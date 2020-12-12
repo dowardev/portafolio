@@ -1,0 +1,7 @@
+{
+  "name": "dowar",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
