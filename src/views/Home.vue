@@ -143,22 +143,31 @@
         </ion-row>
       </section>
 
-      <ion-button v-on:click="$router.push('/informacion')">
-        Click me
-      </ion-button>
+      <ion-row>
+        <ion-col>
+          <ion-fab horizontal="center">
+            <ion-fab-button v-on:click="$router.push('/informacion')">
+              <ion-icon :icon="arrowForward"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </ion-col>
+      </ion-row>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import { IonContent, IonPage } from "@ionic/vue";
+import { IonPage, IonContent, IonFab, IonFabButton } from "@ionic/vue";
 import { defineComponent } from "vue";
+import { arrowForward } from "ionicons/icons";
 
 export default defineComponent({
   name: "Home",
-  components: {
-    IonContent,
-    IonPage,
+  components: { IonPage, IonContent, IonFab, IonFabButton },
+  setup() {
+    return {
+      arrowForward,
+    };
   },
 });
 </script>

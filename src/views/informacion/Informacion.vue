@@ -1,10 +1,12 @@
 <template>
   <ion-page>
-    <ion-content>
-      <ion-segment v-model="segment">
-        <ion-button fill="clear" v-on:click="$router.push('/')">
+    <ion-toolbar>
+      <ion-buttons slot="start" v-on:click="$router.push('/')">
+        <ion-button>
           <ion-icon :icon="arrowBack"></ion-icon>
         </ion-button>
+      </ion-buttons>
+      <ion-segment v-model="segment" scrollable="true">
         <ion-segment-button value="historia">
           <ion-label>Historia</ion-label>
         </ion-segment-button>
@@ -15,14 +17,16 @@
           <ion-label>Proyectos</ion-label>
         </ion-segment-button>
       </ion-segment>
+    </ion-toolbar>
 
+    <ion-content>
       <ion-col size="12" v-if="segment == 'historia'">
         <historia />
       </ion-col>
       <ion-col size="12" v-if="segment == 'habilidades'">
         <habilidades />
       </ion-col>
-      <ion-col size="12" v-if="segment == 'proyectos'">
+      <ion-col id="div-prueba" size="12" v-if="segment == 'proyectos'">
         <proyectos />
       </ion-col>
     </ion-content>
@@ -30,7 +34,13 @@
 </template>
 
 <script lang="ts">
-import { IonPage, IonContent, IonSegment, IonSegmentButton } from "@ionic/vue";
+import {
+  IonPage,
+  IonContent,
+  IonSegment,
+  IonSegmentButton,
+  IonButtons,
+} from "@ionic/vue";
 import { defineComponent } from "vue";
 import Habilidades from "../habilidades/Habilidades.vue";
 import Proyectos from "../proyectos/Proyectos.vue";
@@ -46,6 +56,7 @@ export default defineComponent({
     Habilidades,
     Proyectos,
     Historia,
+    IonButtons,
   },
   data() {
     return {

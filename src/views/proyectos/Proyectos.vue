@@ -1,116 +1,92 @@
 <template>
-  <ion-page>
-    <ion-content>
-      <!-- proyectos -->
-      <section class="ion-padding">
-        <h2>Proyectos</h2>
-        <ion-row>
-          <ion-col size="auto">
-            <ion-card>
-              <img
-                src="../../../public/assets/otros/globtec.webp"
-                alt=""
-                class="img-proyecto"
-              />
-              <ion-card-header>
-                <ion-card-title>Globalizaciones</ion-card-title>
-                <ion-card-subtitle>PWA</ion-card-subtitle>
-              </ion-card-header>
-              <ion-card-content>
-                <ion-button expand="block" v-on:click="modalGlobalizaciones">
-                  Ver mas
-                </ion-button>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-          <ion-col size="auto">
-            <ion-card>
-              <img
-                src="../../../public/assets/otros/color.png"
-                alt=""
-                class="img-proyecto"
-              />
-              <ion-card-header>
-                <ion-card-title>Full Color Memories</ion-card-title>
-                <ion-card-subtitle>Sitio web</ion-card-subtitle>
-              </ion-card-header>
-              <ion-card-content>
-                <ion-button expand="block" v-on:click="modalFullColorMemories">
-                  Ver mas
-                </ion-button>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-          <ion-col size="auto">
-            <ion-card>
-              <img
-                src="../../../public/assets/otros/agendaris.jpg"
-                alt=""
-                class="img-proyecto"
-              />
-              <ion-card-header>
-                <ion-card-title>Agendaris</ion-card-title>
-                <ion-card-subtitle>PWA</ion-card-subtitle>
-              </ion-card-header>
-              <ion-card-content>
-                <ion-button expand="block" v-on:click="modalAgendaris">
-                  Ver mas
-                </ion-button>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </section>
+  <ion-content class="content">
+    <!-- proyectos -->
+    <section class="ion-padding">
+      <h2>Proyectos</h2>
+      <ion-row>
+        <ion-col size="auto">
+          <ion-card v-on:click="modalGlobalizaciones">
+            <img
+              src="../../../public/assets/otros/globtec.webp"
+              alt=""
+              class="img-proyecto"
+              style="max-width: 196px;"
+            />
+            <ion-card-header>
+              <ion-card-title>Globalizaciones</ion-card-title>
+              <ion-card-subtitle>PWA</ion-card-subtitle>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+        <ion-col size="auto">
+          <ion-card v-on:click="modalFullColorMemories">
+            <img
+              src="../../../public/assets/otros/color.png"
+              alt=""
+              class="img-proyecto"
+            />
+            <ion-card-header>
+              <ion-card-title>Full Color Memories</ion-card-title>
+              <ion-card-subtitle>Sitio web</ion-card-subtitle>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+        <ion-col size="auto">
+          <ion-card v-on:click="modalAgendaris">
+            <img
+              src="../../../public/assets/otros/agendaris.jpg"
+              alt=""
+              class="img-proyecto"
+            />
+            <ion-card-header>
+              <ion-card-title>Agendaris</ion-card-title>
+              <ion-card-subtitle>PWA</ion-card-subtitle>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </section>
 
-      <!-- otras participaciones -->
-      <section class="ion-padding">
-        <h2>Otras participaciones</h2>
-        <ion-row>
-          <ion-col size="auto">
-            <ion-card>
-              <img
-                src="../../../public/assets/otros/workana.png"
-                alt=""
-                class="img-proyecto"
-              />
-              <ion-card-header>
-                <ion-card-title>Freelance de sitios web</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
-                <ion-button
-                  expand="block"
-                  v-on:click="
-                    navegador(
-                      'https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c?ref=user_dropdown'
-                    )
-                  "
-                >
-                  Ver perfil
-                </ion-button>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-          <ion-col size="auto">
-            <ion-card>
-              <img
-                src="../../../public/assets/otros/init.png"
-                alt=""
-                style="width: 241px"
-              />
-              <ion-card-header>
-                <ion-card-title>Colaborador de contenido</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
-                <ion-button expand="block" v-on:click="modalInit">
-                  Mas informacion
-                </ion-button>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </section>
-    </ion-content>
-  </ion-page>
+    <!-- otras participaciones -->
+    <section class="ion-padding">
+      <h2>Otras participaciones</h2>
+      <ion-row>
+        <ion-col size="auto">
+          <ion-card
+            v-on:click="
+              navegador(
+                'https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c?ref=user_dropdown'
+              )
+            "
+          >
+            <ion-row>
+              <ion-col>
+                <img
+                  src="../../../public/assets/otros/workana.png"
+                  alt=""
+                  class="img-proyecto"
+              /></ion-col>
+            </ion-row>
+            <ion-card-header>
+              <ion-card-title>Freelance de sitios web</ion-card-title>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+        <ion-col size="auto">
+          <ion-card v-on:click="modalInit">
+            <img
+              src="../../../public/assets/otros/init.png"
+              alt=""
+              style="width: 134px"
+            />
+            <ion-card-header>
+              <ion-card-title>Colaborador de contenido</ion-card-title>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </section>
+  </ion-content>
 </template>
 
 <script lang="ts">
@@ -163,9 +139,20 @@ export default defineComponent({
 </script>
 
 <style>
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.content {
+  height: 92rem;
+}
 @media (min-width: 992px) {
   .img-proyecto {
     max-width: 196px;
+  }
+  .content {
+    height: 51rem;
   }
 }
 </style>
