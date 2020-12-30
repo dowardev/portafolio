@@ -6,7 +6,7 @@
           <ion-icon slot="start" :icon="arrowBackOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title>Globalizaciones web</ion-title>
+      <ion-title>Globalizaciones web(en desarrollo)</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding">

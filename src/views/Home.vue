@@ -394,6 +394,24 @@
               </ion-card-content>
             </ion-card>
           </ion-col>
+          <ion-col size="auto">
+            <ion-card>
+              <img
+                src="../../public/assets/otros/agendaris.jpg"
+                alt=""
+                class="img-proyecto"
+              />
+              <ion-card-header>
+                <ion-card-title>Agendaris</ion-card-title>
+                <ion-card-subtitle>PWA</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-button expand="block" v-on:click="modalAgendaris">
+                  Ver mas
+                </ion-button>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
         </ion-row>
       </section>
 
@@ -464,6 +482,7 @@ import { logoIonic } from "ionicons/icons";
 import Globalizaciones from "./modal/globalizaciones/Globalizaciones.vue";
 import FullColorMemories from "./modal/full color memories/FullColorMemories.vue";
 import Init from "./modal/init/Init.vue";
+import Agendaris from "./modal/agendaris/Agendaris.vue";
 
 export default defineComponent({
   name: "Home",
@@ -497,6 +516,13 @@ export default defineComponent({
     async modalInit() {
       const modal = await modalController.create({
         component: Init,
+        cssClass: "my-custom-class",
+      });
+      return modal.present();
+    },
+    async modalAgendaris() {
+      const modal = await modalController.create({
+        component: Agendaris,
         cssClass: "my-custom-class",
       });
       return modal.present();
