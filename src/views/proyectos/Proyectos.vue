@@ -44,6 +44,19 @@
             </ion-card-header>
           </ion-card>
         </ion-col>
+        <ion-col size-md="auto" size="12">
+          <ion-card v-on:click="modalMaxvie">
+            <img
+              src="../../../public/assets/otros/maxvie.png"
+              alt=""
+              class="img-proyecto"
+            />
+            <ion-card-header>
+              <ion-card-title>Maxvie</ion-card-title>
+              <ion-card-subtitle>PWA</ion-card-subtitle>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
       </ion-row>
     </section>
 
@@ -99,6 +112,7 @@ import Globalizaciones from "./modal/globalizaciones/Globalizaciones.vue";
 import FullColorMemories from "./modal/full color memories/FullColorMemories.vue";
 import Init from "./modal/init/Init.vue";
 import Agendaris from "./modal/agendaris/Agendaris.vue";
+import Maxvie from "./modal/maxvie/Maxvie.vue";
 
 export default defineComponent({
   components: { IonContent },
@@ -130,6 +144,13 @@ export default defineComponent({
     async modalAgendaris() {
       const modal = await modalController.create({
         component: Agendaris,
+        cssClass: "my-custom-class",
+      });
+      return modal.present();
+    },
+    async modalMaxvie() {
+      const modal = await modalController.create({
+        component: Maxvie,
         cssClass: "my-custom-class",
       });
       return modal.present();
