@@ -11,9 +11,9 @@
   </ion-header>
   <ion-content class="ion-padding">
     <p>
-      Globaliaciones es mi sitio Web principal y mi mas grande proyecto, con el
-      quiero ofrecer contenido de calidad a todo aquel que lo necesite para
-      ayudarlo durante su camino como desarrollador.
+      Globalizaciones es mi sitio Web principal y mi mas grande proyecto, con el
+      quiero ofrecer contenido(videos, cursos, consejos, etc) a todo aquel que
+      lo necesite para ayudarlo durante su camino como desarrollador.
     </p>
     <br />
     <p>
@@ -21,8 +21,12 @@
       ofrece al usuario final la posibilidad de acceder a nuestro contenido
       desde cualquier dispositivo.
     </p>
-    <ion-router-link v-on:click="navegador('http://globalizaciones.dowar.xyz')"
-      >Globalizaciones</ion-router-link
+    <a href="http://globalizaciones.dowar.xyz" target="_blank">Sitio web</a>
+    <br />
+    <a
+      href="https://gitlab.com/gonzam4/globalizaciones-web-front"
+      target="_blank"
+      >Repositorio</a
     >
   </ion-content>
 </template>

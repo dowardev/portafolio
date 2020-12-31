@@ -1,10 +1,10 @@
 <template>
-  <ion-content class="content">
+  <ion-content class="contenido-proyectos">
     <!-- proyectos -->
     <section class="ion-padding">
       <h2>Proyectos</h2>
       <ion-row>
-        <ion-col size="auto">
+        <ion-col size-md="auto" size="12">
           <ion-card v-on:click="modalGlobalizaciones">
             <img
               src="../../../public/assets/otros/globtec.webp"
@@ -31,7 +31,7 @@
             </ion-card-header>
           </ion-card>
         </ion-col>
-        <ion-col size="auto">
+        <ion-col size-md="auto" size="12">
           <ion-card v-on:click="modalAgendaris">
             <img
               src="../../../public/assets/otros/agendaris.jpg"
@@ -51,7 +51,7 @@
     <section class="ion-padding">
       <h2>Otras participaciones</h2>
       <ion-row>
-        <ion-col size="auto">
+        <ion-col size-md="auto" size="12">
           <ion-card
             v-on:click="
               navegador(
@@ -72,7 +72,7 @@
             </ion-card-header>
           </ion-card>
         </ion-col>
-        <ion-col size="auto">
+        <ion-col size-md="auto" size="12">
           <ion-card v-on:click="modalInit">
             <img
               src="../../../public/assets/otros/init.png"
@@ -144,14 +144,14 @@ img {
   margin-left: auto;
   margin-right: auto;
 }
-.content {
+.contenido-proyectos {
   height: 92rem;
 }
 @media (min-width: 992px) {
   .img-proyecto {
     max-width: 196px;
   }
-  .content {
+  .contenido-proyectos {
     height: 51rem;
   }
 }

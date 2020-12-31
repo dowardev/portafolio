@@ -11,17 +11,25 @@
   </ion-header>
   <ion-content class="ion-padding">
     <p>
-      Agendaris es una aplicacion tipo PWA desarrollada como proyecto escolar
-      usando Ionic Framework, Angular y Firebase.
+      Agendaris es una aplicacion tipo PWA desarrollada usando Ionic Framework,
+      Angular y Firebase.
     </p>
     <br />
     <p>
       El objetivo de esta aplicacion es el poder administrar los proyectos y
       compromisos de la presidencia.
     </p>
-    <ion-router-link
-      v-on:click="navegador('https://agendaris-ded04.web.app/inicio')"
-      >Agendaris</ion-router-link
+    <a
+      href="https://agendaris-ded04.web.app/"
+      target="_blank"
+      rel="noopener noreferrer"
+      >Sitio web</a
+    ><br />
+    <a
+      href="https://gitlab.com/gonzam4/agendadis"
+      target="_blank"
+      rel="noopener noreferrer"
+      >Repositorio</a
     >
   </ion-content>
 </template>

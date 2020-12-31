@@ -6,7 +6,7 @@
           <ion-icon slot="start" :icon="arrowBackOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title>FullColorMemories</ion-title>
+      <ion-title>FullColorMemories(suspendido)</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding">
@@ -22,9 +22,18 @@
     </p>
     <br />
     <p>Esta desarrollado con Html, Bootstrap y JavaScript.</p>
-    <ion-router-link
-      v-on:click="navegador('http://fullcolormemories.dowar.xyz ')"
-      >Full Color Memories</ion-router-link
+    <a
+      href="http://fullcolormemories.dowar.xyz"
+      target="_blank"
+      rel="noopener noreferrer"
+      >Sitio web</a
+    >
+    <br />
+    <a
+      href="https://gitlab.com/gonzam4/pagina-web-fcm"
+      target="_blank"
+      rel="noopener noreferrer"
+      >Repositorio</a
     >
   </ion-content>
 </template>

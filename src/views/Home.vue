@@ -56,15 +56,7 @@
                   />
                 </svg>
               </ion-button>
-              <ion-button
-                expand="block"
-                fill="clear"
-                v-on:click="
-                  navegador(
-                    'mailto:contacto@dowar.xyz?Subject=Contacto%20laboral'
-                  )
-                "
-              >
+              <ion-button expand="block" fill="clear" v-on:click="mail">
                 <svg style="width: 24px; height: 24px" viewBox="0 0 24 24">
                   <path
                     fill="#777777"
@@ -160,6 +152,7 @@
 import { IonPage, IonContent, IonFab, IonFabButton } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { arrowForward } from "ionicons/icons";
+import { isPlatform } from "@ionic/vue";
 
 export default defineComponent({
   name: "Home",
@@ -168,6 +161,13 @@ export default defineComponent({
     return {
       arrowForward,
     };
+  },
+  methods: {
+    mail() {
+      if (isPlatform("desktop")) {
+        location.href = "mailto:contacto@dowar.xyz?Subject=Contacto%20laboral";
+      }
+    },
   },
 });
 </script>
@@ -221,6 +221,9 @@ export default defineComponent({
   }
   #texto-descr {
     text-align: center;
+  }
+  #img-perfil {
+    margin-top: 40px;
   }
 }
 
