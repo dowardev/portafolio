@@ -6,7 +6,7 @@
         <h2>Proyectos</h2>
         <ion-row>
           <ion-col size="auto">
-            <ion-card v-on:click="modalGlobalizaciones">
+            <ion-card v-on:click="modalGlobalizaciones" class="fancy_card">
               <img
                 src="../../../public/assets/otros/globtec.webp"
                 alt=""
@@ -20,7 +20,7 @@
             </ion-card>
           </ion-col>
           <ion-col size="auto">
-            <ion-card v-on:click="modalFullColorMemories">
+            <ion-card v-on:click="modalFullColorMemories" class="fancy_card">
               <img
                 src="../../../public/assets/otros/color.png"
                 alt=""
@@ -33,7 +33,7 @@
             </ion-card>
           </ion-col>
           <ion-col size="auto">
-            <ion-card v-on:click="modalAgendaris">
+            <ion-card v-on:click="modalAgendaris" class="fancy_card">
               <img
                 src="../../../public/assets/otros/agendaris.jpg"
                 alt=""
@@ -46,7 +46,7 @@
             </ion-card>
           </ion-col>
           <ion-col size="auto">
-            <ion-card v-on:click="modalMaxvie">
+            <ion-card v-on:click="modalMaxvie" class="fancy_card">
               <img
                 src="../../../public/assets/otros/maxvie.png"
                 alt=""
@@ -68,6 +68,7 @@
         <ion-row>
           <ion-col size="auto">
             <ion-card
+              class="fancy_card"
               v-on:click="
                 navegador(
                   'https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c?ref=user_dropdown'
@@ -88,7 +89,7 @@
             </ion-card>
           </ion-col>
           <ion-col size="auto">
-            <ion-card v-on:click="modalInit">
+            <ion-card v-on:click="modalInit" class="fancy_card">
               <img
                 src="../../../public/assets/otros/init.png"
                 alt=""
@@ -277,4 +278,25 @@ ion-card-title {
     height: 56rem;
   }
 } */
+
+/* tarjetas */
+.fancy_card {
+  border-radius: 5px;
+  box-shadow: 8px 14px 38px rgba(39, 44, 49, 0.06),
+    1px 3px 8px rgba(39, 44, 49, 0.03);
+  overflow: hidden;
+  /* otherwise header image won't respect rounded corners */
+  background: #0a151f;
+  transition: all 0.5s ease;
+  /* back to normal */
+}
+.fancy_card:hover {
+  transform: translate3D(0, -1px, 0) scale(1.03);
+  /* move up slightly and zoom in */
+  box-shadow: 8px 28px 50px rgba(39, 44, 49, 0.07),
+    1px 6px 12px rgba(39, 44, 49, 0.04);
+  transition: all 0.4s ease;
+  /* zoom in */
+  cursor: pointer;
+}
 </style>

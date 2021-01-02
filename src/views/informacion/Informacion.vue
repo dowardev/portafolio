@@ -45,7 +45,7 @@ export default defineComponent({
   },
   data() {
     return {
-      segment: "habilidades",
+      segment: "historia",
     };
   },
   setup() {
