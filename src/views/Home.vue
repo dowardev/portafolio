@@ -1,8 +1,16 @@
 <template>
   <ion-page>
     <ion-content :fullscreen="true">
+      <ion-row>
+        <ion-col size="12"
+          ><img
+            src="../../public/assets/portafolio/dowar.png"
+            alt=""
+            id="img-logo"
+        /></ion-col>
+      </ion-row>
       <!-- Descripcion -->
-      <section id="section-descripcion" style="margin-top: 16px;">
+      <section id="section-descripcion">
         <ion-row>
           <ion-col size="12">
             <img
@@ -12,7 +20,7 @@
               class="center"
             />
           </ion-col>
-          <ion-col size="12" class="ion-padding" style="margin-top: 5px;">
+          <ion-col size="12" class="ion-padding">
             <div style="text-align: center">
               <div class="wrapper">
                 <div class="letters">
@@ -30,7 +38,7 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size="12" class="ion-padding" style="margin-top: 18px">
+          <ion-col size="12" class="ion-padding texto-bienvenida">
             <h5 style="text-align: center">
               Hola!, Es un gusto tenerte aqui <br />
               Cualquier cosa que necesites te ayudare con mucho gusto.
@@ -43,7 +51,7 @@
               srcset=""
               @click="navegador('https://www.codewars.com/users/dowar/')"
           /></ion-col>
-          <ion-col>
+          <ion-col style="display: flex; justify-content: center">
             <ion-row id="iconos-redes">
               <ion-button
                 fill="clear"
@@ -164,7 +172,11 @@ export default defineComponent({
   },
   methods: {
     mail() {
-      if (isPlatform("desktop")) {
+      if (
+        isPlatform("desktop") ||
+        isPlatform("mobile") ||
+        isPlatform("mobileweb")
+      ) {
         location.href = "mailto:contacto@dowar.xyz?Subject=Contacto%20laboral";
       }
     },
@@ -173,34 +185,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
-
 #img-perfil {
   border-radius: 50%;
   width: 182px;
@@ -211,22 +195,70 @@ export default defineComponent({
   margin-right: auto;
   width: 50%;
 }
+/*iPhone 5, 5C, 5S, SE vertical */
+@media only screen and (min-width: 320px) and (max-width: 568px) and (-webkit-min-device-pixel-ratio: 2) and (device-aspect-ratio: 320/568) {
+  #img-perfil {
+    border-radius: 50%;
+    width: 145px;
+  }
+  .texto-bienvenida {
+    margin-top: 28px;
+  }
+}
 /* escritorio */
 @media (min-width: 992px) {
   .img-proyecto {
     width: 241px;
   }
-  #iconos-redes {
-    margin-left: 35%;
-  }
-  #texto-descr {
-    text-align: center;
-  }
   #img-perfil {
     margin-top: 40px;
   }
+  .texto-bienvenida {
+    margin-top: 18px;
+  }
+  #section-descripcion {
+    margin-top: 16px;
+  }
+  #img-logo {
+    width: 215px;
+  }
 }
-
+/* smartphones vertical */
+@media (min-width: 320px) and (max-width: 480px) {
+  .texto-bienvenida {
+    margin-top: 21px;
+  }
+  #img-logo {
+    width: 215px;
+  }
+  #img-perfil {
+    width: 166px;
+  }
+}
+/* smartphones horizontal */
+@media (min-width: 481px) and (max-width: 767px) {
+  #img-logo {
+    width: 186px;
+  }
+  .texto-bienvenida {
+    margin-top: 16px;
+  }
+}
+/*tablet, ipad */
+@media (min-width: 768px) and (max-width: 1024px) {
+  #img-logo {
+    width: 226px;
+  }
+  .texto-bienvenida {
+    margin-top: 16px;
+  }
+}
+/* iPhone 6 Plus, 6S Plus, 7 Plus, 8 Plus horizontal */
+@media only screen and (min-width: 414px) and (max-width: 736px) and (device-aspect-ratio: 736/414) and (-webkit-min-device-pixel-ratio: 3) {
+  .texto-bienvenida {
+    margin-top: 14px;
+  }
+}
 body {
   text-align: center;
   background-color: #1d1f20;
@@ -247,7 +279,7 @@ p {
   opacity: 0.3;
 }
 .letter {
-  width: 24px;
+  width: 21px;
   display: inline-block;
   vertical-align: middle;
   position: relative;

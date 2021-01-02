@@ -19,48 +19,33 @@
       </ion-segment>
     </ion-toolbar>
 
-    <ion-content>
-      <ion-col size="12" v-if="segment == 'historia'">
-        <historia />
-      </ion-col>
-      <ion-col size="12" v-if="segment == 'habilidades'">
-        <habilidades />
-      </ion-col>
-      <ion-col id="div-prueba" size="12" v-if="segment == 'proyectos'">
-        <proyectos />
-      </ion-col>
-    </ion-content>
+    <historia v-if="segment == 'historia'" />
+    <habilidades v-if="segment == 'habilidades'" />
+    <proyectos v-if="segment == 'proyectos'" />
   </ion-page>
 </template>
 
 <script lang="ts">
-import {
-  IonPage,
-  IonContent,
-  IonSegment,
-  IonSegmentButton,
-  IonButtons,
-} from "@ionic/vue";
+import { IonPage, IonSegment, IonSegmentButton, IonButtons } from "@ionic/vue";
 import { defineComponent } from "vue";
-import Habilidades from "../habilidades/Habilidades.vue";
-import Proyectos from "../proyectos/Proyectos.vue";
 import { arrowBack } from "ionicons/icons";
 import Historia from "../historia/Historia.vue";
+import Habilidades from "../habilidades/Habilidades.vue";
+import Proyectos from "../proyectos/Proyectos.vue";
 
 export default defineComponent({
   components: {
     IonPage,
-    IonContent,
-    IonSegment,
-    IonSegmentButton,
+    Historia,
     Habilidades,
     Proyectos,
-    Historia,
+    IonSegment,
+    IonSegmentButton,
     IonButtons,
   },
   data() {
     return {
-      segment: "historia",
+      segment: "habilidades",
     };
   },
   setup() {

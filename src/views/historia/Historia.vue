@@ -1,8 +1,8 @@
 <template>
-  <ion-content class="contenido-historia">
+  <ion-content>
     <ion-row class="ion-padding">
       <ion-col size="12">
-        <div id="div-historia">
+        <div id="div-contenido-historia">
           Soy originario de Hidalgo del Parral Chihuahua México y tengo
           {{ edad }} años de edad.
           <br />
@@ -35,7 +35,7 @@
 
     <div class="timeline">
       <div class="container left">
-        <div class="content">
+        <div class="content-timeline">
           <h2>2016</h2>
           <p>
             Inicio como desarrollador de sitios web.
@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="container right">
-        <div class="content">
+        <div class="content-timeline">
           <h2>2018</h2>
           <p>
             Nueva habilidad: Laravel
@@ -51,7 +51,7 @@
         </div>
       </div>
       <div class="container left">
-        <div class="content">
+        <div class="content-timeline">
           <h2>2020</h2>
           <p>
             Iniciativa como freelance
@@ -63,7 +63,7 @@
         </div>
       </div>
       <!--  <div class="container right">
-        <div class="content">
+        <div class="content-timeline">
           <h2>2020</h2>
           <p>
             Iniciativa como freelance
@@ -75,7 +75,7 @@
         </div>
       </div>
       <div class="container left">
-        <div class="content">
+        <div class="content-timeline">
           <h2>2011</h2>
           <p>
             Lorem ipsum dolor sit amet, quo ei simul congue exerci, ad nec
@@ -86,7 +86,7 @@
         </div>
       </div>
       <div class="container right">
-        <div class="content">
+        <div class="content-timeline">
           <h2>2007</h2>
           <p>
             Lorem ipsum dolor sit amet, quo ei simul congue exerci, ad nec
@@ -125,34 +125,22 @@ export default defineComponent({
 </script>
 
 <style>
-#div-historia {
-  font-size: 18px;
-  line-height: 1.6;
-  letter-spacing: 0.013em;
-}
-.contenido-historia {
-  height: 123rem;
-}
-@media (min-width: 992px) {
-  #div-historia {
-    padding-left: 8rem;
-    padding-right: 8rem;
-    font-size: 18px;
-    line-height: 1.6;
-  }
-  .contenido-historia {
-    height: 62rem;
-  }
-}
 * {
   box-sizing: border-box;
 }
-
-body {
-  background-color: #474e5d;
-  font-family: Helvetica, sans-serif;
+#div-contenido-historia {
+  font-size: 19px;
 }
-
+@media (min-width: 1025px) and (max-width: 1280px) {
+  #div-contenido-historia {
+    font-size: 22px;
+  }
+}
+@media (min-width: 1281px) {
+  #div-contenido-historia {
+    font-size: 22px;
+  }
+}
 /* The actual timeline (the vertical ruler) */
 .timeline {
   position: relative;
@@ -238,9 +226,9 @@ body {
 }
 
 /* The actual content */
-.content {
+.content-timeline {
   padding: 20px 30px;
-  background-color: #1e1e1e;
+  background-color: #0a151f;
   position: relative;
   border-radius: 6px;
 }

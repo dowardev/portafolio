@@ -97,7 +97,7 @@
             </ion-card>
           </ion-col>
 
-          <ion-col size-md="6" size-sm="12" size="12">
+          <ion-col size-md="6" size-sm="4">
             <ion-card>
               <ion-card-header>
                 <ion-card-title>Back-End</ion-card-title>
@@ -129,7 +129,7 @@
             </ion-card>
           </ion-col>
 
-          <ion-col size-md="6" size-sm="12" size="12">
+          <ion-col size-md="6" size-sm="8">
             <ion-card>
               <ion-card-header>
                 <ion-card-title>Aplicaciones Moviles</ion-card-title>
@@ -148,7 +148,7 @@
             </ion-card>
           </ion-col>
 
-          <ion-col size-md="6" size-sm="12" size="12">
+          <ion-col size-md="6" size-sm="5">
             <ion-card>
               <ion-card-header>
                 <ion-card-title>Escritorio</ion-card-title>
@@ -180,7 +180,7 @@
             </ion-card>
           </ion-col>
 
-          <ion-col size-md="6" size-sm="12" size="12">
+          <ion-col size-md="6" size-sm="6">
             <ion-card>
               <ion-card-header>
                 <ion-card-title>Base de Datos</ion-card-title>
@@ -197,7 +197,7 @@
                     </svg>
                     <p>Firebase</p>
                   </ion-col>
-                  <ion-col size-md="2"> MySql </ion-col>
+                  <ion-col size-md="3"> MySql </ion-col>
                 </ion-row>
               </ion-card-content>
             </ion-card>
@@ -253,3 +253,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+ion-card-title {
+  --color: #909090;
+}
+</style>
