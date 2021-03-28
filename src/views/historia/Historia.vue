@@ -3,32 +3,34 @@
     <ion-row class="ion-padding">
       <ion-col size="12">
         <div id="div-contenido-historia">
-          Soy originario de Hidalgo del Parral Chihuahua México y tengo
-          {{ edad }} años de edad.
+          Soy desarrollador especializado en la creación de aplicaciones
+          multiplataforma usando tecnologías web, tengo {{ edad }} años de edad
+          y a continuación te contaré un poco más sobre mi historia.
           <br />
           Inicie con en el desarrollado de sitios Web en el año 2016 donde
-          empecé con las tres tecnologías básicas Html, Css y JavaScript, por
+          empecé con las tres tecnologías básicas HTML, CSS y JavaScript, por
           motivos de seguir con mis estudios deje un poco de lado esto y no fue
-          hasta el 2018 donde lo retome pero esta vez con Laravel, con el paso
-          del tiempo fui aprendiendo otras tecnologías FrontEnd como Jquery,
-          Materialize y Bootstrap.
+          hasta el 2018 donde lo retome, pero esta vez introduciéndome al
+          BackEnd con Laravel, con el paso del tiempo fui aprendiendo otras
+          tecnologías FrontEnd como Materialize y Bootstrap.
           <br />
-          En el 2020 decidi emprender como freelance en la plataforma de Workana
-          en la que adquiri un proyecto,al mismo tiempo en el que desarrollaba
-          este proyecto tome un curso en la plataforma de Udemy en la cual
-          aprendi 3 nuevas tecnologias Vue, React y Angular, poniendo en
-          practica solamente a Vue(ya que fue la que mas me gusto) en el
-          desarrollo de mi sitio web personal. Meses después adquirí otro curso
-          de Udemy para el desarrollo de aplicaciones móviles usando Ionic y fue
-          ahí donde puse en practica mis conocimientos con el Framework de
-          Angular. A lo largo de este año 2020 adquirí otros conocimientos como
-          el manejo de la librería grafica Vuetify, manejo de servidores (
-          básico), otros conocimientos que he adquirido a lo largo del tiempo
-          son el manejo de sistemas operativos Linux, git, Python, Java y C#.
+          En el 2020 decidí emprender como freelance en la plataforma de
+          Workana, con el pasar del tiempo fui adquiriendo otras habilidades
+          como Vue, React y Angular.
           <br />
-          Me gusta compartir mis conocimientos con los demás y siempre estoy
-          dispuesto ayudar a todo aquel que lo necesite para hacer un poco mas
-          fácil su trayectoria como desarrollador.
+          A mediados del 2020 comencé a trabajar con Ionic lo cual me permitiría
+          desarrollar aplicaciones multiplataforma(PWA, Android, iOS), al mismo
+          tiempo me permitía pulir mis conocimientos con los Frameworks Vue y
+          Angular.
+          <br />
+          Otros conocimientos que he adquirido a lo largo del tiempo son el
+          manejo de sistemas operativos Linux, Git, Python, Java y C#.
+          <br />
+          Para este 2021 comenzaré a compartir mis conocimientos subiendo
+          contenido a la plataforma de YouTube y Udemy y con esto poder ayudar a
+          todo aquel que lo necesite con lo poco que he aprendido durante todos
+          estos años. Todos está en nuestras mentes, tanto si crees que puedes
+          como que no puedes estas en lo correcto. Henry Ford
         </div>
       </ion-col>
     </ion-row>
@@ -62,19 +64,15 @@
           </p>
         </div>
       </div>
-      <!--  <div class="container right">
+      <div class="container right">
         <div class="content-timeline">
-          <h2>2020</h2>
+          <h2>2021</h2>
           <p>
-            Iniciativa como freelance
-            <br />
-            Nuevas habilidades: Vue, React, Angular y Ionic
-            <br />
-            Participacion en Init
+            Creador de contenido
           </p>
         </div>
       </div>
-      <div class="container left">
+      <!--  <div class="container left">
         <div class="content-timeline">
           <h2>2011</h2>
           <p>
@@ -130,6 +128,7 @@ export default defineComponent({
 }
 #div-contenido-historia {
   font-size: 19px;
+  text-align: initial;
 }
 @media (min-width: 1025px) and (max-width: 1280px) {
   #div-contenido-historia {

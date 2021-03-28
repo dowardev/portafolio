@@ -55,3 +55,15 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+ion-segment {
+  --background: #23232f;
+}
+ion-segment-button {
+  --color-checked: #e64e81;
+}
+ion-toolbar {
+  --background: #23232f;
+}
+</style>
