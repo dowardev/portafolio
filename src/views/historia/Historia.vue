@@ -122,7 +122,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scope>
 * {
   box-sizing: border-box;
 }

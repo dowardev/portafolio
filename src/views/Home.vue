@@ -20,7 +20,7 @@
               class="center"
             />
           </ion-col>
-          <ion-col size="12" class="ion-padding">
+          <ion-col size="12" class="ion-padding" id="copywriting">
             <div style="text-align: center">
               <div class="wrapper">
                 <div class="letters">
@@ -32,18 +32,19 @@
                   ><span class="letter">n</span><span class="letter">c</span
                   ><span class="letter">e</span><span class="letter"></span>
                 </div>
-                <p>Desarrollador de aplicaciones y sitios web</p>
               </div>
             </div>
           </ion-col>
         </ion-row>
-        <ion-row>
-          <ion-col size="12" class="ion-padding texto-bienvenida">
-            <h5 style="text-align: center">
-              Hola!, Es un gusto tenerte aqui <br />
-              Cualquier cosa que necesites te ayudare con mucho gusto.
+        <ion-row id="texto-bienvenida">
+          <ion-col size="12" size-md="6" class="ion-padding ">
+            <h5 >
+              Tus necesidades son mis necesidades lo que me permite construir y
+              desarrollar aplicaciones de alto nivel.
             </h5>
           </ion-col>
+        </ion-row>
+        <ion-row>
           <ion-col size="12" style="display: flex; justify-content: center"
             ><img
               src="https://www.codewars.com/users/dowar/badges/small"
@@ -220,7 +221,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scope>
 svg {
   width: 28px;
   height: 28px;
@@ -262,9 +263,6 @@ svg {
     border-radius: 50%;
     width: 145px;
   }
-  .texto-bienvenida {
-    margin-top: 28px;
-  }
 }
 /* escritorio */
 @media (min-width: 992px) {
@@ -272,8 +270,9 @@ svg {
     width: 241px;
   }
 
-  .texto-bienvenida {
-    margin-top: 18px;
+  #texto-bienvenida {
+    display: flex;
+    justify-content: center;
   }
   #img-logo {
     width: 215px;

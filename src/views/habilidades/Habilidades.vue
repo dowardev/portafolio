@@ -185,6 +185,16 @@ export default defineComponent({
                     },
                   ],
                 },
+{
+                  nombre: "Vim",
+                  imagen: [
+                    {
+                      ruta: require("../../../public/assets/otros/vim.png"),
+                      size: "24px",
+                    },
+                  ],
+                },
+
               ],
             },
           ],

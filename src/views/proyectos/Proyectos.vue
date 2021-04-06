@@ -6,7 +6,8 @@
         <h2>Proyectos</h2>
         <ion-row>
           <ion-col
-            size="auto"
+            size="12"
+            size-md="2"
             v-for="(proyecto, index) in proyectos"
             :key="index"
           >
@@ -37,7 +38,8 @@
         <h2>Participaciones</h2>
         <ion-row>
           <ion-col
-            size="auto"
+            size="12"
+            size-md="2"
             v-for="(proyecto, index) in participaciones"
             :key="index"
           >
@@ -72,11 +74,6 @@ import { defineComponent } from "vue";
 import { Plugins } from "@capacitor/core";
 const { Browser } = Plugins;
 
-import Globalizaciones from "./modal/globalizaciones/Globalizaciones.vue";
-import FullColorMemories from "./modal/full color memories/FullColorMemories.vue";
-import Init from "./modal/init/Init.vue";
-import Agendaris from "./modal/agendaris/Agendaris.vue";
-import Maxvie from "./modal/maxvie/Maxvie.vue";
 import Proyectos from "./modal/modalProyectos/Proyectos.vue";
 import {
   arrowBackOutline,
@@ -249,46 +246,11 @@ export default defineComponent({
       });
       return modal.present();
     },
-    async modalGlobalizaciones() {
-      const modal = await modalController.create({
-        component: Globalizaciones,
-        cssClass: "my-custom-class",
-      });
-      return modal.present();
-    },
-    async modalFullColorMemories() {
-      const modal = await modalController.create({
-        component: FullColorMemories,
-        cssClass: "my-custom-class",
-      });
-      return modal.present();
-    },
-    async modalInit() {
-      const modal = await modalController.create({
-        component: Init,
-        cssClass: "my-custom-class",
-      });
-      return modal.present();
-    },
-    async modalAgendaris() {
-      const modal = await modalController.create({
-        component: Agendaris,
-        cssClass: "my-custom-class",
-      });
-      return modal.present();
-    },
-    async modalMaxvie() {
-      const modal = await modalController.create({
-        component: Maxvie,
-        cssClass: "my-custom-class",
-      });
-      return modal.present();
-    },
   },
 });
 </script>
 
-<style>
+<style scope>
 /* img {
   display: block;
   margin-left: auto;
