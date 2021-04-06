@@ -5,99 +5,59 @@
       <section class="ion-padding">
         <h2>Proyectos</h2>
         <ion-row>
-          <ion-col size="auto">
-            <ion-card v-on:click="modalGlobalizaciones" class="fancy_card">
-              <img
-                src="../../../public/assets/otros/globtec.webp"
-                alt=""
-                class="img-proyecto"
-                style="max-width: 196px;"
-              />
+          <ion-col
+            size="auto"
+            v-for="(proyecto, index) in proyectos"
+            :key="index"
+          >
+            <ion-card @click="abrirModalProyectos(proyecto)" class="fancy_card">
               <ion-card-header>
-                <ion-card-title>Globalizaciones</ion-card-title>
-                <ion-card-subtitle>PWA</ion-card-subtitle>
+                <img
+                  :src="proyecto.imagen[0].ruta"
+                  alt=""
+                  class="img-proyecto"
+                  :style="{
+                    maxWidth: proyecto.imagen[0].size,
+                  }"
+                />
+                <ion-card-subtitle>{{ proyecto.tipo }} </ion-card-subtitle>
               </ion-card-header>
-            </ion-card>
-          </ion-col>
-          <ion-col size="auto">
-            <ion-card v-on:click="modalFullColorMemories" class="fancy_card">
-              <img
-                src="../../../public/assets/otros/color.png"
-                alt=""
-                class="img-proyecto"
-              />
-              <ion-card-header>
-                <ion-card-title>Full Color Memories</ion-card-title>
-                <ion-card-subtitle>Sitio web</ion-card-subtitle>
-              </ion-card-header>
-            </ion-card>
-          </ion-col>
-          <ion-col size="auto">
-            <ion-card v-on:click="modalAgendaris" class="fancy_card">
-              <img
-                src="../../../public/assets/otros/agendaris.jpg"
-                alt=""
-                class="img-proyecto"
-              />
-              <ion-card-header>
-                <ion-card-title>Agendaris</ion-card-title>
-                <ion-card-subtitle>PWA</ion-card-subtitle>
-              </ion-card-header>
-            </ion-card>
-          </ion-col>
-          <ion-col size="auto">
-            <ion-card v-on:click="modalMaxvie" class="fancy_card">
-              <img
-                src="../../../public/assets/otros/maxvie.png"
-                alt=""
-                class="img-proyecto"
-                style="max-width: 196px;"
-              />
-              <ion-card-header>
-                <ion-card-title>Maxvie</ion-card-title>
-                <ion-card-subtitle>PWA</ion-card-subtitle>
-              </ion-card-header>
+              <ion-card-content>
+                <ion-chip :color="proyecto.color">
+                  <ion-label>{{ proyecto.estado }}</ion-label>
+                </ion-chip>
+              </ion-card-content>
             </ion-card>
           </ion-col>
         </ion-row>
       </section>
 
-      <!-- otras participaciones -->
+      <!-- Participaciones-->
       <section class="ion-padding">
-        <h2>Otras participaciones</h2>
+        <h2>Participaciones</h2>
         <ion-row>
-          <ion-col size="auto">
-            <ion-card
-              class="fancy_card"
-              v-on:click="
-                navegador(
-                  'https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c?ref=user_dropdown'
-                )
-              "
-            >
-              <ion-row>
-                <ion-col>
-                  <img
-                    src="../../../public/assets/otros/workana.png"
-                    alt=""
-                    class="img-proyecto"
-                /></ion-col>
-              </ion-row>
+          <ion-col
+            size="auto"
+            v-for="(proyecto, index) in participaciones"
+            :key="index"
+          >
+            <ion-card @click="abrirModalProyectos(proyecto)" class="fancy_card">
               <ion-card-header>
-                <ion-card-title>Freelance de sitios web</ion-card-title>
+                <img
+                  :src="proyecto.imagen[0].ruta"
+                  alt=""
+                  class="img-proyecto"
+                  :style="{
+                    maxWidth: proyecto.imagen[0].size,
+                  }"
+                />
               </ion-card-header>
-            </ion-card>
-          </ion-col>
-          <ion-col size="auto">
-            <ion-card v-on:click="modalInit" class="fancy_card">
-              <img
-                src="../../../public/assets/otros/init.png"
-                alt=""
-                style="width: 134px"
-              />
-              <ion-card-header>
-                <ion-card-title>Colaborador de contenido</ion-card-title>
-              </ion-card-header>
+              <ion-card-content>
+                <!-- <ion-card-title>{{ proyecto.nombre }}</ion-card-title>-->
+                <ion-chip :color="proyecto.color">
+                  <ion-label>{{ proyecto.tipo }}</ion-label>
+                </ion-chip>
+              </ion-card-content>
             </ion-card>
           </ion-col>
         </ion-row>
@@ -117,12 +77,177 @@ import FullColorMemories from "./modal/full color memories/FullColorMemories.vue
 import Init from "./modal/init/Init.vue";
 import Agendaris from "./modal/agendaris/Agendaris.vue";
 import Maxvie from "./modal/maxvie/Maxvie.vue";
-
+import Proyectos from "./modal/modalProyectos/Proyectos.vue";
+import {
+  arrowBackOutline,
+  logoIonic,
+  logoFirebase,
+  logoPaypal,
+  logoLaravel,
+  logoVue,
+  logoWordpress,
+  ellipsisVerticalOutline,
+} from "ionicons/icons";
 export default defineComponent({
   components: { IonContent },
+  setup() {
+    return {
+      arrowBackOutline,
+      logoIonic,
+      logoFirebase,
+      logoPaypal,
+      logoLaravel,
+      logoVue,
+      logoWordpress,
+      ellipsisVerticalOutline,
+      proyectos: [
+        {
+          nombre: "Globalizaciones",
+          estado: "En desarrollo",
+          tipo: "PWA, Android, IOs",
+          color: "secondary",
+          imagen: [
+            {
+              ruta: require("../../../public/assets/otros/globtec.webp"),
+              size: "134px",
+            },
+          ],
+          descripcion:
+            "Globalizaciones es una aplicación multiplataforma cuyo objetivo es entregar conocimiento mediante tutoriales y cursos de tecnologia.",
+          tecnologias: [
+            {
+              nombre: "Ionic",
+              ruta: "https://ionicframework.com/",
+              icono: logoIonic,
+              tipo: "FrontEnd",
+            },
+            {
+              nombre: "Vue",
+              ruta: "https://vuejs.org/",
+              icono: logoVue,
+              tipo: "FrontEnd",
+            },
+
+            {
+              nombre: "Laravel",
+              ruta: "https://laravel.com/",
+              icono: logoLaravel,
+              tipo: "BackEnd",
+            },
+          ],
+          pagina: "https://globalizaciones.dowar.xyz/",
+          repositorio: "https://gitlab.com/gonzam4/globalizaciones-web",
+        },
+        {
+          nombre: "Petstread",
+          estado: "En desarrollo",
+          tipo: "Aplicacion móvil",
+          color: "secondary",
+          imagen: [
+            {
+              ruta: require("../../../public/assets/otros/Petstread.svg"),
+              size: "134px",
+            },
+          ],
+          descripcion:
+            "Petstread es una tienda de alimentos y accesorios para diversos tipos de mascotas siendo esta una aplicación para Android y IOs, el proyecto fue adquirido por medio de la plataforma de workana.El ejemplo adjunto es visualizado como un sitio web debido a que está desarrollándose  como una aplicación web por lo tanto deberá activarse la vista móvil de su navegador para su  correcta visualización.",
+          tecnologias: [
+            {
+              nombre: "Ionic",
+              ruta: "https://ionicframework.com/",
+              icono: logoIonic,
+              tipo: "FrontEnd",
+            },
+            {
+              nombre: "Firebase",
+              ruta: "https://firebase.google.com/",
+              icono: logoFirebase,
+              tipo: "BackEnd",
+            },
+            {
+              nombre: "Paypal",
+              ruta: "https://www.paypal.com/mx/",
+              icono: logoPaypal,
+              tipo: "FrontEnd",
+            },
+          ],
+          pagina: "https://petstread.web.app/",
+        },
+        {
+          nombre: "Thinkers",
+          estado: "Finalizado",
+          tipo: "Sitio web",
+          color: "success",
+          imagen: [
+            {
+              ruta: require("../../../public/assets/otros/thinkers.png"),
+              size: "134px",
+            },
+          ],
+          descripcion:
+            "Thinkers fue desarrollado como un landing page para una compañía de desarrolladores de software, el proyecto fue asignado como un proyecto de la plataforma de Workana.",
+          tecnologias: [
+            {
+              nombre: "Wordpress",
+              ruta: "https://es-mx.wordpress.org/",
+              icono: logoWordpress,
+              tipo: "CMS",
+            },
+          ],
+          pagina: "https://thinkers.com.ec/wordpress/",
+        },
+      ],
+      participaciones: [
+        {
+          nombre: "Workana",
+          tipo: "Trabajo",
+          color: "secondary",
+          imagen: [
+            {
+              ruta: require("../../../public/assets/otros/workana.png"),
+              size: "134px",
+            },
+          ],
+          descripcion:
+            "Workana es una plataforma de mercado de trabajo freelance y remoto, de contratación de trabajadores independientes. Mi labor dentro de la plataforma es el desarrollo de sitios web y aplicaciones multiplataforma",
+          pagina:
+            "https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c?ref=user_dropdown",
+        },
+        {
+          nombre: "Init",
+          tipo: "Colaboracion",
+          color: "secondary",
+          imagen: [
+            {
+              ruta: require("../../../public/assets/otros/init.png"),
+              size: "134px",
+            },
+          ],
+          descripcion:
+            "Init es un emprendimiento por parte de Juan Villalvazo para entregar todo tipo de contenido audiovisual de forma gratuita a todo aquel que lo necesite.",
+
+          pagina: "https://www.initu.me/",
+        },
+      ],
+    };
+  },
   methods: {
     async navegador(url: string) {
       await Browser.open({ url });
+    },
+    async abrirModalProyectos(datosModal: any) {
+      const modal = await modalController.create({
+        component: Proyectos,
+        cssClass: "my-custom-class",
+        componentProps: {
+          nombre: datosModal.nombre,
+          descripcion: datosModal.descripcion,
+          tecnologias: datosModal.tecnologias,
+          pagina: datosModal.pagina,
+          repositorio: datosModal.repositorio,
+        },
+      });
+      return modal.present();
     },
     async modalGlobalizaciones() {
       const modal = await modalController.create({
