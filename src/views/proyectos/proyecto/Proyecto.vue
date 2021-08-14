@@ -1,46 +1,48 @@
 <template>
-  <ion-header class="ion-no-border">
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-button v-on:click="cerrarModal()">
-          <ion-icon slot="start" :icon="arrowBackOutline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-      <ion-title>{{ nombre }}</ion-title>
-      <ion-buttons slot="end">
-        <ion-button v-on:click="openPopover($event, repositorio, pagina)">
-          <ion-icon :icon="ellipsisVerticalOutline"></ion-icon
-        ></ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
+  <ion-app>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button v-on:click="cerrarModal()">
+            <ion-icon slot="start" :icon="arrowBackOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title>{{ nombre }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button v-on:click="openPopover($event, repositorio, pagina)">
+            <ion-icon :icon="ellipsisVerticalOutline"></ion-icon
+          ></ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
 
-  <ion-content class="ion-padding">
-    <p style="font-size:19px">
-      {{ descripcion }}
-    </p>
-    <ion-row  v-if="tecnologias"
->
-       <ion-col size="12">
-        <p style="text-align:left;font-size:17px">Tecnologias</p>
-        <ion-item
-          :href="tecnologia.ruta"
-          target="_blank"
-          lines="none"
-          v-for="tecnologia in tecnologias"
-          :key="tecnologia"
-        >
-          <ion-icon slot="start" :icon="tecnologia.icono"></ion-icon>
-          <ion-label>{{ tecnologia.nombre }}</ion-label>
-          <p slot="end">{{ tecnologia.tipo }}</p>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-  </ion-content>
+    <ion-content class="ion-padding">
+      <p style="font-size:19px">
+        {{ descripcion }}
+      </p>
+      <ion-row v-if="tecnologias">
+        <ion-col size="12">
+          <p style="text-align:left;font-size:17px">Tecnologias</p>
+          <ion-item
+            :href="tecnologia.ruta"
+            target="_blank"
+            lines="none"
+            v-for="tecnologia in tecnologias"
+            :key="tecnologia"
+          >
+            <ion-icon slot="start" :icon="tecnologia.icono"></ion-icon>
+            <ion-label>{{ tecnologia.nombre }}</ion-label>
+            <p slot="end">{{ tecnologia.tipo }}</p>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-content>
+  </ion-app>
 </template>
 
 <script lang="ts">
 import {
+  IonApp,
   IonContent,
   IonHeader,
   IonTitle,
@@ -58,14 +60,14 @@ import {
   logoPaypal,
   ellipsisVerticalOutline,
 } from "ionicons/icons";
-import OpcionesModal from "./OpcionesModal.vue";
+import OpcionesModal from "../modal/modalProyectos/OpcionesModal.vue";
 
 export default defineComponent({
   name: "Petstread",
   props: {
     nombre: { type: String, default: "Super Modal" },
     descripcion: { type: String, default: "Super Modal" },
-    tecnologias: {type:Object },
+    tecnologias: { type: Object },
     pagina: { default: null },
     repositorio: { default: null },
   },
@@ -81,7 +83,7 @@ export default defineComponent({
       ellipsisVerticalOutline,
     };
   },
-  components: { IonContent, IonHeader, IonTitle, IonToolbar },
+  components: { IonApp, IonContent, IonHeader, IonTitle, IonToolbar },
   methods: {
     async navegador(url: string) {
       await Browser.open({ url });

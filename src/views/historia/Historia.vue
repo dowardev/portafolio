@@ -1,78 +1,79 @@
 <template>
-  <ion-content>
-    <ion-row class="ion-padding">
-      <ion-col size="12">
-        <div id="div-contenido-historia">
-          Soy desarrollador especializado en la creación de aplicaciones
-          multiplataforma usando tecnologías web, tengo {{ edad }} años de edad
-          y a continuación te contaré un poco más sobre mi historia.
-          <br />
-          Inicie con en el desarrollado de sitios Web en el año 2016 donde
-          empecé con las tres tecnologías básicas HTML, CSS y JavaScript, por
-          motivos de seguir con mis estudios deje un poco de lado esto y no fue
-          hasta el 2018 donde lo retome, pero esta vez introduciéndome al
-          BackEnd con Laravel, con el paso del tiempo fui aprendiendo otras
-          tecnologías FrontEnd como Materialize y Bootstrap.
-          <br />
-          En el 2020 decidí emprender como freelance en la plataforma de
-          Workana, con el pasar del tiempo fui adquiriendo otras habilidades
-          como Vue, React y Angular.
-          <br />
-          A mediados del 2020 comencé a trabajar con Ionic lo cual me permitiría
-          desarrollar aplicaciones multiplataforma(PWA, Android, iOS), al mismo
-          tiempo me permitía pulir mis conocimientos con los Frameworks Vue y
-          Angular.
-          <br />
-          Otros conocimientos que he adquirido a lo largo del tiempo son el
-          manejo de sistemas operativos Linux, Git, Python, Java y C#.
-          <br />
-          Para este 2021 comenzaré a compartir mis conocimientos subiendo
-          contenido a la plataforma de YouTube y Udemy y con esto poder ayudar a
-          todo aquel que lo necesite con lo poco que he aprendido durante todos
-          estos años. Todos está en nuestras mentes, tanto si crees que puedes
-          como que no puedes estas en lo correcto. Henry Ford
-        </div>
-      </ion-col>
-    </ion-row>
+  <ion-page>
+    <ion-content>
+      <ion-row class="ion-padding">
+        <ion-col size="12">
+          <div class="historia">
+            Soy desarrollador especializado en la creación de aplicaciones
+            multiplataforma usando tecnologías web, tengo {{ edad }} años de
+            edad y a continuación te contaré un poco más sobre mi historia.
+            <br />
+            Inicie con en el desarrollado de sitios Web en el año 2016 donde
+            empecé con las tres tecnologías básicas HTML, CSS y JavaScript, por
+            motivos de seguir con mis estudios deje un poco de lado esto y no
+            fue hasta el 2018 donde lo retome, pero esta vez introduciéndome al
+            BackEnd con Laravel, con el paso del tiempo fui aprendiendo otras
+            tecnologías FrontEnd como Materialize y Bootstrap.
+            <br />
+            En el 2020 decidí emprender como freelance en la plataforma de
+            Workana, con el pasar del tiempo fui adquiriendo otras habilidades
+            como Vue, React y Angular.
+            <br />
+            A mediados del 2020 comencé a trabajar con Ionic lo cual me
+            permitiría desarrollar aplicaciones multiplataforma(PWA, Android,
+            iOS), al mismo tiempo me permitía pulir mis conocimientos con los
+            Frameworks Vue y Angular.
+            <br />
+            Otros conocimientos que he adquirido a lo largo del tiempo son el
+            manejo de sistemas operativos Linux, Git, Python, Java y C#.
+            <br />
+            Para este 2021 comenzaré a compartir mis conocimientos subiendo
+            contenido a la plataforma de YouTube y Udemy y con esto poder ayudar
+            a todo aquel que lo necesite con lo poco que he aprendido durante
+            todos estos años. Todos está en nuestras mentes, tanto si crees que
+            puedes como que no puedes estas en lo correcto. Henry Ford
+          </div>
+        </ion-col>
+      </ion-row>
 
-    <div class="timeline">
-      <div class="container left">
-        <div class="content-timeline">
-          <h2>2016</h2>
-          <p>
-            Inicio como desarrollador de sitios web.
-          </p>
+      <div class="timeline">
+        <div class="container left">
+          <div class="content-timeline">
+            <h2>2016</h2>
+            <p>
+              Inicio como desarrollador de sitios web.
+            </p>
+          </div>
         </div>
-      </div>
-      <div class="container right">
-        <div class="content-timeline">
-          <h2>2018</h2>
-          <p>
-            Nueva habilidad: Laravel
-          </p>
+        <div class="container right">
+          <div class="content-timeline">
+            <h2>2018</h2>
+            <p>
+              Nueva habilidad: Laravel
+            </p>
+          </div>
         </div>
-      </div>
-      <div class="container left">
-        <div class="content-timeline">
-          <h2>2020</h2>
-          <p>
-            Iniciativa como freelance
-            <br />
-            Nuevas habilidades: Vue, React, Angular y Ionic
-            <br />
-            Participacion en Init
-          </p>
+        <div class="container left">
+          <div class="content-timeline">
+            <h2>2020</h2>
+            <p>
+              Iniciativa como freelance
+              <br />
+              Nuevas habilidades: Vue, React, Angular y Ionic
+              <br />
+              Participacion en Init
+            </p>
+          </div>
         </div>
-      </div>
-      <div class="container right">
-        <div class="content-timeline">
-          <h2>2021</h2>
-          <p>
-            Creador de contenido
-          </p>
+        <div class="container right">
+          <div class="content-timeline">
+            <h2>2021</h2>
+            <p>
+              Creador de contenido
+            </p>
+          </div>
         </div>
-      </div>
-      <!--  <div class="container left">
+        <!--  <div class="container left">
         <div class="content-timeline">
           <h2>2011</h2>
           <p>
@@ -94,19 +95,18 @@
           </p>
         </div>
       </div> -->
-    </div>
-  </ion-content>
+      </div>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script>
-import { IonContent } from "@ionic/vue";
+import { IonPage, IonContent } from "@ionic/vue";
 import { defineComponent } from "vue";
 import moment from "moment";
 
 export default defineComponent({
-  components: {
-    IonContent,
-  },
+  components: { IonPage, IonContent },
   data() {
     return {
       edad: 0,
@@ -123,20 +123,12 @@ export default defineComponent({
 </script>
 
 <style scope>
-* {
-  box-sizing: border-box;
-}
-#div-contenido-historia {
+.historia {
   font-size: 19px;
   text-align: initial;
 }
-@media (min-width: 1025px) and (max-width: 1280px) {
-  #div-contenido-historia {
-    font-size: 22px;
-  }
-}
-@media (min-width: 1281px) {
-  #div-contenido-historia {
+@media only screen and (min-width: 992px) {
+  .historia {
     font-size: 22px;
   }
 }
@@ -231,8 +223,6 @@ export default defineComponent({
   position: relative;
   border-radius: 6px;
 }
-
-/* Media queries - Responsive timeline on screens less than 600px wide */
 @media screen and (max-width: 600px) {
   /* Place the timelime to the left */
   .timeline::after {

@@ -1,80 +1,89 @@
 <template>
-  <ion-content class="contenido-proyectos">
-    <div id="div-proyectos">
-      <!-- proyectos -->
-      <section class="ion-padding">
-        <h2>Proyectos</h2>
-        <ion-row>
-          <ion-col
-            size="12"
-            size-md="2"
-            v-for="(proyecto, index) in proyectos"
-            :key="index"
-          >
-            <ion-card @click="abrirModalProyectos(proyecto)" class="fancy_card">
-              <ion-card-header>
-                <img
-                  :src="proyecto.imagen[0].ruta"
-                  alt=""
-                  class="img-proyecto"
-                  :style="{
-                    maxWidth: proyecto.imagen[0].size,
-                  }"
-                />
-                <ion-card-subtitle>{{ proyecto.tipo }} </ion-card-subtitle>
-              </ion-card-header>
-              <ion-card-content>
-                <ion-chip :color="proyecto.color">
-                  <ion-label>{{ proyecto.estado }}</ion-label>
-                </ion-chip>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </section>
+  <ion-page>
+    <ion-content class="contenido-proyectos">
+      <div id="div-proyectos">
+        <!-- proyectos -->
+        <section class="ion-padding">
+          <h2>Proyectos</h2>
+          <ion-row>
+            <ion-col
+              size="12"
+              size-md="2"
+              v-for="(proyecto, index) in proyectos"
+              :key="index"
+            >
+              <ion-card
+                @click="abrirModalProyectos(proyecto)"
+                class="fancy_card"
+              >
+                <ion-card-header>
+                  <img
+                    :src="proyecto.imagen[0].ruta"
+                    alt=""
+                    class="img-proyecto"
+                    :style="{
+                      maxWidth: proyecto.imagen[0].size,
+                    }"
+                  />
+                  <ion-card-subtitle>{{ proyecto.tipo }} </ion-card-subtitle>
+                </ion-card-header>
+                <ion-card-content>
+                  <ion-chip :color="proyecto.color">
+                    <ion-label>{{ proyecto.estado }}</ion-label>
+                  </ion-chip>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </section>
 
-      <!-- Participaciones-->
-      <section class="ion-padding">
-        <h2>Participaciones</h2>
-        <ion-row>
-          <ion-col
-            size="12"
-            size-md="2"
-            v-for="(proyecto, index) in participaciones"
-            :key="index"
-          >
-            <ion-card @click="abrirModalProyectos(proyecto)" class="fancy_card">
-              <ion-card-header>
-                <img
-                  :src="proyecto.imagen[0].ruta"
-                  alt=""
-                  class="img-proyecto"
-                  :style="{
-                    maxWidth: proyecto.imagen[0].size,
-                  }"
-                />
-              </ion-card-header>
-              <ion-card-content>
-                <!-- <ion-card-title>{{ proyecto.nombre }}</ion-card-title>-->
-                <ion-chip :color="proyecto.color">
-                  <ion-label>{{ proyecto.tipo }}</ion-label>
-                </ion-chip>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </section>
-    </div>
-  </ion-content>
+        <!-- Participaciones-->
+        <section class="ion-padding">
+          <h2>Participaciones</h2>
+          <ion-row>
+            <ion-col
+              size="12"
+              size-md="2"
+              v-for="(proyecto, index) in participaciones"
+              :key="index"
+            >
+              <ion-card
+                @click="abrirModalProyectos(proyecto)"
+                class="fancy_card"
+              >
+                <ion-card-header>
+                  <img
+                    :src="proyecto.imagen[0].ruta"
+                    alt=""
+                    class="img-proyecto"
+                    :style="{
+                      maxWidth: proyecto.imagen[0].size,
+                    }"
+                  />
+                </ion-card-header>
+                <ion-card-content>
+                  <!-- <ion-card-title>{{ proyecto.nombre }}</ion-card-title>-->
+                  <ion-chip :color="proyecto.color">
+                    <ion-label>{{ proyecto.tipo }}</ion-label>
+                  </ion-chip>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </section>
+      </div>
+      <router-view></router-view>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script lang="ts">
-import { IonContent, modalController } from "@ionic/vue";
+import { IonPage, IonContent, modalController } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { Plugins } from "@capacitor/core";
 const { Browser } = Plugins;
 
-import Proyectos from "./modal/modalProyectos/Proyectos.vue";
+import Proyectos from "./proyecto/Proyecto.vue";
 import {
   arrowBackOutline,
   logoIonic,
@@ -86,7 +95,7 @@ import {
   ellipsisVerticalOutline,
 } from "ionicons/icons";
 export default defineComponent({
-  components: { IonContent },
+  components: { IonPage, IonContent },
   setup() {
     return {
       arrowBackOutline,
@@ -233,7 +242,11 @@ export default defineComponent({
       await Browser.open({ url });
     },
     async abrirModalProyectos(datosModal: any) {
-      const modal = await modalController.create({
+      this.$router.push({
+        name: "Proyecto",
+        params: { nombre: "123" },
+      });
+      /* const modal = await modalController.create({
         component: Proyectos,
         cssClass: "my-custom-class",
         componentProps: {
@@ -244,7 +257,7 @@ export default defineComponent({
           repositorio: datosModal.repositorio,
         },
       });
-      return modal.present();
+      return modal.present(); */
     },
   },
 });
@@ -270,102 +283,6 @@ export default defineComponent({
 ion-card-title {
   --color: #909090;
 }
-
-/* movil vertical */
-@media (min-width: 320px) and (max-width: 480px) {
-  /*  #div-proyectos {
-    height: 147rem;
-  } */
-  /*  @supports (-webkit-touch-callout: none) {
-    #div-proyectos {
-      height: 160rem;
-    }
-  }
-  @supports not (-webkit-touch-callout: none) {
-    #div-proyectos {
-      height: 160rem;
-    }
-  } */
-}
-/* movil horizontal */
-/* @media (min-width: 481px) and (max-width: 767px) {
-  #div-proyectos {
-    height: 160rem;
-  }
-} */
-/* iPhone X, XS, 11 Pro vertical */
-/* @media only screen and (min-width: 375px) and (max-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (device-aspect-ratio: 375/812) {
-  #div-proyectos {
-    height: 150rem;
-  }
-} */
-/* iPhone X, XS, 11 Pro horinzontal */
-/* @media only screen and (min-width: 375px) and (max-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (device-aspect-ratio: 812/375) {
-  #div-proyectos {
-    height: 142rem;
-  }
-} */
-/* iPhone XS Max, 11 Pro Max vertical */
-/* @media only screen and (min-device-width: 414px) and (max-device-width: 896px) and (-webkit-min-device-pixel-ratio: 3) and (device-aspect-ratio: 414/896) {
-  #div-proyectos {
-    height: 147rem;
-  }
-} */
-/* iPhone XS Max, 11 Pro Max horizontal */
-/* @media only screen and (min-device-width: 414px) and (max-device-width: 896px) and (-webkit-min-device-pixel-ratio: 3) and (device-aspect-ratio: 896/414) {
-  #div-proyectos {
-    height: 140rem;
-  }
-} */
-/* iPhone 6, 6S, 7, 8 vertical */
-/* @media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (orientation: portrait) and (device-aspect-ratio: 375/667) and (-webkit-min-device-pixel-ratio: 2) {
-  #div-proyectos {
-    height: 160rem;
-  }
-} */
-/* iPhone 6, 6S, 7, 8 horizontal */
-/* @media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (device-aspect-ratio: 667/375) and (-webkit-min-device-pixel-ratio: 2) {
-  #div-proyectos {
-    height: 171rem;
-  }
-} */
-/* iPhone 6 Plus, 6S Plus, 7 Plus, 8 Plus vertical */
-/* @media only screen and (min-width: 414px) and (max-width: 736px) and (device-aspect-ratio: 414/736) and (-webkit-min-device-pixel-ratio: 3) {
-  #div-proyectos {
-    height: 156rem;
-  }
-} */
-/* iPhone 6 Plus, 6S Plus, 7 Plus, 8 Plus horizontal */
-/* @media only screen and (min-width: 414px) and (max-width: 736px) and (device-aspect-ratio: 736/414) and (-webkit-min-device-pixel-ratio: 3) {
-  #div-proyectos {
-    height: 169rem;
-  }
-} */
-/* iPhone 5, 5C, 5S, SE vertical */
-/* @media only screen and (min-width: 320px) and (max-width: 568px) and (-webkit-min-device-pixel-ratio: 2) and (device-aspect-ratio: 320/568) {
-  #div-proyectos {
-    height: 171rem;
-  }
-} */
-/* iPhone 5, 5C, 5S, SE horinzontal */
-/* @media only screen and (min-width: 320px) and (max-width: 568px) and (-webkit-min-device-pixel-ratio: 2) and (device-aspect-ratio: 568/320) {
-  #div-proyectos {
-    height: 175rem;
-  }
-} */
-/* escritorio */
-/* @media (min-width: 1025px) and (max-width: 1280px) {
-  #div-proyectos {
-    height: 56rem;
-  }
-} */
-/* laptops */
-/* @media (min-width: 1281px) {
-  #div-proyectos {
-    height: 56rem;
-  }
-} */
-
 /* tarjetas */
 .fancy_card {
   border-radius: 5px;

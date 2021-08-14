@@ -1,56 +1,58 @@
 <template>
-  <ion-content>
-    <!-- skills -->
-    <section class="ion-padding">
-      <h2>Conocimientos</h2>
-      <ion-grid>
-        <ion-row>
-          <ion-col
-            size-md="6"
-            size-sm="12"
-            size="12"
-            v-for="(habilidad, indexHabilidad) in habilidades[0].tipo"
-            :key="indexHabilidad"
-          >
-            <ion-card>
-              <ion-card-header>
-                <ion-card-title>{{ habilidad.nombre }}</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
-                <ion-row style="text-align: center;">
-                  <ion-col
-                    v-for="(tecnologia, index) in habilidad.tecnologia"
-                    :key="index"
-                    style="cursor: pointer;"
-                  >
-                    <ion-icon
-                      v-if="tecnologia.icono"
-                      :icon="tecnologia.icono[0].nombre"
-                      :style="{
-                        fontSize: tecnologia.icono[0].size,
-                      }"
-                    ></ion-icon>
-                    <img
-                      v-else
-                      :src="tecnologia.imagen[0].ruta"
-                      :style="{
-                        width: tecnologia.imagen[0].size,
-                      }"
-                    />
-                    <p>{{ tecnologia.nombre }}</p>
-                  </ion-col>
-                </ion-row>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </section>
-  </ion-content>
+  <ion-page>
+    <ion-content>
+      <!-- skills -->
+      <section class="ion-padding">
+        <h2>Conocimientos</h2>
+        <ion-grid>
+          <ion-row>
+            <ion-col
+              size-md="6"
+              size-sm="12"
+              size="12"
+              v-for="(habilidad, indexHabilidad) in habilidades[0].tipo"
+              :key="indexHabilidad"
+            >
+              <ion-card>
+                <ion-card-header>
+                  <ion-card-title>{{ habilidad.nombre }}</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  <ion-row style="text-align: center;">
+                    <ion-col
+                      v-for="(tecnologia, index) in habilidad.tecnologia"
+                      :key="index"
+                      style="cursor: pointer;"
+                    >
+                      <ion-icon
+                        v-if="tecnologia.icono"
+                        :icon="tecnologia.icono[0].nombre"
+                        :style="{
+                          fontSize: tecnologia.icono[0].size,
+                        }"
+                      ></ion-icon>
+                      <img
+                        v-else
+                        :src="tecnologia.imagen[0].ruta"
+                        :style="{
+                          width: tecnologia.imagen[0].size,
+                        }"
+                      />
+                      <p>{{ tecnologia.nombre }}</p>
+                    </ion-col>
+                  </ion-row>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </section>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script>
-import { IonContent } from "@ionic/vue";
+import { IonPage, IonContent } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
   logoIonic,
@@ -61,9 +63,10 @@ import {
   logoFirebase,
   logoJavascript,
   logoLaravel,
+  logoElectron,
 } from "ionicons/icons";
 export default defineComponent({
-  components: { IonContent },
+  components: { IonPage, IonContent },
   setup() {
     return {
       logoIonic,
@@ -74,6 +77,7 @@ export default defineComponent({
       logoFirebase,
       logoJavascript,
       logoLaravel,
+      logoElectron,
     };
   },
   data() {
@@ -111,20 +115,29 @@ export default defineComponent({
               nombre: "Frameworks",
               tecnologia: [
                 {
-                  nombre: "Vue",
-                  icono: [{ nombre: logoVue, size: "24px" }],
-                },
-                {
                   nombre: "Angular",
                   icono: [{ nombre: logoAngular, size: "24px" }],
                 },
                 {
-                  nombre: "Laravel",
-                  icono: [{ nombre: logoLaravel, size: "24px" }],
+                  nombre: "Bootstrap",
+                  imagen: [
+                    {
+                      ruta: require("../../../public/assets/otros/Bootstrap.svg"),
+                      size: "24px",
+                    },
+                  ],
+                },
+                {
+                  nombre: "Electron",
+                  icono: [{ nombre: logoElectron, size: "24px" }],
                 },
                 {
                   nombre: "Ionic",
                   icono: [{ nombre: logoIonic, size: "24px" }],
+                },
+                {
+                  nombre: "Vue",
+                  icono: [{ nombre: logoVue, size: "24px" }],
                 },
                 {
                   nombre: "Vuetify",
@@ -136,19 +149,18 @@ export default defineComponent({
                   ],
                 },
                 {
-                  nombre: "Bootstrap",
-                  imagen: [
-                    {
-                      ruta: require("../../../public/assets/otros/Bootstrap.svg"),
-                      size: "24px",
-                    },
-                  ],
+                  nombre: "Laravel",
+                  icono: [{ nombre: logoLaravel, size: "24px" }],
                 },
               ],
             },
             {
               nombre: "Bases de datos",
               tecnologia: [
+                {
+                  nombre: "Firebase",
+                  icono: [{ nombre: logoFirebase, size: "24px" }],
+                },
                 {
                   nombre: "Mysql",
                   imagen: [
@@ -158,24 +170,11 @@ export default defineComponent({
                     },
                   ],
                 },
-                {
-                  nombre: "Firebase",
-                  icono: [{ nombre: logoFirebase, size: "24px" }],
-                },
               ],
             },
             {
               nombre: "Herramientas",
               tecnologia: [
-                {
-                  nombre: "Linux",
-                  imagen: [
-                    {
-                      ruta: require("../../../public/assets/otros/linux.svg"),
-                      size: "24px",
-                    },
-                  ],
-                },
                 {
                   nombre: "Git",
                   imagen: [
@@ -185,7 +184,17 @@ export default defineComponent({
                     },
                   ],
                 },
-{
+                {
+                  nombre: "Linux",
+                  imagen: [
+                    {
+                      ruta: require("../../../public/assets/otros/linux.svg"),
+                      size: "24px",
+                    },
+                  ],
+                },
+
+                {
                   nombre: "Vim",
                   imagen: [
                     {
@@ -194,7 +203,6 @@ export default defineComponent({
                     },
                   ],
                 },
-
               ],
             },
           ],
