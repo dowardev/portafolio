@@ -11,42 +11,52 @@
         scrollable="true"
         class="hide-scroll-y hide-scroll"
       >
-        <ion-segment-button
-          value="historia"
-          @click="$router.push('/informacion/historia')"
-        >
+        <ion-segment-button value="historia">
           <ion-label>Historia</ion-label>
         </ion-segment-button>
-        <ion-segment-button
-          value="habilidades"
-          @click="$router.push('/informacion/habilidades')"
-        >
+        <ion-segment-button value="habilidades">
           <ion-label>Habilidades</ion-label>
         </ion-segment-button>
-        <ion-segment-button
-          value="proyectos"
-          @click="$router.push('/informacion/proyectos')"
-        >
+        <ion-segment-button value="proyectos">
           <ion-label>Proyectos</ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
 
-    <router-view></router-view>
+    <ion-content>
+      <Historia v-if="segment == 'historia'"></Historia>
+      <Habilidades v-if="segment == 'habilidades'"></Habilidades>
+      <Proyectos v-if="segment == 'proyectos'"></Proyectos>
+    </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import { IonPage, IonSegment, IonSegmentButton, IonButtons } from "@ionic/vue";
+import {
+  IonPage,
+  IonToolbar,
+  IonSegment,
+  IonSegmentButton,
+  IonButtons,
+  IonContent,
+} from "@ionic/vue";
 import { defineComponent } from "vue";
 import { chevronBackOutline } from "ionicons/icons";
+import Historia from "../historia/Historia.vue";
+import Habilidades from "../habilidades/Habilidades.vue";
+import Proyectos from "../proyectos/Proyectos.vue";
 
 export default defineComponent({
   components: {
     IonPage,
+    IonToolbar,
     IonSegment,
     IonSegmentButton,
     IonButtons,
+    IonContent,
+    Historia,
+    Habilidades,
+    Proyectos,
   },
   data() {
     return {

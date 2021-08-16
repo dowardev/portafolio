@@ -1,84 +1,77 @@
 <template>
   <ion-page>
     <ion-content class="contenido-proyectos">
-      <div id="div-proyectos">
-        <!-- proyectos -->
-        <section class="ion-padding">
-          <h2>Proyectos</h2>
-          <ion-row>
-            <ion-col
-              size="12"
-              size-md="2"
-              v-for="(proyecto, index) in proyectos"
-              :key="index"
-            >
-              <ion-card
-                @click="abrirModalProyectos(proyecto)"
-                class="fancy_card"
-              >
-                <ion-card-header>
+      <!-- proyectos -->
+      <section>
+        <h2 class="ion-padding">Proyectos</h2>
+        <ion-row>
+          <ion-col
+            size="12"
+            size-md="4"
+            size-lg="3"
+            v-for="(proyecto, index) in proyectos"
+            :key="index"
+          >
+            <ion-card @click="abrirModalProyectos(proyecto)" class="fancy_card">
+              <ion-card-header>
+                <div class="center">
                   <img
                     :src="proyecto.imagen[0].ruta"
                     alt=""
-                    class="img-proyecto"
                     :style="{
-                      maxWidth: proyecto.imagen[0].size,
+                      maxWidth: proyecto.imagen[0].width,
+                      height: proyecto.imagen[0].height,
                     }"
                   />
-                  <ion-card-subtitle>{{ proyecto.tipo }} </ion-card-subtitle>
-                </ion-card-header>
-                <ion-card-content>
-                  <ion-chip :color="proyecto.color">
-                    <ion-label>{{ proyecto.estado }}</ion-label>
-                  </ion-chip>
-                </ion-card-content>
-              </ion-card>
-            </ion-col>
-          </ion-row>
-        </section>
+                </div>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-chip :color="proyecto.color">
+                      <ion-label>{{ proyecto.estado }}</ion-label>
+                    </ion-chip>
+                  </ion-col>
+                  <ion-col size="12">
+                    <ion-button
+                      v-for="icono in proyecto.tipo"
+                      :key="icono"
+                      fill="clear"
+                      size="small"
+                    >
+                      <ion-icon :icon="icono"></ion-icon>
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </section>
 
-        <!-- Participaciones-->
-        <section class="ion-padding">
-          <h2>Participaciones</h2>
-          <ion-row>
-            <ion-col
-              size="12"
-              size-md="2"
-              v-for="(proyecto, index) in participaciones"
-              :key="index"
-            >
-              <ion-card
-                @click="abrirModalProyectos(proyecto)"
-                class="fancy_card"
-              >
-                <ion-card-header>
-                  <img
-                    :src="proyecto.imagen[0].ruta"
-                    alt=""
-                    class="img-proyecto"
-                    :style="{
-                      maxWidth: proyecto.imagen[0].size,
-                    }"
-                  />
-                </ion-card-header>
-                <ion-card-content>
-                  <!-- <ion-card-title>{{ proyecto.nombre }}</ion-card-title>-->
-                  <ion-chip :color="proyecto.color">
-                    <ion-label>{{ proyecto.tipo }}</ion-label>
-                  </ion-chip>
-                </ion-card-content>
-              </ion-card>
-            </ion-col>
-          </ion-row>
-        </section>
-      </div>
-      <router-view></router-view>
+      <!-- Participaciones-->
+      <section class="ion-padding">
+        <h2>Participaciones</h2>
+        <ion-row>
+          <ion-col
+            size="12"
+            size-md="4"
+            size-lg="3"
+            v-for="(participacion, index) in participaciones"
+            :key="index"
+          >
+            <ion-item button :href="participacion.pagina" target="_blank">
+              <ion-label>{{ participacion.nombre }}</ion-label>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </section>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import { IonPage, IonContent, modalController } from "@ionic/vue";
+import { IonPage, IonContent } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { Plugins } from "@capacitor/core";
 const { Browser } = Plugins;
@@ -93,7 +86,13 @@ import {
   logoVue,
   logoWordpress,
   ellipsisVerticalOutline,
+  logoPwa,
+  logoAndroid,
+  logoApple,
+  globeOutline,
 } from "ionicons/icons";
+import eventBus from "../EventBus";
+
 export default defineComponent({
   components: { IonPage, IonContent },
   setup() {
@@ -106,16 +105,21 @@ export default defineComponent({
       logoVue,
       logoWordpress,
       ellipsisVerticalOutline,
+      logoPwa,
+      logoAndroid,
+      logoApple,
+      globeOutline,
       proyectos: [
         {
           nombre: "Globalizaciones",
           estado: "En desarrollo",
-          tipo: "PWA, Android, IOs",
+          tipo: [logoPwa, logoAndroid, logoApple],
           color: "secondary",
           imagen: [
             {
               ruta: require("../../../public/assets/otros/globtec.webp"),
-              size: "134px",
+              width: "134px",
+              height: "112px",
             },
           ],
           descripcion:
@@ -142,21 +146,21 @@ export default defineComponent({
             },
           ],
           pagina: "https://globalizaciones.dowar.xyz/",
-          repositorio: "https://gitlab.com/gonzam4/globalizaciones-web",
         },
         {
           nombre: "Petstread",
           estado: "En desarrollo",
-          tipo: "Aplicacion móvil",
+          tipo: [logoAndroid],
           color: "secondary",
           imagen: [
             {
               ruta: require("../../../public/assets/otros/Petstread.svg"),
-              size: "134px",
+              width: "134px",
+              height: "112px",
             },
           ],
           descripcion:
-            "Petstread es una tienda de alimentos y accesorios para diversos tipos de mascotas siendo esta una aplicación para Android y IOs, el proyecto fue adquirido por medio de la plataforma de workana.El ejemplo adjunto es visualizado como un sitio web debido a que está desarrollándose  como una aplicación web por lo tanto deberá activarse la vista móvil de su navegador para su  correcta visualización.",
+            "Petstread es una tienda de alimentos y accesorios para diversos tipos de mascotas siendo esta una aplicación para PWA, Android y IOs, el proyecto fue adquirido por medio de la plataforma de workana.",
           tecnologias: [
             {
               nombre: "Ionic",
@@ -177,17 +181,18 @@ export default defineComponent({
               tipo: "FrontEnd",
             },
           ],
-          pagina: "https://petstread.web.app/",
+          pagina: "https://petstread-ab119.web.app/inicio",
         },
         {
           nombre: "Thinkers",
           estado: "Finalizado",
-          tipo: "Sitio web",
+          tipo: [globeOutline],
           color: "success",
           imagen: [
             {
               ruta: require("../../../public/assets/otros/thinkers.png"),
-              size: "134px",
+              width: "134px",
+              height: "112px",
             },
           ],
           descripcion:
@@ -211,11 +216,10 @@ export default defineComponent({
           imagen: [
             {
               ruta: require("../../../public/assets/otros/workana.png"),
-              size: "134px",
+              width: "189px",
+              height: "82px",
             },
           ],
-          descripcion:
-            "Workana es una plataforma de mercado de trabajo freelance y remoto, de contratación de trabajadores independientes. Mi labor dentro de la plataforma es el desarrollo de sitios web y aplicaciones multiplataforma",
           pagina:
             "https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c?ref=user_dropdown",
         },
@@ -226,12 +230,10 @@ export default defineComponent({
           imagen: [
             {
               ruta: require("../../../public/assets/otros/init.png"),
-              size: "134px",
+              width: "134px",
+              height: "82px",
             },
           ],
-          descripcion:
-            "Init es un emprendimiento por parte de Juan Villalvazo para entregar todo tipo de contenido audiovisual de forma gratuita a todo aquel que lo necesite.",
-
           pagina: "https://www.initu.me/",
         },
       ],
@@ -242,46 +244,46 @@ export default defineComponent({
       await Browser.open({ url });
     },
     async abrirModalProyectos(datosModal: any) {
-      this.$router.push({
-        name: "Proyecto",
-        params: { nombre: "123" },
-      });
-      /* const modal = await modalController.create({
-        component: Proyectos,
-        cssClass: "my-custom-class",
-        componentProps: {
-          nombre: datosModal.nombre,
-          descripcion: datosModal.descripcion,
-          tecnologias: datosModal.tecnologias,
-          pagina: datosModal.pagina,
-          repositorio: datosModal.repositorio,
-        },
-      });
-      return modal.present(); */
+      this.$router
+        .push({
+          path: "/proyecto",
+        })
+        .then(() => {
+          eventBus().emitter.emit("datos-proyecto", {
+            nombre: datosModal.nombre,
+            descripcion: datosModal.descripcion,
+            tecnologias: datosModal.tecnologias,
+            pagina: datosModal.pagina,
+            repositorio: datosModal.repositorio,
+            playstore: datosModal.playstore,
+          });
+        });
+    },
+    async abrirPagina(pagina: string) {
+      window.open(pagina, "_blank");
     },
   },
 });
 </script>
 
 <style scope>
-/* img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-} */
+.center {
+  display: flex;
+  justify-content: center;
+}
 .contenido-proyectos {
   height: 92rem;
 }
 @media (min-width: 992px) {
-  .img-proyecto {
-    max-width: 196px;
-  }
   .contenido-proyectos {
     height: 51rem;
   }
 }
 ion-card-title {
   --color: #909090;
+}
+ion-item {
+  --background: #0a151f;
 }
 /* tarjetas */
 .fancy_card {

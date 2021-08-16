@@ -21,21 +21,16 @@ const routes: Array<RouteRecordRaw> = [
     path: "/informacion",
     name: "Informacion",
     component: Informacion,
-    children: [
-      { path: "historia", component: Historia },
-      { path: "habilidades", component: Habilidades },
-      {
-        path: "proyectos",
-        component: Proyectos,
-        props: true,
-        children: [{ name: "Proyecto", path: ":nombre", component: Proyecto }],
-      },
-    ],
   },
   {
     path: "/prueba",
     name: "Prueba",
     component: Prueba,
+  },
+  {
+    path: "/proyecto/",
+    name: "Proyecto",
+    component: Proyecto,
   },
 ];
 
