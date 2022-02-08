@@ -34,7 +34,7 @@
               Historia
             </ion-label>
           </ion-item>
-          <ion-item lines="none" button>
+          <ion-item lines="none" button @click="$router.push('/skills')">
             <ion-label
               v-bind:class="{
                 optionSelected: $route.path == '/skills',

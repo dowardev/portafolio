@@ -3,6 +3,7 @@ import { RouteRecordRaw } from "vue-router";
 import HomePage from "../views/HomePage.vue";
 import PresentationPage from "../views/Presentation/PresentationPage.vue";
 import HistoryPage from "../views/history/HistoryPage.vue";
+import SkillsPage from "../views/skills/SkillsPage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -23,6 +24,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/history",
     name: "HistoryPage",
     component: HistoryPage,
+  },
+  {
+    path: "/skills",
+    name: "SkillsPage",
+    component: SkillsPage,
   },
 ];
 

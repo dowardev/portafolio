@@ -41,36 +41,52 @@
 
       <div class="timeline">
         <div class="container left">
-          <div class="content-timeline">
-            <h2 class="title-timeline">2016</h2>
-            <p class="desc-timeline">
-              Inicio como desarrollador de sitios web.
-            </p>
-          </div>
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title> 2016 </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p class="desc-timeline">
+                Inicio como desarrollador de sitios web.
+              </p>
+            </ion-card-content>
+          </ion-card>
         </div>
         <div class="container right">
-          <div class="content-timeline">
-            <h2>2018</h2>
-            <p>Nueva habilidad: Laravel</p>
-          </div>
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title> 2018 </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p>Nueva habilidad: Laravel</p>
+            </ion-card-content>
+          </ion-card>
         </div>
         <div class="container left">
-          <div class="content-timeline">
-            <h2>2020</h2>
-            <p>
-              Iniciativa como freelance
-              <br />
-              Nuevas habilidades: Vue, Angular y Ionic
-              <br />
-              Participación en Init
-            </p>
-          </div>
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title> 2020 </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p>
+                Iniciativa como freelance
+                <br />
+                Nuevas habilidades: Vue, Angular y Ionic
+                <br />
+                Participación en Init
+              </p>
+            </ion-card-content>
+          </ion-card>
         </div>
         <div class="container right">
-          <div class="content-timeline">
-            <h2>2021</h2>
-            <p>Creador de contenido</p>
-          </div>
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title> 2021 </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p>Creador de contenido</p>
+            </ion-card-content>
+          </ion-card>
         </div>
       </div>
     </ion-content>
