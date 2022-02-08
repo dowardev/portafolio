@@ -44,14 +44,14 @@
               Habilidades</ion-label
             >
           </ion-item>
-          <ion-item lines="none" button>
+          <ion-item lines="none" button @click="$router.push('/portfolio')">
             <ion-label
               v-bind:class="{
-                optionSelected: $route.path == '/projects',
-                optionNoSelected: $route.path != '/projects',
+                optionSelected: $route.path == '/portfolio',
+                optionNoSelected: $route.path != '/portfolio',
               }"
             >
-              Proyectos
+              Portfolio
             </ion-label>
           </ion-item>
         </ion-content>

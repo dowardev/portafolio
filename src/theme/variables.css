@@ -248,9 +248,17 @@ h5,
 h6,
 ion-label,
 ion-title,
-ion-card-title {
+ion-card-title,
+ion-icon {
   color: #81a1c1;
 }
 ion-card {
   --background: #2e3440;
+}
+ion-item {
+  --background: #333947;
+}
+.center {
+  display: flex;
+  justify-content: center;
 }
