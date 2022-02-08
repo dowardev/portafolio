@@ -9,17 +9,51 @@
         style="--side-max-width: 200px"
       >
         <ion-header class="ion-no-border">
-          <ion-toolbar class="ion-no-border">
+          <ion-toolbar>
             <img src="../public/assets/portafolio/dowar.png" />
           </ion-toolbar>
         </ion-header>
         <ion-content>
-          <ion-item lines="none" button @click="$router.push('/presentation')"
-            >Presentación</ion-item
-          >
-          <ion-item lines="none" button>Historia</ion-item>
-          <ion-item lines="none" button>Habilidades</ion-item>
-          <ion-item lines="none" button>Proyectos</ion-item>
+          <ion-item lines="none" button @click="$router.push('/presentation')">
+            <ion-label
+              v-bind:class="{
+                optionSelected: $route.path == '/presentation',
+                optionNoSelected: $route.path != '/presentation',
+              }"
+            >
+              Presentación
+            </ion-label>
+          </ion-item>
+          <ion-item lines="none" button @click="$router.push('/history')">
+            <ion-label
+              v-bind:class="{
+                optionSelected: $route.path == '/history',
+                optionNoSelected: $route.path != '/history',
+              }"
+            >
+              Historia
+            </ion-label>
+          </ion-item>
+          <ion-item lines="none" button>
+            <ion-label
+              v-bind:class="{
+                optionSelected: $route.path == '/skills',
+                optionNoSelected: $route.path != '/skills',
+              }"
+            >
+              Habilidades</ion-label
+            >
+          </ion-item>
+          <ion-item lines="none" button>
+            <ion-label
+              v-bind:class="{
+                optionSelected: $route.path == '/projects',
+                optionNoSelected: $route.path != '/projects',
+              }"
+            >
+              Proyectos
+            </ion-label>
+          </ion-item>
         </ion-content>
       </ion-menu>
       <ion-router-outlet Id="menu-content" />
@@ -44,5 +78,11 @@ export default defineComponent({
 ion-item,
 ion-toolbar {
   --background: #2e3440;
+}
+.optionSelected {
+  color: #7e9dbd;
+}
+.optionNoSelected {
+  color: white;
 }
 </style>

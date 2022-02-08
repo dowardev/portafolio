@@ -164,13 +164,7 @@
 </template>
 
 <script lang="ts">
-import {
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-} from "@ionic/vue";
+import { IonContent, IonPage } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { isPlatform } from "@ionic/vue";
 import {
@@ -223,9 +217,10 @@ export default defineComponent({
 });
 </script>
 
-<style scope>
-@import "./animacion-nombre.css";
-@import "./boton-flecha.css";
+<style scoped src="./animacion-nombre.css"></style>
+<style scoped src="./boton-flecha.css"></style>
+
+<style scoped>
 svg {
   width: 28px;
   height: 28px;

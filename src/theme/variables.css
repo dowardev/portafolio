@@ -236,4 +236,17 @@ http://ionicframework.com/docs/theming/ */
 ion-content {
   --background: #2e3440;
 }
-
+ion-toolbar {
+  --background: #2e3440;
+}
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ion-label,
+ion-title {
+  color: #81a1c1;
+}
