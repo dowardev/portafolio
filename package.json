@@ -17,9 +17,12 @@
     "@capacitor/status-bar": "1.0.7",
     "@ionic/vue": "^6.0.0",
     "@ionic/vue-router": "^6.0.0",
+    "@kangc/v-md-editor": "^2.3.13",
+    "axios": "^0.25.0",
     "core-js": "^3.6.5",
     "vue": "^3.2.21",
-    "vue-router": "^4.0.12"
+    "vue-router": "^4.0.12",
+    "vue3-markdown-it": "^1.0.10"
   },
   "devDependencies": {
     "@capacitor/cli": "3.4.0",

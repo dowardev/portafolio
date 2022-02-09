@@ -5,6 +5,9 @@ import PresentationPage from "../views/presentation/PresentationPage.vue";
 import HistoryPage from "../views/history/HistoryPage.vue";
 import SkillsPage from "../views/skills/SkillsPage.vue";
 import PortfolioPage from "../views/portfolio/PortfolioPage.vue";
+import EditorPage from "../views/blog/editor/EditorPage.vue";
+import BlogPage from "../views/blog/posts/PostsPage.vue";
+import PostPage from "../views/blog/post/PostPage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -35,6 +38,21 @@ const routes: Array<RouteRecordRaw> = [
     path: "/portfolio",
     name: "PortfolioPage",
     component: PortfolioPage,
+  },
+  {
+    path: "/blog/editor",
+    name: "EditorPage",
+    component: EditorPage,
+  },
+  {
+    path: "/blog",
+    name: "BlogPage",
+    component: BlogPage,
+  },
+  {
+    path: "/blog/post/:id",
+    name: "PostPage",
+    component: PostPage,
   },
 ];
 

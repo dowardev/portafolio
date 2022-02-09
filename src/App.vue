@@ -54,6 +54,16 @@
               Portfolio
             </ion-label>
           </ion-item>
+          <ion-item lines="none" button @click="$router.push('/blog')">
+            <ion-label
+              v-bind:class="{
+                optionSelected: $route.path == '/blog',
+                optionNoSelected: $route.path != '/blog',
+              }"
+            >
+              Blog
+            </ion-label>
+          </ion-item>
         </ion-content>
       </ion-menu>
       <ion-router-outlet Id="menu-content" />
