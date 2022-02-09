@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,6 +22,10 @@ Route::middleware("auth:sanctum")->get("/user", function (Request $request) {
 Route::group(["prefix" => "auth"], function () {
     Route::post("login", [AuthController::class, "login"]);
     Route::post("signup", [AuthController::class, "signup"]);
+
+    Route::post("create-post", [PostController::class, "createPost"]);
+    Route::get("get-posts", [PostController::class, "getPosts"]);
+    Route::get("get-post", [PostController::class, "getPost"]);
 
     Route::group(["middleware" => "auth:api"], function () {
         Route::get("logout", [AuthController::class, "logout"]);
