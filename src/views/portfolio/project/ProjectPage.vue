@@ -29,7 +29,7 @@
               </ion-col>
               <ion-col size="12">
                 <ion-item
-                  :href="technology.ruta"
+                  :href="technology.route"
                   target="_blank"
                   lines="none"
                   v-for="technology in datosProyecto.technologies"

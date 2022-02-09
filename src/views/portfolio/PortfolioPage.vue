@@ -120,9 +120,9 @@ export default defineComponent({
       proyectos: [
         {
           name: "Globalizaciones",
-          status: "En desarrollo",
+          status: "Pausado",
           type: [logoPwa, logoAndroid, logoApple],
-          color: "secondary",
+          color: "warning",
           image: [
             {
               route: require("../../../public/assets/otros/globtec.webp"),
@@ -157,9 +157,9 @@ export default defineComponent({
         },
         {
           name: "Petstread",
-          status: "En desarrollo",
+          status: "Finalizado",
           type: [logoAndroid],
-          color: "secondary",
+          color: "success",
           image: [
             {
               route: require("../../../public/assets/otros/Petstread.svg"),
@@ -213,7 +213,7 @@ export default defineComponent({
               type: "CMS",
             },
           ],
-          page: "https://thinkers.com.ec/wordpress/",
+          page: "https://thinkers.com.ec/",
         },
       ],
       participaciones: [
