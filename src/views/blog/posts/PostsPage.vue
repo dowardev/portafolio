@@ -4,6 +4,9 @@
       <ion-toolbar>
         <ion-title>Blog</ion-title>
         <ion-buttons slot="end">
+          <ion-button @click="$router.push('/blog/editor')" v-if="userLogged">
+            <ion-icon :icon="addOutline"></ion-icon>
+          </ion-button>
           <ion-button @click="getPosts()">
             <ion-icon :icon="refreshOutline"></ion-icon>
           </ion-button>
@@ -36,7 +39,8 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import postService from "../../../services/post.vue";
-import { refreshOutline } from "ionicons/icons";
+import { refreshOutline, addOutline } from "ionicons/icons";
+import userService from "../../../services/user.vue";
 
 export default defineComponent({
   name: "PostsPage",
@@ -48,13 +52,14 @@ export default defineComponent({
     IonToolbar,
   },
   setup() {
-    return { refreshOutline };
+    return { refreshOutline, addOutline };
   },
   data() {
-    return { posts: Array<any>() };
+    return { posts: Array<any>(), userLogged: false };
   },
   mounted() {
     this.getPosts();
+    this.getUserLogged();
   },
   methods: {
     async getPosts() {
@@ -81,6 +86,12 @@ export default defineComponent({
       });
 
       return loading;
+    },
+    async getUserLogged() {
+      const user = await userService().getUserLogged();
+      if (user.data) {
+        this.userLogged = true;
+      }
     },
   },
 });

@@ -1,30 +1,34 @@
 <script lang="ts">
 import axios from "axios";
+import userService from "./user.vue";
 
 export default function () {
   async function createPost(post: Record<string, any>) {
-    // const token = await userservice()
-    //   .getusertoken()
-    //   .then((response) => {
-    //     return response;
-    //   });
-    return axios.post("http://localhost:8000/api/auth/create-post", post, {});
+    const token = await userService().getUserToken();
+    return axios.post("http://localhost:8000/api/auth/create-post", post, {
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
   }
   async function getPosts() {
-    // const token = await userservice()
-    //   .getusertoken()
-    //   .then((response) => {
-    //     return response;
-    //   });
-    return axios.get("http://localhost:8000/api/auth/get-posts");
+    const token = await userService().getUserToken();
+
+    return axios.get("http://localhost:8000/api/auth/get-posts", {
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
   }
   async function getPost(id: string) {
-    // const token = await userservice()
-    //   .getusertoken()
-    //   .then((response) => {
-    //     return response;
-    //   });
+    const token = await userService().getUserToken();
     return axios.get("http://localhost:8000/api/auth/get-post", {
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + token,
+      },
       params: { id },
     });
   }

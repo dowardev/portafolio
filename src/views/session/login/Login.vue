@@ -240,7 +240,7 @@ export default defineComponent({
     changeInputTypePassword(type: string) {
       this.inputTypePassword = type;
     },
-    async alertConfirmacionEmail() {
+    async alertConfirmationEmail() {
       const alert = await alertController.create({
         cssClass: "my-custom-class",
         header: "Alerta",
