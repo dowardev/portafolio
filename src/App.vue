@@ -65,6 +65,34 @@
             </ion-label>
           </ion-item>
         </ion-content>
+
+        <ion-footer class="ion-no-border">
+          <ion-toolbar>
+            <ion-buttons slot="end">
+              <ion-button id="trigger-button-session">
+                <ion-icon :icon="personCircleOutline"></ion-icon>
+              </ion-button>
+              <ion-popover
+                trigger="trigger-button-session"
+                dismiss-on-select="true"
+              >
+                <ion-content>
+                  <ion-item button lines="none" @click="$router.push('login')">
+                    <ion-label>Iniciar sesión</ion-label>
+                  </ion-item>
+                  <ion-item
+                    button
+                    lines="none"
+                    @click="$router.push('register')"
+                    disabled
+                  >
+                    <ion-label>Registrar</ion-label>
+                  </ion-item>
+                </ion-content>
+              </ion-popover>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-footer>
       </ion-menu>
       <ion-router-outlet Id="menu-content" />
     </ion-split-pane>
@@ -72,14 +100,18 @@
 </template>
 
 <script lang="ts">
-import { IonApp, IonRouterOutlet } from "@ionic/vue";
+import { IonApp, IonRouterOutlet, IonPopover } from "@ionic/vue";
 import { defineComponent } from "vue";
+import { personCircleOutline } from "ionicons/icons";
 
 export default defineComponent({
   name: "App",
   components: {
     IonApp,
     IonRouterOutlet,
+  },
+  setup() {
+    return { personCircleOutline };
   },
 });
 </script>

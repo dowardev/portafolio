@@ -8,6 +8,8 @@ import PortfolioPage from "../views/portfolio/PortfolioPage.vue";
 import EditorPage from "../views/blog/editor/EditorPage.vue";
 import BlogPage from "../views/blog/posts/PostsPage.vue";
 import PostPage from "../views/blog/post/PostPage.vue";
+import LoginPage from "../views/session/login/Login.vue";
+import RegisterPage from "../views/session/register/Register.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -53,6 +55,16 @@ const routes: Array<RouteRecordRaw> = [
     path: "/blog/post/:id",
     name: "PostPage",
     component: PostPage,
+  },
+  {
+    path: "/login",
+    name: "LoginPage",
+    component: LoginPage,
+  },
+  {
+    path: "/register",
+    name: "RegisterPage",
+    component: RegisterPage,
   },
 ];
 
