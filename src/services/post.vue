@@ -32,10 +32,21 @@ export default function () {
       params: { id },
     });
   }
+  async function uploadImage(img: any) {
+    const token = await userService().getUserToken();
+    return axios.post("http://localhost:8000/api/auth/upload-image-post", img, {
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + token,
+        "content-type": "multipart/form-data",
+      },
+    });
+  }
   return {
     createPost,
     getPosts,
     getPost,
+    uploadImage,
   };
 }
 </script>

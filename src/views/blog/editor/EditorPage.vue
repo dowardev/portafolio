@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
-        <ion-title>Blank</ion-title>
+        <ion-title>Editor</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="createPost()">
             <ion-icon :icon="saveOutline"></ion-icon>
@@ -24,6 +24,22 @@
 
     <ion-content :fullscreen="true">
       <section v-if="segment == 'editor'">
+        <ion-item lines="none" style="--background: transparent">
+          <ion-button
+            slot="end"
+            fill="clear"
+            @click="($refs as any).inputImage.click()"
+          >
+            <ion-icon :icon="imageOutline"></ion-icon>
+          </ion-button>
+          <input
+            accept="image/*"
+            type="file"
+            @change="uploadImage($event)"
+            style="display: none"
+            ref="inputImage"
+          />
+        </ion-item>
         <ion-item>
           <ion-label position="floating">Titulo</ion-label>
           <ion-input v-model="form.title"></ion-input>
@@ -37,6 +53,18 @@
             placeholder="Contenido"
           ></ion-textarea>
         </ion-item>
+        <ion-item lines="none">
+          <ion-button fill="clear" @click="($refs as any).inputCover.click()">
+            Portada
+          </ion-button>
+          <input
+            accept="image/*"
+            type="file"
+            @change="uploadCover($event)"
+            style="display: none"
+            ref="inputCover"
+          />
+        </ion-item>
       </section>
 
       <section v-if="segment == 'result'">
@@ -44,6 +72,10 @@
           <h1 class="ion-padding">{{ form.title }}</h1>
           <ion-col size="12" style="background: #333947; height: 84vh">
             <Markdown :source="form.content" />
+          </ion-col>
+          <ion-col size="12">
+            <h3>Portada</h3>
+            <img :src="cover" style="max-width: 32%" />
           </ion-col>
         </ion-row>
       </section>
@@ -66,10 +98,10 @@ import {
 import { defineComponent, ref } from "vue";
 import Markdown from "vue3-markdown-it";
 import postService from "../../../services/post.vue";
-import { saveOutline } from "ionicons/icons";
+import { saveOutline, imageOutline } from "ionicons/icons";
 
 export default defineComponent({
-  name: "HomePage",
+  name: "EditorPage",
   components: {
     IonContent,
     IonHeader,
@@ -83,15 +115,18 @@ export default defineComponent({
     IonInput,
   },
   setup() {
-    return { saveOutline };
+    return { saveOutline, imageOutline };
   },
   data() {
     return {
       segment: "editor",
       form: {
         title: "Titulo de prueba",
-        content: "Contenido de prueba",
+        content: "",
+        coverId: 0,
+        images: Array<number>(),
       },
+      cover: "",
     };
   },
   methods: {
@@ -100,6 +135,45 @@ export default defineComponent({
     },
     createPost() {
       postService().createPost(this.form);
+    },
+
+    getImage(e: any) {
+      const file = e.target.files[0];
+      return file;
+      // const reader = new FileReader();
+      // reader.onload = (e: any) => {
+      // const fileData = e.target.result;
+      // };
+      // reader.readAsDataURL(file);
+    },
+    uploadImage(e: any) {
+      const image = this.getImage(e);
+      const uploadFormData = new FormData();
+      uploadFormData.append("image", image, "sss");
+      postService()
+        .uploadImage(uploadFormData)
+        .then((response) => {
+          this.form.content =
+            this.form.content +
+            "![Markdown Logo](http://localhost:8000/api/get-image?name=" +
+            response.data.name +
+            " 'Markdown Tutorial')";
+        });
+    },
+    uploadCover(e: any) {
+      const image = this.getImage(e);
+      const uploadFormData = new FormData();
+      uploadFormData.append("image", image, "sss");
+      postService()
+        .uploadImage(uploadFormData)
+        .then((response) => {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            const fileData = e.target.result;
+            this.cover = fileData;
+          };
+          reader.readAsDataURL(image);
+        });
     },
   },
 });
