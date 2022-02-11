@@ -6,16 +6,26 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Images;
 use Illuminate\Support\Facades\Storage;
+use App\Models\PostImage;
 
 class PostController extends Controller
 {
     function createPost(Request $request)
     {
-        Post::create([
+        $post = Post::create([
             "title" => $request->title,
             "content" => $request->content,
             "cover_id" => $request->coverId,
         ]);
+
+        $post_id = $post->id;
+        foreach ($request->images as $key => $value) {
+            PostImage::create([
+                "post_id" => $post_id,
+                "image_id" => $value,
+            ]);
+        }
+
         return response()->json("Success", 200);
     }
     function getPosts()
