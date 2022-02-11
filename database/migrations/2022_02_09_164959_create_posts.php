@@ -17,7 +17,13 @@ class CreatePosts extends Migration
             $table->increments("id");
             $table->string("title");
             $table->string("content");
+            $table->integer("cover_id")->unsigned();
             $table->timestamps();
+            $table
+                ->foreign("cover_id")
+                ->references("id")
+                ->on("images")
+                ->onDelete("cascade");
         });
     }
 

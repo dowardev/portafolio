@@ -10,5 +10,5 @@ use Laravel\Sanctum\HasApiTokens;
 class Post extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
-    protected $fillable = ["title", "content"];
+    protected $fillable = ["title", "content", "cover_id"];
 }

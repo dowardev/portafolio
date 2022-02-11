@@ -14,16 +14,22 @@ class PostController extends Controller
         Post::create([
             "title" => $request->title,
             "content" => $request->content,
+            "cover_id" => $request->coverId,
         ]);
         return response()->json("Success", 200);
     }
     function getPosts()
     {
-        return response()->json(Post::get(), 200);
+        $posts = Post::get();
+        foreach ($posts as $key => $value) {
+            $value->cover = Images::find($value->cover_id)->name;
+        }
+        return response()->json($posts, 200);
     }
     function getPost(Request $request)
     {
         $post = Post::find($request->id);
+        $post->cover = Images::find($post->cover_id)->name;
         return response()->json($post, 200);
     }
     function uploadImagePost(Request $request)
