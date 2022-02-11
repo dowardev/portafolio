@@ -80,11 +80,11 @@
                   <ion-item button lines="none" @click="$router.push('login')">
                     <ion-label>Iniciar sesión</ion-label>
                   </ion-item>
+                  <!-- TODO: disabled -->
                   <ion-item
                     button
                     lines="none"
                     @click="$router.push('register')"
-                    disabled
                   >
                     <ion-label>Registrar</ion-label>
                   </ion-item>

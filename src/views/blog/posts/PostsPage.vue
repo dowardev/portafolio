@@ -18,6 +18,7 @@
       <ion-row>
         <ion-col size="12" size-lg="6" v-for="post in posts" :key="post">
           <ion-card @click="openPost(post.id)">
+            <img :src="post.cover" alt="" />
             <ion-card-header>
               <ion-card-title>{{ post.title }}</ion-card-title>
             </ion-card-header>
@@ -70,11 +71,18 @@ export default defineComponent({
         .getPosts()
         .then((response: any) => {
           loading.dismiss();
-          this.posts = response.data;
+          this.showPost(response.data);
         })
         .catch(() => {
           loading.dismiss();
         });
+    },
+    showPost(posts: Array<any>) {
+      // this.posts = posts;
+      posts.forEach((post) => {
+        post.cover = "http://localhost:8000/api/get-image?name=" + post.cover;
+      });
+      this.posts = posts;
     },
     openPost(id: string) {
       this.$router.push({ name: "PostPage", params: { id } });

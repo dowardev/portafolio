@@ -94,6 +94,7 @@ import {
   IonSegmentButton,
   IonTextarea,
   IonInput,
+  toastController,
 } from "@ionic/vue";
 import { defineComponent, ref } from "vue";
 import Markdown from "vue3-markdown-it";
@@ -122,7 +123,7 @@ export default defineComponent({
       segment: "editor",
       form: {
         title: "Titulo de prueba",
-        content: "",
+        content: "Contenido de prueba",
         coverId: 0,
         images: Array<number>(),
       },
@@ -134,7 +135,14 @@ export default defineComponent({
       this.form.content = e.target.innerText;
     },
     createPost() {
-      postService().createPost(this.form);
+      postService()
+        .createPost(this.form)
+        .then((response) => {
+          this.openToast("Publicado correctamente", "success");
+        })
+        .catch((e) => {
+          this.openToast("Ocurrió un error al publicar", "danger");
+        });
     },
 
     getImage(e: any) {
@@ -158,6 +166,10 @@ export default defineComponent({
             "![Markdown Logo](http://localhost:8000/api/get-image?name=" +
             response.data.name +
             " 'Markdown Tutorial')";
+          this.form.images.push(response.data.id);
+        })
+        .catch((e) => {
+          this.openToast("Ocurrió un error al subir la imagen", "danger");
         });
     },
     uploadCover(e: any) {
@@ -171,9 +183,21 @@ export default defineComponent({
           reader.onload = (e: any) => {
             const fileData = e.target.result;
             this.cover = fileData;
+            this.form.coverId = response.data.id;
           };
           reader.readAsDataURL(image);
+        })
+        .catch((e) => {
+          this.openToast("Ocurrió un al subir la portada", "danger");
         });
+    },
+    async openToast(message: string, color: string) {
+      const toast = await toastController.create({
+        message,
+        duration: 2000,
+        color,
+      });
+      return toast.present();
     },
   },
 });

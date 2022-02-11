@@ -42,11 +42,23 @@ export default function () {
       },
     });
   }
+  async function getImage(name: string) {
+    const token = await userService().getUserToken();
+    return axios.get("http://localhost:8000/api/auth/get-image-post", {
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + token,
+        "content-type": "multipart/form-data",
+      },
+      params: { name },
+    });
+  }
   return {
     createPost,
     getPosts,
     getPost,
     uploadImage,
+    getImage,
   };
 }
 </script>

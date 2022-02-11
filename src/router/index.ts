@@ -11,6 +11,7 @@ import PostPage from "../views/blog/post/PostPage.vue";
 import LoginPage from "../views/session/login/Login.vue";
 import RegisterPage from "../views/session/register/Register.vue";
 
+// TODO: proteger rutas
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",

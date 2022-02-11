@@ -13,6 +13,11 @@
 
     <ion-content :fullscreen="true">
       <ion-row>
+        <ion-col size="12">
+          <img :src="post.cover" alt="" />
+        </ion-col>
+      </ion-row>
+      <ion-row>
         <ion-col size="12" style="background: #333947; height: 84vh">
           <Markdown :source="post.content" />
         </ion-col>
@@ -53,6 +58,7 @@ export default defineComponent({
       post: {
         title: "",
         content: "",
+        cover: "",
       },
     };
   },
@@ -70,6 +76,8 @@ export default defineComponent({
           loading.dismiss();
           this.post.title = response.data.title;
           this.post.content = response.data.content;
+          this.post.cover =
+            "http://localhost:8000/api/get-image?name=" + response.data.cover;
         })
         .catch((e) => {
           loading.dismiss();
