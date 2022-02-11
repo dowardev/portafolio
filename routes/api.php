@@ -18,6 +18,7 @@ use App\Http\Controllers\PostController;
 Route::middleware("auth:sanctum")->get("/user", function (Request $request) {
     return $request->user();
 });
+Route::get("get-image/", [PostController::class, "getImagePost"]);
 
 Route::group(["prefix" => "auth"], function () {
     Route::post("login", [AuthController::class, "login"]);
@@ -30,5 +31,10 @@ Route::group(["prefix" => "auth"], function () {
         Route::post("create-post", [PostController::class, "createPost"]);
         Route::get("get-posts", [PostController::class, "getPosts"]);
         Route::get("get-post", [PostController::class, "getPost"]);
+
+        Route::post("upload-image-post", [
+            PostController::class,
+            "uploadImagePost",
+        ]);
     });
 });
