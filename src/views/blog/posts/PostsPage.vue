@@ -89,7 +89,7 @@ export default defineComponent({
     },
     async presentLoading(message: string) {
       const loading = await loadingController.create({
-        cssClass: "loadingClass ",
+        cssClass: "ionic-elements",
         message,
       });
 

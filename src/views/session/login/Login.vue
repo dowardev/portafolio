@@ -27,7 +27,7 @@
           <ion-card>
             <div class="center">
               <img
-                src="../../../../public/assets/otros/key.svg"
+                src="../../../../public/assets/otros/key.png"
                 alt=""
                 class="imagen-usuario"
               />
@@ -121,7 +121,7 @@
           <ion-row>
             <ion-col size="12" class="center">
               <small style="cursor: pointer">
-                <ion-text color="primary" v-on:click="$router.push('/register')"
+                <ion-text color="primary" v-on:click="$router.push('/signup')"
                   >Crear cuenta</ion-text
                 >
               </small>
@@ -231,6 +231,9 @@ export default defineComponent({
           if (e.response.data.message == "Unauthorized") {
             this.presentToast("Credenciales incorrectas", "danger");
           }
+          if (e.response.data.message == "Unverified email") {
+            this.alertConfirmationEmail();
+          }
         });
     },
     clearInputs() {
@@ -261,7 +264,7 @@ export default defineComponent({
     },
     async presentLoading(message: string) {
       const loading = await loadingController.create({
-        cssClass: "loadingClass ",
+        cssClass: "ionic-elements",
         message,
       });
 

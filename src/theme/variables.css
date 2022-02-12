@@ -251,9 +251,6 @@ ion-card-title,
 ion-icon {
   color: #81a1c1;
 }
-ion-card {
-  --background: #2e3440;
-}
 ion-item {
   --background: #333947;
 }
@@ -261,7 +258,8 @@ ion-item {
   display: flex;
   justify-content: center;
 }
-.loadingClass {
+.ionic-elements,
+ion-card {
   --background: #2e3440;
   --spinner-color: #81a1c1;
   color: #81a1c1;

@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header class="ion-no-border" mode="ios" :translucent="true">
+    <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button v-on:click="$router.go(-1)">
@@ -28,7 +28,7 @@
             <ion-card-header>
               <div class="center">
                 <img
-                  src="../../../../public/assets/otros/user.svg"
+                  src="../../../../public/assets/otros/user.png"
                   alt=""
                   class="imagen-usuario"
                 />
@@ -40,12 +40,12 @@
                 <ion-item>
                   <ion-label position="floating">Nombre</ion-label>
                   <ion-input
-                    v-model="v$.form['name'].$model"
+                    v-model="(v$.form as any).name.$model"
                     autocomplete="name"
                   ></ion-input>
                 </ion-item>
                 <div
-                  v-for="(error, index) of v$.form['name'].$errors"
+                  v-for="(error, index) of (v$.form as any).name.$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
@@ -53,10 +53,10 @@
 
                 <ion-item>
                   <ion-label position="floating">Usuario</ion-label>
-                  <ion-input v-model="v$.form['user'].$model"></ion-input>
+                  <ion-input v-model="(v$.form as any).user.$model"></ion-input>
                 </ion-item>
                 <div
-                  v-for="(error, index) of v$.form['user'].$errors"
+                  v-for="(error, index) of (v$.form as any).user.$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
@@ -65,12 +65,12 @@
                 <ion-item>
                   <ion-label position="floating">Correo electrónico</ion-label>
                   <ion-input
-                    v-model="v$.form['email'].$model"
+                    v-model="(v$.form as any).email.$model"
                     autocomplete="email"
                   ></ion-input>
                 </ion-item>
                 <div
-                  v-for="(error, index) of v$.form['email'].$errors"
+                  v-for="(error, index) of (v$.form as any).email.$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
@@ -79,7 +79,7 @@
                 <ion-item>
                   <ion-label position="floating">Contraseña</ion-label>
                   <ion-input
-                    v-model="v$.form['password'].$model"
+                    v-model="(v$.form as any).password.$model"
                     :type="inputTypePassword1"
                     autocomplete="password"
                   ></ion-input>
@@ -103,7 +103,7 @@
                   </ion-button>
                 </ion-item>
                 <div
-                  v-for="(error, index) of v$.form['password'].$errors"
+                  v-for="(error, index) of (v$.form as any).password.$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
@@ -112,7 +112,7 @@
                 <ion-item>
                   <ion-label position="floating">Repite contraseña</ion-label>
                   <ion-input
-                    v-model="v$.form['password2'].$model"
+                    v-model="(v$.form as any).password2.$model"
                     :type="inputTypePassword2"
                   ></ion-input>
                   <ion-button
@@ -135,7 +135,7 @@
                   </ion-button>
                 </ion-item>
                 <div
-                  v-for="(error, index) of v$.form['password2'].$errors"
+                  v-for="(error, index) of (v$.form as any).password2.$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
@@ -148,7 +148,7 @@
                     expand="block"
                     fill="clear"
                     v-on:click="register()"
-                    :disabled="v$.form.$invalid"
+                    :disabled="(v$.form as any).$invalid"
                   >
                     Registrar
                   </ion-button>
@@ -267,7 +267,7 @@ export default defineComponent({
       )
         .then(() => {
           loading.dismiss();
-          // this.alertConfirmaciónEmail();
+          this.alertConfirmaciónEmail();
           this.$router.push("/register");
           this.clearInputs();
           this.presentToast("Registrado correctamente", "success");
@@ -305,7 +305,7 @@ export default defineComponent({
     },
     async alertConfirmaciónEmail() {
       const alert = await alertController.create({
-        cssClass: "my-custom-class",
+        cssClass: "ionic-elements",
         header: "Alerta",
         subHeader: "Confirmación",
         message:
@@ -316,7 +316,7 @@ export default defineComponent({
           {
             text: "Continuar",
             handler: () => {
-              this.$router.push("/session");
+              this.$router.push("/login");
             },
           },
         ],
@@ -326,7 +326,7 @@ export default defineComponent({
     },
     async presentLoading(message: string) {
       const loading = await loadingController.create({
-        cssClass: "loadingClass ",
+        cssClass: "ionic-elements",
         message,
       });
 
