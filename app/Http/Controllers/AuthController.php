@@ -29,15 +29,19 @@ class AuthController extends Controller
         $user->save();
 
         $token = Str::random(64);
-        // UserVerify::create([
-        //     'user_id' => $user->id,
-        //     'token' => $token,
-        // ]);
+        UserVerify::create([
+            "user_id" => $user->id,
+            "token" => $token,
+        ]);
 
-        // Mail::send('emails.emailVerificationEmail', ['token' => $token], function ($message) use ($request) {
-        //     $message->to($request->email);
-        //     $message->subject('Email Verification Mail');
-        // });
+        Mail::send(
+            "emails.emailVerificationEmail",
+            ["token" => $token],
+            function ($message) use ($request) {
+                $message->to($request->email);
+                $message->subject("Email Verification Mail");
+            }
+        );
 
         return response()->json(
             [
@@ -63,19 +67,28 @@ class AuthController extends Controller
             );
         }
         $user = $request->user();
-        $tokenResult = $user->createToken("Personal Access Token");
-        $token = $tokenResult->token;
-        if ($request->remember_me) {
-            $token->expires_at = Carbon::now()->addWeeks(1);
+        if ($user->is_email_verified) {
+            $tokenResult = $user->createToken("Personal Access Token");
+            $token = $tokenResult->token;
+            if ($request->remember_me) {
+                $token->expires_at = Carbon::now()->addWeeks(1);
+            }
+            $token->save();
+            return response()->json([
+                "access_token" => $tokenResult->accessToken,
+                "token_type" => "Bearer",
+                "expires_at" => Carbon::parse(
+                    $tokenResult->token->expires_at
+                )->toDateTimeString(),
+            ]);
+        } else {
+            return response()->json(
+                [
+                    "message" => "Unverified email",
+                ],
+                401
+            );
         }
-        $token->save();
-        return response()->json([
-            "access_token" => $tokenResult->accessToken,
-            "token_type" => "Bearer",
-            "expires_at" => Carbon::parse(
-                $tokenResult->token->expires_at
-            )->toDateTimeString(),
-        ]);
     }
 
     public function logout(Request $request)
@@ -93,23 +106,23 @@ class AuthController extends Controller
     }
     public function verifyAccount($token)
     {
-        // $verifyUser = UserVerify::where("token", $token)->first();
-        //
-        // $message = "Tu correo electronico no puede ser identificado.";
-        //
-        // if (!is_null($verifyUser)) {
-        //     $user = $verifyUser->user;
-        //
-        //     if (!$user->is_email_verified) {
-        //         $verifyUser->user->is_email_verified = 1;
-        //         $verifyUser->user->save();
-        //         $message =
-        //             "Tu correo electronico esta verificado. Ya puedes iniciar sesion.";
-        //     } else {
-        //         $message = "Tu correo electronico ya se encontraba verificado.";
-        //     }
-        // }
-        //
-        // return $message;
+        $verifyUser = UserVerify::where("token", $token)->first();
+
+        $message = "Tu correo electrónico no puede ser identificado.";
+
+        if (!is_null($verifyUser)) {
+            $user = $verifyUser->user;
+
+            if (!$user->is_email_verified) {
+                $verifyUser->user->is_email_verified = 1;
+                $verifyUser->user->save();
+                $message =
+                    "Tu correo electrónico esta verificado. Ya puedes iniciar sesión.";
+            } else {
+                $message = "Tu correo electrónico ya se encontraba verificado.";
+            }
+        }
+
+        return $message;
     }
 }

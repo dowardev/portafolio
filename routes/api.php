@@ -22,7 +22,6 @@ Route::get("get-image/", [PostController::class, "getImagePost"]);
 
 Route::group(["prefix" => "auth"], function () {
     Route::post("login", [AuthController::class, "login"]);
-    // TODO: disable
     Route::post("signup", [AuthController::class, "signup"]);
 
     Route::group(["middleware" => "auth:api"], function () {
