@@ -133,7 +133,7 @@ export default defineComponent({
   content: "";
   position: absolute;
   width: 6px;
-  background-color: white;
+  background-color: var(--secondary-color);
   top: 0;
   bottom: 0;
   left: 50%;
@@ -156,7 +156,7 @@ export default defineComponent({
   height: 25px;
   right: -17px;
   background-color: white;
-  border: 4px solid #81a1c1;
+  border: 4px solid var(--accent-color);
   top: 15px;
   border-radius: 50%;
   z-index: 1;

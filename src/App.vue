@@ -9,11 +9,11 @@
         style="--side-max-width: 200px"
       >
         <ion-header class="ion-no-border">
-          <ion-toolbar>
+          <ion-toolbar class="menu-color">
             <img src="../public/assets/portafolio/dowar.png" />
           </ion-toolbar>
         </ion-header>
-        <ion-content>
+        <ion-content class="menu-color">
           <ion-item lines="none" button @click="$router.push('/presentation')">
             <ion-label
               v-bind:class="{
@@ -67,7 +67,7 @@
         </ion-content>
 
         <ion-footer class="ion-no-border">
-          <ion-toolbar>
+          <ion-toolbar class="menu-color">
             <ion-buttons slot="end">
               <ion-button id="trigger-button-session">
                 <ion-icon :icon="personCircleOutline"></ion-icon>
@@ -112,14 +112,14 @@ export default defineComponent({
 </script>
 
 <style scoped>
-ion-item,
-ion-toolbar {
-  --background: #2e3440;
-}
 .optionSelected {
-  color: #7e9dbd;
+  color: var(--accent-color);
 }
 .optionNoSelected {
-  color: white;
+  color: var(--secondary-text-color);
+}
+.menu-color,
+ion-item {
+  --background: var(--secondary-color);
 }
 </style>

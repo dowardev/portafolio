@@ -38,7 +38,9 @@
             <ion-card-content>
               <form>
                 <ion-item>
-                  <ion-label position="floating">Nombre</ion-label>
+                  <ion-label position="floating" class="input-signup"
+                    >Nombre</ion-label
+                  >
                   <ion-input
                     v-model="(v$.form as any).name.$model"
                     autocomplete="name"
@@ -52,7 +54,9 @@
                 </div>
 
                 <ion-item>
-                  <ion-label position="floating">Usuario</ion-label>
+                  <ion-label position="floating" class="input-signup"
+                    >Usuario</ion-label
+                  >
                   <ion-input v-model="(v$.form as any).user.$model"></ion-input>
                 </ion-item>
                 <div
@@ -63,7 +67,9 @@
                 </div>
 
                 <ion-item>
-                  <ion-label position="floating">Correo electrónico</ion-label>
+                  <ion-label position="floating" class="input-signup"
+                    >Correo electrónico</ion-label
+                  >
                   <ion-input
                     v-model="(v$.form as any).email.$model"
                     autocomplete="email"
@@ -77,7 +83,9 @@
                 </div>
 
                 <ion-item>
-                  <ion-label position="floating">Contraseña</ion-label>
+                  <ion-label position="floating" class="input-signup"
+                    >Contraseña</ion-label
+                  >
                   <ion-input
                     v-model="(v$.form as any).password.$model"
                     :type="inputTypePassword1"
@@ -110,7 +118,9 @@
                 </div>
 
                 <ion-item>
-                  <ion-label position="floating">Repite contraseña</ion-label>
+                  <ion-label position="floating" class="input-signup"
+                    >Repite contraseña</ion-label
+                  >
                   <ion-input
                     v-model="(v$.form as any).password2.$model"
                     :type="inputTypePassword2"
@@ -149,6 +159,7 @@
                     fill="clear"
                     v-on:click="register()"
                     :disabled="(v$.form as any).$invalid"
+                    class="options"
                   >
                     Registrar
                   </ion-button>
@@ -159,7 +170,11 @@
           <ion-row>
             <ion-col size="12" class="center">
               <small style="cursor: pointer">
-                <ion-text color="primary" v-on:click="$router.push('/login')">
+                <ion-text
+                  color="primary"
+                  v-on:click="$router.push('/login')"
+                  class="options"
+                >
                   ¿Ya tienes cuenta?</ion-text
                 >
               </small>
@@ -339,7 +354,7 @@ export default defineComponent({
 
 <style scoped>
 .error {
-  color: red;
+  color:var(--ion-color-danger);
 }
 .center {
   display: flex;
@@ -394,5 +409,9 @@ export default defineComponent({
   .card-form {
     margin-top: 0;
   }
+}
+.options,
+.input-signup {
+  color: var(--accent-color);
 }
 </style>

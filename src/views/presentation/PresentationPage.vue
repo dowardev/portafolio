@@ -21,13 +21,20 @@
           <div style="text-align: center">
             <div class="wrapper">
               <div class="letters">
-                <span class="letter">G</span><span class="letter">o</span
-                ><span class="letter">n</span><span class="letter">z</span
-                ><span class="letter">a</span><span class="letter">l</span
-                ><span class="letter">o</span><span class="letter"></span
-                ><span class="letter">P</span> <span class="letter">o</span
-                ><span class="letter">n</span><span class="letter">c</span
-                ><span class="letter">e</span><span class="letter"></span>
+                <span class="letter">G</span>
+                <span class="letter">o</span>
+                <span class="letter">n</span>
+                <span class="letter">z</span>
+                <span class="letter">a</span>
+                <span class="letter">l</span>
+                <span class="letter">o</span>
+                <span class="letter"></span>
+                <span class="letter">P</span>
+                <span class="letter">o</span>
+                <span class="letter">n</span>
+                <span class="letter">c</span>
+                <span class="letter">e</span>
+                <span class="letter"></span>
               </div>
             </div>
           </div>
@@ -36,9 +43,9 @@
 
       <ion-row id="texto-bienvenida" class="center">
         <ion-col size="12" size-md="6" class="ion-padding">
-          <h5 style="text-align: center">
+          <p class="slogan">
             Haciendo de mi pasión una forma de hacer realidad tus objetivos.
-          </h5>
+          </p>
         </ion-col>
       </ion-row>
 
@@ -290,6 +297,24 @@ svg {
     border-radius: 50%;
     width: 182px;
     height: 182px;
+  }
+}
+.slogan {
+  text-align: center;
+  font-family: OpenSans-Bold !important;
+  opacity: 0.6;
+}
+@media (prefers-color-scheme: dark) {
+  .slogan {
+    opacity: 0.3;
+  }
+  p,
+  ion-label,
+  ion-text {
+    font-family: OpenSans-Medium !important;
+  }
+  p {
+    opacity: 0.7;
   }
 }
 </style>

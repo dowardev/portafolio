@@ -40,7 +40,9 @@
                     style="font-size: 20px; margin-top: 24px"
                     slot="start"
                   ></ion-icon>
-                  <ion-label position="floating">Correo electrónico</ion-label>
+                  <ion-label position="floating" class="input-login">
+                    Correo electrónico</ion-label
+                  >
                   <ion-input
                     v-model="v$.form['email'].$model"
                     type="email"
@@ -59,11 +61,14 @@
                     style="font-size: 20px; margin-top: 24px"
                     slot="start"
                   ></ion-icon>
-                  <ion-label position="floating">Contraseña</ion-label>
+                  <ion-label position="floating" class="input-login"
+                    >Contraseña</ion-label
+                  >
                   <ion-input
                     v-model="v$.form['password'].$model"
                     :type="inputTypePassword"
-                  ></ion-input>
+                  >
+                  </ion-input>
                   <ion-button
                     slot="end"
                     fill="clear"
@@ -110,8 +115,8 @@
             <ion-col size="12" class="center">
               <small style="cursor: pointer">
                 <ion-text
-                  color="primary"
                   v-on:click="$router.push('/restablecer')"
+                  class="options"
                 >
                   ¿Olvidaste la contraseña?</ion-text
                 >
@@ -121,9 +126,13 @@
           <ion-row>
             <ion-col size="12" class="center">
               <small style="cursor: pointer">
-                <ion-text color="primary" v-on:click="$router.push('/signup')"
-                  >Crear cuenta</ion-text
+                <ion-text
+                  color="primary"
+                  v-on:click="$router.push('/signup')"
+                  class="options"
                 >
+                  Crear cuenta
+                </ion-text>
               </small>
             </ion-col>
           </ion-row>
@@ -277,7 +286,7 @@ export default defineComponent({
 
 <style scoped>
 .error {
-  color: red;
+  color: var(--ion-color-danger);
 }
 .center {
   display: flex;
@@ -329,5 +338,9 @@ export default defineComponent({
   .card-form {
     margin-top: 4vh;
   }
+}
+.options,
+.input-login {
+  color: var(--accent-color);
 }
 </style>

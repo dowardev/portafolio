@@ -35,7 +35,7 @@
                 <ion-row>
                   <ion-col size="12">
                     <ion-chip :color="project.color">
-                      <ion-label>{{ project.status }}</ion-label>
+                      <ion-label >{{ project.status }}</ion-label>
                     </ion-chip>
                   </ion-col>
                   <ion-col size="12">
