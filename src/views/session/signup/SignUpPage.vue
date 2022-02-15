@@ -38,9 +38,7 @@
             <ion-card-content>
               <form>
                 <ion-item>
-                  <ion-label position="floating" class="input-signup"
-                    >Nombre</ion-label
-                  >
+                  <ion-label position="floating">Nombre</ion-label>
                   <ion-input
                     v-model="(v$.form as any).name.$model"
                     autocomplete="name"
@@ -54,9 +52,7 @@
                 </div>
 
                 <ion-item>
-                  <ion-label position="floating" class="input-signup"
-                    >Usuario</ion-label
-                  >
+                  <ion-label position="floating">Usuario</ion-label>
                   <ion-input v-model="(v$.form as any).user.$model"></ion-input>
                 </ion-item>
                 <div
@@ -67,9 +63,7 @@
                 </div>
 
                 <ion-item>
-                  <ion-label position="floating" class="input-signup"
-                    >Correo electrónico</ion-label
-                  >
+                  <ion-label position="floating">Correo electrónico</ion-label>
                   <ion-input
                     v-model="(v$.form as any).email.$model"
                     autocomplete="email"
@@ -83,9 +77,7 @@
                 </div>
 
                 <ion-item>
-                  <ion-label position="floating" class="input-signup"
-                    >Contraseña</ion-label
-                  >
+                  <ion-label position="floating">Contraseña</ion-label>
                   <ion-input
                     v-model="(v$.form as any).password.$model"
                     :type="inputTypePassword1"
@@ -95,7 +87,7 @@
                     slot="end"
                     fill="clear"
                     v-if="inputTypePassword1 == 'text'"
-                    v-on:click="changeInputTypePassword1('password')"
+                    v-on:click="inputTypePassword1 = 'password'"
                     style="margin-top: 20px"
                   >
                     <ion-icon :icon="eyeOffOutline"></ion-icon>
@@ -104,7 +96,7 @@
                     slot="end"
                     fill="clear"
                     v-if="inputTypePassword1 == 'password'"
-                    v-on:click="changeInputTypePassword1('text')"
+                    v-on:click="inputTypePassword1 = 'text'"
                     style="margin-top: 20px"
                   >
                     <ion-icon :icon="eyeOutline"></ion-icon>
@@ -118,9 +110,7 @@
                 </div>
 
                 <ion-item>
-                  <ion-label position="floating" class="input-signup"
-                    >Repite contraseña</ion-label
-                  >
+                  <ion-label position="floating">Repite contraseña</ion-label>
                   <ion-input
                     v-model="(v$.form as any).password2.$model"
                     :type="inputTypePassword2"
@@ -129,7 +119,7 @@
                     slot="end"
                     fill="clear"
                     v-if="inputTypePassword2 == 'text'"
-                    v-on:click="changeInputTypePassword2('password')"
+                    v-on:click="inputTypePassword2 = 'password'"
                     style="margin-top: 20px"
                   >
                     <ion-icon :icon="eyeOffOutline"></ion-icon>
@@ -138,7 +128,7 @@
                     slot="end"
                     fill="clear"
                     v-if="inputTypePassword2 == 'password'"
-                    v-on:click="changeInputTypePassword2('text')"
+                    v-on:click="inputTypePassword2 = 'text'"
                     style="margin-top: 20px"
                   >
                     <ion-icon :icon="eyeOutline"></ion-icon>
@@ -199,7 +189,7 @@ import {
   loadingController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import session from "../../../services/session.vue";
+import sessionService from "../../../services/session.vue";
 import { eyeOutline, eyeOffOutline, chevronBackOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, email, helpers, alpha, sameAs } from "@vuelidate/validators";
@@ -215,9 +205,7 @@ export default defineComponent({
     IonInput,
   },
   setup() {
-    const { userRegister } = session();
     return {
-      userRegister,
       eyeOutline,
       eyeOffOutline,
       chevronBackOutline,
@@ -274,12 +262,8 @@ export default defineComponent({
       const loading = await this.presentLoading("Creando cuenta");
       loading.present();
       const email = this.form.email.replace(/\s+/g, "");
-      this.userRegister(
-        this.form.name,
-        this.form.user,
-        email,
-        this.form.password
-      )
+      sessionService()
+        .userRegister(this.form.name, this.form.user, email, this.form.password)
         .then(() => {
           loading.dismiss();
           this.alertConfirmaciónEmail();
@@ -312,15 +296,8 @@ export default defineComponent({
       this.form.password2 = "";
       this.form.email = "";
     },
-    changeInputTypePassword1(type: string) {
-      this.inputTypePassword1 = type;
-    },
-    changeInputTypePassword2(type: string) {
-      this.inputTypePassword2 = type;
-    },
     async alertConfirmaciónEmail() {
       const alert = await alertController.create({
-        cssClass: "ionic-elements",
         header: "Alerta",
         subHeader: "Confirmación",
         message:
@@ -341,7 +318,6 @@ export default defineComponent({
     },
     async presentLoading(message: string) {
       const loading = await loadingController.create({
-        cssClass: "ionic-elements",
         message,
       });
 
@@ -354,7 +330,7 @@ export default defineComponent({
 
 <style scoped>
 .error {
-  color:var(--ion-color-danger);
+  color: var(--ion-color-danger);
 }
 .center {
   display: flex;
@@ -410,8 +386,7 @@ export default defineComponent({
     margin-top: 0;
   }
 }
-.options,
-.input-signup {
+.options {
   color: var(--accent-color);
 }
 </style>

@@ -255,7 +255,7 @@ http://ionicframework.com/docs/theming/ */
     --background-color: white;
     --background-elements-color: white;
     --primary-text-color: #252729;
-    --secondary-text-color: white;
+    --secondary-text-color: black;
   }
   ion-card {
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
@@ -285,12 +285,15 @@ http://ionicframework.com/docs/theming/ */
 
 p,
 ion-label,
-ion-text {
+ion-text,
+ol,
+span {
   font-family: OpenSans-Medium;
   color: var(--primary-text-color);
 }
-ion-item > ion-label {
-  --color: var(--secondary-text-color) !important;
+
+.item-label-floating {
+  --color: var(--secondary-text-color);
 }
 ion-title,
 ion-card-title {
@@ -309,6 +312,25 @@ ion-content,
 ion-toolbar,
 ion-footer {
   --background: var(--background-color);
+}
+
+/* loading */
+.loading-wrapper.sc-ion-loading-md {
+  --background: var(--primary-color);
+  color: var(--secondary-text-color);
+  --spinner-color: var(--accent-color);
+}
+
+/* alert */
+.alert-wrapper,
+.alert-title,
+.alert-sub-title,
+.alert-message {
+  --background: var(--primary-color);
+  color: var(--secondary-text-color) !important;
+}
+.alert-button-inner.sc-ion-alert-md {
+  color: var(--accent-color);
 }
 
 /* .ionic-elements, */

@@ -48,10 +48,49 @@ export default function () {
       },
     });
   }
+  function sendMailResetPassword(email: string) {
+    return axios.post(
+      "http://localhost:8000/api/auth/mail-reset-password",
+      { headers: { Accept: "application/json" } },
+      {
+        params: {
+          email,
+        },
+      }
+    );
+  }
+  function sendCodeResetPassword(email: string, code: string) {
+    return axios.post(
+      "http://localhost:8000/api/auth/code-reset-password",
+      { headers: { Accept: "application/json" } },
+      {
+        params: {
+          email,
+          code,
+        },
+      }
+    );
+  }
+  function resetPassword(email: string, password: string) {
+    return axios.post(
+      "http://localhost:8000/api/auth/reset-password",
+      { headers: { Accept: "application/json" } },
+      {
+        params: {
+          email,
+          password,
+        },
+      }
+    );
+  }
+
   return {
     userRegister,
     userLogin,
     logout,
+    sendMailResetPassword,
+    sendCodeResetPassword,
+    resetPassword,
   };
 }
 </script>

@@ -10,6 +10,7 @@ import BlogPage from "../views/blog/posts/PostsPage.vue";
 import PostPage from "../views/blog/post/PostPage.vue";
 import LoginPage from "../views/session/login/Login.vue";
 import SignUpPage from "../views/session/signup/SignUpPage.vue";
+import RestorePasswordPage from "../views/session/restore-password/RestorePasswordPage.vue";
 
 // TODO: proteger rutas
 const routes: Array<RouteRecordRaw> = [
@@ -66,6 +67,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/signup",
     name: "SignUpPage",
     component: SignUpPage,
+  },
+  {
+    path: "/restore-password",
+    name: "RestorePasswordPage",
+    component: RestorePasswordPage,
   },
 ];
 

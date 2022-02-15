@@ -40,9 +40,7 @@
                     style="font-size: 20px; margin-top: 24px"
                     slot="start"
                   ></ion-icon>
-                  <ion-label position="floating" class="input-login">
-                    Correo electrónico</ion-label
-                  >
+                  <ion-label position="floating"> Correo electrónico</ion-label>
                   <ion-input
                     v-model="v$.form['email'].$model"
                     type="email"
@@ -61,9 +59,7 @@
                     style="font-size: 20px; margin-top: 24px"
                     slot="start"
                   ></ion-icon>
-                  <ion-label position="floating" class="input-login"
-                    >Contraseña</ion-label
-                  >
+                  <ion-label position="floating">Contraseña</ion-label>
                   <ion-input
                     v-model="v$.form['password'].$model"
                     :type="inputTypePassword"
@@ -73,7 +69,7 @@
                     slot="end"
                     fill="clear"
                     v-if="inputTypePassword == 'text'"
-                    v-on:click="changeInputTypePassword('password')"
+                    v-on:click="inputTypePassword = 'password'"
                     style="margin-top: 20px"
                   >
                     <ion-icon :icon="eyeOffOutline"></ion-icon>
@@ -82,7 +78,7 @@
                     slot="end"
                     fill="clear"
                     v-if="inputTypePassword == 'password'"
-                    v-on:click="changeInputTypePassword('text')"
+                    v-on:click="inputTypePassword = 'text'"
                     style="margin-top: 20px"
                   >
                     <ion-icon :icon="eyeOutline"></ion-icon>
@@ -115,11 +111,11 @@
             <ion-col size="12" class="center">
               <small style="cursor: pointer">
                 <ion-text
-                  v-on:click="$router.push('/restablecer')"
+                  v-on:click="$router.push('/restore-password')"
                   class="options"
                 >
-                  ¿Olvidaste la contraseña?</ion-text
-                >
+                  ¿Olvidaste la contraseña?
+                </ion-text>
               </small>
             </ion-col>
           </ion-row>
@@ -249,9 +245,6 @@ export default defineComponent({
       this.form.password = "";
       this.form.email = "";
     },
-    changeInputTypePassword(type: string) {
-      this.inputTypePassword = type;
-    },
     async alertConfirmationEmail() {
       const alert = await alertController.create({
         cssClass: "my-custom-class",
@@ -273,7 +266,6 @@ export default defineComponent({
     },
     async presentLoading(message: string) {
       const loading = await loadingController.create({
-        cssClass: "ionic-elements",
         message,
       });
 
@@ -287,10 +279,6 @@ export default defineComponent({
 <style scoped>
 .error {
   color: var(--ion-color-danger);
-}
-.center {
-  display: flex;
-  justify-content: center;
 }
 .imagen-usuario {
   border-radius: 50%;
@@ -339,8 +327,7 @@ export default defineComponent({
     margin-top: 4vh;
   }
 }
-.options,
-.input-login {
+.options {
   color: var(--accent-color);
 }
 </style>
