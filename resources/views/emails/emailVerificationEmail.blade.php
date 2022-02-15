@@ -1,4 +1,6 @@
-<h1>Email Verification Mail</h1>
+<h1>Correo de verificación de cuenta</h1>
 
-Please verify your email with bellow link:
-<a href="{{ route('user.verify', $token) }}">Verify Email</a>
+<p>
+	Este es un correo para la activación de una nueva cuenta en <a href="https://dowar.xyz">dowar.xyz</a>
+</p>
+<a href="{{ route('user.verify', $token) }}">Verificar correo electrónico</a>

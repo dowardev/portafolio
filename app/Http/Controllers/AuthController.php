@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Models\ResetCodePassword;
 
 class AuthController extends Controller
 {
@@ -124,5 +125,48 @@ class AuthController extends Controller
         }
 
         return $message;
+    }
+    public function sendCodeResetPassword(Request $request)
+    {
+        $data = $request->validate([
+            "email" => "required|email|exists:users",
+        ]);
+
+        ResetCodePassword::where("email", $request->email)->delete();
+
+        $data["code"] = mt_rand(100000, 999999);
+
+        $codeData = ResetCodePassword::create($data);
+
+        Mail::send(
+            "emails.emailCodeResetPassword",
+            ["code" => $codeData->code],
+            function ($message) use ($request) {
+                $message->to($request->email);
+                $message->subject("Email Verification Mail");
+            }
+        );
+
+        return response()->json(["message" => "Success"], 200);
+    }
+    function verifyCodeResetPassword(Request $request)
+    {
+        $email = $request->email;
+        $code = $request->code;
+        $result = ResetCodePassword::where("email", "=", $email)
+            ->where("code", "=", $code)
+            ->get();
+        if (sizeof($result) > 0) {
+            return response()->json(["message" => "Code valid"], 200);
+        } else {
+            return response()->json(["message" => "Code invalid"], 400);
+        }
+    }
+    function resetPassword(Request $request)
+    {
+        ResetCodePassword::where("email", $request->email)->delete();
+        return User::where("email", "=", $request->email)->update([
+            "password" => bcrypt($request->password),
+        ]);
     }
 }

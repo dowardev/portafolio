@@ -23,6 +23,15 @@ Route::get("get-image/", [PostController::class, "getImagePost"]);
 Route::group(["prefix" => "auth"], function () {
     Route::post("login", [AuthController::class, "login"]);
     Route::post("signup", [AuthController::class, "signup"]);
+    Route::post("mail-reset-password", [
+        AuthController::class,
+        "sendCodeResetPassword",
+    ]);
+    Route::post("code-reset-password", [
+        AuthController::class,
+        "verifyCodeResetPassword",
+    ]);
+    Route::post("reset-password", [AuthController::class, "resetPassword"]);
 
     Route::group(["middleware" => "auth:api"], function () {
         Route::get("logout", [AuthController::class, "logout"]);
