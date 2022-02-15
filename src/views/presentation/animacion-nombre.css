@@ -6,6 +6,18 @@
   font-size: 0;
   transform: translate(-50%);
 }
+@media (prefers-color-scheme: light) {
+  .letter {
+    --color1: white;
+    --color2: black;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .letter {
+    --color1: black;
+    --color2: white;
+  }
+}
 .letter {
   width: 21px;
   display: inline-block;
@@ -18,7 +30,7 @@
   font-weight: 600;
   line-height: 24px;
   text-transform: uppercase;
-  color: #eee;
+  color: var(--color2);
 }
 .letter:before {
   position: absolute;
@@ -26,7 +38,8 @@
   left: 0;
   width: 100%;
   word-break: break-all;
-  background-color: #1d1f20;
+  background-color: var(--color2);
+  color: var(--color1);
 }
 .letter:nth-child(1):before {
   content: "9413782506";

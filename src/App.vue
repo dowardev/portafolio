@@ -14,7 +14,12 @@
           </ion-toolbar>
         </ion-header>
         <ion-content class="menu-color">
-          <ion-item lines="none" button @click="$router.push('/presentation')">
+          <ion-item
+            lines="none"
+            button
+            @click="$router.push('/presentation')"
+            class="ion-item-menu"
+          >
             <ion-label
               v-bind:class="{
                 optionSelected: $route.path == '/presentation',
@@ -24,7 +29,12 @@
               Presentación
             </ion-label>
           </ion-item>
-          <ion-item lines="none" button @click="$router.push('/history')">
+          <ion-item
+            lines="none"
+            button
+            @click="$router.push('/history')"
+            class="ion-item-menu"
+          >
             <ion-label
               v-bind:class="{
                 optionSelected: $route.path == '/history',
@@ -34,7 +44,12 @@
               Historia
             </ion-label>
           </ion-item>
-          <ion-item lines="none" button @click="$router.push('/skills')">
+          <ion-item
+            lines="none"
+            button
+            @click="$router.push('/skills')"
+            class="ion-item-menu"
+          >
             <ion-label
               v-bind:class="{
                 optionSelected: $route.path == '/skills',
@@ -44,7 +59,12 @@
               Habilidades</ion-label
             >
           </ion-item>
-          <ion-item lines="none" button @click="$router.push('/portfolio')">
+          <ion-item
+            lines="none"
+            button
+            @click="$router.push('/portfolio')"
+            class="ion-item-menu"
+          >
             <ion-label
               v-bind:class="{
                 optionSelected: $route.path == '/portfolio',
@@ -54,7 +74,12 @@
               Portfolio
             </ion-label>
           </ion-item>
-          <ion-item lines="none" button @click="$router.push('/blog')">
+          <ion-item
+            lines="none"
+            button
+            @click="$router.push('/blog')"
+            class="ion-item-menu"
+          >
             <ion-label
               v-bind:class="{
                 optionSelected: $route.path == '/blog',
@@ -113,13 +138,13 @@ export default defineComponent({
 
 <style scoped>
 .optionSelected {
-  color: var(--accent-color);
+  color: var(--accent-color) !important;
 }
 .optionNoSelected {
-  color: var(--secondary-text-color);
+  color: white !important;
 }
 .menu-color,
-ion-item {
+.ion-item-menu {
   --background: var(--secondary-color);
 }
 </style>

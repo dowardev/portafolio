@@ -178,7 +178,7 @@ export default defineComponent({
   data() {
     return {
       form: {
-        email: "contacto@dowar.xyz",
+        email: "",
         code: "",
         password1: "",
         password2: "",
