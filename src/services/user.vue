@@ -26,6 +26,9 @@ export default function () {
     const token = await getUserToken().then((response) => {
       return response;
     });
+    if (token == "") {
+      return null;
+    }
     return axios.get("http://localhost:8000/api/auth/user", {
       headers: {
         "Content-Type": "application/json",

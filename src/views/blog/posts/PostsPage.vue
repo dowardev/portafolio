@@ -92,12 +92,11 @@ export default defineComponent({
         cssClass: "ionic-elements",
         message,
       });
-
       return loading;
     },
     async getUserLogged() {
       const user = await userService().getUserLogged();
-      if (user.data) {
+      if (user?.data) {
         this.userLogged = true;
       }
     },

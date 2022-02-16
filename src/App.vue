@@ -102,11 +102,32 @@
                 dismiss-on-select="true"
               >
                 <ion-content>
-                  <ion-item button lines="none" @click="$router.push('login')">
+                  <ion-item
+                    button
+                    lines="none"
+                    @click="$router.push('login')"
+                    v-if="!userLogged"
+                  >
+                    <ion-icon :icon="logInOutline" slot="start"></ion-icon>
                     <ion-label>Iniciar sesión</ion-label>
                   </ion-item>
-                  <ion-item button lines="none" @click="$router.push('signup')">
+                  <ion-item
+                    button
+                    lines="none"
+                    @click="$router.push('signup')"
+                    v-if="!userLogged"
+                  >
+                    <ion-icon :icon="personAddOutline" slot="start"></ion-icon>
                     <ion-label>Registrar</ion-label>
+                  </ion-item>
+                  <ion-item
+                    button
+                    lines="none"
+                    @click="userLogout()"
+                    v-if="userLogged"
+                  >
+                    <ion-icon :icon="logOutOutline" slot="start"></ion-icon>
+                    <ion-label>Salir</ion-label>
                   </ion-item>
                 </ion-content>
               </ion-popover>
@@ -122,7 +143,14 @@
 <script lang="ts">
 import { IonApp, IonRouterOutlet, IonPopover } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { personCircleOutline } from "ionicons/icons";
+import {
+  personCircleOutline,
+  personAddOutline,
+  logInOutline,
+  logOutOutline,
+} from "ionicons/icons";
+import userService from "../src/services/user.vue";
+import sessionService from "../src/services/session.vue";
 
 export default defineComponent({
   name: "App",
@@ -131,7 +159,34 @@ export default defineComponent({
     IonRouterOutlet,
   },
   setup() {
-    return { personCircleOutline };
+    return {
+      personCircleOutline,
+      personAddOutline,
+      logInOutline,
+      logOutOutline,
+    };
+  },
+  data() {
+    return { userLogged: false };
+  },
+  mounted() {
+    this.getUserLogged();
+  },
+  methods: {
+    async getUserLogged() {
+      const user = await userService().getUserLogged();
+      if (user?.data) {
+        this.userLogged = true;
+      }
+    },
+    userLogout() {
+      sessionService()
+        .logout()
+        .then(() => {
+          userService().setUserToken("");
+          this.userLogged = false;
+        });
+    },
   },
 });
 </script>

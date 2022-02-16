@@ -287,7 +287,12 @@ p,
 ion-label,
 ion-text,
 ol,
-span {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 span {
   font-family: OpenSans-Medium;
   color: var(--primary-text-color);
 }

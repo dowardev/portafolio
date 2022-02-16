@@ -10,11 +10,11 @@
       <ion-row style="margin-top: 12vw">
         <ion-col size="12">
           <div class="center">
-            <!-- <img -->
-            <!--   src="../../../public/assets/portafolio/foto_perfil.jpg" -->
-            <!--   alt="" -->
-            <!--   class="img-perfil" -->
-            <!-- /> -->
+            <img
+              src="../../../public/assets/portafolio/foto_perfil.jpg"
+              alt=""
+              class="img-perfil"
+            />
           </div>
         </ion-col>
         <ion-col size="12" class="ion-padding" id="copywriting">
