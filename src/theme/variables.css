@@ -246,24 +246,25 @@ http://ionicframework.com/docs/theming/ */
   font-family: "Roboto-Light";
   src: url("../../public/assets/fonts/roboto/Roboto-Light.ttf");
 }
-@media (prefers-color-scheme: light) {
-  body {
-    --primary-color: white;
-    --secondary-color: #252729;
-    --accent-color: #4f9adf;
+:root {
+  --primary-color: white;
+  --secondary-color: #252729;
+  --accent-color: #4f9adf;
 
-    --background-color: white;
-    --background-elements-color: white;
-    --primary-text-color: #252729;
-    --secondary-text-color: black;
-  }
+  --background-color: white;
+  --background-elements-color: white;
+  --primary-text-color: #252729;
+  --secondary-text-color: black;
+}
+
+@media (prefers-color-scheme: light) {
   ion-card {
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  .md body {
+  html[data-theme="dark"] {
     --primary-color: #121212;
     --secondary-color: #252729;
     --accent-color: #4f9adf;
@@ -277,7 +278,6 @@ http://ionicframework.com/docs/theming/ */
     opacity: 0.7;
   }
 }
-
 .center {
   display: flex;
   justify-content: center;
@@ -309,8 +309,7 @@ ion-card-title {
 ion-icon {
   color: var(--accent-color);
 }
-ion-card,
-ion-item {
+ion-card {
   --background: var(--background-elements-color);
 }
 ion-content,
@@ -320,6 +319,9 @@ ion-footer {
 }
 ion-item > ion-label {
   color: var(--primary-text-color) !important;
+}
+ion-item {
+  --background: transparent;
 }
 
 /* loading */

@@ -2,6 +2,9 @@
   <ion-page>
     <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button menu="mainMenu"></ion-menu-button>
+        </ion-buttons>
         <ion-title>Blog</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="$router.push('/blog/editor')" v-if="userLogged">

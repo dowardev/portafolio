@@ -3,11 +3,9 @@
     <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button v-on:click="$router.go(-1)">
-            <ion-icon :icon="chevronBackOutline"></ion-icon>
-          </ion-button>
+          <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
-        <ion-title>Iniciar sesion</ion-title>
+        <ion-title>Iniciar sesión</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -152,7 +150,6 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
-  chevronBackOutline,
   eyeOffOutline,
   eyeOutline,
   fingerPrintOutline,
@@ -176,7 +173,6 @@ export default defineComponent({
   },
   setup() {
     return {
-      chevronBackOutline,
       eyeOffOutline,
       eyeOutline,
       v$: useVuelidate(),

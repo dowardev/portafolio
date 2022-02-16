@@ -48,11 +48,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "EditorPage",
     component: EditorPage,
   },
-  {
-    path: "/blog",
-    name: "BlogPage",
-    component: BlogPage,
-  },
+  // {
+  //   path: "/blog",
+  //   name: "BlogPage",
+  //   component: BlogPage,
+  // },
   {
     path: "/blog/post/:id",
     name: "PostPage",
@@ -63,11 +63,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "LoginPage",
     component: LoginPage,
   },
-  {
-    path: "/signup",
-    name: "SignUpPage",
-    component: SignUpPage,
-  },
+  // {
+  //   path: "/signup",
+  //   name: "SignUpPage",
+  //   component: SignUpPage,
+  // },
   {
     path: "/restore-password",
     name: "RestorePasswordPage",

@@ -2,6 +2,9 @@
   <ion-page>
     <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button menu="mainMenu"></ion-menu-button>
+        </ion-buttons>
         <ion-title>Portfolio</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -35,7 +38,7 @@
                 <ion-row>
                   <ion-col size="12">
                     <ion-chip :color="project.color">
-                      <ion-label >{{ project.status }}</ion-label>
+                      <ion-label>{{ project.status }}</ion-label>
                     </ion-chip>
                   </ion-col>
                   <ion-col size="12">

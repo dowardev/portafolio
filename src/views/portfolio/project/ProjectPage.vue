@@ -133,7 +133,6 @@ export default defineComponent({
     };
   },
   mounted() {
-    console.log(this.project.technologies);
     this.datosProyecto.name = this.project.name;
     this.datosProyecto.description = this.project.description;
     this.datosProyecto.technologies = this.project.technologies;

@@ -3,137 +3,12 @@
     <ion-split-pane when="md" contentId="menu-content">
       <ion-menu
         contentId="menu-content"
-        menuId="firstMenu"
+        menuId="mainMenu"
         side="start"
         type="overlay"
         style="--side-max-width: 200px"
       >
-        <ion-header class="ion-no-border">
-          <ion-toolbar class="menu-color">
-            <img src="../public/assets/portafolio/dowar.png" />
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="menu-color">
-          <ion-item
-            lines="none"
-            button
-            @click="$router.push('/presentation')"
-            class="ion-item-menu"
-          >
-            <ion-label
-              v-bind:class="{
-                optionSelected: $route.path == '/presentation',
-                optionNoSelected: $route.path != '/presentation',
-              }"
-            >
-              Presentación
-            </ion-label>
-          </ion-item>
-          <ion-item
-            lines="none"
-            button
-            @click="$router.push('/history')"
-            class="ion-item-menu"
-          >
-            <ion-label
-              v-bind:class="{
-                optionSelected: $route.path == '/history',
-                optionNoSelected: $route.path != '/history',
-              }"
-            >
-              Historia
-            </ion-label>
-          </ion-item>
-          <ion-item
-            lines="none"
-            button
-            @click="$router.push('/skills')"
-            class="ion-item-menu"
-          >
-            <ion-label
-              v-bind:class="{
-                optionSelected: $route.path == '/skills',
-                optionNoSelected: $route.path != '/skills',
-              }"
-            >
-              Habilidades</ion-label
-            >
-          </ion-item>
-          <ion-item
-            lines="none"
-            button
-            @click="$router.push('/portfolio')"
-            class="ion-item-menu"
-          >
-            <ion-label
-              v-bind:class="{
-                optionSelected: $route.path == '/portfolio',
-                optionNoSelected: $route.path != '/portfolio',
-              }"
-            >
-              Portfolio
-            </ion-label>
-          </ion-item>
-          <ion-item
-            lines="none"
-            button
-            @click="$router.push('/blog')"
-            class="ion-item-menu"
-          >
-            <ion-label
-              v-bind:class="{
-                optionSelected: $route.path == '/blog',
-                optionNoSelected: $route.path != '/blog',
-              }"
-            >
-              Blog
-            </ion-label>
-          </ion-item>
-        </ion-content>
-
-        <ion-footer class="ion-no-border">
-          <ion-toolbar class="menu-color">
-            <ion-buttons slot="end">
-              <ion-button id="trigger-button-session">
-                <ion-icon :icon="personCircleOutline"></ion-icon>
-              </ion-button>
-              <ion-popover
-                trigger="trigger-button-session"
-                dismiss-on-select="true"
-              >
-                <ion-content>
-                  <ion-item
-                    button
-                    lines="none"
-                    @click="$router.push('login')"
-                    v-if="!userLogged"
-                  >
-                    <ion-icon :icon="logInOutline" slot="start"></ion-icon>
-                    <ion-label>Iniciar sesión</ion-label>
-                  </ion-item>
-                  <ion-item
-                    button
-                    lines="none"
-                    @click="$router.push('signup')"
-                    v-if="!userLogged"
-                  >
-                    <ion-icon :icon="personAddOutline" slot="start"></ion-icon>
-                    <ion-label>Registrar</ion-label>
-                  </ion-item>
-                  <ion-item
-                    button
-                    lines="none"
-                    @click="userLogout()"
-                    v-if="userLogged"
-                  >
-                    <ion-icon :icon="logOutOutline" slot="start"></ion-icon>
-                    <ion-label>Salir</ion-label>
-                  </ion-item>
-                </ion-content>
-              </ion-popover>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-footer>
+        <Menu></Menu>
       </ion-menu>
       <ion-router-outlet Id="menu-content" />
     </ion-split-pane>
@@ -141,65 +16,25 @@
 </template>
 
 <script lang="ts">
-import { IonApp, IonRouterOutlet, IonPopover } from "@ionic/vue";
+import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import { defineComponent } from "vue";
-import {
-  personCircleOutline,
-  personAddOutline,
-  logInOutline,
-  logOutOutline,
-} from "ionicons/icons";
-import userService from "../src/services/user.vue";
-import sessionService from "../src/services/session.vue";
+import Menu from "./views/menu/MenuComponent.vue";
+import systemService from "./services/system.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     IonApp,
     IonRouterOutlet,
-  },
-  setup() {
-    return {
-      personCircleOutline,
-      personAddOutline,
-      logInOutline,
-      logOutOutline,
-    };
-  },
-  data() {
-    return { userLogged: false };
+    Menu,
   },
   mounted() {
-    this.getUserLogged();
-  },
-  methods: {
-    async getUserLogged() {
-      const user = await userService().getUserLogged();
-      if (user?.data) {
-        this.userLogged = true;
-      }
-    },
-    userLogout() {
-      sessionService()
-        .logout()
-        .then(() => {
-          userService().setUserToken("");
-          this.userLogged = false;
-        });
-    },
+    systemService().detectToggleTheme();
+    systemService()
+      .getTheme()
+      .then((response) => {
+        systemService().setTheme(response);
+      });
   },
 });
 </script>
-
-<style scoped>
-.optionSelected {
-  color: var(--accent-color) !important;
-}
-.optionNoSelected {
-  color: white !important;
-}
-.menu-color,
-.ion-item-menu {
-  --background: var(--secondary-color);
-}
-</style>

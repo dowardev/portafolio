@@ -3,9 +3,7 @@
     <ion-header class="ion-no-border" :translucent="true">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button @click="closeComponent()">
-            <ion-icon :icon="chevronBackOutline"></ion-icon>
-          </ion-button>
+          <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
         <ion-title>Restablecer contraseña</ion-title>
       </ion-toolbar>
@@ -158,7 +156,7 @@ import {
   IonInput,
   loadingController,
 } from "@ionic/vue";
-import { chevronBackOutline, eyeOutline, eyeOffOutline } from "ionicons/icons";
+import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { defineComponent } from "vue";
 import sessionService from "../../../services/session.vue";
 
@@ -173,7 +171,7 @@ export default defineComponent({
     IonInput,
   },
   setup() {
-    return { chevronBackOutline, eyeOutline, eyeOffOutline };
+    return { eyeOutline, eyeOffOutline };
   },
   data() {
     return {

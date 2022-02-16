@@ -1,10 +1,13 @@
 <template>
   <ion-page>
-    <!-- <ion-header :translucent="true"> -->
-    <!--   <ion-toolbar> -->
-    <!--     <ion-title></ion-title> -->
-    <!--   </ion-toolbar> -->
-    <!-- </ion-header> -->
+    <ion-header :translucent="true">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button menu="mainMenu"></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Bienvenido</ion-title>
+      </ion-toolbar>
+    </ion-header>
 
     <ion-content :fullscreen="true">
       <ion-row style="margin-top: 12vw">

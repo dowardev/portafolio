@@ -3,9 +3,7 @@
     <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button v-on:click="$router.go(-1)">
-            <ion-icon :icon="chevronBackOutline"></ion-icon>
-          </ion-button>
+          <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
         <ion-title>Crear cuenta</ion-title>
       </ion-toolbar>
@@ -190,7 +188,7 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import sessionService from "../../../services/session.vue";
-import { eyeOutline, eyeOffOutline, chevronBackOutline } from "ionicons/icons";
+import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, email, helpers, alpha, sameAs } from "@vuelidate/validators";
 
@@ -208,7 +206,6 @@ export default defineComponent({
     return {
       eyeOutline,
       eyeOffOutline,
-      chevronBackOutline,
       v$: useVuelidate(),
     };
   },
