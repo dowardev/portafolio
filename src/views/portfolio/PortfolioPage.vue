@@ -144,43 +144,6 @@ export default defineComponent({
     return {
       proyectos: [
         {
-          name: "Globalizaciones",
-          status: "Pausado",
-          type: [logoPwa, logoAndroid, logoApple],
-          color: "warning",
-          image: [
-            {
-              route: require("../../../public/assets/otros/globtec.webp"),
-              width: "134px",
-              height: "112px",
-            },
-          ],
-          description:
-            "Globalizaciones es una aplicación multiplataforma cuyo objetivo es entregar conocimiento mediante tutoriales y cursos de tecnología.",
-          technologies: [
-            {
-              name: "Ionic",
-              route: "https://ionicframework.com/",
-              icon: logoIonic,
-              type: "FrontEnd",
-            },
-            {
-              name: "Vue",
-              route: "https://vuejs.org/",
-              icon: logoVue,
-              type: "FrontEnd",
-            },
-
-            {
-              name: "Laravel",
-              route: "https://laravel.com/",
-              icon: logoLaravel,
-              type: "BackEnd",
-            },
-          ],
-          page: "https://globalizaciones.dowar.xyz/",
-        },
-        {
           name: "Petstread",
           status: "Finalizado",
           type: [logoAndroid],

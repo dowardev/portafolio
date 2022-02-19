@@ -102,44 +102,9 @@
           >
             <ion-icon :icon="brushOutline"></ion-icon>
           </ion-button>
-          <ion-button id="trigger-button-session">
+          <ion-button @click="openPopover">
             <ion-icon :icon="personCircleOutline"></ion-icon>
           </ion-button>
-          <ion-popover
-            trigger="trigger-button-session"
-            dismiss-on-select="true"
-          >
-            <ion-content>
-              <ion-item
-                button
-                lines="none"
-                @click="openRoute('login')"
-                v-if="!userLogged"
-              >
-                <ion-icon :icon="logInOutline" slot="start"></ion-icon>
-                <ion-label>Iniciar sesión</ion-label>
-              </ion-item>
-              <ion-item
-                button
-                lines="none"
-                @click="openRoute('signup')"
-                v-if="!userLogged"
-                disabled
-              >
-                <ion-icon :icon="personAddOutline" slot="start"></ion-icon>
-                <ion-label>Registrar</ion-label>
-              </ion-item>
-              <ion-item
-                button
-                lines="none"
-                @click="userLogout()"
-                v-if="userLogged"
-              >
-                <ion-icon :icon="logOutOutline" slot="start"></ion-icon>
-                <ion-label>Salir</ion-label>
-              </ion-item>
-            </ion-content>
-          </ion-popover>
         </ion-buttons>
       </ion-toolbar>
     </ion-footer>
@@ -158,22 +123,17 @@ import {
   IonLabel,
   IonItem,
   IonButton,
-  IonPopover,
   IonFooter,
   IonButtons,
   IonIcon,
+  popoverController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import {
-  personCircleOutline,
-  personAddOutline,
-  logInOutline,
-  logOutOutline,
-  brushOutline,
-} from "ionicons/icons";
+import { personCircleOutline, brushOutline } from "ionicons/icons";
 import userService from "../../services/user.vue";
 import sessionService from "../../services/session.vue";
 import DarkMode from "./darkmode/DarkMode.vue";
+import PopoverSession from "./OptionsSession.vue";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -192,9 +152,6 @@ export default defineComponent({
   setup() {
     return {
       personCircleOutline,
-      personAddOutline,
-      logInOutline,
-      logOutOutline,
       androidPlatform: isPlatform("android"),
       iosPlatform: isPlatform("ios"),
       brushOutline,
@@ -243,6 +200,18 @@ export default defineComponent({
     openRoute(route: string) {
       this.$router.push(route);
       menuController.close();
+    },
+    async openPopover(ev: Event) {
+      const popover = await popoverController.create({
+        component: PopoverSession,
+        cssClass: "my-custom-class",
+        event: ev,
+        translucent: true,
+      });
+      await popover.present();
+
+      const { role } = await popover.onDidDismiss();
+      console.log("onDidDismiss resolved with role", role);
     },
   },
 });
