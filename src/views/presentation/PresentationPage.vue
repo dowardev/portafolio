@@ -183,6 +183,8 @@ import {
   IonCol,
   IonButton,
   IonIcon,
+  useBackButton,
+  alertController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { isPlatform } from "@ionic/vue";
@@ -194,6 +196,8 @@ import {
   logoGitlab,
   logoLinkedin,
 } from "ionicons/icons";
+import { Plugins } from "@capacitor/core";
+const { App } = Plugins;
 
 export default defineComponent({
   name: "HomePage",
@@ -209,7 +213,6 @@ export default defineComponent({
   },
   setup() {
     return {
-      arrowForward,
       mailOutline,
       logoMastodon,
       logoTwitter,
@@ -228,6 +231,11 @@ export default defineComponent({
       fillDev: "#777777",
     };
   },
+  mounted() {
+    useBackButton(10, () => {
+      this.alertExitApp();
+    });
+  },
   methods: {
     mail() {
       if (
@@ -237,6 +245,34 @@ export default defineComponent({
       ) {
         location.href = "mailto:contacto@dowar.xyz?Subject=Contacto%20laboral";
       }
+    },
+    async alertExitApp() {
+      const alert = await alertController.create({
+        header: "Alerta",
+        message: "Esta a punto de salir de la aplicación",
+        buttons: [
+          {
+            text: "Cancel",
+            role: "cancel",
+            cssClass: "secondary",
+            id: "cancel-button",
+            handler: (blah) => {
+              // console.log('Confirm Cancel:', blah)
+            },
+          },
+          {
+            text: "Continuar",
+            id: "confirm-button",
+            handler: () => {
+              App.exitApp();
+            },
+          },
+        ],
+      });
+      await alert.present();
+
+      const { role } = await alert.onDidDismiss();
+      console.log("onDidDismiss resolved with role", role);
     },
   },
 });
