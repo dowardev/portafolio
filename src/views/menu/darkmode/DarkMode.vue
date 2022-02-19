@@ -36,6 +36,8 @@ import {
   IonToolbar,
   IonRadioGroup,
   IonRadio,
+  IonItem,
+  IonLabel,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import systemService from "../../../services/system.vue";
@@ -49,6 +51,8 @@ export default defineComponent({
     IonToolbar,
     IonRadioGroup,
     IonRadio,
+    IonItem,
+    IonLabel,
   },
   data() {
     const darkMode = null as boolean | null;

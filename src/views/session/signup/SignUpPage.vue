@@ -185,6 +185,17 @@ import {
   toastController,
   IonInput,
   loadingController,
+  IonButtons,
+  IonMenuButton,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonItem,
+  IonLabel,
+  IonButton,
+  IonIcon,
+  IonText,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import sessionService from "../../../services/session.vue";
@@ -201,6 +212,17 @@ export default defineComponent({
     IonTitle,
     IonToolbar,
     IonInput,
+    IonButtons,
+    IonMenuButton,
+    IonRow,
+    IonCol,
+    IonCard,
+    IonCardHeader,
+    IonItem,
+    IonLabel,
+    IonButton,
+    IonIcon,
+    IonText,
   },
   setup() {
     return {

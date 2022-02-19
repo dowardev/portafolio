@@ -34,6 +34,10 @@ import {
   IonTitle,
   IonToolbar,
   loadingController,
+  IonButtons,
+  IonIcon,
+  IonRow,
+  IonCol,
 } from "@ionic/vue";
 import { defineComponent, ref } from "vue";
 import Markdown from "vue3-markdown-it";
@@ -49,6 +53,10 @@ export default defineComponent({
     IonTitle,
     IonToolbar,
     Markdown,
+    IonButtons,
+    IonIcon,
+    IonRow,
+    IonCol,
   },
   setup() {
     return { saveOutline, chevronBackOutline };

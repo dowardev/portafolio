@@ -1,0 +1,10 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "portfolio",
+	"webDir": "dist",
+	"bundledWebRuntime": false,
+	"server": {
+		"cleartext": true,
+		"url": "http://192.168.0.10:8100"
+	}
+}

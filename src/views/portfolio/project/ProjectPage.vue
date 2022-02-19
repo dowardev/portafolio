@@ -83,6 +83,12 @@ import {
   IonTitle,
   IonToolbar,
   modalController,
+  IonButtons,
+  IonIcon,
+  IonRow,
+  IonCol,
+  IonItem,
+  IonLabel,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { Plugins } from "@capacitor/core";
@@ -105,6 +111,12 @@ export default defineComponent({
     IonPage,
     IonTitle,
     IonToolbar,
+    IonButtons,
+    IonIcon,
+    IonRow,
+    IonCol,
+    IonItem,
+    IonLabel,
   },
   props: {
     project: { type: Array<any>(), default: {} },

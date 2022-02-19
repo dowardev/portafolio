@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
+    <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
@@ -10,7 +10,7 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-row style="margin-top: 12vw">
+      <ion-row style="margin-top: 12vh">
         <ion-col size="12">
           <div class="center">
             <img
@@ -174,7 +174,16 @@
 </template>
 
 <script lang="ts">
-import { IonContent, IonPage } from "@ionic/vue";
+import {
+  IonContent,
+  IonPage,
+  IonButtons,
+  IonMenuButton,
+  IonRow,
+  IonCol,
+  IonButton,
+  IonIcon,
+} from "@ionic/vue";
 import { defineComponent } from "vue";
 import { isPlatform } from "@ionic/vue";
 import {
@@ -191,6 +200,12 @@ export default defineComponent({
   components: {
     IonContent,
     IonPage,
+    IonButtons,
+    IonMenuButton,
+    IonRow,
+    IonCol,
+    IonButton,
+    IonIcon,
   },
   setup() {
     return {

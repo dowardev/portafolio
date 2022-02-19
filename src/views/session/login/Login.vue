@@ -147,6 +147,16 @@ import {
   alertController,
   IonInput,
   loadingController,
+  IonCard,
+  IonRow,
+  IonCol,
+  IonButtons,
+  IonMenuButton,
+  IonItem,
+  IonIcon,
+  IonLabel,
+  IonText,
+  IonButton,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
@@ -170,6 +180,16 @@ export default defineComponent({
     IonTitle,
     IonToolbar,
     IonInput,
+    IonCard,
+    IonRow,
+    IonCol,
+    IonButtons,
+    IonMenuButton,
+    IonItem,
+    IonIcon,
+    IonLabel,
+    IonText,
+    IonButton,
   },
   setup() {
     return {

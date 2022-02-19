@@ -155,6 +155,16 @@ import {
   toastController,
   IonInput,
   loadingController,
+  IonButtons,
+  IonMenuButton,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardContent,
+  IonLabel,
+  IonButton,
+  IonItem,
+  IonIcon,
 } from "@ionic/vue";
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { defineComponent } from "vue";
@@ -169,6 +179,16 @@ export default defineComponent({
     IonTitle,
     IonToolbar,
     IonInput,
+    IonButtons,
+    IonMenuButton,
+    IonRow,
+    IonCol,
+    IonCard,
+    IonCardContent,
+    IonLabel,
+    IonButton,
+    IonItem,
+    IonIcon,
   },
   setup() {
     return { eyeOutline, eyeOffOutline };

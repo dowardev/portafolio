@@ -91,6 +91,17 @@ import {
   IonTitle,
   IonToolbar,
   modalController,
+  IonButtons,
+  IonRow,
+  IonCol,
+  IonMenuButton,
+  IonCard,
+  IonCardHeader,
+  IonCardContent,
+  IonChip,
+  IonLabel,
+  IonButton,
+  IonCardTitle,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { Plugins } from "@capacitor/core";
@@ -117,6 +128,17 @@ export default defineComponent({
     IonPage,
     IonTitle,
     IonToolbar,
+    IonButtons,
+    IonRow,
+    IonCol,
+    IonMenuButton,
+    IonCard,
+    IonCardHeader,
+    IonCardContent,
+    IonChip,
+    IonLabel,
+    IonButton,
+    IonCardTitle,
   },
   setup() {
     return {

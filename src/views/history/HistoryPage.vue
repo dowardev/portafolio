@@ -103,6 +103,14 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  IonButtons,
+  IonIcon,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 

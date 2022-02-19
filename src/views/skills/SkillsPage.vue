@@ -60,6 +60,15 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  IonButtons,
+  IonMenuButton,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonIcon,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
@@ -82,6 +91,15 @@ export default defineComponent({
     IonPage,
     IonTitle,
     IonToolbar,
+    IonButtons,
+    IonMenuButton,
+    IonRow,
+    IonCol,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
+    IonIcon,
   },
   setup() {
     return {

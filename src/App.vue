@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { IonApp, IonRouterOutlet } from "@ionic/vue";
+import { IonApp, IonRouterOutlet, IonMenu, IonSplitPane } from "@ionic/vue";
 import { defineComponent } from "vue";
 import Menu from "./views/menu/MenuComponent.vue";
 import systemService from "./services/system.vue";
@@ -27,6 +27,8 @@ export default defineComponent({
     IonApp,
     IonRouterOutlet,
     Menu,
+    IonMenu,
+    IonSplitPane,
   },
   mounted() {
     systemService().detectToggleTheme();

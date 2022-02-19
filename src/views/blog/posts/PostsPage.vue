@@ -1,4 +1,4 @@
-<template>
+template>
   <ion-page>
     <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
@@ -40,6 +40,7 @@ import {
   IonTitle,
   IonToolbar,
   loadingController,
+  IonButton,IonRow,IonCol,IonCard,IonCardTitle,IonCardHeader,IonIcon
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import postService from "../../../services/post.vue";
@@ -54,6 +55,7 @@ export default defineComponent({
     IonPage,
     IonTitle,
     IonToolbar,
+  IonButton,IonRow,IonCol,IonCard,IonCardTitle,IonCardHeader,IonIcon
   },
   setup() {
     return { refreshOutline, addOutline };

@@ -98,6 +98,14 @@ import {
   IonTextarea,
   IonInput,
   toastController,
+  IonButtons,
+  IonMenuButton,
+  IonItem,
+  IonButton,
+  IonIcon,
+  IonLabel,
+  IonRow,
+  IonCol,
 } from "@ionic/vue";
 import { defineComponent, ref } from "vue";
 import Markdown from "vue3-markdown-it";
@@ -117,6 +125,14 @@ export default defineComponent({
     IonSegmentButton,
     IonTextarea,
     IonInput,
+    IonButtons,
+    IonMenuButton,
+    IonItem,
+    IonButton,
+    IonIcon,
+    IonLabel,
+    IonRow,
+    IonCol,
   },
   setup() {
     return { saveOutline, imageOutline };

@@ -5,6 +5,7 @@
         <img src="../../../public/assets/portafolio/dowar.png" />
       </ion-toolbar>
     </ion-header>
+
     <ion-content class="menu-color">
       <ion-item
         lines="none"
@@ -154,6 +155,13 @@ import {
   modalController,
   isPlatform,
   menuController,
+  IonLabel,
+  IonItem,
+  IonButton,
+  IonPopover,
+  IonFooter,
+  IonButtons,
+  IonIcon,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
@@ -174,6 +182,12 @@ export default defineComponent({
     IonHeader,
     IonPage,
     IonToolbar,
+    IonLabel,
+    IonItem,
+    IonButton,
+    IonFooter,
+    IonButtons,
+    IonIcon,
   },
   setup() {
     return {
