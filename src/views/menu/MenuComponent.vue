@@ -4,6 +4,23 @@
       <ion-toolbar class="menu-color">
         <img src="../../../public/assets/portafolio/dowar.png" />
       </ion-toolbar>
+      <ion-toolbar class="menu-color">
+        <ion-item lines="full" v-if="userLogged == false">
+          <ion-label>Bienvenido</ion-label>
+          <ion-button fill="clear" @click="openRoute('/login')">
+            <ion-icon :icon="logInOutline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" @click="openRoute('/signup')">
+            <ion-icon :icon="personAddOutline"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <ion-item lines="full" v-if="userLogged == true">
+          <ion-label>{{ user }}</ion-label>
+          <ion-button fill="clear" @click="userLogout()">
+            <ion-icon :icon="logOutOutline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-toolbar>
     </ion-header>
 
     <ion-content class="menu-color">
@@ -102,9 +119,6 @@
           >
             <ion-icon :icon="brushOutline"></ion-icon>
           </ion-button>
-          <ion-button @click="openPopover">
-            <ion-icon :icon="personCircleOutline"></ion-icon>
-          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-footer>
@@ -126,12 +140,19 @@ import {
   IonFooter,
   IonButtons,
   IonIcon,
-  popoverController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { personCircleOutline, brushOutline } from "ionicons/icons";
+import {
+  brushOutline,
+  personAddOutline,
+  logInOutline,
+  logOutOutline,
+} from "ionicons/icons";
 import DarkMode from "./darkmode/DarkMode.vue";
-import PopoverSession from "./OptionsSession.vue";
+import sessionService from "../../services/session.vue";
+import eventBus from "../../EventBus";
+import systemService from "../../services/system.vue";
+import userService from "../../services/user.vue";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -149,11 +170,25 @@ export default defineComponent({
   },
   setup() {
     return {
-      personCircleOutline,
       androidPlatform: isPlatform("android"),
       iosPlatform: isPlatform("ios"),
       brushOutline,
+      personAddOutline,
+      logInOutline,
+      logOutOutline,
     };
+  },
+  data() {
+    return { userLogged: false, user: "" };
+  },
+  mounted() {
+    eventBus().emitter.on("refresh-content", (response: any) => {
+      if (response.event == "login") {
+        this.userLogged = true;
+        this.getUser();
+      }
+    });
+    this.getUser();
   },
   methods: {
     async openModalDesktop() {
@@ -179,14 +214,23 @@ export default defineComponent({
       this.$router.push(route);
       menuController.close();
     },
-    async openPopover(ev: Event) {
-      const popover = await popoverController.create({
-        component: PopoverSession,
-        cssClass: "my-custom-class",
-        event: ev,
-        translucent: true,
-      });
-      await popover.present();
+    userLogout() {
+      sessionService()
+        .logout()
+        .then(() => {
+          this.userLogged = false;
+          systemService().openToast("Hasta pronto", "success");
+        });
+    },
+    getUser() {
+      userService()
+        .getUserLogged()
+        .then((response: any) => {
+          if (response?.data) {
+            this.userLogged = true;
+            this.user = response.data.user;
+          }
+        });
     },
   },
 });

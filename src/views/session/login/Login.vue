@@ -251,7 +251,7 @@ export default defineComponent({
       sessionService()
         .userLogin(this.form.email.replace(/\s+/g, ""), this.form.password)
         .then(async (response) => {
-          eventBus().emitter.emit("content-refresh");
+          eventBus().emitter.emit("refresh-content", { event: "login" });
           loading.dismiss();
           await userService().setUserToken(response.data.access_token);
           this.$router.go(-1);

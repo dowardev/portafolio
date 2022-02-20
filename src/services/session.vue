@@ -42,6 +42,7 @@ export default function () {
         return response;
       });
 
+    userService().setUserToken(null);
     return axios.get(systemService().getBaseURL() + "api/auth/logout", {
       headers: {
         Accept: "application/json",
