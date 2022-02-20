@@ -202,6 +202,7 @@ import sessionService from "../../../services/session.vue";
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, email, helpers, alpha, sameAs } from "@vuelidate/validators";
+import userService from "../../../services/user.vue";
 
 export default defineComponent({
   name: "RegisterPage",
@@ -276,6 +277,17 @@ export default defineComponent({
       },
     };
   },
+  beforeRouteEnter(to, from, next) {
+    userService()
+      .getUserToken()
+      .then(async (response) => {
+        if (response == null) {
+          next();
+        } else {
+          next("/blog");
+        }
+      });
+  },
   methods: {
     async register() {
       const loading = await this.presentLoading("Creando cuenta");
@@ -286,7 +298,7 @@ export default defineComponent({
         .then(() => {
           loading.dismiss();
           this.alertConfirmaciónEmail();
-          this.$router.push("/register");
+          this.$router.push("/login");
           this.clearInputs();
           this.presentToast("Registrado correctamente", "success");
         })

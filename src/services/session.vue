@@ -1,6 +1,7 @@
 <script lang="ts">
 import axios from "axios";
 import userService from "./user.vue";
+import systemService from "./system.vue";
 
 export default function () {
   function userRegister(
@@ -10,7 +11,7 @@ export default function () {
     password: string
   ) {
     return axios.post(
-      "http://localhost:8000/api/auth/signup",
+      systemService().getBaseURL() + "api/auth/signup",
       { headers: { Accept: "application/json" } },
       {
         params: {
@@ -24,7 +25,7 @@ export default function () {
   }
   function userLogin(email: string, password: string) {
     return axios.post(
-      "http://localhost:8000/api/auth/login",
+      systemService().getBaseURL() + "api/auth/login",
       { headers: { Accept: "application/json" } },
       {
         params: {
@@ -41,7 +42,7 @@ export default function () {
         return response;
       });
 
-    return axios.get("http://localhost:8000/api/auth/logout", {
+    return axios.get(systemService().getBaseURL() + "api/auth/logout", {
       headers: {
         Accept: "application/json",
         Authorization: "Bearer " + token,
@@ -50,7 +51,7 @@ export default function () {
   }
   function sendMailResetPassword(email: string) {
     return axios.post(
-      "http://localhost:8000/api/auth/mail-reset-password",
+      systemService().getBaseURL() + "api/auth/mail-reset-password",
       { headers: { Accept: "application/json" } },
       {
         params: {
@@ -61,7 +62,7 @@ export default function () {
   }
   function sendCodeResetPassword(email: string, code: string) {
     return axios.post(
-      "http://localhost:8000/api/auth/code-reset-password",
+      systemService().getBaseURL() + "api/auth/code-reset-password",
       { headers: { Accept: "application/json" } },
       {
         params: {
@@ -73,7 +74,7 @@ export default function () {
   }
   function resetPassword(email: string, password: string) {
     return axios.post(
-      "http://localhost:8000/api/auth/reset-password",
+      systemService().getBaseURL() + "api/auth/reset-password",
       { headers: { Accept: "application/json" } },
       {
         params: {

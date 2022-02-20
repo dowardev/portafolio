@@ -1,5 +1,5 @@
 <template>
-  <ion-content class="ion-padding">
+  <ion-content>
     <ion-item
       button
       lines="none"
@@ -14,7 +14,6 @@
       lines="none"
       @click="openRoute('signup')"
       v-if="!userLogged"
-      disabled
     >
       <ion-icon :icon="personAddOutline" slot="start"></ion-icon>
       <ion-label>Registrar</ion-label>
@@ -26,10 +25,12 @@
   </ion-content>
 </template>
 
-<script>
-import { IonContent } from "@ionic/vue";
+<script lang="ts">
+import { IonContent, popoverController } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { personAddOutline, logInOutline, logOutOutline } from "ionicons/icons";
+import userService from "../../services/user.vue";
+import sessionService from "../../services/session.vue";
 
 export default defineComponent({
   name: "PopoverSessionOptions",
@@ -40,6 +41,38 @@ export default defineComponent({
       logInOutline,
       logOutOutline,
     };
+  },
+  data() {
+    return { userLogged: false };
+  },
+  mounted() {
+    this.getUserLogged();
+  },
+  methods: {
+    closePopover() {
+      popoverController.dismiss();
+    },
+    openRoute(route: string) {
+      this.$router.push(route);
+      this.closePopover();
+    },
+    async getUserLogged() {
+      userService()
+        .getUserToken()
+        .then(async (response) => {
+          if (response != null) {
+            this.userLogged = true;
+          }
+        });
+    },
+    userLogout() {
+      sessionService()
+        .logout()
+        .then(() => {
+          userService().setUserToken("");
+          this.userLogged = false;
+        });
+    },
   },
 });
 </script>

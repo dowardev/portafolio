@@ -4,9 +4,10 @@ const store = new Storage();
 store.create();
 import axios from "axios";
 // import jsonLangSpanish from "../../public/assets/lang/lang-es.json";
+import systemService from "./system.vue";
 
 export default function () {
-  async function setUserToken(token: string) {
+  async function setUserToken(token: string | null) {
     await store.set("token", token);
   }
   function getUserToken() {
@@ -26,10 +27,11 @@ export default function () {
     const token = await getUserToken().then((response) => {
       return response;
     });
+
     if (token == null) {
       return null;
     }
-    return axios.get("http://localhost:8000/api/auth/user", {
+    return axios.get(systemService().getBaseURL() + "api/auth/user", {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,

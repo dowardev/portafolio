@@ -20,6 +20,7 @@ import { IonApp, IonRouterOutlet, IonMenu, IonSplitPane } from "@ionic/vue";
 import { defineComponent } from "vue";
 import Menu from "./views/menu/MenuComponent.vue";
 import systemService from "./services/system.vue";
+import userService from "./services/user.vue";
 
 export default defineComponent({
   name: "App",
@@ -37,6 +38,16 @@ export default defineComponent({
       .then((response) => {
         systemService().setTheme(response);
       });
+    this.validateUserToken();
+  },
+  methods: {
+    validateUserToken() {
+      userService()
+        .getUserLogged()
+        .catch(() => {
+          userService().setUserToken(null);
+        });
+    },
   },
 });
 </script>

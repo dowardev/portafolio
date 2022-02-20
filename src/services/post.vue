@@ -1,6 +1,7 @@
 <script lang="ts">
 import axios from "axios";
 import userService from "./user.vue";
+import systemService from "./system.vue";
 
 export default function () {
   async function createPost(post: Record<string, any>) {
@@ -15,7 +16,7 @@ export default function () {
   async function getPosts() {
     const token = await userService().getUserToken();
 
-    return axios.get("http://localhost:8000/api/auth/get-posts", {
+    return axios.get(systemService().getBaseURL() + "api/auth/get-posts", {
       headers: {
         Accept: "application/json",
         Authorization: "Bearer " + token,
@@ -24,7 +25,7 @@ export default function () {
   }
   async function getPost(id: string) {
     const token = await userService().getUserToken();
-    return axios.get("http://localhost:8000/api/auth/get-post", {
+    return axios.get(systemService().getBaseURL() + "api/auth/get-post", {
       headers: {
         Accept: "application/json",
         Authorization: "Bearer " + token,
@@ -34,17 +35,21 @@ export default function () {
   }
   async function uploadImage(img: any) {
     const token = await userService().getUserToken();
-    return axios.post("http://localhost:8000/api/auth/upload-image-post", img, {
-      headers: {
-        Accept: "application/json",
-        Authorization: "Bearer " + token,
-        "content-type": "multipart/form-data",
-      },
-    });
+    return axios.post(
+      systemService().getBaseURL() + "api/auth/upload-image-post",
+      img,
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization: "Bearer " + token,
+          "content-type": "multipart/form-data",
+        },
+      }
+    );
   }
   async function getImage(name: string) {
     const token = await userService().getUserToken();
-    return axios.get("http://localhost:8000/api/auth/get-image-post", {
+    return axios.get(systemService().getBaseURL() + "api/auth/get-image-post", {
       headers: {
         Accept: "application/json",
         Authorization: "Bearer " + token,

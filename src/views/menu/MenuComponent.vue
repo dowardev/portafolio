@@ -130,8 +130,6 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { personCircleOutline, brushOutline } from "ionicons/icons";
-import userService from "../../services/user.vue";
-import sessionService from "../../services/session.vue";
 import DarkMode from "./darkmode/DarkMode.vue";
 import PopoverSession from "./OptionsSession.vue";
 
@@ -157,27 +155,7 @@ export default defineComponent({
       brushOutline,
     };
   },
-  data() {
-    return { userLogged: false };
-  },
-  mounted() {
-    this.getUserLogged();
-  },
   methods: {
-    async getUserLogged() {
-      const user = await userService().getUserLogged();
-      if (user?.data) {
-        this.userLogged = true;
-      }
-    },
-    userLogout() {
-      sessionService()
-        .logout()
-        .then(() => {
-          userService().setUserToken("");
-          this.userLogged = false;
-        });
-    },
     async openModalDesktop() {
       const modal = await modalController.create({
         component: DarkMode,
@@ -209,9 +187,6 @@ export default defineComponent({
         translucent: true,
       });
       await popover.present();
-
-      const { role } = await popover.onDidDismiss();
-      console.log("onDidDismiss resolved with role", role);
     },
   },
 });

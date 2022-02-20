@@ -55,11 +55,20 @@ export default function () {
       }
     });
   }
+  function getBaseURL() {
+    const mode = process.env.NODE_ENV;
+    if (mode == "development") {
+      return "http://localhost:8000/";
+    } else {
+      return "https://dowar.xyz/blog/";
+    }
+  }
   return {
     getTheme,
     setTheme,
     openToast,
     detectToggleTheme,
+    getBaseURL,
   };
 }
 </script>

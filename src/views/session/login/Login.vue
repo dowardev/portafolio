@@ -224,6 +224,17 @@ export default defineComponent({
       },
     };
   },
+  beforeRouteEnter(to, from, next) {
+    userService()
+      .getUserToken()
+      .then(async (response) => {
+        if (response == null) {
+          next();
+        } else {
+          next("/blog");
+        }
+      });
+  },
   methods: {
     async presentToast(message: string, color: string) {
       const toast = await toastController.create({
@@ -239,10 +250,10 @@ export default defineComponent({
       loading.present();
       sessionService()
         .userLogin(this.form.email.replace(/\s+/g, ""), this.form.password)
-        .then((response) => {
+        .then(async (response) => {
           eventBus().emitter.emit("content-refresh");
           loading.dismiss();
-          userService().setUserToken(response.data.access_token);
+          await userService().setUserToken(response.data.access_token);
           this.$router.go(-1);
           this.clearInputs();
           this.presentToast("Bienvenido", "success");
