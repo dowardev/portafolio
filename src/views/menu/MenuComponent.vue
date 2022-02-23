@@ -89,7 +89,6 @@
         button
         @click="openRoute('/blog')"
         class="ion-item-menu"
-        disabled
       >
         <ion-label
           v-bind:class="{
@@ -218,17 +217,19 @@ export default defineComponent({
       sessionService()
         .logout()
         .then(() => {
+          userService().setUserData(null);
+          userService().setUserToken(null);
           this.userLogged = false;
           systemService().openToast("Hasta pronto", "success");
         });
     },
     getUser() {
       userService()
-        .getUserLogged()
+        .getUser()
         .then((response: any) => {
-          if (response?.data) {
+          if (response != null) {
             this.userLogged = true;
-            this.user = response.data.user;
+            this.user = response;
           }
         });
     },

@@ -18,7 +18,7 @@
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col size="12" style="background: #333947; height: 84vh">
+        <ion-col size="12" style="height: 84vh">
           <Markdown :source="post.content" />
         </ion-col>
       </ion-row>

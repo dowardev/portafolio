@@ -21,6 +21,7 @@ import { defineComponent } from "vue";
 import Menu from "./views/menu/MenuComponent.vue";
 import systemService from "./services/system.vue";
 import userService from "./services/user.vue";
+import eventBus from "./EventBus";
 
 export default defineComponent({
   name: "App",
@@ -31,6 +32,11 @@ export default defineComponent({
     IonMenu,
     IonSplitPane,
   },
+  // data() {
+  //   return {
+  //     ready: false,
+  //   };
+  // },
   mounted() {
     systemService().detectToggleTheme();
     systemService()
@@ -38,14 +44,22 @@ export default defineComponent({
       .then((response) => {
         systemService().setTheme(response);
       });
-    this.validateUserToken();
+    this.getUser();
   },
   methods: {
-    validateUserToken() {
+    async getUser() {
+      await userService().setUserUploaded(null);
       userService()
         .getUserLogged()
-        .catch(() => {
-          userService().setUserToken(null);
+        .then(async (response: any) => {
+          if (response?.data) {
+            await userService().setUserData(response.data);
+          }
+          userService().setUserUploaded(true);
+        })
+        .catch(async (e) => {
+          await userService().setUserData(null);
+          userService().setUserUploaded(true);
         });
     },
   },

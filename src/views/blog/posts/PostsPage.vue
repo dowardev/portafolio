@@ -1,4 +1,4 @@
-template>
+<template>
   <ion-page>
     <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
@@ -7,7 +7,7 @@ template>
         </ion-buttons>
         <ion-title>Blog</ion-title>
         <ion-buttons slot="end">
-          <ion-button @click="$router.push('/blog/editor')" v-if="userLogged">
+          <ion-button @click="$router.push('/blog/editor')" v-if="isUserAdmin">
             <ion-icon :icon="addOutline"></ion-icon>
           </ion-button>
           <ion-button @click="getPosts()">
@@ -19,7 +19,7 @@ template>
 
     <ion-content :fullscreen="true">
       <ion-row>
-        <ion-col size="12" size-lg="6" v-for="post in posts" :key="post">
+        <ion-col size="12" size-lg="4" v-for="post in posts" :key="post">
           <ion-card @click="openPost(post.id)">
             <img :src="post.cover" alt="" />
             <ion-card-header>
@@ -40,12 +40,19 @@ import {
   IonTitle,
   IonToolbar,
   loadingController,
-  IonButton,IonRow,IonCol,IonCard,IonCardTitle,IonCardHeader,IonIcon
+  IonButton,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardTitle,
+  IonCardHeader,
+  IonIcon,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import postService from "../../../services/post.vue";
 import { refreshOutline, addOutline } from "ionicons/icons";
 import userService from "../../../services/user.vue";
+import eventBus from "../../../EventBus";
 
 export default defineComponent({
   name: "PostsPage",
@@ -55,17 +62,31 @@ export default defineComponent({
     IonPage,
     IonTitle,
     IonToolbar,
-  IonButton,IonRow,IonCol,IonCard,IonCardTitle,IonCardHeader,IonIcon
+    IonButton,
+    IonRow,
+    IonCol,
+    IonCard,
+    IonCardTitle,
+    IonCardHeader,
+    IonIcon,
   },
   setup() {
     return { refreshOutline, addOutline };
   },
   data() {
-    return { posts: Array<any>(), userLogged: false };
+    return { posts: Array<any>(), isUserAdmin: false };
   },
   mounted() {
     this.getPosts();
-    this.getUserLogged();
+    this.verifyUserAdmin();
+    eventBus().emitter.on("refresh-content", (response: any) => {
+      if (response.event == "new-post") {
+        this.getPosts();
+      }
+      // if (response.event == "login") {
+      //         this.getPosts();
+      //       }
+    });
   },
   methods: {
     async getPosts() {
@@ -99,10 +120,17 @@ export default defineComponent({
       });
       return loading;
     },
-    async getUserLogged() {
-      const user = await userService().getUserLogged();
-      if (user?.data) {
-        this.userLogged = true;
+    async verifyUserAdmin() {
+      if (navigator.onLine) {
+        const permissions = await userService().getUserPermissions();
+        if (permissions.admin) {
+          this.isUserAdmin = true;
+        }
+      } else {
+        const user = await userService().getUserPermissionsOffline();
+        if (user.admin) {
+          this.isUserAdmin = true;
+        }
       }
     },
   },

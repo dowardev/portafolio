@@ -227,7 +227,7 @@ export default defineComponent({
   beforeRouteEnter(to, from, next) {
     userService()
       .getUserToken()
-      .then(async (response) => {
+      .then((response: string | null) => {
         if (response == null) {
           next();
         } else {
@@ -251,12 +251,13 @@ export default defineComponent({
       sessionService()
         .userLogin(this.form.email.replace(/\s+/g, ""), this.form.password)
         .then(async (response) => {
-          eventBus().emitter.emit("refresh-content", { event: "login" });
           loading.dismiss();
           await userService().setUserToken(response.data.access_token);
-          this.$router.go(-1);
+          await this.saveUserData();
+          eventBus().emitter.emit("refresh-content", { event: "login" });
           this.clearInputs();
           this.presentToast("Bienvenido", "success");
+          this.$router.go(-1);
         })
         .catch((e) => {
           loading.dismiss();
@@ -298,6 +299,10 @@ export default defineComponent({
 
       // await loading.present();
       return loading;
+    },
+    async saveUserData() {
+      const user = await userService().getUserLogged();
+      userService().setUserData(user?.data);
     },
   },
 });

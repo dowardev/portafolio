@@ -6,7 +6,7 @@
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
         <ion-title>Editor</ion-title>
-        <ion-buttons slot="end">
+        <ion-buttons slot="end" v-if="userLogged == true">
           <ion-button @click="createPost()">
             <ion-icon :icon="saveOutline"></ion-icon>
           </ion-button>
@@ -107,10 +107,12 @@ import {
   IonRow,
   IonCol,
 } from "@ionic/vue";
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import Markdown from "vue3-markdown-it";
 import postService from "../../../services/post.vue";
 import { saveOutline, imageOutline } from "ionicons/icons";
+import eventBus from "../../../EventBus";
+import userService from "../../../services/user.vue";
 
 export default defineComponent({
   name: "EditorPage",
@@ -147,7 +149,34 @@ export default defineComponent({
         images: Array<number>(),
       },
       cover: "",
+      userLogged: false,
     };
+  },
+  mounted() {
+    this.getUser();
+  },
+  beforeRouteEnter(to, from, next) {
+    if (navigator.onLine) {
+      userService()
+        .getUserPermissions()
+        .then((response) => {
+          if (response.admin) {
+            next();
+          } else {
+            next("/blog");
+          }
+        });
+    } else {
+      userService()
+        .getUserPermissions()
+        .then((response) => {
+          if (response.admin) {
+            next();
+          } else {
+            next("/blog");
+          }
+        });
+    }
   },
   methods: {
     setContent(e: any) {
@@ -157,7 +186,10 @@ export default defineComponent({
       postService()
         .createPost(this.form)
         .then((response) => {
+          eventBus().emitter.emit("refresh-content", { event: "new-post" });
           this.openToast("Publicado correctamente", "success");
+          this.clearInputs();
+          this.$router.push("/blog");
         })
         .catch((e) => {
           this.openToast("Ocurrió un error al publicar", "danger");
@@ -217,6 +249,21 @@ export default defineComponent({
         color,
       });
       return toast.present();
+    },
+    clearInputs() {
+      this.form.title = "";
+      this.form.content = "";
+      this.form.coverId = 0;
+      this.form.images = Array<number>();
+    },
+    getUser() {
+      userService()
+        .getUserLogged()
+        .then((response: any) => {
+          if (response != null) {
+            this.userLogged = true;
+          }
+        });
     },
   },
 });

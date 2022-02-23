@@ -10,27 +10,15 @@ export default function () {
   async function setUserToken(token: string | null) {
     await store.set("token", token);
   }
-  function getUserToken() {
-    let token = null;
-    return new Promise((resolve) => {
-      setTimeout(async () => {
-        token = await store.get("token");
-        if (token != null) {
-          resolve(token);
-        } else {
-          resolve(null);
-        }
-      }, 300);
-    });
+  async function getUserToken() {
+    return await store.get("token");
   }
   async function getUserLogged() {
-    const token = await getUserToken().then((response) => {
-      return response;
-    });
-
+    const token = await getUserToken();
     if (token == null) {
       return null;
     }
+
     return axios.get(systemService().getBaseURL() + "api/auth/user", {
       headers: {
         "Content-Type": "application/json",
@@ -49,11 +37,87 @@ export default function () {
   //     return jsonLangSpanish as any;
   //   }
   // }
+  async function setUserData(data: any) {
+    await store.set("userData", data);
+  }
+  function getUserOffline() {
+    let userUploaded = null;
+    return new Promise((resolve) => {
+      const interval = setInterval(async () => {
+        userUploaded = await store.get("user-uploaded");
+        if (userUploaded != null) {
+          if (userUploaded) {
+            resolve(Object.assign({}, await store.get("userData"))["user"]);
+          } else {
+            resolve(null);
+          }
+          clearInterval(interval);
+        }
+      }, 100);
+    });
+  }
+  async function getUser() {
+    const token = await getUserToken();
+    return axios.get(systemService().getBaseURL() + "api/auth/user", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
+  }
+  function getUserPermissionsOffline(): Promise<{
+    admin: boolean | null;
+    roles: string[] | null;
+  }> {
+    let userUploaded = null;
+    return new Promise((resolve) => {
+      const interval = setInterval(async () => {
+        userUploaded = await store.get("user-uploaded");
+        if (userUploaded != null) {
+          if (userUploaded) {
+            const admin = Object.assign({}, await store.get("userData"))[
+              "is_admin"
+            ];
+            const roles = Object.assign({}, await store.get("userData"))[
+              "role"
+            ];
+            resolve({ admin, roles });
+          } else {
+            resolve({ admin: null, roles: null });
+          }
+          clearInterval(interval);
+        }
+      }, 100);
+    });
+  }
+  async function getUserPermissions(): Promise<{
+    admin: boolean | null;
+    roles: string[] | null;
+  }> {
+    return new Promise((resolve) => {
+      getUser().then((response) => {
+        if (response.data) {
+          resolve({ admin: response.data.is_admin, roles: response.data.role });
+        } else {
+          resolve({ admin: null, roles: response.data.role });
+        }
+      });
+    });
+  }
+  async function setUserUploaded(option: boolean | null) {
+    await store.set("user-uploaded", option);
+  }
+
   return {
-    setUserToken,
     getUserToken,
+    setUserToken,
     getUserLogged,
-    getUserLang,
+    setUserData,
+    getUser,
+    getUserOffline,
+    getUserPermissions,
+    getUserPermissionsOffline,
+    setUserUploaded,
   };
 }
 </script>

@@ -280,7 +280,7 @@ export default defineComponent({
   beforeRouteEnter(to, from, next) {
     userService()
       .getUserToken()
-      .then(async (response) => {
+      .then((response: string | null) => {
         if (response == null) {
           next();
         } else {

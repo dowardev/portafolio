@@ -12,16 +12,10 @@ import LoginPage from "../views/session/login/Login.vue";
 import SignUpPage from "../views/session/signup/SignUpPage.vue";
 import RestorePasswordPage from "../views/session/restore-password/RestorePasswordPage.vue";
 
-// TODO: proteger rutas
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     redirect: "/presentation",
-  },
-  {
-    path: "/home",
-    name: "Home",
-    component: HomePage,
   },
   {
     path: "/presentation",
@@ -48,11 +42,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "EditorPage",
     component: EditorPage,
   },
-  // {
-  //   path: "/blog",
-  //   name: "BlogPage",
-  //   component: BlogPage,
-  // },
+  {
+    path: "/blog",
+    name: "BlogPage",
+    component: BlogPage,
+  },
   {
     path: "/blog/post/:id",
     name: "PostPage",

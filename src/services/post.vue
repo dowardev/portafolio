@@ -16,7 +16,7 @@ export default function () {
   async function getPosts() {
     const token = await userService().getUserToken();
 
-    return axios.get(systemService().getBaseURL() + "api/auth/get-posts", {
+    return axios.get(systemService().getBaseURL() + "api/get-posts", {
       headers: {
         Accept: "application/json",
         Authorization: "Bearer " + token,
@@ -25,7 +25,7 @@ export default function () {
   }
   async function getPost(id: string) {
     const token = await userService().getUserToken();
-    return axios.get(systemService().getBaseURL() + "api/auth/get-post", {
+    return axios.get(systemService().getBaseURL() + "api/get-post", {
       headers: {
         Accept: "application/json",
         Authorization: "Bearer " + token,
@@ -49,7 +49,7 @@ export default function () {
   }
   async function getImage(name: string) {
     const token = await userService().getUserToken();
-    return axios.get(systemService().getBaseURL() + "api/auth/get-image-post", {
+    return axios.get(systemService().getBaseURL() + "api/get-image-post", {
       headers: {
         Accept: "application/json",
         Authorization: "Bearer " + token,
