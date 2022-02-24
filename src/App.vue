@@ -32,11 +32,6 @@ export default defineComponent({
     IonMenu,
     IonSplitPane,
   },
-  // data() {
-  //   return {
-  //     ready: false,
-  //   };
-  // },
   mounted() {
     systemService().detectToggleTheme();
     systemService()

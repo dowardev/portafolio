@@ -168,7 +168,7 @@ export default defineComponent({
         });
     } else {
       userService()
-        .getUserPermissions()
+        .getUserPermissionsOffline()
         .then((response) => {
           if (response.admin) {
             next();
