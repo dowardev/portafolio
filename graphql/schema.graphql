@@ -13,6 +13,18 @@ input RegisterInput {
   email: String!
   password: String!
 }
+input ForgotPasswordInput {
+  email: String
+}
+input CodeForgotPasswordInput {
+  email: String
+  code: Int
+}
+input UpdateUserPassword {
+  code: String
+  email: String
+  password: String
+}
 type User {
   id: ID!
   name: String!
@@ -31,15 +43,21 @@ type UserAuth {
   access_token: String
   token_type: String
 }
-type PayloadLogin {
+type LoginPayload {
   msg: String!
   user: [User]
   auth: [UserAuth]
 }
-type PayloadRegister {
+type RegisterPayload {
   msg: String!
   user: [User]
   auth: [UserAuth]
+}
+type ForgotPasswordPayload {
+  msg: String
+}
+type UpdateUserPasswordPayload {
+  msg: String
 }
 
 type Query {
@@ -58,10 +76,20 @@ type Query {
   posts_images: [Post!]! @all
 }
 
-###### mutations
 type Mutation {
-  login(input: LoginInput @spread): PayloadLogin
+  login(input: LoginInput @spread): LoginPayload
     @field(resolver: "App\\GraphQL\\Resolvers\\LoginResolver@resolve")
-  register(input: RegisterInput @spread): PayloadRegister
+
+  register(input: RegisterInput @spread): RegisterPayload
     @field(resolver: "App\\GraphQL\\Resolvers\\RegisterResolver@resolve")
+
+  forgotPassword(input: ForgotPasswordInput @spread): ForgotPasswordPayload
+    @field(resolver: "App\\GraphQL\\Resolvers\\ForgotPasswordResolver@resolve")
+
+  updateUserPassword(
+    input: UpdateUserPassword @spread
+  ): UpdateUserPasswordPayload
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\UpdateUserPasswordResolver@resolve"
+    )
 }

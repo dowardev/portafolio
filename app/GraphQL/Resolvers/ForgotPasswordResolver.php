@@ -1,0 +1,44 @@
+<?php
+
+namespace App\GraphQL\Resolvers;
+
+use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use GraphQL\Type\Definition\ResolveInfo;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Models\ResetCodePassword;
+use App\Models\User;
+
+class ForgotPasswordResolver
+{
+  public function resolve(
+    $rootValue,
+    array $args,
+    GraphQLContext $context = null,
+    ResolveInfo $resolveInfo
+  ) {
+    $user = User::where('email', '=', $args['email'])->get();
+
+    $email = $user[0]->email;
+    $code = mt_rand(100000, 999999);
+
+    if (count($user)) {
+      ResetCodePassword::where('email', $email)->delete();
+
+      $codeData = ResetCodePassword::create([
+        'code' => $code,
+        'email' => $email,
+      ]);
+
+      Mail::send(
+        'emails.emailCodeResetPassword',
+        ['code' => $codeData->code],
+        function ($message) use ($email) {
+          $message->to($email);
+          $message->subject('Email Verification Mail');
+        }
+      );
+    }
+    return ['msg' => 'Success'];
+  }
+}

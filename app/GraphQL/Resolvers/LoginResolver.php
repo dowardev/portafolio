@@ -16,8 +16,7 @@ class LoginResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
-    $user = DB::table('users')
-      ->where('user', '=', $args['user'])
+    $user = User::where('user', '=', $args['user'])
       ->orWhere('email', '=', $args['user'])
       ->get();
 

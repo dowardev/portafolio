@@ -5,8 +5,6 @@ namespace App\GraphQL\Resolvers;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\UserVerify;
 use Illuminate\Support\Facades\Mail;
@@ -29,7 +27,7 @@ class RegisterResolver
       $user->save();
     } catch (\Illuminate\Database\QueryException $ex) {
       if ($ex->getCode() == '23000') {
-        return ['msg' => 'mail selected'];
+        return ['msg' => 'Mail selected'];
       }
     }
     $token = Str::random(64);
