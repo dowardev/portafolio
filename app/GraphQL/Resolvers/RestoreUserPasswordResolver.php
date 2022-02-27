@@ -7,7 +7,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\ResetCodePassword;
 use App\Models\User;
 
-class UpdateUserPasswordResolver
+class RestoreUserPasswordResolver
 {
   public function resolve(
     $rootValue,

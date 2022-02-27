@@ -20,7 +20,7 @@ input CodeForgotPasswordInput {
   email: String
   code: Int
 }
-input UpdateUserPassword {
+input RestoreUserPasswordInput {
   code: String
   email: String
   password: String
@@ -56,7 +56,7 @@ type RegisterPayload {
 type ForgotPasswordPayload {
   msg: String
 }
-type UpdateUserPasswordPayload {
+type RestoreUserPasswordPayload {
   msg: String
 }
 
@@ -86,10 +86,13 @@ type Mutation {
   forgotPassword(input: ForgotPasswordInput @spread): ForgotPasswordPayload
     @field(resolver: "App\\GraphQL\\Resolvers\\ForgotPasswordResolver@resolve")
 
-  updateUserPassword(
-    input: UpdateUserPassword @spread
-  ): UpdateUserPasswordPayload
+  restoreUserPassword(
+    input: RestoreUserPasswordInput @spread
+  ): RestoreUserPasswordPayload
     @field(
-      resolver: "App\\GraphQL\\Resolvers\\UpdateUserPasswordResolver@resolve"
+      resolver: "App\\GraphQL\\Resolvers\\RestoreUserPasswordResolver@resolve"
     )
+
+  userLogout: ForgotPasswordPayload
+    @field(resolver: "App\\GraphQL\\Resolvers\\UserLogoutResolver@resolve")
 }
