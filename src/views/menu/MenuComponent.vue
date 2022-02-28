@@ -187,7 +187,7 @@ export default defineComponent({
         this.getUser();
       }
     });
-    this.getUser();
+    // this.getUser();
   },
   methods: {
     async openModalDesktop() {

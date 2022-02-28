@@ -277,22 +277,23 @@ export default defineComponent({
       },
     };
   },
-  beforeRouteEnter(to, from, next) {
-    userService()
-      .getUserToken()
-      .then((response: string | null) => {
-        if (response == null) {
-          next();
-        } else {
-          next("/blog");
-        }
-      });
-  },
+  // beforeRouteEnter(to, from, next) {
+  //   userService()
+  //     .getUserToken()
+  //     .then((response: string | null) => {
+  //       if (response == null) {
+  //         next();
+  //       } else {
+  //         next("/blog");
+  //       }
+  //     });
+  // },
   methods: {
     async register() {
       const loading = await this.presentLoading("Creando cuenta");
       loading.present();
       const email = this.form.email.replace(/\s+/g, "");
+
       sessionService()
         .userRegister(this.form.name, this.form.user, email, this.form.password)
         .then(() => {
@@ -305,9 +306,16 @@ export default defineComponent({
         .catch((e) => {
           loading.dismiss();
           if (
-            e.response.data.errors.email == "The email has already been taken."
+            e.graphQLErrors[0].debugMessage ==
+            "The email has already been selected"
           ) {
             this.presentToast("Correo ya en uso", "danger");
+          }
+          if (
+            e.graphQLErrors[0].debugMessage ==
+            "The user has already been selected"
+          ) {
+            this.presentToast("Usuario ya en uso", "danger");
           }
         });
     },
@@ -351,8 +359,6 @@ export default defineComponent({
       const loading = await loadingController.create({
         message,
       });
-
-      // await loading.present();
       return loading;
     },
   },

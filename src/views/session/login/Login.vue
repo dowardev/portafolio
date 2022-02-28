@@ -224,17 +224,17 @@ export default defineComponent({
       },
     };
   },
-  beforeRouteEnter(to, from, next) {
-    userService()
-      .getUserToken()
-      .then((response: string | null) => {
-        if (response == null) {
-          next();
-        } else {
-          next("/blog");
-        }
-      });
-  },
+  // beforeRouteEnter(to, from, next) {
+  //   userService()
+  //     .getUserToken()
+  //     .then((response: string | null) => {
+  //       if (response == null) {
+  //         next();
+  //       } else {
+  //         next("/blog");
+  //       }
+  //     });
+  // },
   methods: {
     async presentToast(message: string, color: string) {
       const toast = await toastController.create({
@@ -252,19 +252,17 @@ export default defineComponent({
         .userLogin(this.form.email.replace(/\s+/g, ""), this.form.password)
         .then(async (response) => {
           loading.dismiss();
-          await userService().setUserToken(response.data.access_token);
-          await this.saveUserData();
-          eventBus().emitter.emit("refresh-content", { event: "login" });
+          // eventBus().emitter.emit("refresh-content", { event: "login" });
           this.clearInputs();
           this.presentToast("Bienvenido", "success");
           this.$router.go(-1);
         })
         .catch((e) => {
           loading.dismiss();
-          if (e.response.data.message == "Unauthorized") {
+          if (e.graphQLErrors[0].debugMessage == "Unauthorized") {
             this.presentToast("Credenciales incorrectas", "danger");
           }
-          if (e.response.data.message == "Unverified email") {
+          if (e.graphQLErrors[0].debugMessage == "Unverified email") {
             this.alertConfirmationEmail();
           }
         });

@@ -89,7 +89,7 @@ export default defineComponent({
   },
   mounted() {
     // this.getPosts();
-    this.verifyUserAdmin();
+    // this.verifyUserAdmin();
     eventBus().emitter.on("refresh-content", (response: any) => {
       if (response.event == "new-post") {
         this.getPosts();

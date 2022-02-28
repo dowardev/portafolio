@@ -39,7 +39,7 @@ export default defineComponent({
       .then((response) => {
         systemService().setTheme(response);
       });
-    this.getUser();
+    // this.getUser();
   },
   methods: {
     async getUser() {
