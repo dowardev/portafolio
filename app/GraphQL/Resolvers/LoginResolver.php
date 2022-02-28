@@ -6,6 +6,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class LoginResolver
 {
@@ -24,11 +25,11 @@ class LoginResolver
       'password' => $args['password'],
     ];
     if (count($user) == 0 || !Auth::attempt($credentials)) {
-      return ['msg' => 'Unauthorized', 'user' => null];
+      throw new Exception('Unauthorized');
     }
 
     if (!$user[0]->is_email_verified) {
-      return ['msg' => 'Unverified email', 'user' => null];
+      throw new Exception('Unverified email');
     }
 
     $us = User::find(1);

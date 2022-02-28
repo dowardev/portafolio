@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\UserVerify;
 use Illuminate\Support\Facades\Mail;
+use Exception;
 
 class RegisterResolver
 {
@@ -17,19 +18,21 @@ class RegisterResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
-    try {
-      $user = new User([
-        'name' => $args['name'],
-        'user' => $args['user'],
-        'email' => $args['email'],
-        'password' => bcrypt($args['password']),
-      ]);
-      $user->save();
-    } catch (\Illuminate\Database\QueryException $ex) {
-      if ($ex->getCode() == '23000') {
-        return ['msg' => 'Mail selected'];
-      }
+    if (count(User::where('user', '=', $args['user'])->get())) {
+      throw new Exception('The user has already been selected');
     }
+    if (count(User::where('email', '=', $args['email'])->get())) {
+      throw new Exception('The email has already been selected');
+    }
+
+    $user = new User([
+      'name' => $args['name'],
+      'user' => $args['user'],
+      'email' => $args['email'],
+      'password' => bcrypt($args['password']),
+    ]);
+    $user->save();
+
     $token = Str::random(64);
     UserVerify::create([
       'user_id' => $user->id,
