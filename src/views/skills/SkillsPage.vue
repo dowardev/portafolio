@@ -15,7 +15,7 @@
           size-md="6"
           size-sm="12"
           size="12"
-          v-for="(habilidad, indexHabilidad) in habilidades[0].tipo"
+          v-for="(habilidad, indexHabilidad) in skills[0].tipo"
           :key="indexHabilidad"
         >
           <ion-card>
@@ -28,18 +28,10 @@
                   v-for="(technology, index) in habilidad.technology"
                   :key="index"
                 >
-                  <ion-icon
-                    v-if="technology.icon"
-                    :icon="technology.icon[0].name"
-                    :style="{
-                      fontSize: technology.icon[0].size,
-                    }"
-                  ></ion-icon>
                   <img
-                    v-else
-                    :src="technology.image[0].ruta"
+                    :src="technology.image[0].path"
                     :style="{
-                      width: technology.image[0].size,
+                      maxWidth: technology.image[0].size,
                     }"
                   />
                   <p>{{ technology.name }}</p>
@@ -68,20 +60,8 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
-  IonIcon,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import {
-  logoIonic,
-  logoHtml5,
-  logoVue,
-  logoAngular,
-  logoCss3,
-  logoFirebase,
-  logoJavascript,
-  logoLaravel,
-  logoElectron,
-} from "ionicons/icons";
 
 export default defineComponent({
   name: "HomePage",
@@ -99,47 +79,62 @@ export default defineComponent({
     IonCardHeader,
     IonCardTitle,
     IonCardContent,
-    IonIcon,
-  },
-  setup() {
-    return {
-      logoIonic,
-      logoHtml5,
-      logoVue,
-      logoAngular,
-      logoCss3,
-      logoFirebase,
-      logoJavascript,
-      logoLaravel,
-      logoElectron,
-    };
   },
   data() {
     return {
-      habilidades: [
+      skills: [
         {
           tipo: [
             {
-              name: "Tecnología",
+              name: "Tecnologías",
               technology: [
                 {
                   name: "Html",
-                  icon: [{ name: logoHtml5, size: "24px" }],
+                  image: [
+                    {
+                      path: require("../../../public/assets/otros/html-1.svg"),
+                      size: "24px",
+                      color: "red",
+                    },
+                  ],
                 },
                 {
                   name: "Css",
-                  icon: [{ name: logoCss3, size: "24px" }],
+                  image: [
+                    {
+                      path: require("../../../public/assets/otros/css-3.svg"),
+                      size: "24px",
+                      color: "red",
+                    },
+                  ],
                 },
                 {
                   name: "JavaScript",
-                  icon: [{ name: logoJavascript, size: "24px" }],
+                  image: [
+                    {
+                      path: require("../../../public/assets/otros/logo-javascript.svg"),
+                      size: "27px",
+                      color: "red",
+                    },
+                  ],
                 },
                 {
                   name: "Php",
                   image: [
                     {
-                      ruta: require("../../../public/assets/otros/php.svg"),
-                      size: "24px",
+                      path: require("../../../public/assets/otros/php-1.svg"),
+                      size: "51px",
+                      color: "red",
+                    },
+                  ],
+                },
+                {
+                  name: "GraphQL",
+                  image: [
+                    {
+                      path: require("../../../public/assets/otros/GraphQL.svg"),
+                      size: "27px",
+                      color: "red",
                     },
                   ],
                 },
@@ -150,23 +145,51 @@ export default defineComponent({
               technology: [
                 {
                   name: "Angular",
-                  icon: [{ name: logoAngular, size: "24px" }],
+                  image: [
+                    {
+                      path: require("../../../public/assets/otros/angular-icon-1.svg"),
+                      size: "25px",
+                      color: "red",
+                    },
+                  ],
                 },
                 {
                   name: "Electron",
-                  icon: [{ name: logoElectron, size: "24px" }],
+                  image: [
+                    {
+                      path: require("../../../public/assets/otros/electron-1.svg"),
+                      size: "25px",
+                      color: "red",
+                    },
+                  ],
                 },
                 {
                   name: "Ionic",
-                  icon: [{ name: logoIonic, size: "24px" }],
+                  image: [
+                    {
+                      path: require("../../../public/assets/otros/ionicframework-icon.svg"),
+                      size: "27px",
+                      color: "red",
+                    },
+                  ],
                 },
                 {
                   name: "Vue",
-                  icon: [{ name: logoVue, size: "24px" }],
+                  image: [
+                    {
+                      path: require("../../../public/assets/otros/vue-js-1.svg"),
+                      size: "31px",
+                    },
+                  ],
                 },
                 {
                   name: "Laravel",
-                  icon: [{ name: logoLaravel, size: "24px" }],
+                  image: [
+                    {
+                      path: require("../../../public/assets/otros/laravel-2.svg"),
+                      size: "26px",
+                    },
+                  ],
                 },
               ],
             },
@@ -175,14 +198,19 @@ export default defineComponent({
               technology: [
                 {
                   name: "Firebase",
-                  icon: [{ name: logoFirebase, size: "24px" }],
+                  image: [
+                    {
+                      path: require("../../../public/assets/otros/Firebase_Logo_Logomark.svg"),
+                      size: "22px",
+                    },
+                  ],
                 },
                 {
                   name: "Mysql",
                   image: [
                     {
-                      ruta: require("../../../public/assets/otros/mysql.svg"),
-                      size: "24px",
+                      path: require("../../../public/assets/otros/mysql-6.svg"),
+                      size: "29px",
                     },
                   ],
                 },
@@ -195,8 +223,9 @@ export default defineComponent({
                   name: "Git",
                   image: [
                     {
-                      ruta: require("../../../public/assets/otros/git.svg"),
-                      size: "24px",
+                      path: require("../../../public/assets/otros/git-icon.svg"),
+                      size: "30px",
+                      color: "red",
                     },
                   ],
                 },
@@ -204,8 +233,9 @@ export default defineComponent({
                   name: "Linux",
                   image: [
                     {
-                      ruta: require("../../../public/assets/otros/linux.svg"),
-                      size: "24px",
+                      path: require("../../../public/assets/otros/linux-tux-2.svg"),
+                      size: "30px",
+                      color: "red",
                     },
                   ],
                 },
