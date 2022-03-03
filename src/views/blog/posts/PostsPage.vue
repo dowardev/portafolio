@@ -77,16 +77,16 @@ export default defineComponent({
   data() {
     return { posts: Array<any>(), isUserAdmin: false };
   },
-  apollo: {
-    posts: gql`
-      query {
-        posts {
-          id
-          title
-        }
-      }
-    `,
-  },
+  // apollo: {
+  //   posts: gql`
+  //     query {
+  //       posts {
+  //         id
+  //         title
+  //       }
+  //     }
+  //   `,
+  // },
   mounted() {
     // this.getPosts();
     // this.verifyUserAdmin();
@@ -98,6 +98,7 @@ export default defineComponent({
       //         this.getPosts();
       //       }
     });
+    this.prueba();
   },
   methods: {
     async getPosts() {
@@ -133,16 +134,40 @@ export default defineComponent({
     },
     async verifyUserAdmin() {
       if (navigator.onLine) {
-        const permissions = await userService().getUserPermissions();
-        if (permissions.admin) {
-          this.isUserAdmin = true;
-        }
-      } else {
-        const user = await userService().getUserPermissionsOffline();
-        if (user.admin) {
-          this.isUserAdmin = true;
-        }
+        //   const permissions = await userService().getUserPermissions();
+        //   if (permissions.admin) {
+        //     this.isUserAdmin = true;
+        //   }
+        // } else {
+        //   const user = await userService().getUserPermissionsOffline();
+        //   if (user.admin) {
+        //     this.isUserAdmin = true;
+        //   }
       }
+    },
+    prueba() {
+      this.$apollo
+        .query({
+          // Query
+          query: gql`
+            query @client {
+              posts {
+                id
+                title
+              }
+            }
+          `,
+        })
+        .then((data) => {
+          // Result
+          // console.log(data);
+        })
+        .catch((error) => {
+          // Error
+          console.error(error);
+          // We restore the initial user input
+          // this.newTag = newTag
+        });
     },
   },
 });

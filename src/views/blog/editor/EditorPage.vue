@@ -155,29 +155,29 @@ export default defineComponent({
   mounted() {
     this.getUser();
   },
-  beforeRouteEnter(to, from, next) {
-    if (navigator.onLine) {
-      userService()
-        .getUserPermissions()
-        .then((response) => {
-          if (response.admin) {
-            next();
-          } else {
-            next("/blog");
-          }
-        });
-    } else {
-      userService()
-        .getUserPermissionsOffline()
-        .then((response) => {
-          if (response.admin) {
-            next();
-          } else {
-            next("/blog");
-          }
-        });
-    }
-  },
+  // beforeRouteEnter(to, from, next) {
+  //   if (navigator.onLine) {
+  //     userService()
+  //       .getUserPermissions()
+  //       .then((response) => {
+  //         if (response.admin) {
+  //           next();
+  //         } else {
+  //           next("/blog");
+  //         }
+  //       });
+  //   } else {
+  //     userService()
+  //       .getUserPermissionsOffline()
+  //       .then((response) => {
+  //         if (response.admin) {
+  //           next();
+  //         } else {
+  //           next("/blog");
+  //         }
+  //       });
+  //   }
+  // },
   methods: {
     setContent(e: any) {
       this.form.content = e.target.innerText;

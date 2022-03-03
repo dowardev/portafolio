@@ -46,8 +46,15 @@ export default function () {
       mutation: gql`
         mutation ($user: String!, $password: String!) {
           login(input: { user: $user, password: $password }) {
+            msg
             auth {
               access_token
+            }
+            user {
+              name
+              email
+              is_admin
+              role
             }
           }
         }
@@ -59,17 +66,14 @@ export default function () {
     });
   }
   async function logout() {
-    const token = await userService()
-      .getUserToken()
-      .then((response) => {
-        return response;
-      });
-
-    return axios.get(systemService().getBaseURL() + "api/auth/logout", {
-      headers: {
-        Accept: "application/json",
-        Authorization: "Bearer " + token,
-      },
+    return apollo.mutate({
+      mutation: gql`
+        mutation {
+          userLogout {
+            msg
+          }
+        }
+      `,
     });
   }
   function sendMailResetPassword(email: string) {

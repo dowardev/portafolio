@@ -252,10 +252,13 @@ export default defineComponent({
         .userLogin(this.form.email.replace(/\s+/g, ""), this.form.password)
         .then(async (response) => {
           loading.dismiss();
-          // eventBus().emitter.emit("refresh-content", { event: "login" });
+          userService().setUserToken(
+            "Bearer " + response.data.login.auth[0].access_token
+          );
           this.clearInputs();
           this.presentToast("Bienvenido", "success");
           this.$router.go(-1);
+          this.saveUserData(response.data.login.user[0]);
         })
         .catch((e) => {
           loading.dismiss();
@@ -294,13 +297,11 @@ export default defineComponent({
       const loading = await loadingController.create({
         message,
       });
-
-      // await loading.present();
       return loading;
     },
-    async saveUserData() {
-      const user = await userService().getUserLogged();
-      userService().setUserData(user?.data);
+    saveUserData(data: any) {
+      userService().setUserData(data);
+      eventBus().emitter.emit("refresh-user-content");
     },
   },
 });

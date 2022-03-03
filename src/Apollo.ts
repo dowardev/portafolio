@@ -1,19 +1,26 @@
-import mitt from "mitt";
 import {
   ApolloClient,
   createHttpLink,
   InMemoryCache,
 } from "@apollo/client/core";
-// HTTP connection to the API
-const httpLink = createHttpLink({
-  // You should use an absolute URL here
-  uri: "http://127.0.0.1:8000/graphql",
+
+const name = "token=";
+const cDecoded = decodeURIComponent(document.cookie);
+const cArr = cDecoded.split("; ");
+let token = "";
+cArr.forEach((val) => {
+  if (val.indexOf(name) === 0) token = val.substring(name.length);
 });
 
-// Cache implementation
+const httpLink = createHttpLink({
+  uri: "http://127.0.0.1:8000/graphql",
+  headers: {
+    Authorization: token,
+  },
+});
+
 const cache = new InMemoryCache();
 
-// Create the apollo client
 const apolloClient = new ApolloClient({
   link: httpLink,
   cache,

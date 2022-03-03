@@ -6,7 +6,7 @@
       </ion-toolbar>
       <ion-toolbar class="menu-color">
         <ion-item lines="full" v-if="userLogged == false">
-          <ion-label>Bienvenido</ion-label>
+          <ion-label style="color: white !important">Bienvenido</ion-label>
           <ion-button fill="clear" @click="openRoute('/login')">
             <ion-icon :icon="logInOutline"></ion-icon>
           </ion-button>
@@ -15,7 +15,7 @@
           </ion-button>
         </ion-item>
         <ion-item lines="full" v-if="userLogged == true">
-          <ion-label>{{ user }}</ion-label>
+          <ion-label style="color: white !important">{{ userName }}</ion-label>
           <ion-button fill="clear" @click="userLogout()">
             <ion-icon :icon="logOutOutline"></ion-icon>
           </ion-button>
@@ -178,16 +178,13 @@ export default defineComponent({
     };
   },
   data() {
-    return { userLogged: false, user: "" };
+    return { userLogged: false, userName: "" };
   },
   mounted() {
-    eventBus().emitter.on("refresh-content", (response: any) => {
-      if (response.event == "login") {
-        this.userLogged = true;
-        this.getUser();
-      }
+    eventBus().emitter.on("refresh-user-content", async (response: any) => {
+      this.userLogged = true;
+      this.userName = await userService().getUserName();
     });
-    // this.getUser();
   },
   methods: {
     async openModalDesktop() {
@@ -216,21 +213,12 @@ export default defineComponent({
     userLogout() {
       sessionService()
         .logout()
-        .then(() => {
-          userService().setUserData(null);
-          userService().setUserToken(null);
+        .then((response) => {
+          const token = (document.cookie =
+            "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
+          userService().setUserToken(token);
           this.userLogged = false;
           systemService().openToast("Hasta pronto", "success");
-        });
-    },
-    getUser() {
-      userService()
-        .getUser()
-        .then((response: any) => {
-          if (response != null) {
-            this.userLogged = true;
-            this.user = response;
-          }
         });
     },
   },

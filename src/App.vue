@@ -39,22 +39,20 @@ export default defineComponent({
       .then((response) => {
         systemService().setTheme(response);
       });
-    // this.getUser();
+    this.getUser();
   },
   methods: {
-    async getUser() {
-      await userService().setUserUploaded(null);
+    getUser() {
       userService()
-        .getUserLogged()
-        .then(async (response: any) => {
-          if (response?.data) {
-            await userService().setUserData(response.data);
+        .getUser()
+        .then((response) => {
+          if (response.data.getUserAuth.msg == "Success") {
+            userService().setUserData(response.data.getUserAuth.user[0]);
+            eventBus().emitter.emit("refresh-user-content");
           }
-          userService().setUserUploaded(true);
         })
-        .catch(async (e) => {
-          await userService().setUserData(null);
-          userService().setUserUploaded(true);
+        .catch((error) => {
+          console.error(error);
         });
     },
   },
