@@ -5,7 +5,9 @@
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
-        <ion-title>Conocimientos</ion-title>
+        <ion-title style="color: var(--primary-color) !important"
+          >Conocimientos</ion-title
+        >
       </ion-toolbar>
     </ion-header>
 

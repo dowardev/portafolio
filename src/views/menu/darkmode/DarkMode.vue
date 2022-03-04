@@ -55,7 +55,7 @@ export default defineComponent({
     IonLabel,
   },
   data() {
-    const darkMode = null as boolean | null;
+    const darkMode = false as boolean | null;
     return {
       darkMode,
     };
@@ -72,11 +72,6 @@ export default defineComponent({
         });
     },
     setTheme() {
-      if ((this.darkMode as null) == null) {
-        systemService().setTheme(
-          window.matchMedia("(prefers-color-scheme: dark)").matches
-        );
-      }
       systemService().setTheme(this.darkMode);
     },
   },

@@ -7,6 +7,7 @@
         side="start"
         type="overlay"
         style="--side-max-width: 200px"
+        class="menu-color"
       >
         <Menu></Menu>
       </ion-menu>
@@ -58,3 +59,11 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+@media only screen and (min-width: 768px) {
+  .menu-color {
+    background-color: var(--secondary-color);
+  }
+}
+</style>
