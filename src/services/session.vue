@@ -3,7 +3,7 @@ import axios from "axios";
 import userService from "./user.vue";
 import systemService from "./system.vue";
 import apolloClient from "../Apollo";
-const apollo = apolloClient.defaultClient;
+const apollo = apolloClient;
 import gql from "graphql-tag";
 
 export default function () {
@@ -13,7 +13,7 @@ export default function () {
     email: string,
     password: string
   ) {
-    return apollo.mutate({
+    return apollo.defaultClient.mutate({
       mutation: gql`
         mutation (
           $name: String!
@@ -42,7 +42,7 @@ export default function () {
     });
   }
   function userLogin(user: string, password: string) {
-    return apollo.mutate({
+    return apollo.defaultClient.mutate({
       mutation: gql`
         mutation ($user: String!, $password: String!) {
           login(input: { user: $user, password: $password }) {
@@ -66,7 +66,7 @@ export default function () {
     });
   }
   async function logout() {
-    return apollo.mutate({
+    return apollo.defaultClient.mutate({
       mutation: gql`
         mutation {
           userLogout {
@@ -75,6 +75,9 @@ export default function () {
         }
       `,
     });
+  }
+  function removeUserCached() {
+    apollo.defaultClient.cache.evict({ fieldName: "user" });
   }
   function sendMailResetPassword(email: string) {
     return axios.post(
@@ -119,6 +122,7 @@ export default function () {
     sendMailResetPassword,
     sendCodeResetPassword,
     resetPassword,
+    removeUserCached,
   };
 }
 </script>

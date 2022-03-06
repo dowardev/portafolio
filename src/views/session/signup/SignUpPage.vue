@@ -277,17 +277,17 @@ export default defineComponent({
       },
     };
   },
-  // beforeRouteEnter(to, from, next) {
-  //   userService()
-  //     .getUserToken()
-  //     .then((response: string | null) => {
-  //       if (response == null) {
-  //         next();
-  //       } else {
-  //         next("/blog");
-  //       }
-  //     });
-  // },
+  beforeRouteEnter(to, from, next) {
+    userService()
+      .getUserName()
+      .then((response) => {
+        if (response.name) {
+          next("/blog");
+        } else {
+          next();
+        }
+      });
+  },
   methods: {
     async register() {
       const loading = await this.presentLoading("Creando cuenta");

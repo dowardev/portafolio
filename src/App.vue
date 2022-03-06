@@ -47,13 +47,11 @@ export default defineComponent({
       userService()
         .getUser()
         .then((response) => {
-          if (response.data.getUserAuth.msg == "Success") {
-            userService().setUserData(response.data.getUserAuth.user[0]);
-            eventBus().emitter.emit("refresh-user-content");
+          if (response.user) {
+            const data = response.user![0];
+            data["is_admin"] = data.admin;
+            userService().setUserData(data);
           }
-        })
-        .catch((error) => {
-          console.error(error);
         });
     },
   },

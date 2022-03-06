@@ -17,22 +17,6 @@ export default function () {
   async function getUserToken() {
     return await store.get("token");
   }
-  async function getUserLogged() {
-    const token = await getUserToken();
-    if (token == null) {
-      return null;
-    }
-
-    return axios.get(systemService().getBaseURL() + "api/auth/user", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    });
-  }
-  function getUserLang() {
-    return store.get("lang");
-  }
   function getUserOffline() {
     let userUploaded = null;
     return new Promise((resolve) => {
@@ -48,42 +32,6 @@ export default function () {
         }
       }, 100);
     });
-  }
-  async function prueba() {
-    const query = gql`
-      query pp($id: ID) {
-        pr(id: $id) {
-          name
-          user
-        }
-      }
-    `;
-    apollo.defaultClient
-      .query({
-        query: query,
-      })
-      .then((data) => {
-        // console.log(data.data);
-        apollo.defaultClient.cache.writeQuery({
-          query: query,
-          data: {
-            pr: data.data.pr,
-          },
-          variables: {
-            id: 1,
-          },
-        });
-        const todo = apollo.defaultClient.cache.readQuery({
-          query: query,
-          variables: {
-            id: 1,
-          },
-        });
-        // console.log(todo);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
   }
   async function setUserData(data: any) {
     const query = gql`
@@ -103,25 +51,73 @@ export default function () {
       },
     });
   }
-  function getUser() {
-    const mutation = gql`
-      mutation {
-        getUserAuth {
-          msg
-          user {
-            name
-            email
-            is_admin
-            role
+  function getUser(): Promise<{
+    msg: string;
+    user:
+      | [{ name: string; email: string; admin: boolean; role: string[] }]
+      | null;
+  }> {
+    return new Promise((resolve) => {
+      const mutation = gql`
+        mutation {
+          getUserAuth {
+            msg
+            user {
+              name
+              email
+              is_admin
+              role
+            }
           }
         }
-      }
-    `;
-    return apollo.defaultClient.mutate({
-      mutation,
+      `;
+      apollo.defaultClient
+        .mutate({
+          mutation,
+        })
+        .then((response) => {
+          if (response.data.getUserAuth.msg == "Success") {
+            resolve({
+              msg: response.data.getUserAuth.msg,
+              user: [
+                {
+                  name: response.data.getUserAuth.user[0].name as string,
+                  email: response.data.getUserAuth.user[0].email as string,
+                  admin: response.data.getUserAuth.user[0].is_admin as boolean,
+                  role: response.data.getUserAuth.user[0].role as string[],
+                },
+              ],
+            });
+          }
+          resolve({
+            msg: response.data.msg,
+            user: null,
+          });
+        });
     });
   }
-  async function getUserName(): Promise<string> {
+  async function setUserUploaded(option: boolean | null) {
+    await store.set("user-uploaded", option);
+  }
+
+  async function getUserName(): Promise<{ name: string | null }> {
+    return new Promise((resolve) => {
+      getUserNameCached().then((response) => {
+        if (response.name != null) {
+          resolve({ name: response.name });
+        }
+
+        getUser().then((response) => {
+          if (response.msg == "Success") {
+            resolve({ name: response.user![0].name });
+          }
+
+          resolve({ name: null });
+        });
+      });
+    });
+  }
+  async function getUserNameCached(): Promise<{ name: string | null }> {
     return new Promise((resolve) => {
       const query = gql`
         query {
@@ -133,63 +129,83 @@ export default function () {
       const user = apollo.defaultClient.cache.readQuery({
         query: query,
       }) as any;
-      resolve(user.user.name);
-    });
-  }
-  function getUserPermissions() {
-    const query = gql`
-      query {
-        user {
-          is_admin
-          role
-        }
+
+      let name = null;
+      if (user) {
+        name = user.user.name;
       }
-    `;
-    return apollo.defaultClient.cache.readQuery({
-      query: query,
+
+      resolve({
+        name,
+      });
     });
   }
-  function getUserPermissionsOffline(): Promise<{
-    admin: boolean | null;
-    roles: string[] | null;
+
+  function getUserPermissions(): Promise<{
+    admin: null | boolean;
+    rol: null | string[];
   }> {
-    let userUploaded = null;
     return new Promise((resolve) => {
-      const interval = setInterval(async () => {
-        userUploaded = await store.get("user-uploaded");
-        if (userUploaded != null) {
-          if (userUploaded) {
-            const admin = Object.assign({}, await store.get("userData"))[
-              "is_admin"
-            ];
-            const roles = Object.assign({}, await store.get("userData"))[
-              "role"
-            ];
-            resolve({ admin, roles });
-          } else {
-            resolve({ admin: null, roles: null });
-          }
-          clearInterval(interval);
+      getUserPermissionsCached().then((response) => {
+        if (response.admin != null) {
+          resolve({ admin: response.admin, rol: response.rol });
         }
-      }, 100);
+
+        getUser().then((response) => {
+          if (response.msg == "Success") {
+            resolve({
+              admin: response.user![0].admin,
+              rol: response.user![0].role,
+            });
+          }
+
+          resolve({ admin: null, rol: null });
+        });
+      });
     });
   }
-  async function setUserUploaded(option: boolean | null) {
-    await store.set("user-uploaded", option);
+  function getUserPermissionsCached(): Promise<{
+    admin: boolean | null;
+    rol: string[] | null;
+  }> {
+    return new Promise((resolve) => {
+      const query = gql`
+        query {
+          user {
+            is_admin
+            role
+          }
+        }
+      `;
+      const userPermissions = apollo.defaultClient.cache.readQuery({
+        query: query,
+      }) as any;
+
+      let admin = null;
+      let rol = null;
+      if (userPermissions) {
+        admin = userPermissions.user.is_admin;
+        rol = userPermissions.rol;
+      }
+
+      resolve({
+        admin,
+        rol,
+      });
+    });
   }
 
   return {
     getUserToken,
     setUserToken,
-    getUserLogged,
     setUserData,
     getUser,
     getUserOffline,
     getUserPermissions,
-    getUserPermissionsOffline,
+    getUserPermissionsCached,
     setUserUploaded,
-    prueba,
     getUserName,
+    getUserNameCached,
   };
 }
 </script>

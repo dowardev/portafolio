@@ -21,7 +21,10 @@
             v-for="(project, index) in proyectos"
             :key="index"
           >
-            <ion-card @click="openModalProject(project)" class="fancy_card">
+            <ion-card
+              @click="openModalProject(project)"
+              class="fancy_card card-click"
+            >
               <ion-card-header>
                 <div class="center">
                   <img
@@ -69,7 +72,7 @@
             v-for="(participación, index) in participaciones"
             :key="index"
           >
-            <ion-card>
+            <ion-card class="card-click">
               <ion-card-header @click="openPage(participación.page)">
                 <ion-card-title>
                   {{ participación.name }}
@@ -272,6 +275,8 @@ export default defineComponent({
     1px 6px 12px rgba(129, 161, 193, 0.04);
   transition: all 0.4s ease;
   /* zoom in */
+}
+.card-click {
   cursor: pointer;
 }
 </style>

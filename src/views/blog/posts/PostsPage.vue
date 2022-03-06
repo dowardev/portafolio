@@ -53,7 +53,6 @@ import postService from "../../../services/post.vue";
 import { refreshOutline, addOutline } from "ionicons/icons";
 import userService from "../../../services/user.vue";
 import eventBus from "../../../EventBus";
-import gql from "graphql-tag";
 
 export default defineComponent({
   name: "PostsPage",
@@ -77,28 +76,17 @@ export default defineComponent({
   data() {
     return { posts: Array<any>(), isUserAdmin: false };
   },
-  // apollo: {
-  //   posts: gql`
-  //     query {
-  //       posts {
-  //         id
-  //         title
-  //       }
-  //     }
-  //   `,
-  // },
   mounted() {
     // this.getPosts();
-    // this.verifyUserAdmin();
     eventBus().emitter.on("refresh-content", (response: any) => {
       if (response.event == "new-post") {
         this.getPosts();
       }
-      // if (response.event == "login") {
-      //         this.getPosts();
-      //       }
     });
-    this.prueba();
+    eventBus().emitter.on("refresh-user-content", (response: any) => {
+      this.verifyUserAdmin();
+    });
+    this.verifyUserAdmin();
   },
   methods: {
     async getPosts() {
@@ -132,42 +120,14 @@ export default defineComponent({
       });
       return loading;
     },
-    async verifyUserAdmin() {
+    verifyUserAdmin() {
       if (navigator.onLine) {
-        //   const permissions = await userService().getUserPermissions();
-        //   if (permissions.admin) {
-        //     this.isUserAdmin = true;
-        //   }
-        // } else {
-        //   const user = await userService().getUserPermissionsOffline();
-        //   if (user.admin) {
-        //     this.isUserAdmin = true;
-        //   }
+        userService()
+          .getUserPermissions()
+          .then((response) => {
+            this.isUserAdmin = response.admin ? response.admin != null : false;
+          });
       }
-    },
-    prueba() {
-      this.$apollo
-        .query({
-          // Query
-          query: gql`
-            query @client {
-              posts {
-                id
-                title
-              }
-            }
-          `,
-        })
-        .then((data) => {
-          // Result
-          // console.log(data);
-        })
-        .catch((error) => {
-          // Error
-          console.error(error);
-          // We restore the initial user input
-          // this.newTag = newTag
-        });
     },
   },
 });

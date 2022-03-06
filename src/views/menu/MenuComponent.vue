@@ -178,13 +178,13 @@ export default defineComponent({
     };
   },
   data() {
-    return { userLogged: false, userName: "" };
+    return { userLogged: false, userName: null as null | string };
   },
   mounted() {
-    eventBus().emitter.on("refresh-user-content", async (response: any) => {
-      this.userLogged = true;
-      this.userName = await userService().getUserName();
+    eventBus().emitter.on("refresh-user-content", (response: any) => {
+      this.getUserName();
     });
+    this.getUserName();
   },
   methods: {
     async openModalDesktop() {
@@ -219,6 +219,17 @@ export default defineComponent({
           userService().setUserToken(token);
           this.userLogged = false;
           systemService().openToast("Hasta pronto", "success");
+          sessionService().removeUserCached();
+        });
+    },
+    getUserName() {
+      userService()
+        .getUserName()
+        .then((response) => {
+          if (response.name) {
+            this.userLogged = true;
+            this.userName = response.name;
+          }
         });
     },
   },

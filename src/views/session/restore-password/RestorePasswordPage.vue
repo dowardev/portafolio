@@ -169,6 +169,7 @@ import {
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { defineComponent } from "vue";
 import sessionService from "../../../services/session.vue";
+import userService from "../../../services/user.vue";
 
 export default defineComponent({
   name: "HomePage",
@@ -209,6 +210,17 @@ export default defineComponent({
       inputTypePassword1: "password",
       inputTypePassword2: "password",
     };
+  },
+  beforeRouteEnter(to, from, next) {
+    userService()
+      .getUserName()
+      .then((response) => {
+        if (response.name) {
+          next("/blog");
+        } else {
+          next();
+        }
+      });
   },
   methods: {
     closeComponent() {

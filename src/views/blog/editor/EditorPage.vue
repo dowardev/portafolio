@@ -152,32 +152,17 @@ export default defineComponent({
       userLogged: false,
     };
   },
-  mounted() {
-    this.getUser();
+  beforeRouteEnter(to, from, next) {
+    userService()
+      .getUserPermissions()
+      .then((response) => {
+        if (response.admin) {
+          next();
+        } else {
+          next("/blog");
+        }
+      });
   },
-  // beforeRouteEnter(to, from, next) {
-  //   if (navigator.onLine) {
-  //     userService()
-  //       .getUserPermissions()
-  //       .then((response) => {
-  //         if (response.admin) {
-  //           next();
-  //         } else {
-  //           next("/blog");
-  //         }
-  //       });
-  //   } else {
-  //     userService()
-  //       .getUserPermissionsOffline()
-  //       .then((response) => {
-  //         if (response.admin) {
-  //           next();
-  //         } else {
-  //           next("/blog");
-  //         }
-  //       });
-  //   }
-  // },
   methods: {
     setContent(e: any) {
       this.form.content = e.target.innerText;
@@ -255,15 +240,6 @@ export default defineComponent({
       this.form.content = "";
       this.form.coverId = 0;
       this.form.images = Array<number>();
-    },
-    getUser() {
-      userService()
-        .getUserLogged()
-        .then((response: any) => {
-          if (response != null) {
-            this.userLogged = true;
-          }
-        });
     },
   },
 });
