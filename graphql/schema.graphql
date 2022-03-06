@@ -26,7 +26,6 @@ input RestoreUserPasswordInput {
   password: String
 }
 type User {
-  id: ID!
   name: String!
   email: String!
   is_email_verified: String!
@@ -44,12 +43,12 @@ type UserAuth {
   token_type: String
 }
 type LoginPayload {
-  msg: String!
-  user: [User]
+  msg: String
   auth: [UserAuth]
+  user: [User]
 }
 type RegisterPayload {
-  msg: String!
+  msg: String
   user: [User]
   auth: [UserAuth]
 }
@@ -59,17 +58,21 @@ type ForgotPasswordPayload {
 type RestoreUserPasswordPayload {
   msg: String
 }
+type GetUserAuthPayload {
+  msg: String
+  user: [User]
+}
 
 type Query {
-  user(
-    id: ID @eq @rules(apply: ["prohibits:email", "required_without:email"])
-    email: String
-      @eq
-      @rules(apply: ["prohibits:id", "required_without:id", "email"])
-  ): User @find
+  # user(
+  #   id: ID @eq @rules(apply: ["prohibits:email", "required_without:email"])
+  #   email: String
+  #     @eq
+  #     @rules(apply: ["prohibits:id", "required_without:id", "email"])
+  # ): User @find
 
-  users(name: String @where(operator: "like")): [User!]!
-    @paginate(defaultCount: 10)
+  # users(name: String @where(operator: "like")): [User!]!
+  #   @paginate(defaultCount: 10)
 
   post(id: Int! @eq): Post @find
   posts: [Post!]! @all
@@ -78,21 +81,30 @@ type Query {
 
 type Mutation {
   login(input: LoginInput @spread): LoginPayload
-    @field(resolver: "App\\GraphQL\\Resolvers\\LoginResolver@resolve")
+    @field(resolver: "App\\GraphQL\\Resolvers\\auth\\LoginResolver@resolve")
 
   register(input: RegisterInput @spread): RegisterPayload
-    @field(resolver: "App\\GraphQL\\Resolvers\\RegisterResolver@resolve")
+    @field(resolver: "App\\GraphQL\\Resolvers\\auth\\RegisterResolver@resolve")
 
   forgotPassword(input: ForgotPasswordInput @spread): ForgotPasswordPayload
-    @field(resolver: "App\\GraphQL\\Resolvers\\ForgotPasswordResolver@resolve")
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\auth\\ForgotPasswordResolver@resolve"
+    )
 
   restoreUserPassword(
     input: RestoreUserPasswordInput @spread
   ): RestoreUserPasswordPayload
     @field(
-      resolver: "App\\GraphQL\\Resolvers\\RestoreUserPasswordResolver@resolve"
+      resolver: "App\\GraphQL\\Resolvers\\auth\\RestoreUserPasswordResolver@resolve"
     )
 
   userLogout: ForgotPasswordPayload
-    @field(resolver: "App\\GraphQL\\Resolvers\\UserLogoutResolver@resolve")
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\auth\\UserLogoutResolver@resolve"
+    )
+
+  getUserAuth: GetUserAuthPayload
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\auth\\GetUserAuthResolver@resolve"
+    )
 }

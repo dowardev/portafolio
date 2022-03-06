@@ -1,6 +1,6 @@
 <?php
 
-namespace App\GraphQL\Resolvers;
+namespace App\GraphQL\Resolvers\auth;
 
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -39,11 +39,10 @@ class LoginResolver
       'msg' => 'Authorized',
       'user' => [
         [
-          'id' => $user[0]->id,
           'name' => $user[0]->name,
           'user' => $user[0]->user,
           'email' => $user[0]->email,
-          'admin' => $user[0]->is_admin,
+          'is_admin' => $user[0]->is_admin,
           'role' => $user[0]->role,
         ],
       ],
