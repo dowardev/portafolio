@@ -2,14 +2,43 @@
 import axios from "axios";
 import userService from "./user.vue";
 import systemService from "./system.vue";
+import gql from "graphql-tag";
+import apolloClient from "../Apollo";
+
+const apollo = apolloClient;
 
 export default function () {
-  async function createPost(post: Record<string, any>) {
-    const token = await userService().getUserToken();
-    return axios.post("http://localhost:8000/api/auth/create-post", post, {
-      headers: {
-        Accept: "application/json",
-        Authorization: "Bearer " + token,
+  async function createPost(
+    title: string,
+    content: string,
+    coverId: number,
+    images: number[]
+  ) {
+    return apollo.defaultClient.mutate({
+      mutation: gql`
+        mutation (
+          $title: String!
+          $content: String!
+          $coverId: Int!
+          $images: [Int]
+        ) {
+          createPost(
+            input: {
+              title: $title
+              content: $content
+              coverId: $coverId
+              images: $images
+            }
+          ) {
+            msg
+          }
+        }
+      `,
+      variables: {
+        title,
+        content,
+        coverId,
+        images,
       },
     });
   }
@@ -34,28 +63,51 @@ export default function () {
     });
   }
   async function uploadImage(img: any) {
-    const token = await userService().getUserToken();
-    return axios.post(
-      systemService().getBaseURL() + "api/auth/upload-image-post",
-      img,
-      {
-        headers: {
-          Accept: "application/json",
-          Authorization: "Bearer " + token,
-          "content-type": "multipart/form-data",
-        },
+    const operations = {
+      query: `
+      mutation($file: Upload!) {
+        uploadImage(input:{file: $file}) {
+         msg
+         image{
+          id
+          name
+          path
+          source
+         }
+        }
       }
-    );
-  }
-  async function getImage(name: string) {
-    const token = await userService().getUserToken();
-    return axios.get(systemService().getBaseURL() + "api/get-image-post", {
+    `,
+      variables: {
+        file: null,
+      },
+    };
+    const _map = {
+      file: ["variables.file"],
+    };
+    const file = img;
+    const fd = new FormData();
+    fd.append("operations", JSON.stringify(operations));
+    fd.append("map", JSON.stringify(_map));
+    fd.append("file", file, file.name);
+
+    return axios.post("http://127.0.0.1:8000/graphql", fd, {
       headers: {
         Accept: "application/json",
-        Authorization: "Bearer " + token,
-        "content-type": "multipart/form-data",
       },
-      params: { name },
+    });
+  }
+  async function getImage(name: string) {
+    return apollo.defaultClient.mutate({
+      mutation: gql`
+        mutation ($name: String!) {
+          getImage(input: { name: $name }) {
+            msg
+          }
+        }
+      `,
+      variables: {
+        name,
+      },
     });
   }
   return {

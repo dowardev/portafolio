@@ -2,11 +2,8 @@
 import { Storage } from "@ionic/storage";
 const store = new Storage();
 store.create();
-import axios from "axios";
-import systemService from "./system.vue";
 import gql from "graphql-tag";
 import apolloClient from "../Apollo";
-import userService from "./user.vue";
 
 const apollo = apolloClient;
 

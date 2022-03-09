@@ -6,7 +6,7 @@
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
         <ion-title>Editor</ion-title>
-        <ion-buttons slot="end" v-if="userLogged == true">
+        <ion-buttons slot="end">
           <ion-button @click="createPost()">
             <ion-icon :icon="saveOutline"></ion-icon>
           </ion-button>
@@ -72,13 +72,14 @@
 
       <section v-if="segment == 'result'">
         <ion-row>
+          <ion-col size="12">
+            <img :src="cover" style="max-width: 32%" />
+          </ion-col>
+        </ion-row>
+        <ion-row>
           <h1 class="ion-padding">{{ form.title }}</h1>
           <ion-col size="12" style="background: #333947; height: 84vh">
             <Markdown :source="form.content" />
-          </ion-col>
-          <ion-col size="12">
-            <h3>Portada</h3>
-            <img :src="cover" style="max-width: 32%" />
           </ion-col>
         </ion-row>
       </section>
@@ -113,6 +114,7 @@ import postService from "../../../services/post.vue";
 import { saveOutline, imageOutline } from "ionicons/icons";
 import eventBus from "../../../EventBus";
 import userService from "../../../services/user.vue";
+import systemService from "../../../services/system.vue";
 
 export default defineComponent({
   name: "EditorPage",
@@ -167,16 +169,26 @@ export default defineComponent({
     setContent(e: any) {
       this.form.content = e.target.innerText;
     },
-    createPost() {
+    async createPost() {
+      const loading = await systemService().presentLoading("Creando post");
+      loading.present();
+      const title = this.form.title;
+      const content = this.form.content;
+      const coverId = this.form.coverId;
+      const images = this.form.images;
+
       postService()
-        .createPost(this.form)
-        .then((response) => {
+        .createPost(title, content, coverId, images)
+        .then(() => {
+          loading.dismiss();
           eventBus().emitter.emit("refresh-content", { event: "new-post" });
           this.openToast("Publicado correctamente", "success");
           this.clearInputs();
           this.$router.push("/blog");
         })
         .catch((e) => {
+          loading.dismiss();
+          console.log(e);
           this.openToast("Ocurrió un error al publicar", "danger");
         });
     },
@@ -190,40 +202,48 @@ export default defineComponent({
       // };
       // reader.readAsDataURL(file);
     },
-    uploadImage(e: any) {
+    async uploadImage(e: any) {
+      const loading = await systemService().presentLoading("Subiendo imagen");
+      loading.present();
       const image = this.getImage(e);
-      const uploadFormData = new FormData();
-      uploadFormData.append("image", image, "sss");
+
       postService()
-        .uploadImage(uploadFormData)
+        .uploadImage(image)
         .then((response) => {
+          loading.dismiss();
           this.form.content =
             this.form.content +
             "![Markdown Logo](http://localhost:8000/api/get-image?name=" +
-            response.data.name +
+            response.data.data.uploadImage.image[0].name +
             " 'Markdown Tutorial')";
-          this.form.images.push(response.data.id);
+          this.form.images.push(
+            parseInt(response.data.data.uploadImage.image[0].id)
+          );
         })
         .catch((e) => {
+          loading.dismiss();
+          console.log(e);
           this.openToast("Ocurrió un error al subir la imagen", "danger");
         });
     },
-    uploadCover(e: any) {
+    async uploadCover(e: any) {
+      const loading = await systemService().presentLoading("Subiendo imagen");
+      loading.present();
       const image = this.getImage(e);
-      const uploadFormData = new FormData();
-      uploadFormData.append("image", image, "sss");
       postService()
-        .uploadImage(uploadFormData)
+        .uploadImage(image)
         .then((response) => {
-          const reader = new FileReader();
-          reader.onload = (e: any) => {
-            const fileData = e.target.result;
-            this.cover = fileData;
-            this.form.coverId = response.data.id;
-          };
-          reader.readAsDataURL(image);
+          loading.dismiss();
+          this.cover =
+            "data:image/png;base64," +
+            response.data.data.uploadImage.image[0].source;
+          this.form.coverId = parseInt(
+            response.data.data.uploadImage.image[0].id
+          );
         })
         .catch((e) => {
+          loading.dismiss();
+          console.log(e);
           this.openToast("Ocurrió un al subir la portada", "danger");
         });
     },

@@ -2,7 +2,7 @@
 import { Storage } from "@ionic/storage";
 const storage = new Storage();
 storage.create();
-import { toastController } from "@ionic/vue";
+import { toastController, loadingController } from "@ionic/vue";
 import systemService from "./system.vue";
 
 export default function () {
@@ -60,12 +60,20 @@ export default function () {
       return "https://dowar.xyz/blog/";
     }
   }
+  async function presentLoading(message: string) {
+    const loading = await loadingController.create({
+      cssClass: "my-custom-class",
+      message,
+    });
+    return loading;
+  }
   return {
     getTheme,
     setTheme,
     openToast,
     detectToggleTheme,
     getBaseURL,
+    presentLoading,
   };
 }
 </script>

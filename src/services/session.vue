@@ -3,8 +3,9 @@ import axios from "axios";
 import userService from "./user.vue";
 import systemService from "./system.vue";
 import apolloClient from "../Apollo";
-const apollo = apolloClient;
 import gql from "graphql-tag";
+
+const apollo = apolloClient;
 
 export default function () {
   async function userRegister(
