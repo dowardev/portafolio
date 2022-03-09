@@ -25,6 +25,19 @@ input RestoreUserPasswordInput {
   email: String
   password: String
 }
+input CreatePostInput {
+  title: String!
+  content: String!
+  coverId: Int!
+  images: [Int]
+}
+input FileInput {
+  file: Upload
+}
+input ImageInput {
+  name: String
+}
+
 type User {
   name: String!
   email: String!
@@ -34,9 +47,9 @@ type User {
   user: String!
 }
 type Post {
-  id: ID!
   title: String!
   content: String!
+  coverId: ID
 }
 type UserAuth {
   access_token: String
@@ -61,6 +74,24 @@ type RestoreUserPasswordPayload {
 type GetUserAuthPayload {
   msg: String
   user: [User]
+}
+type CreatePostPayload {
+  msg: String
+  post: Post
+}
+type Image {
+  id: ID
+  name: String
+  path: String
+  source: String
+}
+type UploadImagePayload {
+  msg: String
+  image: [Image]
+}
+type GetImagePayload {
+  msg: String
+  image: [Image]
 }
 
 type Query {
@@ -107,4 +138,17 @@ type Mutation {
     @field(
       resolver: "App\\GraphQL\\Resolvers\\auth\\GetUserAuthResolver@resolve"
     )
+
+  createPost(input: CreatePostInput @spread): CreatePostPayload
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\auth\\CreatePostResolver@resolve"
+    )
+
+  uploadImage(input: FileInput @spread): UploadImagePayload
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\auth\\UploadImageResolver@resolve"
+    )
+
+  getImage(input: ImageInput @spread): GetImagePayload
+    @field(resolver: "App\\GraphQL\\Resolvers\\auth\\GetImageResolver@resolve")
 }
