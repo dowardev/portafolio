@@ -79,17 +79,25 @@ export default defineComponent({
       loading.present();
 
       postService()
-        .getPost(this.$route.params.id as string)
-        .then((response) => {
+        .getPost(parseInt(this.$route.params.id as string))
+        .then(async (response) => {
+          const title = response.data.post.title;
+          const content = response.data.post.content;
+          const name = response.data.post.cover.name;
+          const cover = await postService().getImage(name);
+          console.log(cover);
+          this.showPost(title, content, cover.data.getImage.image[0].source);
           loading.dismiss();
-          this.post.title = response.data.title;
-          this.post.content = response.data.content;
-          this.post.cover =
-            "http://localhost:8000/api/get-image?name=" + response.data.cover;
         })
         .catch((e) => {
+          console.log(e);
           loading.dismiss();
         });
+    },
+    showPost(title: string, content: string, cover: string) {
+      this.post.title = title;
+      this.post.content = content;
+      this.post.cover = "data:image/png;base64," + cover;
     },
     async presentLoading(message: string) {
       const loading = await loadingController.create({

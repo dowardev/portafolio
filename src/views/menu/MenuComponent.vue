@@ -98,6 +98,7 @@
         >
           Blog
         </ion-label>
+        <ion-chip color="success">BETA</ion-chip>
       </ion-item>
     </ion-content>
 

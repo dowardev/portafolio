@@ -42,24 +42,49 @@ export default function () {
       },
     });
   }
-  async function getPosts() {
-    const token = await userService().getUserToken();
-
-    return axios.get(systemService().getBaseURL() + "api/get-posts", {
-      headers: {
-        Accept: "application/json",
-        Authorization: "Bearer " + token,
+  async function getPosts(first: number, page: number) {
+    return apollo.defaultClient.mutate({
+      mutation: gql`
+        query ($first: Int!, $page: Int) {
+          posts(first: $first, page: $page) {
+            data {
+              id
+              title
+              content
+              cover {
+                name
+              }
+            }
+            paginatorInfo {
+              currentPage
+              lastPage
+            }
+          }
+        }
+      `,
+      variables: {
+        first,
+        page,
       },
     });
   }
-  async function getPost(id: string) {
-    const token = await userService().getUserToken();
-    return axios.get(systemService().getBaseURL() + "api/get-post", {
-      headers: {
-        Accept: "application/json",
-        Authorization: "Bearer " + token,
+  async function getPost(id: number) {
+    return apollo.defaultClient.mutate({
+      mutation: gql`
+        query ($id: Int!) {
+          post(id: $id) {
+            id
+            title
+            content
+            cover {
+              name
+            }
+          }
+        }
+      `,
+      variables: {
+        id,
       },
-      params: { id },
     });
   }
   async function uploadImage(img: any) {
@@ -102,6 +127,9 @@ export default function () {
         mutation ($name: String!) {
           getImage(input: { name: $name }) {
             msg
+            image {
+              source
+            }
           }
         }
       `,

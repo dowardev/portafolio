@@ -20,7 +20,7 @@
     <ion-content :fullscreen="true">
       <ion-row>
         <ion-col size="12" size-lg="4" v-for="post in posts" :key="post">
-          <ion-card @click="openPost(post.id)">
+          <ion-card @click="openPost(post.id)" style="cursor: pointer">
             <img :src="post.cover" alt="" />
             <ion-card-header>
               <ion-card-title>{{ post.title }}</ion-card-title>
@@ -39,7 +39,6 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  loadingController,
   IonButton,
   IonRow,
   IonCol,
@@ -53,6 +52,7 @@ import postService from "../../../services/post.vue";
 import { refreshOutline, addOutline } from "ionicons/icons";
 import userService from "../../../services/user.vue";
 import eventBus from "../../../EventBus";
+import systemService from "../../../services/system.vue";
 
 export default defineComponent({
   name: "PostsPage",
@@ -77,7 +77,7 @@ export default defineComponent({
     return { posts: Array<any>(), isUserAdmin: false };
   },
   mounted() {
-    // this.getPosts();
+    this.getPosts();
     eventBus().emitter.on("refresh-content", (response: any) => {
       if (response.event == "new-post") {
         this.getPosts();
@@ -90,35 +90,31 @@ export default defineComponent({
   },
   methods: {
     async getPosts() {
-      const loading = await this.presentLoading("Obteniendo publicaciónes");
+      const loading = await systemService().presentLoading(
+        "Obteniendo publicaciónes"
+      );
       loading.present();
 
       postService()
-        .getPosts()
+        .getPosts(10, 1)
         .then((response: any) => {
           loading.dismiss();
-          this.showPost(response.data);
+          this.showPost(response.data.posts.data);
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           loading.dismiss();
         });
     },
     showPost(posts: Array<any>) {
-      // this.posts = posts;
       posts.forEach((post) => {
-        post.cover = "http://localhost:8000/api/get-image?name=" + post.cover;
+        post.cover =
+          "http://localhost:8000/api/get-image?name=" + post.cover.name;
       });
       this.posts = posts;
     },
     openPost(id: string) {
       this.$router.push({ name: "PostPage", params: { id } });
-    },
-    async presentLoading(message: string) {
-      const loading = await loadingController.create({
-        cssClass: "ionic-elements",
-        message,
-      });
-      return loading;
     },
     verifyUserAdmin() {
       if (navigator.onLine) {
