@@ -15,37 +15,39 @@ use App\Http\Controllers\PostController;
 |
 */
 
-Route::middleware("auth:sanctum")->get("/user", function (Request $request) {
+route::middleware('auth:sanctum')->get('/user', function (request $request) {
     return $request->user();
 });
-Route::get("get-image/", [PostController::class, "getImagePost"]);
-Route::get("get-image-post", [PostController::class, "getImagePost"]);
+Route::get('prueba', [PostController::class, 'getPostCover']);
 
-Route::get("get-posts", [PostController::class, "getPosts"]);
-Route::get("get-post", [PostController::class, "getPost"]);
+Route::get('get-image/', [PostController::class, 'getImagePost']);
+Route::get('get-image-post', [PostController::class, 'getImagePost']);
 
-Route::group(["prefix" => "auth"], function () {
-    Route::post("login", [AuthController::class, "login"]);
-    Route::post("signup", [AuthController::class, "signup"]);
-    Route::post("mail-reset-password", [
+Route::get('get-posts', [PostController::class, 'getPosts']);
+Route::get('get-post', [PostController::class, 'getPost']);
+
+Route::group(['prefix' => 'auth'], function () {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('signup', [AuthController::class, 'signup']);
+    Route::post('mail-reset-password', [
         AuthController::class,
-        "sendCodeResetPassword",
+        'sendCodeResetPassword',
     ]);
-    Route::post("code-reset-password", [
+    Route::post('code-reset-password', [
         AuthController::class,
-        "verifyCodeResetPassword",
+        'verifyCodeResetPassword',
     ]);
-    Route::post("reset-password", [AuthController::class, "resetPassword"]);
+    Route::post('reset-password', [AuthController::class, 'resetPassword']);
 
-    Route::group(["middleware" => "auth:api"], function () {
-        Route::get("logout", [AuthController::class, "logout"]);
-        Route::get("user", [AuthController::class, "user"]);
+    Route::group(['middleware' => 'auth:api'], function () {
+        Route::get('logout', [AuthController::class, 'logout']);
+        Route::get('user', [AuthController::class, 'user']);
 
         // posts
-        Route::post("create-post", [PostController::class, "createPost"]);
-        Route::post("upload-image-post", [
+        Route::post('create-post', [PostController::class, 'createPost']);
+        Route::post('upload-image-post', [
             PostController::class,
-            "uploadImagePost",
+            'uploadImagePost',
         ]);
     });
 });

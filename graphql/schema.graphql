@@ -35,7 +35,11 @@ input FileInput {
   file: Upload
 }
 input ImageInput {
-  name: String
+  name: String!
+}
+input PostsInput {
+  title: String
+  content: String
 }
 
 type User {
@@ -47,9 +51,11 @@ type User {
   user: String!
 }
 type Post {
+  id: ID
   title: String!
   content: String!
   coverId: ID
+  cover: Image @belongsTo(relation: "cover")
 }
 type UserAuth {
   access_token: String
@@ -106,8 +112,7 @@ type Query {
   #   @paginate(defaultCount: 10)
 
   post(id: Int! @eq): Post @find
-  posts: [Post!]! @all
-  posts_images: [Post!]! @all
+  posts: [Post!]! @paginate
 }
 
 type Mutation {
