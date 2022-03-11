@@ -21,7 +21,7 @@ class UserLogoutResolver
         ->revoke();
     }
     return [
-      'msg' => 'Success',
+      'message' => 'Success',
     ];
   }
 }

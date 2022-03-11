@@ -6,6 +6,8 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\Post;
 use App\Models\PostImage;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class CreatePostResolver
 {
@@ -15,7 +17,9 @@ class CreatePostResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
-    // return ['msg' => json_encode($args['images'])];
+    if (Auth::guard('api')->user()->is_admin == false) {
+      throw new Exception('Unauthorized');
+    }
     $post = Post::create([
       'title' => $args['title'],
       'content' => $args['content'],
@@ -29,6 +33,6 @@ class CreatePostResolver
         'image_id' => $value,
       ]);
     }
-    return ['msg' => 'Success'];
+    return ['message' => 'Success'];
   }
 }

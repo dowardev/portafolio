@@ -14,15 +14,13 @@ class GetUserAuthResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
-    if (Auth::guard('api')->check()) {
-      $user = Auth::guard('api')->user();
-      return [
-        'msg' => 'Success',
-        'user' => [$user],
-      ];
-    }
+    $user = Auth::guard('api')->user();
     return [
-      'msg' => 'Unauthorized',
+      'message' => 'Success',
+      'user' => [$user],
+    ];
+    return [
+      'message' => 'Unauthorized',
     ];
   }
 }

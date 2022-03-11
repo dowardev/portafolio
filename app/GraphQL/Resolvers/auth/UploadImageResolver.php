@@ -6,6 +6,8 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\Images;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class UploadImageResolver
 {
@@ -15,6 +17,9 @@ class UploadImageResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
+    if (Auth::guard('api')->user()->is_admin == false) {
+      throw new Exception('Unauthorized');
+    }
     $file = $args['file'];
     $filename = uniqid() . time() . '.webp';
     $path = $file->storeAs('images_posts', $filename);
@@ -24,7 +29,7 @@ class UploadImageResolver
       'path' => $path,
     ]);
     return [
-      'msg' => $args['file'],
+      'message' => $args['file'],
       'image' => [
         [
           'source' => base64_encode(

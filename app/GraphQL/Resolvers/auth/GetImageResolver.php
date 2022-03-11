@@ -20,7 +20,7 @@ class GetImageResolver
       ->get();
 
     return [
-      'msg' => 'Success',
+      'message' => 'Success',
       'image' => [
         [
           'source' => base64_encode(

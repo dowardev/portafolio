@@ -38,6 +38,6 @@ class ForgotPasswordResolver
         }
       );
     }
-    return ['msg' => 'Success'];
+    return ['message' => 'Success'];
   }
 }

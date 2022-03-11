@@ -14,16 +14,16 @@ input RegisterInput {
   password: String!
 }
 input ForgotPasswordInput {
-  email: String
+  email: String!
 }
 input CodeForgotPasswordInput {
-  email: String
-  code: Int
+  email: String!
+  code: Int!
 }
 input RestoreUserPasswordInput {
-  code: String
-  email: String
-  password: String
+  code: String!
+  email: String!
+  password: String!
 }
 input CreatePostInput {
   title: String!
@@ -32,14 +32,14 @@ input CreatePostInput {
   images: [Int]
 }
 input FileInput {
-  file: Upload
+  file: Upload!
 }
 input ImageInput {
   name: String!
 }
 input PostsInput {
-  title: String
-  content: String
+  title: String!
+  content: String!
 }
 
 type User {
@@ -54,50 +54,52 @@ type Post {
   id: ID
   title: String!
   content: String!
-  coverId: ID
-  cover: Image @belongsTo(relation: "cover")
+  coverId: ID!
+  cover: Image! @belongsTo(relation: "cover")
 }
 type UserAuth {
-  access_token: String
-  token_type: String
+  access_token: String!
+  token_type: String!
 }
 type LoginPayload {
-  msg: String
-  auth: [UserAuth]
-  user: [User]
+  message: String!
+  auth: [UserAuth]!
+  user: [User]!
 }
 type RegisterPayload {
-  msg: String
-  user: [User]
-  auth: [UserAuth]
+  message: String!
+  user: [User]!
+  auth: [UserAuth]!
 }
 type ForgotPasswordPayload {
-  msg: String
+  message: String!
 }
 type RestoreUserPasswordPayload {
-  msg: String
+  message: String!
 }
 type GetUserAuthPayload {
-  msg: String
-  user: [User]
+  message: String!
+  user: [User]!
 }
 type CreatePostPayload {
-  msg: String
-  post: Post
+  message: String!
 }
 type Image {
   id: ID
-  name: String
-  path: String
-  source: String
+  name: String!
+  path: String!
+  source: String!
 }
 type UploadImagePayload {
-  msg: String
-  image: [Image]
+  message: String!
+  image: [Image]!
 }
 type GetImagePayload {
-  msg: String
-  image: [Image]
+  message: String!
+  image: [Image]!
+}
+type PruebaPayload {
+  message: String!
 }
 
 type Query {
@@ -140,6 +142,7 @@ type Mutation {
     )
 
   getUserAuth: GetUserAuthPayload
+    @guard
     @field(
       resolver: "App\\GraphQL\\Resolvers\\auth\\GetUserAuthResolver@resolve"
     )
@@ -156,4 +159,7 @@ type Mutation {
 
   getImage(input: ImageInput @spread): GetImagePayload
     @field(resolver: "App\\GraphQL\\Resolvers\\auth\\GetImageResolver@resolve")
+
+  # prueba: PruebaPayload
+  #   @field(resolver: "App\\GraphQL\\Resolvers\\auth\\PruebaResolver@resolve")
 }

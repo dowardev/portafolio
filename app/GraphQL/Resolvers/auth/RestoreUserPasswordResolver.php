@@ -24,7 +24,7 @@ class RestoreUserPasswordResolver
       ->get();
 
     if (sizeof($result) == 0) {
-      return ['msg' => 'Code invalid'];
+      return ['message' => 'Code invalid'];
     }
     ResetCodePassword::where('email', '=', $email)
       ->where('code', '=', $code)
@@ -32,6 +32,6 @@ class RestoreUserPasswordResolver
     User::where('email', '=', $email)->update([
       'password' => bcrypt($args['password']),
     ]);
-    return ['msg' => 'Success'];
+    return ['message' => 'Success'];
   }
 }
