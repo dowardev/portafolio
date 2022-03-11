@@ -85,12 +85,10 @@ export default defineComponent({
           const content = response.data.post.content;
           const name = response.data.post.cover.name;
           const cover = await postService().getImage(name);
-          console.log(cover);
           this.showPost(title, content, cover.data.getImage.image[0].source);
           loading.dismiss();
         })
         .catch((e) => {
-          console.log(e);
           loading.dismiss();
         });
     },

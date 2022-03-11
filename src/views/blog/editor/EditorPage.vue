@@ -3,7 +3,9 @@
     <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu"></ion-menu-button>
+          <ion-button fill="clear" @click="$router.go(-1)">
+            <ion-icon :icon="chevronBackOutline"></ion-icon>
+          </ion-button>
         </ion-buttons>
         <ion-title>Editor</ion-title>
         <ion-buttons slot="end">
@@ -100,7 +102,6 @@ import {
   IonInput,
   toastController,
   IonButtons,
-  IonMenuButton,
   IonItem,
   IonButton,
   IonIcon,
@@ -111,7 +112,7 @@ import {
 import { defineComponent } from "vue";
 import Markdown from "vue3-markdown-it";
 import postService from "../../../services/post.vue";
-import { saveOutline, imageOutline } from "ionicons/icons";
+import { saveOutline, imageOutline, chevronBackOutline } from "ionicons/icons";
 import eventBus from "../../../EventBus";
 import userService from "../../../services/user.vue";
 import systemService from "../../../services/system.vue";
@@ -130,7 +131,6 @@ export default defineComponent({
     IonTextarea,
     IonInput,
     IonButtons,
-    IonMenuButton,
     IonItem,
     IonButton,
     IonIcon,
@@ -139,7 +139,7 @@ export default defineComponent({
     IonCol,
   },
   setup() {
-    return { saveOutline, imageOutline };
+    return { saveOutline, imageOutline, chevronBackOutline };
   },
   data() {
     return {
@@ -163,6 +163,9 @@ export default defineComponent({
         } else {
           next("/blog");
         }
+      })
+      .catch((e) => {
+        next("/blog");
       });
   },
   methods: {
@@ -188,7 +191,6 @@ export default defineComponent({
         })
         .catch((e) => {
           loading.dismiss();
-          console.log(e);
           this.openToast("Ocurrió un error al publicar", "danger");
         });
     },
@@ -222,7 +224,6 @@ export default defineComponent({
         })
         .catch((e) => {
           loading.dismiss();
-          console.log(e);
           this.openToast("Ocurrió un error al subir la imagen", "danger");
         });
     },
@@ -243,7 +244,6 @@ export default defineComponent({
         })
         .catch((e) => {
           loading.dismiss();
-          console.log(e);
           this.openToast("Ocurrió un al subir la portada", "danger");
         });
     },

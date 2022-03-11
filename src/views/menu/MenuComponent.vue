@@ -231,6 +231,9 @@ export default defineComponent({
             this.userLogged = true;
             this.userName = response.name;
           }
+        })
+        .catch((e) => {
+          this.userLogged = false;
         });
     },
   },

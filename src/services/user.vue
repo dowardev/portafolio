@@ -12,7 +12,14 @@ export default function () {
     document.cookie = "token=" + token;
   }
   async function getUserToken() {
-    return await store.get("token");
+    const name = "token=";
+    const cDecoded = decodeURIComponent(document.cookie);
+    const cArr = cDecoded.split("; ");
+    let token = "";
+    cArr.forEach((val) => {
+      if (val.indexOf(name) === 0) token = val.substring(name.length);
+    });
+    return token;
   }
   function getUserOffline() {
     let userUploaded = null;
@@ -49,16 +56,16 @@ export default function () {
     });
   }
   function getUser(): Promise<{
-    msg: string;
+    message: string;
     user:
       | [{ name: string; email: string; admin: boolean; role: string[] }]
       | null;
   }> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const mutation = gql`
         mutation {
           getUserAuth {
-            msg
+            message
             user {
               name
               email
@@ -73,9 +80,9 @@ export default function () {
           mutation,
         })
         .then((response) => {
-          if (response.data.getUserAuth.msg == "Success") {
+          if (response.data.getUserAuth.message == "Success") {
             resolve({
-              msg: response.data.getUserAuth.msg,
+              message: response.data.getUserAuth.message,
               user: [
                 {
                   name: response.data.getUserAuth.user[0].name as string,
@@ -87,9 +94,12 @@ export default function () {
             });
           }
           resolve({
-            msg: response.data.msg,
+            message: response.data.message,
             user: null,
           });
+        })
+        .catch((e) => {
+          reject(e);
         });
     });
   }
@@ -97,20 +107,28 @@ export default function () {
     await store.set("user-uploaded", option);
   }
 
-  async function getUserName(): Promise<{ name: string | null }> {
-    return new Promise((resolve) => {
+  async function getUserName(): Promise<{
+    message: string;
+    name: string | null;
+  }> {
+    return new Promise((resolve, reject) => {
       getUserNameCached().then((response) => {
         if (response.name != null) {
-          resolve({ name: response.name });
+          resolve({ message: "Success", name: response.name });
         }
 
-        getUser().then((response) => {
-          if (response.msg == "Success") {
-            resolve({ name: response.user![0].name });
-          }
-
-          resolve({ name: null });
-        });
+        getUser()
+          .then(
+            (response) => {
+              resolve({ message: "Success", name: response.user![0].name });
+            },
+            (e) => {
+              throw new Error(e);
+            }
+          )
+          .catch((e) => {
+            reject(e);
+          });
       });
     });
   }
@@ -139,25 +157,36 @@ export default function () {
   }
 
   function getUserPermissions(): Promise<{
+    message: string;
     admin: null | boolean;
     rol: null | string[];
   }> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       getUserPermissionsCached().then((response) => {
         if (response.admin != null) {
-          resolve({ admin: response.admin, rol: response.rol });
+          resolve({
+            message: "Success",
+            admin: response.admin,
+            rol: response.rol,
+          });
         }
 
-        getUser().then((response) => {
-          if (response.msg == "Success") {
-            resolve({
-              admin: response.user![0].admin,
-              rol: response.user![0].role,
-            });
-          }
-
-          resolve({ admin: null, rol: null });
-        });
+        getUser()
+          .then(
+            (response) => {
+              resolve({
+                message: "Success",
+                admin: response.user![0].admin,
+                rol: response.user![0].role,
+              });
+            },
+            (e) => {
+              throw new Error(e);
+            }
+          )
+          .catch((e) => {
+            reject(e);
+          });
       });
     });
   }

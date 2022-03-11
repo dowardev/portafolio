@@ -215,11 +215,10 @@ export default defineComponent({
     userService()
       .getUserName()
       .then((response) => {
-        if (response.name) {
-          next("/blog");
-        } else {
-          next();
-        }
+        next("/blog");
+      })
+      .catch((e) => {
+        next();
       });
   },
   methods: {

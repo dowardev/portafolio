@@ -52,6 +52,9 @@ export default defineComponent({
             data["is_admin"] = data.admin;
             userService().setUserData(data);
           }
+        })
+        .catch((e) => {
+          //
         });
     },
   },

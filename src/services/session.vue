@@ -30,7 +30,7 @@ export default function () {
               password: $password
             }
           ) {
-            msg
+            message
           }
         }
       `,
@@ -47,7 +47,7 @@ export default function () {
       mutation: gql`
         mutation ($user: String!, $password: String!) {
           login(input: { user: $user, password: $password }) {
-            msg
+            message
             auth {
               access_token
             }
@@ -71,7 +71,7 @@ export default function () {
       mutation: gql`
         mutation {
           userLogout {
-            msg
+            message
           }
         }
       `,

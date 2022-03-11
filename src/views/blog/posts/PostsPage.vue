@@ -102,7 +102,6 @@ export default defineComponent({
           this.showPost(response.data.posts.data);
         })
         .catch((e) => {
-          console.log(e);
           loading.dismiss();
         });
     },
@@ -122,6 +121,9 @@ export default defineComponent({
           .getUserPermissions()
           .then((response) => {
             this.isUserAdmin = response.admin ? response.admin != null : false;
+          })
+          .catch((e) => {
+            this.isUserAdmin = false;
           });
       }
     },

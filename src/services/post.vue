@@ -30,7 +30,7 @@ export default function () {
               images: $images
             }
           ) {
-            msg
+            message
           }
         }
       `,
@@ -92,7 +92,7 @@ export default function () {
       query: `
       mutation($file: Upload!) {
         uploadImage(input:{file: $file}) {
-         msg
+        message 
          image{
           id
           name
@@ -115,9 +115,12 @@ export default function () {
     fd.append("map", JSON.stringify(_map));
     fd.append("file", file, file.name);
 
+    const token = await userService().getUserToken();
+
     return axios.post("http://127.0.0.1:8000/graphql", fd, {
       headers: {
         Accept: "application/json",
+        Authorization: token,
       },
     });
   }
@@ -126,7 +129,7 @@ export default function () {
       mutation: gql`
         mutation ($name: String!) {
           getImage(input: { name: $name }) {
-            msg
+            message
             image {
               source
             }
