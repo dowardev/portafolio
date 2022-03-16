@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
-import HomePage from "../views/HomePage.vue";
 import PresentationPage from "../views/presentation/PresentationPage.vue";
 import HistoryPage from "../views/history/HistoryPage.vue";
 import SkillsPage from "../views/skills/SkillsPage.vue";
 import PortfolioPage from "../views/portfolio/PortfolioPage.vue";
-import EditorPage from "../views/blog/editor/EditorPage.vue";
+import CreatePost from "../views/blog/editor/CreatePost.vue";
+import UpdatePost from "../views/blog/editor/UpdatePost.vue";
 import BlogPage from "../views/blog/posts/PostsPage.vue";
 import PostPage from "../views/blog/post/PostPage.vue";
 import LoginPage from "../views/session/login/Login.vue";
@@ -38,10 +38,21 @@ const routes: Array<RouteRecordRaw> = [
     component: PortfolioPage,
   },
   {
-    path: "/blog/editor",
-    name: "EditorPage",
-    component: EditorPage,
+    path: "/blog/editor/create",
+    name: "CreatePost",
+    component: CreatePost,
   },
+  {
+    path: "/blog/editor/update/:id",
+    name: "UpdatePost",
+    component: UpdatePost,
+  },
+  // {
+  //   path: "/blog/editor/update/:id",
+  //   name: "EditorPage",
+  //   component: EditorPage,
+  // },
+
   {
     path: "/blog",
     name: "BlogPage",

@@ -43,6 +43,7 @@ import { defineComponent, ref } from "vue";
 import Markdown from "vue3-markdown-it";
 import postService from "../../../services/post.vue";
 import { saveOutline, chevronBackOutline } from "ionicons/icons";
+import systemService from "../../../services/system.vue";
 
 export default defineComponent({
   name: "HomePage",
@@ -75,16 +76,18 @@ export default defineComponent({
   },
   methods: {
     async getPost() {
-      const loading = await this.presentLoading("Obteniendo publicación");
+      const loading = await systemService().presentLoading(
+        "Obteniendo publicación"
+      );
       loading.present();
 
       postService()
-        .getPost(parseInt(this.$route.params.id as string))
+        .getPost(this.$route.params.id as string)
         .then(async (response) => {
           const title = response.data.post.title;
           const content = response.data.post.content;
-          const name = response.data.post.cover.name;
-          const cover = await postService().getImage(name);
+          const coverName = response.data.post.cover.name;
+          const cover = await postService().getImage({ name: coverName });
           this.showPost(title, content, cover.data.getImage.image[0].source);
           loading.dismiss();
         })
@@ -96,14 +99,6 @@ export default defineComponent({
       this.post.title = title;
       this.post.content = content;
       this.post.cover = "data:image/png;base64," + cover;
-    },
-    async presentLoading(message: string) {
-      const loading = await loadingController.create({
-        cssClass: "ionic-elements ",
-        message,
-      });
-
-      return loading;
     },
   },
 });

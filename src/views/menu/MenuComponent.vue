@@ -211,16 +211,23 @@ export default defineComponent({
       this.$router.push(route);
       menuController.close();
     },
-    userLogout() {
+    async userLogout() {
+      const loading = await systemService().presentLoading("Cerrando sesión");
+      loading.present();
+
       sessionService()
         .logout()
         .then((response) => {
+          loading.dismiss();
           const token = (document.cookie =
             "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
           userService().setUserToken(token);
           this.userLogged = false;
           systemService().openToast("Hasta pronto", "success");
           sessionService().removeUserCached();
+        })
+        .catch((e) => {
+          loading.dismiss();
         });
     },
     getUserName() {

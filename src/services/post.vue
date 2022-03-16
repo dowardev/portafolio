@@ -7,6 +7,26 @@ import apolloClient from "../Apollo";
 
 const apollo = apolloClient;
 
+interface Post {
+  title: string;
+  content: string;
+  coverId: string;
+  images: number[];
+}
+interface UpdatePost {
+  id: string;
+  title: string;
+  content: string;
+  coverId: string;
+  newCoverId: string;
+  images: string[];
+  imagesRemoved: string[];
+}
+interface getImage {
+  id?: string;
+  name?: string;
+}
+
 export default function () {
   async function createPost(
     title: string,
@@ -42,6 +62,52 @@ export default function () {
       },
     });
   }
+  async function updatePost({
+    id,
+    title,
+    content,
+    coverId,
+    newCoverId,
+    images,
+    imagesRemoved,
+  }: UpdatePost) {
+    return apollo.defaultClient.mutate({
+      mutation: gql`
+        mutation (
+          $id: ID!
+          $title: String!
+          $content: String!
+          $coverId: ID!
+          $newCoverId: ID!
+          $images: [String]
+          $imagesRemoved: [String]
+        ) {
+          updatePost(
+            input: {
+              id: $id
+              title: $title
+              content: $content
+              coverId: $coverId
+              newCoverId: $newCoverId
+              images: $images
+              imagesRemoved: $imagesRemoved
+            }
+          ) {
+            message
+          }
+        }
+      `,
+      variables: {
+        id,
+        title,
+        content,
+        coverId,
+        newCoverId,
+        images,
+        imagesRemoved,
+      },
+    });
+  }
   async function getPosts(first: number, page: number) {
     return apollo.defaultClient.mutate({
       mutation: gql`
@@ -68,15 +134,16 @@ export default function () {
       },
     });
   }
-  async function getPost(id: number) {
+  async function getPost(id: string) {
     return apollo.defaultClient.mutate({
       mutation: gql`
-        query ($id: Int!) {
+        query ($id: ID!) {
           post(id: $id) {
             id
             title
             content
             cover {
+              id
               name
             }
           }
@@ -92,7 +159,7 @@ export default function () {
       query: `
       mutation($file: Upload!) {
         uploadImage(input:{file: $file}) {
-        message 
+        message
          image{
           id
           name
@@ -124,19 +191,22 @@ export default function () {
       },
     });
   }
-  async function getImage(name: string) {
+  async function getImage({ id = "", name = "" }: getImage) {
     return apollo.defaultClient.mutate({
       mutation: gql`
-        mutation ($name: String!) {
-          getImage(input: { name: $name }) {
+        mutation ($id: String, $name: String) {
+          getImage(input: { id: $id, name: $name }) {
             message
             image {
+              id
+              name
               source
             }
           }
         }
       `,
       variables: {
+        id,
         name,
       },
     });
@@ -147,6 +217,7 @@ export default function () {
     getPost,
     uploadImage,
     getImage,
+    updatePost,
   };
 }
 </script>

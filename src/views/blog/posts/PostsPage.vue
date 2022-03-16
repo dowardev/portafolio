@@ -7,7 +7,10 @@
         </ion-buttons>
         <ion-title>Blog</ion-title>
         <ion-buttons slot="end">
-          <ion-button @click="$router.push('/blog/editor')" v-if="isUserAdmin">
+          <ion-button
+            @click="$router.push('/blog/editor/create')"
+            v-if="isUserAdmin"
+          >
             <ion-icon :icon="addOutline"></ion-icon>
           </ion-button>
           <ion-button @click="getPosts()">
@@ -20,10 +23,25 @@
     <ion-content :fullscreen="true">
       <ion-row>
         <ion-col size="12" size-lg="4" v-for="post in posts" :key="post">
-          <ion-card @click="openPost(post.id)" style="cursor: pointer">
-            <img :src="post.cover" alt="" />
+          <ion-card>
+            <img
+              :src="post.cover"
+              alt=""
+              @click="openPost(post.id)"
+              style="cursor: pointer"
+            />
             <ion-card-header>
-              <ion-card-title>{{ post.title }}</ion-card-title>
+              <ion-item lines="none">
+                <ion-card-title>{{ post.title }}</ion-card-title>
+                <div slot="end" v-if="isUserAdmin">
+                  <ion-button fill="clear" @click="updatePost(post.id)">
+                    <ion-icon :icon="createOutline"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" @click="deletePost(post.id)">
+                    <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-item>
             </ion-card-header>
           </ion-card>
         </ion-col>
@@ -49,7 +67,12 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import postService from "../../../services/post.vue";
-import { refreshOutline, addOutline } from "ionicons/icons";
+import {
+  refreshOutline,
+  addOutline,
+  createOutline,
+  trashOutline,
+} from "ionicons/icons";
 import userService from "../../../services/user.vue";
 import eventBus from "../../../EventBus";
 import systemService from "../../../services/system.vue";
@@ -71,7 +94,7 @@ export default defineComponent({
     IonIcon,
   },
   setup() {
-    return { refreshOutline, addOutline };
+    return { refreshOutline, addOutline, createOutline, trashOutline };
   },
   data() {
     return { posts: Array<any>(), isUserAdmin: false };
@@ -126,6 +149,12 @@ export default defineComponent({
             this.isUserAdmin = false;
           });
       }
+    },
+    updatePost(id: string) {
+      this.$router.push("/blog/editor/update/" + id);
+    },
+    deletePost(id: string) {
+      console.log("eliminar", id);
     },
   },
 });
