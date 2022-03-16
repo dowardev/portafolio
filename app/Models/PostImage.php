@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class PostImage extends Model
 {
-    use HasFactory;
-    protected $fillable = ["image_id", "post_id"];
+  use HasFactory;
+  protected $fillable = ['image_id', 'post_id'];
 }

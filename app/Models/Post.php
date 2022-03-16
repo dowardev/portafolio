@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Post extends Model
 {
@@ -16,5 +17,9 @@ class Post extends Model
     public function cover(): BelongsTo
     {
         return $this->belongsTo(Images::class, 'cover_id');
+    }
+    public function images(): HasMany
+    {
+        return $this->hasMany(PostImage::class, 'post_id');
     }
 }
