@@ -40,6 +40,9 @@ input UpdatePostInput {
   images: [String]
   imagesRemoved: [String]
 }
+input DeletePostInput {
+  id: ID!
+}
 input FileInput {
   file: Upload!
 }
@@ -94,6 +97,9 @@ type CreatePostPayload {
   message: String!
 }
 type UpdatePostPayload {
+  message: String!
+}
+type DeletePostPayload {
   message: String!
 }
 type Image {
@@ -169,6 +175,11 @@ type Mutation {
   updatePost(input: UpdatePostInput @spread): UpdatePostPayload
     @field(
       resolver: "App\\GraphQL\\Resolvers\\auth\\UpdatePostResolver@resolve"
+    )
+
+  deletePost(input: DeletePostInput @spread): DeletePostPayload
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\auth\\DeletePostResolver@resolve"
     )
 
   uploadImage(input: FileInput @spread): UploadImagePayload

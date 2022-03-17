@@ -13,21 +13,21 @@ class CreatePostImages extends Migration
      */
     public function up()
     {
-        Schema::create("post_images", function (Blueprint $table) {
-            $table->increments("id");
-            $table->integer("image_id")->unsigned();
-            $table->integer("post_id")->unsigned();
+        Schema::create('post_images', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('image_id')->unsigned();
+            $table->integer('post_id')->unsigned();
             $table->timestamps();
             $table
-                ->foreign("image_id")
-                ->references("id")
-                ->on("images")
-                ->onDelete("cascade");
+                ->foreign('image_id')
+                ->references('id')
+                ->on('images')
+                ->onDelete('cascade');
             $table
-                ->foreign("post_id")
-                ->references("id")
-                ->on("posts")
-                ->onDelete("cascade");
+                ->foreign('post_id')
+                ->references('id')
+                ->on('posts')
+                ->onDelete('cascade');
         });
     }
 
@@ -38,6 +38,6 @@ class CreatePostImages extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists("post_images");
+        Schema::dropIfExists('post_images');
     }
 }

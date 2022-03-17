@@ -13,17 +13,17 @@ class CreatePosts extends Migration
      */
     public function up()
     {
-        Schema::create("posts", function (Blueprint $table) {
-            $table->increments("id");
-            $table->string("title");
-            $table->string("content");
-            $table->integer("cover_id")->unsigned();
+        Schema::create('posts', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('title');
+            $table->longText('content');
+            $table->integer('cover_id')->unsigned();
             $table->timestamps();
             $table
-                ->foreign("cover_id")
-                ->references("id")
-                ->on("images")
-                ->onDelete("cascade");
+                ->foreign('cover_id')
+                ->references('id')
+                ->on('images')
+                ->onDelete('cascade');
         });
     }
 
@@ -34,6 +34,6 @@ class CreatePosts extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists("posts");
+        Schema::dropIfExists('posts');
     }
 }
