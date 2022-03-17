@@ -108,6 +108,20 @@ export default function () {
       },
     });
   }
+  async function deletePost(id: string) {
+    return apollo.defaultClient.mutate({
+      mutation: gql`
+        mutation ($id: ID!) {
+          deletePost(input: { id: $id }) {
+            message
+          }
+        }
+      `,
+      variables: {
+        id,
+      },
+    });
+  }
   async function getPosts(first: number, page: number) {
     return apollo.defaultClient.mutate({
       mutation: gql`
@@ -218,6 +232,7 @@ export default function () {
     uploadImage,
     getImage,
     updatePost,
+    deletePost,
   };
 }
 </script>

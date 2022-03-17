@@ -22,7 +22,12 @@
 
     <ion-content :fullscreen="true">
       <ion-row>
-        <ion-col size="12" size-lg="4" v-for="post in posts" :key="post">
+        <ion-col
+          size="12"
+          size-lg="4"
+          v-for="(post, index) in posts"
+          :key="post"
+        >
           <ion-card>
             <img
               :src="post.cover"
@@ -37,7 +42,7 @@
                   <ion-button fill="clear" @click="updatePost(post.id)">
                     <ion-icon :icon="createOutline"></ion-icon>
                   </ion-button>
-                  <ion-button fill="clear" @click="deletePost(post.id)">
+                  <ion-button fill="clear" @click="deletePost(post.id, index)">
                     <ion-icon :icon="trashOutline" color="danger"></ion-icon>
                   </ion-button>
                 </div>
@@ -153,8 +158,22 @@ export default defineComponent({
     updatePost(id: string) {
       this.$router.push("/blog/editor/update/" + id);
     },
-    deletePost(id: string) {
-      console.log("eliminar", id);
+    async deletePost(id: string, index: number) {
+      const loading = await systemService().presentLoading(
+        "Eliminando publicación"
+      );
+      loading.present();
+
+      postService()
+        .deletePost(id)
+        .then((response) => {
+          loading.dismiss();
+          this.posts.splice(index, 1);
+        })
+        .catch((e) => {
+          loading.dismiss();
+          console.log(e);
+        });
     },
   },
 });
