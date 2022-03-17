@@ -1,6 +1,11 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header
+      collapse="fade"
+      :translucent="true"
+      mode="ios"
+      class="ion-no-border"
+    >
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
@@ -21,34 +26,26 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-row>
-        <ion-col
-          size="12"
-          size-lg="4"
-          v-for="(post, index) in posts"
-          :key="post"
-        >
-          <ion-card>
-            <img
-              :src="post.cover"
-              alt=""
-              @click="openPost(post.id)"
-              style="cursor: pointer"
-            />
-            <ion-card-header>
-              <ion-item lines="none">
-                <ion-card-title>{{ post.title }}</ion-card-title>
-                <div slot="end" v-if="isUserAdmin">
-                  <ion-button fill="clear" @click="updatePost(post.id)">
-                    <ion-icon :icon="createOutline"></ion-icon>
-                  </ion-button>
-                  <ion-button fill="clear" @click="deletePost(post.id, index)">
-                    <ion-icon :icon="trashOutline" color="danger"></ion-icon>
-                  </ion-button>
-                </div>
-              </ion-item>
-            </ion-card-header>
-          </ion-card>
+      <ion-header collapse="condense" mode="ios">
+        <ion-toolbar>
+          <h1>Blog</h1>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-row v-for="(post, index) in posts" :key="post">
+        <ion-col size="4">
+          <img :src="post.cover" alt="" @click="openPost(post.id)" />
+        </ion-col>
+        <ion-col size="8">
+          <h2 style="margin-top: 4px">{{ post.title }}</h2>
+          <div v-if="isUserAdmin">
+            <ion-button fill="clear" @click="updatePost(post.id)">
+              <ion-icon :icon="createOutline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" @click="deletePost(post.id, index)">
+              <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+            </ion-button>
+          </div>
         </ion-col>
       </ion-row>
     </ion-content>
@@ -63,11 +60,6 @@ import {
   IonTitle,
   IonToolbar,
   IonButton,
-  IonRow,
-  IonCol,
-  IonCard,
-  IonCardTitle,
-  IonCardHeader,
   IonIcon,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
@@ -91,11 +83,6 @@ export default defineComponent({
     IonTitle,
     IonToolbar,
     IonButton,
-    IonRow,
-    IonCol,
-    IonCard,
-    IonCardTitle,
-    IonCardHeader,
     IonIcon,
   },
   setup() {

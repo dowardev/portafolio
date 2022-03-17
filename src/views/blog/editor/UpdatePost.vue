@@ -125,7 +125,7 @@ export default defineComponent({
           eventBus().emitter.emit("refresh-content", { event: "new-post" });
           this.openToast("Publicado correctamente", "success");
           this.clearInputs();
-          this.$router.push("/blog");
+          this.$router.go(-1);
         })
         .catch((e) => {
           loading.dismiss();

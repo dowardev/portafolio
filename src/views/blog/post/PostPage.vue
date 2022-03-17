@@ -1,6 +1,11 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header
+      collapse="fade"
+      :translucent="true"
+      mode="ios"
+      class="ion-no-border"
+    >
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button @click="$router.go(-1)">
@@ -8,10 +13,24 @@
           </ion-button>
         </ion-buttons>
         <ion-title>{{ post.title }}</ion-title>
+        <ion-buttons slot="end" v-if="isUserAdmin">
+          <ion-button fill="clear" @click="updatePost()">
+            <ion-icon :icon="createOutline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" @click="deletePost()">
+            <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
+      <ion-header collapse="condense" mode="ios">
+        <ion-toolbar>
+          <h1>{{ post.title }}</h1>
+        </ion-toolbar>
+      </ion-header>
+
       <ion-row>
         <ion-col size="12">
           <img :src="post.cover" alt="" />
@@ -42,8 +61,14 @@ import {
 import { defineComponent, ref } from "vue";
 import Markdown from "vue3-markdown-it";
 import postService from "../../../services/post.vue";
-import { saveOutline, chevronBackOutline } from "ionicons/icons";
+import {
+  chevronBackOutline,
+  createOutline,
+  trashOutline,
+} from "ionicons/icons";
 import systemService from "../../../services/system.vue";
+import eventBus from "../../../EventBus";
+import userService from "../../../services/user.vue";
 
 export default defineComponent({
   name: "HomePage",
@@ -60,19 +85,27 @@ export default defineComponent({
     IonCol,
   },
   setup() {
-    return { saveOutline, chevronBackOutline };
+    return { chevronBackOutline, createOutline, trashOutline };
   },
   data() {
     return {
+      postId: this.$route.params.id,
       post: {
         title: "",
         content: "",
         cover: "",
       },
+      isUserAdmin: false,
     };
   },
   mounted() {
     this.getPost();
+    this.verifyUserAdmin();
+    eventBus().emitter.on("refresh-content", (response: any) => {
+      if (response.event == "new-post") {
+        this.getPost();
+      }
+    });
   },
   methods: {
     async getPost() {
@@ -82,7 +115,7 @@ export default defineComponent({
       loading.present();
 
       postService()
-        .getPost(this.$route.params.id as string)
+        .getPost(this.postId as string)
         .then(async (response) => {
           const title = response.data.post.title;
           const content = response.data.post.content;
@@ -99,6 +132,38 @@ export default defineComponent({
       this.post.title = title;
       this.post.content = content;
       this.post.cover = "data:image/png;base64," + cover;
+    },
+    updatePost() {
+      this.$router.push("/blog/editor/update/" + this.postId);
+    },
+    async deletePost() {
+      const loading = await systemService().presentLoading(
+        "Eliminando publicación"
+      );
+      loading.present();
+
+      postService()
+        .deletePost(this.postId as string)
+        .then((response) => {
+          loading.dismiss();
+          this.$router.push("/blog");
+        })
+        .catch((e) => {
+          loading.dismiss();
+          console.log(e);
+        });
+    },
+    verifyUserAdmin() {
+      if (navigator.onLine) {
+        userService()
+          .getUserPermissions()
+          .then((response) => {
+            this.isUserAdmin = response.admin ? response.admin != null : false;
+          })
+          .catch((e) => {
+            this.isUserAdmin = false;
+          });
+      }
     },
   },
 });

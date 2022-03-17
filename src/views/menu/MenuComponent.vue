@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header class="ion-no-border">
+    <ion-content class="menu-color">
       <ion-toolbar class="menu-color">
         <img src="../../../public/assets/portafolio/dowar.png" />
       </ion-toolbar>
@@ -21,9 +21,7 @@
           </ion-button>
         </ion-item>
       </ion-toolbar>
-    </ion-header>
 
-    <ion-content class="menu-color">
       <ion-item
         lines="none"
         button
@@ -128,7 +126,6 @@
 <script lang="ts">
 import {
   IonContent,
-  IonHeader,
   IonPage,
   IonToolbar,
   modalController,
@@ -158,7 +155,6 @@ export default defineComponent({
   name: "MenuComponent",
   components: {
     IonContent,
-    IonHeader,
     IonPage,
     IonToolbar,
     IonLabel,
