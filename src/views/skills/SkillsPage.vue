@@ -1,17 +1,28 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header
+      :translucent="true"
+      collapse="fade"
+      mode="ios"
+      class="ion-no-border"
+    >
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
-        <ion-title style="color: var(--primary-color) !important"
-          >Conocimientos</ion-title
-        >
+        <ion-title>
+          {{ pageTitle }}
+        </ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
+      <ion-header collapse="condense" mode="ios">
+        <ion-toolbar>
+          <h1>{{ pageTitle }}</h1>
+        </ion-toolbar>
+      </ion-header>
+
       <ion-row>
         <ion-col
           size-md="6"
@@ -84,6 +95,7 @@ export default defineComponent({
   },
   data() {
     return {
+      pageTitle: "Conocimientos",
       skills: [
         {
           tipo: [

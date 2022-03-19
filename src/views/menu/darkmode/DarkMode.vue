@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header :translucent="true" class="ion-no-border" mode="ios">
       <ion-toolbar>
         <ion-title>Modo oscuro</ion-title>
       </ion-toolbar>

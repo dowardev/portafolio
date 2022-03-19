@@ -1,15 +1,26 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header
+      :translucent="true"
+      collapse="fade"
+      mode="ios"
+      class="ion-no-border"
+    >
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
-        <ion-title>Un poco mas de mi</ion-title>
+        <ion-title>{{ pageTitle }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
+      <ion-header collapse="condense" mode="ios">
+        <ion-toolbar>
+          <h1>{{ pageTitle }}</h1>
+        </ion-toolbar>
+      </ion-header>
+
       <ion-row class="ion-padding">
         <ion-col size="12">
           <p>
@@ -125,6 +136,7 @@ export default defineComponent({
   },
   data() {
     return {
+      pageTitle: "Un poco mas de mi",
       edad: new Date().getFullYear() - new Date("1998-06-18").getFullYear(),
     };
   },

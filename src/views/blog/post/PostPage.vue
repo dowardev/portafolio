@@ -1,8 +1,8 @@
 <template>
   <ion-page>
     <ion-header
-      collapse="fade"
       :translucent="true"
+      collapse="fade"
       mode="ios"
       class="ion-no-border"
     >

@@ -1,6 +1,11 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header
+      :translucent="true"
+      collapse="fade"
+      mode="ios"
+      class="ion-no-border"
+    >
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button v-on:click="closeModal()">
@@ -12,6 +17,12 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
+      <ion-header collapse="condense" mode="ios">
+        <ion-toolbar>
+          <h1>{{ datosProyecto.name }}</h1>
+        </ion-toolbar>
+      </ion-header>
+
       <section v-if="datosProyecto.technologies">
         <ion-row>
           <ion-col size="12" class="ion-padding">

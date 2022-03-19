@@ -1,15 +1,26 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header
+      :translucent="true"
+      collapse="fade"
+      mode="ios"
+      class="ion-no-border"
+    >
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
-        <ion-title>Portfolio</ion-title>
+        <ion-title>{{ pageTitle }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
+      <ion-header collapse="condense" mode="ios">
+        <ion-toolbar>
+          <h1>{{ pageTitle }}</h1>
+        </ion-toolbar>
+      </ion-header>
+
       <!-- Projects -->
       <section>
         <h2 class="ion-padding">Proyectos</h2>
@@ -124,7 +135,7 @@ import {
 import ProjectModal from "./project/ProjectPage.vue";
 
 export default defineComponent({
-  name: "HomePage",
+  name: "PortfolioPage",
   components: {
     IonContent,
     IonHeader,
@@ -145,6 +156,7 @@ export default defineComponent({
   },
   setup() {
     return {
+      pageTitle: "Portfolio",
       proyectos: [
         {
           name: "Petstread",

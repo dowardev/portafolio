@@ -11,11 +11,17 @@ import PostPage from "../views/blog/post/PostPage.vue";
 import LoginPage from "../views/session/login/Login.vue";
 import SignUpPage from "../views/session/signup/SignUpPage.vue";
 import RestorePasswordPage from "../views/session/restore-password/RestorePasswordPage.vue";
+import PruebaPage from "../views/prueba/Prueba.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     redirect: "/presentation",
+  },
+  {
+    path: "/prueba",
+    name: "PruebaPage",
+    component: PruebaPage,
   },
   {
     path: "/presentation",
