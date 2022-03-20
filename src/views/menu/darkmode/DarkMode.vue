@@ -2,6 +2,11 @@
   <ion-page>
     <ion-header :translucent="true" class="ion-no-border" mode="ios">
       <ion-toolbar>
+        <ion-buttons>
+          <ion-button class="close-button" @click="closeModal()">
+            <ion-icon :icon="closeOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
         <ion-title>Modo oscuro</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -38,9 +43,11 @@ import {
   IonRadio,
   IonItem,
   IonLabel,
+  modalController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import systemService from "../../../services/system.vue";
+import { closeOutline } from "ionicons/icons";
 
 export default defineComponent({
   components: {
@@ -53,6 +60,9 @@ export default defineComponent({
     IonRadio,
     IonItem,
     IonLabel,
+  },
+  setup() {
+    return { closeOutline };
   },
   data() {
     const darkMode = false as boolean | null;
@@ -74,6 +84,17 @@ export default defineComponent({
     setTheme() {
       systemService().setTheme(this.darkMode);
     },
+    closeModal() {
+      modalController.dismiss();
+    },
   },
 });
 </script>
+
+<style scoped>
+@media only screen and (max-width: 768px), (orientation: landscape) {
+  .close-button {
+    display: none;
+  }
+}
+</style>

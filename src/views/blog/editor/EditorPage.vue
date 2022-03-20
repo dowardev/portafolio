@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header :translucent="true" class="ion-no-border" mode="ios">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button fill="clear" @click="$router.go(-1)">
@@ -14,9 +14,11 @@
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
+    </ion-header>
 
-      <ion-toolbar>
-        <ion-segment v-model="segment">
+    <ion-content>
+      <div class="segment-container">
+        <ion-segment v-model="segment" class="segment-editor">
           <ion-segment-button value="editor">
             <ion-label>Editor</ion-label>
           </ion-segment-button>
@@ -24,18 +26,31 @@
             <ion-label>Resultado</ion-label>
           </ion-segment-button>
         </ion-segment>
-      </ion-toolbar>
-    </ion-header>
+      </div>
 
-    <ion-content>
       <section v-if="segment == 'editor'">
-        <ion-item lines="none" style="--background: transparent">
+        <ion-item lines="none">
+          <ion-button
+            slot="end"
+            fill="clear"
+            @click="($refs as any).inputCover.click()"
+          >
+            <ion-icon :icon="imageOutline"></ion-icon>
+          </ion-button>
+          <input
+            accept="image/*"
+            type="file"
+            @change="uploadCover($event)"
+            style="display: none"
+            ref="inputCover"
+          />
+
           <ion-button
             slot="end"
             fill="clear"
             @click="($refs as any).inputImage.click()"
           >
-            <ion-icon :icon="imageOutline"></ion-icon>
+            <ion-icon :icon="imagesOutline"></ion-icon>
           </ion-button>
           <input
             accept="image/*"
@@ -62,18 +77,6 @@
             @ionChange="setContent($event.detail.value)"
           ></ion-textarea>
         </ion-item>
-        <ion-item lines="none">
-          <ion-button fill="clear" @click="($refs as any).inputCover.click()">
-            Portada
-          </ion-button>
-          <input
-            accept="image/*"
-            type="file"
-            @change="uploadCover($event)"
-            style="display: none"
-            ref="inputCover"
-          />
-        </ion-item>
       </section>
 
       <section v-if="segment == 'result'">
@@ -84,7 +87,7 @@
         </ion-row>
         <ion-row>
           <h1 class="ion-padding">{{ title }}</h1>
-          <ion-col size="12" style="background: #333947; height: 84vh">
+          <ion-col size="12">
             <Markdown :source="content" />
           </ion-col>
         </ion-row>
@@ -114,7 +117,12 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import Markdown from "vue3-markdown-it";
-import { saveOutline, imageOutline, chevronBackOutline } from "ionicons/icons";
+import {
+  saveOutline,
+  imageOutline,
+  chevronBackOutline,
+  imagesOutline,
+} from "ionicons/icons";
 import userService from "../../../services/user.vue";
 
 export default defineComponent({
@@ -150,7 +158,7 @@ export default defineComponent({
     },
   },
   setup() {
-    return { saveOutline, imageOutline, chevronBackOutline };
+    return { saveOutline, imageOutline, chevronBackOutline, imagesOutline };
   },
   data() {
     return {
@@ -202,3 +210,15 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+@media only screen and (min-width: 992px) {
+  .segment-container {
+    display: flex;
+    justify-content: center;
+  }
+  .segment-editor {
+    max-width: 25vw;
+  }
+}
+</style>

@@ -34,19 +34,30 @@
 
       <ion-row v-for="(post, index) in posts" :key="post">
         <ion-col size="4">
-          <img :src="post.cover" alt="" @click="openPost(post.id)" />
+          <img
+            :src="post.cover"
+            alt=""
+            @click="openPost(post.id)"
+            style="cursor: pointer"
+          />
         </ion-col>
         <ion-col size="8">
-          <h2 style="margin-top: 4px">{{ post.title }}</h2>
-          <div v-if="isUserAdmin">
-            <ion-button fill="clear" @click="updatePost(post.id)">
-              <ion-icon :icon="createOutline"></ion-icon>
-            </ion-button>
-            <ion-button fill="clear" @click="deletePost(post.id, index)">
-              <ion-icon :icon="trashOutline" color="danger"></ion-icon>
-            </ion-button>
-          </div>
+          <h2
+            style="margin-top: 4px; cursor: pointer"
+            @click="openPost(post.id)"
+          >
+            {{ post.title }}
+          </h2>
         </ion-col>
+        <ion-col size="12" v-if="isUserAdmin">
+          <ion-button fill="clear" @click="updatePost(post.id)">
+            <ion-icon :icon="createOutline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" @click="deletePost(post.id, index)">
+            <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <hr />
       </ion-row>
     </ion-content>
   </ion-page>
@@ -165,3 +176,24 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+/* hr.style-five { */
+/*   border: 0; */
+/*   height: 0; 
+*/
+/*   box-shadow: 0 0 10px 1px #353535; */
+/* } */
+hr {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0),
+    rgba(32, 31, 31, 0.75),
+    rgba(0, 0, 0, 0)
+  );
+  width: 100%;
+  margin-bottom: 16px;
+}
+</style>

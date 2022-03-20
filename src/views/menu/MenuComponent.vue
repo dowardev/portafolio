@@ -192,6 +192,9 @@ export default defineComponent({
           title: "New Title",
         },
       });
+      modal.onDidDismiss().then(() => {
+        modalController.dismiss();
+      });
       return modal.present();
     },
     async openModalMobile() {
@@ -253,5 +256,8 @@ export default defineComponent({
 .menu-color,
 .ion-item-menu {
   --background: var(--secondary-color);
+}
+.ion-item-menu {
+  --detail-icon-color: white;
 }
 </style>

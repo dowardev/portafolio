@@ -3,7 +3,7 @@
     <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu"></ion-menu-button>
+          <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
         </ion-buttons>
         <ion-title>Crear cuenta</ion-title>
       </ion-toolbar>
