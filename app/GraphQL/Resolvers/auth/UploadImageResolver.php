@@ -22,7 +22,7 @@ class UploadImageResolver
     }
     $file = $args['file'];
     $filename = uniqid() . time() . '.webp';
-    $path = $file->storeAs('images_posts', $filename);
+    $path = $file->storeAs('tmp', $filename);
 
     $image = Images::create([
       'name' => $filename,
@@ -32,9 +32,7 @@ class UploadImageResolver
       'message' => $args['file'],
       'image' => [
         [
-          'source' => base64_encode(
-            Storage::disk('images_posts')->get($image['name'])
-          ),
+          'source' => base64_encode(Storage::disk('tmp')->get($image['name'])),
           'id' => $image->id,
           'path' => $image->path,
           'name' => $image->name,

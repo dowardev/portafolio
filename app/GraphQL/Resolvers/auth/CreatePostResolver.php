@@ -8,6 +8,8 @@ use App\Models\Post;
 use App\Models\PostImage;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Images;
 
 class CreatePostResolver
 {
@@ -20,6 +22,8 @@ class CreatePostResolver
     if (Auth::guard('api')->user()->is_admin == false) {
       throw new Exception('Unauthorized');
     }
+
+    $this->moveImage($args['coverId']);
     $post = Post::create([
       'title' => $args['title'],
       'content' => $args['content'],
@@ -28,11 +32,18 @@ class CreatePostResolver
     $post_id = $post->id;
 
     foreach ($args['images'] as $key => $value) {
+      $this->moveImage($value);
       PostImage::create([
         'post_id' => $post_id,
         'image_id' => $value,
       ]);
     }
     return ['message' => 'Success'];
+  }
+
+  function moveImage($id)
+  {
+    $imageName = Images::find($id)->name;
+    Storage::move('tmp/' . $imageName, 'images_posts/' . $imageName);
   }
 }

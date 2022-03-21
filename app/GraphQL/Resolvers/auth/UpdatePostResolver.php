@@ -37,6 +37,7 @@ class UpdatePostResolver
       ]);
       Storage::delete('images_posts/' . $cover_name);
       Images::where('id', '=', $cover_id)->delete();
+      $this->moveImage($new_cover_id);
     }
 
     foreach ($images_removed as $key => $value) {
@@ -45,6 +46,7 @@ class UpdatePostResolver
     }
 
     foreach ($new_images as $key => $value) {
+      $this->moveImage($value);
       PostImage::create([
         'image_id' => $value,
         'post_id' => $id,
@@ -52,5 +54,10 @@ class UpdatePostResolver
     }
 
     return ['message' => 'Success'];
+  }
+  function moveImage($id)
+  {
+    $imageName = Images::find($id)->name;
+    Storage::move('tmp/' . $imageName, 'images_posts/' . $imageName);
   }
 }
