@@ -35,8 +35,8 @@ input UpdatePostInput {
   id: ID!
   title: String!
   content: String!
-  coverId: ID!
-  newCoverId: ID!
+  coverId: ID
+  newCoverId: ID
   images: [String]
   imagesRemoved: [String]
 }
@@ -167,7 +167,7 @@ type Mutation {
       resolver: "App\\GraphQL\\Resolvers\\auth\\GetUserAuthResolver@resolve"
     )
 
-  createPost(input: CreatePostInput @spread): CreatePostPayload
+  createPost(input: CreatePostInput! @spread): CreatePostPayload
     @field(
       resolver: "App\\GraphQL\\Resolvers\\auth\\CreatePostResolver@resolve"
     )

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Post;
 use App\Models\Images;
 use App\Models\PostImage;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class UpdatePostResolver
 {
@@ -17,13 +19,26 @@ class UpdatePostResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
+    if (Auth::guard('api')->user()->is_admin == false) {
+      throw new Exception('Unauthorized');
+    }
+
     $id = intval($args['id']);
     $title = $args['title'];
     $content = $args['content'];
     $cover_id = intval($args['coverId']);
-    $new_cover_id = intval($args['newCoverId']);
-    $new_images = $args['images'];
-    $images_removed = $args['imagesRemoved'];
+    $new_cover_id = array_key_exists('newCoverId', $args)
+      ? $args['newCoverId']
+      : 0;
+    $new_images = array_key_exists('images', $args) ? $args['images'] : [];
+    $images_removed = array_key_exists('imagesRemoved', $args) ? $args['imagesRemoved'] : [];
+
+    if ($title == '' || $title == 'null') {
+      throw new Exception('Title is required');
+    }
+    if ($content == '' || $content == 'null') {
+      throw new Exception('Content is required');
+    }
 
     Post::where('id', '=', $id)->update([
       'title' => $title,

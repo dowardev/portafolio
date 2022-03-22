@@ -7,7 +7,8 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Post;
 use App\Models\Images;
-use App\Models\PostImage;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class DeletePostResolver
 {
@@ -17,6 +18,10 @@ class DeletePostResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
+    if (Auth::guard('api')->user()->is_admin == false) {
+      throw new Exception('Unauthorized');
+    }
+
     $id = intval($args['id']);
 
     $post_images = Post::find($id)->images;

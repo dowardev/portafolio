@@ -24,6 +24,10 @@ class UploadImageResolver
     $filename = uniqid() . time() . '.webp';
     $path = $file->storeAs('tmp', $filename);
 
+    if ($file == '' || $file == 'null') {
+      throw new Exception('File is required');
+    }
+
     $image = Images::create([
       'name' => $filename,
       'path' => $path,

@@ -16,19 +16,29 @@ class LoginResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
-    $user = User::where('user', '=', $args['user'])
-      ->orWhere('email', '=', $args['user'])
+    $user = $args['user'];
+    $password = $args['password'];
+
+    if ($user == '' || $user == 'null') {
+      throw new Exception('User is required');
+    }
+    if ($password == '' || $password == 'null') {
+      throw new Exception('Password is required');
+    }
+
+    $userData = User::where('user', '=', $user)
+      ->orWhere('email', '=', $user)
       ->get();
 
     $credentials = [
-      'email' => $user[0]->email,
-      'password' => $args['password'],
+      'email' => $userData[0]->email,
+      'password' => $password,
     ];
-    if (count($user) == 0 || !Auth::attempt($credentials)) {
+    if (count($userData) == 0 || !Auth::attempt($credentials)) {
       throw new Exception('Unauthorized');
     }
 
-    if (!$user[0]->is_email_verified) {
+    if (!$userData[0]->is_email_verified) {
       throw new Exception('Unverified email');
     }
 
@@ -39,11 +49,11 @@ class LoginResolver
       'message' => 'Authorized',
       'user' => [
         [
-          'name' => $user[0]->name,
-          'user' => $user[0]->user,
-          'email' => $user[0]->email,
-          'is_admin' => $user[0]->is_admin,
-          'role' => $user[0]->role,
+          'name' => $userData[0]->name,
+          'user' => $userData[0]->user,
+          'email' => $userData[0]->email,
+          'is_admin' => $userData[0]->is_admin,
+          'role' => $userData[0]->role,
         ],
       ],
       'auth' => [

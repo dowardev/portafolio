@@ -23,6 +23,21 @@ class CreatePostResolver
       throw new Exception('Unauthorized');
     }
 
+    $title = $args['title'];
+    $content = $args['content'];
+    $cover_id = $args['coverId'];
+    $images = array_key_exists('images', $args) ? $args['images'] : [];
+
+    if ($title == '' || $title == 'null') {
+      throw new Exception('Title is required');
+    }
+    if ($content == '' || $content == 'null') {
+      throw new Exception('Content is required');
+    }
+    if ($cover_id == '' || $cover_id == null) {
+      throw new Exception('CoverId is required');
+    }
+
     $this->moveImage($args['coverId']);
     $post = Post::create([
       'title' => $args['title'],
@@ -31,7 +46,7 @@ class CreatePostResolver
     ]);
     $post_id = $post->id;
 
-    foreach ($args['images'] as $key => $value) {
+    foreach ($images as $key => $value) {
       $this->moveImage($value);
       PostImage::create([
         'post_id' => $post_id,
