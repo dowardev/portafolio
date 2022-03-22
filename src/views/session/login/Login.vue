@@ -38,7 +38,9 @@
                     style="font-size: 20px; margin-top: 24px"
                     slot="start"
                   ></ion-icon>
-                  <ion-label position="floating"> Correo electrónico</ion-label>
+                  <ion-label position="floating"
+                    >Usuario o correo electrónico</ion-label
+                  >
                   <ion-input
                     v-model="v$.form['email'].$model"
                     type="email"
@@ -215,11 +217,9 @@ export default defineComponent({
       form: {
         email: {
           required: helpers.withMessage(messageRequired, required),
-          email: helpers.withMessage("Correo no valido", email),
         },
         password: {
           required: helpers.withMessage(messageRequired, required),
-          min: minLength(6),
         },
       },
     };
@@ -256,7 +256,8 @@ export default defineComponent({
           );
           this.clearInputs();
           this.presentToast("Bienvenido", "success");
-          this.$router.go(-1);
+          // this.$router.go(-1); error #2
+          this.$router.push("/blog");
           this.saveUserData(response.data.login.user[0]);
         })
         .catch((e) => {
@@ -307,9 +308,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.error {
-  color: var(--ion-color-danger);
-}
 .imagen-usuario {
   border-radius: 50%;
   width: 90px;

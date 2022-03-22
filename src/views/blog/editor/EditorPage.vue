@@ -9,7 +9,7 @@
         </ion-buttons>
         <ion-title>Editor</ion-title>
         <ion-buttons slot="end">
-          <ion-button @click="createPost()">
+          <ion-button @click="createPost()" :disabled="v$.form.$invalid">
             <ion-icon :icon="saveOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -33,21 +33,6 @@
           <ion-button
             slot="end"
             fill="clear"
-            @click="($refs as any).inputCover.click()"
-          >
-            <ion-icon :icon="imageOutline"></ion-icon>
-          </ion-button>
-          <input
-            accept="image/*"
-            type="file"
-            @change="uploadCover($event)"
-            style="display: none"
-            ref="inputCover"
-          />
-
-          <ion-button
-            slot="end"
-            fill="clear"
             @click="($refs as any).inputImage.click()"
           >
             <ion-icon :icon="imagesOutline"></ion-icon>
@@ -63,32 +48,57 @@
         <ion-item>
           <ion-label position="floating">Titulo</ion-label>
           <ion-input
-            :value="title"
             @ionChange="setTitle($event.detail.value)"
+            v-model="v$.form['title'].$model"
           ></ion-input>
         </ion-item>
+        <div v-for="(error, index) of v$.form['title'].$errors" :key="index">
+          <div class="error">{{ error.$message }}</div>
+        </div>
+
+        <ion-item
+          button
+          @click="($refs as any).inputCover.click()"
+          lines="full"
+        >
+          <ion-label slot="start">Portada</ion-label>
+          <input
+            accept="image/*"
+            type="file"
+            @change="uploadCover($event)"
+            style="display: none"
+            ref="inputCover"
+          />
+          <ion-label slot="end">{{ coverName }}</ion-label>
+        </ion-item>
+        <div v-for="(error, index) of v$.form['cover'].$errors" :key="index">
+          <div class="error">{{ error.$message }}</div>
+        </div>
 
         <ion-item>
           <ion-label position="floating">Editor</ion-label>
           <ion-textarea
-            :value="content"
             auto-grow="true"
             placeholder="Contenido"
             @ionChange="setContent($event.detail.value)"
+            v-model="v$.form['content'].$model"
           ></ion-textarea>
         </ion-item>
+        <div v-for="(error, index) of v$.form['content'].$errors" :key="index">
+          <div class="error">{{ error.$message }}</div>
+        </div>
       </section>
 
       <section v-if="segment == 'result'">
         <ion-row>
           <ion-col size="12">
-            <img :src="cover" style="max-width: 32%" />
+            <img :src="form.cover" style="max-width: 32%" />
           </ion-col>
         </ion-row>
         <ion-row>
-          <h1 class="ion-padding">{{ title }}</h1>
+          <h1 class="ion-padding">{{ form.title }}</h1>
           <ion-col size="12">
-            <Markdown :source="content" />
+            <Markdown :source="form.content" />
           </ion-col>
         </ion-row>
       </section>
@@ -124,6 +134,9 @@ import {
   imagesOutline,
 } from "ionicons/icons";
 import userService from "../../../services/user.vue";
+import useVuelidate from "@vuelidate/core";
+import { required, helpers } from "@vuelidate/validators";
+import eventBus from "../../../EventBus";
 
 export default defineComponent({
   name: "EditorPage",
@@ -146,23 +159,36 @@ export default defineComponent({
     IonCol,
     IonPage,
   },
-  props: {
-    title: {
-      type: String,
-    },
-    content: {
-      type: String,
-    },
-    cover: {
-      type: String,
-    },
-  },
   setup() {
-    return { saveOutline, imageOutline, chevronBackOutline, imagesOutline };
+    return {
+      saveOutline,
+      imageOutline,
+      chevronBackOutline,
+      imagesOutline,
+      v$: useVuelidate(),
+    };
   },
   data() {
     return {
       segment: "editor",
+      form: { title: "", content: "", cover: "" },
+      coverName: "",
+    };
+  },
+  validations() {
+    const messageRequired = "Campo requerido";
+    return {
+      form: {
+        title: {
+          required: helpers.withMessage(messageRequired, required),
+        },
+        content: {
+          required: helpers.withMessage(messageRequired, required),
+        },
+        cover: {
+          required: helpers.withMessage(messageRequired, required),
+        },
+      },
     };
   },
   beforeRouteEnter(to, from, next) {
@@ -178,6 +204,13 @@ export default defineComponent({
       .catch((e) => {
         next("/blog");
       });
+  },
+  mounted() {
+    eventBus().emitter.on("set-data-post-update", (response: any) => {
+      this.form.title = response.title;
+      this.form.content = response.content;
+      this.form.cover = response.cover;
+    });
   },
   methods: {
     createPost() {
@@ -199,6 +232,8 @@ export default defineComponent({
     },
     async uploadCover(e: any) {
       const image = this.getImage(e);
+      this.form.cover = image;
+      this.coverName = image.name;
       this.$emit("uploadCover", { image });
     },
     setTitle(e: string) {
@@ -206,6 +241,12 @@ export default defineComponent({
     },
     setContent(e: string) {
       this.$emit("setContent", { content: e });
+    },
+    clearInputs() {
+      this.form.title = "";
+      this.form.content = "";
+      this.coverName = "";
+      this.v$.$reset();
     },
   },
 });

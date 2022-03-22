@@ -5,7 +5,7 @@
         <img src="../../../public/assets/portafolio/dowar.png" />
       </ion-toolbar>
       <ion-toolbar class="menu-color">
-        <ion-item lines="full" v-if="userLogged == false">
+        <ion-item lines="none" v-if="userLogged == false">
           <ion-label style="color: white !important">Bienvenido</ion-label>
           <ion-button fill="clear" @click="openRoute('/login')">
             <ion-icon :icon="logInOutline"></ion-icon>
@@ -14,7 +14,7 @@
             <ion-icon :icon="personAddOutline"></ion-icon>
           </ion-button>
         </ion-item>
-        <ion-item lines="full" v-if="userLogged == true">
+        <ion-item lines="none" v-if="userLogged == true">
           <ion-label style="color: white !important">{{ userName }}</ion-label>
           <ion-button fill="clear" @click="userLogout()">
             <ion-icon :icon="logOutOutline"></ion-icon>

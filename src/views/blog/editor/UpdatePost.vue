@@ -8,9 +8,6 @@
         @uploadImage="uploadImage($event)"
         @setTitle="form.title = $event.title"
         @setContent="setContent($event.content)"
-        :cover="coverSource"
-        :title="form.title"
-        :content="form.content"
       ></EditorComponent>
     </ion-content>
   </ion-page>
@@ -81,24 +78,23 @@ export default defineComponent({
           const coverId = response.data.post.cover.id;
           const cover = await postService().getImage({ name: coverName });
 
-          this.showPost(
+          this.showPost(title, content, coverId);
+          this.getPostImages();
+          this.setDataEditorComponent(
             title,
             content,
-            coverId,
-            cover.data.getImage.image[0].source
+            "data:image/png;base64," + cover.data.getImage.image[0].source
           );
-          this.getPostImages();
           loading.dismiss();
         })
         .catch((e) => {
           loading.dismiss();
         });
     },
-    showPost(title: string, content: string, coverId: string, cover: string) {
+    showPost(title: string, content: string, coverId: string) {
       this.form.title = title;
       this.form.content = content;
       this.form.coverId = coverId;
-      this.coverSource = "data:image/png;base64," + cover;
     },
     async updatePost() {
       const loading = await systemService().presentLoading("Actualizando post");
@@ -188,6 +184,7 @@ export default defineComponent({
       this.form.content = "";
       this.form.coverId = "";
       this.form.newImages.length = 0;
+      (this.$refs.editorRef as any).clearInputs();
     },
     setContent(e) {
       this.form.content = e;
@@ -204,6 +201,13 @@ export default defineComponent({
         if (this.form.content.includes(element) == false) {
           this.form.imagesRemoved.push(element.split("=")[1]);
         }
+      });
+    },
+    setDataEditorComponent(title: string, content: string, cover: string) {
+      eventBus().emitter.emit("set-data-post-update", {
+        title,
+        content,
+        cover,
       });
     },
   },

@@ -22,7 +22,6 @@ import { defineComponent } from "vue";
 import Menu from "./views/menu/MenuComponent.vue";
 import systemService from "./services/system.vue";
 import userService from "./services/user.vue";
-import eventBus from "./EventBus";
 
 export default defineComponent({
   name: "App",

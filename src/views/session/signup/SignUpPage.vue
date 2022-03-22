@@ -365,9 +365,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.error {
-  color: var(--ion-color-danger);
-}
 .center {
   display: flex;
   justify-content: center;

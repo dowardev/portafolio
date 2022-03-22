@@ -8,9 +8,6 @@
         @uploadImage="uploadImage($event)"
         @setTitle="form.title = $event.title"
         @setContent="form.content = $event.content"
-        :cover="coverSource"
-        :title="form.title"
-        :content="form.content"
       ></EditorComponent>
     </ion-content>
   </ion-page>
@@ -107,6 +104,7 @@ export default defineComponent({
       const loading = await systemService().presentLoading("Subiendo imagen");
       loading.present();
       const image = e.image;
+
       postService()
         .uploadImage(image)
         .then((response) => {
@@ -136,6 +134,7 @@ export default defineComponent({
       this.form.content = "";
       this.form.coverId = 0;
       this.form.images = Array<number>();
+      (this.$refs.editorRef as any).clearInputs();
     },
   },
 });

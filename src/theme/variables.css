@@ -286,6 +286,9 @@ http://ionicframework.com/docs/theming/ */
 ion-icon {
   color: var(--accent-color);
 }
+.error {
+  color: var(--ion-color-danger);
+}
 
 /* ionic card */
 ion-card {
@@ -320,6 +323,7 @@ ion-title {
 }
 ion-item {
   --background: transparent;
+  --border-color: var(--secondary-text-color);
 }
 ion-item.ios {
   --border-width: 0;
