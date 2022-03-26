@@ -31,16 +31,16 @@ export default function () {
   async function createPost(
     title: string,
     content: string,
-    coverId: number,
-    images: number[]
+    coverId: string,
+    images: string[]
   ) {
     return apollo.defaultClient.mutate({
       mutation: gql`
         mutation (
           $title: String!
           $content: String!
-          $coverId: Int!
-          $images: [Int]
+          $coverId: ID!
+          $images: [ID]
         ) {
           createPost(
             input: {

@@ -3,11 +3,11 @@
     <ion-content :fullscreen="true">
       <EditorComponent
         ref="editorRef"
-        @createPost="updatePost"
-        @uploadCover="uploadCover($event)"
         @uploadImage="uploadImage($event)"
-        @setTitle="form.title = $event.title"
-        @setContent="setContent($event.content)"
+        @save="save($event)"
+        :title="title"
+        :content="content"
+        :cover="cover"
       ></EditorComponent>
     </ion-content>
   </ion-page>
@@ -32,16 +32,10 @@ export default defineComponent({
     return {
       idPost: this.$route.params.id,
       segment: "editor",
-      form: {
-        title: "",
-        content: "",
-        coverId: "",
-        newCoverId: "",
-        newImages: Array<string>(),
-        imagesRemoved: Array<string>(),
-      },
-      coverSource: "",
+      title: "",
       content: "",
+      cover: { id: "", name: "", source: "" },
+      newImages: Array<string>(),
       images: Array<string>(),
     };
   },
@@ -76,57 +70,123 @@ export default defineComponent({
           const content = response.data.post.content;
           const coverName = response.data.post.cover.name;
           const coverId = response.data.post.cover.id;
-          const cover = await postService().getImage({ name: coverName });
+          const coverSource = (
+            await postService().getImage({ name: coverName })
+          ).data.getImage.image[0].source;
 
-          this.showPost(title, content, coverId);
-          this.getPostImages();
-          this.setDataEditorComponent(
-            title,
-            content,
-            "data:image/png;base64," + cover.data.getImage.image[0].source
-          );
+          this.setData({ title, content, coverId, coverName, coverSource });
           loading.dismiss();
         })
         .catch((e) => {
           loading.dismiss();
         });
     },
-    showPost(title: string, content: string, coverId: string) {
-      this.form.title = title;
-      this.form.content = content;
-      this.form.coverId = coverId;
+
+    setData(data: {
+      title: string;
+      content: string;
+      coverId: string;
+      coverName: string;
+      coverSource: string;
+    }) {
+      this.title = data.title;
+      this.content = data.content;
+      this.cover = {
+        id: data.coverId,
+        name: data.coverName,
+        source: data.coverSource,
+      };
+      this.getPostImages(data.content);
     },
-    async updatePost() {
+
+    async save(data: {
+      title: string;
+      content: string;
+      cover: object;
+      newCoverStatus: boolean;
+    }) {
       const loading = await systemService().presentLoading("Actualizando post");
       loading.present();
-      const title = this.form.title;
-      const content = this.form.content;
-      const coverId = this.form.coverId;
-      const newCoverId = this.form.newCoverId;
-      const images = this.form.newImages;
-      const imagesRemoved = this.form.imagesRemoved;
 
-      postService()
-        .updatePost({
-          id: this.idPost as string,
-          title,
-          content,
-          coverId,
-          newCoverId,
-          images,
-          imagesRemoved,
-        })
-        .then((response) => {
+      const id = this.idPost as string;
+      const title = data.title;
+      const content = data.content;
+      const cover = data.cover;
+      const coverId = this.cover.id;
+      let newCoverId = "";
+      const newCoverStatus = data.newCoverStatus;
+      const images = this.newImages;
+      const imagesRemoved = this.getRemovedImages(data.content);
+
+      let uploadCover = true;
+      if (newCoverStatus) {
+        uploadCover = await this.uploadCover(cover)
+          .then((response) => {
+            newCoverId = response;
+            return true;
+          })
+          .catch((e) => {
+            console.log(e);
+            systemService().openToast("Ocurrió un problema", "danger");
+            return false;
+          });
+      }
+
+      if (uploadCover == false) {
+        loading.dismiss();
+        return;
+      }
+
+      this.updatePost({
+        id,
+        title,
+        content,
+        coverId,
+        newCoverId,
+        images,
+        imagesRemoved,
+      })
+        .then(() => {
           loading.dismiss();
           eventBus().emitter.emit("refresh-content", { event: "new-post" });
-          this.openToast("Publicado correctamente", "success");
+          systemService().openToast("Actualizado correctamente", "success");
           this.clearInputs();
           this.$router.go(-1);
         })
         .catch((e) => {
+          console.log(e);
           loading.dismiss();
-          this.openToast("Ocurrió un error al publicar", "danger");
+          systemService().openToast("Ocurrió un problema", "danger");
         });
+    },
+
+    async updatePost(data: {
+      id: string;
+      title: string;
+      content: string;
+      coverId: string;
+      newCoverId: string;
+      images: Array<string>;
+      imagesRemoved: Array<string>;
+    }) {
+      return new Promise((resolve, reject) => {
+        postService()
+          .updatePost({
+            id: data.id,
+            title: data.title,
+            content: data.content,
+            coverId: data.coverId,
+            newCoverId: data.newCoverId,
+            images: data.images,
+            imagesRemoved: data.imagesRemoved,
+          })
+          .then((response) => {
+            resolve(true);
+          })
+          .catch((e) => {
+            reject(e);
+          });
+      });
     },
     async uploadImage(e: any) {
       const loading = await systemService().presentLoading("Subiendo imagen");
@@ -138,77 +198,54 @@ export default defineComponent({
         .then((response) => {
           loading.dismiss();
 
-          this.form.content +=
+          this.content =
             "![Markdown Logo](http://localhost:8000/api/get-image?name=" +
             response.data.data.uploadImage.image[0].name +
             " 'Markdown Tutorial')";
 
-          this.form.newImages.push(response.data.data.uploadImage.image[0].id);
+          this.newImages.push(response.data.data.uploadImage.image[0].id);
         })
         .catch((e) => {
           loading.dismiss();
-          this.openToast("Ocurrió un error al subir la imagen", "danger");
+          systemService().openToast(
+            "Ocurrió un error al subir la imagen",
+            "danger"
+          );
         });
     },
-    async uploadCover(e) {
-      const loading = await systemService().presentLoading("Subiendo imagen");
-      loading.present();
-      const image = e.image;
-
-      postService()
-        .uploadImage(image)
-        .then((response) => {
-          loading.dismiss();
-
-          this.coverSource =
-            "data:image/png;base64," +
-            response.data.data.uploadImage.image[0].source;
-
-          this.form.newCoverId = response.data.data.uploadImage.image[0].id;
-        })
-        .catch((e) => {
-          loading.dismiss();
-          this.openToast("Ocurrió un al subir la portada", "danger");
-        });
-    },
-    async openToast(message: string, color: string) {
-      const toast = await toastController.create({
-        message,
-        duration: 2000,
-        color,
+    async uploadCover(image: object): Promise<string> {
+      return new Promise((resolve, reject) => {
+        postService()
+          .uploadImage(image)
+          .then((response) => {
+            resolve(response.data.data.uploadImage.image[0].id);
+          })
+          .catch((e) => {
+            reject(e);
+          });
       });
-      return toast.present();
     },
     clearInputs() {
-      this.form.title = "";
-      this.form.content = "";
-      this.form.coverId = "";
-      this.form.newImages.length = 0;
+      this.title = "";
+      this.content = "";
+      this.cover.id = "";
+      this.newImages.length = 0;
       (this.$refs.editorRef as any).clearInputs();
     },
-    setContent(e) {
-      this.form.content = e;
-      this.getRemovedImages();
-    },
-    getPostImages() {
-      const imageId = this.form.content.match(/\bhttp?:\/\/\S+/gi);
+    getPostImages(content: string) {
+      const imageId = content.match(/\bhttp?:\/\/\S+/gi);
       imageId?.forEach((element) => {
         this.images.push(element);
       });
     },
-    getRemovedImages() {
+    getRemovedImages(content: string) {
+      const imagesRemoved = Array<string>();
       this.images.forEach((element: string) => {
-        if (this.form.content.includes(element) == false) {
-          this.form.imagesRemoved.push(element.split("=")[1]);
+        if (content.includes(element) == false) {
+          imagesRemoved.push(element.split("=")[1]);
         }
       });
-    },
-    setDataEditorComponent(title: string, content: string, cover: string) {
-      eventBus().emitter.emit("set-data-post-update", {
-        title,
-        content,
-        cover,
-      });
+      return imagesRemoved;
     },
   },
 });

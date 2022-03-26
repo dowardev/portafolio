@@ -9,7 +9,7 @@
         </ion-buttons>
         <ion-title>Editor</ion-title>
         <ion-buttons slot="end">
-          <ion-button @click="createPost()" :disabled="v$.form.$invalid">
+          <ion-button @click="save()" :disabled="v$.$invalid">
             <ion-icon :icon="saveOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -47,12 +47,9 @@
         </ion-item>
         <ion-item>
           <ion-label position="floating">Titulo</ion-label>
-          <ion-input
-            @ionChange="setTitle($event.detail.value)"
-            v-model="v$.form['title'].$model"
-          ></ion-input>
+          <ion-input v-model="v$.postTitle.$model"> </ion-input>
         </ion-item>
-        <div v-for="(error, index) of v$.form['title'].$errors" :key="index">
+        <div v-for="(error, index) of v$.postTitle.$errors" :key="index">
           <div class="error">{{ error.$message }}</div>
         </div>
 
@@ -71,7 +68,7 @@
           />
           <ion-label slot="end">{{ coverName }}</ion-label>
         </ion-item>
-        <div v-for="(error, index) of v$.form['cover'].$errors" :key="index">
+        <div v-for="(error, index) of v$.coverSource.$errors" :key="index">
           <div class="error">{{ error.$message }}</div>
         </div>
 
@@ -80,25 +77,25 @@
           <ion-textarea
             auto-grow="true"
             placeholder="Contenido"
-            @ionChange="setContent($event.detail.value)"
-            v-model="v$.form['content'].$model"
+            v-model="v$.postContent.$model"
           ></ion-textarea>
         </ion-item>
-        <div v-for="(error, index) of v$.form['content'].$errors" :key="index">
+        <div v-for="(error, index) of v$.postContent.$errors" :key="index">
           <div class="error">{{ error.$message }}</div>
         </div>
       </section>
 
+      <!-- view -->
       <section v-if="segment == 'result'">
         <ion-row>
           <ion-col size="12">
-            <img :src="form.cover" style="max-width: 32%" />
+            <img :src="coverImage" style="max-width: 32%" />
           </ion-col>
         </ion-row>
         <ion-row>
-          <h1 class="ion-padding">{{ form.title }}</h1>
+          <h1 class="ion-padding">{{ title }}</h1>
           <ion-col size="12">
-            <Markdown :source="form.content" />
+            <Markdown :source="content" />
           </ion-col>
         </ion-row>
       </section>
@@ -159,6 +156,23 @@ export default defineComponent({
     IonCol,
     IonPage,
   },
+  props: {
+    title: String,
+    content: String,
+    cover: {},
+  },
+  watch: {
+    title: function (newVal, oldVal) {
+      (this.v$ as any).postTitle.$model = newVal;
+    },
+    content: function (newVal, oldVal) {
+      (this.v$ as any).postContent.$model += newVal;
+    },
+    cover: function (newVal, oldVal) {
+      this.coverName = newVal.name;
+      this.coverSource = "data:image/png;base64," + newVal.source;
+    },
+  },
   setup() {
     return {
       saveOutline,
@@ -171,23 +185,25 @@ export default defineComponent({
   data() {
     return {
       segment: "editor",
-      form: { title: "", content: "", cover: "" },
+      postTitle: "",
+      postContent: "",
       coverName: "",
+      coverImage: "",
+      coverSource: "",
+      newCoverStatus: false,
     };
   },
   validations() {
     const messageRequired = "Campo requerido";
     return {
-      form: {
-        title: {
-          required: helpers.withMessage(messageRequired, required),
-        },
-        content: {
-          required: helpers.withMessage(messageRequired, required),
-        },
-        cover: {
-          required: helpers.withMessage(messageRequired, required),
-        },
+      postTitle: {
+        required: helpers.withMessage(messageRequired, required),
+      },
+      postContent: {
+        required: helpers.withMessage(messageRequired, required),
+      },
+      coverSource: {
+        required: helpers.withMessage(messageRequired, required),
       },
     };
   },
@@ -205,18 +221,14 @@ export default defineComponent({
         next("/blog");
       });
   },
-  mounted() {
-    eventBus().emitter.on("set-data-post-update", (response: any) => {
-      this.form.title = response.title;
-      this.form.content = response.content;
-      this.form.cover = response.cover;
-    });
-  },
   methods: {
-    createPost() {
-      this.$emit("createPost");
+    save() {
+      const title = this.postTitle;
+      const content = this.postContent;
+      const cover = this.coverSource;
+      const newCoverStatus = this.newCoverStatus;
+      this.$emit("save", { title, content, cover, newCoverStatus });
     },
-
     getImage(e: any) {
       const file = e.target.files[0];
       return file;
@@ -232,19 +244,14 @@ export default defineComponent({
     },
     async uploadCover(e: any) {
       const image = this.getImage(e);
-      this.form.cover = image;
+      this.coverImage = URL.createObjectURL(image);
+      this.coverSource = image;
       this.coverName = image.name;
-      this.$emit("uploadCover", { image });
-    },
-    setTitle(e: string) {
-      this.$emit("setTitle", { title: e });
-    },
-    setContent(e: string) {
-      this.$emit("setContent", { content: e });
+      this.newCover = true;
     },
     clearInputs() {
-      this.form.title = "";
-      this.form.content = "";
+      this.postTitle = "";
+      this.postContent = "";
       this.coverName = "";
       this.v$.$reset();
     },
