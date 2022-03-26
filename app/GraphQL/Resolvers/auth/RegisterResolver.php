@@ -59,7 +59,7 @@ class RegisterResolver
     Mail::send('emails.emailVerificationEmail', ['token' => $token], function (
       $message
     ) use ($args) {
-      $message->to($args);
+      $message->to($args['email']);
       $message->subject('Email Verification Mail');
     });
     return ['message' => 'Success'];

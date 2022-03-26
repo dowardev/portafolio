@@ -42,8 +42,7 @@ class LoginResolver
       throw new Exception('Unverified email');
     }
 
-    $us = User::find(1);
-    $token = $us->createToken('Personal Access Token')->accessToken;
+    $token = $userData[0]->createToken('Personal Access Token')->accessToken;
 
     return [
       'message' => 'Authorized',

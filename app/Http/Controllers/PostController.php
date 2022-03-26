@@ -13,20 +13,20 @@ class PostController extends Controller
     function createPost(Request $request)
     {
         $post = Post::create([
-            "title" => $request->title,
-            "content" => $request->content,
-            "cover_id" => $request->coverId,
+            'title' => $request->title,
+            'content' => $request->content,
+            'cover_id' => $request->coverId,
         ]);
 
         $post_id = $post->id;
         foreach ($request->images as $key => $value) {
             PostImage::create([
-                "post_id" => $post_id,
-                "image_id" => $value,
+                'post_id' => $post_id,
+                'image_id' => $value,
             ]);
         }
 
-        return response()->json("Success", 200);
+        return response()->json('Success', 200);
     }
     function getPosts()
     {
@@ -44,21 +44,25 @@ class PostController extends Controller
     }
     function uploadImagePost(Request $request)
     {
-        $file = $request->file("image");
-        $filename = uniqid() . time() . ".webp";
-        $path = $file->storeAs("images_posts", $filename);
+        $file = $request->file('image');
+        $filename = uniqid() . time() . '.webp';
+        $path = $file->storeAs('images_posts', $filename);
 
         $image = Images::create([
-            "name" => $filename,
-            "path" => $path,
+            'name' => $filename,
+            'path' => $path,
         ]);
         return response()->json(
-            ["id" => $image->id, "name" => $filename, "path" => $path],
+            ['id' => $image->id, 'name' => $filename, 'path' => $path],
             200
         );
     }
     function getImagePost(Request $request)
     {
-        return Storage::disk("images_posts")->get($request->name);
+        if (Storage::disk('tmp')->get($request->name)) {
+            return Storage::disk('tmp')->get($request->name);
+        } else {
+            return Storage::disk('images_posts')->get($request->name);
+        }
     }
 }

@@ -27,11 +27,16 @@ class UpdatePostResolver
     $title = $args['title'];
     $content = $args['content'];
     $cover_id = intval($args['coverId']);
+
     $new_cover_id = array_key_exists('newCoverId', $args)
       ? $args['newCoverId']
-      : 0;
+      : '';
+
     $new_images = array_key_exists('images', $args) ? $args['images'] : [];
-    $images_removed = array_key_exists('imagesRemoved', $args) ? $args['imagesRemoved'] : [];
+
+    $images_removed = array_key_exists('imagesRemoved', $args)
+      ? $args['imagesRemoved']
+      : [];
 
     if ($title == '' || $title == 'null') {
       throw new Exception('Title is required');
@@ -45,7 +50,7 @@ class UpdatePostResolver
       'content' => $content,
     ]);
 
-    if ($new_cover_id != 0) {
+    if ($new_cover_id != '') {
       $cover_name = Images::where('id', '=', $cover_id)->get()[0]->name;
       Post::where('id', '=', $id)->update([
         'cover_id' => $new_cover_id,

@@ -28,8 +28,8 @@ input RestoreUserPasswordInput {
 input CreatePostInput {
   title: String!
   content: String!
-  coverId: Int!
-  images: [Int]
+  coverId: ID!
+  images: [ID]
 }
 input UpdatePostInput {
   id: ID!
