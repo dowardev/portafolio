@@ -1,6 +1,6 @@
 <?php
 
-namespace App\GraphQL\Resolvers\auth;
+namespace App\GraphQL\Resolvers\post;
 
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;

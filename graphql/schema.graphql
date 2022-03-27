@@ -68,6 +68,8 @@ type Post {
   title: String!
   content: String!
   cover: Image! @belongsTo(relation: "cover")
+  created_at: String
+  updated_at: String
 }
 type UserAuth {
   access_token: String!
@@ -169,24 +171,26 @@ type Mutation {
 
   createPost(input: CreatePostInput! @spread): CreatePostPayload
     @field(
-      resolver: "App\\GraphQL\\Resolvers\\auth\\CreatePostResolver@resolve"
+      resolver: "App\\GraphQL\\Resolvers\\post\\CreatePostResolver@resolve"
     )
 
   updatePost(input: UpdatePostInput @spread): UpdatePostPayload
     @field(
-      resolver: "App\\GraphQL\\Resolvers\\auth\\UpdatePostResolver@resolve"
+      resolver: "App\\GraphQL\\Resolvers\\post\\UpdatePostResolver@resolve"
     )
 
   deletePost(input: DeletePostInput @spread): DeletePostPayload
     @field(
-      resolver: "App\\GraphQL\\Resolvers\\auth\\DeletePostResolver@resolve"
+      resolver: "App\\GraphQL\\Resolvers\\post\\DeletePostResolver@resolve"
     )
 
   uploadImage(input: FileInput @spread): UploadImagePayload
     @field(
-      resolver: "App\\GraphQL\\Resolvers\\auth\\UploadImageResolver@resolve"
+      resolver: "App\\GraphQL\\Resolvers\\others\\UploadImageResolver@resolve"
     )
 
   getImage(input: ImageInput @spread): GetImagePayload
-    @field(resolver: "App\\GraphQL\\Resolvers\\auth\\GetImageResolver@resolve")
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\others\\GetImageResolver@resolve"
+    )
 }
