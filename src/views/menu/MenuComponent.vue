@@ -103,6 +103,11 @@
     <ion-footer class="ion-no-border">
       <ion-toolbar class="menu-color">
         <ion-buttons slot="end">
+          <!-- button feedback -->
+          <ion-button @click="openModalFeedback">
+            <ion-icon :icon="thumbsUpOutline"></ion-icon>
+          </ion-button>
+          <!-- dark button -->
           <ion-button
             fill="clear"
             @click="openModalDesktop()"
@@ -144,12 +149,14 @@ import {
   personAddOutline,
   logInOutline,
   logOutOutline,
+  thumbsUpOutline,
 } from "ionicons/icons";
 import DarkMode from "./darkmode/DarkMode.vue";
 import sessionService from "../../services/session.vue";
 import eventBus from "../../EventBus";
 import systemService from "../../services/system.vue";
 import userService from "../../services/user.vue";
+import FeedbackPage from "./feedback/FeedbackPage.vue";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -172,6 +179,7 @@ export default defineComponent({
       personAddOutline,
       logInOutline,
       logOutOutline,
+      thumbsUpOutline,
     };
   },
   data() {
@@ -222,7 +230,10 @@ export default defineComponent({
             "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
           userService().setUserToken(token);
           this.userLogged = false;
-          systemService().openToast("Hasta pronto", "success");
+          systemService().openToast({
+            message: "Hasta pronto",
+            color: "success",
+          });
           sessionService().removeUserCached();
         })
         .catch((e) => {
@@ -241,6 +252,13 @@ export default defineComponent({
         .catch((e) => {
           this.userLogged = false;
         });
+    },
+    async openModalFeedback() {
+      const modal = await modalController.create({
+        component: FeedbackPage,
+        // cssClass: "my-custom-class",
+      });
+      return modal.present();
     },
   },
 });

@@ -7,6 +7,14 @@ import apolloClient from "../Apollo";
 
 const apollo = apolloClient;
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  admin: boolean;
+  role: string[];
+}
+
 export default function () {
   function setUserToken(token: string | null) {
     document.cookie = "token=" + token;
@@ -55,11 +63,10 @@ export default function () {
       },
     });
   }
+
   function getUser(): Promise<{
     message: string;
-    user:
-      | [{ name: string; email: string; admin: boolean; role: string[] }]
-      | null;
+    user: User | null;
   }> {
     return new Promise((resolve, reject) => {
       const mutation = gql`
@@ -67,6 +74,7 @@ export default function () {
           getUserAuth {
             message
             user {
+              id
               name
               email
               is_admin
@@ -83,14 +91,13 @@ export default function () {
           if (response.data.getUserAuth.message == "Success") {
             resolve({
               message: response.data.getUserAuth.message,
-              user: [
-                {
-                  name: response.data.getUserAuth.user[0].name as string,
-                  email: response.data.getUserAuth.user[0].email as string,
-                  admin: response.data.getUserAuth.user[0].is_admin as boolean,
-                  role: response.data.getUserAuth.user[0].role as string[],
-                },
-              ],
+              user: {
+                id: response.data.getUserAuth.user[0].id as string,
+                name: response.data.getUserAuth.user[0].name as string,
+                email: response.data.getUserAuth.user[0].email as string,
+                admin: response.data.getUserAuth.user[0].is_admin as boolean,
+                role: response.data.getUserAuth.user[0].role as string[],
+              },
             });
           }
           resolve({
@@ -120,7 +127,7 @@ export default function () {
         getUser()
           .then(
             (response) => {
-              resolve({ message: "Success", name: response.user![0].name });
+              resolve({ message: "Success", name: response.user!.name });
             },
             (e) => {
               throw new Error(e);

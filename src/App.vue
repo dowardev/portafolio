@@ -47,7 +47,7 @@ export default defineComponent({
         .getUser()
         .then((response) => {
           if (response.user) {
-            const data = response.user![0];
+            const data = response.user;
             data["is_admin"] = data.admin;
             userService().setUserData(data);
           }

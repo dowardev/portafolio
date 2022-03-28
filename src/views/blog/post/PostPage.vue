@@ -25,6 +25,12 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
+      <ion-row>
+        <ion-col size="12">
+          <img :src="post.cover" alt="" />
+        </ion-col>
+      </ion-row>
+
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
           <h1>{{ post.title }}</h1>
@@ -32,10 +38,14 @@
       </ion-header>
 
       <ion-row>
-        <ion-col size="12">
-          <img :src="post.cover" alt="" />
+        <ion-col>
+          <p class="post-date">Creación del post: {{ post.created }}</p>
+          <p class="post-date">
+            Ultimá actualización del post: {{ post.updated }}
+          </p>
         </ion-col>
       </ion-row>
+
       <ion-row>
         <ion-col size="12" style="height: 84vh">
           <Markdown :source="post.content" />
@@ -52,7 +62,6 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  loadingController,
   IonButtons,
   IonIcon,
   IonRow,
@@ -69,9 +78,10 @@ import {
 import systemService from "../../../services/system.vue";
 import eventBus from "../../../EventBus";
 import userService from "../../../services/user.vue";
+import { zonedTimeToUtc, utcToZonedTime, format } from "date-fns-tz";
 
 export default defineComponent({
-  name: "HomePage",
+  name: "PostPage",
   components: {
     IonContent,
     IonHeader,
@@ -94,6 +104,8 @@ export default defineComponent({
         title: "",
         content: "",
         cover: "",
+        created: "",
+        updated: "",
       },
       isUserAdmin: false,
     };
@@ -121,17 +133,42 @@ export default defineComponent({
           const content = response.data.post.content;
           const coverName = response.data.post.cover.name;
           const cover = await postService().getImage({ name: coverName });
-          this.showPost(title, content, cover.data.getImage.image[0].source);
+          const created = utcToZonedTime(
+            new Date(response.data.post.created_at + "Z"),
+            "America/Chihuahua"
+          );
+          const postCreated = format(created, "P");
+          const updated = utcToZonedTime(
+            new Date(response.data.post.updated_at + "Z"),
+            "America/Chihuahua"
+          );
+          const postUpdated = format(updated, "P");
+
+          this.setData({
+            title,
+            content,
+            cover: cover.data.getImage.image[0].source,
+            created: postCreated,
+            updated: postUpdated,
+          });
           loading.dismiss();
         })
         .catch((e) => {
           loading.dismiss();
         });
     },
-    showPost(title: string, content: string, cover: string) {
-      this.post.title = title;
-      this.post.content = content;
-      this.post.cover = "data:image/png;base64," + cover;
+    setData(data: {
+      title: string;
+      content: string;
+      cover: string;
+      created: string;
+      updated: string;
+    }) {
+      this.post.title = data.title;
+      this.post.content = data.content;
+      this.post.cover = "data:image/png;base64," + data.cover;
+      this.post.created = data.created;
+      this.post.updated = data.updated;
     },
     updatePost() {
       this.$router.push("/blog/editor/update/" + this.postId);
@@ -168,3 +205,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.post-date {
+  font-size: 12px;
+}
+</style>

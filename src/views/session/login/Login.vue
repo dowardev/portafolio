@@ -37,14 +37,13 @@
                     :icon="mailOpenOutline"
                     style="font-size: 20px; margin-top: 24px"
                     slot="start"
-                  ></ion-icon>
-                  <ion-label position="floating"
-                    >Usuario o correo electrónico</ion-label
                   >
-                  <ion-input
-                    v-model="v$.form['email'].$model"
-                    type="email"
-                  ></ion-input>
+                  </ion-icon>
+                  <ion-label position="floating">
+                    Usuario o correo electrónico
+                  </ion-label>
+                  <ion-input v-model="v$.form['email'].$model" type="email">
+                  </ion-input>
                 </ion-item>
                 <div
                   v-for="(error, index) of v$.form['email'].$errors"
@@ -58,7 +57,8 @@
                     :icon="fingerPrintOutline"
                     style="font-size: 20px; margin-top: 24px"
                     slot="start"
-                  ></ion-icon>
+                  >
+                  </ion-icon>
                   <ion-label position="floating">Contraseña</ion-label>
                   <ion-input
                     v-model="v$.form['password'].$model"
@@ -171,7 +171,6 @@ import sessionService from "../../../services/session.vue";
 import userService from "../../../services/user.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, email, minLength, helpers } from "@vuelidate/validators";
-import eventBus from "../../../EventBus";
 
 export default defineComponent({
   name: "LoginPage",
@@ -256,9 +255,7 @@ export default defineComponent({
           );
           this.clearInputs();
           this.presentToast("Bienvenido", "success");
-          // this.$router.go(-1); error #2
-          this.$router.push("/blog");
-          this.saveUserData(response.data.login.user[0]);
+          location.reload();
         })
         .catch((e) => {
           loading.dismiss();
@@ -298,10 +295,6 @@ export default defineComponent({
         message,
       });
       return loading;
-    },
-    saveUserData(data: any) {
-      userService().setUserData(data);
-      eventBus().emitter.emit("refresh-user-content");
     },
   },
 });

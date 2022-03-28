@@ -65,7 +65,10 @@ export default defineComponent({
         })
         .catch((e) => {
           console.log(e);
-          systemService().openToast("Ocurrió un problema", "danger");
+          systemService().openToast({
+            message: "Ocurrió un problema",
+            color: "danger",
+          });
           return false;
         });
 
@@ -80,11 +83,17 @@ export default defineComponent({
           eventBus().emitter.emit("refresh-content", { event: "new-post" });
           this.clearInputs();
           this.$router.push("/blog");
-          systemService().openToast("Publicado correctamente", "success");
+          systemService().openToast({
+            message: "Publicado correctamente",
+            color: "success",
+          });
         })
         .catch((e) => {
           console.log(e);
-          systemService().openToast("Ocurrió un problema", "danger");
+          systemService().openToast({
+            message: "Ocurrió un problema",
+            color: "danger",
+          });
         });
     },
 
@@ -131,10 +140,10 @@ export default defineComponent({
         .catch((e) => {
           console.log(e);
           loading.dismiss();
-          systemService().openToast(
-            "Ocurrió un error al subir la imagen",
-            "danger"
-          );
+          systemService().openToast({
+            message: "Ocurrió un error al subir la imagen",
+            color: "danger",
+          });
         });
     },
     async uploadCover(image: object): Promise<string> {

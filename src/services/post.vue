@@ -156,6 +156,8 @@ export default function () {
             id
             title
             content
+            created_at
+            updated_at
             cover {
               id
               name

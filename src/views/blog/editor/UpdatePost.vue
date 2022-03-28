@@ -127,7 +127,10 @@ export default defineComponent({
           })
           .catch((e) => {
             console.log(e);
-            systemService().openToast("Ocurrió un problema", "danger");
+            systemService().openToast({
+              message: "Ocurrió un problema",
+              color: "danger",
+            });
             return false;
           });
       }
@@ -149,14 +152,20 @@ export default defineComponent({
         .then(() => {
           loading.dismiss();
           eventBus().emitter.emit("refresh-content", { event: "new-post" });
-          systemService().openToast("Actualizado correctamente", "success");
+          systemService().openToast({
+            message: "Actualizado correctamente",
+            color: "success",
+          });
           this.clearInputs();
           this.$router.go(-1);
         })
         .catch((e) => {
           console.log(e);
           loading.dismiss();
-          systemService().openToast("Ocurrió un problema", "danger");
+          systemService().openToast({
+            message: "Ocurrió un problema",
+            color: "danger",
+          });
         });
     },
 
@@ -207,10 +216,10 @@ export default defineComponent({
         })
         .catch((e) => {
           loading.dismiss();
-          systemService().openToast(
-            "Ocurrió un error al subir la imagen",
-            "danger"
-          );
+          systemService().openToast({
+            message: "Ocurrió un error al subir la imagen",
+            color: "danger",
+          });
         });
     },
     async uploadCover(image: object): Promise<string> {

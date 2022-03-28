@@ -5,6 +5,13 @@ storage.create();
 import { toastController, loadingController } from "@ionic/vue";
 import systemService from "./system.vue";
 
+interface Toast {
+  message: string;
+  color: string;
+  position?: "top" | "bottom" | "middle";
+  duration?: number;
+}
+
 export default function () {
   async function getTheme() {
     return await storage.get("darkMode");
@@ -43,15 +50,21 @@ export default function () {
       }
     });
   }
-  async function openToast(message: string, color: string) {
+  async function openToast({
+    message,
+    color,
+    position = "bottom",
+    duration = 2000,
+  }: Toast) {
     const toast = await toastController.create({
       message,
-      duration: 2000,
+      duration,
       color,
-      position: "bottom",
+      position,
     });
     return toast.present();
   }
+
   function getBaseURL() {
     const mode = process.env.NODE_ENV;
     if (mode == "development") {

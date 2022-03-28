@@ -95,7 +95,7 @@
         <ion-row>
           <h1 class="ion-padding">{{ title }}</h1>
           <ion-col size="12">
-            <Markdown :source="content" />
+            <Markdown :source="postContent" />
           </ion-col>
         </ion-row>
       </section>
@@ -133,7 +133,6 @@ import {
 import userService from "../../../services/user.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import eventBus from "../../../EventBus";
 
 export default defineComponent({
   name: "EditorPage",
@@ -161,18 +160,6 @@ export default defineComponent({
     content: String,
     cover: {},
   },
-  watch: {
-    title: function (newVal, oldVal) {
-      (this.v$ as any).postTitle.$model = newVal;
-    },
-    content: function (newVal, oldVal) {
-      (this.v$ as any).postContent.$model += newVal;
-    },
-    cover: function (newVal, oldVal) {
-      this.coverName = newVal.name;
-      this.coverSource = "data:image/png;base64," + newVal.source;
-    },
-  },
   setup() {
     return {
       saveOutline,
@@ -192,6 +179,18 @@ export default defineComponent({
       coverSource: "",
       newCoverStatus: false,
     };
+  },
+  watch: {
+    title: function (newVal, oldVal) {
+      (this.v$ as any).postTitle.$model = newVal;
+    },
+    content: function (newVal, oldVal) {
+      (this.v$ as any).postContent.$model += newVal;
+    },
+    cover: function (newVal, oldVal) {
+      this.coverName = newVal.name;
+      this.coverSource = "data:image/png;base64," + newVal.source;
+    },
   },
   validations() {
     const messageRequired = "Campo requerido";
@@ -247,7 +246,7 @@ export default defineComponent({
       this.coverImage = URL.createObjectURL(image);
       this.coverSource = image;
       this.coverName = image.name;
-      this.newCover = true;
+      this.newCoverStatus = true;
     },
     clearInputs() {
       this.postTitle = "";
