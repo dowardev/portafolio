@@ -92,11 +92,11 @@ export default function () {
             resolve({
               message: response.data.getUserAuth.message,
               user: {
-                id: response.data.getUserAuth.user[0].id as string,
-                name: response.data.getUserAuth.user[0].name as string,
-                email: response.data.getUserAuth.user[0].email as string,
-                admin: response.data.getUserAuth.user[0].is_admin as boolean,
-                role: response.data.getUserAuth.user[0].role as string[],
+                id: response.data.getUserAuth.user.id as string,
+                name: response.data.getUserAuth.user.name as string,
+                email: response.data.getUserAuth.user.email as string,
+                admin: response.data.getUserAuth.user.is_admin as boolean,
+                role: response.data.getUserAuth.user.role as string[],
               },
             });
           }
@@ -183,8 +183,8 @@ export default function () {
             (response) => {
               resolve({
                 message: "Success",
-                admin: response.user![0].admin,
-                rol: response.user![0].role,
+                admin: response.user!.admin,
+                rol: response.user!.role,
               });
             },
             (e) => {

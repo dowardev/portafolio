@@ -89,7 +89,7 @@
       <section v-if="segment == 'result'">
         <ion-row>
           <ion-col size="12">
-            <img :src="coverImage" style="max-width: 32%" />
+            <img :src="coverSource" style="max-width: 32%" />
           </ion-col>
         </ion-row>
         <ion-row>

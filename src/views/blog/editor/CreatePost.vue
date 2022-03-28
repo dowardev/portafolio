@@ -124,7 +124,7 @@ export default defineComponent({
         .uploadImage(image)
         .then((response) => {
           loading.dismiss();
-          const imageName = response.data.data.uploadImage.image[0].name;
+          const imageName = response.data.data.uploadImage.image.name;
 
           this.content =
             "![" +
@@ -135,7 +135,7 @@ export default defineComponent({
             imageName +
             "')";
 
-          this.images.push(response.data.data.uploadImage.image[0].id);
+          this.images.push(response.data.data.uploadImage.image.id);
         })
         .catch((e) => {
           console.log(e);
@@ -151,7 +151,7 @@ export default defineComponent({
         postService()
           .uploadImage(image)
           .then((response) => {
-            resolve(response.data.data.uploadImage.image[0].id);
+            resolve(response.data.data.uploadImage.image.id);
           })
           .catch((e) => {
             reject(e);

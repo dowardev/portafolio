@@ -72,7 +72,7 @@ export default defineComponent({
           const coverId = response.data.post.cover.id;
           const coverSource = (
             await postService().getImage({ name: coverName })
-          ).data.getImage.image[0].source;
+          ).data.getImage.image.source;
 
           this.setData({ title, content, coverId, coverName, coverSource });
           loading.dismiss();
@@ -209,10 +209,10 @@ export default defineComponent({
 
           this.content =
             "![Markdown Logo](http://localhost:8000/api/get-image?name=" +
-            response.data.data.uploadImage.image[0].name +
+            response.data.data.uploadImage.image.name +
             " 'Markdown Tutorial')";
 
-          this.newImages.push(response.data.data.uploadImage.image[0].id);
+          this.newImages.push(response.data.data.uploadImage.image.id);
         })
         .catch((e) => {
           loading.dismiss();
@@ -227,7 +227,7 @@ export default defineComponent({
         postService()
           .uploadImage(image)
           .then((response) => {
-            resolve(response.data.data.uploadImage.image[0].id);
+            resolve(response.data.data.uploadImage.image.id);
           })
           .catch((e) => {
             reject(e);
