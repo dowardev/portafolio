@@ -17,7 +17,7 @@ class GetUserAuthResolver
     $user = Auth::guard('api')->user();
     return [
       'message' => 'Success',
-      'user' => [$user],
+      'user' => $user,
     ];
     return [
       'message' => 'Unauthorized',

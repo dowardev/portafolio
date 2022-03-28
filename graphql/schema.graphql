@@ -83,15 +83,17 @@ type UserAuth {
   access_token: String!
   token_type: String!
 }
+
+# payloads
 type LoginPayload {
   message: String!
-  auth: [UserAuth]!
+  auth: UserAuth!
   user: [User]!
 }
 type RegisterPayload {
   message: String!
-  user: [User]!
-  auth: [UserAuth]!
+  user: User!
+  auth: UserAuth!
 }
 type ForgotPasswordPayload {
   message: String!
@@ -101,7 +103,7 @@ type RestoreUserPasswordPayload {
 }
 type GetUserAuthPayload {
   message: String!
-  user: [User]!
+  user: User!
 }
 type CreatePostPayload {
   message: String!
@@ -120,11 +122,11 @@ type Image {
 }
 type UploadImagePayload {
   message: String!
-  image: [Image]!
+  image: Image!
 }
 type GetImagePayload {
   message: String!
-  image: [Image]!
+  image: Image!
 }
 type PostImage {
   id: ID

@@ -19,8 +19,6 @@ route::middleware('auth:sanctum')->get('/user', function (request $request) {
     return $request->user();
 });
 
-Route::get('/prueba', [PostController::class, 'prueba']);
-
 Route::get('get-image/', [PostController::class, 'getImagePost']);
 // Route::get('get-image-post', [PostController::class, 'getImagePost']);
 //

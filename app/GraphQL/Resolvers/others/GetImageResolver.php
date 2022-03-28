@@ -30,14 +30,12 @@ class GetImageResolver
     return [
       'message' => 'Success',
       'image' => [
-        [
-          'source' => base64_encode(
-            Storage::disk('images_posts')->get($image[0]->name)
-          ),
-          'id' => $image[0]->id,
-          'path' => $image[0]->path,
-          'name' => $image[0]->name,
-        ],
+        'source' => base64_encode(
+          Storage::disk('images_posts')->get($image[0]->name)
+        ),
+        'id' => $image[0]->id,
+        'path' => $image[0]->path,
+        'name' => $image[0]->name,
       ],
     ];
   }

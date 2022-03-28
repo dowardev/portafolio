@@ -56,10 +56,8 @@ class LoginResolver
         ],
       ],
       'auth' => [
-        [
-          'access_token' => $token,
-          'token_type' => 'Bearer',
-        ],
+        'access_token' => $token,
+        'token_type' => 'Bearer',
       ],
     ];
   }
