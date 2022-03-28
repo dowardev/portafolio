@@ -54,8 +54,16 @@ input PostsInput {
   title: String!
   content: String!
 }
+input FeedbackInput {
+  user_id: String
+  name: String
+  email: String
+  description: String!
+  contact_me: Boolean!
+}
 
 type User {
+  id: ID!
   name: String!
   email: String!
   is_email_verified: String!
@@ -122,6 +130,9 @@ type PostImage {
   id: ID
   image_id: ID
   post_id: ID
+}
+type CreateFeedbackPayload {
+  message: String!
 }
 
 type Query {
@@ -192,5 +203,10 @@ type Mutation {
   getImage(input: ImageInput @spread): GetImagePayload
     @field(
       resolver: "App\\GraphQL\\Resolvers\\others\\GetImageResolver@resolve"
+    )
+
+  createFeedback(input: FeedbackInput @spread): CreateFeedbackPayload
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\others\\CreateFeedbackResolver@resolve"
     )
 }
