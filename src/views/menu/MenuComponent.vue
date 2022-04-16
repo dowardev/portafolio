@@ -82,7 +82,12 @@
           Portfolio
         </ion-label>
       </ion-item>
-      <ion-item lines="none" button @click="openBlog" class="ion-item-menu">
+      <ion-item
+        lines="none"
+        button
+        @click="openRoute('/blog')"
+        class="ion-item-menu"
+      >
         <ion-label
           v-bind:class="{
             optionSelected: $route.path == '/blog',
@@ -98,6 +103,30 @@
     <ion-footer class="ion-no-border">
       <ion-toolbar class="menu-color">
         <ion-buttons slot="end">
+          <!-- button source code-->
+          <ion-button id="trigger-button">
+            <ion-icon :icon="logoGitlab"></ion-icon>
+          </ion-button>
+          <ion-popover trigger="trigger-button">
+            <ion-content>
+              <ion-item
+                button
+                lines="full"
+                href="https://www.gitlab.com/gonzam4/portafolio"
+                target="_blank"
+              >
+                <ion-label>FrontEnd</ion-label>
+              </ion-item>
+              <ion-item
+                button
+                href="https://gitlab.com/gonzam4/portfolio-backend"
+                target="_blank"
+              >
+                <ion-label>Backend</ion-label>
+              </ion-item>
+            </ion-content>
+          </ion-popover>
+
           <!-- button feedback -->
           <ion-button @click="openModalFeedback">
             <ion-icon :icon="thumbsUpOutline"></ion-icon>
@@ -145,6 +174,7 @@ import {
   logInOutline,
   logOutOutline,
   thumbsUpOutline,
+  logoGitlab,
 } from "ionicons/icons";
 import DarkMode from "./darkmode/DarkMode.vue";
 import sessionService from "../../services/session.vue";
@@ -177,6 +207,7 @@ export default defineComponent({
       logInOutline,
       logOutOutline,
       thumbsUpOutline,
+      logoGitlab,
     };
   },
   data() {
@@ -256,19 +287,6 @@ export default defineComponent({
         // cssClass: "my-custom-class",
       });
       return modal.present();
-    },
-    openBlog() {
-      postService()
-        .getRecentDatePosts()
-        .then((response) => {
-          const date = response.dates;
-          const route =
-            "/blog/" +
-            formatISO(new Date(date), {
-              representation: "date",
-            }).replaceAll("/", "-");
-          this.openRoute(route);
-        });
     },
   },
 });

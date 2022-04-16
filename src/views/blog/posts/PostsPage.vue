@@ -51,7 +51,21 @@ export default defineComponent({
       );
       loading.present();
 
-      const currentPage = this.$route.params.date as string;
+      let currentPage = "";
+      if (this.$route.path == "/blog" || this.$route.path == "/blog/") {
+        await postService()
+          .getRecentDatePosts()
+          .then((response) => {
+            const date = response.dates;
+            currentPage = formatISO(new Date(date), {
+              representation: "date",
+            }).replaceAll("/", "-");
+            this.$router.replace("/blog/" + currentPage);
+          });
+      } else {
+        currentPage = this.$route.params.date as string;
+      }
+
       let dates = Array<string>();
       let posts = Array<Posts>();
 
@@ -102,12 +116,6 @@ export default defineComponent({
     },
 
     async goToPage(currentPage: string) {
-      // const d = this.dates
-      //   .map(function (e) {
-      //     return e["formatted"];
-      //   })
-      //   .indexOf(currentPage);
-
       const date = this.dates.filter((element) => element == currentPage)[0];
       await this.$router.replace("/blog/" + date);
       this.loadData();
