@@ -251,7 +251,7 @@ export default defineComponent({
         .then(async (response) => {
           loading.dismiss();
           userService().setUserToken(
-            "Bearer " + response.data.login.auth[0].access_token
+            "Bearer " + response.data.login.auth.access_token
           );
           this.clearInputs();
           this.presentToast("Bienvenido", "success");

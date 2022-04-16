@@ -8,6 +8,7 @@ import CreatePost from "../views/blog/editor/CreatePost.vue";
 import UpdatePost from "../views/blog/editor/UpdatePost.vue";
 import BlogPage from "../views/blog/posts/PostsPage.vue";
 import PostPage from "../views/blog/post/PostPage.vue";
+import PostsPage2 from "../views/blog/posts/PostsPage2.vue";
 import LoginPage from "../views/session/login/Login.vue";
 import SignUpPage from "../views/session/signup/SignUpPage.vue";
 import RestorePasswordPage from "../views/session/restore-password/RestorePasswordPage.vue";
@@ -53,16 +54,21 @@ const routes: Array<RouteRecordRaw> = [
     name: "UpdatePost",
     component: UpdatePost,
   },
-  // {
-  //   path: "/blog/editor/update/:id",
-  //   name: "EditorPage",
-  //   component: EditorPage,
-  // },
-
   {
     path: "/blog",
     name: "BlogPage",
     component: BlogPage,
+  },
+  {
+    path: "/blog",
+    name: "PostsPage",
+    component: BlogPage,
+    children: [
+      {
+        path: ":date",
+        component: PostsPage2,
+      },
+    ],
   },
   {
     path: "/blog/post/:id",

@@ -390,3 +390,18 @@ ion-segment-button > ion-label {
 ion-menu-button {
   --color: var(--secondary-text-color);
 }
+
+.item-radio-checked.sc-ion-select-popover-md {
+  --background: #252729;
+  --background-focused: "";
+}
+ion-list {
+  background: var(--background-color) !important;
+}
+.item-radio-checked.sc-ion-select-popover-md .sc-ion-label-md-h {
+  color: var(--accent-color) !important;
+}
+
+ion-item {
+  color: var(--secondary-text-color) !important;
+}

@@ -72,7 +72,7 @@ export default defineComponent({
           const coverId = response.data.post.cover.id;
           const coverSource = (
             await postService().getImage({ name: coverName })
-          ).data.getImage.image.source;
+          ).image.source;
 
           this.setData({ title, content, coverId, coverName, coverSource });
           loading.dismiss();

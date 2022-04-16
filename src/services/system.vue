@@ -4,6 +4,7 @@ const storage = new Storage();
 storage.create();
 import { toastController, loadingController } from "@ionic/vue";
 import systemService from "./system.vue";
+import axios from "axios";
 
 interface Toast {
   message: string;
@@ -80,6 +81,17 @@ export default function () {
     });
     return loading;
   }
+
+  async function getImageAPI() {
+    return axios.get("http://127.0.0.1:8000/api/get-image", {
+      params: {
+        name: "624bb168328e71649127784.webp",
+      },
+      headers: {
+        Accept: "application/json",
+      },
+    });
+  }
   return {
     getTheme,
     setTheme,
@@ -87,6 +99,7 @@ export default function () {
     detectToggleTheme,
     getBaseURL,
     presentLoading,
+    getImageAPI,
   };
 }
 </script>

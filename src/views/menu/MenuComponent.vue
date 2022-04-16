@@ -82,12 +82,7 @@
           Portfolio
         </ion-label>
       </ion-item>
-      <ion-item
-        lines="none"
-        button
-        @click="openRoute('/blog')"
-        class="ion-item-menu"
-      >
+      <ion-item lines="none" button @click="openBlog" class="ion-item-menu">
         <ion-label
           v-bind:class="{
             optionSelected: $route.path == '/blog',
@@ -157,6 +152,8 @@ import eventBus from "../../EventBus";
 import systemService from "../../services/system.vue";
 import userService from "../../services/user.vue";
 import FeedbackPage from "./feedback/FeedbackPage.vue";
+import postService from "../../services/post.vue";
+import formatISO from "date-fns/formatISO";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -259,6 +256,19 @@ export default defineComponent({
         // cssClass: "my-custom-class",
       });
       return modal.present();
+    },
+    openBlog() {
+      postService()
+        .getRecentDatePosts()
+        .then((response) => {
+          const date = response.dates;
+          const route =
+            "/blog/" +
+            formatISO(new Date(date), {
+              representation: "date",
+            }).replaceAll("/", "-");
+          this.openRoute(route);
+        });
     },
   },
 });

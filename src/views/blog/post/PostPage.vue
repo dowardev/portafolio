@@ -78,7 +78,7 @@ import {
 import systemService from "../../../services/system.vue";
 import eventBus from "../../../EventBus";
 import userService from "../../../services/user.vue";
-import { zonedTimeToUtc, utcToZonedTime, format } from "date-fns-tz";
+import { utcToZonedTime, format } from "date-fns-tz";
 
 export default defineComponent({
   name: "PostPage",
@@ -147,7 +147,7 @@ export default defineComponent({
           this.setData({
             title,
             content,
-            cover: cover.data.getImage.image[0].source,
+            cover: cover.image[0].source,
             created: postCreated,
             updated: postUpdated,
           });
