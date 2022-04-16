@@ -16,7 +16,6 @@ class PruebaResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
-    $user = Auth::guard('api')->user()->is_admin == false;
-    return ['message' => json_encode($user)];
+    return ['message' => 'ssss'];
   }
 }
