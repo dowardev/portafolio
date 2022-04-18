@@ -68,7 +68,7 @@ type User {
   email: String!
   is_email_verified: String!
   is_admin: Boolean!
-  role: [String]
+  rol: [String]
   user: String!
 }
 type Post {
