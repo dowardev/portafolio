@@ -8,18 +8,19 @@ import apolloClient from "../Apollo";
 const apollo = apolloClient;
 
 interface User {
-  id: string;
-  name: string;
-  email: string;
-  admin: boolean;
-  role: string[];
+  id?: string;
+  name?: string;
+  email?: string;
+  admin?: boolean;
+  rol?: Array<any>;
 }
 
 export default function () {
-  function setUserToken(token: string | null) {
+  function setUserToken(token: string | null): void {
     document.cookie = "token=" + token;
   }
-  async function getUserToken() {
+
+  async function getUserToken(): Promise<string> {
     const name = "token=";
     const cDecoded = decodeURIComponent(document.cookie);
     const cArr = cDecoded.split("; ");
@@ -29,203 +30,239 @@ export default function () {
     });
     return token;
   }
-  function getUserOffline() {
+
+  async function getUserOffline() {
     let userUploaded = null;
-    return new Promise((resolve) => {
-      const interval = setInterval(async () => {
-        userUploaded = await store.get("user-uploaded");
-        if (userUploaded != null) {
-          if (userUploaded) {
-            resolve(Object.assign({}, await store.get("userData"))["user"]);
-          } else {
-            resolve(null);
-          }
-          clearInterval(interval);
+    const interval = setInterval(async () => {
+      userUploaded = await store.get("user-uploaded");
+      if (userUploaded != null) {
+        if (userUploaded) {
+          return Object.assign({}, await store.get("userData"))["user"];
+        } else {
+          return null;
         }
-      }, 100);
-    });
+      }
+      clearInterval(interval);
+    }, 100);
   }
-  async function setUserData(data: any) {
+
+  async function setUserData(data: { user: User }): Promise<void> {
     const query = gql`
       query {
         user {
           name
           email
-          is_admin
-          role
+          admin
+          rol
         }
       }
     `;
-    apollo.defaultClient.cache.writeQuery({
-      query,
-      data: {
-        user: data,
-      },
-    });
+
+    try {
+      apollo.defaultClient.cache.writeQuery({
+        query,
+        data: {
+          user: data.user,
+        },
+      });
+    } catch (e: any) {
+      throw e.message;
+    }
   }
 
-  function getUser(): Promise<{
+  async function getUser(): Promise<{
     message: string;
-    user: User | null;
+    user: User | undefined;
   }> {
-    return new Promise((resolve, reject) => {
-      const mutation = gql`
-        mutation {
-          getUserAuth {
-            message
-            user {
-              id
-              name
-              email
-              is_admin
-              role
-            }
+    const mutation = gql`
+      mutation {
+        getUserAuth {
+          message
+          user {
+            id
+            name
+            email
+            is_admin
+            rol
           }
         }
-      `;
-      apollo.defaultClient
-        .mutate({
-          mutation,
-        })
-        .then((response) => {
-          if (response.data.getUserAuth.message == "Success") {
-            resolve({
-              message: response.data.getUserAuth.message,
-              user: {
-                id: response.data.getUserAuth.user.id as string,
-                name: response.data.getUserAuth.user.name as string,
-                email: response.data.getUserAuth.user.email as string,
-                admin: response.data.getUserAuth.user.is_admin as boolean,
-                role: response.data.getUserAuth.user.role as string[],
-              },
-            });
-          }
-          resolve({
-            message: response.data.message,
-            user: null,
-          });
-        })
-        .catch((e) => {
-          reject(e);
-        });
-    });
+      }
+    `;
+
+    let message = "Error";
+    let user: User | undefined;
+
+    try {
+      const response = await apollo.defaultClient.mutate({
+        mutation,
+      });
+
+      if (response.data.getUserAuth.message == "Success") {
+        message = response.data.getUserAuth.message;
+        user = {
+          id: response.data.getUserAuth.user.id as string,
+          name: response.data.getUserAuth.user.name as string,
+          email: response.data.getUserAuth.user.email as string,
+          admin: response.data.getUserAuth.user.is_admin as boolean,
+          rol: response.data.getUserAuth.user.rol as string[],
+        };
+      }
+    } catch (e: any) {
+      throw e.message;
+    }
+
+    return {
+      message,
+      user: user,
+    };
   }
+
   async function setUserUploaded(option: boolean | null) {
     await store.set("user-uploaded", option);
   }
 
   async function getUserName(): Promise<{
     message: string;
-    name: string | null;
+    user: User | undefined;
   }> {
-    return new Promise((resolve, reject) => {
-      getUserNameCached().then((response) => {
-        if (response.name != null) {
-          resolve({ message: "Success", name: response.name });
-        }
+    let user: User | undefined;
+    let message = "Error";
 
-        getUser()
-          .then(
-            (response) => {
-              resolve({ message: "Success", name: response.user!.name });
-            },
-            (e) => {
-              throw new Error(e);
-            }
-          )
-          .catch((e) => {
-            reject(e);
-          });
-      });
-    });
-  }
-  async function getUserNameCached(): Promise<{ name: string | null }> {
-    return new Promise((resolve) => {
-      const query = gql`
-        query {
-          user {
-            name
-          }
-        }
-      `;
-      const user = apollo.defaultClient.cache.readQuery({
-        query: query,
-      }) as any;
-
-      let name = null;
-      if (user) {
-        name = user.user.name;
+    try {
+      const response = await getUserNameCached();
+      if (response.message == "Success") {
+        message = response.message;
+        user = { name: response.user?.name };
       }
+    } catch (e: any) {
+      throw e.message;
+    }
 
-      resolve({
-        name,
-      });
-    });
+    try {
+      const response = await getUser();
+      message = response.message;
+      user = { name: response.user?.name };
+    } catch (e: any) {
+      throw e.message;
+    }
+
+    return {
+      message,
+      user,
+    };
   }
 
-  function getUserPermissions(): Promise<{
+  async function getUserNameCached(): Promise<{
     message: string;
-    admin: null | boolean;
-    rol: null | string[];
+    user: User | undefined;
   }> {
-    return new Promise((resolve, reject) => {
-      getUserPermissionsCached().then((response) => {
-        if (response.admin != null) {
-          resolve({
-            message: "Success",
-            admin: response.admin,
-            rol: response.rol,
-          });
+    const query = gql`
+      query {
+        user {
+          name
         }
+      }
+    `;
 
-        getUser()
-          .then(
-            (response) => {
-              resolve({
-                message: "Success",
-                admin: response.user!.admin,
-                rol: response.user!.role,
-              });
-            },
-            (e) => {
-              throw new Error(e);
-            }
-          )
-          .catch((e) => {
-            reject(e);
-          });
-      });
-    });
+    let message = "Error";
+    let user: User | undefined;
+
+    try {
+      const response = apollo.defaultClient.cache.readQuery({
+        query: query,
+      }) as any;
+      if (response != null) {
+        message = response.user.name;
+        user = { name: response.user.name };
+      }
+    } catch (e: any) {
+      throw e.message;
+    }
+
+    return {
+      message,
+      user,
+    };
   }
-  function getUserPermissionsCached(): Promise<{
-    admin: boolean | null;
-    rol: string[] | null;
+
+  async function getUserPermissions(): Promise<{
+    message: string;
+    user: User;
   }> {
-    return new Promise((resolve) => {
-      const query = gql`
-        query {
-          user {
-            is_admin
-            role
-          }
+    let admin: boolean | undefined;
+    let rol: any[] | undefined;
+    let message = "Error";
+
+    try {
+      let response = getUserPermissionsCached();
+
+      if (response.user.admin) {
+        message = "Success";
+        admin = response.user.admin;
+        rol = response.user.rol;
+      }
+    } catch (e: any) {
+      throw e.message;
+    }
+
+    try {
+      const response = await getUser();
+      if (response.message == "Success") {
+        message = "Success";
+        admin = response.user?.admin;
+        rol = response.user?.rol;
+      }
+    } catch (e: any) {
+      throw e.message;
+    }
+
+    return {
+      message,
+      user: {
+        admin,
+        rol: rol,
+      },
+    };
+  }
+
+  function getUserPermissionsCached(): {
+    message: string;
+    user: User;
+  } {
+    const query = gql`
+      query {
+        user {
+          is_admin
+          rol
         }
-      `;
-      const userPermissions = apollo.defaultClient.cache.readQuery({
+      }
+    `;
+
+    let message = "Error";
+    let admin = undefined;
+    let rol = undefined;
+
+    try {
+      const response = apollo.defaultClient.cache.readQuery({
         query: query,
       }) as any;
 
-      let admin = null;
-      let rol = null;
-      if (userPermissions) {
-        admin = userPermissions.user.is_admin;
-        rol = userPermissions.rol;
+      if (response) {
+        message = response.msessage;
+        admin = response.user.is_admin;
+        rol = response.rol;
       }
+    } catch (e: any) {
+      throw e.message;
+    }
 
-      resolve({
+    return {
+      message,
+      user: {
         admin,
         rol,
-      });
-    });
+      },
+    };
   }
 
   return {

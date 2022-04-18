@@ -122,8 +122,7 @@ export default defineComponent({
         id: "",
         name: "",
         email: "",
-        description:
-          "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+        description: "",
         contactMe: false,
       },
     };

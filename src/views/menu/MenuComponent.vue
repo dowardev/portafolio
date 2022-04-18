@@ -182,8 +182,6 @@ import eventBus from "../../EventBus";
 import systemService from "../../services/system.vue";
 import userService from "../../services/user.vue";
 import FeedbackPage from "./feedback/FeedbackPage.vue";
-import postService from "../../services/post.vue";
-import formatISO from "date-fns/formatISO";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -214,7 +212,7 @@ export default defineComponent({
     return { userLogged: false, userName: null as null | string };
   },
   mounted() {
-    eventBus().emitter.on("refresh-user-content", (response: any) => {
+    eventBus().emitter.on("refresh-user-content", () => {
       this.getUserName();
     });
     this.getUserName();
@@ -252,7 +250,7 @@ export default defineComponent({
 
       sessionService()
         .logout()
-        .then((response) => {
+        .then(() => {
           loading.dismiss();
           const token = (document.cookie =
             "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
@@ -264,7 +262,7 @@ export default defineComponent({
           });
           sessionService().removeUserCached();
         })
-        .catch((e) => {
+        .catch(() => {
           loading.dismiss();
         });
     },
@@ -272,12 +270,13 @@ export default defineComponent({
       userService()
         .getUserName()
         .then((response) => {
-          if (response.name) {
+          if (response.user?.name) {
             this.userLogged = true;
-            this.userName = response.name;
+            this.userName = response?.user.name;
           }
         })
         .catch((e) => {
+          console.log(e);
           this.userLogged = false;
         });
     },

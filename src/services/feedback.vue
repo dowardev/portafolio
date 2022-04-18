@@ -19,8 +19,8 @@ export default function () {
     email,
     description,
     contactMe,
-  }: Feedback) {
-    return apollo.defaultClient.mutate({
+  }: Feedback): Promise<{ message: string }> {
+    const response = await apollo.defaultClient.mutate({
       mutation: gql`
         mutation (
           $userId: String
@@ -50,6 +50,8 @@ export default function () {
         contactMe,
       },
     });
+
+    return { message: response.data.message };
   }
 
   return {

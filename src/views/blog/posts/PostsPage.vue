@@ -13,10 +13,16 @@ import eventBus from "../../../EventBus";
 import systemService from "../../../services/system.vue";
 
 interface Posts {
-  id: string;
+  id?: string;
   title: string;
   content: string;
-  cover: { name: string; path: string; source?: string };
+  created: string;
+  updated: string;
+  cover: {
+    id?: string;
+    name?: string;
+    path?: string;
+  };
 }
 
 export default defineComponent({

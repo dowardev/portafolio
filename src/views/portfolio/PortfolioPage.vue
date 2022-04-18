@@ -124,12 +124,8 @@ import {
   logoIonic,
   logoFirebase,
   logoPaypal,
-  logoLaravel,
-  logoVue,
   logoWordpress,
-  logoPwa,
   logoAndroid,
-  logoApple,
   globeOutline,
 } from "ionicons/icons";
 import ProjectModal from "./project/ProjectPage.vue";

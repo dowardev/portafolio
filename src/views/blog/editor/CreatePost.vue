@@ -37,7 +37,7 @@ export default defineComponent({
     userService()
       .getUserPermissions()
       .then((response) => {
-        if (response.admin) {
+        if (response.user.admin) {
           next();
         } else {
           next("/blog");

@@ -1,6 +1,5 @@
 <script lang="ts">
 import axios from "axios";
-import userService from "./user.vue";
 import systemService from "./system.vue";
 import apolloClient from "../Apollo";
 import gql from "graphql-tag";
@@ -13,8 +12,15 @@ export default function () {
     user: string,
     email: string,
     password: string
-  ) {
-    return apollo.defaultClient.mutate({
+  ): Promise<{
+    user: {
+      name: string;
+      user: string;
+      email: string;
+      password: string;
+    };
+  }> {
+    const response = await apollo.defaultClient.mutate({
       mutation: gql`
         mutation (
           $name: String!
@@ -41,8 +47,22 @@ export default function () {
         password,
       },
     });
+
+    try {
+      return {
+        user: {
+          name: response.data.name,
+          user: response.data.user,
+          email: response.data.email,
+          password: response.data.password,
+        },
+      };
+    } catch (e: any) {
+      throw e.message;
+    }
   }
-  function userLogin(user: string, password: string) {
+
+  function userLogin(user: string, password: string): Promise<any> {
     return apollo.defaultClient.mutate({
       mutation: gql`
         mutation ($user: String!, $password: String!) {
@@ -55,7 +75,7 @@ export default function () {
               name
               email
               is_admin
-              role
+              rol
             }
           }
         }
@@ -66,7 +86,8 @@ export default function () {
       },
     });
   }
-  async function logout() {
+
+  async function logout(): Promise<any> {
     return apollo.defaultClient.mutate({
       mutation: gql`
         mutation {
@@ -77,11 +98,15 @@ export default function () {
       `,
     });
   }
-  function removeUserCached() {
+
+  function removeUserCached(): void {
     apollo.defaultClient.cache.evict({ fieldName: "user" });
   }
-  function sendMailResetPassword(email: string) {
-    return axios.post(
+
+  async function sendMailResetPassword(
+    email: string
+  ): Promise<{ message: string }> {
+    const response = await axios.post(
       systemService().getBaseURL() + "api/auth/mail-reset-password",
       { headers: { Accept: "application/json" } },
       {
@@ -90,9 +115,15 @@ export default function () {
         },
       }
     );
+
+    return { message: response.data.message };
   }
-  function sendCodeResetPassword(email: string, code: string) {
-    return axios.post(
+
+  async function sendCodeResetPassword(
+    email: string,
+    code: string
+  ): Promise<{ message: string }> {
+    const response = await axios.post(
       systemService().getBaseURL() + "api/auth/code-reset-password",
       { headers: { Accept: "application/json" } },
       {
@@ -102,8 +133,11 @@ export default function () {
         },
       }
     );
+
+    return { message: response.data.message };
   }
-  function resetPassword(email: string, password: string) {
+
+  function resetPassword(email: string, password: string): Promise<void> {
     return axios.post(
       systemService().getBaseURL() + "api/auth/reset-password",
       { headers: { Accept: "application/json" } },

@@ -214,7 +214,7 @@ export default defineComponent({
   beforeRouteEnter(to, from, next) {
     userService()
       .getUserName()
-      .then((response) => {
+      .then(() => {
         next("/blog");
       })
       .catch((e) => {

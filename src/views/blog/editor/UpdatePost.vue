@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { IonPage, toastController } from "@ionic/vue";
+import { IonPage } from "@ionic/vue";
 import { defineComponent } from "vue";
 import postService from "../../../services/post.vue";
 import userService from "../../../services/user.vue";
@@ -43,13 +43,13 @@ export default defineComponent({
     userService()
       .getUserPermissions()
       .then((response) => {
-        if (response.admin) {
+        if (response.user.admin) {
           next();
         } else {
           next("/blog");
         }
       })
-      .catch((e) => {
+      .catch(() => {
         next("/blog");
       });
   },
@@ -63,23 +63,24 @@ export default defineComponent({
       );
       loading.present();
 
-      postService()
-        .getPost(this.idPost as string)
-        .then(async (response) => {
-          const title = response.data.post.title;
-          const content = response.data.post.content;
-          const coverName = response.data.post.cover.name;
-          const coverId = response.data.post.cover.id;
-          const coverSource = (
-            await postService().getImage({ name: coverName })
-          ).image.source;
-
-          this.setData({ title, content, coverId, coverName, coverSource });
-          loading.dismiss();
-        })
-        .catch((e) => {
-          loading.dismiss();
+      try {
+        const response = await postService().getPost({
+          id: this.idPost as string,
         });
+
+        const title = response.title;
+        const content = response.content;
+        const coverName = response.cover.name ? response.cover.name : "";
+        const coverId = response.cover.id ? response.cover.id : "";
+        const coverSource = (await postService().getImage({ name: coverName }))
+          .image.source;
+
+        this.setData({ title, content, coverId, coverName, coverSource });
+        loading.dismiss();
+      } catch (e: any) {
+        console.error(e);
+        loading.dismiss();
+      }
     },
 
     setData(data: {
@@ -189,7 +190,7 @@ export default defineComponent({
             images: data.images,
             imagesRemoved: data.imagesRemoved,
           })
-          .then((response) => {
+          .then(() => {
             resolve(true);
           })
           .catch((e) => {
@@ -214,7 +215,7 @@ export default defineComponent({
 
           this.newImages.push(response.data.data.uploadImage.image.id);
         })
-        .catch((e) => {
+        .catch(() => {
           loading.dismiss();
           systemService().openToast({
             message: "Ocurrió un error al subir la imagen",

@@ -76,7 +76,6 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import systemService from "../../../services/system.vue";
-import eventBus from "../../../EventBus";
 import userService from "../../../services/user.vue";
 import { utcToZonedTime, format } from "date-fns-tz";
 
@@ -113,11 +112,6 @@ export default defineComponent({
   mounted() {
     this.getPost();
     this.verifyUserAdmin();
-    eventBus().emitter.on("refresh-content", (response: any) => {
-      if (response.event == "new-post") {
-        this.getPost();
-      }
-    });
   },
   methods: {
     async getPost() {
@@ -127,19 +121,19 @@ export default defineComponent({
       loading.present();
 
       postService()
-        .getPost(this.postId as string)
+        .getPost({ id: this.postId as string })
         .then(async (response) => {
-          const title = response.data.post.title;
-          const content = response.data.post.content;
-          const coverName = response.data.post.cover.name;
+          const title = response.title;
+          const content = response.content;
+          const coverName = response.cover.name;
           const cover = await postService().getImage({ name: coverName });
           const created = utcToZonedTime(
-            new Date(response.data.post.created_at + "Z"),
+            new Date(response.created + "Z"),
             "America/Chihuahua"
           );
           const postCreated = format(created, "P");
           const updated = utcToZonedTime(
-            new Date(response.data.post.updated_at + "Z"),
+            new Date(response.updated + "Z"),
             "America/Chihuahua"
           );
           const postUpdated = format(updated, "P");
@@ -147,13 +141,13 @@ export default defineComponent({
           this.setData({
             title,
             content,
-            cover: cover.image[0].source,
+            cover: cover.image.source,
             created: postCreated,
             updated: postUpdated,
           });
           loading.dismiss();
         })
-        .catch((e) => {
+        .catch(() => {
           loading.dismiss();
         });
     },
@@ -181,7 +175,7 @@ export default defineComponent({
 
       postService()
         .deletePost(this.postId as string)
-        .then((response) => {
+        .then(() => {
           loading.dismiss();
           this.$router.push("/blog");
         })
@@ -195,9 +189,11 @@ export default defineComponent({
         userService()
           .getUserPermissions()
           .then((response) => {
-            this.isUserAdmin = response.admin ? response.admin != null : false;
+            this.isUserAdmin = response.user.admin
+              ? response.user.admin != null
+              : false;
           })
-          .catch((e) => {
+          .catch(() => {
             this.isUserAdmin = false;
           });
       }

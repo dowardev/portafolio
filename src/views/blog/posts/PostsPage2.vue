@@ -188,7 +188,9 @@ export default defineComponent({
         userService()
           .getUserPermissions()
           .then((response) => {
-            this.isUserAdmin = response.admin ? response.admin != null : false;
+            this.isUserAdmin = response.user.admin
+              ? response.user.admin != null
+              : false;
           })
           .catch(() => {
             this.isUserAdmin = false;

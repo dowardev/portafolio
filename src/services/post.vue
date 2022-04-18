@@ -10,10 +10,17 @@ import apolloClient from "../Apollo";
 const apollo = apolloClient;
 
 interface Post {
+  id?: string;
   title: string;
   content: string;
-  coverId: string;
-  images: number[];
+  created: string;
+  updated: string;
+  cover: {
+    id?: string;
+    name?: string;
+    path?: string;
+  };
+  images?: number[];
 }
 interface UpdatePost {
   id: string;
@@ -35,8 +42,8 @@ export default function () {
     content: string,
     coverId: string,
     images: string[]
-  ) {
-    return apollo.defaultClient.mutate({
+  ): Promise<{ message: string }> {
+    const response = await apollo.defaultClient.mutate({
       mutation: gql`
         mutation (
           $title: String!
@@ -63,7 +70,10 @@ export default function () {
         images,
       },
     });
+
+    return { message: response.data.message };
   }
+
   async function updatePost({
     id,
     title,
@@ -72,8 +82,8 @@ export default function () {
     newCoverId,
     images,
     imagesRemoved,
-  }: UpdatePost) {
-    return apollo.defaultClient.mutate({
+  }: UpdatePost): Promise<{ message: string }> {
+    const response = await apollo.defaultClient.mutate({
       mutation: gql`
         mutation (
           $id: ID!
@@ -109,9 +119,12 @@ export default function () {
         imagesRemoved,
       },
     });
+
+    return { message: response.data.message };
   }
-  async function deletePost(id: string) {
-    return apollo.defaultClient.mutate({
+
+  async function deletePost(id: string): Promise<{ message: string }> {
+    const response = await apollo.defaultClient.mutate({
       mutation: gql`
         mutation ($id: ID!) {
           deletePost(input: { id: $id }) {
@@ -123,17 +136,13 @@ export default function () {
         id,
       },
     });
+
+    return { message: response.data.message };
   }
+
   async function getPosts(data: { date: string }): Promise<{
     message: string;
-    posts: [
-      {
-        id: string;
-        title: string;
-        content: string;
-        cover: { name: string; path: string };
-      }
-    ];
+    posts: Array<Post>;
   }> {
     const posts = await apollo.defaultClient.mutate({
       mutation: gql`
@@ -166,8 +175,9 @@ export default function () {
       throw e.message;
     }
   }
-  async function getPost(id: string) {
-    return apollo.defaultClient.mutate({
+
+  async function getPost(data: { id: string }): Promise<Post> {
+    const response = await apollo.defaultClient.mutate({
       mutation: gql`
         query ($id: ID!) {
           post(id: $id) {
@@ -184,10 +194,23 @@ export default function () {
         }
       `,
       variables: {
-        id,
+        id: data.id,
       },
     });
+
+    return {
+      title: response.data.post.title,
+      content: response.data.post.content,
+      created: response.data.post.created_at,
+      updated: response.data.post.updated_at,
+      cover: {
+        id: response.data.post.cover.id,
+        name: response.data.post.cover.name,
+        path: response.data.post.cover.path,
+      },
+    };
   }
+
   async function uploadImage(img: any) {
     const operations = {
       query: `
@@ -225,6 +248,7 @@ export default function () {
       },
     });
   }
+
   async function getImage({ id = "", name = "" }: getImage): Promise<{
     message: string;
     image: { id: string; name: string; source: string };
@@ -261,6 +285,7 @@ export default function () {
       throw e.message;
     }
   }
+
   async function getNextPostDate(data: {
     date: string;
     option: "new" | "old";
@@ -335,6 +360,7 @@ export default function () {
         });
     });
   }
+
   async function getPostsDates(data: { currentDate: string }): Promise<{
     message: string;
     dates: [string];

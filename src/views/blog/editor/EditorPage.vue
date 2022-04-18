@@ -181,13 +181,13 @@ export default defineComponent({
     };
   },
   watch: {
-    title: function (newVal, oldVal) {
+    title: function (newVal) {
       (this.v$ as any).postTitle.$model = newVal;
     },
-    content: function (newVal, oldVal) {
+    content: function (newVal) {
       (this.v$ as any).postContent.$model += newVal;
     },
-    cover: function (newVal, oldVal) {
+    cover: function (newVal) {
       this.coverName = newVal.name;
       this.coverSource = "data:image/png;base64," + newVal.source;
     },
@@ -210,7 +210,7 @@ export default defineComponent({
     userService()
       .getUserPermissions()
       .then((response) => {
-        if (response.admin) {
+        if (response.user.admin) {
           next();
         } else {
           next("/blog");

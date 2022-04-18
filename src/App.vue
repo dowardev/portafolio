@@ -46,14 +46,13 @@ export default defineComponent({
       userService()
         .getUser()
         .then((response) => {
-          if (response.user) {
+          if (response.message == "Success") {
             const data = response.user;
-            data["is_admin"] = data.admin;
-            userService().setUserData(data);
+            if (data) userService().setUserData({ user: data });
           }
         })
         .catch((e) => {
-          //
+          console.error(e);
         });
     },
   },

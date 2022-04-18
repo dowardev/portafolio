@@ -107,6 +107,7 @@
               </ion-row>
             </ion-card-content>
           </ion-card>
+
           <ion-row>
             <ion-col size="12" class="center">
               <small style="cursor: pointer">
@@ -170,7 +171,7 @@ import {
 import sessionService from "../../../services/session.vue";
 import userService from "../../../services/user.vue";
 import useVuelidate from "@vuelidate/core";
-import { required, email, minLength, helpers } from "@vuelidate/validators";
+import { required, helpers } from "@vuelidate/validators";
 
 export default defineComponent({
   name: "LoginPage",
@@ -226,10 +227,10 @@ export default defineComponent({
   beforeRouteEnter(to, from, next) {
     userService()
       .getUserName()
-      .then((response) => {
+      .then(() => {
         next("/blog");
       })
-      .catch((e) => {
+      .catch(() => {
         next();
       });
   },
@@ -258,6 +259,7 @@ export default defineComponent({
           location.reload();
         })
         .catch((e) => {
+          console.error(e);
           loading.dismiss();
           if (e.graphQLErrors[0].debugMessage == "Unauthorized") {
             this.presentToast("Credenciales incorrectas", "danger");

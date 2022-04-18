@@ -14,10 +14,11 @@ interface Toast {
 }
 
 export default function () {
-  async function getTheme() {
+  async function getTheme(): Promise<boolean | null> {
     return await storage.get("darkMode");
   }
-  async function setTheme(darkMode: boolean | null) {
+
+  async function setTheme(darkMode: boolean | null): Promise<void> {
     if (darkMode) {
       document.getElementsByTagName("body")[0].classList.add("dark");
     }
@@ -34,10 +35,12 @@ export default function () {
     }
     saveTheme(darkMode);
   }
-  async function saveTheme(status: boolean | null) {
+
+  async function saveTheme(status: boolean | null): Promise<void> {
     await storage.set("darkMode", status);
   }
-  async function detectToggleTheme() {
+
+  async function detectToggleTheme(): Promise<void> {
     window.matchMedia("(prefers-color-scheme: dark)").addListener(async (e) => {
       const darkMode = await systemService().getTheme();
       if (darkMode == null) {
@@ -51,12 +54,13 @@ export default function () {
       }
     });
   }
+
   async function openToast({
     message,
     color,
     position = "bottom",
     duration = 2000,
-  }: Toast) {
+  }: Toast): Promise<void> {
     const toast = await toastController.create({
       message,
       duration,
@@ -66,7 +70,7 @@ export default function () {
     return toast.present();
   }
 
-  function getBaseURL() {
+  function getBaseURL(): string {
     const mode = process.env.NODE_ENV;
     if (mode == "development") {
       return "http://localhost:8000/";
@@ -82,7 +86,7 @@ export default function () {
     return loading;
   }
 
-  async function getImageAPI() {
+  async function getImageAPI(): Promise<object> {
     return axios.get("http://127.0.0.1:8000/api/get-image", {
       params: {
         name: "624bb168328e71649127784.webp",

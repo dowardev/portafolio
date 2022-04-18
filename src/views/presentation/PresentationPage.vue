@@ -189,7 +189,6 @@ import {
 import { defineComponent } from "vue";
 import { isPlatform } from "@ionic/vue";
 import {
-  arrowForward,
   mailOutline,
   logoMastodon,
   logoTwitter,
