@@ -22,7 +22,7 @@ class DeletePostResolver
       throw new Exception('Unauthorized');
     }
 
-    $id = intval($args['id']);
+    $id = $args['id'];
 
     $post_images = Post::find($id)->images;
     foreach ($post_images as $key => $value) {

@@ -73,15 +73,17 @@ type User {
 }
 type Post {
   id: ID
-  title: String!
-  content: String!
-  cover: Image! @belongsTo(relation: "cover")
+  title: String
+  content: String
+  cover: PostCover
   created_at: String
   updated_at: String
 }
-type GetPost {
-  message: String!
+type GetPosts {
   posts: [Post]!
+}
+type GetPost {
+  post: Post
 }
 type UserAuth {
   access_token: String!
@@ -94,6 +96,12 @@ type PostsDate {
 type PostsDates {
   message: String!
   dates: [String]!
+}
+type PostCover {
+  id: String!
+  name: String!
+  path: String!
+  source: String!
 }
 
 # payloads
@@ -160,9 +168,10 @@ type Query {
   # users(name: String @where(operator: "like")): [User!]!
   #   @paginate(defaultCount: 10)
 
-  post(id: ID! @eq): Post @find
+  post(id: ID): GetPost
+    @field(resolver: "App\\GraphQL\\Resolvers\\post\\GetPostResolver@resolve")
 
-  posts(date: String): GetPost
+  posts(date: String): GetPosts
     @field(resolver: "App\\GraphQL\\Resolvers\\post\\GetPostsResolver@resolve")
 
   recentDatePosts: PostsDate!
