@@ -69,7 +69,7 @@
       <ion-row v-for="(post, index) in posts" :key="post">
         <ion-col size="4">
           <img
-            :src="post.cover.source"
+            :src="coverToBase64(post.cover.source)"
             @click="openPost(post.id)"
             style="cursor: pointer"
           />
@@ -232,6 +232,11 @@ export default defineComponent({
     },
 
     async deletePost(id: string, index: number) {
+      const response = await systemService().presentAlertConfirmation({
+        message: "¿Desea eliminar el post?",
+      });
+      if (response == false) return;
+
       const loading = await systemService().presentLoading(
         "Eliminando publicación"
       );
@@ -255,6 +260,10 @@ export default defineComponent({
         return true;
       }
       return false;
+    },
+
+    coverToBase64(cover: string) {
+      return "data:image/png;base64," + cover;
     },
   },
 });

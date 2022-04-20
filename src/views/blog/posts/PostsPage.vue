@@ -134,15 +134,6 @@ export default defineComponent({
 
       try {
         const posts = response.posts;
-        await Promise.all(
-          posts.map(async (element) => {
-            element.cover["source"] =
-              "data:image/png;base64," +
-              (await postService().getImage({ name: element.cover.name })).image
-                .source;
-          })
-        );
-
         return posts;
       } catch (e: any) {
         throw e.message;

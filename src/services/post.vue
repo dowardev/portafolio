@@ -19,6 +19,7 @@ interface Post {
     id?: string;
     name?: string;
     path?: string;
+    source: string;
   };
   images?: number[];
 }
@@ -148,7 +149,6 @@ export default function () {
       mutation: gql`
         query ($date: String!) {
           posts(date: $date) {
-            message
             posts {
               id
               title
@@ -156,6 +156,7 @@ export default function () {
               cover {
                 name
                 path
+                source
               }
             }
           }
@@ -177,38 +178,44 @@ export default function () {
   }
 
   async function getPost(data: { id: string }): Promise<Post> {
-    const response = await apollo.defaultClient.mutate({
-      mutation: gql`
-        query ($id: ID!) {
-          post(id: $id) {
-            id
-            title
-            content
-            created_at
-            updated_at
-            cover {
-              id
-              name
+    try {
+      const response = await apollo.defaultClient.mutate({
+        mutation: gql`
+          query ($id: ID!) {
+            post(id: $id) {
+              post {
+                id
+                title
+                content
+                created_at
+                updated_at
+                cover {
+                  id
+                  name
+                  source
+                }
+              }
             }
           }
-        }
-      `,
-      variables: {
-        id: data.id,
-      },
-    });
+        `,
+        variables: {
+          id: data.id,
+        },
+      });
 
-    return {
-      title: response.data.post.title,
-      content: response.data.post.content,
-      created: response.data.post.created_at,
-      updated: response.data.post.updated_at,
-      cover: {
-        id: response.data.post.cover.id,
-        name: response.data.post.cover.name,
-        path: response.data.post.cover.path,
-      },
-    };
+      return {
+        title: response.data.post.post.title,
+        content: response.data.post.post.content,
+        created: response.data.post.post.created_at,
+        updated: response.data.post.post.updated_at,
+        cover: {
+          id: response.data.post.post.cover.id,
+          source: response.data.post.post.cover.source,
+        },
+      };
+    } catch (e: any) {
+      throw e.message;
+    }
   }
 
   async function uploadImage(img: any) {

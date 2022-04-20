@@ -67,7 +67,7 @@ import {
   IonRow,
   IonCol,
 } from "@ionic/vue";
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import Markdown from "vue3-markdown-it";
 import postService from "../../../services/post.vue";
 import {
@@ -120,36 +120,37 @@ export default defineComponent({
       );
       loading.present();
 
-      postService()
-        .getPost({ id: this.postId as string })
-        .then(async (response) => {
-          const title = response.title;
-          const content = response.content;
-          const coverName = response.cover.name;
-          const cover = await postService().getImage({ name: coverName });
-          const created = utcToZonedTime(
-            new Date(response.created + "Z"),
-            "America/Chihuahua"
-          );
-          const postCreated = format(created, "P");
-          const updated = utcToZonedTime(
-            new Date(response.updated + "Z"),
-            "America/Chihuahua"
-          );
-          const postUpdated = format(updated, "P");
-
-          this.setData({
-            title,
-            content,
-            cover: cover.image.source,
-            created: postCreated,
-            updated: postUpdated,
-          });
-          loading.dismiss();
-        })
-        .catch(() => {
-          loading.dismiss();
+      try {
+        const response = await postService().getPost({
+          id: this.postId as string,
         });
+
+        const title = response.title;
+        const content = response.content;
+        const cover = response.cover.source;
+        const created = utcToZonedTime(
+          new Date(response.created + "Z"),
+          "America/Chihuahua"
+        );
+        const postCreated = format(created, "P");
+        const updated = utcToZonedTime(
+          new Date(response.updated + "Z"),
+          "America/Chihuahua"
+        );
+        const postUpdated = format(updated, "P");
+
+        this.setData({
+          title,
+          content,
+          cover,
+          created: postCreated,
+          updated: postUpdated,
+        });
+        loading.dismiss();
+      } catch (e) {
+        console.error(e);
+        loading.dismiss();
+      }
     },
     setData(data: {
       title: string;

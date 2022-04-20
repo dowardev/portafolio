@@ -2,7 +2,11 @@
 import { Storage } from "@ionic/storage";
 const storage = new Storage();
 storage.create();
-import { toastController, loadingController } from "@ionic/vue";
+import {
+  toastController,
+  loadingController,
+  alertController,
+} from "@ionic/vue";
 import systemService from "./system.vue";
 import axios from "axios";
 
@@ -96,6 +100,37 @@ export default function () {
       },
     });
   }
+
+  async function presentAlertConfirmation(data: {
+    message: string;
+  }): Promise<boolean> {
+    const alert = await alertController.create({
+      cssClass: "my-custom-class",
+      header: "Confirmacion",
+      message: data.message,
+      buttons: [
+        {
+          text: "Cancelar",
+          role: "cancel",
+          cssClass: "secondary",
+          id: "cancel-button",
+        },
+        {
+          text: "Confirmar",
+          id: "confirm-button",
+          role: "confirm",
+        },
+      ],
+    });
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+    if (role == "confirm") {
+      return true;
+    } else {
+      return false;
+    }
+  }
   return {
     getTheme,
     setTheme,
@@ -104,6 +139,7 @@ export default function () {
     getBaseURL,
     presentLoading,
     getImageAPI,
+    presentAlertConfirmation,
   };
 }
 </script>
