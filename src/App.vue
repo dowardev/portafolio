@@ -37,23 +37,31 @@ export default defineComponent({
     systemService()
       .getTheme()
       .then((response) => {
-        systemService().setTheme(response);
+        systemService().setTheme({ status: response });
       });
     this.getUser();
   },
   methods: {
-    getUser() {
-      userService()
-        .getUser()
-        .then((response) => {
-          if (response.message == "Success") {
-            const data = response.user;
-            if (data) userService().setUserData({ user: data });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-        });
+    async getUser() {
+      const query = `
+            user {
+              id
+              name
+              email
+              is_admin 
+              rol
+        }
+      `;
+      try {
+        const response = await userService().getUser({ query });
+        const name = response.name;
+        const email = response.email;
+        const rol = response.rol;
+        const is_admin = response.is_admin;
+        userService().setUserData({ name, email, rol, is_admin });
+      } catch (e: any) {
+        console.error(e);
+      }
     },
   },
 });

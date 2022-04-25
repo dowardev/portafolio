@@ -183,18 +183,14 @@ export default defineComponent({
   },
 
   methods: {
-    verifyUserAdmin() {
+    async verifyUserAdmin() {
       if (navigator.onLine) {
-        userService()
-          .getUserPermissions()
-          .then((response) => {
-            this.isUserAdmin = response.user.admin
-              ? response.user.admin != null
-              : false;
-          })
-          .catch(() => {
-            this.isUserAdmin = false;
-          });
+        try {
+          const response = await userService().getUserPermissions();
+          this.isUserAdmin = response.admin ? response.admin != null : false;
+        } catch (e: any) {
+          console.error(e);
+        }
       }
     },
 
@@ -237,13 +233,13 @@ export default defineComponent({
       });
       if (response == false) return;
 
-      const loading = await systemService().presentLoading(
-        "Eliminando publicación"
-      );
+      const loading = await systemService().presentLoading({
+        message: "Eliminando publicación",
+      });
       loading.present();
 
       postService()
-        .deletePost(id)
+        .deletePost({ id })
         .then(() => {
           loading.dismiss();
           this.posts.splice(index, 1);

@@ -210,7 +210,7 @@ export default defineComponent({
     userService()
       .getUserPermissions()
       .then((response) => {
-        if (response.user.admin) {
+        if (response.admin) {
           next();
         } else {
           next("/blog");

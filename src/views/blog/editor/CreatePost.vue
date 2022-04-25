@@ -19,6 +19,7 @@ import userService from "../../../services/user.vue";
 import systemService from "../../../services/system.vue";
 import EditorComponent from "./EditorPage.vue";
 import eventBus from "../../../EventBus";
+import { CreatePost, Image } from "@/services/interfaces.vue";
 
 export default defineComponent({
   name: "EditorPage",
@@ -37,19 +38,21 @@ export default defineComponent({
     userService()
       .getUserPermissions()
       .then((response) => {
-        if (response.user.admin) {
+        if (response.admin) {
           next();
         } else {
           next("/blog");
         }
       })
-      .catch((e) => {
+      .catch(() => {
         next("/blog");
       });
   },
   methods: {
     async save(data: { title: string; content: string; cover: object }) {
-      const loading = await systemService().presentLoading("Creando post");
+      const loading = await systemService().presentLoading({
+        message: "Creando post",
+      });
       loading.present();
 
       const title = data.title;
@@ -58,65 +61,67 @@ export default defineComponent({
       let coverId = "";
       const images = this.images;
 
-      const uploadCover = await this.uploadCover(cover)
-        .then((response) => {
-          coverId = response;
-          return true;
-        })
-        .catch((e) => {
-          console.log(e);
-          systemService().openToast({
-            message: "Ocurrió un problema",
-            color: "danger",
-          });
-          return false;
-        });
-
-      if (uploadCover == false) {
+      try {
+        const response = await this.uploadCover(cover);
+        coverId = response;
+      } catch (error) {
+        console.error(error);
         loading.dismiss();
+        systemService().openToast({
+          message: "Ocurrió un problema",
+          color: "danger",
+        });
         return;
       }
 
-      this.createPost({ title, content, coverId, images })
-        .then(() => {
-          loading.dismiss();
-          eventBus().emitter.emit("refresh-content", { event: "new-post" });
-          this.clearInputs();
-          this.$router.push("/blog");
-          systemService().openToast({
-            message: "Publicado correctamente",
-            color: "success",
-          });
-        })
-        .catch((e) => {
-          console.log(e);
-          systemService().openToast({
-            message: "Ocurrió un problema",
-            color: "danger",
-          });
+      try {
+        await this.createPost({
+          title,
+          content,
+          coverId,
+          images,
         });
+        loading.dismiss();
+        eventBus().emitter.emit("refresh-content", { event: "new-post" });
+        this.clearInputs();
+        this.$router.push("/blog");
+        systemService().openToast({
+          message: "Publicado correctamente",
+          color: "success",
+        });
+      } catch (e) {
+        console.error(e);
+        loading.dismiss();
+        systemService().openToast({
+          message: "Ocurrió un problema",
+          color: "danger",
+        });
+      }
     },
 
-    async createPost(data: {
-      title: string;
-      content: string;
-      coverId: string;
-      images: Array<string>;
-    }) {
-      return new Promise((resolve, reject) => {
-        postService()
-          .createPost(data.title, data.content, data.coverId, data.images)
-          .then(() => {
-            resolve(true);
-          })
-          .catch((e) => {
-            reject(e);
-          });
-      });
+    async createPost({
+      title,
+      content,
+      coverId,
+      images,
+    }: CreatePost): Promise<void> {
+      try {
+        await postService().createPost({
+          title,
+          content,
+          coverId,
+          images,
+        });
+        return;
+      } catch (e: any) {
+        throw new Error(e);
+      }
     },
 
     async uploadImage(e: any) {
-      const loading = await systemService().presentLoading("Subiendo imagen");
+      const loading = await systemService().presentLoading({
+        message: "Subiendo imagen",
+      });
       loading.present();
       const image = e.image;
 
@@ -124,7 +129,7 @@ export default defineComponent({
         .uploadImage(image)
         .then((response) => {
           loading.dismiss();
-          const imageName = response.data.data.uploadImage.image.name;
+          const imageName = response.name;
 
           this.content =
             "![" +
@@ -135,7 +140,7 @@ export default defineComponent({
             imageName +
             "')";
 
-          this.images.push(response.data.data.uploadImage.image.id);
+          if (response.id) this.images.push(response.id);
         })
         .catch((e) => {
           console.log(e);
@@ -146,18 +151,22 @@ export default defineComponent({
           });
         });
     },
+
     async uploadCover(image: object): Promise<string> {
-      return new Promise((resolve, reject) => {
-        postService()
-          .uploadImage(image)
-          .then((response) => {
-            resolve(response.data.data.uploadImage.image.id);
-          })
-          .catch((e) => {
-            reject(e);
-          });
-      });
+      const query = `
+            image {
+              id
+            }
+              `;
+      try {
+        const response = await postService().uploadImage({ image, query });
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return response.id!;
+      } catch (e: any) {
+        throw new Error(e);
+      }
     },
+
     clearInputs() {
       (this.$refs.editorRef as any).clearInputs();
     },

@@ -229,18 +229,19 @@ export default defineComponent({
       const loading = await this.presentLoading("Enviando correo");
       loading.present();
 
-      sessionService()
-        .sendMailResetPassword(this.form.email)
-        .then(() => {
-          loading.dismiss();
-          this.options.emailForm = false;
-          this.options.codeForm = true;
-        })
-        .catch((e) => {
-          loading.dismiss();
-          this.presentToast("Hubo un problema al enviar el corro.", "danger");
+      try {
+        await sessionService().sendMailResetPassword({
+          email: this.form.email,
         });
+        loading.dismiss();
+        this.options.emailForm = false;
+        this.options.codeForm = true;
+      } catch (e: any) {
+        loading.dismiss();
+        this.presentToast("Hubo un problema al enviar el corro.", "danger");
+      }
     },
+
     async presentToast(message: string, color: string) {
       const toast = await toastController.create({
         message,
@@ -260,8 +261,10 @@ export default defineComponent({
       const loading = await this.presentLoading("Verificando código");
       loading.present();
 
+      const email = this.form.email;
+      const code = this.form.code;
       sessionService()
-        .sendCodeResetPassword(this.form.email, this.form.code)
+        .sendCodeResetPassword({ email, code })
         .then(() => {
           loading.dismiss();
           this.options.codeForm = false;
@@ -282,8 +285,10 @@ export default defineComponent({
       const loading = await this.presentLoading("Actualizando contraseña");
       loading.present();
 
+      const email = this.form.email;
+      const password = this.form.password1;
       sessionService()
-        .resetPassword(this.form.email, this.form.password1)
+        .resetPassword({ email, password })
         .then(() => {
           loading.dismiss();
           this.options.passwordForm = false;

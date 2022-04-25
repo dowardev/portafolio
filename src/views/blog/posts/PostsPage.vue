@@ -11,19 +11,7 @@ import postService from "../../../services/post.vue";
 import formatISO from "date-fns/formatISO";
 import eventBus from "../../../EventBus";
 import systemService from "../../../services/system.vue";
-
-interface Posts {
-  id?: string;
-  title: string;
-  content: string;
-  created: string;
-  updated: string;
-  cover: {
-    id?: string;
-    name?: string;
-    path?: string;
-  };
-}
+import { Post } from "@/services/interfaces.vue";
 
 export default defineComponent({
   name: "PostsPage",
@@ -34,7 +22,7 @@ export default defineComponent({
   data() {
     return {
       dates: Array<string>(),
-      posts: Array<Posts>(),
+      posts: Array<Post>(),
     };
   },
   mounted() {
@@ -52,34 +40,38 @@ export default defineComponent({
 
   methods: {
     async loadData() {
-      const loading = await systemService().presentLoading(
-        "Obteniendo publicaciónes"
-      );
+      const loading = await systemService().presentLoading({
+        message: "Obteniendo publicaciónes",
+      });
       loading.present();
 
       let currentPage = "";
+      currentPage = this.$route.params.date as string;
+
       if (this.$route.path == "/blog" || this.$route.path == "/blog/") {
-        await postService()
-          .getRecentDatePosts()
-          .then((response) => {
-            const date = response.dates;
-            currentPage = formatISO(new Date(date), {
-              representation: "date",
-            }).replaceAll("/", "-");
-            this.$router.replace("/blog/" + currentPage);
-          });
-      } else {
-        currentPage = this.$route.params.date as string;
+        try {
+          const response = await postService().getRecentDatePosts();
+          const date = response.date;
+          currentPage = formatISO(new Date(date), {
+            representation: "date",
+          }).replaceAll("/", "-");
+          this.$router.replace("/blog/" + currentPage);
+        } catch (e: any) {
+          console.error(e);
+          loading.dismiss();
+          return;
+        }
       }
 
       let dates = Array<string>();
-      let posts = Array<Posts>();
+      let posts = Array<Post>();
 
       try {
         this.dates = dates = await this.getPostsDates(currentPage);
       } catch (e: any) {
         console.log(e);
         loading.dismiss();
+        return;
       }
 
       try {
@@ -88,15 +80,16 @@ export default defineComponent({
       } catch (e: any) {
         loading.dismiss();
         console.log(e);
+        return;
       }
 
       this.passData({ currentPage, dates, posts });
     },
 
     passData(data: {
-      dates?: Array<string>;
+      dates: Array<string>;
       currentPage?: string;
-      posts?: Array<Posts> | void;
+      posts: Array<Post> | void;
     }) {
       eventBus().emitter.emit("event-posts2-data", {
         dates: data.dates,
@@ -127,17 +120,20 @@ export default defineComponent({
       this.loadData();
     },
 
-    async getPosts(date: string): Promise<Array<Posts>> {
+    async getPosts(date: string): Promise<Array<Post>> {
+      const query = `
+            id
+            title
+            cover {
+              source
+            }
+      `;
       const response = await postService().getPosts({
         date: date,
+        query,
       });
 
-      try {
-        const posts = response.posts;
-        return posts;
-      } catch (e: any) {
-        throw e.message;
-      }
+      return response;
     },
 
     async getPostsDates(currentPage: string): Promise<Array<string>> {
@@ -146,7 +142,7 @@ export default defineComponent({
       });
 
       const dates = Array<string>();
-      response.dates.forEach((element) => {
+      response.forEach((element: any) => {
         dates.push(
           formatISO(new Date(element), {
             representation: "date",

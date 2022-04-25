@@ -226,11 +226,9 @@ export default defineComponent({
           title: "New Title",
         },
       });
-      modal.onDidDismiss().then(() => {
-        modalController.dismiss();
-      });
       return modal.present();
     },
+
     async openModalMobile() {
       const modal = await modalController.create({
         component: DarkMode,
@@ -245,7 +243,9 @@ export default defineComponent({
       menuController.close();
     },
     async userLogout() {
-      const loading = await systemService().presentLoading("Cerrando sesión");
+      const loading = await systemService().presentLoading({
+        message: "Cerrando sesión",
+      });
       loading.present();
 
       sessionService()
@@ -254,32 +254,30 @@ export default defineComponent({
           loading.dismiss();
           const token = (document.cookie =
             "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
-          userService().setUserToken(token);
+          userService().setUserToken({ token });
           this.userLogged = false;
           systemService().openToast({
             message: "Hasta pronto",
             color: "success",
           });
           sessionService().removeUserCached();
+          location.reload();
         })
         .catch(() => {
           loading.dismiss();
         });
     },
-    getUserName() {
-      userService()
-        .getUserName()
-        .then((response) => {
-          if (response.user?.name) {
-            this.userLogged = true;
-            this.userName = response?.user.name;
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-          this.userLogged = false;
-        });
+    async getUserName() {
+      try {
+        const response = await userService().getUserName();
+        this.userLogged = true;
+        this.userName = response;
+      } catch (e: any) {
+        console.error(e);
+        this.userLogged = false;
+      }
     },
+
     async openModalFeedback() {
       const modal = await modalController.create({
         component: FeedbackPage,

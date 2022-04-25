@@ -14,6 +14,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { IonPage } from "@ionic/vue";
 import { defineComponent } from "vue";
 import postService from "../../../services/post.vue";
@@ -43,7 +44,7 @@ export default defineComponent({
     userService()
       .getUserPermissions()
       .then((response) => {
-        if (response.user.admin) {
+        if (response.admin) {
           next();
         } else {
           next("/blog");
@@ -58,24 +59,47 @@ export default defineComponent({
   },
   methods: {
     async getPost() {
-      const loading = await systemService().presentLoading(
-        "Obteniendo publicación"
-      );
+      const loading = await systemService().presentLoading({
+        message: "Obteniendo publicación",
+      });
       loading.present();
+
+      const query = `
+              id
+              title
+              content
+              created_at
+              updated_at
+              cover {
+                id
+                name
+                source
+              }
+      `;
 
       try {
         const response = await postService().getPost({
           id: this.idPost as string,
+          query,
         });
-
-        const title = response.title;
-        const content = response.content;
+        const title = response.title ? response.title : "";
+        const content = response.content ? response.content : "";
         const coverName = response.cover.name ? response.cover.name : "";
         const coverId = response.cover.id ? response.cover.id : "";
-        const coverSource = (await postService().getImage({ name: coverName }))
-          .image.source;
+        const queryImage = `
+              image {
+                id
+                name
+                source
+              }
+        `;
+        const coverSource = (
+          await postService().getImage({ name: coverName, query: queryImage })
+        ).source!;
 
-        this.setData({ title, content, coverId, coverName, coverSource });
+        if (response) {
+          this.setData({ title, content, coverId, coverName, coverSource });
+        }
         loading.dismiss();
       } catch (e: any) {
         console.error(e);
@@ -106,7 +130,9 @@ export default defineComponent({
       cover: object;
       newCoverStatus: boolean;
     }) {
-      const loading = await systemService().presentLoading("Actualizando post");
+      const loading = await systemService().presentLoading({
+        message: "Actualizando post",
+      });
       loading.present();
 
       const id = this.idPost as string;
@@ -119,26 +145,19 @@ export default defineComponent({
       const images = this.newImages;
       const imagesRemoved = this.getRemovedImages(data.content);
 
-      let uploadCover = true;
       if (newCoverStatus) {
-        uploadCover = await this.uploadCover(cover)
-          .then((response) => {
-            newCoverId = response;
-            return true;
-          })
-          .catch((e) => {
-            console.log(e);
-            systemService().openToast({
-              message: "Ocurrió un problema",
-              color: "danger",
-            });
-            return false;
+        try {
+          const response = await this.uploadCover(cover);
+          newCoverId = response as string;
+        } catch (error) {
+          console.error(error);
+          loading.dismiss();
+          systemService().openToast({
+            message: "Ocurrió un problema",
+            color: "danger",
           });
-      }
-
-      if (uploadCover == false) {
-        loading.dismiss();
-        return;
+          return;
+        }
       }
 
       this.updatePost({
@@ -161,7 +180,7 @@ export default defineComponent({
           this.$router.go(-1);
         })
         .catch((e) => {
-          console.log(e);
+          console.error(e);
           loading.dismiss();
           systemService().openToast({
             message: "Ocurrió un problema",
@@ -198,43 +217,56 @@ export default defineComponent({
           });
       });
     },
+
     async uploadImage(e: any) {
-      const loading = await systemService().presentLoading("Subiendo imagen");
+      const loading = await systemService().presentLoading({
+        message: "Subiendo imagen",
+      });
       loading.present();
       const image = e.image;
+      const query = `
+            image {
+              id
+        }
+      `;
 
-      postService()
-        .uploadImage(image)
-        .then((response) => {
-          loading.dismiss();
+      let id = "";
 
-          this.content =
-            "![Markdown Logo](http://localhost:8000/api/get-image?name=" +
-            response.data.data.uploadImage.image.name +
-            " 'Markdown Tutorial')";
+      try {
+        const response = await postService().uploadImage({ image, query });
+        id = response.id as string;
+        loading.dismiss();
 
-          this.newImages.push(response.data.data.uploadImage.image.id);
-        })
-        .catch(() => {
-          loading.dismiss();
-          systemService().openToast({
-            message: "Ocurrió un error al subir la imagen",
-            color: "danger",
-          });
+        this.content =
+          "![Markdown Logo](http://localhost:8000/api/get-image?name=" +
+          response.name +
+          " 'Markdown Tutorial')";
+
+        if (response) this.newImages.push(id);
+      } catch (error) {
+        loading.dismiss();
+        systemService().openToast({
+          message: "Ocurrió un error al subir la imagen",
+          color: "danger",
         });
+      }
     },
-    async uploadCover(image: object): Promise<string> {
-      return new Promise((resolve, reject) => {
-        postService()
-          .uploadImage(image)
-          .then((response) => {
-            resolve(response.data.data.uploadImage.image.id);
-          })
-          .catch((e) => {
-            reject(e);
-          });
-      });
+
+    async uploadCover(image: object): Promise<string | undefined> {
+      const query = `
+            image {
+              id
+        }
+      `;
+
+      try {
+        const response = await postService().uploadImage({ image, query });
+        return response.id;
+      } catch (error) {
+        console.error(error);
+      }
     },
+
     clearInputs() {
       this.title = "";
       this.content = "";
@@ -242,6 +274,7 @@ export default defineComponent({
       this.newImages.length = 0;
       (this.$refs.editorRef as any).clearInputs();
     },
+
     getPostImages(content: string) {
       const imageId = content.match(/\bhttp?:\/\/\S+/gi);
       imageId?.forEach((element) => {

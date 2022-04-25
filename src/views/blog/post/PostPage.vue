@@ -115,26 +115,37 @@ export default defineComponent({
   },
   methods: {
     async getPost() {
-      const loading = await systemService().presentLoading(
-        "Obteniendo publicación"
-      );
+      const loading = await systemService().presentLoading({
+        message: "Obteniendo publicación",
+      });
       loading.present();
 
+      const query = `
+            title
+            content
+            created_at
+            updated_at
+            cover {
+              source
+            }
+      `;
       try {
         const response = await postService().getPost({
           id: this.postId as string,
+          query,
         });
 
-        const title = response.title;
-        const content = response.content;
-        const cover = response.cover.source;
+        const title = response.title ? response.title : "";
+        const content = response.content ? response.content : "";
+        const coverSource = response.cover.source ? response.cover.source : "";
         const created = utcToZonedTime(
-          new Date(response.created + "Z"),
+          new Date(response.created_at + "Z"),
           "America/Chihuahua"
         );
+
         const postCreated = format(created, "P");
         const updated = utcToZonedTime(
-          new Date(response.updated + "Z"),
+          new Date(response.updated_at + "Z"),
           "America/Chihuahua"
         );
         const postUpdated = format(updated, "P");
@@ -142,7 +153,7 @@ export default defineComponent({
         this.setData({
           title,
           content,
-          cover,
+          coverSource,
           created: postCreated,
           updated: postUpdated,
         });
@@ -155,13 +166,13 @@ export default defineComponent({
     setData(data: {
       title: string;
       content: string;
-      cover: string;
+      coverSource: string;
       created: string;
       updated: string;
     }) {
       this.post.title = data.title;
       this.post.content = data.content;
-      this.post.cover = "data:image/png;base64," + data.cover;
+      this.post.cover = "data:image/png;base64," + data.coverSource;
       this.post.created = data.created;
       this.post.updated = data.updated;
     },
@@ -169,13 +180,13 @@ export default defineComponent({
       this.$router.push("/blog/editor/update/" + this.postId);
     },
     async deletePost() {
-      const loading = await systemService().presentLoading(
-        "Eliminando publicación"
-      );
+      const loading = await systemService().presentLoading({
+        message: "Eliminando publicación",
+      });
       loading.present();
 
       postService()
-        .deletePost(this.postId as string)
+        .deletePost({ id: this.postId as string })
         .then(() => {
           loading.dismiss();
           this.$router.push("/blog");
@@ -185,18 +196,15 @@ export default defineComponent({
           console.log(e);
         });
     },
-    verifyUserAdmin() {
+    async verifyUserAdmin() {
       if (navigator.onLine) {
-        userService()
-          .getUserPermissions()
-          .then((response) => {
-            this.isUserAdmin = response.user.admin
-              ? response.user.admin != null
-              : false;
-          })
-          .catch(() => {
-            this.isUserAdmin = false;
-          });
+        try {
+          const response = await userService().getUserPermissions();
+          this.isUserAdmin = response.admin ? response.admin != null : false;
+        } catch (e: any) {
+          console.error(e);
+          this.isUserAdmin = false;
+        }
       }
     },
   },

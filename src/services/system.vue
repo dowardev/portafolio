@@ -9,27 +9,21 @@ import {
 } from "@ionic/vue";
 import systemService from "./system.vue";
 import axios from "axios";
-
-interface Toast {
-  message: string;
-  color: string;
-  position?: "top" | "bottom" | "middle";
-  duration?: number;
-}
+import { AlertConfirmation, Loading, Theme, Toast } from "./interfaces.vue";
 
 export default function () {
   async function getTheme(): Promise<boolean | null> {
     return await storage.get("darkMode");
   }
 
-  async function setTheme(darkMode: boolean | null): Promise<void> {
-    if (darkMode) {
+  async function setTheme({ status }: Theme): Promise<void> {
+    if (status) {
       document.getElementsByTagName("body")[0].classList.add("dark");
     }
-    if (darkMode == false) {
+    if (status == false) {
       document.getElementsByTagName("body")[0].classList.remove("dark");
     }
-    if (darkMode == null) {
+    if (status == null) {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
         document.getElementsByTagName("body")[0].classList.add("dark");
       }
@@ -37,10 +31,10 @@ export default function () {
         document.getElementsByTagName("body")[0].classList.remove("dark");
       }
     }
-    saveTheme(darkMode);
+    saveTheme({ status });
   }
 
-  async function saveTheme(status: boolean | null): Promise<void> {
+  async function saveTheme({ status }: Theme): Promise<void> {
     await storage.set("darkMode", status);
   }
 
@@ -49,26 +43,24 @@ export default function () {
       const darkMode = await systemService().getTheme();
       if (darkMode == null) {
         if (e.matches) {
-          setTheme(true);
-          saveTheme(null);
+          setTheme({ status: true });
+          saveTheme({ status: null });
         } else {
-          saveTheme(false);
-          setTheme(null);
+          saveTheme({ status: false });
+          setTheme({ status: null });
         }
       }
     });
   }
 
-  async function openToast({
-    message,
-    color,
-    position = "bottom",
-    duration = 2000,
-  }: Toast): Promise<void> {
+  async function openToast(params: Toast): Promise<void> {
+    const duration = params.duration == undefined ? 2000 : params.duration;
+    const position = params.position == undefined ? "bottom" : params.position;
+
     const toast = await toastController.create({
-      message,
+      message: params.message,
       duration,
-      color,
+      color: params.color,
       position,
     });
     return toast.present();
@@ -82,32 +74,36 @@ export default function () {
       return "https://dowar.xyz/blog/";
     }
   }
-  async function presentLoading(message: string) {
+  async function presentLoading(params: Loading) {
     const loading = await loadingController.create({
       cssClass: "my-custom-class",
-      message,
+      message: params.message,
     });
     return loading;
   }
 
   async function getImageAPI(): Promise<object> {
-    return axios.get("http://127.0.0.1:8000/api/get-image", {
-      params: {
-        name: "624bb168328e71649127784.webp",
-      },
-      headers: {
-        Accept: "application/json",
-      },
-    });
+    try {
+      return await axios.get("http://127.0.0.1:8000/api/get-image", {
+        params: {
+          name: "624bb168328e71649127784.webp",
+        },
+        headers: {
+          Accept: "application/json",
+        },
+      });
+    } catch (e: any) {
+      throw new Error(e);
+    }
   }
 
-  async function presentAlertConfirmation(data: {
-    message: string;
-  }): Promise<boolean> {
+  async function presentAlertConfirmation(
+    params: AlertConfirmation
+  ): Promise<boolean> {
     const alert = await alertController.create({
       cssClass: "my-custom-class",
       header: "Confirmacion",
-      message: data.message,
+      message: params.message,
       buttons: [
         {
           text: "Cancelar",
@@ -125,11 +121,7 @@ export default function () {
     await alert.present();
 
     const { role } = await alert.onDidDismiss();
-    if (role == "confirm") {
-      return true;
-    } else {
-      return false;
-    }
+    return role == "confirm" ? true : false;
   }
   return {
     getTheme,

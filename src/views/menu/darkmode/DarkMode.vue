@@ -82,7 +82,7 @@ export default defineComponent({
         });
     },
     setTheme() {
-      systemService().setTheme(this.darkMode);
+      systemService().setTheme({ status: this.darkMode });
     },
     closeModal() {
       modalController.dismiss();

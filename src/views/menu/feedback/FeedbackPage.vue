@@ -156,17 +156,22 @@ export default defineComponent({
       modalController.dismiss();
     },
     async getUser() {
-      userService()
-        .getUser()
-        .then((response) => {
-          this.form.id = response.user?.id as string;
-          this.form.name = response.user?.name as string;
-          this.form.email = response.user?.email as string;
-        })
-        .catch((e) => {
-          console.log(e);
-          return "";
-        });
+      const query = `
+            user {
+              id
+              name
+              email
+            }
+      `;
+      try {
+        const response = await userService().getUser({ query });
+        this.form.id = response.id as string;
+        this.form.name = response.name as string;
+        this.form.email = response.email as string;
+      } catch (e: any) {
+        console.error(e);
+        return;
+      }
     },
     async sendFeedback() {
       const loading = await this.presentLoading();
@@ -178,24 +183,39 @@ export default defineComponent({
       const description = this.form.description;
       const contactMe = this.form.contactMe;
 
-      feedbackService()
-        .createFeedback({ userId, name, email, description, contactMe })
-        .then(() => {
-          loading.dismiss();
-          this.clearInputs;
-          this.closeModal();
-        })
-        .catch((e) => {
-          loading.dismiss();
-          systemService().openToast({
-            message: "Ocurrió un error",
-            color: "danger",
-          });
-          console.log(e);
+      const query = `
+            message
+      `;
+
+      try {
+        await feedbackService().createFeedback({
+          query,
+          userId,
+          name,
+          email,
+          description,
+          contactMe,
         });
+        loading.dismiss();
+        systemService().openToast({
+          message: "Gracias por tus comentarios",
+          color: "success",
+        });
+        this.clearInputs;
+        this.closeModal();
+      } catch (e) {
+        loading.dismiss();
+        systemService().openToast({
+          message: "Ocurrió un error",
+          color: "danger",
+        });
+        console.error(e);
+      }
     },
     presentLoading() {
-      return systemService().presentLoading("Enviando comentarios");
+      return systemService().presentLoading({
+        message: "Enviando comentarios",
+      });
     },
     clearInputs() {
       this.form.id = "";

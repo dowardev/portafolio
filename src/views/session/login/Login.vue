@@ -247,28 +247,37 @@ export default defineComponent({
     async login() {
       const loading = await this.presentLoading("Iniciando sesión");
       loading.present();
-      sessionService()
-        .userLogin(this.form.email.replace(/\s+/g, ""), this.form.password)
-        .then(async (response) => {
-          loading.dismiss();
-          userService().setUserToken(
-            "Bearer " + response.data.login.auth.access_token
-          );
-          this.clearInputs();
-          this.presentToast("Bienvenido", "success");
-          location.reload();
-        })
-        .catch((e) => {
-          console.error(e);
-          loading.dismiss();
-          if (e.graphQLErrors[0].debugMessage == "Unauthorized") {
-            this.presentToast("Credenciales incorrectas", "danger");
-          }
-          if (e.graphQLErrors[0].debugMessage == "Unverified email") {
-            this.alertConfirmationEmail();
-          }
+
+      const user = this.form.email.replace(/\s+/g, "");
+      const password = this.form.password;
+      const query = `
+            auth {
+              access_token
+        }
+      `;
+      try {
+        const response = await sessionService().userLogin({
+          query,
+          user,
+          password,
         });
+        loading.dismiss();
+        const token = "Bearer " + response.auth.access_token;
+        userService().setUserToken({ token });
+        this.clearInputs();
+        this.presentToast("Bienvenido", "success");
+        location.reload();
+      } catch (e: any) {
+        loading.dismiss();
+        // if (e.graphQLErrors[0].debugMessage == "Unauthorized") {
+        //   this.presentToast("Credenciales incorrectas", "danger");
+        // }
+        // if (e.graphQLErrors[0].debugMessage == "Unverified email") {
+        //   this.alertConfirmationEmail();
+        // }
+      }
     },
+
     clearInputs() {
       this.form.password = "";
       this.form.email = "";

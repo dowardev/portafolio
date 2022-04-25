@@ -291,10 +291,13 @@ export default defineComponent({
     async register() {
       const loading = await this.presentLoading("Creando cuenta");
       loading.present();
-      const email = this.form.email.replace(/\s+/g, "");
 
+      const name = this.form.name;
+      const user = this.form.user;
+      const email = this.form.email.replace(/\s+/g, "");
+      const password = this.form.password;
       sessionService()
-        .userRegister(this.form.name, this.form.user, email, this.form.password)
+        .userRegister({ name, user, email, password })
         .then(() => {
           loading.dismiss();
           this.alertConfirmaciónEmail();
