@@ -6,6 +6,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\Post;
 use DateTime;
+use Exception;
 
 class RecentPostsDateResolver
 {
@@ -15,10 +16,17 @@ class RecentPostsDateResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
-    $postDates = Post::select('created_at')
+try {
+$postDates = Post::select('created_at')
       ->groupBy('created_at')
       ->get()
       ->first();
+
+    if($postDates==null)throw new Exception('No dates');
+    } catch (Exception $e) {
+      throw new Exception($e->getMessage());
+    }
+    
 
     return [
       'message' => 'success',

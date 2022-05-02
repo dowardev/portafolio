@@ -22,6 +22,7 @@ class CreateFeedbackResolver
     $email = $args['email'];
     $description = $args['description'];
     $contact_me = $args['contact_me'];
+    $type = $args['type'];
 
     if ($user != null) {
       $user_id = $user->id;
@@ -35,6 +36,7 @@ class CreateFeedbackResolver
       'email' => $email,
       'description' => $description,
       'contact_me' => $contact_me,
+      'type' => $type,
     ]);
 
     return ['message' => 'Success'];

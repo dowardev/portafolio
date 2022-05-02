@@ -4,10 +4,9 @@ namespace App\GraphQL\Resolvers\post;
 
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
-use App\Models\Post;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use stdClass;
+use Exception;
 
 class GetPostsResolver
 {
@@ -17,6 +16,7 @@ class GetPostsResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
+    try {
     $result = DB::table('posts')
       ->join('images', 'cover_id', '=', 'images.id')
       ->select(
@@ -32,6 +32,12 @@ class GetPostsResolver
       ->whereDate('posts.created_at', $args['date'])
       ->get();
 
+    if($result==null)throw new Exception('No posts');
+  
+    } catch (Exception $e) {
+throw new Exception($e->getMessage());
+    }
+    
     $posts = [];
     foreach ($result as $key => $value) {
       $post = [

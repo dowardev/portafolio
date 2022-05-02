@@ -7,6 +7,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use GraphQL\Error\Error;
 
 class LoginResolver
 {
@@ -30,12 +31,20 @@ class LoginResolver
       ->orWhere('email', '=', $user)
       ->get();
 
+    if(count($userData)==0)
+      throw new Exception('Not found');
+
     $credentials = [
       'email' => $userData[0]->email,
       'password' => $password,
     ];
-    if (count($userData) == 0 || !Auth::attempt($credentials)) {
-      throw new Exception('Unauthorized');
+    try {
+      if (count($userData) == 0 || !Auth::attempt($credentials)) {
+        throw new Exception('Unauthorized');
+      }
+    } catch (\Throwable $error) {
+      $errorPool = app(\Nuwave\Lighthouse\Execution\ErrorPool::class);
+      $errorPool->record($error);
     }
 
     if (!$userData[0]->is_email_verified) {

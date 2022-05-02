@@ -60,6 +60,7 @@ input FeedbackInput {
   email: String
   description: String!
   contact_me: Boolean!
+  type: String!
 }
 
 type User {
@@ -215,7 +216,6 @@ type Mutation {
     )
 
   getUserAuth: GetUserAuthPayload
-    @guard
     @field(
       resolver: "App\\GraphQL\\Resolvers\\auth\\GetUserAuthResolver@resolve"
     )

@@ -14,5 +14,6 @@ class Feedbacks extends Model
         'email',
         'description',
         'contact_me',
+        'type',
     ];
 }
