@@ -60,7 +60,11 @@ export default defineComponent({
         const is_admin = response.is_admin;
         userService().setUserData({ name, email, rol, is_admin });
       } catch (e: any) {
-        console.error(e);
+        if (e.message == "Unauthorized") return;
+        else {
+          systemService().openToastErrror(e);
+          console.error(e);
+        }
       }
     },
   },

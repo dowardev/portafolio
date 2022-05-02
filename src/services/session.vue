@@ -51,7 +51,8 @@ export default function () {
       if (response.data) return response.data;
       throw new Error("Bad response");
     } catch (e: any) {
-      throw new Error(e);
+      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
     }
   }
 
@@ -74,7 +75,8 @@ export default function () {
 
       return response.data.login;
     } catch (e: any) {
-      throw new Error(e);
+      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
     }
   }
 
@@ -90,7 +92,8 @@ export default function () {
         `,
       });
     } catch (e: any) {
-      throw new Error(e);
+      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
     }
   }
 
@@ -116,7 +119,8 @@ export default function () {
         }
       );
     } catch (e: any) {
-      throw new Error(e);
+      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
     }
   }
 
@@ -135,7 +139,8 @@ export default function () {
         }
       );
     } catch (e: any) {
-      throw new Error(e);
+      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
     }
   }
 

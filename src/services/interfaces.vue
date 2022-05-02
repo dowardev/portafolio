@@ -6,6 +6,7 @@ interface Feedback {
   email?: string;
   description: string;
   contactMe: boolean;
+  type: string;
 }
 
 interface FeedbackParams {
@@ -14,7 +15,9 @@ interface FeedbackParams {
   email?: Feedback["email"];
   description: Feedback["description"];
   contactMe: Feedback["contactMe"];
+  error?: any;
   query: string;
+  type: Feedback["type"];
 }
 
 // posts
@@ -112,6 +115,11 @@ interface Loading {
 
 interface AlertConfirmation {
   message: string;
+}
+
+interface ModalFeedback {
+  error?: object;
+  type: "feedback" | "error";
 }
 
 // user
@@ -229,5 +237,6 @@ export {
   GetUserResponse,
   GetUserPermissionsResponse,
   UserLoginResponse,
+  ModalFeedback,
 };
 </script>

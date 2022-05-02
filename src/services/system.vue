@@ -9,7 +9,16 @@ import {
 } from "@ionic/vue";
 import systemService from "./system.vue";
 import axios from "axios";
-import { AlertConfirmation, Loading, Theme, Toast } from "./interfaces.vue";
+import {
+  AlertConfirmation,
+  Loading,
+  ModalFeedback,
+  Theme,
+  Toast,
+} from "./interfaces.vue";
+import { alertCircleOutline, closeOutline } from "ionicons/icons";
+import FeedbackPage from "../components/feedback/FeedbackPage.vue";
+import { modalController } from "@ionic/vue";
 
 export default function () {
   async function getTheme(): Promise<boolean | null> {
@@ -93,7 +102,8 @@ export default function () {
         },
       });
     } catch (e: any) {
-      throw new Error(e);
+      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
     }
   }
 
@@ -123,6 +133,44 @@ export default function () {
     const { role } = await alert.onDidDismiss();
     return role == "confirm" ? true : false;
   }
+
+  async function openToastErrror(error: object) {
+    const toast = await toastController.create({
+      header: "Ocurrio un error",
+      message: "¿Quieres reportar el error?",
+      icon: alertCircleOutline,
+      position: "bottom",
+      color: "danger",
+      buttons: [
+        {
+          text: "Reportar",
+          handler: () => {
+            openModalFeedback({ error, type: "error" });
+          },
+        },
+        {
+          icon: closeOutline,
+          role: "cancel",
+          handler: () => {
+            // console.log("Cancel clicked");
+          },
+        },
+      ],
+    });
+    await toast.present();
+  }
+
+  async function openModalFeedback(data: ModalFeedback) {
+    const modal = await modalController.create({
+      component: FeedbackPage,
+      // cssClass: "my-custom-class",
+      componentProps: {
+        dataProp: data,
+      },
+    });
+    await modal.present();
+  }
+
   return {
     getTheme,
     setTheme,
@@ -132,6 +180,8 @@ export default function () {
     presentLoading,
     getImageAPI,
     presentAlertConfirmation,
+    openToastErrror,
+    openModalFeedback,
   };
 }
 </script>

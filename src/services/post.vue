@@ -51,6 +51,7 @@ export default function () {
         },
       });
     } catch (e: any) {
+      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
       throw new Error(e);
     }
   }
@@ -94,6 +95,7 @@ export default function () {
         },
       });
     } catch (e: any) {
+      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
       throw new Error(e);
     }
   }
@@ -113,6 +115,7 @@ export default function () {
         },
       });
     } catch (e: any) {
+      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
       throw new Error(e);
     }
   }
@@ -137,6 +140,7 @@ export default function () {
       if (response.data.posts.posts) return response.data.posts.posts;
       throw new Error("Bad response");
     } catch (e: any) {
+      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
       throw new Error(e);
     }
   }
@@ -161,6 +165,7 @@ export default function () {
       if (response.data.post.post) return response.data.post.post;
       throw new Error("Bad response");
     } catch (e: any) {
+      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
       throw new Error(e);
     }
   }
@@ -201,6 +206,7 @@ export default function () {
         return response.data.data.uploadImage.image;
       throw new Error("Bad response");
     } catch (e: any) {
+      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
       throw new Error(e);
     }
   }
@@ -224,6 +230,7 @@ export default function () {
       if (response.data) return response.data;
       throw new Error("Bad response");
     } catch (e: any) {
+      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
       throw new Error(e);
     }
   }
@@ -241,13 +248,12 @@ export default function () {
         `,
       });
 
-      if (response.data)
-        return {
-          date: (response.data.recentDatePosts.date as string).split(" ")[0],
-        };
-      throw new Error("Bad response");
+      return {
+        date: (response.data.recentDatePosts.date as string).split(" ")[0],
+      };
     } catch (e: any) {
-      throw new Error(e);
+      if (e.graphQLErrors) throw Error(e.graphQLErrors[0].debugMessage);
+      throw Error(e.message);
     }
   }
 
@@ -272,6 +278,7 @@ export default function () {
       if (response.data.getDates.dates) return response.data.getDates.dates;
       throw new Error("Bad response");
     } catch (e: any) {
+      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
       throw new Error(e);
     }
   }

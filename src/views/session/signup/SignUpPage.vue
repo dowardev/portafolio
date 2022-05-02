@@ -203,6 +203,7 @@ import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, email, helpers, alpha, sameAs } from "@vuelidate/validators";
 import userService from "../../../services/user.vue";
+import systemService from "../../../services/system.vue";
 
 export default defineComponent({
   name: "RegisterPage",
@@ -318,6 +319,9 @@ export default defineComponent({
             "The user has already been selected"
           ) {
             this.presentToast("Usuario ya en uso", "danger");
+          } else {
+            console.error(e);
+            systemService().openToastErrror(e);
           }
         });
     },

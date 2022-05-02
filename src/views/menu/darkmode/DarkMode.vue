@@ -74,12 +74,14 @@ export default defineComponent({
     this.getTheme();
   },
   methods: {
-    getTheme() {
-      systemService()
-        .getTheme()
-        .then((response) => {
-          this.darkMode = response;
-        });
+    async getTheme() {
+      try {
+        const response = await systemService().getTheme();
+        this.darkMode = response;
+      } catch (e: any) {
+        console.error(e);
+        systemService().openToastErrror(e);
+      }
     },
     setTheme() {
       systemService().setTheme({ status: this.darkMode });

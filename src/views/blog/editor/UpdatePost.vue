@@ -104,6 +104,7 @@ export default defineComponent({
       } catch (e: any) {
         console.error(e);
         loading.dismiss();
+        systemService().openToastErrror(e);
       }
     },
 
@@ -149,44 +150,37 @@ export default defineComponent({
         try {
           const response = await this.uploadCover(cover);
           newCoverId = response as string;
-        } catch (error) {
-          console.error(error);
+        } catch (e: any) {
+          console.error(e);
           loading.dismiss();
-          systemService().openToast({
-            message: "Ocurrió un problema",
-            color: "danger",
-          });
+          systemService().openToastErrror(e);
           return;
         }
       }
 
-      this.updatePost({
-        id,
-        title,
-        content,
-        coverId,
-        newCoverId,
-        images,
-        imagesRemoved,
-      })
-        .then(() => {
-          loading.dismiss();
-          eventBus().emitter.emit("refresh-content", { event: "new-post" });
-          systemService().openToast({
-            message: "Actualizado correctamente",
-            color: "success",
-          });
-          this.clearInputs();
-          this.$router.go(-1);
-        })
-        .catch((e) => {
-          console.error(e);
-          loading.dismiss();
-          systemService().openToast({
-            message: "Ocurrió un problema",
-            color: "danger",
-          });
+      try {
+        this.updatePost({
+          id,
+          title,
+          content,
+          coverId,
+          newCoverId,
+          images,
+          imagesRemoved,
         });
+        loading.dismiss();
+        eventBus().emitter.emit("refresh-content", { event: "new-post" });
+        systemService().openToast({
+          message: "Actualizado correctamente",
+          color: "success",
+        });
+        this.clearInputs();
+        this.$router.go(-1);
+      } catch (e: any) {
+        console.error(e);
+        loading.dismiss();
+        systemService().openToastErrror(e);
+      }
     },
 
     async updatePost(data: {
@@ -197,25 +191,20 @@ export default defineComponent({
       newCoverId: string;
       images: Array<string>;
       imagesRemoved: Array<string>;
-    }) {
-      return new Promise((resolve, reject) => {
-        postService()
-          .updatePost({
-            id: data.id,
-            title: data.title,
-            content: data.content,
-            coverId: data.coverId,
-            newCoverId: data.newCoverId,
-            images: data.images,
-            imagesRemoved: data.imagesRemoved,
-          })
-          .then(() => {
-            resolve(true);
-          })
-          .catch((e) => {
-            reject(e);
-          });
-      });
+    }): Promise<void> {
+      try {
+        postService().updatePost({
+          id: data.id,
+          title: data.title,
+          content: data.content,
+          coverId: data.coverId,
+          newCoverId: data.newCoverId,
+          images: data.images,
+          imagesRemoved: data.imagesRemoved,
+        });
+      } catch (e: any) {
+        throw new Error(e);
+      }
     },
 
     async uploadImage(e: any) {
@@ -245,10 +234,7 @@ export default defineComponent({
         if (response) this.newImages.push(id);
       } catch (error) {
         loading.dismiss();
-        systemService().openToast({
-          message: "Ocurrió un error al subir la imagen",
-          color: "danger",
-        });
+        systemService().openToastErrror(e);
       }
     },
 
@@ -262,8 +248,9 @@ export default defineComponent({
       try {
         const response = await postService().uploadImage({ image, query });
         return response.id;
-      } catch (error) {
-        console.error(error);
+      } catch (e: any) {
+        console.error(e);
+        systemService().openToastErrror(e);
       }
     },
 

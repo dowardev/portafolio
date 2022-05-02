@@ -12,10 +12,11 @@
         </ion-buttons>
         <ion-title>Blog</ion-title>
         <ion-buttons slot="end">
-          <ion-button
-            @click="$router.push('/blog/editor/create')"
-            v-if="isUserAdmin"
-          >
+          <ion-spinner
+            name="crescent"
+            v-if="spinners.buttonAddNewPost"
+          ></ion-spinner>
+          <ion-button @click="addPost()" v-if="isUserAdmin">
             <ion-icon :icon="addOutline"></ion-icon>
           </ion-button>
           <ion-button>
@@ -32,66 +33,95 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-row v-if="dates.length > 0">
-        <ion-col class="center">
-          <!-- navigation button -->
-          <ion-button fill="clear" @click="previousPage">
-            <ion-icon :icon="chevronBackOutline"></ion-icon>
-          </ion-button>
+      <!-- date selector -->
+      <section>
+        <ion-row v-if="dates.length > 0">
+          <ion-col class="center">
+            <!-- navigation button -->
+            <ion-button fill="clear" @click="previousPage">
+              <ion-icon :icon="chevronBackOutline"></ion-icon>
+            </ion-button>
 
-          <!-- pages -->
-          <ion-item
-            button="true"
-            id="open-date-input"
-            lines="none"
-            v-if="dates.length > 0"
-          >
-            <ion-text>{{ currentPage }}</ion-text>
-            <ion-popover trigger="open-date-input" :show-backdrop="false">
-              <ion-datetime
-                :is-date-enabled="getDaysEnabled"
-                presentation="date"
-                @ionChange="goToPage($event.detail.value)"
-                :value="currentPage"
-                ref="datetime"
-                firstDayOfWeek="1"
-              ></ion-datetime>
-            </ion-popover>
-          </ion-item>
+            <!-- pages -->
+            <ion-item
+              button="true"
+              id="open-date-input"
+              lines="none"
+              v-if="dates.length > 0"
+            >
+              <ion-text>{{ currentPage }}</ion-text>
+              <ion-popover trigger="open-date-input" :show-backdrop="false">
+                <ion-datetime
+                  :is-date-enabled="getDaysEnabled"
+                  presentation="date"
+                  @ionChange="goToPage($event.detail.value)"
+                  :value="currentPage"
+                  ref="datetime"
+                  firstDayOfWeek="1"
+                ></ion-datetime>
+              </ion-popover>
+            </ion-item>
 
-          <!-- navigation button -->
-          <ion-button fill="clear" @click="nextPage">
-            <ion-icon :icon="chevronForwardOutline"></ion-icon>
-          </ion-button>
-        </ion-col>
-      </ion-row>
+            <!-- navigation button -->
+            <ion-button fill="clear" @click="nextPage">
+              <ion-icon :icon="chevronForwardOutline"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </section>
 
-      <ion-row v-for="(post, index) in posts" :key="post">
-        <ion-col size="4">
-          <img
-            :src="coverToBase64(post.cover.source)"
-            @click="openPost(post.id)"
-            style="cursor: pointer"
-          />
-        </ion-col>
-        <ion-col size="8">
-          <h2
-            style="margin-top: 4px; cursor: pointer"
-            @click="openPost(post.id)"
-          >
-            {{ post.title }}
-          </h2>
-        </ion-col>
-        <ion-col size="12" v-if="isUserAdmin">
-          <ion-button fill="clear" @click="updatePost(post.id)">
-            <ion-icon :icon="createOutline"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" @click="deletePost(post.id, index)">
-            <ion-icon :icon="trashOutline" color="danger"></ion-icon>
-          </ion-button>
-        </ion-col>
-        <hr />
-      </ion-row>
+      <!-- posts -->
+      <section v-if="posts.length > 0">
+        <ion-row v-for="(post, index) in posts" :key="post">
+          <ion-col size="4">
+            <img
+              :src="coverToBase64(post.cover.source)"
+              @click="openPost(post.id)"
+              style="cursor: pointer"
+            />
+          </ion-col>
+          <ion-col size="8">
+            <h2
+              style="margin-top: 4px; cursor: pointer"
+              @click="openPost(post.id)"
+            >
+              {{ post.title }}
+            </h2>
+          </ion-col>
+          <ion-col size="12" v-if="isUserAdmin">
+            <ion-button fill="clear" @click="updatePost(post.id)">
+              <ion-icon :icon="createOutline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" @click="deletePost(post.id, index)">
+              <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+            </ion-button>
+          </ion-col>
+          <hr />
+        </ion-row>
+      </section>
+
+      <!-- empty icon -->
+      <section v-if="posts.length == 0">
+        <div class="align-vertical" v-if="posts.length == 0">
+          <div>
+            <img
+              src="../../../../public/assets/otros/empty.png"
+              alt=""
+              style="width: 180px"
+            />
+            <p style="text-align: center">No exiten posts</p>
+            <ion-item lines="none" v-if="isUserAdmin">
+              <ion-spinner
+                name="crescent"
+                v-if="spinners.buttonAddNewPost"
+              ></ion-spinner>
+              <ion-button fill="clear" @click="addPost()">
+                Agregar nuevo post
+              </ion-button>
+            </ion-item>
+          </div>
+        </div>
+      </section>
     </ion-content>
   </ion-page>
 </template>
@@ -154,6 +184,9 @@ export default defineComponent({
       isUserAdmin: false,
       currentPage: "",
       dates: Array<string>(),
+      spinners: {
+        buttonAddNewPost: false,
+      },
     };
   },
   mounted() {
@@ -189,7 +222,11 @@ export default defineComponent({
           const response = await userService().getUserPermissions();
           this.isUserAdmin = response.admin ? response.admin != null : false;
         } catch (e: any) {
-          console.error(e);
+          if (e.message == "Unauthorized") return;
+          else {
+            systemService().openToastErrror(e);
+            console.error(e);
+          }
         }
       }
     },
@@ -261,6 +298,12 @@ export default defineComponent({
     coverToBase64(cover: string) {
       return "data:image/png;base64," + cover;
     },
+
+    async addPost() {
+      this.spinners.buttonAddNewPost = true;
+      await this.$router.push("/blog/editor/create");
+      this.spinners.buttonAddNewPost = false;
+    },
   },
 });
 </script>
@@ -289,5 +332,12 @@ hr {
   background: #3880ff;
   border-radius: 4px;
   color: white;
+}
+
+.align-vertical {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

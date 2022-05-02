@@ -45,7 +45,7 @@ export default defineComponent({
       });
       loading.present();
 
-      let currentPage = "";
+      let currentPage = String();
       currentPage = this.$route.params.date as string;
 
       if (this.$route.path == "/blog" || this.$route.path == "/blog/") {
@@ -57,8 +57,16 @@ export default defineComponent({
           }).replaceAll("/", "-");
           this.$router.replace("/blog/" + currentPage);
         } catch (e: any) {
-          console.error(e);
           loading.dismiss();
+          if (e.message == "No dates") {
+            const today = formatISO(new Date(), {
+              representation: "date",
+            });
+            this.$router.replace("/blog/" + today);
+            return;
+          }
+          console.error(e);
+          systemService().openToastErrror(e);
           return;
         }
       }
@@ -79,7 +87,8 @@ export default defineComponent({
         loading.dismiss();
       } catch (e: any) {
         loading.dismiss();
-        console.log(e);
+        console.error(e);
+        systemService().openToastErrror(e);
         return;
       }
 

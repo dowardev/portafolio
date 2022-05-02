@@ -172,6 +172,7 @@ import sessionService from "../../../services/session.vue";
 import userService from "../../../services/user.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
+import systemService from "../../../services/system.vue";
 
 export default defineComponent({
   name: "LoginPage",
@@ -224,6 +225,7 @@ export default defineComponent({
       },
     };
   },
+
   beforeRouteEnter(to, from, next) {
     userService()
       .getUserName()
@@ -234,6 +236,7 @@ export default defineComponent({
         next();
       });
   },
+
   methods: {
     async presentToast(message: string, color: string) {
       const toast = await toastController.create({
@@ -244,6 +247,7 @@ export default defineComponent({
       });
       toast.present();
     },
+
     async login() {
       const loading = await this.presentLoading("Iniciando sesión");
       loading.present();
@@ -269,12 +273,15 @@ export default defineComponent({
         location.reload();
       } catch (e: any) {
         loading.dismiss();
-        // if (e.graphQLErrors[0].debugMessage == "Unauthorized") {
-        //   this.presentToast("Credenciales incorrectas", "danger");
-        // }
-        // if (e.graphQLErrors[0].debugMessage == "Unverified email") {
-        //   this.alertConfirmationEmail();
-        // }
+        if (e.message == "Unauthorized")
+          this.presentToast("Usuario y/o contraseña incorrectos", "danger");
+        if (e.message == "Unverified email") this.alertConfirmationEmail();
+        if (e.message == "Not found")
+          this.presentToast("Usuario no encontrado", "warning");
+        else {
+          systemService().openToastErrror(e);
+          console.error(e);
+        }
       }
     },
 
@@ -282,6 +289,7 @@ export default defineComponent({
       this.form.password = "";
       this.form.email = "";
     },
+
     async alertConfirmationEmail() {
       const alert = await alertController.create({
         cssClass: "my-custom-class",
@@ -301,6 +309,7 @@ export default defineComponent({
 
       await alert.present();
     },
+
     async presentLoading(message: string) {
       const loading = await loadingController.create({
         message,

@@ -69,7 +69,8 @@ export default function () {
         },
       });
     } catch (e: any) {
-      throw new Error(e);
+      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
     }
   }
 
@@ -88,7 +89,8 @@ export default function () {
       if (response.data.getUserAuth) return response.data.getUserAuth.user;
       throw new Error("Bad response");
     } catch (e: any) {
-      throw new Error(e);
+      if (e.graphQLErrors) throw Error(e.graphQLErrors[0].debugMessage);
+      throw Error(e.message);
     }
   }
 
@@ -105,10 +107,11 @@ export default function () {
     try {
       const response = await getUser({ query });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if (response) return response.name!;
-      throw new Error("Bad response");
+      return response.name!;
+      // throw new Error("Bad response");
     } catch (e: any) {
-      throw new Error(e);
+      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
     }
   }
 
@@ -161,7 +164,8 @@ export default function () {
       }
       throw new Error("Bad response");
     } catch (e: any) {
-      throw new Error(e);
+      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
     }
   }
 

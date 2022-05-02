@@ -181,7 +181,6 @@ import sessionService from "../../services/session.vue";
 import eventBus from "../../EventBus";
 import systemService from "../../services/system.vue";
 import userService from "../../services/user.vue";
-import FeedbackPage from "./feedback/FeedbackPage.vue";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -248,24 +247,24 @@ export default defineComponent({
       });
       loading.present();
 
-      sessionService()
-        .logout()
-        .then(() => {
-          loading.dismiss();
-          const token = (document.cookie =
-            "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
-          userService().setUserToken({ token });
-          this.userLogged = false;
-          systemService().openToast({
-            message: "Hasta pronto",
-            color: "success",
-          });
-          sessionService().removeUserCached();
-          location.reload();
-        })
-        .catch(() => {
-          loading.dismiss();
+      try {
+        await sessionService().logout();
+        loading.dismiss();
+        const token = (document.cookie =
+          "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
+        userService().setUserToken({ token });
+        this.userLogged = false;
+        systemService().openToast({
+          message: "Hasta pronto",
+          color: "success",
         });
+        sessionService().removeUserCached();
+        location.reload();
+      } catch (e: any) {
+        loading.dismiss();
+        console.error(e);
+        systemService().openToastErrror(e);
+      }
     },
     async getUserName() {
       try {
@@ -273,17 +272,17 @@ export default defineComponent({
         this.userLogged = true;
         this.userName = response;
       } catch (e: any) {
-        console.error(e);
         this.userLogged = false;
+        if (e.message == "Unauthorized") return;
+        else {
+          systemService().openToastErrror(e);
+          console.error(e);
+        }
       }
     },
 
     async openModalFeedback() {
-      const modal = await modalController.create({
-        component: FeedbackPage,
-        // cssClass: "my-custom-class",
-      });
-      return modal.present();
+      systemService().openModalFeedback({ type: "feedback" });
     },
   },
 });

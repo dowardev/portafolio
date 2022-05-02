@@ -170,6 +170,7 @@ import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { defineComponent } from "vue";
 import sessionService from "../../../services/session.vue";
 import userService from "../../../services/user.vue";
+import systemService from "../../../services/system.vue";
 
 export default defineComponent({
   name: "HomePage",
@@ -217,7 +218,7 @@ export default defineComponent({
       .then(() => {
         next("/blog");
       })
-      .catch((e) => {
+      .catch(() => {
         next();
       });
   },
@@ -225,6 +226,7 @@ export default defineComponent({
     closeComponent() {
       this.$router.push("/login");
     },
+
     async sendMailResetPassword() {
       const loading = await this.presentLoading("Enviando correo");
       loading.present();
@@ -238,7 +240,8 @@ export default defineComponent({
         this.options.codeForm = true;
       } catch (e: any) {
         loading.dismiss();
-        this.presentToast("Hubo un problema al enviar el corro.", "danger");
+        console.error(e);
+        systemService().openToastErrror(e);
       }
     },
 
@@ -250,6 +253,7 @@ export default defineComponent({
       });
       toast.present();
     },
+
     async presentLoading(message: string) {
       const loading = await loadingController.create({
         cssClass: "loading",
@@ -257,26 +261,32 @@ export default defineComponent({
       });
       return loading;
     },
+
     async sendCodeResetPassword() {
       const loading = await this.presentLoading("Verificando código");
       loading.present();
 
       const email = this.form.email;
       const code = this.form.code;
-      sessionService()
-        .sendCodeResetPassword({ email, code })
-        .then(() => {
-          loading.dismiss();
-          this.options.codeForm = false;
-          this.options.passwordForm = true;
-        })
-        .catch((e) => {
-          loading.dismiss();
-          if (e.response.data.message == "Code invalid") {
-            this.presentToast("Código incorrecto", "danger");
-          }
+      try {
+        await sessionService().sendCodeResetPassword({
+          email,
+          code,
         });
+        loading.dismiss();
+        this.options.codeForm = false;
+        this.options.passwordForm = true;
+      } catch (e: any) {
+        loading.dismiss();
+        if (e.debugMessage == "Code invalid")
+          this.presentToast("Código incorrecto", "danger");
+        else {
+          console.error(e);
+          systemService().openToastErrror(e);
+        }
+      }
     },
+
     async resetPassword() {
       if (this.form.password1 != this.form.password2) {
         this.presentToast("Las contraseñas no coinciden", "danger");
@@ -287,22 +297,18 @@ export default defineComponent({
 
       const email = this.form.email;
       const password = this.form.password1;
-      sessionService()
-        .resetPassword({ email, password })
-        .then(() => {
-          loading.dismiss();
-          this.options.passwordForm = false;
-          this.options.emailForm = true;
-          this.presentToast("Contraseña restaurada", "success");
-          this.$router.push("/login");
-        })
-        .catch(() => {
-          loading.dismiss();
-          this.presentToast(
-            "Hubo un problema al actualizar la contraseña",
-            "danger"
-          );
-        });
+      try {
+        await sessionService().resetPassword({ email, password });
+        loading.dismiss();
+        this.options.passwordForm = false;
+        this.options.emailForm = true;
+        this.presentToast("Contraseña restaurada", "success");
+        this.$router.push("/login");
+      } catch (e: any) {
+        loading.dismiss();
+        console.error(e);
+        systemService().openToastErrror(e);
+      }
     },
   },
 });

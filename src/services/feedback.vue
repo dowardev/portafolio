@@ -10,8 +10,10 @@ export default function () {
     try {
       await apollo.defaultClient.mutate({
         mutation: gql`
-        mutation($user_id:String,$name:String,$email:String,$description:String!,$contact_me:Boolean!) {
-          createFeedback(input:{user_id:$user_id,name:$name,email:$email,description:$description,contact_me:$contact_me}) {
+        mutation($user_id:String,$name:String,$email:String,
+          $description:String!,$contact_me:Boolean!,$type:String!) {
+          createFeedback(input:{user_id:$user_id,name:$name,email:$email,
+            description:$description,contact_me:$contact_me,type:$type}) {
            ${params.query} 
           }
         }
@@ -20,12 +22,16 @@ export default function () {
           user_id: params.userId,
           name: params.name,
           email: params.email,
-          description: params.email,
+          description: params.description,
           contact_me: params.contactMe,
+          type: params.type,
         },
       });
     } catch (e: any) {
-      throw new Error(e);
+      console.error(e);
+      // throw e.graphQLErrors[0];
+      if (e.graphQLErrors[0]) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
     }
   }
 

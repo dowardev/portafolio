@@ -158,8 +158,9 @@ export default defineComponent({
           updated: postUpdated,
         });
         loading.dismiss();
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
+        systemService().openToastErrror(e);
         loading.dismiss();
       }
     },
@@ -193,17 +194,23 @@ export default defineComponent({
         })
         .catch((e) => {
           loading.dismiss();
-          console.log(e);
+          console.error(e);
+          systemService().openToastErrror(e);
         });
     },
+
     async verifyUserAdmin() {
       if (navigator.onLine) {
         try {
           const response = await userService().getUserPermissions();
           this.isUserAdmin = response.admin ? response.admin != null : false;
         } catch (e: any) {
-          console.error(e);
           this.isUserAdmin = false;
+          if (e.message == "Unauthorized") return;
+          else {
+            systemService().openToastErrror(e);
+            console.error(e);
+          }
         }
       }
     },

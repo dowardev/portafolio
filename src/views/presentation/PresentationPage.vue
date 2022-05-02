@@ -93,18 +93,6 @@
               ></ion-icon>
             </ion-button>
             <ion-button
-              fill="clear"
-              href="https://twitter.com/dowar_r"
-              target="_blank"
-              @mouseover="fillTwitter = '#00a9ea'"
-              @mouseleave="fillTwitter = '#777777'"
-            >
-              <ion-icon
-                :style="{ color: fillTwitter }"
-                :icon="logoTwitter"
-              ></ion-icon>
-            </ion-button>
-            <ion-button
               expand="block"
               fill="clear"
               href="https://gitlab.com/gonzam4"
@@ -191,7 +179,6 @@ import { isPlatform } from "@ionic/vue";
 import {
   mailOutline,
   logoMastodon,
-  logoTwitter,
   logoGitlab,
   logoLinkedin,
 } from "ionicons/icons";
@@ -214,7 +201,6 @@ export default defineComponent({
     return {
       mailOutline,
       logoMastodon,
-      logoTwitter,
       logoGitlab,
       logoLinkedin,
     };
@@ -224,7 +210,6 @@ export default defineComponent({
       fillTelegram: "#777777",
       fillCorreo: "#777777",
       fillMastodon: "#777777",
-      fillTwitter: "#777777",
       fillGitlab: "#777777",
       fillLinkedIn: "#777777",
       fillDev: "#777777",

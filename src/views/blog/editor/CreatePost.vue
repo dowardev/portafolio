@@ -19,7 +19,7 @@ import userService from "../../../services/user.vue";
 import systemService from "../../../services/system.vue";
 import EditorComponent from "./EditorPage.vue";
 import eventBus from "../../../EventBus";
-import { CreatePost, Image } from "@/services/interfaces.vue";
+import { CreatePost } from "@/services/interfaces.vue";
 
 export default defineComponent({
   name: "EditorPage",
@@ -48,6 +48,7 @@ export default defineComponent({
         next("/blog");
       });
   },
+
   methods: {
     async save(data: { title: string; content: string; cover: object }) {
       const loading = await systemService().presentLoading({
@@ -64,13 +65,10 @@ export default defineComponent({
       try {
         const response = await this.uploadCover(cover);
         coverId = response;
-      } catch (error) {
-        console.error(error);
+      } catch (e: any) {
+        console.error(e);
         loading.dismiss();
-        systemService().openToast({
-          message: "Ocurrió un problema",
-          color: "danger",
-        });
+        systemService().openToastErrror(e);
         return;
       }
 
@@ -84,18 +82,15 @@ export default defineComponent({
         loading.dismiss();
         eventBus().emitter.emit("refresh-content", { event: "new-post" });
         this.clearInputs();
-        this.$router.push("/blog");
+        this.$router.go(-1);
         systemService().openToast({
           message: "Publicado correctamente",
           color: "success",
         });
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
         loading.dismiss();
-        systemService().openToast({
-          message: "Ocurrió un problema",
-          color: "danger",
-        });
+        systemService().openToastErrror(e);
       }
     },
 
@@ -125,31 +120,26 @@ export default defineComponent({
       loading.present();
       const image = e.image;
 
-      postService()
-        .uploadImage(image)
-        .then((response) => {
-          loading.dismiss();
-          const imageName = response.name;
+      try {
+        const response = await postService().uploadImage(image);
+        loading.dismiss();
+        const imageName = response.name;
 
-          this.content =
-            "![" +
-            imageName +
-            "](http://localhost:8000/api/get-image?name=" +
-            imageName +
-            " '" +
-            imageName +
-            "')";
+        this.content =
+          "![" +
+          imageName +
+          "](http://localhost:8000/api/get-image?name=" +
+          imageName +
+          " '" +
+          imageName +
+          "')";
 
-          if (response.id) this.images.push(response.id);
-        })
-        .catch((e) => {
-          console.log(e);
-          loading.dismiss();
-          systemService().openToast({
-            message: "Ocurrió un error al subir la imagen",
-            color: "danger",
-          });
-        });
+        if (response.id) this.images.push(response.id);
+      } catch (e: any) {
+        console.error(e);
+        loading.dismiss();
+        systemService().openToastErrror(e);
+      }
     },
 
     async uploadCover(image: object): Promise<string> {
