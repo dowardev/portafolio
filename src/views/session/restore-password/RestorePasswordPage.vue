@@ -36,13 +36,21 @@
                     @keyup.enter="sendMailResetPassword()"
                   ></ion-input>
                 </ion-item>
-                <ion-button
-                  expand="block"
-                  fill="clear"
-                  @click="sendMailResetPassword()"
-                >
-                  Confirmar
-                </ion-button>
+                <div class="center">
+                  <ion-item lines="none">
+                    <ion-spinner
+                      name="crescent"
+                      v-if="spinners.buttonSendEmail"
+                    ></ion-spinner>
+                    <ion-button
+                      expand="block"
+                      fill="clear"
+                      @click="sendMailResetPassword()"
+                    >
+                      Confirmar
+                    </ion-button>
+                  </ion-item>
+                </div>
               </ion-card-content>
             </ion-card>
           </ion-col>
@@ -62,12 +70,20 @@
                     @keyup.enter="sendCodeResetPassword()"
                   ></ion-input>
                 </ion-item>
-                <ion-button
-                  expand="full"
-                  fill="clear"
-                  @click="sendCodeResetPassword()"
-                  >Enviar</ion-button
-                >
+                <div class="center">
+                  <ion-item lines="none">
+                    <ion-spinner
+                      name="crescent"
+                      v-if="spinners.buttonSendCode"
+                    ></ion-spinner>
+                    <ion-button
+                      expand="full"
+                      fill="clear"
+                      @click="sendCodeResetPassword()"
+                      >Enviar</ion-button
+                    >
+                  </ion-item>
+                </div>
               </ion-card-content>
             </ion-card>
           </ion-col>
@@ -83,7 +99,7 @@
                   <ion-label position="floating">Contraseña</ion-label>
                   <ion-input
                     :type="inputTypePassword1"
-                    v-model="form.password1"
+                    v-model="(v$.form as any).password1.$model"
                     @keyup.enter="resetPassword()"
                   ></ion-input>
                   <ion-button
@@ -105,13 +121,20 @@
                     <ion-icon :icon="eyeOutline"></ion-icon>
                   </ion-button>
                 </ion-item>
+                <div
+                  v-for="(error, index) of (v$.form as any).password1.$errors"
+                  :key="index"
+                >
+                  <div class="error">{{ error.$message }}</div>
+                </div>
+
                 <ion-item>
                   <ion-label position="floating"
                     >Repite la contraseña</ion-label
                   >
                   <ion-input
                     :type="inputTypePassword2"
-                    v-model="form.password2"
+                    v-model="(v$.form as any).password2.$model"
                     @keyup.enter="resetPassword()"
                   ></ion-input>
                   <ion-button
@@ -133,9 +156,29 @@
                     <ion-icon :icon="eyeOutline"></ion-icon>
                   </ion-button>
                 </ion-item>
-                <ion-button expand="full" fill="clear" @click="resetPassword()">
-                  Enviar
-                </ion-button>
+                <div
+                  v-for="(error, index) of (v$.form as any).password2.$errors"
+                  :key="index"
+                >
+                  <div class="error">{{ error.$message }}</div>
+                </div>
+
+                <div class="center">
+                  <ion-item lines="none">
+                    <ion-spinner
+                      name="crescent"
+                      v-if="spinners.buttonResetPassword"
+                    ></ion-spinner>
+                    <ion-button
+                      expand="full"
+                      fill="clear"
+                      @click="resetPassword()"
+                      :disabled="(v$.form as any).$invalid"
+                    >
+                      Enviar
+                    </ion-button>
+                  </ion-item>
+                </div>
               </ion-card-content>
             </ion-card>
           </ion-col>
@@ -152,7 +195,6 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  toastController,
   IonInput,
   loadingController,
   IonButtons,
@@ -165,12 +207,15 @@ import {
   IonButton,
   IonItem,
   IonIcon,
+  IonSpinner,
 } from "@ionic/vue";
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { defineComponent } from "vue";
 import sessionService from "../../../services/session.vue";
 import userService from "../../../services/user.vue";
 import systemService from "../../../services/system.vue";
+import useVuelidate from "@vuelidate/core";
+import { required, helpers, sameAs } from "@vuelidate/validators";
 
 export default defineComponent({
   name: "HomePage",
@@ -191,9 +236,10 @@ export default defineComponent({
     IonButton,
     IonItem,
     IonIcon,
+    IonSpinner,
   },
   setup() {
-    return { eyeOutline, eyeOffOutline };
+    return { eyeOutline, eyeOffOutline, v$: useVuelidate() };
   },
   data() {
     return {
@@ -210,6 +256,11 @@ export default defineComponent({
       },
       inputTypePassword1: "password",
       inputTypePassword2: "password",
+      spinners: {
+        buttonSendEmail: false,
+        buttonSendCode: false,
+        buttonResetPassword: false,
+      },
     };
   },
   beforeRouteEnter(to, from, next) {
@@ -222,36 +273,48 @@ export default defineComponent({
         next();
       });
   },
+
+  validations() {
+    const messageRequired = "Campo requerido";
+    return {
+      form: {
+        password1: {
+          required: helpers.withMessage(messageRequired, required),
+          minLength: helpers.withMessage(
+            "La contraseña debe tener al menos una mayúscula, un numero y tener un tamaño de 8",
+            helpers.regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
+          ),
+        },
+        password2: {
+          same: helpers.withMessage(
+            "Las contraseñas no coinciden",
+            sameAs(this.form.password1)
+          ),
+        },
+      },
+    };
+  },
+
   methods: {
     closeComponent() {
       this.$router.push("/login");
     },
 
     async sendMailResetPassword() {
-      const loading = await this.presentLoading("Enviando correo");
-      loading.present();
+      this.spinners.buttonSendEmail = true;
 
       try {
         await sessionService().sendMailResetPassword({
           email: this.form.email,
         });
-        loading.dismiss();
+        this.spinners.buttonSendEmail = false;
         this.options.emailForm = false;
         this.options.codeForm = true;
       } catch (e: any) {
-        loading.dismiss();
+        this.spinners.buttonSendEmail = false;
         console.error(e);
         systemService().openToastErrror(e);
       }
-    },
-
-    async presentToast(message: string, color: string) {
-      const toast = await toastController.create({
-        message,
-        duration: 3000,
-        color,
-      });
-      toast.present();
     },
 
     async presentLoading(message: string) {
@@ -263,8 +326,7 @@ export default defineComponent({
     },
 
     async sendCodeResetPassword() {
-      const loading = await this.presentLoading("Verificando código");
-      loading.present();
+      this.spinners.buttonSendCode = true;
 
       const email = this.form.email;
       const code = this.form.code;
@@ -273,39 +335,40 @@ export default defineComponent({
           email,
           code,
         });
-        loading.dismiss();
+        this.spinners.buttonSendCode = false;
         this.options.codeForm = false;
         this.options.passwordForm = true;
       } catch (e: any) {
-        loading.dismiss();
-        if (e.debugMessage == "Code invalid")
-          this.presentToast("Código incorrecto", "danger");
-        else {
-          console.error(e);
-          systemService().openToastErrror(e);
+        this.spinners.buttonSendCode = false;
+        if (e.message == "Code invalid") {
+          systemService().openToast({
+            message: "Code incorrecto",
+            color: "danger",
+          });
+          return;
         }
+        console.error(e.message);
+        systemService().openToastErrror(e);
       }
     },
 
     async resetPassword() {
-      if (this.form.password1 != this.form.password2) {
-        this.presentToast("Las contraseñas no coinciden", "danger");
-        return;
-      }
-      const loading = await this.presentLoading("Actualizando contraseña");
-      loading.present();
+      this.spinners.buttonResetPassword = true;
 
       const email = this.form.email;
       const password = this.form.password1;
       try {
         await sessionService().resetPassword({ email, password });
-        loading.dismiss();
+        this.spinners.buttonResetPassword = false;
         this.options.passwordForm = false;
         this.options.emailForm = true;
-        this.presentToast("Contraseña restaurada", "success");
+        systemService().openToast({
+          message: "Contraseña restaurada",
+          color: "success",
+        });
         this.$router.push("/login");
       } catch (e: any) {
-        loading.dismiss();
+        this.spinners.buttonResetPassword = false;
         console.error(e);
         systemService().openToastErrror(e);
       }

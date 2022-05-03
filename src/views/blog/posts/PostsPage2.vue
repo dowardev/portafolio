@@ -110,15 +110,6 @@
               style="width: 180px"
             />
             <p style="text-align: center">No exiten posts</p>
-            <ion-item lines="none" v-if="isUserAdmin">
-              <ion-spinner
-                name="crescent"
-                v-if="spinners.buttonAddNewPost"
-              ></ion-spinner>
-              <ion-button fill="clear" @click="addPost()">
-                Agregar nuevo post
-              </ion-button>
-            </ion-item>
           </div>
         </div>
       </section>

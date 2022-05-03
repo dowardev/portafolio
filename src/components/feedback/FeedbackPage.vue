@@ -9,7 +9,7 @@
         </ion-buttons>
         <ion-title>Comentarios</ion-title>
 
-        <ion-buttons slot="end">
+        <ion-buttons slot="end" v-if="dataProp?.type == 'error'">
           <ion-button @click="displayError = true">
             <ion-icon :icon="bugOutline"></ion-icon>
           </ion-button>
@@ -76,14 +76,22 @@
                 </ion-label>
               </ion-item>
 
-              <ion-button
-                fill="clear"
-                expand="block"
-                :disabled="v$.$invalid"
-                @click="sendFeedback"
-              >
-                Enviar
-              </ion-button>
+              <div class="center">
+                <ion-item lines="none">
+                  <ion-spinner
+                    name="crescent"
+                    v-if="spinners.buttonSendFeedback"
+                  ></ion-spinner>
+                  <ion-button
+                    fill="clear"
+                    expand="block"
+                    :disabled="v$.$invalid"
+                    @click="sendFeedback"
+                  >
+                    Enviar
+                  </ion-button>
+                </ion-item>
+              </div>
             </form>
           </ion-col>
         </ion-row>
@@ -157,6 +165,9 @@ export default defineComponent({
         type: String(),
       },
       displayError: false,
+      spinners: {
+        buttonSendFeedback: false,
+      },
     };
   },
   validations() {
@@ -210,8 +221,7 @@ export default defineComponent({
       }
     },
     async sendFeedback() {
-      const loading = await this.presentLoading();
-      loading.present();
+      this.spinners.buttonSendFeedback = true;
 
       const userId = this.form.id;
       const type = this.form.type;
@@ -237,7 +247,7 @@ export default defineComponent({
           contactMe,
           type,
         });
-        loading.dismiss();
+        this.spinners.buttonSendFeedback = false;
         systemService().openToast({
           message: "Gracias por tus comentarios",
           color: "success",
@@ -245,7 +255,7 @@ export default defineComponent({
         this.clearInputs;
         this.closeModal();
       } catch (e) {
-        loading.dismiss();
+        this.spinners.buttonSendFeedback = false;
         systemService().openToast({
           message: "Ocurrió un error",
           color: "danger",

@@ -6,6 +6,8 @@
         @uploadImage="uploadImage($event)"
         @save="save($event)"
         :content="content"
+        :spinnerSavePost="spinners.savePost"
+        :spinnerSaveCover="spinners.saveCover"
       ></EditorComponent>
     </ion-content>
   </ion-page>
@@ -32,6 +34,7 @@ export default defineComponent({
       segment: "editor",
       content: "",
       images: Array<string>(),
+      spinners: { savePost: false, saveCover: false },
     };
   },
   beforeRouteEnter(to, from, next) {
@@ -51,10 +54,7 @@ export default defineComponent({
 
   methods: {
     async save(data: { title: string; content: string; cover: object }) {
-      const loading = await systemService().presentLoading({
-        message: "Creando post",
-      });
-      loading.present();
+      this.spinners.savePost = true;
 
       const title = data.title;
       const content = data.content;
@@ -67,7 +67,7 @@ export default defineComponent({
         coverId = response;
       } catch (e: any) {
         console.error(e);
-        loading.dismiss();
+        this.spinners.savePost = false;
         systemService().openToastErrror(e);
         return;
       }
@@ -79,7 +79,7 @@ export default defineComponent({
           coverId,
           images,
         });
-        loading.dismiss();
+        this.spinners.savePost = false;
         eventBus().emitter.emit("refresh-content", { event: "new-post" });
         this.clearInputs();
         this.$router.go(-1);
@@ -89,7 +89,7 @@ export default defineComponent({
         });
       } catch (e: any) {
         console.error(e);
-        loading.dismiss();
+        this.spinners.savePost = false;
         systemService().openToastErrror(e);
       }
     },
@@ -114,15 +114,18 @@ export default defineComponent({
     },
 
     async uploadImage(e: any) {
-      const loading = await systemService().presentLoading({
-        message: "Subiendo imagen",
-      });
-      loading.present();
+      this.spinners.saveCover = true;
       const image = e.image;
+      const query = `
+            image {
+              id
+              name
+            }
+              `;
 
       try {
-        const response = await postService().uploadImage(image);
-        loading.dismiss();
+        const response = await postService().uploadImage({ query, image });
+        this.spinners.saveCover = false;
         const imageName = response.name;
 
         this.content =
@@ -137,7 +140,7 @@ export default defineComponent({
         if (response.id) this.images.push(response.id);
       } catch (e: any) {
         console.error(e);
-        loading.dismiss();
+        this.spinners.saveCover = false;
         systemService().openToastErrror(e);
       }
     },

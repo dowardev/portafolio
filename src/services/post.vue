@@ -171,8 +171,9 @@ export default function () {
   }
 
   async function uploadImage(params: UploadImage): Promise<Image> {
+    let operations = "" as any;
     try {
-      const operations = {
+      operations = {
         query: `
           mutation ($file: Upload!) {
             uploadImage(input: { file: $file }) {
@@ -184,6 +185,12 @@ export default function () {
           file: null,
         },
       };
+    } catch (e: any) {
+      if (e.graphQLErrors) throw Error(e.graphQLErrors[0].debugMessage);
+      throw Error(e.message);
+    }
+
+    try {
       const _map = {
         file: ["variables.file"],
       };
@@ -202,12 +209,10 @@ export default function () {
         },
       });
 
-      if (response.data.data.uploadImage.image)
-        return response.data.data.uploadImage.image;
-      throw new Error("Bad response");
+      return response.data.data.uploadImage.image;
     } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
+      // throw new Error(e.response.data.message);
+      throw new Error(e.message);
     }
   }
 

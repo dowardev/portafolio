@@ -4,19 +4,28 @@
       <ion-toolbar class="menu-color">
         <img src="../../../public/assets/portafolio/dowar.png" />
       </ion-toolbar>
+
       <ion-toolbar class="menu-color">
         <ion-item lines="none" v-if="userLogged == false">
           <ion-label style="color: white !important">Bienvenido</ion-label>
-          <ion-button fill="clear" @click="openRoute('/login')">
+          <ion-spinner name="crescent" v-if="spinners.buttonLogin">
+          </ion-spinner>
+          <ion-spinner name="crescent" v-if="spinners.buttonSignup">
+          </ion-spinner>
+          <ion-button fill="clear" @click="login()">
             <ion-icon :icon="logInOutline"></ion-icon>
           </ion-button>
-          <ion-button fill="clear" @click="openRoute('/signup')">
+
+          <ion-button fill="clear" @click="signup()">
             <ion-icon :icon="personAddOutline"></ion-icon>
           </ion-button>
         </ion-item>
+
         <ion-item lines="none" v-if="userLogged == true">
           <ion-label style="color: white !important">{{ userName }}</ion-label>
-          <ion-button fill="clear" @click="userLogout()">
+          <ion-spinner name="crescent" v-if="spinners.buttonLogout">
+          </ion-spinner>
+          <ion-button fill="clear" @click="logout()">
             <ion-icon :icon="logOutOutline"></ion-icon>
           </ion-button>
         </ion-item>
@@ -166,6 +175,7 @@ import {
   IonFooter,
   IonButtons,
   IonIcon,
+  IonSpinner,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
@@ -194,6 +204,7 @@ export default defineComponent({
     IonFooter,
     IonButtons,
     IonIcon,
+    IonSpinner,
   },
   setup() {
     return {
@@ -208,7 +219,15 @@ export default defineComponent({
     };
   },
   data() {
-    return { userLogged: false, userName: null as null | string };
+    return {
+      userLogged: false,
+      userName: null as null | string,
+      spinners: {
+        buttonLogin: false,
+        buttonSignup: false,
+        buttonLogout: false,
+      },
+    };
   },
   mounted() {
     eventBus().emitter.on("refresh-user-content", () => {
@@ -241,31 +260,7 @@ export default defineComponent({
       this.$router.push(route);
       menuController.close();
     },
-    async userLogout() {
-      const loading = await systemService().presentLoading({
-        message: "Cerrando sesión",
-      });
-      loading.present();
 
-      try {
-        await sessionService().logout();
-        loading.dismiss();
-        const token = (document.cookie =
-          "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
-        userService().setUserToken({ token });
-        this.userLogged = false;
-        systemService().openToast({
-          message: "Hasta pronto",
-          color: "success",
-        });
-        sessionService().removeUserCached();
-        location.reload();
-      } catch (e: any) {
-        loading.dismiss();
-        console.error(e);
-        systemService().openToastErrror(e);
-      }
-    },
     async getUserName() {
       try {
         const response = await userService().getUserName();
@@ -283,6 +278,37 @@ export default defineComponent({
 
     async openModalFeedback() {
       systemService().openModalFeedback({ type: "feedback" });
+    },
+
+    async login() {
+      this.spinners.buttonLogin = true;
+      await this.$router.push("/login");
+      this.spinners.buttonLogin = false;
+    },
+
+    async signup() {
+      this.spinners.buttonSignup = true;
+      await this.$router.push("/signup");
+      this.spinners.buttonSignup = false;
+    },
+
+    async logout() {
+      this.spinners.buttonLogout = true;
+
+      try {
+        await sessionService().logout();
+        this.spinners.buttonLogout = false;
+        const token = (document.cookie =
+          "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
+        userService().setUserToken({ token });
+        this.userLogged = false;
+        sessionService().removeUserCached();
+        location.reload();
+      } catch (e: any) {
+        this.spinners.buttonLogout = false;
+        console.error(e);
+        systemService().openToastErrror(e);
+      }
     },
   },
 });

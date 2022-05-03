@@ -9,6 +9,7 @@
         </ion-buttons>
         <ion-title>Editor</ion-title>
         <ion-buttons slot="end">
+          <ion-spinner name="crescent" v-if="spinnerSavePost"></ion-spinner>
           <ion-button @click="save()" :disabled="v$.$invalid">
             <ion-icon :icon="saveOutline"></ion-icon>
           </ion-button>
@@ -29,14 +30,22 @@
       </div>
 
       <section v-if="segment == 'editor'">
-        <ion-item lines="none">
-          <ion-button
-            slot="end"
-            fill="clear"
-            @click="($refs as any).inputImage.click()"
-          >
-            <ion-icon :icon="imagesOutline"></ion-icon>
-          </ion-button>
+        <div style="display: inline-block; width: 100%">
+          <div style="float: right">
+            <ion-item lines="none">
+              <ion-spinner
+                name="crescent"
+                v-if="spinnerSaveCover"
+              ></ion-spinner>
+              <ion-button
+                slot="end"
+                fill="clear"
+                @click="($refs as any).inputImage.click()"
+              >
+                <ion-icon :icon="imagesOutline"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </div>
           <input
             accept="image/*"
             type="file"
@@ -44,7 +53,8 @@
             style="display: none"
             ref="inputImage"
           />
-        </ion-item>
+        </div>
+
         <ion-item>
           <ion-label position="floating">Titulo</ion-label>
           <ion-input v-model="v$.postTitle.$model"> </ion-input>
@@ -159,6 +169,8 @@ export default defineComponent({
     title: String,
     content: String,
     cover: {},
+    spinnerSavePost: Boolean,
+    spinnerSaveCover: Boolean,
   },
   setup() {
     return {

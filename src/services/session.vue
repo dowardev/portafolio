@@ -140,7 +140,7 @@ export default function () {
       );
     } catch (e: any) {
       if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
-      throw new Error(e.message);
+      throw new Error(e.response.data.message);
     }
   }
 

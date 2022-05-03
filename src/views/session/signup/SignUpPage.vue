@@ -22,152 +22,167 @@
       </ion-row>
       <ion-row class="center center-vertical-card-login">
         <ion-col size="12" size-lg="6" size-xl="4" class="card-form">
-          <ion-card>
-            <ion-card-header>
-              <div class="center">
-                <img
-                  src="../../../../public/assets/otros/user.png"
-                  alt=""
-                  class="imagen-usuario"
-                />
-              </div>
-            </ion-card-header>
-
-            <ion-card-content>
-              <form>
-                <ion-item>
-                  <ion-label position="floating">Nombre</ion-label>
-                  <ion-input
-                    v-model="(v$.form as any).name.$model"
-                    autocomplete="name"
-                  ></ion-input>
-                </ion-item>
-                <div
-                  v-for="(error, index) of (v$.form as any).name.$errors"
-                  :key="index"
-                >
-                  <div class="error">{{ error.$message }}</div>
+          <section>
+            <ion-card>
+              <ion-card-header>
+                <div class="center">
+                  <img
+                    src="../../../../public/assets/otros/user.png"
+                    alt=""
+                    class="imagen-usuario"
+                  />
                 </div>
+              </ion-card-header>
 
-                <ion-item>
-                  <ion-label position="floating">Usuario</ion-label>
-                  <ion-input v-model="(v$.form as any).user.$model"></ion-input>
-                </ion-item>
-                <div
-                  v-for="(error, index) of (v$.form as any).user.$errors"
-                  :key="index"
-                >
-                  <div class="error">{{ error.$message }}</div>
-                </div>
+              <ion-card-content>
+                <section>
+                  <form>
+                    <ion-item>
+                      <ion-label position="floating">Nombre</ion-label>
+                      <ion-input
+                        v-model="(v$.form as any).name.$model"
+                        autocomplete="name"
+                      ></ion-input>
+                    </ion-item>
+                    <div
+                      v-for="(error, index) of (v$.form as any).name.$errors"
+                      :key="index"
+                    >
+                      <div class="error">{{ error.$message }}</div>
+                    </div>
 
-                <ion-item>
-                  <ion-label position="floating">Correo electrónico</ion-label>
-                  <ion-input
-                    v-model="(v$.form as any).email.$model"
-                    autocomplete="email"
-                  ></ion-input>
-                </ion-item>
-                <div
-                  v-for="(error, index) of (v$.form as any).email.$errors"
-                  :key="index"
-                >
-                  <div class="error">{{ error.$message }}</div>
-                </div>
+                    <ion-item>
+                      <ion-label position="floating">Usuario</ion-label>
+                      <ion-input
+                        v-model="(v$.form as any).user.$model"
+                      ></ion-input>
+                    </ion-item>
+                    <div
+                      v-for="(error, index) of (v$.form as any).user.$errors"
+                      :key="index"
+                    >
+                      <div class="error">{{ error.$message }}</div>
+                    </div>
 
-                <ion-item>
-                  <ion-label position="floating">Contraseña</ion-label>
-                  <ion-input
-                    v-model="(v$.form as any).password.$model"
-                    :type="inputTypePassword1"
-                    autocomplete="password"
-                  ></ion-input>
-                  <ion-button
-                    slot="end"
-                    fill="clear"
-                    v-if="inputTypePassword1 == 'text'"
-                    v-on:click="inputTypePassword1 = 'password'"
-                    style="margin-top: 20px"
-                  >
-                    <ion-icon :icon="eyeOffOutline"></ion-icon>
-                  </ion-button>
-                  <ion-button
-                    slot="end"
-                    fill="clear"
-                    v-if="inputTypePassword1 == 'password'"
-                    v-on:click="inputTypePassword1 = 'text'"
-                    style="margin-top: 20px"
-                  >
-                    <ion-icon :icon="eyeOutline"></ion-icon>
-                  </ion-button>
-                </ion-item>
-                <div
-                  v-for="(error, index) of (v$.form as any).password.$errors"
-                  :key="index"
-                >
-                  <div class="error">{{ error.$message }}</div>
-                </div>
+                    <ion-item>
+                      <ion-label position="floating"
+                        >Correo electrónico</ion-label
+                      >
+                      <ion-input
+                        v-model="(v$.form as any).email.$model"
+                        autocomplete="email"
+                      ></ion-input>
+                    </ion-item>
+                    <div
+                      v-for="(error, index) of (v$.form as any).email.$errors"
+                      :key="index"
+                    >
+                      <div class="error">{{ error.$message }}</div>
+                    </div>
 
-                <ion-item>
-                  <ion-label position="floating">Repite contraseña</ion-label>
-                  <ion-input
-                    v-model="(v$.form as any).password2.$model"
-                    :type="inputTypePassword2"
-                  ></ion-input>
-                  <ion-button
-                    slot="end"
-                    fill="clear"
-                    v-if="inputTypePassword2 == 'text'"
-                    v-on:click="inputTypePassword2 = 'password'"
-                    style="margin-top: 20px"
-                  >
-                    <ion-icon :icon="eyeOffOutline"></ion-icon>
-                  </ion-button>
-                  <ion-button
-                    slot="end"
-                    fill="clear"
-                    v-if="inputTypePassword2 == 'password'"
-                    v-on:click="inputTypePassword2 = 'text'"
-                    style="margin-top: 20px"
-                  >
-                    <ion-icon :icon="eyeOutline"></ion-icon>
-                  </ion-button>
-                </ion-item>
-                <div
-                  v-for="(error, index) of (v$.form as any).password2.$errors"
-                  :key="index"
-                >
-                  <div class="error">{{ error.$message }}</div>
-                </div>
-              </form>
+                    <ion-item>
+                      <ion-label position="floating">Contraseña</ion-label>
+                      <ion-input
+                        v-model="(v$.form as any).password.$model"
+                        :type="inputTypePassword1"
+                        autocomplete="password"
+                      ></ion-input>
+                      <ion-button
+                        slot="end"
+                        fill="clear"
+                        v-if="inputTypePassword1 == 'text'"
+                        v-on:click="inputTypePassword1 = 'password'"
+                        style="margin-top: 20px"
+                      >
+                        <ion-icon :icon="eyeOffOutline"></ion-icon>
+                      </ion-button>
+                      <ion-button
+                        slot="end"
+                        fill="clear"
+                        v-if="inputTypePassword1 == 'password'"
+                        v-on:click="inputTypePassword1 = 'text'"
+                        style="margin-top: 20px"
+                      >
+                        <ion-icon :icon="eyeOutline"></ion-icon>
+                      </ion-button>
+                    </ion-item>
+                    <div
+                      v-for="(error, index) of (v$.form as any).password.$errors"
+                      :key="index"
+                    >
+                      <div class="error">{{ error.$message }}</div>
+                    </div>
 
-              <ion-row>
-                <ion-col size="12">
-                  <ion-button
-                    expand="block"
-                    fill="clear"
-                    v-on:click="register()"
-                    :disabled="(v$.form as any).$invalid"
-                    class="options"
-                  >
-                    Registrar
-                  </ion-button>
-                </ion-col>
-              </ion-row>
-            </ion-card-content>
-          </ion-card>
-          <ion-row>
-            <ion-col size="12" class="center">
-              <small style="cursor: pointer">
-                <ion-text
-                  color="primary"
-                  v-on:click="$router.push('/login')"
-                  class="options"
-                >
-                  ¿Ya tienes cuenta?</ion-text
-                >
-              </small>
-            </ion-col>
-          </ion-row>
+                    <ion-item>
+                      <ion-label position="floating"
+                        >Repite contraseña</ion-label
+                      >
+                      <ion-input
+                        v-model="(v$.form as any).password2.$model"
+                        :type="inputTypePassword2"
+                      ></ion-input>
+                      <ion-button
+                        slot="end"
+                        fill="clear"
+                        v-if="inputTypePassword2 == 'text'"
+                        v-on:click="inputTypePassword2 = 'password'"
+                        style="margin-top: 20px"
+                      >
+                        <ion-icon :icon="eyeOffOutline"></ion-icon>
+                      </ion-button>
+                      <ion-button
+                        slot="end"
+                        fill="clear"
+                        v-if="inputTypePassword2 == 'password'"
+                        v-on:click="inputTypePassword2 = 'text'"
+                        style="margin-top: 20px"
+                      >
+                        <ion-icon :icon="eyeOutline"></ion-icon>
+                      </ion-button>
+                    </ion-item>
+                    <div
+                      v-for="(error, index) of (v$.form as any).password2.$errors"
+                      :key="index"
+                    >
+                      <div class="error">{{ error.$message }}</div>
+                    </div>
+                  </form>
+                </section>
+
+                <section>
+                  <div class="center">
+                    <ion-item lines="none">
+                      <ion-spinner
+                        name="crescent"
+                        v-if="spinners.buttonSignup"
+                      ></ion-spinner>
+                      <ion-button
+                        fill="clear"
+                        v-on:click="register()"
+                        :disabled="(v$.form as any).$invalid"
+                      >
+                        Registrar
+                      </ion-button>
+                    </ion-item>
+                  </div>
+                </section>
+              </ion-card-content>
+            </ion-card>
+          </section>
+
+          <section>
+            <div class="center">
+              <ion-item lines="none">
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.buttonLogin"
+                ></ion-spinner>
+                <ion-button @click="login()" fill="clear">
+                  <ion-label>¿Ya tienes cuenta?</ion-label>
+                </ion-button>
+              </ion-item>
+            </div>
+          </section>
         </ion-col>
       </ion-row>
     </ion-content>
@@ -182,9 +197,7 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  toastController,
   IonInput,
-  loadingController,
   IonButtons,
   IonMenuButton,
   IonRow,
@@ -195,7 +208,6 @@ import {
   IonLabel,
   IonButton,
   IonIcon,
-  IonText,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import sessionService from "../../../services/session.vue";
@@ -224,7 +236,6 @@ export default defineComponent({
     IonLabel,
     IonButton,
     IonIcon,
-    IonText,
   },
   setup() {
     return {
@@ -243,6 +254,10 @@ export default defineComponent({
         email: "",
         password: "",
         password2: "",
+      },
+      spinners: {
+        buttonSignup: false,
+        buttonLogin: false,
       },
     };
   },
@@ -278,6 +293,7 @@ export default defineComponent({
       },
     };
   },
+
   beforeRouteEnter(to, from, next) {
     userService()
       .getUserName()
@@ -288,52 +304,47 @@ export default defineComponent({
         next();
       });
   },
+
   methods: {
     async register() {
-      const loading = await this.presentLoading("Creando cuenta");
-      loading.present();
+      this.spinners.buttonSignup = true;
 
       const name = this.form.name;
       const user = this.form.user;
       const email = this.form.email.replace(/\s+/g, "");
       const password = this.form.password;
-      sessionService()
-        .userRegister({ name, user, email, password })
-        .then(() => {
-          loading.dismiss();
-          this.alertConfirmaciónEmail();
-          this.$router.push("/login");
-          this.clearInputs();
-          this.presentToast("Registrado correctamente", "success");
-        })
-        .catch((e) => {
-          loading.dismiss();
-          if (
-            e.graphQLErrors[0].debugMessage ==
-            "The email has already been selected"
-          ) {
-            this.presentToast("Correo ya en uso", "danger");
-          }
-          if (
-            e.graphQLErrors[0].debugMessage ==
-            "The user has already been selected"
-          ) {
-            this.presentToast("Usuario ya en uso", "danger");
-          } else {
-            console.error(e);
-            systemService().openToastErrror(e);
-          }
+      try {
+        await sessionService().userRegister({
+          name,
+          user,
+          email,
+          password,
         });
+        this.spinners.buttonSignup = false;
+        this.alertConfirmaciónEmail();
+        this.$router.push("/login");
+        this.clearInputs();
+      } catch (e: any) {
+        this.spinners.buttonSignup = false;
+        if (e.message == "The email has already been selected") {
+          systemService().openToast({
+            message: "Correo ya en uso",
+            color: "warning",
+          });
+          return;
+        }
+        if (e.message == "The user has already been selected") {
+          systemService().openToast({
+            message: "Usuario ya en uso",
+            color: "warning",
+          });
+          return;
+        }
+        console.error(e);
+        systemService().openToastErrror(e);
+      }
     },
-    async presentToast(message: string, color: string) {
-      const toast = await toastController.create({
-        message,
-        duration: 3000,
-        mode: "ios",
-        color,
-      });
-      toast.present();
-    },
+
     clearInputs() {
       this.form.name = "";
       this.form.user = "";
@@ -341,6 +352,7 @@ export default defineComponent({
       this.form.password2 = "";
       this.form.email = "";
     },
+
     async alertConfirmaciónEmail() {
       const alert = await alertController.create({
         header: "Alerta",
@@ -361,11 +373,11 @@ export default defineComponent({
 
       await alert.present();
     },
-    async presentLoading(message: string) {
-      const loading = await loadingController.create({
-        message,
-      });
-      return loading;
+
+    async login() {
+      this.spinners.buttonLogin = true;
+      await this.$router.push("/login");
+      this.spinners.buttonLogin = false;
     },
   },
 });

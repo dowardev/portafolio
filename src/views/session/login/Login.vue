@@ -93,46 +93,57 @@
                 </div>
               </form>
 
-              <ion-row>
-                <ion-col size="12">
+              <div class="center">
+                <ion-item lines="none">
+                  <ion-spinner
+                    name="crescent"
+                    v-if="spinners.buttonLogin"
+                  ></ion-spinner>
                   <ion-button
                     fill="clear"
-                    expand="block"
                     v-on:click="login()"
                     :disabled="v$.form.$invalid"
                   >
                     Iniciar sesión
                   </ion-button>
-                </ion-col>
-              </ion-row>
+                </ion-item>
+              </div>
             </ion-card-content>
           </ion-card>
 
-          <ion-row>
-            <ion-col size="12" class="center">
-              <small style="cursor: pointer">
-                <ion-text
-                  v-on:click="$router.push('/restore-password')"
+          <section>
+            <div class="center">
+              <ion-item lines="none">
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.buttonForgotPassword"
+                ></ion-spinner>
+                <ion-button
+                  @click="forgotPassword()"
                   class="options"
+                  fill="clear"
                 >
-                  ¿Olvidaste la contraseña?
-                </ion-text>
-              </small>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size="12" class="center">
-              <small style="cursor: pointer">
-                <ion-text
-                  color="primary"
-                  v-on:click="$router.push('/signup')"
+                  <ion-label>¿Olvidaste la contraseña?</ion-label>
+                </ion-button>
+              </ion-item>
+            </div>
+
+            <div class="center">
+              <ion-item lines="none">
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.buttonCreateAccount"
+                ></ion-spinner>
+                <ion-button
+                  @click="createAccount()"
                   class="options"
+                  fill="clear"
                 >
-                  Crear cuenta
-                </ion-text>
-              </small>
-            </ion-col>
-          </ion-row>
+                  <ion-label>Crear cuenta</ion-label>
+                </ion-button>
+              </ion-item>
+            </div>
+          </section>
         </ion-col>
       </ion-row>
     </ion-content>
@@ -158,7 +169,6 @@ import {
   IonItem,
   IonIcon,
   IonLabel,
-  IonText,
   IonButton,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
@@ -191,7 +201,6 @@ export default defineComponent({
     IonItem,
     IonIcon,
     IonLabel,
-    IonText,
     IonButton,
   },
   setup() {
@@ -209,6 +218,11 @@ export default defineComponent({
       form: {
         email: "",
         password: "",
+      },
+      spinners: {
+        buttonLogin: false,
+        buttonForgotPassword: false,
+        buttonCreateAccount: false,
       },
     };
   },
@@ -249,8 +263,7 @@ export default defineComponent({
     },
 
     async login() {
-      const loading = await this.presentLoading("Iniciando sesión");
-      loading.present();
+      this.spinners.buttonLogin = true;
 
       const user = this.form.email.replace(/\s+/g, "");
       const password = this.form.password;
@@ -265,23 +278,23 @@ export default defineComponent({
           user,
           password,
         });
-        loading.dismiss();
+        this.spinners.buttonLogin = false;
         const token = "Bearer " + response.auth.access_token;
         userService().setUserToken({ token });
         this.clearInputs();
-        this.presentToast("Bienvenido", "success");
         location.reload();
       } catch (e: any) {
-        loading.dismiss();
-        if (e.message == "Unauthorized")
+        this.spinners.buttonLogin = false;
+        if (e.message == "Unauthorized" || e.message == "Not found") {
           this.presentToast("Usuario y/o contraseña incorrectos", "danger");
-        if (e.message == "Unverified email") this.alertConfirmationEmail();
-        if (e.message == "Not found")
-          this.presentToast("Usuario no encontrado", "warning");
-        else {
-          systemService().openToastErrror(e);
-          console.error(e);
+          return;
         }
+        if (e.message == "Unverified email") {
+          this.alertConfirmationEmail();
+          return;
+        }
+        systemService().openToastErrror(e);
+        console.error(e);
       }
     },
 
@@ -315,6 +328,18 @@ export default defineComponent({
         message,
       });
       return loading;
+    },
+
+    async forgotPassword() {
+      this.spinners.buttonForgotPassword = true;
+      await this.$router.push("/restore-password");
+      this.spinners.buttonForgotPassword = false;
+    },
+
+    async createAccount() {
+      this.spinners.buttonCreateAccount = true;
+      await this.$router.push("/signup");
+      this.spinners.buttonCreateAccount = false;
     },
   },
 });
@@ -367,8 +392,5 @@ export default defineComponent({
   .card-form {
     margin-top: 4vh;
   }
-}
-.options {
-  color: var(--accent-color);
 }
 </style>
