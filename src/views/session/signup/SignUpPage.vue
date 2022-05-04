@@ -17,7 +17,7 @@
       />
       <ion-row class="ion-padding">
         <ion-col size="12">
-          <h1 style="color: white">Bienvenido</h1>
+          <h1 style="color: white !important">Bienvenido</h1>
         </ion-col>
       </ion-row>
       <ion-row class="center center-vertical-card-login">
@@ -37,7 +37,12 @@
               <ion-card-content>
                 <section>
                   <form>
-                    <ion-item>
+                    <ion-item lines="inset">
+                      <ion-icon
+                        :icon="manOutline"
+                        slot="start"
+                        class="item-icon"
+                      ></ion-icon>
                       <ion-label position="floating">Nombre</ion-label>
                       <ion-input
                         v-model="(v$.form as any).name.$model"
@@ -51,7 +56,12 @@
                       <div class="error">{{ error.$message }}</div>
                     </div>
 
-                    <ion-item>
+                    <ion-item lines="inset">
+                      <ion-icon
+                        :icon="personOutline"
+                        slot="start"
+                        class="item-icon"
+                      ></ion-icon>
                       <ion-label position="floating">Usuario</ion-label>
                       <ion-input
                         v-model="(v$.form as any).user.$model"
@@ -64,7 +74,12 @@
                       <div class="error">{{ error.$message }}</div>
                     </div>
 
-                    <ion-item>
+                    <ion-item lines="inset">
+                      <ion-icon
+                        :icon="mailOpenOutline"
+                        slot="start"
+                        class="item-icon"
+                      ></ion-icon>
                       <ion-label position="floating"
                         >Correo electrónico</ion-label
                       >
@@ -80,7 +95,12 @@
                       <div class="error">{{ error.$message }}</div>
                     </div>
 
-                    <ion-item>
+                    <ion-item lines="inset">
+                      <ion-icon
+                        :icon="keyOutline"
+                        slot="start"
+                        class="item-icon"
+                      ></ion-icon>
                       <ion-label position="floating">Contraseña</ion-label>
                       <ion-input
                         v-model="(v$.form as any).password.$model"
@@ -113,7 +133,12 @@
                       <div class="error">{{ error.$message }}</div>
                     </div>
 
-                    <ion-item>
+                    <ion-item lines="inset">
+                      <ion-icon
+                        :icon="keyOutline"
+                        slot="start"
+                        class="item-icon"
+                      ></ion-icon>
                       <ion-label position="floating"
                         >Repite contraseña</ion-label
                       >
@@ -211,7 +236,14 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import sessionService from "../../../services/session.vue";
-import { eyeOutline, eyeOffOutline } from "ionicons/icons";
+import {
+  eyeOutline,
+  eyeOffOutline,
+  manOutline,
+  personOutline,
+  mailOpenOutline,
+  keyOutline,
+} from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, email, helpers, alpha, sameAs } from "@vuelidate/validators";
 import userService from "../../../services/user.vue";
@@ -242,6 +274,10 @@ export default defineComponent({
       eyeOutline,
       eyeOffOutline,
       v$: useVuelidate(),
+      manOutline,
+      personOutline,
+      mailOpenOutline,
+      keyOutline,
     };
   },
   data() {

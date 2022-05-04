@@ -49,7 +49,9 @@
               lines="none"
               v-if="dates.length > 0"
             >
-              <ion-text>{{ currentPage }}</ion-text>
+              <ion-text style="color: var(--accent-color) !important">{{
+                currentPage
+              }}</ion-text>
               <ion-popover trigger="open-date-input" :show-backdrop="false">
                 <ion-datetime
                   :is-date-enabled="getDaysEnabled"

@@ -32,55 +32,49 @@
           </ion-col>
         </ion-row>
 
-        <ion-row>
-          <ion-col size="12">
-            <ion-row>
-              <ion-col size="12">
-                <p style="text-align: left; font-size: 17px">Tecnologías</p>
-              </ion-col>
-              <ion-col size="12">
-                <ion-item
-                  :href="technology.route"
-                  target="_blank"
-                  lines="none"
-                  v-for="technology in datosProyecto.technologies"
-                  :key="technology"
-                >
-                  <ion-icon slot="start" :icon="technology.icon"></ion-icon>
-                  <ion-label>{{ technology.name }}</ion-label>
-                  <p slot="end">{{ technology.type }}</p>
-                </ion-item>
-              </ion-col>
-            </ion-row>
+        <ion-list>
+          <ion-list-header>
+            <ion-label>Tecnologías</ion-label>
+          </ion-list-header>
+          <ion-item
+            :href="technology.route"
+            target="_blank"
+            lines="none"
+            v-for="technology in datosProyecto.technologies"
+            :key="technology"
+          >
+            <ion-icon slot="start" :icon="technology.icon"></ion-icon>
+            <ion-label>{{ technology.name }}</ion-label>
+            <ion-label slot="end">{{ technology.type }}</ion-label>
+          </ion-item>
+        </ion-list>
 
-            <ion-row>
-              <ion-col size="12">
-                <p style="text-align: left; font-size: 17px">Mas información</p>
-                <ion-button
-                  fill="clear"
-                  v-if="datosProyecto.page"
-                  v-on:click="abrirPagina(datosProyecto.page)"
-                >
-                  <ion-icon :icon="globeOutline"></ion-icon>
-                </ion-button>
-                <ion-button
-                  fill="clear"
-                  v-if="datosProyecto.playstore"
-                  v-on:click="abrirPagina(datosProyecto.playstore)"
-                >
-                  <ion-icon :icon="logoGooglePlaystore"></ion-icon>
-                </ion-button>
-                <ion-button
-                  fill="clear"
-                  v-if="datosProyecto.repository"
-                  v-on:click="abrirPagina(datosProyecto.repository)"
-                >
-                  <ion-icon :icon="codeSlashOutline"></ion-icon>
-                </ion-button>
-              </ion-col>
-            </ion-row>
-          </ion-col>
-        </ion-row>
+        <ion-list>
+          <ion-list-header>
+            <ion-label>Mas información</ion-label>
+          </ion-list-header>
+          <ion-button
+            fill="clear"
+            v-if="datosProyecto.page"
+            v-on:click="abrirPagina(datosProyecto.page)"
+          >
+            <ion-icon :icon="globeOutline"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear"
+            v-if="datosProyecto.playstore"
+            v-on:click="abrirPagina(datosProyecto.playstore)"
+          >
+            <ion-icon :icon="logoGooglePlaystore"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear"
+            v-if="datosProyecto.repository"
+            v-on:click="abrirPagina(datosProyecto.repository)"
+          >
+            <ion-icon :icon="codeSlashOutline"></ion-icon>
+          </ion-button>
+        </ion-list>
       </section>
     </ion-content>
   </ion-page>

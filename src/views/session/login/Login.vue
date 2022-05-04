@@ -17,25 +17,28 @@
       />
       <ion-row class="ion-padding">
         <ion-col size="12">
-          <h1 style="color: white">Hola, es un gusto tenerte de vuelta</h1>
+          <h1 style="color: white !important">
+            Hola, es un gusto tenerte de vuelta
+          </h1>
         </ion-col>
       </ion-row>
+
       <ion-row class="center center-vertical-card-login">
         <ion-col size="12" size-lg="6" size-xl="4" class="card-form">
           <ion-card>
-            <div class="center">
-              <img
-                src="../../../../public/assets/otros/key.png"
-                alt=""
-                class="imagen-usuario"
-              />
-            </div>
             <ion-card-content>
+              <div class="center">
+                <img
+                  src="../../../../public/assets/otros/key.png"
+                  alt=""
+                  class="imagen-usuario"
+                />
+              </div>
               <form>
-                <ion-item>
+                <ion-item lines="inset">
                   <ion-icon
                     :icon="mailOpenOutline"
-                    style="font-size: 20px; margin-top: 24px"
+                    class="item-icon"
                     slot="start"
                   >
                   </ion-icon>
@@ -52,10 +55,10 @@
                   <div class="error">{{ error.$message }}</div>
                 </div>
 
-                <ion-item>
+                <ion-item lines="inset">
                   <ion-icon
                     :icon="fingerPrintOutline"
-                    style="font-size: 20px; margin-top: 24px"
+                    class="item-icon"
                     slot="start"
                   >
                   </ion-icon>

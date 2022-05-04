@@ -235,6 +235,10 @@ http://ionicframework.com/docs/theming/ */
 }
 
 @font-face {
+  font-family: "OpenSans-Regular";
+  src: url("../../public/assets/fonts/open_sans/static/OpenSans/OpenSans-Regular.ttf");
+}
+@font-face {
   font-family: "OpenSans-Medium";
   src: url("../../public/assets/fonts/open_sans/static/OpenSans/OpenSans-Medium.ttf");
 }
@@ -243,8 +247,12 @@ http://ionicframework.com/docs/theming/ */
   src: url("../../public/assets/fonts/open_sans/static/OpenSans/OpenSans-SemiBold.ttf");
 }
 @font-face {
-  font-family: "Roboto-Light";
-  src: url("../../public/assets/fonts/roboto/Roboto-Light.ttf");
+  font-family: "Comfortaa-Bold";
+  src: url("../../public/assets/fonts/comfortaa/Comfortaa-Bold.ttf");
+}
+@font-face {
+  font-family: "Comfortaa-Light";
+  src: url("../../public/assets/fonts/comfortaa/Comfortaa-Light.ttf");
 }
 
 :root {
@@ -258,6 +266,14 @@ http://ionicframework.com/docs/theming/ */
   --secondary-text-color: black;
   --text-opacity: 1;
   --img-brightness: brightness(100%);
+
+  --primary-font: "Comfortaa-Bold";
+  --secondary-font: "Comfortaa-Light";
+  --tertiary-font: "OpenSans-Regular";
+
+  --border-color-ion-item: #25272924;
+
+  --box-shadow-card: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
 *.dark {
@@ -269,12 +285,16 @@ http://ionicframework.com/docs/theming/ */
   --background-elements-color: #2f2f2f;
   --primary-text-color: #eeeeee;
   --secondary-text-color: white;
-  --box-shadow-card: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  /* --box-shadow-card: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
   --text-opacity: 0.7;
   --img-brightness: brightness(85%);
 
   --segment-background: #2f2f2f;
   --segment-button-indicator-color: red;
+
+  --border-color-ion-item: #25272924;
+
+  --box-shadow-card: 0;
 }
 
 /* others */
@@ -292,43 +312,68 @@ ion-icon {
 
 /* ionic card */
 ion-card {
-  box-shadow: var(-box-shadow-card);
+  box-shadow: var(--box-shadow-card);
   --background: var(--background-elements-color);
 }
 ion-card-title {
-  font-family: OpenSans-Bold;
   color: var(--primary-text-color);
+  font-family: var(--primary-font) !important;
 }
 
 /* text */
-p,
-ion-text,
-ol,
 h1,
 h2,
 h3,
 h4,
 h5,
 h6,
-span,
-ion-title,
-.alert-radio-label.sc-ion-alert-md {
-  font-family: OpenSans-Medium;
+ion-title {
+  font-family: var(--primary-font) !important;
   color: var(--primary-text-color) !important;
   opacity: var(--text-opacity);
 }
+ion-text,
+ol,
+span,
+.alert-radio-label.sc-ion-alert-md {
+  font-family: var(--tertiary-font) !important;
+  color: var(--primary-text-color) !important;
+  opacity: var(--text-opacity);
+}
+p {
+  font-family: var(--tertiary-font);
+  color: var(--primary-text-color) !important;
+  opacity: var(--text-opacity);
+  font-size: 1.2rem !important;
+  line-height: 1.6em !important;
+  font-weight: 700 !important;
+  font-style: normal !important;
+}
 
 /* ionic item */
-.item-label-floating {
+.label-floating.sc-ion-label-md-h {
+  font-family: var(--tertiary-font) !important;
   --color: var(--secondary-text-color);
 }
 ion-item {
   --background: transparent;
-  --border-color: var(--secondary-text-color);
+  --border-color: var(--border-color-ion-item);
   --color-hover: var(--primary-text-color);
 }
 ion-item.ios {
   --border-width: 0;
+}
+.item-icon {
+  font-size: 20px;
+  margin-top: 24px;
+}
+.item-radio-checked.sc-ion-select-popover-md {
+  --background: #252729;
+  --background-focused: "";
+}
+
+.item-radio-checked.sc-ion-select-popover-md .sc-ion-label-md-h {
+  color: var(--accent-color) !important;
 }
 
 /* ionic content */
@@ -393,22 +438,23 @@ ion-menu-button {
   --color: var(--secondary-text-color);
 }
 
-.item-radio-checked.sc-ion-select-popover-md {
-  --background: #252729;
-  --background-focused: "";
-}
-ion-list {
-  background: var(--background-color) !important;
-}
-.item-radio-checked.sc-ion-select-popover-md .sc-ion-label-md-h {
-  color: var(--accent-color) !important;
-}
-
-ion-item {
-  color: var(--secondary-text-color) !important;
-}
-
 /* spinner */
 ion-spinner {
   --color: var(--accent-color);
+}
+
+/* list */
+ion-list {
+  background: var(--background-color) !important;
+}
+
+ion-list-header > ion-label {
+  color: var(--primary-text-color) !important;
+  font-family: var(--primary-font) !important;
+}
+
+/* ionic datetime */
+ion-datetime {
+  --background: var(--primary-color);
+  color: var(--secondary-text-color);
 }

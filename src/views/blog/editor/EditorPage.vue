@@ -18,16 +18,18 @@
     </ion-header>
 
     <ion-content>
-      <div class="segment-container">
-        <ion-segment v-model="segment" class="segment-editor">
-          <ion-segment-button value="editor">
-            <ion-label>Editor</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="result">
-            <ion-label>Resultado</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </div>
+      <section>
+        <div class="segment-container">
+          <ion-segment v-model="segment" class="segment-editor">
+            <ion-segment-button value="editor">
+              <ion-label>Editor</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="result">
+              <ion-label>Resultado</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </div>
+      </section>
 
       <section v-if="segment == 'editor'">
         <div style="display: inline-block; width: 100%">

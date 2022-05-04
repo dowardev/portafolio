@@ -99,8 +99,8 @@
       >
         <ion-label
           v-bind:class="{
-            optionSelected: $route.path == '/blog',
-            optionNoSelected: $route.path != '/blog',
+            optionSelected: $route.path == '/blog' || $route.params.date,
+            optionNoSelected: $route.path != '/blog' && !$route.params.date,
           }"
         >
           Blog

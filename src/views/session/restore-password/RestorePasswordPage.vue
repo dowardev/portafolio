@@ -27,7 +27,12 @@
           <ion-col size="12" size-md="8" size-lg="6" size-xl="4">
             <ion-card>
               <ion-card-content>
-                <ion-item>
+                <ion-item lines="inset">
+                  <ion-icon
+                    :icon="mailOpenOutline"
+                    class="item-icon"
+                    slot="start"
+                  ></ion-icon>
                   <ion-label position="floating">Correo electrónico</ion-label>
                   <ion-input
                     type="email"
@@ -62,7 +67,12 @@
           <ion-col size="12" size-md="8" size-lg="6" size-xl="4">
             <ion-card>
               <ion-card-content>
-                <ion-item>
+                <ion-item lines="inset">
+                  <ion-icon
+                    :icon="shieldOutline"
+                    class="item-icon"
+                    slot="start"
+                  ></ion-icon>
                   <ion-label position="floating">Código</ion-label>
                   <ion-input
                     type="numeric"
@@ -95,7 +105,12 @@
           <ion-col size="12" size-md="8" size-lg="6" size-xl="4">
             <ion-card>
               <ion-card-content>
-                <ion-item>
+                <ion-item lines="inset">
+                  <ion-icon
+                    :icon="keyOutline"
+                    class="item-icon"
+                    slot="start"
+                  ></ion-icon>
                   <ion-label position="floating">Contraseña</ion-label>
                   <ion-input
                     :type="inputTypePassword1"
@@ -128,7 +143,12 @@
                   <div class="error">{{ error.$message }}</div>
                 </div>
 
-                <ion-item>
+                <ion-item lines="inset">
+                  <ion-icon
+                    :icon="keyOutline"
+                    class="item-icon"
+                    slot="start"
+                  ></ion-icon>
                   <ion-label position="floating"
                     >Repite la contraseña</ion-label
                   >
@@ -209,7 +229,13 @@ import {
   IonIcon,
   IonSpinner,
 } from "@ionic/vue";
-import { eyeOutline, eyeOffOutline } from "ionicons/icons";
+import {
+  eyeOutline,
+  eyeOffOutline,
+  mailOpenOutline,
+  keyOutline,
+  shieldOutline,
+} from "ionicons/icons";
 import { defineComponent } from "vue";
 import sessionService from "../../../services/session.vue";
 import userService from "../../../services/user.vue";
@@ -239,7 +265,14 @@ export default defineComponent({
     IonSpinner,
   },
   setup() {
-    return { eyeOutline, eyeOffOutline, v$: useVuelidate() };
+    return {
+      eyeOutline,
+      eyeOffOutline,
+      v$: useVuelidate(),
+      mailOpenOutline,
+      keyOutline,
+      shieldOutline,
+    };
   },
   data() {
     return {
