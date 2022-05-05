@@ -19,7 +19,7 @@
           <ion-button @click="addPost()" v-if="isUserAdmin">
             <ion-icon :icon="addOutline"></ion-icon>
           </ion-button>
-          <ion-button>
+          <ion-button @click="refreshContent">
             <ion-icon :icon="refreshOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -101,20 +101,6 @@
           <hr />
         </ion-row>
       </section>
-
-      <!-- empty icon -->
-      <section v-if="posts.length == 0">
-        <div class="align-vertical" v-if="posts.length == 0">
-          <div>
-            <img
-              src="../../../../public/assets/otros/empty.png"
-              alt=""
-              style="width: 180px"
-            />
-            <p style="text-align: center">No exiten posts</p>
-          </div>
-        </div>
-      </section>
     </ion-content>
   </ion-page>
 </template>
@@ -194,11 +180,13 @@ export default defineComponent({
     });
 
     eventBus().emitter.on("event-posts2-data", (response: any) => {
-      if (response.dates != undefined) this.dates = response.dates;
-
       if (response.currentPage != undefined) {
         const currentPage = response.currentPage;
         this.currentPage = currentPage;
+      }
+
+      if (response.dates != undefined) {
+        this.dates = response.dates;
       }
 
       if (response.posts) {
@@ -296,6 +284,13 @@ export default defineComponent({
       this.spinners.buttonAddNewPost = true;
       await this.$router.push("/blog/editor/create");
       this.spinners.buttonAddNewPost = false;
+    },
+
+    async refreshContent() {
+      eventBus().emitter.emit("event-posts1-data", {
+        option: "refresh",
+        currentPage: this.currentPage,
+      });
     },
   },
 });
