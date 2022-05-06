@@ -12,8 +12,16 @@ cArr.forEach((val) => {
   if (val.indexOf(name) === 0) token = val.substring(name.length);
 });
 
+let uri = "";
+const mode = process.env.NODE_ENV;
+if (mode == "development") {
+  uri = "http://127.0.0.1:8000/graphql";
+} else {
+  uri = "https://prueba-blogb.dowar.xyz/graphql";
+}
+
 const httpLink = createHttpLink({
-  uri: "http://127.0.0.1:8000/graphql",
+  uri,
   headers: {
     Authorization: token,
   },

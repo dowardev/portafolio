@@ -131,7 +131,9 @@ export default defineComponent({
         this.content =
           "![" +
           imageName +
-          "](http://localhost:8000/api/get-image?name=" +
+          "](" +
+          systemService().getBaseURL() +
+          "api/get-image?name=" +
           imageName +
           " '" +
           imageName +

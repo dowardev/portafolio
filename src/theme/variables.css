@@ -353,12 +353,13 @@ p {
 /* ionic item */
 .label-floating.sc-ion-label-md-h {
   font-family: var(--tertiary-font) !important;
-  --color: var(--secondary-text-color);
+  /* color: var(--accent-color) !important; */
 }
 ion-item {
   --background: transparent;
   --border-color: var(--border-color-ion-item);
   --color-hover: var(--primary-text-color);
+  --color: var(--primary-text-color);
 }
 ion-item.ios {
   --border-width: 0;

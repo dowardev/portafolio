@@ -25,34 +25,6 @@
             name="crescent"
             slot="start"
             v-if="
-              loadingData.data.status == 'loading' &&
-              loadingData.data.status != 'error' &&
-              loadingData.dates.status != 'error' &&
-              loadingData.posts.status != 'error'
-            "
-          >
-          </ion-spinner>
-          <ion-icon
-            :icon="checkmarkOutline"
-            v-if="loadingData.data.status == 'finished'"
-            slot="start"
-          ></ion-icon>
-          <ion-icon
-            :icon="closeOutline"
-            v-if="loadingData.data.status == 'error'"
-            slot="start"
-            color="danger"
-          ></ion-icon>
-          <ion-label>Cargando datos</ion-label>
-        </ion-item>
-      </div>
-
-      <div class="center">
-        <ion-item lines="none">
-          <ion-spinner
-            name="crescent"
-            slot="start"
-            v-if="
               loadingData.dates.status == 'loading' &&
               loadingData.data.status != 'error' &&
               loadingData.dates.status != 'error' &&
@@ -72,6 +44,34 @@
             color="danger"
           ></ion-icon>
           <ion-label>Cargando fechas</ion-label>
+        </ion-item>
+      </div>
+
+      <div class="center">
+        <ion-item lines="none">
+          <ion-spinner
+            name="crescent"
+            slot="start"
+            v-if="
+              loadingData.data.status == 'loading' &&
+              loadingData.data.status != 'error' &&
+              loadingData.dates.status != 'error' &&
+              loadingData.posts.status != 'error'
+            "
+          >
+          </ion-spinner>
+          <ion-icon
+            :icon="checkmarkOutline"
+            v-if="loadingData.data.status == 'finished'"
+            slot="start"
+          ></ion-icon>
+          <ion-icon
+            :icon="closeOutline"
+            v-if="loadingData.data.status == 'error'"
+            slot="start"
+            color="danger"
+          ></ion-icon>
+          <ion-label>Cargando datos</ion-label>
         </ion-item>
       </div>
 
@@ -159,16 +159,22 @@ export default defineComponent({
       this.loadingData.dates.status = "loading";
       this.loadingData.posts.status = "loading";
 
+      let dates = Array<string>();
+      try {
+        dates = await this.getPostsDates();
+        this.loadingData.dates.status = "finished";
+      } catch (e: any) {
+        this.loadingData.dates.status = "error";
+        return;
+      }
+
       let currentPage = String();
       currentPage = this.$route.params.date as string;
 
       if (this.$route.path == "/blog" || this.$route.path == "/blog/") {
         try {
-          const response = await postService().getRecentDatePosts();
-          const date = response.date;
-          currentPage = formatISO(new Date(date), {
-            representation: "date",
-          }).replaceAll("/", "-");
+          const date = dates.pop() as string;
+          currentPage = new Date(date).toISOString().split("T")[0];
           this.$router.replace("/blog/" + currentPage);
         } catch (e: any) {
           if (e.message == "No dates") {
@@ -184,21 +190,9 @@ export default defineComponent({
           return;
         }
       }
-
       this.loadingData.data.status = "finished";
-      this.loadingData.dates.status = "loading";
 
-      let dates = Array<string>();
       let posts = Array<Post>();
-
-      try {
-        dates = await this.getPostsDates(currentPage);
-        this.loadingData.dates.status = "finished";
-        this.loadingData.posts.status = "loading";
-      } catch (e: any) {
-        this.loadingData.dates.status = "error";
-        return;
-      }
 
       try {
         posts = await this.getPosts(currentPage);
@@ -208,6 +202,7 @@ export default defineComponent({
       }
 
       setTimeout(() => {
+        console.log(this.loadingData);
         this.passData({ currentPage, dates, posts });
       }, 500);
     },
@@ -270,11 +265,9 @@ export default defineComponent({
       }
     },
 
-    async getPostsDates(currentPage: string): Promise<Array<string>> {
+    async getPostsDates(): Promise<Array<string>> {
       try {
-        const response = await postService().getPostsDates({
-          currentDate: currentPage,
-        });
+        const response = await postService().getPostsDates();
 
         const dates = Array<string>();
         response.forEach((element: any) => {

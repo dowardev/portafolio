@@ -11,12 +11,12 @@ import {
   CreatePost,
   GetPost,
   GetPosts,
-  GetPostsDates,
   Image,
   UploadImage,
   GetRecentDatePostsResponse,
   GetPostsDatesResponse,
 } from "./interfaces.vue";
+import systemService from "./system.vue";
 
 const apollo = apolloClient;
 
@@ -202,7 +202,7 @@ export default function () {
 
       const token = await userService().getUserToken();
 
-      const response = await axios.post("http://127.0.0.1:8000/graphql", fd, {
+      const response = await axios.post(systemService().getBaseURL(), fd, {
         headers: {
           Accept: "application/json",
           Authorization: token,
@@ -240,44 +240,17 @@ export default function () {
     }
   }
 
-  async function getRecentDatePosts(): Promise<GetRecentDatePostsResponse> {
+  async function getPostsDates(): Promise<Array<GetPostsDatesResponse>> {
     try {
       const response = await apollo.defaultClient.mutate({
         mutation: gql`
           query {
-            recentDatePosts {
-              message
-              date
-            }
-          }
-        `,
-      });
-
-      return {
-        date: (response.data.recentDatePosts.date as string).split(" ")[0],
-      };
-    } catch (e: any) {
-      if (e.graphQLErrors) throw Error(e.graphQLErrors[0].debugMessage);
-      throw Error(e.message);
-    }
-  }
-
-  async function getPostsDates(
-    params: GetPostsDates
-  ): Promise<Array<GetPostsDatesResponse>> {
-    try {
-      const response = await apollo.defaultClient.mutate({
-        mutation: gql`
-          query ($currentDate: String!) {
-            getDates(currentDate: $currentDate) {
+            getDates {
               message
               dates
             }
           }
         `,
-        variables: {
-          currentDate: params.currentDate,
-        },
       });
 
       if (response.data.getDates.dates) return response.data.getDates.dates;
@@ -295,7 +268,6 @@ export default function () {
     getImage,
     updatePost,
     deletePost,
-    getRecentDatePosts,
     getPostsDates,
   };
 }

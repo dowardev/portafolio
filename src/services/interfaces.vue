@@ -62,10 +62,6 @@ interface UpdatePost {
   imagesRemoved: string[];
 }
 
-interface GetPostsDates {
-  currentDate: string;
-}
-
 interface GetPostsDatesResponse {
   dates: string;
 }
@@ -216,7 +212,6 @@ export {
   CreatePost,
   GetPost,
   GetPosts,
-  GetPostsDates,
   UserRegister,
   UserLogin,
   EmailResetPassword,

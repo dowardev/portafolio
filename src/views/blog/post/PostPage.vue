@@ -220,6 +220,6 @@ export default defineComponent({
 
 <style scoped>
 .post-date {
-  font-size: 12px;
+  font-size: 12px !important;
 }
 </style>
