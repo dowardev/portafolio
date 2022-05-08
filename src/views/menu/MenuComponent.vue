@@ -140,20 +140,26 @@
           <ion-button @click="openModalFeedback">
             <ion-icon :icon="thumbsUpOutline"></ion-icon>
           </ion-button>
+
           <!-- dark button -->
           <ion-button
             fill="clear"
-            @click="openModalDesktop()"
+            @click="openModalThemeDesktop()"
             v-if="!androidPlatform && !iosPlatform"
           >
             <ion-icon :icon="brushOutline"></ion-icon>
           </ion-button>
           <ion-button
             fill="clear"
-            @click="openModalMobile()"
+            @click="openModalThemeMobile()"
             v-if="androidPlatform || iosPlatform"
           >
             <ion-icon :icon="brushOutline"></ion-icon>
+          </ion-button>
+
+          <!-- more-->
+          <ion-button fill="clear" @click="openModalAppsDesktop()">
+            <ion-icon :icon="appsOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
@@ -185,12 +191,14 @@ import {
   logOutOutline,
   thumbsUpOutline,
   logoGitlab,
+  appsOutline,
 } from "ionicons/icons";
 import DarkMode from "./darkmode/DarkMode.vue";
 import sessionService from "../../services/session.vue";
 import eventBus from "../../EventBus";
 import systemService from "../../services/system.vue";
 import userService from "../../services/user.vue";
+import AppsComponent from "./apps/Apps.vue";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -216,6 +224,7 @@ export default defineComponent({
       logOutOutline,
       thumbsUpOutline,
       logoGitlab,
+      appsOutline,
     };
   },
   data() {
@@ -236,7 +245,7 @@ export default defineComponent({
     this.getUserName();
   },
   methods: {
-    async openModalDesktop() {
+    async openModalThemeDesktop() {
       const modal = await modalController.create({
         component: DarkMode,
         cssClass: "my-custom-class",
@@ -247,7 +256,7 @@ export default defineComponent({
       return modal.present();
     },
 
-    async openModalMobile() {
+    async openModalThemeMobile() {
       const modal = await modalController.create({
         component: DarkMode,
         initialBreakpoint: 0.5,
@@ -256,6 +265,7 @@ export default defineComponent({
       modal.present();
       menuController.close();
     },
+
     openRoute(route: string) {
       this.$router.push(route);
       menuController.close();
@@ -309,6 +319,17 @@ export default defineComponent({
         console.error(e);
         systemService().openToastErrror(e);
       }
+    },
+
+    async openModalAppsDesktop() {
+      const modal = await modalController.create({
+        component: AppsComponent,
+        cssClass: "my-custom-class",
+        componentProps: {
+          title: "New Title",
+        },
+      });
+      return modal.present();
     },
   },
 });

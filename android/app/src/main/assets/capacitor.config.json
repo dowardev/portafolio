@@ -4,7 +4,7 @@
 	"webDir": "dist",
 	"bundledWebRuntime": false,
 	"server": {
-		"cleartext": true,
-		"url": "http://192.168.0.10:8100"
+		"url": "http://192.168.0.10:8100",
+		"cleartext": true
 	}
 }

@@ -25,6 +25,8 @@ import "./theme/variables.css";
 
 import apollo from "./Apollo";
 
+import "./registerServiceWorker";
+
 const app = createApp(App).use(IonicVue).use(router).use(apollo);
 
 router.isReady().then(() => {
