@@ -13,7 +13,6 @@ import {
   GetPosts,
   Image,
   UploadImage,
-  GetRecentDatePostsResponse,
   GetPostsDatesResponse,
 } from "./interfaces.vue";
 import systemService from "./system.vue";

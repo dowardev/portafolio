@@ -195,6 +195,7 @@ export default defineComponent({
     };
   },
   mounted() {
+    // eslint-disable-next-line
     this.form.type = this.dataProp!.type;
     this.getUser();
   },
@@ -212,8 +213,11 @@ export default defineComponent({
       `;
       try {
         const response = await userService().getUser({ query });
+        // eslint-disable-next-line
         this.form.id = response.id!;
+        // eslint-disable-next-line
         this.form.name = response.name!;
+        // eslint-disable-next-line
         this.form.email = response.email!;
       } catch (e: any) {
         console.error(e);
@@ -230,7 +234,9 @@ export default defineComponent({
       let description = this.form.description;
       const contactMe = this.form.contactMe;
 
+      // eslint-disable-next-line
       if (this.dataProp!.error)
+        // eslint-disable-next-line
         description += "\nError " + JSON.stringify(this.dataProp!.error);
 
       const query = `

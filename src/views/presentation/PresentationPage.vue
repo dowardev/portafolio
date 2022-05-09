@@ -240,7 +240,7 @@ export default defineComponent({
             role: "cancel",
             cssClass: "secondary",
             id: "cancel-button",
-            handler: (blah) => {
+            handler: () => {
               // console.log('Confirm Cancel:', blah)
             },
           },

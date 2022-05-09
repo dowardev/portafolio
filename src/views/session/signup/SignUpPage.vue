@@ -336,7 +336,7 @@ export default defineComponent({
       .then(() => {
         next("/blog");
       })
-      .catch((e) => {
+      .catch(() => {
         next();
       });
   },

@@ -230,7 +230,7 @@ export default defineComponent({
           next("/blog");
         }
       })
-      .catch((e) => {
+      .catch(() => {
         next("/blog");
       });
   },
