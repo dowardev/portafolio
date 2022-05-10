@@ -32,6 +32,7 @@
       </section>
 
       <section v-if="segment == 'editor'">
+        <!-- input image -->
         <div style="display: inline-block; width: 100%">
           <div style="float: right">
             <ion-item lines="none">
@@ -65,6 +66,7 @@
           <div class="error">{{ error.$message }}</div>
         </div>
 
+        <!-- input cover -->
         <ion-item
           button
           @click="($refs as any).inputCover.click()"
@@ -101,7 +103,7 @@
       <section v-if="segment == 'result'">
         <ion-row>
           <ion-col size="12">
-            <img :src="coverSource" style="max-width: 32%" />
+            <img :src="coverImage" style="max-width: 32%" />
           </ion-col>
         </ion-row>
         <ion-row>
@@ -255,6 +257,7 @@ export default defineComponent({
       const image = this.getImage(e);
       this.$emit("uploadImage", { image });
     },
+
     async uploadCover(e: any) {
       const image = this.getImage(e);
       this.coverImage = URL.createObjectURL(image);
@@ -262,6 +265,7 @@ export default defineComponent({
       this.coverName = image.name;
       this.newCoverStatus = true;
     },
+
     clearInputs() {
       this.postTitle = "";
       this.postContent = "";

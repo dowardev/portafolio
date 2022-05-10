@@ -41,7 +41,7 @@
   --ion-color-warning-tint: #ffca22;
 
   /** danger **/
-  --ion-color-danger: #eb445a;
+  --ion-color-danger: #d23e52;
   --ion-color-danger-rgb: 235, 68, 90;
   --ion-color-danger-contrast: #ffffff;
   --ion-color-danger-contrast-rgb: 255, 255, 255;
@@ -300,7 +300,7 @@ ion-icon {
   color: var(--accent-color);
 }
 .error {
-  color: var(--ion-color-danger);
+  color: var(--ion-color-danger) !important;
 }
 
 /* ionic card */
@@ -345,7 +345,6 @@ ul {
 }
 ion-item {
   --background: transparent;
-  --border-color: var(--border-color-ion-item);
   --color-hover: var(--primary-text-color);
   --color: var(--primary-text-color);
 }

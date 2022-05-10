@@ -50,7 +50,7 @@
             >Cargando fechas</ion-label
           >
           <ion-chip color="danger" v-if="loadingData.dates.status == 'error'">
-            <ion-label>{{ loadingData.dates.message }}</ion-label>
+            <ion-label class="error">No se encontraron posts</ion-label>
           </ion-chip>
         </ion-item>
       </div>
@@ -85,9 +85,6 @@
             v-if="loadingData.data.status == 'loading'"
             >Cargando datos</ion-label
           >
-          <ion-chip color="danger" v-if="loadingData.data.status == 'error'">
-            <ion-label>{{ loadingData.data.message }}</ion-label>
-          </ion-chip>
         </ion-item>
       </div>
 
@@ -121,9 +118,6 @@
             v-if="loadingData.posts.status == 'loading'"
             >Cargando posts</ion-label
           >
-          <ion-chip color="danger" v-if="loadingData.posts.status == 'error'">
-            <ion-label>{{ loadingData.posts.message }}</ion-label>
-          </ion-chip>
         </ion-item>
       </div>
     </section>
@@ -139,6 +133,7 @@ import {
   IonItem,
   IonSpinner,
   IonIcon,
+  alertController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import postService from "../../../services/post.vue";
@@ -146,7 +141,8 @@ import formatISO from "date-fns/formatISO";
 import eventBus from "../../../EventBus";
 import systemService from "../../../services/system.vue";
 import { Post } from "@/services/interfaces.vue";
-import { checkmarkOutline, closeOutline } from "ionicons/icons";
+import { checkmarkOutline, closeOutline, addOutline } from "ionicons/icons";
+import userService from "../../../services/user.vue";
 
 export default defineComponent({
   name: "PostsPage",
@@ -163,6 +159,7 @@ export default defineComponent({
     return {
       checkmarkOutline,
       closeOutline,
+      addOutline,
     };
   },
   data() {
@@ -171,20 +168,19 @@ export default defineComponent({
       loadingData: {
         data: {
           status: "loading | finished | error",
-          message: "",
         },
         dates: {
           status: "loading | finished | error",
-          message: "No se encontraron posts",
         },
         posts: {
           status: "loading | finished | error",
-          message: "No se encontraron posts",
         },
       },
+      isUserAdmin: false,
     };
   },
-  mounted() {
+  async mounted() {
+    await this.verifyUserAdmin();
     this.loadData();
 
     eventBus().emitter.on("event-posts1-data", (response: any) => {
@@ -196,6 +192,12 @@ export default defineComponent({
       if (response.option == "goTo") this.goToPage(response.currentPage);
 
       if (response.option == "refresh") this.loadData();
+    });
+
+    eventBus().emitter.on("refresh-content", (response: any) => {
+      if (response.event == "new-post") {
+        this.loadData();
+      }
     });
   },
 
@@ -210,6 +212,7 @@ export default defineComponent({
         dates = await this.getPostsDates();
         if (dates.length == 0) {
           this.loadingData.dates.status = "error";
+          if (this.isUserAdmin) this.presentAlertAddPost();
           return;
         }
         this.loadingData.dates.status = "finished";
@@ -334,6 +337,47 @@ export default defineComponent({
         console.error(e);
         systemService().openToastErrror(e);
         throw new Error(e.message);
+      }
+    },
+
+    async presentAlertAddPost() {
+      const alert = await alertController.create({
+        cssClass: "my-custom-class",
+        header: "No se encontraron Posts",
+        message: "¿Quieres agregar uno?",
+        buttons: [
+          {
+            text: "No",
+            role: "cancel",
+            cssClass: "secondary",
+            handler: (blah) => {
+              // console.log('Confirm Cancel:', blah)
+            },
+          },
+          {
+            text: "Si",
+            id: "confirm-button",
+            handler: () => {
+              this.$router.push("/blog/editor/create");
+            },
+          },
+        ],
+      });
+      return alert.present();
+    },
+
+    async verifyUserAdmin() {
+      if (navigator.onLine) {
+        try {
+          const response = await userService().getUserPermissions();
+          this.isUserAdmin = response.admin ? response.admin != null : false;
+        } catch (e: any) {
+          if (e.message == "Unauthorized") return;
+          else {
+            systemService().openToastErrror(e);
+            console.error(e);
+          }
+        }
       }
     },
   },

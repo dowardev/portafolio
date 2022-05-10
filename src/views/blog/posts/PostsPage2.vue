@@ -169,12 +169,7 @@ export default defineComponent({
     };
   },
   mounted() {
-    eventBus().emitter.on("refresh-content", (response: any) => {
-      if (response.event == "new-post") {
-        // this.getPosts();
-      }
-    });
-
+    this.verifyUserAdmin();
     eventBus().emitter.on("refresh-user-content", () => {
       this.verifyUserAdmin();
     });
@@ -193,7 +188,6 @@ export default defineComponent({
         this.posts = response.posts;
       }
     });
-    this.verifyUserAdmin();
   },
 
   methods: {
