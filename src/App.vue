@@ -17,11 +17,18 @@
 </template>
 
 <script lang="ts">
-import { IonApp, IonRouterOutlet, IonMenu, IonSplitPane } from "@ionic/vue";
+import {
+  IonApp,
+  IonRouterOutlet,
+  IonMenu,
+  IonSplitPane,
+  toastController,
+} from "@ionic/vue";
 import { defineComponent } from "vue";
 import Menu from "./views/menu/MenuComponent.vue";
 import systemService from "./services/system.vue";
 import userService from "./services/user.vue";
+import { closeOutline } from "ionicons/icons";
 
 export default defineComponent({
   name: "App",
@@ -33,6 +40,7 @@ export default defineComponent({
     IonSplitPane,
   },
   mounted() {
+    this.createFirstCookie();
     systemService().detectToggleTheme();
     systemService()
       .getTheme()
@@ -48,7 +56,7 @@ export default defineComponent({
               id
               name
               email
-              is_admin 
+              is_admin
               rol
         }
       `;
@@ -66,6 +74,40 @@ export default defineComponent({
           console.error(e);
         }
       }
+    },
+
+    createFirstCookie() {
+      if (systemService().getFirstCookie()) {
+        this.openToastOptions();
+        systemService().createFirstCookie();
+      }
+    },
+
+    async openToastOptions() {
+      const toast = await toastController.create({
+        header: "Aviso",
+        message:
+          "Hola nuevo usuario, te invitamos a leer nuestras políticas, si estás de acuerdo con estas puedes seguir navegando e ignorar este mensaje",
+        position: "bottom",
+        buttons: [
+          {
+            side: "end",
+            text: "Leer",
+            handler: () => {
+              this.$router.push("/policies");
+            },
+          },
+          {
+            side: "end",
+            role: "cancel",
+            icon: closeOutline,
+            handler: () => {
+              // console.log("Cancel clicked");
+            },
+          },
+        ],
+      });
+      await toast.present();
     },
   },
 });

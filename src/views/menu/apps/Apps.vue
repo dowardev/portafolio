@@ -219,6 +219,8 @@ import {
   IonItem,
   IonLabel,
   modalController,
+  IonAccordionGroup,
+  IonAccordion,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
@@ -248,6 +250,8 @@ export default defineComponent({
     IonToolbar,
     IonItem,
     IonLabel,
+    IonAccordionGroup,
+    IonAccordion,
   },
   setup() {
     return {

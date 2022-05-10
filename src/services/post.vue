@@ -252,8 +252,7 @@ export default function () {
         `,
       });
 
-      if (response.data.getDates.dates) return response.data.getDates.dates;
-      throw new Error("Bad response");
+      return response.data.getDates.dates;
     } catch (e: any) {
       if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
       throw new Error(e);

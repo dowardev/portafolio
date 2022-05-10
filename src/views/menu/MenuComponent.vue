@@ -113,10 +113,10 @@
       <ion-toolbar class="menu-color">
         <ion-buttons slot="end">
           <!-- button source code-->
-          <ion-button id="trigger-button">
+          <ion-button id="trigger-button-source-code">
             <ion-icon :icon="logoGitlab"></ion-icon>
           </ion-button>
-          <ion-popover trigger="trigger-button">
+          <ion-popover trigger="trigger-button-source-code">
             <ion-content>
               <ion-item
                 button
@@ -145,21 +145,26 @@
           <ion-button
             fill="clear"
             @click="openModalThemeDesktop()"
-            v-if="!androidPlatform && !iosPlatform"
+            v-if="!isAndroidPlatform && !isIosPlatform"
           >
             <ion-icon :icon="brushOutline"></ion-icon>
           </ion-button>
           <ion-button
             fill="clear"
             @click="openModalThemeMobile()"
-            v-if="androidPlatform || iosPlatform"
+            v-if="isAndroidPlatform || isIosPlatform"
           >
             <ion-icon :icon="brushOutline"></ion-icon>
           </ion-button>
 
-          <!-- more-->
-          <ion-button fill="clear" @click="openModalAppsDesktop()">
+          <!-- more -->
+          <ion-button fill="clear" @click="openModalApps()">
             <ion-icon :icon="appsOutline"></ion-icon>
+          </ion-button>
+
+          <!-- policies -->
+          <ion-button fill="clear" @click="goToPoliciesPage()">
+            <ion-icon :icon="documentsOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
@@ -192,6 +197,7 @@ import {
   thumbsUpOutline,
   logoGitlab,
   appsOutline,
+  documentsOutline,
 } from "ionicons/icons";
 import DarkMode from "./darkmode/DarkMode.vue";
 import sessionService from "../../services/session.vue";
@@ -216,8 +222,8 @@ export default defineComponent({
   },
   setup() {
     return {
-      androidPlatform: isPlatform("android"),
-      iosPlatform: isPlatform("ios"),
+      isAndroidPlatform: isPlatform("android"),
+      isIosPlatform: isPlatform("ios"),
       brushOutline,
       personAddOutline,
       logInOutline,
@@ -225,6 +231,7 @@ export default defineComponent({
       thumbsUpOutline,
       logoGitlab,
       appsOutline,
+      documentsOutline,
     };
   },
   data() {
@@ -288,18 +295,21 @@ export default defineComponent({
 
     async openModalFeedback() {
       systemService().openModalFeedback({ type: "feedback" });
+      menuController.close();
     },
 
     async login() {
       this.spinners.buttonLogin = true;
       await this.$router.push("/login");
       this.spinners.buttonLogin = false;
+      menuController.close();
     },
 
     async signup() {
       this.spinners.buttonSignup = true;
       await this.$router.push("/signup");
       this.spinners.buttonSignup = false;
+      menuController.close();
     },
 
     async logout() {
@@ -319,9 +329,10 @@ export default defineComponent({
         console.error(e);
         systemService().openToastErrror(e);
       }
+      menuController.close();
     },
 
-    async openModalAppsDesktop() {
+    async openModalApps() {
       const modal = await modalController.create({
         component: AppsComponent,
         cssClass: "my-custom-class",
@@ -329,7 +340,13 @@ export default defineComponent({
           title: "New Title",
         },
       });
+      menuController.close();
       return modal.present();
+    },
+
+    goToPoliciesPage() {
+      this.$router.push("/policies");
+      if (isPlatform("mobile")) menuController.close();
     },
   },
 });

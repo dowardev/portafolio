@@ -13,6 +13,7 @@ import LoginPage from "../views/session/login/Login.vue";
 import SignUpPage from "../views/session/signup/SignUpPage.vue";
 import RestorePasswordPage from "../views/session/restore-password/RestorePasswordPage.vue";
 import PruebaPage from "../views/prueba/Prueba.vue";
+import PoliciesPage from "../views/policies/PoliciesPage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -89,6 +90,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/restore-password",
     name: "RestorePasswordPage",
     component: RestorePasswordPage,
+  },
+  {
+    path: "/policies",
+    name: "PoliciesPage",
+    component: PoliciesPage,
   },
 ];
 

@@ -1,6 +1,3 @@
-/* Ionic Variables and Theming. For more info, please see:
-http://ionicframework.com/docs/theming/ */
-
 /** Ionic CSS Variables **/
 :root {
   /** primary **/
@@ -243,10 +240,6 @@ http://ionicframework.com/docs/theming/ */
   src: url("../../public/assets/fonts/open_sans/static/OpenSans/OpenSans-Medium.ttf");
 }
 @font-face {
-  font-family: "OpenSans-Bold";
-  src: url("../../public/assets/fonts/open_sans/static/OpenSans/OpenSans-SemiBold.ttf");
-}
-@font-face {
   font-family: "Comfortaa-Bold";
   src: url("../../public/assets/fonts/comfortaa/Comfortaa-Bold.ttf");
 }
@@ -332,22 +325,17 @@ ion-title {
   color: var(--primary-text-color) !important;
   opacity: var(--text-opacity);
 }
+p,
 ion-text,
 ol,
 span,
-.alert-radio-label.sc-ion-alert-md {
-  font-family: var(--tertiary-font) !important;
-  color: var(--primary-text-color) !important;
-  opacity: var(--text-opacity);
-}
-p {
+.alert-radio-label.sc-ion-alert-md,
+ul {
   font-family: var(--tertiary-font);
   color: var(--primary-text-color) !important;
   opacity: var(--text-opacity);
   font-size: 1.2rem !important;
   line-height: 1.6em !important;
-  font-weight: 700 !important;
-  font-style: normal !important;
 }
 
 /* ionic item */
@@ -458,4 +446,17 @@ ion-list-header > ion-label {
 ion-datetime {
   --background: var(--primary-color);
   color: var(--secondary-text-color);
+}
+
+/* ionic accordion */
+ion-accordion {
+  background: transparent;
+}
+ion-accordion > ion-list {
+  background: transparent !important;
+}
+
+/* ionic chip */
+ion-chip > ion-label {
+  color: var(--primary-text-color) !important;
 }

@@ -19,6 +19,7 @@
           loadingData.posts.status == 'error')
       "
     >
+      <!-- dates -->
       <div class="center">
         <ion-item lines="none">
           <ion-spinner
@@ -43,10 +44,18 @@
             slot="start"
             color="danger"
           ></ion-icon>
-          <ion-label>Cargando fechas</ion-label>
+          <ion-label
+            class="loading-label"
+            v-if="loadingData.dates.status == 'loading'"
+            >Cargando fechas</ion-label
+          >
+          <ion-chip color="danger" v-if="loadingData.dates.status == 'error'">
+            <ion-label>{{ loadingData.dates.message }}</ion-label>
+          </ion-chip>
         </ion-item>
       </div>
 
+      <!-- data -->
       <div class="center">
         <ion-item lines="none">
           <ion-spinner
@@ -71,10 +80,18 @@
             slot="start"
             color="danger"
           ></ion-icon>
-          <ion-label>Cargando datos</ion-label>
+          <ion-label
+            class="loading-label"
+            v-if="loadingData.data.status == 'loading'"
+            >Cargando datos</ion-label
+          >
+          <ion-chip color="danger" v-if="loadingData.data.status == 'error'">
+            <ion-label>{{ loadingData.data.message }}</ion-label>
+          </ion-chip>
         </ion-item>
       </div>
 
+      <!-- posts -->
       <div class="center">
         <ion-item lines="none">
           <ion-spinner
@@ -99,7 +116,14 @@
             slot="start"
             color="danger"
           ></ion-icon>
-          <ion-label>Cargando posts</ion-label>
+          <ion-label
+            class="loading-label"
+            v-if="loadingData.posts.status == 'loading'"
+            >Cargando posts</ion-label
+          >
+          <ion-chip color="danger" v-if="loadingData.posts.status == 'error'">
+            <ion-label>{{ loadingData.posts.message }}</ion-label>
+          </ion-chip>
         </ion-item>
       </div>
     </section>
@@ -107,7 +131,15 @@
 </template>
 
 <script lang="ts">
-import { IonPage, IonRouterOutlet } from "@ionic/vue";
+import {
+  IonPage,
+  IonRouterOutlet,
+  IonChip,
+  IonLabel,
+  IonItem,
+  IonSpinner,
+  IonIcon,
+} from "@ionic/vue";
 import { defineComponent } from "vue";
 import postService from "../../../services/post.vue";
 import formatISO from "date-fns/formatISO";
@@ -121,6 +153,11 @@ export default defineComponent({
   components: {
     IonPage,
     IonRouterOutlet,
+    IonChip,
+    IonLabel,
+    IonItem,
+    IonSpinner,
+    IonIcon,
   },
   setup() {
     return {
@@ -132,9 +169,18 @@ export default defineComponent({
     return {
       dates: Array<string>(),
       loadingData: {
-        data: { status: "loading | finished | error" },
-        dates: { status: "loading | finished | error" },
-        posts: { status: "loading | finished | error" },
+        data: {
+          status: "loading | finished | error",
+          message: "",
+        },
+        dates: {
+          status: "loading | finished | error",
+          message: "No se encontraron posts",
+        },
+        posts: {
+          status: "loading | finished | error",
+          message: "No se encontraron posts",
+        },
       },
     };
   },
@@ -162,6 +208,10 @@ export default defineComponent({
       let dates = Array<string>();
       try {
         dates = await this.getPostsDates();
+        if (dates.length == 0) {
+          this.loadingData.dates.status = "error";
+          return;
+        }
         this.loadingData.dates.status = "finished";
       } catch (e: any) {
         this.loadingData.dates.status = "error";
@@ -297,5 +347,8 @@ export default defineComponent({
   top: 50%;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+}
+.loading-label {
+  color: white !important;
 }
 </style>

@@ -171,6 +171,21 @@ export default function () {
     await modal.present();
   }
 
+  function createFirstCookie() {
+    document.cookie = "firstAccess=" + false;
+  }
+
+  function getFirstCookie(): boolean {
+    const name = "firstAccess=";
+    const cDecoded = decodeURIComponent(document.cookie);
+    const cArr = cDecoded.split("; ");
+    let access = true;
+    cArr.forEach((val) => {
+      if (val.indexOf(name) === 0) access = false;
+    });
+    return access;
+  }
+
   return {
     getTheme,
     setTheme,
@@ -182,6 +197,8 @@ export default function () {
     presentAlertConfirmation,
     openToastErrror,
     openModalFeedback,
+    createFirstCookie,
+    getFirstCookie,
   };
 }
 </script>

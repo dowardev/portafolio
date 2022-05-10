@@ -2,7 +2,7 @@
   "name": "portfolio",
   "version": "3.2.2",
   "private": true,
-  "description": "An Ionic project",
+  "description": "Dowar Blog",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
