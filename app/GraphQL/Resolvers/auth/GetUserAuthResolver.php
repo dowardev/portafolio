@@ -17,17 +17,18 @@ class GetUserAuthResolver
     ResolveInfo $resolveInfo
   ) {
     try {
-    $user = Auth::guard('api')->user();
-    if($user==null)throw new Exception('Unauthorized');
-     return [
-      'message' => 'Success',
-      'user' => $user,
-    ];
- 
+      $user = Auth::guard('api')->user();
+      if ($user == null) {
+        throw new Exception('Unauthorized');
+      }
+      return [
+        'message' => 'Success',
+        'user' => $user,
+      ];
     } catch (Exception $e) {
-                               throw new Exception($e->getMessage());
+      throw new Exception($e->getMessage());
     }
-        return [
+    return [
       'message' => 'Unauthorized',
     ];
   }

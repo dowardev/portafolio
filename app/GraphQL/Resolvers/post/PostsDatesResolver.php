@@ -26,40 +26,5 @@ class PostsDatesResolver
     }
 
     return ['message' => 'Success', 'dates' => $dates];
-
-    // $dates = [];
-    // $date = date_create(explode(' ', $args['date'])[0])->format('y-m-d');
-    // $totalDates = count($postDates);
-    // $status = true;
-    //
-    // foreach ($postDates as $key => $value) {
-    //   $count = 0;
-    //   $postDate = date_create($value->created_at)->format('y-m-d');
-    //   if ($postDate > $date && $args['option'] == 'new') {
-    //     array_push($dates, $postDate);
-    //     if ($value->created_at == $postDates[$totalDates - 1]->created_at) {
-    //       $status = false;
-    //     }
-    //     $count++;
-    //   }
-    //   if ($postDate < $date && $args['option'] == 'old') {
-    //     array_push($dates, $postDate);
-    //     if ($value->created_at == $postDates[0]->created_at) {
-    //       $status = false;
-    //     }
-    //     $count++;
-    //   } else {
-    //     $status = false;
-    //   }
-    //   if ($count == 4) {
-    //     break;
-    //   }
-    // }
-    //
-    // return [
-    //   'message' => 'success',
-    //   'dates' => array_unique($dates),
-    //   'status' => $status,
-    // ];
   }
 }

@@ -175,17 +175,12 @@ type Query {
   posts(date: String): GetPosts
     @field(resolver: "App\\GraphQL\\Resolvers\\post\\GetPostsResolver@resolve")
 
-  recentDatePosts: PostsDate!
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\post\\RecentPostsDateResolver@resolve"
-    )
-
   # getNextPostDate(date: String, option: String): PostsDates!
   #   @field(
   #     resolver: "App\\GraphQL\\Resolvers\\post\\PostsDatesResolver@resolve"
   #   )
 
-  getDates(currentDate: String): PostsDates!
+  getDates: PostsDates!
     @field(
       resolver: "App\\GraphQL\\Resolvers\\post\\PostsDatesResolver@resolve"
     )
