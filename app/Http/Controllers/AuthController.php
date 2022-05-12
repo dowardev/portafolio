@@ -104,6 +104,7 @@ class AuthController extends Controller
   {
     return response()->json($request->user());
   }
+
   public function verifyAccount($token)
   {
     $verifyUser = UserVerify::where('token', $token)->first();
@@ -170,11 +171,30 @@ class AuthController extends Controller
       throw new Exception($e->getMessage());
     }
   }
+
   function resetPassword(Request $request)
   {
     ResetCodePassword::where('email', $request->email)->delete();
     return User::where('email', '=', $request->email)->update([
       'password' => bcrypt($request->password),
     ]);
+  }
+
+  public function verifyNewEmail(Request $request)
+  {
+    $verifyEmail = UserVerify::where('token', $request->token)->first();
+
+    $message = 'Enlace invalido';
+
+    if (!is_null($verifyEmail)) {
+      $user = $verifyEmail->user;
+      if ($user->email != $request->email) {
+        $verifyEmail->user->email = $request->email;
+        $verifyEmail->user->save();
+        $message = 'Correo electrónico actualizado correctamente.';
+      }
+    }
+
+    return $message;
   }
 }

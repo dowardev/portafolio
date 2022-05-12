@@ -14,10 +14,16 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::get("/", function () {
-    return view("welcome");
+Route::get('/', function () {
+  return view('welcome');
 });
-Route::get("account/verify/{token}", [
-    AuthController::class,
-    "verifyAccount",
-])->name("user.verify");
+
+Route::get('account/verify/{token}', [
+  AuthController::class,
+  'verifyAccount',
+])->name('user.verify');
+
+Route::get('account/verify/{params}', [
+  AuthController::class,
+  'verifyNewEmail',
+])->name('user.new_email');

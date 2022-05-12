@@ -60,7 +60,7 @@ class RegisterResolver
       $message
     ) use ($args) {
       $message->to($args['email']);
-      $message->subject('Email Verification Mail');
+      $message->subject('Verificacion de correo electrónico');
     });
     return ['message' => 'Success'];
   }

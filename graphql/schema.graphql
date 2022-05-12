@@ -62,6 +62,20 @@ input FeedbackInput {
   contact_me: Boolean!
   type: String!
 }
+input UpdateUserProfileInput {
+  name: String!
+  user: String!
+  email: String!
+  imageId: String
+}
+input UpdateUserPasswordInput {
+  oldPassword: String!
+  newPassword: String!
+  newPasswordRepeat: String!
+}
+input DeleteUserAccountInput {
+  password: String!
+}
 
 type User {
   id: ID!
@@ -157,6 +171,15 @@ type PostImage {
 type CreateFeedbackPayload {
   message: String!
 }
+type SaveUserProfilePayload {
+  message: String!
+}
+type UpdateUserPasswordPayload {
+  message: String!
+}
+type DeleteUserAccountPayload {
+  message: String!
+}
 
 type Query {
   # user(
@@ -243,5 +266,26 @@ type Mutation {
   createFeedback(input: FeedbackInput @spread): CreateFeedbackPayload
     @field(
       resolver: "App\\GraphQL\\Resolvers\\others\\CreateFeedbackResolver@resolve"
+    )
+
+  updateUserProfile(
+    input: UpdateUserProfileInput @spread
+  ): SaveUserProfilePayload
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\user\\SaveUserProfileResolver@resolve"
+    )
+
+  updateUserPassword(
+    input: UpdateUserPasswordInput @spread
+  ): UpdateUserPasswordPayload
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\auth\\UpdateUserPasswordResolver@resolve"
+    )
+
+  deleteUserAccount(
+    input: DeleteUserAccountInput @spread
+  ): DeleteUserAccountPayload
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\user\\DeleteUserAccountResolver@resolve"
     )
 }

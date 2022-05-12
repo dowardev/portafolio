@@ -7,7 +7,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Exception;
-use GraphQL\Error\Error;
 
 class LoginResolver
 {
@@ -31,8 +30,9 @@ class LoginResolver
       ->orWhere('email', '=', $user)
       ->get();
 
-    if(count($userData)==0)
+    if (count($userData) == 0) {
       throw new Exception('Not found');
+    }
 
     $credentials = [
       'email' => $userData[0]->email,
