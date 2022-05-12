@@ -6,19 +6,22 @@ import {
   toastController,
   loadingController,
   alertController,
+  modalController,
 } from "@ionic/vue";
 import systemService from "./system.vue";
 import axios from "axios";
 import {
   AlertConfirmation,
+  Image,
   Loading,
   ModalFeedback,
   Theme,
   Toast,
+  UploadImage,
 } from "./interfaces.vue";
 import { alertCircleOutline, closeOutline } from "ionicons/icons";
 import FeedbackPage from "../components/feedback/FeedbackPage.vue";
-import { modalController } from "@ionic/vue";
+import userService from "./user.vue";
 
 export default function () {
   async function getTheme(): Promise<boolean | null> {
@@ -186,6 +189,52 @@ export default function () {
     return access;
   }
 
+  async function uploadImage(params: UploadImage): Promise<Image> {
+    let operations = "" as any;
+    try {
+      operations = {
+        query: `
+          mutation ($file: Upload!) {
+            uploadImage(input: { file: $file }) {
+             ${params.query}
+            }
+          }
+        `,
+        variables: {
+          file: null,
+        },
+      };
+    } catch (e: any) {
+      if (e.graphQLErrors) throw Error(e.graphQLErrors[0].debugMessage);
+      throw Error(e.message);
+    }
+
+    try {
+      const _map = {
+        file: ["variables.file"],
+      };
+      const file = params.image;
+      const fd = new FormData();
+      fd.append("operations", JSON.stringify(operations));
+      fd.append("map", JSON.stringify(_map));
+      fd.append("file", file, file.name);
+
+      const token = await userService().getUserToken();
+
+      const response = await axios.post(systemService().getBaseURL(), fd, {
+        headers: {
+          Accept: "application/json",
+          Authorization: token,
+        },
+      });
+
+      return response.data.data.uploadImage.image;
+    } catch (e: any) {
+      // throw new Error(e.response.data.message);
+      throw new Error(e.message);
+    }
+  }
+
   return {
     getTheme,
     setTheme,
@@ -199,6 +248,7 @@ export default function () {
     openModalFeedback,
     createFirstCookie,
     getFirstCookie,
+    uploadImage,
   };
 }
 </script>

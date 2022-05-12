@@ -25,6 +25,9 @@
           <ion-label style="color: white !important">{{ userName }}</ion-label>
           <ion-spinner name="crescent" v-if="spinners.buttonLogout">
           </ion-spinner>
+          <ion-button fill="clear" @click="goToUserPanel()">
+            <ion-icon :icon="personOutline"></ion-icon>
+          </ion-button>
           <ion-button fill="clear" @click="logout()">
             <ion-icon :icon="logOutOutline"></ion-icon>
           </ion-button>
@@ -198,6 +201,7 @@ import {
   logoGitlab,
   appsOutline,
   documentsOutline,
+  personOutline,
 } from "ionicons/icons";
 import DarkMode from "./darkmode/DarkMode.vue";
 import sessionService from "../../services/session.vue";
@@ -232,6 +236,7 @@ export default defineComponent({
       logoGitlab,
       appsOutline,
       documentsOutline,
+      personOutline,
     };
   },
   data() {
@@ -346,6 +351,11 @@ export default defineComponent({
 
     goToPoliciesPage() {
       this.$router.push("/policies");
+      if (isPlatform("mobile")) menuController.close();
+    },
+
+    goToUserPanel() {
+      this.$router.push("/user");
       if (isPlatform("mobile")) menuController.close();
     },
   },

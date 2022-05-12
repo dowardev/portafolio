@@ -8,8 +8,10 @@ import {
   GetUser,
   GetUserPermissionsResponse,
   GetUserResponse,
+  SaveUserData,
   SetUserData,
   UserToken,
+  DeleteUserAccount,
 } from "./interfaces.vue";
 
 const apollo = apolloClient;
@@ -209,6 +211,61 @@ export default function () {
   //   };
   // }
 
+  async function saveUserData(params: SaveUserData): Promise<void> {
+    try {
+      await apollo.defaultClient.mutate({
+        mutation: gql`
+          mutation (
+            $name: String!
+            $user: String!
+            $email: String!
+            $imageId: String
+          ) {
+            updateUserProfile(
+              input: {
+                name: $name
+                user: $user
+                email: $email
+                imageId: $imageId
+              }
+            ) {
+              message
+            }
+          }
+        `,
+        variables: {
+          name: params.name,
+          user: params.user,
+          email: params.email,
+          imageId: params.imageId,
+        },
+      });
+    } catch (e: any) {
+      if (e.graphQLErrors) throw Error(e.graphQLErrors[0].debugMessage);
+      throw Error(e.message);
+    }
+  }
+
+  async function deleteUserAccount(params: DeleteUserAccount) {
+    try {
+      await apollo.defaultClient.mutate({
+        mutation: gql`
+          mutation ($password: String!) {
+            deleteUserAccount(input: { password: $password }) {
+              message
+            }
+          }
+        `,
+        variables: {
+          password: params.password,
+        },
+      });
+    } catch (e: any) {
+      if (e.graphQLErrors) throw Error(e.graphQLErrors[0].debugMessage);
+      throw Error(e.message);
+    }
+  }
+
   return {
     getUserToken,
     setUserToken,
@@ -218,6 +275,8 @@ export default function () {
     getUserPermissions,
     setUserUploaded,
     getUserName,
+    saveUserData,
+    deleteUserAccount,
   };
 }
 </script>

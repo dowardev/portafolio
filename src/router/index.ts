@@ -1,19 +1,24 @@
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
+// portfolio
 import PresentationPage from "../views/presentation/PresentationPage.vue";
 import HistoryPage from "../views/history/HistoryPage.vue";
 import SkillsPage from "../views/skills/SkillsPage.vue";
 import PortfolioPage from "../views/portfolio/PortfolioPage.vue";
+import PoliciesPage from "../views/policies/PoliciesPage.vue";
+// posts
 import CreatePost from "../views/blog/editor/CreatePost.vue";
 import UpdatePost from "../views/blog/editor/UpdatePost.vue";
 import BlogPage from "../views/blog/posts/PostsPage.vue";
 import PostPage from "../views/blog/post/PostPage.vue";
 import PostsPage2 from "../views/blog/posts/PostsPage2.vue";
+// auth
 import LoginPage from "../views/session/login/Login.vue";
 import SignUpPage from "../views/session/signup/SignUpPage.vue";
 import RestorePasswordPage from "../views/session/restore-password/RestorePasswordPage.vue";
 import PruebaPage from "../views/prueba/Prueba.vue";
-import PoliciesPage from "../views/policies/PoliciesPage.vue";
+// user
+import UserPanelPage from "../views/user/UserPanelPage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -95,6 +100,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/policies",
     name: "PoliciesPage",
     component: PoliciesPage,
+  },
+  {
+    path: "/user",
+    name: "UserPanelPage",
+    component: UserPanelPage,
   },
 ];
 

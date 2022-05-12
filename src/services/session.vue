@@ -11,6 +11,7 @@ import {
   ResetPassword,
   UserRegisterResponse,
   UserLoginResponse,
+  UpdateUserPassword,
 } from "./interfaces.vue";
 
 const apollo = apolloClient;
@@ -157,6 +158,40 @@ export default function () {
     );
   }
 
+  async function updateUserPassword(params: UpdateUserPassword) {
+    try {
+      const response = await apollo.defaultClient.mutate({
+        mutation: gql`
+          mutation (
+            $oldPassword: String!
+            $newPassword: String!
+            $newPasswordRepeat: String!
+          ) {
+            updateUserPassword(
+              input: {
+                oldPassword: $oldPassword
+                newPassword: $newPassword
+                newPasswordRepeat: $newPasswordRepeat
+              }
+            ) {
+              message
+            }
+          }
+        `,
+        variables: {
+          oldPassword: params.oldPassword,
+          newPassword: params.newPassword,
+          newPasswordRepeat: params.newPasswordRepeat,
+        },
+      });
+
+      return response.data;
+    } catch (e: any) {
+      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
+    }
+  }
+
   return {
     userRegister,
     userLogin,
@@ -165,6 +200,7 @@ export default function () {
     sendCodeResetPassword,
     resetPassword,
     removeUserCached,
+    updateUserPassword,
   };
 }
 </script>

@@ -201,6 +201,22 @@ interface ResetPassword {
   password: string;
 }
 
+interface SaveUserData {
+  name: string;
+  user: string;
+  email: string;
+  imageId?: string;
+}
+
+interface UpdateUserPassword {
+  oldPassword: string;
+  newPassword: string;
+  newPasswordRepeat: string;
+}
+interface DeleteUserAccount {
+  password: string;
+}
+
 export {
   Feedback,
   Post,
@@ -233,5 +249,8 @@ export {
   GetUserPermissionsResponse,
   UserLoginResponse,
   ModalFeedback,
+  SaveUserData,
+  UpdateUserPassword,
+  DeleteUserAccount,
 };
 </script>
