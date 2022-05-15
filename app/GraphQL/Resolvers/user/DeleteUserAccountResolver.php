@@ -30,7 +30,7 @@ class DeleteUserAccountResolver
       'password' => strval($args['password']),
     ];
 
-    if (!Auth::guard('web')->attempt($credentials, false, false)) {
+    if (!Auth::guard('web')->attempt($credentials)) {
       throw new Exception('Wrong password');
     }
 

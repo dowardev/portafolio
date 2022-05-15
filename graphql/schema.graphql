@@ -44,7 +44,7 @@ input DeletePostInput {
   id: ID!
 }
 input FileInput {
-  file: Upload!
+  file: String!
 }
 input ImageInput {
   id: String
@@ -85,6 +85,7 @@ type User {
   is_admin: Boolean!
   rol: [String]
   user: String!
+  image_source: String
 }
 type Post {
   id: ID

@@ -17,27 +17,28 @@ class GetPostsResolver
     ResolveInfo $resolveInfo
   ) {
     try {
-    $result = DB::table('posts')
-      ->join('images', 'cover_id', '=', 'images.id')
-      ->select(
-        'posts.id as post_id',
-        'posts.title as post_title',
-        'posts.content as post_content',
-        'posts.created_at as post_created_at',
-        'posts.updated_at as post_updated_at',
-        'images.id as image_id',
-        'images.name as image_name',
-        'images.path as image_path'
-      )
-      ->whereDate('posts.created_at', $args['date'])
-      ->get();
+      $result = DB::table('posts')
+        ->join('images', 'cover_id', '=', 'images.id')
+        ->select(
+          'posts.id as post_id',
+          'posts.title as post_title',
+          'posts.content as post_content',
+          'posts.created_at as post_created_at',
+          'posts.updated_at as post_updated_at',
+          'images.id as image_id',
+          'images.name as image_name',
+          'images.path as image_path'
+        )
+        ->whereDate('posts.created_at', $args['date'])
+        ->get();
 
-    if($result==null)throw new Exception('No posts');
-  
+      if ($result == null) {
+        throw new Exception('No posts');
+      }
     } catch (Exception $e) {
-throw new Exception($e->getMessage());
+      throw new Exception($e->getMessage());
     }
-    
+
     $posts = [];
     foreach ($result as $key => $value) {
       $post = [

@@ -39,7 +39,7 @@ class LoginResolver
       'password' => $password,
     ];
     try {
-      if (count($userData) == 0 || !Auth::attempt($credentials)) {
+      if (count($userData) == 0 || !Auth::guard('web')->attempt($credentials)) {
         throw new Exception('Unauthorized');
       }
     } catch (\Throwable $error) {

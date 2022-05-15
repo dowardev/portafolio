@@ -6,7 +6,8 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Facades\Auth;
 use Exception;
-use Error;
+use App\Models\Images;
+use Illuminate\Support\Facades\Storage;
 
 class GetUserAuthResolver
 {
@@ -17,10 +18,31 @@ class GetUserAuthResolver
     ResolveInfo $resolveInfo
   ) {
     try {
-      $user = Auth::guard('api')->user();
-      if ($user == null) {
+      $response = Auth::guard('api')->user();
+      if ($response == null) {
         throw new Exception('Unauthorized');
       }
+
+      $image_source = '';
+      if ($response->image_id) {
+        $image_source = base64_encode(
+          Storage::disk('user_images_profile')->get(
+            Images::find($response->image_id)->name
+          )
+        );
+      }
+
+      $user = [
+        'id' => $response->name,
+        'name' => $response->name,
+        'user' => $response->user,
+        'email' => $response->email,
+        'is_email_verified' => $response->is_email_verified,
+        'is_admin' => $response->is_admin,
+        'rol' => $response->rol,
+        'image_source' => $image_source,
+      ];
+
       return [
         'message' => 'Success',
         'user' => $user,

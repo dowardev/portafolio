@@ -17,12 +17,12 @@ class UploadImageResolver
     GraphQLContext $context = null,
     ResolveInfo $resolveInfo
   ) {
-    if (Auth::guard('api')->user()->is_admin == false) {
-      throw new Exception('Unauthorized');
-    }
     $file = $args['file'];
     $filename = uniqid() . time() . '.webp';
-    $path = $file->storeAs('tmp', $filename);
+    $path = '/tmp/' . $filename;
+    @list($type, $file_data) = explode(';', $file);
+    @list(, $file_data) = explode(',', $file_data);
+    Storage::disk('tmp')->put($filename, base64_decode($file_data));
 
     if ($file == '' || $file == 'null') {
       throw new Exception('File is required');
@@ -33,9 +33,9 @@ class UploadImageResolver
       'path' => $path,
     ]);
     return [
-      'message' => $args['file'],
+      'message' => 'Success',
       'image' => [
-        'source' => base64_encode(Storage::disk('tmp')->get($image['name'])),
+        'source' => base64_encode(Storage::disk('tmp')->get($filename)),
         'id' => $image->id,
         'path' => $image->path,
         'name' => $image->name,
