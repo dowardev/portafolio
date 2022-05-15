@@ -21,7 +21,7 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-segment v-model="mainSegment">
+      <ion-segment v-model="mainSegment" scrollable>
         <ion-segment-button value="profile">
           <ion-label> Perfil </ion-label>
         </ion-segment-button>

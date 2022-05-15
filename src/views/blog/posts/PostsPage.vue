@@ -350,7 +350,7 @@ export default defineComponent({
             text: "No",
             role: "cancel",
             cssClass: "secondary",
-            handler: (blah) => {
+            handler: () => {
               // console.log('Confirm Cancel:', blah)
             },
           },

@@ -22,7 +22,10 @@
         </ion-item>
 
         <ion-item lines="none" v-if="userLogged == true">
-          <ion-label style="color: white !important">{{ userName }}</ion-label>
+          <ion-avatar slot="start">
+            <img :src="user.imageSource" />
+          </ion-avatar>
+          <ion-label style="color: white !important">{{ user.name }}</ion-label>
           <ion-spinner name="crescent" v-if="spinners.buttonLogout">
           </ion-spinner>
           <ion-button fill="clear" @click="goToUserPanel()">
@@ -242,7 +245,10 @@ export default defineComponent({
   data() {
     return {
       userLogged: false,
-      userName: null as null | string,
+      user: {
+        name: "",
+        imageSource: require("../../../public/assets/otros/user.png"),
+      },
       spinners: {
         buttonLogin: false,
         buttonSignup: false,
@@ -252,9 +258,9 @@ export default defineComponent({
   },
   mounted() {
     eventBus().emitter.on("refresh-user-content", () => {
-      this.getUserName();
+      this.getUser();
     });
-    this.getUserName();
+    this.getUser();
   },
   methods: {
     async openModalThemeDesktop() {
@@ -283,13 +289,26 @@ export default defineComponent({
       menuController.close();
     },
 
-    async getUserName() {
+    async getUser() {
+      const query = `
+          user {
+            name
+            image_source
+          }
+    `;
       try {
-        const response = await userService().getUserName();
+        const response = await userService().getUser({ query });
+        console.log(response);
+        // eslint-disable-next-line
+        this.user.name = response.name!;
+
+        if (response.image_source) {
+          this.user.imageSource =
+            // eslint-disable-next-line
+            "data:image/png;base64," + response.image_source!;
+        }
         this.userLogged = true;
-        this.userName = response;
       } catch (e: any) {
-        this.userLogged = false;
         if (e.message == "Unauthorized") return;
         else {
           systemService().openToastErrror(e);

@@ -5,9 +5,63 @@
         <ion-label>Seguridad basica</ion-label>
       </ion-list-header>
 
-      <ion-row class="center">
-        <ion-col size="12" size-lg="6" size-xl="4" class="card-form">
+      <ion-row>
+        <ion-modal
+          trigger="trigger-cardDeleteAccount"
+          :breakpoints="[0.1, 0.5, 1]"
+          :initialBreakpoint="0.5"
+        >
+          <ion-content class="ion-padding">
+            <ul v-for="item in information[0].cardPassword" :key="item[0]">
+              <li>
+                {{ item.content }}
+              </li>
+            </ul>
+          </ion-content>
+        </ion-modal>
+
+        <ion-col
+          size-xs="12"
+          size-md="12"
+          size-lg="6"
+          size-xl="5"
+          class="ion-padding-start ion-hide-lg-down"
+        >
+          <p>Una buena contraña debe incluir</p>
+          <ul v-for="item in information[0].cardPassword" :key="item[0]">
+            <li>
+              {{ item.content }}
+            </li>
+          </ul>
+        </ion-col>
+
+        <ion-col
+          size-xs="12"
+          size-md="12"
+          size-lg="6"
+          size-xl="4"
+          offset-xl="1"
+        >
           <ion-card>
+            <ion-card-header>
+              <div class="card-header">
+                <div class="card-title-container">
+                  <ion-card-title style="top: 9px">
+                    Cambiar contraseña
+                  </ion-card-title>
+                </div>
+                <div>
+                  <ion-button
+                    fill="clear"
+                    id="trigger-cardDeleteAccount"
+                    class="ion-hide-lg-up"
+                  >
+                    <ion-icon :icon="informationCircleOutline"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+            </ion-card-header>
+
             <ion-card-content>
               <ion-item>
                 <ion-label position="floating">Contraseña actual</ion-label>
@@ -133,13 +187,24 @@
 </template>
 
 <script lang="ts">
-import { IonItem, IonLabel, IonInput, IonButton, IonSpinner } from "@ionic/vue";
+import {
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonSpinner,
+  IonModal,
+} from "@ionic/vue";
 import { defineComponent } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
 import sessionService from "../../../services/session.vue";
 import systemService from "../../../services/system.vue";
-import { eyeOutline, eyeOffOutline } from "ionicons/icons";
+import {
+  eyeOutline,
+  eyeOffOutline,
+  informationCircleOutline,
+} from "ionicons/icons";
 
 export default defineComponent({
   name: "UserProfileComponent",
@@ -149,20 +214,22 @@ export default defineComponent({
     IonInput,
     IonButton,
     IonSpinner,
+    IonModal,
   },
   setup() {
     return {
       v$: useVuelidate(),
       eyeOutline,
       eyeOffOutline,
+      informationCircleOutline,
     };
   },
   data() {
     return {
       form: {
-        oldPassword: "",
-        newPassword: "",
-        newPasswordRepeat: "",
+        oldPassword: "d3D9jFEubBSRo",
+        newPassword: "d3D9jFEubBSRo",
+        newPasswordRepeat: "d3D9jFEubBSRo",
       },
       spinners: {
         saveUserPassword: false,
@@ -170,6 +237,22 @@ export default defineComponent({
       inputTypePassword1: "password",
       inputTypePassword2: "password",
       inputTypePassword3: "password",
+      information: [
+        {
+          cardPassword: [
+            {
+              content:
+                "El tamaño ideal para una contraseña es de 9 caracteres o más",
+            },
+            {
+              content: "Debe contener mayúsculas y minúsculas",
+            },
+            {
+              content: "Debe contener al menos un número",
+            },
+          ],
+        },
+      ],
     };
   },
 
@@ -198,15 +281,17 @@ export default defineComponent({
   },
 
   methods: {
-    saveUserPassword() {
-      console.log(this.form);
+    async saveUserPassword() {
+      this.spinners.saveUserPassword = true;
       try {
-        sessionService().updateUserPassword(this.form);
+        await sessionService().updateUserPassword(this.form);
+        this.spinners.saveUserPassword = false;
         systemService().openToast({
           message: "Contraseña actualizada",
           color: "success",
         });
       } catch (e: any) {
+        this.spinners.saveUserPassword = false;
         if (e.message == "Wrong password") {
           systemService().openToast({
             message: "Contraseña incorrecta",
@@ -221,3 +306,18 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.important-text {
+  font-weight: bold;
+}
+.card-header {
+  display: flex;
+}
+.card-header > .card-title-container {
+  flex-basis: 90%;
+}
+.card-header > .card-title-container > ion-card-title {
+  top: 9px;
+}
+</style>

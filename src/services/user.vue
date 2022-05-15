@@ -88,8 +88,7 @@ export default function () {
       `,
       });
 
-      if (response.data.getUserAuth) return response.data.getUserAuth.user;
-      throw new Error("Bad response");
+      return response.data.getUserAuth.user;
     } catch (e: any) {
       if (e.graphQLErrors) throw Error(e.graphQLErrors[0].debugMessage);
       throw Error(e.message);

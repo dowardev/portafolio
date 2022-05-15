@@ -21,7 +21,10 @@ import {
 } from "./interfaces.vue";
 import { alertCircleOutline, closeOutline } from "ionicons/icons";
 import FeedbackPage from "../components/feedback/FeedbackPage.vue";
-import userService from "./user.vue";
+import gql from "graphql-tag";
+import apolloClient from "../Apollo";
+
+const apollo = apolloClient;
 
 export default function () {
   async function getTheme(): Promise<boolean | null> {
@@ -83,7 +86,7 @@ export default function () {
     if (mode == "development") {
       return "http://127.0.0.1:8000/graphql";
     } else {
-      return "https://prueba-blogb.dowar.xyz/graphql";
+      return "https://dowar-blog.dowar.xyz/graphql";
     }
   }
   async function presentLoading(params: Loading) {
@@ -190,48 +193,24 @@ export default function () {
   }
 
   async function uploadImage(params: UploadImage): Promise<Image> {
-    let operations = "" as any;
     try {
-      operations = {
-        query: `
-          mutation ($file: Upload!) {
+      const response = await apollo.defaultClient.mutate({
+        mutation: gql`
+          mutation ($file: String!) {
             uploadImage(input: { file: $file }) {
-             ${params.query}
+              ${params.query}
             }
           }
         `,
         variables: {
-          file: null,
-        },
-      };
-    } catch (e: any) {
-      if (e.graphQLErrors) throw Error(e.graphQLErrors[0].debugMessage);
-      throw Error(e.message);
-    }
-
-    try {
-      const _map = {
-        file: ["variables.file"],
-      };
-      const file = params.image;
-      const fd = new FormData();
-      fd.append("operations", JSON.stringify(operations));
-      fd.append("map", JSON.stringify(_map));
-      fd.append("file", file, file.name);
-
-      const token = await userService().getUserToken();
-
-      const response = await axios.post(systemService().getBaseURL(), fd, {
-        headers: {
-          Accept: "application/json",
-          Authorization: token,
+          file: params.image,
         },
       });
 
-      return response.data.data.uploadImage.image;
+      return response.data.uploadImage.image;
     } catch (e: any) {
-      // throw new Error(e.response.data.message);
-      throw new Error(e.message);
+      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
+      throw new Error(e);
     }
   }
 

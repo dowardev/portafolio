@@ -159,6 +159,7 @@ interface GetUserResponse {
   email?: string;
   is_admin?: boolean;
   rol?: Array<any>;
+  image_source?: string;
 }
 
 interface GetUserPermissionsResponse {
