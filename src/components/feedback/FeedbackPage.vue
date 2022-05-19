@@ -78,17 +78,19 @@
 
               <div class="center">
                 <ion-item lines="none">
-                  <ion-spinner
-                    name="crescent"
-                    v-if="spinners.buttonSendFeedback"
-                  ></ion-spinner>
                   <ion-button
                     fill="clear"
                     expand="block"
-                    :disabled="v$.$invalid"
+                    :disabled="v$.$invalid || spinners.buttonSendFeedback"
                     @click="sendFeedback"
                   >
-                    Enviar
+                    <ion-label v-if="spinners.buttonSendFeedback == false">
+                      Enviar</ion-label
+                    >
+                    <ion-spinner
+                      name="crescent"
+                      v-if="spinners.buttonSendFeedback"
+                    ></ion-spinner>
                   </ion-button>
                 </ion-item>
               </div>

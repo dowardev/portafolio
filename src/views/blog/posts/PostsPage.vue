@@ -10,117 +10,145 @@
       <ion-router-outlet />
     </section>
 
-    <section
-      class="align-vertical"
-      v-if="
-        loadingData.posts.status != 'finished' ||
-        (loadingData.data.status == 'error' &&
-          loadingData.data.status == 'error' &&
-          loadingData.posts.status == 'error')
-      "
-    >
-      <!-- dates -->
-      <div class="center">
-        <ion-item lines="none">
-          <ion-spinner
-            name="crescent"
-            slot="start"
-            v-if="
-              loadingData.dates.status == 'loading' &&
-              loadingData.data.status != 'error' &&
-              loadingData.dates.status != 'error' &&
-              loadingData.posts.status != 'error'
-            "
-          >
-          </ion-spinner>
-          <ion-icon
-            :icon="checkmarkOutline"
-            v-if="loadingData.dates.status == 'finished'"
-            slot="start"
-          ></ion-icon>
-          <ion-icon
-            :icon="closeOutline"
-            v-if="loadingData.dates.status == 'error'"
-            slot="start"
-            color="danger"
-          ></ion-icon>
-          <ion-label
-            class="loading-label"
-            v-if="loadingData.dates.status == 'loading'"
-            >Cargando fechas</ion-label
-          >
-          <ion-chip color="danger" v-if="loadingData.dates.status == 'error'">
-            <ion-label class="error">No se encontraron posts</ion-label>
-          </ion-chip>
-        </ion-item>
-      </div>
+    <div style="background-color: var(--background-color); height: 100%">
+      <section
+        class="align-vertical"
+        v-if="
+          loadingData.posts.status != 'finished' ||
+          (loadingData.data.status == 'error' &&
+            loadingData.data.status == 'error')
+        "
+      >
+        <!-- dates -->
+        <div class="center">
+          <ion-item lines="none">
+            <ion-spinner
+              name="crescent"
+              slot="start"
+              v-if="
+                loadingData.dates.status == 'loading' &&
+                loadingData.data.status != 'error' &&
+                loadingData.posts.status != 'error'
+              "
+            >
+            </ion-spinner>
+            <ion-icon
+              :icon="checkmarkOutline"
+              v-if="loadingData.dates.status == 'finished'"
+              slot="start"
+            ></ion-icon>
+            <ion-icon
+              :icon="closeOutline"
+              v-if="loadingData.dates.status == 'error'"
+              slot="start"
+              color="danger"
+            ></ion-icon>
+            <ion-label
+              class="loading-label"
+              v-if="loadingData.dates.status == 'loading'"
+              >Cargando fechas</ion-label
+            >
+            <ion-chip color="danger" v-if="loadingData.dates.status == 'error'">
+              <ion-label class="error">No se encontraron posts</ion-label>
+            </ion-chip>
+            <ion-button
+              fill="clear"
+              v-if="
+                loadingData.dates.status == 'error' &&
+                loadingData.dates.message == 'No dates' &&
+                isUserAdmin
+              "
+              @click="addPost()"
+            >
+              <ion-label v-if="spinners.buttonAddPost == false"
+                ><ion-icon :icon="addOutline"></ion-icon
+              ></ion-label>
+              <ion-spinner
+                name="crescent"
+                v-if="spinners.buttonAddPost"
+              ></ion-spinner>
+            </ion-button>
 
-      <!-- data -->
-      <div class="center">
-        <ion-item lines="none">
-          <ion-spinner
-            name="crescent"
-            slot="start"
-            v-if="
-              loadingData.data.status == 'loading' &&
-              loadingData.data.status != 'error' &&
-              loadingData.dates.status != 'error' &&
-              loadingData.posts.status != 'error'
-            "
-          >
-          </ion-spinner>
-          <ion-icon
-            :icon="checkmarkOutline"
-            v-if="loadingData.data.status == 'finished'"
-            slot="start"
-          ></ion-icon>
-          <ion-icon
-            :icon="closeOutline"
-            v-if="loadingData.data.status == 'error'"
-            slot="start"
-            color="danger"
-          ></ion-icon>
-          <ion-label
-            class="loading-label"
-            v-if="loadingData.data.status == 'loading'"
-            >Cargando datos</ion-label
-          >
-        </ion-item>
-      </div>
+            <ion-button
+              fill="clear"
+              v-if="
+                loadingData.dates.status == 'error' &&
+                loadingData.dates.message == 'No dates'
+              "
+              @click="loadData()"
+            >
+              <ion-label v-if="spinners.buttonAddPost == false"
+                ><ion-icon :icon="refreshOutline"></ion-icon
+              ></ion-label>
+            </ion-button>
+          </ion-item>
+        </div>
 
-      <!-- posts -->
-      <div class="center">
-        <ion-item lines="none">
-          <ion-spinner
-            name="crescent"
-            slot="start"
-            v-if="
-              loadingData.posts.status == 'loading' &&
-              loadingData.data.status != 'error' &&
-              loadingData.dates.status != 'error' &&
-              loadingData.posts.status != 'error'
-            "
-          >
-          </ion-spinner>
-          <ion-icon
-            :icon="checkmarkOutline"
-            v-if="loadingData.posts.status == 'finished'"
-            slot="start"
-          ></ion-icon>
-          <ion-icon
-            :icon="closeOutline"
-            v-if="loadingData.posts.status == 'error'"
-            slot="start"
-            color="danger"
-          ></ion-icon>
-          <ion-label
-            class="loading-label"
-            v-if="loadingData.posts.status == 'loading'"
-            >Cargando posts</ion-label
-          >
-        </ion-item>
-      </div>
-    </section>
+        <!-- data -->
+        <div class="center">
+          <ion-item lines="none">
+            <ion-spinner
+              name="crescent"
+              slot="start"
+              v-if="
+                loadingData.data.status == 'loading' &&
+                loadingData.dates.status != 'error' &&
+                loadingData.posts.status != 'error'
+              "
+            >
+            </ion-spinner>
+            <ion-icon
+              :icon="checkmarkOutline"
+              v-if="loadingData.data.status == 'finished'"
+              slot="start"
+            ></ion-icon>
+            <ion-icon
+              :icon="closeOutline"
+              v-if="loadingData.data.status == 'error'"
+              slot="start"
+              color="danger"
+            ></ion-icon>
+            <ion-label
+              class="loading-label"
+              v-if="loadingData.data.status == 'loading'"
+              >Cargando datos</ion-label
+            >
+          </ion-item>
+        </div>
+
+        <!-- posts -->
+        <div class="center">
+          <ion-item lines="none">
+            <ion-spinner
+              name="crescent"
+              slot="start"
+              v-if="
+                loadingData.posts.status == 'loading' &&
+                loadingData.data.status != 'error' &&
+                loadingData.dates.status != 'error'
+              "
+            >
+            </ion-spinner>
+            <ion-icon
+              :icon="checkmarkOutline"
+              v-if="loadingData.posts.status == 'finished'"
+              slot="start"
+            ></ion-icon>
+            <ion-icon
+              :icon="closeOutline"
+              v-if="loadingData.posts.status == 'error'"
+              slot="start"
+              color="danger"
+            ></ion-icon>
+            <ion-label
+              class="loading-label"
+              v-if="loadingData.posts.status == 'loading'"
+              >Cargando posts</ion-label
+            >
+          </ion-item>
+        </div>
+      </section>
+    </div>
   </ion-page>
 </template>
 
@@ -133,7 +161,6 @@ import {
   IonItem,
   IonSpinner,
   IonIcon,
-  alertController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import postService from "../../../services/post.vue";
@@ -141,7 +168,12 @@ import formatISO from "date-fns/formatISO";
 import eventBus from "../../../EventBus";
 import systemService from "../../../services/system.vue";
 import { Post } from "@/services/interfaces.vue";
-import { checkmarkOutline, closeOutline, addOutline } from "ionicons/icons";
+import {
+  checkmarkOutline,
+  closeOutline,
+  addOutline,
+  refreshOutline,
+} from "ionicons/icons";
 import userService from "../../../services/user.vue";
 
 export default defineComponent({
@@ -155,30 +187,40 @@ export default defineComponent({
     IonSpinner,
     IonIcon,
   },
+
   setup() {
     return {
       checkmarkOutline,
       closeOutline,
       addOutline,
+      refreshOutline,
     };
   },
+
   data() {
     return {
       dates: Array<string>(),
       loadingData: {
         data: {
           status: "loading | finished | error",
+          message: "",
         },
         dates: {
           status: "loading | finished | error",
+          message: "",
         },
         posts: {
           status: "loading | finished | error",
+          message: "",
         },
       },
       isUserAdmin: false,
+      spinners: {
+        buttonAddPost: false,
+      },
     };
   },
+
   async mounted() {
     await this.verifyUserAdmin();
     this.loadData();
@@ -212,7 +254,7 @@ export default defineComponent({
         dates = await this.getPostsDates();
         if (dates.length == 0) {
           this.loadingData.dates.status = "error";
-          if (this.isUserAdmin) this.presentAlertAddPost();
+          this.loadingData.dates.message = "No dates";
           return;
         }
         this.loadingData.dates.status = "finished";
@@ -255,7 +297,6 @@ export default defineComponent({
       }
 
       setTimeout(() => {
-        console.log(this.loadingData);
         this.passData({ currentPage, dates, posts });
       }, 500);
     },
@@ -340,32 +381,6 @@ export default defineComponent({
       }
     },
 
-    async presentAlertAddPost() {
-      const alert = await alertController.create({
-        cssClass: "my-custom-class",
-        header: "No se encontraron Posts",
-        message: "¿Quieres agregar uno?",
-        buttons: [
-          {
-            text: "No",
-            role: "cancel",
-            cssClass: "secondary",
-            handler: () => {
-              // console.log('Confirm Cancel:', blah)
-            },
-          },
-          {
-            text: "Si",
-            id: "confirm-button",
-            handler: () => {
-              this.$router.push("/blog/editor/create");
-            },
-          },
-        ],
-      });
-      return alert.present();
-    },
-
     async verifyUserAdmin() {
       if (navigator.onLine) {
         try {
@@ -380,6 +395,12 @@ export default defineComponent({
         }
       }
     },
+
+    async addPost() {
+      this.spinners.buttonAddPost = true;
+      await this.$router.push("/blog/editor/create");
+      this.spinners.buttonAddPost = false;
+    },
   },
 });
 </script>
@@ -392,7 +413,7 @@ export default defineComponent({
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-.loading-label {
-  color: white !important;
-}
+/* .loading-label { */
+/*   color: white !important; */
+/* } */
 </style>

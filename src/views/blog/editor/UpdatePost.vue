@@ -8,13 +8,14 @@
         :title="title"
         :content="content"
         :cover="cover"
+        :spinnerSavePost="spinners.savePost"
+        :spinnerSaveImage="spinners.saveImage"
       ></EditorComponent>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { IonPage } from "@ionic/vue";
 import { defineComponent } from "vue";
 import postService from "../../../services/post.vue";
@@ -29,6 +30,7 @@ export default defineComponent({
     IonPage,
     EditorComponent,
   },
+
   data() {
     return {
       idPost: this.$route.params.id,
@@ -38,8 +40,10 @@ export default defineComponent({
       cover: { id: "", name: "", source: "" },
       newImages: Array<string>(),
       images: Array<string>(),
+      spinners: { savePost: false, saveImage: false },
     };
   },
+
   beforeRouteEnter(to, from, next) {
     userService()
       .getUserPermissions()
@@ -54,9 +58,11 @@ export default defineComponent({
         next("/blog");
       });
   },
+
   mounted() {
     this.getPost();
   },
+
   methods: {
     async getPost() {
       const loading = await systemService().presentLoading({
@@ -86,16 +92,7 @@ export default defineComponent({
         const content = response.content ? response.content : "";
         const coverName = response.cover.name ? response.cover.name : "";
         const coverId = response.cover.id ? response.cover.id : "";
-        const queryImage = `
-              image {
-                id
-                name
-                source
-              }
-        `;
-        const coverSource = (
-          await postService().getImage({ name: coverName, query: queryImage })
-        ).source!;
+        const coverSource = response.cover.source ? response.cover.source : "";
 
         if (response) {
           this.setData({ title, content, coverId, coverName, coverSource });
@@ -131,10 +128,7 @@ export default defineComponent({
       cover: object;
       newCoverStatus: boolean;
     }) {
-      const loading = await systemService().presentLoading({
-        message: "Actualizando post",
-      });
-      loading.present();
+      this.spinners.savePost = true;
 
       const id = this.idPost as string;
       const title = data.title;
@@ -152,7 +146,7 @@ export default defineComponent({
           newCoverId = response as string;
         } catch (e: any) {
           console.error(e);
-          loading.dismiss();
+          this.spinners.savePost = false;
           systemService().openToastErrror(e);
           return;
         }
@@ -168,17 +162,13 @@ export default defineComponent({
           images,
           imagesRemoved,
         });
-        loading.dismiss();
+        this.spinners.savePost = false;
         eventBus().emitter.emit("refresh-content", { event: "new-post" });
-        systemService().openToast({
-          message: "Actualizado correctamente",
-          color: "success",
-        });
         this.clearInputs();
         this.$router.go(-1);
       } catch (e: any) {
         console.error(e);
-        loading.dismiss();
+        this.spinners.savePost = false;
         systemService().openToastErrror(e);
       }
     },
@@ -208,32 +198,35 @@ export default defineComponent({
     },
 
     async uploadImage(e: any) {
-      const loading = await systemService().presentLoading({
-        message: "Subiendo imagen",
-      });
-      loading.present();
-      const image = e.image;
+      this.spinners.saveImage = true;
+      const image = e.image.file;
       const query = `
             image {
               id
-        }
-      `;
-
-      let id = "";
+              name
+            }
+              `;
 
       try {
-        const response = await postService().uploadImage({ image, query });
-        id = response.id as string;
-        loading.dismiss();
+        const response = await systemService().uploadImage({ query, image });
+        const imageName = response.name;
+        this.spinners.saveImage = false;
 
         this.content =
-          "![Markdown Logo](http://localhost:8000/api/get-image?name=" +
-          response.name +
-          " 'Markdown Tutorial')";
+          "![" +
+          imageName +
+          "](" +
+          systemService().getBaseURL() +
+          "api/get-image?name=" +
+          imageName +
+          " '" +
+          imageName +
+          "')";
 
-        if (response) this.newImages.push(id);
-      } catch (error) {
-        loading.dismiss();
+        if (response.id) this.images.push(response.id);
+      } catch (e: any) {
+        console.error(e);
+        this.spinners.saveImage = false;
         systemService().openToastErrror(e);
       }
     },
@@ -246,7 +239,7 @@ export default defineComponent({
       `;
 
       try {
-        const response = await postService().uploadImage({ image, query });
+        const response = await systemService().uploadImage({ image, query });
         return response.id;
       } catch (e: any) {
         console.error(e);

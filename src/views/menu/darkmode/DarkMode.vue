@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true" class="ion-no-border" mode="ios">
       <ion-toolbar>
-        <ion-buttons>
+        <ion-buttons slot="start">
           <ion-button class="close-button" @click="closeModal()">
             <ion-icon :icon="closeOutline"></ion-icon>
           </ion-button>
@@ -94,7 +94,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@media only screen and (max-width: 768px), (orientation: landscape) {
+@media only screen and (max-width: 768px) {
   .close-button {
     display: none;
   }

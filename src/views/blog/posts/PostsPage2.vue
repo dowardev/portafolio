@@ -11,13 +11,17 @@
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
         <ion-title>Blog</ion-title>
-        <ion-buttons slot="end">
-          <ion-spinner
-            name="crescent"
-            v-if="spinners.buttonAddNewPost"
-          ></ion-spinner>
+        <ion-buttons slot="end" :disabled="spinners.buttonAddNewPost">
           <ion-button @click="addPost()" v-if="isUserAdmin">
-            <ion-icon :icon="addOutline"></ion-icon>
+            <ion-icon
+              :icon="addOutline"
+              v-if="spinners.buttonAddNewPost == false"
+            ></ion-icon>
+            <ion-spinner
+              name="crescent"
+              v-if="spinners.buttonAddNewPost"
+              color="primary"
+            ></ion-spinner>
           </ion-button>
           <ion-button @click="refreshContent">
             <ion-icon :icon="refreshOutline"></ion-icon>
@@ -90,12 +94,39 @@
               {{ post.title }}
             </h2>
           </ion-col>
+
           <ion-col size="12" v-if="isUserAdmin">
-            <ion-button fill="clear" @click="updatePost(post.id)">
-              <ion-icon :icon="createOutline"></ion-icon>
+            <ion-button
+              fill="clear"
+              @click="updatePost(post.id)"
+              :disabled="spinners.buttonEditPost"
+            >
+              <ion-icon
+                :icon="createOutline"
+                v-if="spinners.buttonEditPost == false"
+              ></ion-icon>
+              <ion-spinner
+                name="crescent"
+                v-if="spinners.buttonEditPost"
+                color="primary"
+              ></ion-spinner>
             </ion-button>
-            <ion-button fill="clear" @click="deletePost(post.id, index)">
-              <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+
+            <ion-button
+              fill="clear"
+              @click="deletePost(post.id, index)"
+              :disabled="spinners.buttonDeletePost"
+            >
+              <ion-icon
+                :icon="trashOutline"
+                color="danger"
+                v-if="spinners.buttonDeletePost == false"
+              ></ion-icon>
+              <ion-spinner
+                name="crescent"
+                v-if="spinners.buttonDeletePost"
+                color="danger"
+              ></ion-spinner>
             </ion-button>
           </ion-col>
           <hr />
@@ -165,6 +196,8 @@ export default defineComponent({
       dates: Array<string>(),
       spinners: {
         buttonAddNewPost: false,
+        buttonEditPost: false,
+        buttonDeletePost: false,
       },
     };
   },
@@ -235,29 +268,31 @@ export default defineComponent({
       this.$router.push({ name: "PostPage", params: { id } });
     },
 
-    updatePost(id: string) {
-      this.$router.push("/blog/editor/update/" + id);
+    async updatePost(id: string) {
+      this.spinners.buttonEditPost = true;
+      await this.$router.push("/blog/editor/update/" + id);
+      this.spinners.buttonEditPost = false;
     },
 
     async deletePost(id: string, index: number) {
+      this.spinners.buttonDeletePost = true;
+
       const response = await systemService().presentAlertConfirmation({
         message: "¿Desea eliminar el post?",
       });
-      if (response == false) return;
-
-      const loading = await systemService().presentLoading({
-        message: "Eliminando publicación",
-      });
-      loading.present();
+      if (response == false) {
+        this.spinners.buttonDeletePost = false;
+        return;
+      }
 
       postService()
         .deletePost({ id })
         .then(() => {
-          loading.dismiss();
+          this.spinners.buttonDeletePost = false;
           this.posts.splice(index, 1);
         })
         .catch((e) => {
-          loading.dismiss();
+          this.spinners.buttonDeletePost = false;
           console.log(e);
         });
     },

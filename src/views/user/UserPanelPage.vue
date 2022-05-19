@@ -8,7 +8,10 @@
     >
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
+          <ion-menu-button
+            menu="mainMenu"
+            :mode="modeDesignElements"
+          ></ion-menu-button>
         </ion-buttons>
         <ion-title>{{ pageTitle }}</ion-title>
       </ion-toolbar>
@@ -17,19 +20,25 @@
     <ion-content :fullscreen="true">
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
-          <h1>{{ pageTitle }}</h1>
+          <ion-title size="large">{{ pageTitle }}</ion-title>
+        </ion-toolbar>
+
+        <ion-toolbar>
+          <ion-segment
+            v-model="mainSegment"
+            scrollable
+            :mode="modeDesignElements"
+          >
+            <ion-segment-button value="profile">
+              <ion-label> Perfil </ion-label>
+            </ion-segment-button>
+
+            <ion-segment-button value="security">
+              <ion-label> Seguridad</ion-label>
+            </ion-segment-button>
+          </ion-segment>
         </ion-toolbar>
       </ion-header>
-
-      <ion-segment v-model="mainSegment" scrollable>
-        <ion-segment-button value="profile">
-          <ion-label> Perfil </ion-label>
-        </ion-segment-button>
-
-        <ion-segment-button value="security">
-          <ion-label> Seguridad</ion-label>
-        </ion-segment-button>
-      </ion-segment>
 
       <section v-if="mainSegment == 'profile'">
         <UserProfileComponent></UserProfileComponent>
@@ -51,6 +60,7 @@ import {
   IonToolbar,
   IonSegment,
   IonSegmentButton,
+  isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import userService from "../../services/user.vue";
@@ -71,9 +81,12 @@ export default defineComponent({
     UserSecurityComponent,
   },
   data() {
+    const modeDesignElements = isPlatform("ios") ? "ios" : "md";
+
     return {
       pageTitle: "Panel de Usurio",
       mainSegment: "profile",
+      modeDesignElements,
     };
   },
 

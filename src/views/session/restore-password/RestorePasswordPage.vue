@@ -43,16 +43,20 @@
                 </ion-item>
                 <div class="center">
                   <ion-item lines="none">
-                    <ion-spinner
-                      name="crescent"
-                      v-if="spinners.buttonSendEmail"
-                    ></ion-spinner>
                     <ion-button
                       expand="block"
                       fill="clear"
                       @click="sendMailResetPassword()"
+                      :disabled="spinners.buttonSendEmail"
                     >
-                      Confirmar
+                      <ion-label v-if="spinners.buttonSendEmail == false">
+                        Confirmar</ion-label
+                      >
+                      <ion-spinner
+                        name="crescent"
+                        v-if="spinners.buttonSendEmail"
+                        color="primary"
+                      ></ion-spinner>
                     </ion-button>
                   </ion-item>
                 </div>
@@ -82,16 +86,20 @@
                 </ion-item>
                 <div class="center">
                   <ion-item lines="none">
-                    <ion-spinner
-                      name="crescent"
-                      v-if="spinners.buttonSendCode"
-                    ></ion-spinner>
                     <ion-button
                       expand="full"
                       fill="clear"
                       @click="sendCodeResetPassword()"
-                      >Enviar</ion-button
-                    >
+                      :diabled="spinners.buttonSendCode"
+                      ><ion-label v-if="spinners.buttonSendCode == false"
+                        >Enviar</ion-label
+                      >
+                      <ion-spinner
+                        name="crescent"
+                        v-if="spinners.buttonSendCode"
+                        color="primary"
+                      ></ion-spinner>
+                    </ion-button>
                   </ion-item>
                 </div>
               </ion-card-content>
@@ -185,17 +193,20 @@
 
                 <div class="center">
                   <ion-item lines="none">
-                    <ion-spinner
-                      name="crescent"
-                      v-if="spinners.buttonResetPassword"
-                    ></ion-spinner>
                     <ion-button
                       expand="full"
                       fill="clear"
                       @click="resetPassword()"
-                      :disabled="(v$.form as any).$invalid"
+                      :disabled="(v$.form as any).$invalid||spinners.buttonResetPassword"
                     >
-                      Enviar
+                      <ion-label v-if="spinners.buttonResetPassword == false"
+                        >Enviar</ion-label
+                      >
+                      <ion-spinner
+                        name="crescent"
+                        v-if="spinners.buttonResetPassword"
+                        color="primary"
+                      ></ion-spinner>
                     </ion-button>
                   </ion-item>
                 </div>

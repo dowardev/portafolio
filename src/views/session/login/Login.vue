@@ -98,16 +98,18 @@
 
               <div class="center">
                 <ion-item lines="none">
-                  <ion-spinner
-                    name="crescent"
-                    v-if="spinners.buttonLogin"
-                  ></ion-spinner>
                   <ion-button
                     fill="clear"
                     v-on:click="login()"
-                    :disabled="v$.form.$invalid"
+                    :disabled="v$.form.$invalid || spinners.buttonLogin"
                   >
-                    Iniciar sesión
+                    <ion-label v-if="spinners.buttonLogin == false">
+                      Iniciar sesión</ion-label
+                    >
+                    <ion-spinner
+                      name="crescent"
+                      v-if="spinners.buttonLogin"
+                    ></ion-spinner>
                   </ion-button>
                 </ion-item>
               </div>
@@ -117,32 +119,39 @@
           <section>
             <div class="center">
               <ion-item lines="none">
-                <ion-spinner
-                  name="crescent"
-                  v-if="spinners.buttonForgotPassword"
-                ></ion-spinner>
                 <ion-button
                   @click="forgotPassword()"
                   class="options"
                   fill="clear"
+                  :disabled="spinners.buttonForgotPassword"
                 >
-                  <ion-label>¿Olvidaste la contraseña?</ion-label>
+                  <ion-label v-if="spinners.buttonForgotPassword == false"
+                    >¿Olvidaste la contraseña?</ion-label
+                  >
+                  <ion-spinner
+                    name="crescent"
+                    v-if="spinners.buttonForgotPassword"
+                  ></ion-spinner>
                 </ion-button>
               </ion-item>
             </div>
 
             <div class="center">
               <ion-item lines="none">
-                <ion-spinner
-                  name="crescent"
-                  v-if="spinners.buttonCreateAccount"
-                ></ion-spinner>
                 <ion-button
                   @click="createAccount()"
                   class="options"
                   fill="clear"
+                  :disabled="spinners.buttonCreateAccount"
                 >
-                  <ion-label>Crear cuenta</ion-label>
+                  <ion-label v-if="spinners.buttonCreateAccount == false"
+                    >Crear cuenta</ion-label
+                  >
+                  <ion-spinner
+                    name="crescent"
+                    v-if="spinners.buttonCreateAccount"
+                    color="primary"
+                  ></ion-spinner>
                 </ion-button>
               </ion-item>
             </div>

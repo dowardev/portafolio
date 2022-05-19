@@ -1,26 +1,45 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" class="ion-no-border" mode="ios">
+    <ion-header
+      :translucent="true"
+      collapse="fade"
+      mode="ios"
+      class="ion-no-border"
+    >
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button fill="clear" @click="$router.go(-1)">
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <ion-title>Editor</ion-title>
+        <ion-title>{{ pageTitle }}</ion-title>
         <ion-buttons slot="end">
-          <ion-spinner name="crescent" v-if="spinnerSavePost"></ion-spinner>
-          <ion-button @click="save()" :disabled="v$.$invalid">
-            <ion-icon :icon="saveOutline"></ion-icon>
+          <ion-button
+            @click="save()"
+            :disabled="v$.$invalid || spinnerSavePost"
+          >
+            <ion-icon
+              :icon="saveOutline"
+              v-if="spinnerSavePost == false"
+            ></ion-icon>
+            <ion-spinner
+              name="crescent"
+              v-if="spinnerSavePost"
+              color="primary"
+            ></ion-spinner>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content>
-      <section>
-        <div class="segment-container">
-          <ion-segment v-model="segment" class="segment-editor">
+    <ion-content :fullscreen="true">
+      <ion-header collapse="condense" mode="ios">
+        <ion-toolbar>
+          <ion-title size="large">{{ pageTitle }}</ion-title>
+        </ion-toolbar>
+
+        <ion-toolbar>
+          <ion-segment v-model="segment" :mode="modeDesingElements" scrollable>
             <ion-segment-button value="editor">
               <ion-label>Editor</ion-label>
             </ion-segment-button>
@@ -28,24 +47,29 @@
               <ion-label>Resultado</ion-label>
             </ion-segment-button>
           </ion-segment>
-        </div>
-      </section>
+        </ion-toolbar>
+      </ion-header>
 
       <section v-if="segment == 'editor'">
         <!-- input image -->
         <div style="display: inline-block; width: 100%">
           <div style="float: right">
             <ion-item lines="none">
-              <ion-spinner
-                name="crescent"
-                v-if="spinnerSaveCover"
-              ></ion-spinner>
               <ion-button
                 slot="end"
                 fill="clear"
                 @click="($refs as any).inputImage.click()"
+                :disabled="spinnerSaveImage"
               >
-                <ion-icon :icon="imagesOutline"></ion-icon>
+                <ion-icon
+                  :icon="imagesOutline"
+                  v-if="spinnerSaveImage == false"
+                ></ion-icon>
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinnerSaveImage"
+                  color="primary"
+                ></ion-spinner>
               </ion-button>
             </ion-item>
           </div>
@@ -60,7 +84,13 @@
 
         <ion-item>
           <ion-label position="floating">Titulo</ion-label>
-          <ion-input v-model="v$.postTitle.$model"> </ion-input>
+          <ion-input
+            v-model="v$.postTitle.$model"
+            :spellcheck="true"
+            autocorrect="on"
+            pattern="text"
+          >
+          </ion-input>
         </ion-item>
         <div v-for="(error, index) of v$.postTitle.$errors" :key="index">
           <div class="error">{{ error.$message }}</div>
@@ -92,6 +122,9 @@
             auto-grow="true"
             placeholder="Contenido"
             v-model="v$.postContent.$model"
+            :spellcheck="true"
+            autocorrect="on"
+            pattern="text"
           ></ion-textarea>
         </ion-item>
         <div v-for="(error, index) of v$.postContent.$errors" :key="index">
@@ -103,11 +136,11 @@
       <section v-if="segment == 'result'">
         <ion-row>
           <ion-col size="12">
-            <img :src="coverImage" style="max-width: 32%" />
+            <img :src="coverSource" style="max-width: 32%" />
           </ion-col>
         </ion-row>
         <ion-row>
-          <h1 class="ion-padding">{{ title }}</h1>
+          <h1 class="ion-padding">{{ postTitle }}</h1>
           <ion-col size="12">
             <Markdown :source="postContent" />
           </ion-col>
@@ -135,6 +168,7 @@ import {
   IonLabel,
   IonRow,
   IonCol,
+  isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import Markdown from "vue3-markdown-it";
@@ -169,45 +203,52 @@ export default defineComponent({
     IonCol,
     IonPage,
   },
+
   props: {
     title: String,
     content: String,
     cover: {},
     spinnerSavePost: Boolean,
-    spinnerSaveCover: Boolean,
+    spinnerSaveImage: Boolean,
   },
+
   setup() {
+    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
     return {
       saveOutline,
       imageOutline,
       chevronBackOutline,
       imagesOutline,
       v$: useVuelidate(),
+      modeDesingElements,
+      pageTitle: "Editor",
     };
   },
+
   data() {
     return {
       segment: "editor",
       postTitle: "",
       postContent: "",
       coverName: "",
-      coverImage: "",
       coverSource: "",
       newCoverStatus: false,
     };
   },
+
   watch: {
     title: function (newVal) {
-      (this.v$ as any).postTitle.$model = newVal;
+      this.postTitle = newVal;
     },
     content: function (newVal) {
-      (this.v$ as any).postContent.$model += newVal;
+      this.postContent += newVal;
     },
     cover: function (newVal) {
       this.coverName = newVal.name;
       this.coverSource = "data:image/png;base64," + newVal.source;
     },
   },
+
   validations() {
     const messageRequired = "Campo requerido";
     return {
@@ -244,24 +285,28 @@ export default defineComponent({
       const newCoverStatus = this.newCoverStatus;
       this.$emit("save", { title, content, cover, newCoverStatus });
     },
-    getImage(e: any) {
-      const file = e.target.files[0];
-      return file;
-      // const reader = new FileReader();
-      // reader.onload = (e: any) => {
-      // const fileData = e.target.result;
-      // };
-      // reader.readAsDataURL(file);
+
+    async getImageBase64(e: any): Promise<{ file: string; name: string }> {
+      return new Promise((resolve) => {
+        const file = e.target.files[0];
+        console.log(file);
+        const reader = new FileReader();
+        reader.onload = async (e: any) => {
+          const fileData = e.target.result;
+          resolve({ file: fileData, name: file.name });
+        };
+        reader.readAsDataURL(file);
+      });
     },
+
     async uploadImage(e: any) {
-      const image = this.getImage(e);
+      const image = await this.getImageBase64(e);
       this.$emit("uploadImage", { image });
     },
 
     async uploadCover(e: any) {
-      const image = this.getImage(e);
-      this.coverImage = URL.createObjectURL(image);
-      this.coverSource = image;
+      const image = await this.getImageBase64(e);
+      this.coverSource = image.file;
       this.coverName = image.name;
       this.newCoverStatus = true;
     },
@@ -275,15 +320,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-@media only screen and (min-width: 992px) {
-  .segment-container {
-    display: flex;
-    justify-content: center;
-  }
-  .segment-editor {
-    max-width: 25vw;
-  }
-}
-</style>

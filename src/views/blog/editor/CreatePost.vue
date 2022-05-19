@@ -7,7 +7,7 @@
         @save="save($event)"
         :content="content"
         :spinnerSavePost="spinners.savePost"
-        :spinnerSaveCover="spinners.saveCover"
+        :spinnerSaveImage="spinners.saveImage"
       ></EditorComponent>
     </ion-content>
   </ion-page>
@@ -29,14 +29,16 @@ export default defineComponent({
     IonPage,
     EditorComponent,
   },
+
   data() {
     return {
       segment: "editor",
       content: "",
       images: Array<string>(),
-      spinners: { savePost: false, saveCover: false },
+      spinners: { savePost: false, saveImage: false },
     };
   },
+
   beforeRouteEnter(to, from, next) {
     userService()
       .getUserPermissions()
@@ -83,10 +85,6 @@ export default defineComponent({
         eventBus().emitter.emit("refresh-content", { event: "new-post" });
         this.clearInputs();
         this.$router.go(-1);
-        systemService().openToast({
-          message: "Publicado correctamente",
-          color: "success",
-        });
       } catch (e: any) {
         console.error(e);
         this.spinners.savePost = false;
@@ -114,8 +112,8 @@ export default defineComponent({
     },
 
     async uploadImage(e: any) {
-      this.spinners.saveCover = true;
-      const image = e.image;
+      this.spinners.saveImage = true;
+      const image = e.image.file;
       const query = `
             image {
               id
@@ -124,9 +122,9 @@ export default defineComponent({
               `;
 
       try {
-        const response = await postService().uploadImage({ query, image });
-        this.spinners.saveCover = false;
+        const response = await systemService().uploadImage({ query, image });
         const imageName = response.name;
+        this.spinners.saveImage = false;
 
         this.content =
           "![" +
@@ -142,7 +140,7 @@ export default defineComponent({
         if (response.id) this.images.push(response.id);
       } catch (e: any) {
         console.error(e);
-        this.spinners.saveCover = false;
+        this.spinners.saveImage = false;
         systemService().openToastErrror(e);
       }
     },
@@ -154,7 +152,7 @@ export default defineComponent({
             }
               `;
       try {
-        const response = await postService().uploadImage({ image, query });
+        const response = await systemService().uploadImage({ image, query });
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return response.id!;
       } catch (e: any) {

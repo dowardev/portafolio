@@ -84,9 +84,9 @@ export default function () {
   function getBaseURL(): string {
     const mode = process.env.NODE_ENV;
     if (mode == "development") {
-      return "http://127.0.0.1:8000/graphql";
+      return "http://127.0.0.1:8000/";
     } else {
-      return "https://dowar-blog.dowar.xyz/graphql";
+      return "https://dowar-blog.dowar.xyz/";
     }
   }
   async function presentLoading(params: Loading) {

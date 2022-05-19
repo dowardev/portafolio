@@ -64,6 +64,11 @@
 
             <ion-card-content>
               <ion-item>
+                <ion-icon
+                  :icon="keyOutline"
+                  slot="start"
+                  class="item-icon"
+                ></ion-icon>
                 <ion-label position="floating">Contraseña actual</ion-label>
                 <ion-input
                   v-model="(v$.form as any).oldPassword.$model"
@@ -97,6 +102,11 @@
               </div>
 
               <ion-item>
+                <ion-icon
+                  :icon="keyOutline"
+                  slot="start"
+                  class="item-icon"
+                ></ion-icon>
                 <ion-label position="floating">Contraseña nueva</ion-label>
                 <ion-input
                   v-model="(v$.form as any).newPassword.$model"
@@ -130,6 +140,11 @@
               </div>
 
               <ion-item>
+                <ion-icon
+                  :icon="keyOutline"
+                  slot="start"
+                  class="item-icon"
+                ></ion-icon>
                 <ion-label position="floating">Repetir contraseña</ion-label>
                 <ion-input
                   v-model="(v$.form as any).newPasswordRepeat.$model"
@@ -194,6 +209,11 @@ import {
   IonButton,
   IonSpinner,
   IonModal,
+  IonList,
+  IonListHeader,
+  IonRow,
+  IonCol,
+  IonIcon,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import useVuelidate from "@vuelidate/core";
@@ -204,6 +224,7 @@ import {
   eyeOutline,
   eyeOffOutline,
   informationCircleOutline,
+  keyOutline,
 } from "ionicons/icons";
 
 export default defineComponent({
@@ -215,6 +236,11 @@ export default defineComponent({
     IonButton,
     IonSpinner,
     IonModal,
+    IonList,
+    IonListHeader,
+    IonRow,
+    IonCol,
+    IonIcon,
   },
   setup() {
     return {
@@ -222,6 +248,7 @@ export default defineComponent({
       eyeOutline,
       eyeOffOutline,
       informationCircleOutline,
+      keyOutline,
     };
   },
   data() {
@@ -242,13 +269,13 @@ export default defineComponent({
           cardPassword: [
             {
               content:
-                "El tamaño ideal para una contraseña es de 9 caracteres o más",
+                "El tamaño ideal para una contraseña es de 9 caracteres o más.",
             },
             {
-              content: "Debe contener mayúsculas y minúsculas",
+              content: "Debe contener mayúsculas y minúsculas.",
             },
             {
-              content: "Debe contener al menos un número",
+              content: "Debe contener al menos un número.",
             },
           ],
         },

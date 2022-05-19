@@ -8,7 +8,10 @@
     >
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
+          <ion-menu-button
+            menu="mainMenu"
+            :mode="modeDesingElements"
+          ></ion-menu-button>
         </ion-buttons>
         <ion-title>{{ pageTitle }}</ion-title>
       </ion-toolbar>
@@ -17,23 +20,27 @@
     <ion-content :fullscreen="true">
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
-          <h1>{{ pageTitle }}</h1>
+          <ion-title size="large">{{ pageTitle }}</ion-title>
+        </ion-toolbar>
+
+        <ion-toolbar>
+          <ion-segment
+            v-model="policieSegment"
+            :mode="modeDesingElements"
+            scrollable
+          >
+            <ion-segment-button value="privacy">
+              <ion-label>Privacidad</ion-label>
+            </ion-segment-button>
+
+            <ion-segment-button value="tc" disabled="true">
+              <ion-label>Terminos y condiciones</ion-label>
+            </ion-segment-button>
+          </ion-segment>
         </ion-toolbar>
       </ion-header>
 
-      <div class="center">
-        <ion-segment class="segment-policie" v-model="policieSegment">
-          <ion-segment-button value="privacy">
-            <ion-label>Privacidad</ion-label>
-          </ion-segment-button>
-
-          <ion-segment-button value="tc" disabled="true">
-            <ion-label>Terminos y condiciones</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </div>
-
-      <ion-row>
+      <ion-row class="ion-padding">
         <ion-col>
           <p>
             Como desarrollador de software y usuario activo de internet entiendo
@@ -161,6 +168,7 @@ import {
   IonToolbar,
   IonSegment,
   IonSegmentButton,
+  isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 
@@ -175,6 +183,14 @@ export default defineComponent({
     IonSegment,
     IonSegmentButton,
   },
+
+  setup() {
+    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
+    return {
+      modeDesingElements,
+    };
+  },
+
   data() {
     return {
       pageTitle: "Politicas",
@@ -185,11 +201,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@media only screen and (min-width: 992px) {
-  .segment-policie {
-    max-width: 25vw;
-  }
-}
 .important-text {
   font-weight: bold;
 }

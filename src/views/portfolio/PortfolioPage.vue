@@ -17,7 +17,7 @@
     <ion-content :fullscreen="true">
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
-          <h1>{{ pageTitle }}</h1>
+          <ion-title size="large">{{ pageTitle }}</ion-title>
         </ion-toolbar>
       </ion-header>
 
@@ -73,8 +73,8 @@
       </section>
 
       <!-- Holdings -->
-      <section class="ion-padding">
-        <h2>Participaciones</h2>
+      <section>
+        <h2 class="ion-padding-start">Participaciones</h2>
         <ion-row>
           <ion-col
             size="12"

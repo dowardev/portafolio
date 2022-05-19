@@ -10,14 +10,14 @@
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
         </ion-buttons>
-        <ion-title>{{ pageTitle }}</ion-title>
+        <ion-title size="large">{{ pageTitle }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
-          <h1>{{ pageTitle }}</h1>
+          <ion-title size="large">{{ pageTitle }}</ion-title>
         </ion-toolbar>
       </ion-header>
     </ion-content>

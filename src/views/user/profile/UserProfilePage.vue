@@ -96,6 +96,11 @@
                   :disabled="spinners.uploadImage == true"
                 />
                 <ion-item>
+                  <ion-icon
+                    :icon="manOutline"
+                    slot="start"
+                    class="item-icon"
+                  ></ion-icon>
                   <ion-label position="floating">Nombre</ion-label>
                   <ion-input
                     v-model="(v$.form as any).name.$model"
@@ -111,6 +116,11 @@
                 </div>
 
                 <ion-item>
+                  <ion-icon
+                    :icon="personOutline"
+                    slot="start"
+                    class="item-icon"
+                  ></ion-icon>
                   <ion-label position="floating">Usuario</ion-label>
                   <ion-input
                     v-model="(v$.form as any).user.$model"
@@ -126,6 +136,11 @@
                 </div>
 
                 <ion-item>
+                  <ion-icon
+                    :icon="mailOpenOutline"
+                    slot="start"
+                    class="item-icon"
+                  ></ion-icon>
                   <ion-label position="floating">Correo electronico</ion-label>
                   <ion-input
                     v-model="(v$.form as any).email.$model"
@@ -229,6 +244,11 @@
 
               <form>
                 <ion-item>
+                  <ion-icon
+                    :icon="keyOutline"
+                    slot="start"
+                    class="item-icon"
+                  ></ion-icon>
                   <ion-label position="floating">Contraseña</ion-label>
                   <ion-input
                     v-model="(v$.formDeleteAccount as any).password.$model"
@@ -299,6 +319,11 @@ import {
   IonSpinner,
   alertController,
   IonModal,
+  IonList,
+  IonListHeader,
+  IonRow,
+  IonCol,
+  IonIcon,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import systemService from "../../../services/system.vue";
@@ -309,6 +334,10 @@ import {
   eyeOutline,
   eyeOffOutline,
   informationCircleOutline,
+  manOutline,
+  personOutline,
+  mailOpenOutline,
+  keyOutline,
 } from "ionicons/icons";
 import sessionService from "../../../services/session.vue";
 import eventBus from "../../../EventBus";
@@ -322,6 +351,11 @@ export default defineComponent({
     IonButton,
     IonSpinner,
     IonModal,
+    IonList,
+    IonListHeader,
+    IonRow,
+    IonCol,
+    IonIcon,
   },
 
   setup() {
@@ -330,6 +364,10 @@ export default defineComponent({
       eyeOffOutline,
       eyeOutline,
       informationCircleOutline,
+      manOutline,
+      personOutline,
+      mailOpenOutline,
+      keyOutline,
     };
   },
 
@@ -362,7 +400,7 @@ export default defineComponent({
             {
               title: "Usuario:",
               content:
-                "Es el único dato que los otros usuarios de este blog podrán conocer de ti",
+                "Es el único dato que los otros usuarios de este blog podrán conocer de ti.",
             },
             {
               title: "Correo electrónico:",
@@ -377,7 +415,7 @@ export default defineComponent({
             },
             {
               content:
-                "Antes de irte, nos podrías regalar un poco de tu tiempo para que nos cuentes por qué decidiste irte.",
+                "Antes de irte, nos podrías regalar un poco de tu tiempo para que nos cuentes por qué decidiste tomar esta decisión.",
             },
           ],
         },

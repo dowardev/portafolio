@@ -1,11 +1,6 @@
 <template>
   <ion-page>
-    <ion-header
-      :translucent="true"
-      collapse="fade"
-      mode="ios"
-      class="ion-no-border"
-    >
+    <ion-header :translucent="true" class="ion-no-border" mode="ios">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button class="close-button" @click="closeModal()">
@@ -17,12 +12,6 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense" mode="ios">
-        <ion-toolbar>
-          <h1>{{ pageTitle }}</h1>
-        </ion-toolbar>
-      </ion-header>
-
       <ion-list>
         <ion-list-header>
           <ion-label> Nuestras aplicaciones </ion-label>
@@ -94,6 +83,38 @@
                           slot="start"
                         />
                         <ion-label>F-Droid</ion-label>
+                        <ion-chip>
+                          <ion-label>Proximamente</ion-label>
+                        </ion-chip>
+                      </ion-item>
+                    </ion-list>
+                  </ion-accordion>
+                </ion-accordion-group>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Aplicación de escritorio</ion-card-title>
+              </ion-card-header>
+
+              <ion-card-content>
+                <ion-accordion-group>
+                  <ion-accordion value="app-mobile">
+                    <ion-item slot="header">
+                      <ion-icon :icon="logoTux" slot="start"></ion-icon>
+                      <ion-label>GNU Linux</ion-label>
+                    </ion-item>
+
+                    <ion-list slot="content">
+                      <ion-item lines="none">
+                        <ion-icon
+                          :icon="browsersOutline"
+                          slot="start"
+                        ></ion-icon>
+                        <ion-label>Ejecutable</ion-label>
                         <ion-chip>
                           <ion-label>Proximamente</ion-label>
                         </ion-chip>
@@ -225,19 +246,15 @@ import {
 import { defineComponent } from "vue";
 import {
   closeOutline,
-  logoPwa,
   browsersOutline,
-  downloadOutline,
   logoTux,
-  logoWindows,
-  logoApple,
   logoAndroid,
-  logoFirefox,
   logoChrome,
   logoRss,
   bookOutline,
   micOutline,
   videocamOutline,
+  terminalOutline,
 } from "ionicons/icons";
 
 export default defineComponent({
@@ -257,19 +274,15 @@ export default defineComponent({
     return {
       pageTitle: "Mas informacion",
       closeOutline,
-      logoPwa,
       browsersOutline,
-      downloadOutline,
       logoTux,
-      logoWindows,
-      logoApple,
       logoAndroid,
-      logoFirefox,
       logoChrome,
       logoRss,
       bookOutline,
       micOutline,
       videocamOutline,
+      terminalOutline,
     };
   },
   data() {

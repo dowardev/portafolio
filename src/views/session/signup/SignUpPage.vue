@@ -177,16 +177,19 @@
                 <section>
                   <div class="center">
                     <ion-item lines="none">
-                      <ion-spinner
-                        name="crescent"
-                        v-if="spinners.buttonSignup"
-                      ></ion-spinner>
                       <ion-button
                         fill="clear"
                         v-on:click="register()"
-                        :disabled="(v$.form as any).$invalid"
+                        :disabled="(v$.form as any).$invalid||spinners.buttonSignup"
                       >
-                        Registrar
+                        <ion-label v-if="spinners.buttonSignup == false">
+                          Registrar</ion-label
+                        >
+                        <ion-spinner
+                          name="crescent"
+                          v-if="spinners.buttonSignup"
+                          color="primary"
+                        ></ion-spinner>
                       </ion-button>
                     </ion-item>
                   </div>
@@ -198,12 +201,19 @@
           <section>
             <div class="center">
               <ion-item lines="none">
-                <ion-spinner
-                  name="crescent"
-                  v-if="spinners.buttonLogin"
-                ></ion-spinner>
-                <ion-button @click="login()" fill="clear">
-                  <ion-label>¿Ya tienes cuenta?</ion-label>
+                <ion-button
+                  @click="login()"
+                  fill="clear"
+                  :disabled="spinners.buttonLogin"
+                >
+                  <ion-label v-if="spinners.buttonLogin == false"
+                    >¿Ya tienes cuenta?</ion-label
+                  >
+                  <ion-spinner
+                    name="crescent"
+                    v-if="spinners.buttonLogin"
+                    color="primary"
+                  ></ion-spinner>
                 </ion-button>
               </ion-item>
             </div>

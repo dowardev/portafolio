@@ -8,16 +8,39 @@
       <ion-toolbar class="menu-color">
         <ion-item lines="none" v-if="userLogged == false">
           <ion-label style="color: white !important">Bienvenido</ion-label>
-          <ion-spinner name="crescent" v-if="spinners.buttonLogin">
-          </ion-spinner>
-          <ion-spinner name="crescent" v-if="spinners.buttonSignup">
-          </ion-spinner>
-          <ion-button fill="clear" @click="login()">
-            <ion-icon :icon="logInOutline"></ion-icon>
+
+          <ion-button
+            fill="clear"
+            @click="login()"
+            :disabled="spinners.buttonLogin"
+          >
+            <ion-icon
+              :icon="logInOutline"
+              v-if="spinners.buttonLogin == false"
+            ></ion-icon>
+            <ion-spinner
+              name="crescent"
+              v-if="spinners.buttonLogin"
+              color="primary"
+            >
+            </ion-spinner>
           </ion-button>
 
-          <ion-button fill="clear" @click="signup()">
-            <ion-icon :icon="personAddOutline"></ion-icon>
+          <ion-button
+            fill="clear"
+            @click="signup()"
+            :disabled="spinners.buttonSignup"
+          >
+            <ion-icon
+              :icon="personAddOutline"
+              v-if="spinners.buttonSignup == false"
+            ></ion-icon>
+            <ion-spinner
+              name="crescent"
+              v-if="spinners.buttonSignup"
+              color="primary"
+            >
+            </ion-spinner>
           </ion-button>
         </ion-item>
 
@@ -25,14 +48,41 @@
           <ion-avatar slot="start">
             <img :src="user.imageSource" />
           </ion-avatar>
+
           <ion-label style="color: white !important">{{ user.name }}</ion-label>
-          <ion-spinner name="crescent" v-if="spinners.buttonLogout">
-          </ion-spinner>
-          <ion-button fill="clear" @click="goToUserPanel()">
-            <ion-icon :icon="personOutline"></ion-icon>
+
+          <ion-button
+            fill="clear"
+            @click="goToUserPanel()"
+            :disabled="spinners.buttonUserPanel"
+          >
+            <ion-icon
+              :icon="personOutline"
+              v-if="spinners.buttonUserPanel == false"
+            ></ion-icon>
+            <ion-spinner
+              name="crescent"
+              v-if="spinners.buttonUserPanel"
+              color="primary"
+            >
+            </ion-spinner>
           </ion-button>
-          <ion-button fill="clear" @click="logout()">
-            <ion-icon :icon="logOutOutline"></ion-icon>
+
+          <ion-button
+            fill="clear"
+            @click="logout()"
+            :disabled="spinners.buttonLogout"
+          >
+            <ion-icon
+              :icon="logOutOutline"
+              v-if="spinners.buttonLogout == false"
+            ></ion-icon>
+            <ion-spinner
+              name="crescent"
+              v-if="spinners.buttonLogout"
+              color="primary"
+            >
+            </ion-spinner>
           </ion-button>
         </ion-item>
       </ion-toolbar>
@@ -253,6 +303,7 @@ export default defineComponent({
         buttonLogin: false,
         buttonSignup: false,
         buttonLogout: false,
+        buttonUserPanel: false,
       },
     };
   },
@@ -298,7 +349,6 @@ export default defineComponent({
     `;
       try {
         const response = await userService().getUser({ query });
-        console.log(response);
         // eslint-disable-next-line
         this.user.name = response.name!;
 
@@ -373,8 +423,10 @@ export default defineComponent({
       if (isPlatform("mobile")) menuController.close();
     },
 
-    goToUserPanel() {
-      this.$router.push("/user");
+    async goToUserPanel() {
+      this.spinners.buttonUserPanel = true;
+      await this.$router.push("/user");
+      this.spinners.buttonUserPanel = false;
       if (isPlatform("mobile")) menuController.close();
     },
   },
