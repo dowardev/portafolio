@@ -72,7 +72,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: ":date",
-        component: PostsPage2,
+        component: BlogPage,
       },
     ],
   },

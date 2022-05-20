@@ -8,7 +8,10 @@
     >
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
+          <ion-menu-button
+            menu="mainMenu"
+            :mode="modeDesingElements"
+          ></ion-menu-button>
         </ion-buttons>
         <ion-title>
           {{ pageTitle }}
@@ -73,6 +76,7 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
+  isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 
@@ -93,6 +97,14 @@ export default defineComponent({
     IonCardTitle,
     IonCardContent,
   },
+
+  setup() {
+    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
+    return {
+      modeDesingElements,
+    };
+  },
+
   data() {
     return {
       pageTitle: "Conocimientos",

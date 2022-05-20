@@ -8,7 +8,10 @@
     >
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
+          <ion-menu-button
+            menu="mainMenu"
+            :mode="modeDesingElements"
+          ></ion-menu-button>
         </ion-buttons>
         <ion-title>{{ pageTitle }}</ion-title>
       </ion-toolbar>
@@ -116,6 +119,7 @@ import {
   IonLabel,
   IonButton,
   IonCardTitle,
+  isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { Plugins } from "@capacitor/core";
@@ -150,7 +154,9 @@ export default defineComponent({
     IonButton,
     IonCardTitle,
   },
+
   setup() {
+    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
     return {
       pageTitle: "Portfolio",
       proyectos: [
@@ -243,8 +249,10 @@ export default defineComponent({
           page: "https://www.initu.me/",
         },
       ],
+      modeDesingElements,
     };
   },
+
   methods: {
     async navegador(url: string) {
       await Browser.open({ url });

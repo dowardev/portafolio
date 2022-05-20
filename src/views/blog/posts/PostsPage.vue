@@ -1,13 +1,14 @@
 <template>
   <ion-page>
     <section
-      v-if="
-        loadingData.data.status == 'finished' &&
-        loadingData.dates.status == 'finished' &&
-        loadingData.posts.status == 'finished'
-      "
+      :class="{
+        loadContent:
+          loadingData.posts.status == 'loading' ||
+          loadingData.data.status == 'loading' ||
+          loadingData.data.status == 'loading',
+      }"
     >
-      <ion-router-outlet />
+      <PostsComponent></PostsComponent>
     </section>
 
     <div style="background-color: var(--background-color); height: 100%">
@@ -44,8 +45,10 @@
               color="danger"
             ></ion-icon>
             <ion-label
-              class="loading-label"
-              v-if="loadingData.dates.status == 'loading'"
+              v-if="
+                loadingData.dates.status == 'loading' ||
+                loadingData.dates.status == 'finished'
+              "
               >Cargando fechas</ion-label
             >
             <ion-chip color="danger" v-if="loadingData.dates.status == 'error'">
@@ -109,8 +112,10 @@
               color="danger"
             ></ion-icon>
             <ion-label
-              class="loading-label"
-              v-if="loadingData.data.status == 'loading'"
+              v-if="
+                loadingData.data.status == 'loading' ||
+                loadingData.data.status == 'finished'
+              "
               >Cargando datos</ion-label
             >
           </ion-item>
@@ -141,8 +146,10 @@
               color="danger"
             ></ion-icon>
             <ion-label
-              class="loading-label"
-              v-if="loadingData.posts.status == 'loading'"
+              v-if="
+                loadingData.posts.status == 'loading' ||
+                loadingData.posts.status == 'finished'
+              "
               >Cargando posts</ion-label
             >
           </ion-item>
@@ -155,7 +162,7 @@
 <script lang="ts">
 import {
   IonPage,
-  IonRouterOutlet,
+  // IonRouterOutlet,
   IonChip,
   IonLabel,
   IonItem,
@@ -175,17 +182,19 @@ import {
   refreshOutline,
 } from "ionicons/icons";
 import userService from "../../../services/user.vue";
+import PostsComponent from "./PostsPage2.vue";
 
 export default defineComponent({
   name: "PostsPage",
   components: {
     IonPage,
-    IonRouterOutlet,
+    // IonRouterOutlet,
     IonChip,
     IonLabel,
     IonItem,
     IonSpinner,
     IonIcon,
+    PostsComponent,
   },
 
   setup() {
@@ -221,8 +230,8 @@ export default defineComponent({
     };
   },
 
-  async mounted() {
-    await this.verifyUserAdmin();
+  mounted() {
+    this.verifyUserAdmin();
     this.loadData();
 
     eventBus().emitter.on("event-posts1-data", (response: any) => {
@@ -314,25 +323,55 @@ export default defineComponent({
     },
 
     async nextPage(currentPage: string) {
+      this.loadingData.posts.status = "loading";
       const index = this.dates.indexOf(currentPage);
       if (index == this.dates.length - 1) return;
       const date = this.dates[index + 1];
-      await this.$router.replace("/blog/" + date.replaceAll("/", "-"));
-      this.loadData();
+      let posts = Array<Post>();
+
+      try {
+        posts = await this.getPosts(date.replaceAll("/", "-"));
+        this.loadingData.posts.status = "finished";
+      } catch (e: any) {
+        this.loadingData.posts.status = "error";
+      }
+
+      this.passData({ currentPage: date.replaceAll("/", "-"), posts });
+      this.$router.replace("/blog/" + date.replaceAll("/", "-"));
     },
 
     async previousPage(currentPage: string) {
+      this.loadingData.posts.status = "loading";
       const index = this.dates.indexOf(currentPage);
       if (index <= 0) return;
       const date = this.dates[index - 1];
-      await this.$router.replace("/blog/" + date.replaceAll("/", "-"));
-      this.loadData();
+
+      let posts = Array<Post>();
+      try {
+        posts = await this.getPosts(date.replaceAll("/", "-"));
+        this.loadingData.posts.status = "finished";
+      } catch (e: any) {
+        this.loadingData.posts.status = "error";
+      }
+
+      this.passData({ currentPage: date.replaceAll("/", "-"), posts });
+      this.$router.replace("/blog/" + date.replaceAll("/", "-"));
     },
 
     async goToPage(currentPage: string) {
+      this.loadingData.posts.status = "loading";
       const date = this.dates.filter((element) => element == currentPage)[0];
-      await this.$router.replace("/blog/" + date);
-      this.loadData();
+
+      let posts = Array<Post>();
+      try {
+        posts = await this.getPosts(date);
+        this.loadingData.posts.status = "finished";
+      } catch (e: any) {
+        this.loadingData.posts.status = "error";
+      }
+
+      this.passData({ currentPage: date, posts });
+      this.$router.replace("/blog/" + date);
     },
 
     async getPosts(date: string): Promise<Array<Post>> {
@@ -413,7 +452,7 @@ export default defineComponent({
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-/* .loading-label { */
-/*   color: white !important; */
-/* } */
+.loadContent {
+  display: none !important;
+}
 </style>

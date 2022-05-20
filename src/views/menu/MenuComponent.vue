@@ -49,7 +49,7 @@
             <img :src="user.imageSource" />
           </ion-avatar>
 
-          <ion-label style="color: white !important">{{ user.name }}</ion-label>
+          <ion-label style="color: white !important">{{ user.user }}</ion-label>
 
           <ion-button
             fill="clear"
@@ -296,7 +296,7 @@ export default defineComponent({
     return {
       userLogged: false,
       user: {
-        name: "",
+        user: "",
         imageSource: require("../../../public/assets/otros/user.png"),
       },
       spinners: {
@@ -343,14 +343,14 @@ export default defineComponent({
     async getUser() {
       const query = `
           user {
-            name
+            user 
             image_source
           }
     `;
       try {
         const response = await userService().getUser({ query });
         // eslint-disable-next-line
-        this.user.name = response.name!;
+        this.user.user = response.user!;
 
         if (response.image_source) {
           this.user.imageSource =

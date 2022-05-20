@@ -312,6 +312,10 @@ ion-card-title {
   color: var(--primary-text-color);
   font-family: var(--primary-font) !important;
 }
+ion-card-subtitle {
+  color: var(--primary-text-color);
+  font-family: var(--secondary-font) !important;
+}
 
 /* text */
 h1,

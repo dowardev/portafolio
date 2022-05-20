@@ -8,7 +8,10 @@
     >
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
+          <ion-menu-button
+            menu="mainMenu"
+            :mode="modeDesingElements"
+          ></ion-menu-button>
         </ion-buttons>
         <ion-title>{{ pageTitle }}</ion-title>
       </ion-toolbar>
@@ -30,7 +33,7 @@
             <br />
             Inicie con en el desarrollado de sitios Web en el año 2016 donde
             empecé con las tres tecnologías básicas HTML, CSS y JavaScript, por
-            motivos de seguir con mis estudios deje un poco de lado esto y no
+            motivos de seguir con mis estudios dejé un poco de lado esto y no
             fue hasta el 2018 donde lo retome, pero esta vez introduciéndome al
             BackEnd con Laravel, con el paso del tiempo fui aprendiendo otras
             tecnologías FrontEnd como Materialize y Bootstrap.
@@ -44,11 +47,19 @@
             iOS), al mismo tiempo me permitía pulir mis conocimientos con los
             Frameworks Vue y Angular.
             <br />
-            Otros conocimientos que he adquirido a lo largo del tiempo son el
-            manejo de sistemas operativos Linux, Git, Python, Java y C#.
+            Durante el año 2021 seguí trabajando como freelance en la plataforma
+            de Workana, pero decidí hacer una pausa para trabajar en mis
+            proyectos personales, además de seguir puliendo mis habilidades, así
+            fue como en el año 2022 pase de trabajar con Api-Rest a GraphQL
+            conocimiento el cual integre en el blog que empece a desarrollar
+            durante este mismo año.
+            <br />
+            Tengo la firme creencia en que nuestros pensamientos tienen una
+            fuerte influencia sobre nosotros y la siguiente frase lo define
+            perfectamente:
             <br />
             Todo está en nuestras mentes, tanto si crees que puedes como que no
-            puedes estas en lo correcto. Henry Ford
+            puedes estás en lo correcto. Henry Ford
           </p>
         </ion-col>
       </ion-row>
@@ -58,47 +69,68 @@
           <ion-card>
             <ion-card-header>
               <ion-card-title> 2016 </ion-card-title>
+              <ion-card-subtitle>
+                Inicio como desarrollador de sitios web.</ion-card-subtitle
+              >
             </ion-card-header>
+
             <ion-card-content>
-              <p class="desc-timeline">
-                Inicio como desarrollador de sitios web.
-              </p>
+              <ul>
+                <li>Habilidades adquiridas: Html, Css y Javascript</li>
+              </ul>
             </ion-card-content>
           </ion-card>
         </div>
+
         <div class="container right">
           <ion-card>
             <ion-card-header>
               <ion-card-title> 2018 </ion-card-title>
+              <ion-card-subtitle>
+                Inicio como desarrollador BackEnd.</ion-card-subtitle
+              >
             </ion-card-header>
+
             <ion-card-content>
-              <p>Nueva habilidad: Laravel</p>
+              <ul>
+                <li>Habilidades adquiridas: Php y Laravel</li>
+              </ul>
             </ion-card-content>
           </ion-card>
         </div>
+
         <div class="container left">
           <ion-card>
             <ion-card-header>
               <ion-card-title> 2020 </ion-card-title>
+              <ion-card-subtitle>
+                Mejorando mi habilidades como desarrollador
+                FrontEnd.</ion-card-subtitle
+              >
             </ion-card-header>
             <ion-card-content>
-              <p>
-                Iniciativa como freelance
-                <br />
-                Nuevas habilidades: Vue, Angular y Ionic
-                <br />
-                Participación en Init
-              </p>
+              <ul>
+                <li>Iniciativa como freelance</li>
+                <li>Habilidades adquiridas: Vue, Angular, Ionic y Firebase</li>
+                <li>Participación en Init</li>
+              </ul>
             </ion-card-content>
           </ion-card>
         </div>
+
         <div class="container right">
           <ion-card>
             <ion-card-header>
-              <ion-card-title> 2021 </ion-card-title>
+              <ion-card-title> 2022 </ion-card-title>
+              <ion-card-subtitle>
+                Momento de compartir mis conocimientos.</ion-card-subtitle
+              >
             </ion-card-header>
             <ion-card-content>
-              <p>Creador de contenido</p>
+              <ul>
+                <li>Creador de contenido</li>
+                <li>Nuevas habilidades: GraphQL, Electron</li>
+              </ul>
             </ion-card-content>
           </ion-card>
         </div>
@@ -114,6 +146,7 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 
@@ -126,6 +159,14 @@ export default defineComponent({
     IonTitle,
     IonToolbar,
   },
+
+  setup() {
+    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
+    return {
+      modeDesingElements,
+    };
+  },
+
   data() {
     return {
       pageTitle: "Un poco mas de mi",
@@ -258,8 +299,7 @@ export default defineComponent({
   .right {
     left: 0%;
   }
-  .title-timeline,
-  desc-timeline {
+  .title-timeline {
     color: white !important;
   }
 }

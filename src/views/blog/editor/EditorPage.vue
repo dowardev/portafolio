@@ -289,7 +289,6 @@ export default defineComponent({
     async getImageBase64(e: any): Promise<{ file: string; name: string }> {
       return new Promise((resolve) => {
         const file = e.target.files[0];
-        console.log(file);
         const reader = new FileReader();
         reader.onload = async (e: any) => {
           const fileData = e.target.result;

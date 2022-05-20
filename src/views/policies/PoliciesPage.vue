@@ -55,9 +55,9 @@
           <ul>
             <li>
               <span class="important-text">Nombre:</span> Será usado única y
-              exclusivamente para identificarte dentro de la aplicación o en el
-              estricto caso de que se requiera contactarte por medio del correo
-              electrónico ingresado al momento de tu registro.
+              exclusivamente en el estricto caso de que se requiera contactarte
+              por medio del correo electrónico ingresado al momento de tu
+              registro.
             </li>
             <li>
               <span class="important-text">Usuario:</span> Será empleado única y
@@ -75,10 +75,13 @@
           <h2>Datos que se almacenan en tu dispositivo</h2>
           <ul>
             <li>
-              <span class="important-text">Token de sesión:</span> Cuando se
+              <span class="important-text">Token de sesión:</span> Cuando sé
               realiza un inicio de sesión dentro de la aplicación
-              automáticamente se crea un token que sirve para identificarte con
-              el servidor, este es almacenado en forma de cookie.
+              automáticamente, se crea un token que sirve para identificarte con
+              el servidor, este es almacenado en forma de cookie o en la caché
+              de la aplicación, esto es debido a que algunas de las formas en
+              las que distribuimos la aplicación no son compatibles con el
+              formato de cookie.
             </li>
             <li>
               <span class="important-text">Modo offline:</span> La aplicación

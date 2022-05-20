@@ -3,7 +3,10 @@
     <ion-header :translucent="true" class="ion-no-border" mode="ios">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
+          <ion-menu-button
+            menu="mainMenu"
+            :mode="modeDesingElements"
+          ></ion-menu-button>
         </ion-buttons>
         <ion-title>Bienvenido</ion-title>
       </ion-toolbar>
@@ -173,9 +176,9 @@ import {
   IonIcon,
   useBackButton,
   alertController,
+  isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { isPlatform } from "@ionic/vue";
 import {
   mailOutline,
   logoMastodon,
@@ -197,14 +200,18 @@ export default defineComponent({
     IonButton,
     IonIcon,
   },
+
   setup() {
+    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
     return {
       mailOutline,
       logoMastodon,
       logoGitlab,
       logoLinkedin,
+      modeDesingElements,
     };
   },
+
   data() {
     return {
       fillTelegram: "#777777",

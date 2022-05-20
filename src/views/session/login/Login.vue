@@ -3,7 +3,10 @@
     <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
+          <ion-menu-button
+            menu="mainMenu"
+            :smode="modeDesingElements"
+          ></ion-menu-button>
         </ion-buttons>
         <ion-title>Iniciar sesión</ion-title>
       </ion-toolbar>
@@ -182,6 +185,7 @@ import {
   IonIcon,
   IonLabel,
   IonButton,
+  isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
@@ -215,15 +219,19 @@ export default defineComponent({
     IonLabel,
     IonButton,
   },
+
   setup() {
+    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
     return {
       eyeOffOutline,
       eyeOutline,
       v$: useVuelidate(),
       fingerPrintOutline,
       mailOpenOutline,
+      modeDesingElements,
     };
   },
+
   data() {
     return {
       inputTypePassword: "password",

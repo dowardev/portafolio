@@ -3,7 +3,10 @@
     <ion-header class="ion-no-border" :translucent="true">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
+          <ion-menu-button
+            menu="mainMenu"
+            :mode="modeDesingElements"
+          ></ion-menu-button>
         </ion-buttons>
         <ion-title>Restablecer contraseña</ion-title>
       </ion-toolbar>
@@ -239,6 +242,7 @@ import {
   IonItem,
   IonIcon,
   IonSpinner,
+  isPlatform,
 } from "@ionic/vue";
 import {
   eyeOutline,
@@ -275,7 +279,9 @@ export default defineComponent({
     IonIcon,
     IonSpinner,
   },
+
   setup() {
+    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
     return {
       eyeOutline,
       eyeOffOutline,
@@ -283,8 +289,10 @@ export default defineComponent({
       mailOpenOutline,
       keyOutline,
       shieldOutline,
+      modeDesingElements,
     };
   },
+
   data() {
     return {
       form: {

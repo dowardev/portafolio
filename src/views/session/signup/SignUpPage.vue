@@ -3,7 +3,10 @@
     <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
+          <ion-menu-button
+            menu="mainMenu"
+            :mode="modeDesingElements"
+          ></ion-menu-button>
         </ion-buttons>
         <ion-title>Crear cuenta</ion-title>
       </ion-toolbar>
@@ -243,6 +246,7 @@ import {
   IonLabel,
   IonButton,
   IonIcon,
+  isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import sessionService from "../../../services/session.vue";
@@ -279,7 +283,9 @@ export default defineComponent({
     IonButton,
     IonIcon,
   },
+
   setup() {
+    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
     return {
       eyeOutline,
       eyeOffOutline,
@@ -288,8 +294,10 @@ export default defineComponent({
       personOutline,
       mailOpenOutline,
       keyOutline,
+      modeDesingElements,
     };
   },
+
   data() {
     return {
       inputTypePassword1: "password",
