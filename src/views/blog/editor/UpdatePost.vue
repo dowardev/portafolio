@@ -212,16 +212,14 @@ export default defineComponent({
         const imageName = response.name;
         this.spinners.saveImage = false;
 
-        this.content =
-          "![" +
-          imageName +
-          "](" +
+        const api =
           systemService().getBaseURL() +
-          "api/get-image?name=" +
-          imageName +
-          " '" +
-          imageName +
-          "')";
+          "api/get-image-posts?name=" +
+          imageName;
+        this.content =
+          '<div class="center"><img src="' +
+          api +
+          '" style="width:80%"/></div>';
 
         if (response.id) this.images.push(response.id);
       } catch (e: any) {

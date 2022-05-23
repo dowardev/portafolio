@@ -11,7 +11,11 @@
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
         <ion-title>Blog</ion-title>
-        <ion-buttons slot="end" :disabled="spinners.buttonAddNewPost">
+        <ion-buttons
+          slot="end"
+          :disabled="spinners.buttonAddNewPost"
+          :collapse="true"
+        >
           <ion-button @click="addPost()" v-if="isUserAdmin">
             <ion-icon
               :icon="addOutline"
@@ -34,12 +38,32 @@
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
           <h1>Blog</h1>
+          <ion-buttons
+            slot="end"
+            :disabled="spinners.buttonAddNewPost"
+            :collapse="true"
+          >
+            <ion-button @click="addPost()" v-if="isUserAdmin">
+              <ion-icon
+                :icon="addOutline"
+                v-if="spinners.buttonAddNewPost == false"
+              ></ion-icon>
+              <ion-spinner
+                name="crescent"
+                v-if="spinners.buttonAddNewPost"
+                color="primary"
+              ></ion-spinner>
+            </ion-button>
+            <ion-button @click="refreshContent">
+              <ion-icon :icon="refreshOutline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
         </ion-toolbar>
       </ion-header>
 
       <!-- date selector -->
       <section>
-        <ion-row v-if="dates.length > 0">
+        <ion-row v-if="dates!.length > 0">
           <ion-col class="center">
             <!-- navigation button -->
             <ion-button fill="clear" @click="previousPage">
@@ -51,7 +75,7 @@
               button="true"
               id="open-date-input"
               lines="none"
-              v-if="dates.length > 0"
+              v-if="dates!.length > 0"
             >
               <ion-text style="color: var(--accent-color) !important">
                 {{ currentPage }}
@@ -77,19 +101,19 @@
       </section>
 
       <!-- posts -->
-      <section v-if="posts.length > 0">
+      <section v-if="posts!.length > 0">
         <ion-row v-for="(post, index) in posts" :key="post">
           <ion-col size="4">
             <img
-              :src="coverToBase64(post.cover.source)"
-              @click="openPost(post.id)"
+              :src="coverToBase64(post.cover.source!)"
+              @click="openPost(post.id!)"
               style="cursor: pointer"
             />
           </ion-col>
           <ion-col size="8">
             <h2
               style="margin-top: 4px; cursor: pointer"
-              @click="openPost(post.id)"
+              @click="openPost(post.id!)"
             >
               {{ post.title }}
             </h2>
@@ -98,7 +122,7 @@
           <ion-col size="12" v-if="isUserAdmin">
             <ion-button
               fill="clear"
-              @click="updatePost(post.id)"
+              @click="updatePost(post.id!)"
               :disabled="spinners.buttonEditPost"
             >
               <ion-icon
@@ -114,7 +138,7 @@
 
             <ion-button
               fill="clear"
-              @click="deletePost(post.id, index)"
+              @click="deletePost(post.id!, index)"
               :disabled="spinners.buttonDeletePost"
             >
               <ion-icon
@@ -149,7 +173,7 @@ import {
   IonDatetime,
   IonPopover,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 import {
   refreshOutline,
   addOutline,
@@ -163,6 +187,7 @@ import eventBus from "../../../EventBus";
 import systemService from "../../../services/system.vue";
 import postService from "../../../services/post.vue";
 import formatISO from "date-fns/formatISO";
+import { Post } from "@/services/interfaces.vue";
 
 export default defineComponent({
   name: "PostsPage",
@@ -178,6 +203,13 @@ export default defineComponent({
     IonDatetime,
     IonPopover,
   },
+
+  props: {
+    dates: { type: Array as PropType<string[]> },
+    currentPage: { type: String },
+    posts: { type: Array as PropType<Post[]> },
+  },
+
   setup() {
     return {
       refreshOutline,
@@ -190,10 +222,7 @@ export default defineComponent({
   },
   data() {
     return {
-      posts: Array<any>(),
       isUserAdmin: false,
-      currentPage: "",
-      dates: Array<string>(),
       spinners: {
         buttonAddNewPost: false,
         buttonEditPost: false,
@@ -205,21 +234,6 @@ export default defineComponent({
     this.verifyUserAdmin();
     eventBus().emitter.on("refresh-user-content", () => {
       this.verifyUserAdmin();
-    });
-
-    eventBus().emitter.on("event-posts2-data", (response: any) => {
-      if (response.currentPage != undefined) {
-        const currentPage = response.currentPage;
-        this.currentPage = currentPage;
-      }
-
-      if (response.dates != undefined) {
-        this.dates = response.dates;
-      }
-
-      if (response.posts) {
-        this.posts = response.posts;
-      }
     });
   },
 
@@ -240,24 +254,17 @@ export default defineComponent({
     },
 
     async nextPage() {
-      eventBus().emitter.emit("event-posts1-data", {
-        option: "next",
-        currentPage: this.currentPage,
-      });
+      this.$emit("nextPage", { currentPage: this.currentPage });
     },
 
     async previousPage() {
-      eventBus().emitter.emit("event-posts1-data", {
-        option: "previous",
-        currentPage: this.currentPage,
-      });
+      this.$emit("previousPage", { currentPage: this.currentPage });
     },
 
     async goToPage(date: string) {
       await (this.$refs.datetime as any).$el.confirm(true);
       const d = new Date(date).toISOString();
-      eventBus().emitter.emit("event-posts1-data", {
-        option: "goTo",
+      this.$emit("goToPage", {
         currentPage: formatISO(new Date(d.replaceAll("Z", "")), {
           representation: "date",
         }),
@@ -289,7 +296,8 @@ export default defineComponent({
         .deletePost({ id })
         .then(() => {
           this.spinners.buttonDeletePost = false;
-          this.posts.splice(index, 1);
+          // eslint-disable-next-line
+          this.posts!.splice(index, 1);
         })
         .catch((e) => {
           this.spinners.buttonDeletePost = false;
@@ -298,7 +306,8 @@ export default defineComponent({
     },
 
     getDaysEnabled(date: string) {
-      const result = this.dates.filter((element) => element == date);
+      // eslint-disable-next-line
+      const result = this.dates!.filter((element) => element == date);
       if (result.length > 0) {
         return true;
       }

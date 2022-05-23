@@ -20,79 +20,102 @@
     <ion-content :fullscreen="true">
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
-          <ion-title size="large">{{ pageTitle }}</ion-title>
+          <h1 class="ion-padding-start">{{ pageTitle }}</h1>
         </ion-toolbar>
       </ion-header>
 
       <!-- Projects -->
       <section>
-        <h2 class="ion-padding">Proyectos</h2>
         <ion-row>
-          <ion-col
-            size="12"
-            size-md="4"
-            size-lg="3"
-            v-for="(project, index) in proyectos"
-            :key="index"
-          >
-            <ion-card
-              @click="openModalProject(project)"
-              class="fancy_card card-click"
-            >
-              <ion-card-header>
-                <div class="center">
-                  <img
-                    :src="project.image[0].route"
-                    alt=""
-                    :style="{
-                      maxWidth: project.image[0].width,
-                      height: project.image[0].height,
-                    }"
-                  />
-                </div>
-              </ion-card-header>
-              <ion-card-content>
+          <ion-col size="12">
+            <ion-list>
+              <ion-list-header>
+                <ion-label>Proyectos</ion-label>
+                <ion-button href="https://gitlab.com/gonzam4" target="_blank"
+                  >Ver todo</ion-button
+                >
+              </ion-list-header>
+
+              <ion-list>
                 <ion-row>
-                  <ion-col size="12">
-                    <ion-chip :color="project.color">
-                      <ion-label>{{ project.status }}</ion-label>
-                    </ion-chip>
-                  </ion-col>
-                  <ion-col size="12">
-                    <ion-button
-                      v-for="icon in project.type"
-                      :key="icon"
-                      fill="clear"
-                      size="small"
+                  <ion-col
+                    size="12"
+                    size-md="4"
+                    size-lg="3"
+                    v-for="(project, index) in proyectos"
+                    :key="index"
+                  >
+                    <ion-card
+                      @click="openModalProject(project)"
+                      class="fancy_card card-click"
                     >
-                      <ion-icon :icon="icon"></ion-icon>
-                    </ion-button>
+                      <ion-card-header>
+                        <div class="center">
+                          <img
+                            :src="project.image[0].route"
+                            alt=""
+                            :style="{
+                              maxWidth: project.image[0].width,
+                              height: project.image[0].height,
+                            }"
+                          />
+                        </div>
+                      </ion-card-header>
+                      <ion-card-content>
+                        <ion-row>
+                          <ion-col size="12">
+                            <ion-chip :color="project.color">
+                              <ion-label>{{ project.status }}</ion-label>
+                            </ion-chip>
+                          </ion-col>
+                          <ion-col size="12">
+                            <ion-button
+                              v-for="icon in project.type"
+                              :key="icon"
+                              fill="clear"
+                              size="small"
+                            >
+                              <ion-icon :icon="icon"></ion-icon>
+                            </ion-button>
+                          </ion-col>
+                        </ion-row>
+                      </ion-card-content>
+                    </ion-card>
                   </ion-col>
                 </ion-row>
-              </ion-card-content>
-            </ion-card>
+              </ion-list>
+            </ion-list>
           </ion-col>
         </ion-row>
       </section>
 
       <!-- Holdings -->
       <section>
-        <h2 class="ion-padding-start">Participaciones</h2>
         <ion-row>
-          <ion-col
-            size="12"
-            size-md="4"
-            size-lg="3"
-            v-for="(participación, index) in participaciones"
-            :key="index"
-          >
-            <ion-card class="card-click">
-              <ion-card-header @click="openPage(participación.page)">
-                <ion-card-title>
-                  {{ participación.name }}
-                </ion-card-title>
-              </ion-card-header>
-            </ion-card>
+          <ion-col size="12">
+            <ion-list>
+              <ion-list-header>
+                <ion-label>Participaciones</ion-label>
+              </ion-list-header>
+
+              <ion-row>
+                <ion-col
+                  size="12"
+                  size-md="4"
+                  size-lg="3"
+                  v-for="(participación, index) in participaciones"
+                  :key="index"
+                >
+                  <ion-card class="card-click">
+                    <ion-card-header @click="openPage(participación.page)">
+                      <ion-card-title>
+                        {{ participación.name }}
+                      </ion-card-title>
+                    </ion-card-header>
+                  </ion-card>
+                </ion-col>
+              </ion-row>
+            </ion-list>
           </ion-col>
         </ion-row>
       </section>

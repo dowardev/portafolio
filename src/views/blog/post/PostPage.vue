@@ -12,8 +12,10 @@
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <ion-title>{{ post.title }}</ion-title>
-        <ion-buttons slot="end" v-if="isUserAdmin">
+        <ion-title>
+          {{ post.title }}
+        </ion-title>
+        <ion-buttons slot="end" v-if="isUserAdmin" :collapse="true">
           <ion-button fill="clear" @click="updatePost()">
             <ion-icon :icon="createOutline"></ion-icon>
           </ion-button>
@@ -33,11 +35,19 @@
 
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
-          <h1>{{ post.title }}</h1>
+          <h1 class="ion-padding-start">{{ post.title }}</h1>
+          <ion-buttons slot="end" v-if="isUserAdmin" :collapse="true">
+            <ion-button fill="clear" @click="updatePost()">
+              <ion-icon :icon="createOutline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" @click="deletePost()">
+              <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+            </ion-button>
+          </ion-buttons>
         </ion-toolbar>
       </ion-header>
 
-      <ion-row>
+      <ion-row class="ion-padding-start">
         <ion-col>
           <p class="post-date">Creación del post: {{ post.created }}</p>
           <p class="post-date">
@@ -46,9 +56,9 @@
         </ion-col>
       </ion-row>
 
-      <ion-row>
-        <ion-col size="12" style="height: 84vh">
-          <Markdown :source="post.content" />
+      <ion-row class="ion-padding-start">
+        <ion-col size="12">
+          <Markdown :source="post.content" :html="true" />
         </ion-col>
       </ion-row>
     </ion-content>

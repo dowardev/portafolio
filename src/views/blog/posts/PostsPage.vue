@@ -8,7 +8,14 @@
           loadingData.data.status == 'loading',
       }"
     >
-      <PostsComponent></PostsComponent>
+      <PostsComponent
+        :dates="dates"
+        :posts="posts"
+        :currentPage="currentPage"
+        @nextPage="nextPage($event)"
+        @previousPage="previousPage($event)"
+        @goToPage="goToPage($event)"
+      ></PostsComponent>
     </section>
 
     <div style="background-color: var(--background-color); height: 100%">
@@ -209,6 +216,8 @@ export default defineComponent({
   data() {
     return {
       dates: Array<string>(),
+      posts: Array<Post>(),
+      currentPage: String(),
       loadingData: {
         data: {
           status: "loading | finished | error",
@@ -305,62 +314,45 @@ export default defineComponent({
         this.loadingData.posts.status = "error";
       }
 
-      setTimeout(() => {
-        this.passData({ currentPage, dates, posts });
-      }, 500);
+      this.currentPage = currentPage;
+      this.dates = dates;
+      this.posts = posts;
     },
 
-    passData(data: {
-      dates?: Array<string>;
-      currentPage?: string;
-      posts?: Array<Post> | void;
-    }) {
-      eventBus().emitter.emit("event-posts2-data", {
-        dates: data.dates,
-        currentPage: data.currentPage,
-        posts: data.posts,
-      });
-    },
-
-    async nextPage(currentPage: string) {
+    async nextPage(params: { currentPage: string }) {
       this.loadingData.posts.status = "loading";
-      const index = this.dates.indexOf(currentPage);
-      if (index == this.dates.length - 1) return;
-      const date = this.dates[index + 1];
-      let posts = Array<Post>();
+      const index = this.dates.indexOf(params.currentPage);
 
-      try {
-        posts = await this.getPosts(date.replaceAll("/", "-"));
+      if (index == 0) {
         this.loadingData.posts.status = "finished";
-      } catch (e: any) {
-        this.loadingData.posts.status = "error";
+        return;
       }
 
-      this.passData({ currentPage: date.replaceAll("/", "-"), posts });
-      this.$router.replace("/blog/" + date.replaceAll("/", "-"));
-    },
-
-    async previousPage(currentPage: string) {
-      this.loadingData.posts.status = "loading";
-      const index = this.dates.indexOf(currentPage);
-      if (index <= 0) return;
       const date = this.dates[index - 1];
-
       let posts = Array<Post>();
+
       try {
-        posts = await this.getPosts(date.replaceAll("/", "-"));
+        posts = await this.getPosts(date);
         this.loadingData.posts.status = "finished";
       } catch (e: any) {
         this.loadingData.posts.status = "error";
       }
 
-      this.passData({ currentPage: date.replaceAll("/", "-"), posts });
+      this.currentPage = date;
+      this.posts = posts;
       this.$router.replace("/blog/" + date.replaceAll("/", "-"));
     },
 
-    async goToPage(currentPage: string) {
+    async previousPage(params: { currentPage: string }) {
       this.loadingData.posts.status = "loading";
-      const date = this.dates.filter((element) => element == currentPage)[0];
+      const index = this.dates.indexOf(params.currentPage);
+
+      if (index == this.dates.length - 1) {
+        this.loadingData.posts.status = "finished";
+        return;
+      }
+
+      const date = this.dates[index + 1];
 
       let posts = Array<Post>();
       try {
@@ -370,7 +362,27 @@ export default defineComponent({
         this.loadingData.posts.status = "error";
       }
 
-      this.passData({ currentPage: date, posts });
+      this.currentPage = date;
+      this.posts = posts;
+      this.$router.replace("/blog/" + date);
+    },
+
+    async goToPage(params: { currentPage: string }) {
+      this.loadingData.posts.status = "loading";
+      const date = this.dates.filter(
+        (element) => element == params.currentPage
+      )[0];
+
+      let posts = Array<Post>();
+      try {
+        posts = await this.getPosts(date);
+        this.loadingData.posts.status = "finished";
+      } catch (e: any) {
+        this.loadingData.posts.status = "error";
+      }
+
+      this.currentPage = date;
+      this.posts = posts;
       this.$router.replace("/blog/" + date);
     },
 

@@ -80,7 +80,7 @@ export default function () {
     try {
       const response = await apollo.defaultClient.mutate({
         mutation: gql`
-        mutation {
+        query {
           getUserAuth {
             ${params.query}
           }

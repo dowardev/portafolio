@@ -4,12 +4,10 @@ import apolloClient from "../Apollo";
 import {
   UpdatePost,
   Post,
-  GetImage,
   DeletePost,
   CreatePost,
   GetPost,
   GetPosts,
-  Image,
   GetPostsDatesResponse,
 } from "./interfaces.vue";
 
@@ -165,30 +163,6 @@ export default function () {
     }
   }
 
-  async function getImage(params: GetImage): Promise<Image> {
-    try {
-      const response = await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation ($id: String, $name: String) {
-            getImage(input: { id: $id, name: $name }) {
-             ${params.query}
-            }
-          }
-        `,
-        variables: {
-          id: params.id,
-          name: params.name,
-        },
-      });
-
-      if (response.data) return response.data;
-      throw new Error("Bad response");
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
-  }
-
   async function getPostsDates(): Promise<Array<GetPostsDatesResponse>> {
     try {
       const response = await apollo.defaultClient.mutate({
@@ -212,7 +186,6 @@ export default function () {
     createPost,
     getPosts,
     getPost,
-    getImage,
     updatePost,
     deletePost,
     getPostsDates,

@@ -12,7 +12,7 @@
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <ion-title>{{ pageTitle }}</ion-title>
+        <ion-title size="large">{{ pageTitle }}</ion-title>
         <ion-buttons slot="end">
           <ion-button
             @click="save()"
@@ -136,13 +136,13 @@
       <section v-if="segment == 'result'">
         <ion-row>
           <ion-col size="12">
-            <img :src="coverSource" style="max-width: 32%" />
+            <img :src="coverSource" />
           </ion-col>
         </ion-row>
-        <ion-row>
-          <h1 class="ion-padding">{{ postTitle }}</h1>
+        <ion-row class="ion-padding">
+          <h1>{{ postTitle }}</h1>
           <ion-col size="12">
-            <Markdown :source="postContent" />
+            <Markdown :source="postContent" :html="true" />
           </ion-col>
         </ion-row>
       </section>

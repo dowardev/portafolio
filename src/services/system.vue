@@ -9,7 +9,6 @@ import {
   modalController,
 } from "@ionic/vue";
 import systemService from "./system.vue";
-import axios from "axios";
 import {
   AlertConfirmation,
   Image,
@@ -95,22 +94,6 @@ export default function () {
       message: params.message,
     });
     return loading;
-  }
-
-  async function getImageAPI(): Promise<object> {
-    try {
-      return await axios.get("http://127.0.0.1:8000/api/get-image", {
-        params: {
-          name: "624bb168328e71649127784.webp",
-        },
-        headers: {
-          Accept: "application/json",
-        },
-      });
-    } catch (e: any) {
-      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
-      throw new Error(e.message);
-    }
   }
 
   async function presentAlertConfirmation(
@@ -221,7 +204,6 @@ export default function () {
     detectToggleTheme,
     getBaseURL,
     presentLoading,
-    getImageAPI,
     presentAlertConfirmation,
     openToastErrror,
     openModalFeedback,
