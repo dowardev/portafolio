@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PostController;
+// use App\Http\Controllers\SystemController;
+use App\Http\Controllers\PostsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,23 +20,20 @@ route::middleware('auth:sanctum')->get('/user', function (request $request) {
   return $request->user();
 });
 
-Route::get('get-image/', [PostController::class, 'getImagePost']);
-// Route::get('get-image-post', [PostController::class, 'getImagePost']);
-//
-// Route::get('get-posts', [PostController::class, 'getPosts']);
-// Route::get('get-post', [PostController::class, 'getPost']);
-//
+// Route::get('get-image-tmp/', [SystemController::class, 'getTmpImage']);
+Route::get('get-image-posts/', [PostsController::class, 'getImagePost']);
+
 Route::group(['prefix' => 'auth'], function () {
-  //     Route::post('login', [AuthController::class, 'login']);
-  //     Route::post('signup', [AuthController::class, 'signup']);
   Route::post('mail-reset-password', [
     AuthController::class,
     'sendCodeResetPassword',
   ]);
+
   Route::post('code-reset-password', [
     AuthController::class,
     'verifyCodeResetPassword',
   ]);
+
   Route::post('reset-password', [AuthController::class, 'resetPassword']);
   //
   //     Route::group(['middleware' => 'auth:api'], function () {
