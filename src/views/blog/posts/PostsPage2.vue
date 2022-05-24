@@ -169,6 +169,7 @@ import {
   IonButtons,
   IonDatetime,
   IonPopover,
+  IonItemDivider,
 } from "@ionic/vue";
 import { defineComponent, PropType } from "vue";
 import {
@@ -199,6 +200,7 @@ export default defineComponent({
     IonButtons,
     IonDatetime,
     IonPopover,
+    IonItemDivider,
   },
 
   props: {

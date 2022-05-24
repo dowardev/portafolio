@@ -185,6 +185,7 @@ import {
   IonRow,
   IonCol,
   isPlatform,
+  IonItemDivider,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import Markdown from "vue3-markdown-it";
@@ -218,6 +219,7 @@ export default defineComponent({
     IonRow,
     IonCol,
     IonPage,
+    IonItemDivider,
   },
 
   props: {

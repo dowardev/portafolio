@@ -57,6 +57,7 @@ import {
   IonSegment,
   IonSegmentButton,
   isPlatform,
+  IonItemDivider,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import userService from "../../services/user.vue";
@@ -75,6 +76,7 @@ export default defineComponent({
     IonSegmentButton,
     UserProfileComponent,
     UserSecurityComponent,
+    IonItemDivider,
   },
   data() {
     const modeDesignElements = isPlatform("ios") ? "ios" : "md";
