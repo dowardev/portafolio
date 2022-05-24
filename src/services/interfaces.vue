@@ -96,7 +96,7 @@ interface UploadImage {
 // system
 interface Toast {
   message: string;
-  color: string;
+  color?: string;
   position?: "top" | "bottom" | "middle";
   duration?: number;
 }

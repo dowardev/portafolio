@@ -17,7 +17,7 @@
     <ion-content :fullscreen="true">
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
-          <h1 class="ion-padding-start">{{ pageTitle }}</h1>
+          <ion-title size="large">{{ pageTitle }}</ion-title>
         </ion-toolbar>
       </ion-header>
     </ion-content>

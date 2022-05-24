@@ -196,11 +196,13 @@ export default defineComponent({
       },
     };
   },
+
   mounted() {
     // eslint-disable-next-line
     this.form.type = this.dataProp!.type;
     this.getUser();
   },
+
   methods: {
     closeModal() {
       modalController.dismiss();
@@ -226,6 +228,7 @@ export default defineComponent({
         return;
       }
     },
+
     async sendFeedback() {
       this.spinners.buttonSendFeedback = true;
 
@@ -261,6 +264,7 @@ export default defineComponent({
           color: "success",
         });
         this.clearInputs;
+        systemService().openToast({ message: "Gracias por tus comentarios" });
         this.closeModal();
       } catch (e) {
         this.spinners.buttonSendFeedback = false;
@@ -271,11 +275,7 @@ export default defineComponent({
         console.error(e);
       }
     },
-    presentLoading() {
-      return systemService().presentLoading({
-        message: "Enviando comentarios",
-      });
-    },
+
     clearInputs() {
       this.form.id = "";
       this.form.name = "";

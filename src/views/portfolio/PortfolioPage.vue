@@ -20,7 +20,7 @@
     <ion-content :fullscreen="true">
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
-          <h1 class="ion-padding-start">{{ pageTitle }}</h1>
+          <ion-title size="large">{{ pageTitle }}</ion-title>
         </ion-toolbar>
       </ion-header>
 
@@ -103,13 +103,16 @@
                   size="12"
                   size-md="4"
                   size-lg="3"
-                  v-for="(participación, index) in participaciones"
-                  :key="index"
+                  v-for="participacion in participaciones"
+                  :key="participacion"
                 >
-                  <ion-card class="card-click">
-                    <ion-card-header @click="openPage(participación.page)">
+                  <ion-card
+                    class="card-click"
+                    @click="openPage(participacion.page)"
+                  >
+                    <ion-card-header>
                       <ion-card-title>
-                        {{ participación.name }}
+                        {{ participacion.name }}
                       </ion-card-title>
                     </ion-card-header>
                   </ion-card>
@@ -280,9 +283,11 @@ export default defineComponent({
     async navegador(url: string) {
       await Browser.open({ url });
     },
+
     async openPage(page: string) {
       window.open(page, "_blank");
     },
+
     async openModalProject(project: any) {
       const modal = await modalController.create({
         component: ProjectModal,

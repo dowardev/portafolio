@@ -22,23 +22,23 @@
         <ion-toolbar>
           <ion-title size="large">{{ pageTitle }}</ion-title>
         </ion-toolbar>
-
-        <ion-toolbar>
-          <ion-segment
-            v-model="policieSegment"
-            :mode="modeDesingElements"
-            scrollable
-          >
-            <ion-segment-button value="privacy">
-              <ion-label>Privacidad</ion-label>
-            </ion-segment-button>
-
-            <ion-segment-button value="tc" disabled="true">
-              <ion-label>Terminos y condiciones</ion-label>
-            </ion-segment-button>
-          </ion-segment>
-        </ion-toolbar>
       </ion-header>
+
+      <ion-item-divider sticky>
+        <ion-segment
+          v-model="policieSegment"
+          :mode="modeDesingElements"
+          scrollable
+        >
+          <ion-segment-button value="privacy">
+            <ion-label>Privacidad</ion-label>
+          </ion-segment-button>
+
+          <ion-segment-button value="tc" disabled="true">
+            <ion-label>Terminos y condiciones</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-item-divider>
 
       <ion-row class="ion-padding">
         <ion-col>

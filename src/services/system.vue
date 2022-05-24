@@ -70,11 +70,15 @@ export default function () {
   async function openToast(params: Toast): Promise<void> {
     const duration = params.duration == undefined ? 2000 : params.duration;
     const position = params.position == undefined ? "bottom" : params.position;
+    let color = params.color;
+
+    if (params.color == undefined)
+      color = (await getTheme()) ? "dark" : "light";
 
     const toast = await toastController.create({
       message: params.message,
       duration,
-      color: params.color,
+      color: color,
       position,
     });
     return toast.present();
@@ -86,6 +90,7 @@ export default function () {
       return "http://127.0.0.1:8000/";
     } else {
       return "https://dowar-blog.dowar.xyz/";
+      // return "https://prueba-blogb.dowar.xyz/";
     }
   }
   async function presentLoading(params: Loading) {

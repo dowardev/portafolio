@@ -13,153 +13,217 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-row style="margin-top: 12vh">
-        <ion-col size="12">
-          <div class="center">
-            <img
-              src="../../../public/assets/portafolio/foto_perfil.jpg"
-              alt=""
-              class="img-perfil"
-            />
-          </div>
-        </ion-col>
-        <ion-col size="12" class="ion-padding" id="copywriting">
-          <div style="text-align: center">
-            <div class="wrapper">
-              <div class="letters">
-                <span class="letter">G</span>
-                <span class="letter">o</span>
-                <span class="letter">n</span>
-                <span class="letter">z</span>
-                <span class="letter">a</span>
-                <span class="letter">l</span>
-                <span class="letter">o</span>
-                <span class="letter"></span>
-                <span class="letter">P</span>
-                <span class="letter">o</span>
-                <span class="letter">n</span>
-                <span class="letter">c</span>
-                <span class="letter">e</span>
-                <span class="letter"></span>
+      <ion-row>
+        <ion-col size-xs="12" size-lg="6" style="margin-top: 5vh">
+          <ion-row>
+            <ion-col size="12">
+              <div class="center">
+                <img
+                  src="../../../public/assets/portafolio/foto_perfil.jpg"
+                  alt=""
+                  class="img-perfil"
+                />
               </div>
-            </div>
-          </div>
-        </ion-col>
-      </ion-row>
+            </ion-col>
+            <ion-col size="12" class="ion-padding" id="copywriting">
+              <div style="text-align: center">
+                <div class="wrapper">
+                  <div class="letters">
+                    <span class="letter">G</span>
+                    <span class="letter">o</span>
+                    <span class="letter">n</span>
+                    <span class="letter">z</span>
+                    <span class="letter">a</span>
+                    <span class="letter">l</span>
+                    <span class="letter">o</span>
+                    <span class="letter"></span>
+                    <span class="letter">P</span>
+                    <span class="letter">o</span>
+                    <span class="letter">n</span>
+                    <span class="letter">c</span>
+                    <span class="letter">e</span>
+                    <span class="letter"></span>
+                  </div>
+                </div>
+              </div>
+            </ion-col>
+          </ion-row>
 
-      <ion-row id="texto-bienvenida" class="center">
-        <ion-col size="12" size-md="6" class="ion-padding">
-          <p class="slogan">
-            Haciendo de mi pasión una forma de hacer realidad tus objetivos.
-          </p>
-        </ion-col>
-      </ion-row>
+          <ion-row id="texto-bienvenida" class="center">
+            <ion-col size="12" size-md="6" class="ion-padding">
+              <p class="slogan">
+                Haciendo de mi pasión una forma de hacer realidad tus objetivos.
+              </p>
+            </ion-col>
+          </ion-row>
 
-      <ion-row>
-        <ion-col size="12" style="display: flex; justify-content: center">
-          <a href="https://www.codewars.com/users/dowar/" target="_blank">
-            <img
-              src="https://www.codewars.com/users/dowar/badges/small"
-              alt=""
-            />
-          </a>
+          <ion-row>
+            <ion-col size="12" style="display: flex; justify-content: center">
+              <a href="https://www.codewars.com/users/dowar/" target="_blank">
+                <img
+                  src="https://www.codewars.com/users/dowar/badges/small"
+                  alt=""
+                />
+              </a>
+            </ion-col>
+          </ion-row>
         </ion-col>
-      </ion-row>
 
-      <ion-row>
-        <ion-col style="display: flex; justify-content: center">
-          <ion-row id="iconos-redes">
-            <ion-button
-              expand="block"
-              fill="clear"
-              v-on:click="mail"
-              @mouseover="fillCorreo = '#d94f4f'"
-              @mouseleave="fillCorreo = '#777777'"
-            >
-              <ion-icon
-                :style="{ color: fillCorreo }"
-                :icon="mailOutline"
-              ></ion-icon>
-            </ion-button>
-            <ion-button
-              fill="clear"
-              href="
-                  https://mastodon.social/web/accounts/864151'
-                "
-              target="_blank"
-              @mouseover="fillMastodon = '#2791da'"
-              @mouseleave="fillMastodon = '#777777'"
-            >
-              <ion-icon
-                :style="{ color: fillMastodon }"
-                :icon="logoMastodon"
-              ></ion-icon>
-            </ion-button>
-            <ion-button
-              expand="block"
-              fill="clear"
-              href="https://gitlab.com/gonzam4"
-              target="_blank"
-              @mouseover="fillGitlab = '#dd4526'"
-              @mouseleave="fillGitlab = '#777777'"
-            >
-              <ion-icon
-                :style="{ color: fillGitlab }"
-                :icon="logoGitlab"
-              ></ion-icon>
-            </ion-button>
-            <ion-button
-              fill="clear"
-              href="
-                    https://www.linkedin.com/in/dowar/
-                "
-              target="_blank"
-              @mouseover="fillLinkedIn = '#0074b1'"
-              @mouseleave="fillLinkedIn = '#777777'"
-            >
-              <ion-icon
-                :style="{ color: fillLinkedIn }"
-                :icon="logoLinkedin"
-              ></ion-icon>
-            </ion-button>
+        <ion-col size-xs="12" size-lg="6">
+          <ion-row>
+            <ion-col size-xs="12" size-lg="8">
+              <ion-list>
+                <ion-list-header>
+                  <ion-label>Contacto profesional</ion-label>
+                </ion-list-header>
+
+                <ion-card>
+                  <ion-card-content>
+                    <ion-item
+                      @click="openMailContact()"
+                      @mouseover="fillEmailContact = '#d94f4f'"
+                      @mouseleave="fillEmailContact = '#777777'"
+                      lines="none"
+                      button
+                    >
+                      <ion-icon
+                        :style="{ color: fillEmailContact }"
+                        :icon="mail"
+                        slot="start"
+                      ></ion-icon>
+                      <ion-label> Correo electrónico </ion-label>
+                    </ion-item>
+
+                    <ion-item
+                      href="https://www.linkedin.com/in/dowar/"
+                      target="_blank"
+                      @mouseover="fillLinkedIn = '#0074b1'"
+                      @mouseleave="fillLinkedIn = '#777777'"
+                      lines="none"
+                      button
+                    >
+                      <ion-icon
+                        :style="{ color: fillLinkedIn }"
+                        :icon="logoLinkedin"
+                        slot="start"
+                      ></ion-icon>
+                      <ion-label> LinkedIn </ion-label>
+                    </ion-item>
+                  </ion-card-content>
+                </ion-card>
+              </ion-list>
+
+              <ion-list>
+                <ion-list-header>
+                  <ion-label>Social</ion-label>
+                </ion-list-header>
+
+                <ion-card>
+                  <ion-card-content>
+                    <ion-item
+                      @click="openMailHelp()"
+                      @mouseover="fillEmailHelp = '#d94f4f'"
+                      @mouseleave="fillEmailHelp = '#777777'"
+                      lines="none"
+                      button
+                    >
+                      <ion-icon
+                        :style="{ color: fillEmailHelp }"
+                        :icon="mail"
+                        slot="start"
+                      ></ion-icon>
+                      <ion-label> Correo electrónico </ion-label>
+                    </ion-item>
+
+                    <ion-item
+                      href="https://mastodon.social/web/@dowar"
+                      target="_blank"
+                      @mouseover="fillMastodon = '#2791da'"
+                      @mouseleave="fillMastodon = '#777777'"
+                      lines="none"
+                      button
+                    >
+                      <ion-icon
+                        :style="{ color: fillMastodon }"
+                        :icon="logoMastodon"
+                        slot="start"
+                      ></ion-icon>
+                      <ion-label> Mastodon </ion-label>
+                    </ion-item>
+
+                    <ion-item
+                      href="https://t.me/+qSXz6T6rF7djOTkz"
+                      target="_blank"
+                      @mouseover="fillTelegramGroup = '#2497d6'"
+                      @mouseleave="fillTelegramGroup = '#777777'"
+                      lines="none"
+                      button
+                    >
+                      <ion-icon
+                        :style="{ color: fillTelegramGroup }"
+                        :src="iconTelegram"
+                        slot="start"
+                      ></ion-icon>
+                      <ion-label> Grupo de Telegram</ion-label>
+                    </ion-item>
+
+                    <ion-item
+                      href="https://t.me/news_dowar_blog"
+                      target="_blank"
+                      @mouseover="fillTelegramChannel = '#2497d6'"
+                      @mouseleave="fillTelegramChannel = '#777777'"
+                      lines="none"
+                      button
+                    >
+                      <ion-icon
+                        :style="{ color: fillTelegramChannel }"
+                        :src="iconTelegram"
+                        slot="start"
+                      ></ion-icon>
+                      <ion-label> Canal de Telegram</ion-label>
+                    </ion-item>
+
+                    <!-- <ion-row> -->
+                    <!--   <ion-col -->
+                    <!--     style=" -->
+                    <!--       align-items: center; -->
+                    <!--       display: flex; -->
+                    <!--       flex-direction: column; -->
+                    <!--       justify-content: enter; -->
+                    <!--       padding: 1em; -->
+                    <!--       text-align: center; -->
+                    <!--     " -->
+                    <!--   > -->
+                    <!--     <a -->
+                    <!--       class="btn btn-5" -->
+                    <!--       v-on:click="$router.push('/informacion')" -->
+                    <!--       style=" -->
+                    <!--         display: block; -->
+                    <!--         height: 58px; -->
+                    <!--         max-width: 58px; -->
+                    <!--         border-radius: 50%; -->
+                    <!--       " -->
+                    <!--     > -->
+                    <!--       <ion-icon -->
+                    <!--         :icon="arrowForward" -->
+                    <!--         style=" -->
+                    <!--           width: 41px; -->
+                    <!--           height: 40px; -->
+                    <!--           position: absolute; -->
+                    <!--           top: 50%; -->
+                    <!--           transform: translate(-20px, -50%); -->
+                    <!--         " -->
+                    <!--       ></ion-icon -->
+                    <!--     ></a> -->
+                    <!--   </ion-col> -->
+                    <!-- </ion-row> -->
+                  </ion-card-content>
+                </ion-card>
+              </ion-list>
+            </ion-col>
           </ion-row>
         </ion-col>
       </ion-row>
-
-      <!-- <ion-row> -->
-      <!--   <ion-col -->
-      <!--     style=" -->
-      <!--       align-items: center; -->
-      <!--       display: flex; -->
-      <!--       flex-direction: column; -->
-      <!--       justify-content: enter; -->
-      <!--       padding: 1em; -->
-      <!--       text-align: center; -->
-      <!--     " -->
-      <!--   > -->
-      <!--     <a -->
-      <!--       class="btn btn-5" -->
-      <!--       v-on:click="$router.push('/informacion')" -->
-      <!--       style=" -->
-      <!--         display: block; -->
-      <!--         height: 58px; -->
-      <!--         max-width: 58px; -->
-      <!--         border-radius: 50%; -->
-      <!--       " -->
-      <!--     > -->
-      <!--       <ion-icon -->
-      <!--         :icon="arrowForward" -->
-      <!--         style=" -->
-      <!--           width: 41px; -->
-      <!--           height: 40px; -->
-      <!--           position: absolute; -->
-      <!--           top: 50%; -->
-      <!--           transform: translate(-20px, -50%); -->
-      <!--         " -->
-      <!--       ></ion-icon -->
-      <!--     ></a> -->
-      <!--   </ion-col> -->
-      <!-- </ion-row> -->
     </ion-content>
   </ion-page>
 </template>
@@ -172,24 +236,17 @@ import {
   IonMenuButton,
   IonRow,
   IonCol,
-  IonButton,
   IonIcon,
   useBackButton,
   alertController,
   isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import {
-  mailOutline,
-  logoMastodon,
-  logoGitlab,
-  logoLinkedin,
-} from "ionicons/icons";
-import { Plugins } from "@capacitor/core";
-const { App } = Plugins;
+import { mail, logoMastodon, logoGitlab, logoLinkedin } from "ionicons/icons";
+import { App } from "@capacitor/app";
 
 export default defineComponent({
-  name: "HomePage",
+  name: "PresentationPage",
   components: {
     IonContent,
     IonPage,
@@ -197,27 +254,28 @@ export default defineComponent({
     IonMenuButton,
     IonRow,
     IonCol,
-    IonButton,
     IonIcon,
   },
 
   setup() {
     const modeDesingElements = isPlatform("ios") ? "ios" : "md";
     return {
-      mailOutline,
+      mail,
       logoMastodon,
       logoGitlab,
       logoLinkedin,
       modeDesingElements,
+      iconTelegram: require("../../../public/assets/otros/icons8-telegram-app.svg"),
     };
   },
 
   data() {
     return {
-      fillTelegram: "#777777",
-      fillCorreo: "#777777",
+      fillTelegramGroup: "#777777",
+      fillTelegramChannel: "#777777",
+      fillEmailContact: "#777777",
+      fillEmailHelp: "#777777",
       fillMastodon: "#777777",
-      fillGitlab: "#777777",
       fillLinkedIn: "#777777",
       fillDev: "#777777",
     };
@@ -228,15 +286,14 @@ export default defineComponent({
     });
   },
   methods: {
-    mail() {
-      if (
-        isPlatform("desktop") ||
-        isPlatform("mobile") ||
-        isPlatform("mobileweb")
-      ) {
-        location.href = "mailto:contacto@dowar.xyz?Subject=Contacto%20laboral";
-      }
+    openMailContact() {
+      location.href = "mailto:contacto@dowar.xyz?Subject=Contacto%20laboral";
     },
+
+    openMailHelp() {
+      location.href = "mailto:ayuda@dowar.xyz?Subject=Ayuda";
+    },
+
     async alertExitApp() {
       const alert = await alertController.create({
         header: "Alerta",

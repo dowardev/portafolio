@@ -508,7 +508,6 @@ export default defineComponent({
         this.spinners.saveUserData = false;
         systemService().openToast({
           message: "Datos actualizados",
-          color: "success",
         });
         eventBus().emitter.emit("refresh-user-content");
       } catch (e: any) {
@@ -614,7 +613,6 @@ export default defineComponent({
 
           systemService().openToast({
             message: "Hasta pronto",
-            color: "success",
           });
 
           this.spinners.deleteUserAccount = false;

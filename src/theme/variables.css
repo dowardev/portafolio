@@ -266,7 +266,7 @@
 
   --border-color-ion-item: #25272924;
 
-  --box-shadow-card: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  --box-shadow-card: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
 }
 
 *.dark {
@@ -368,6 +368,12 @@ ion-item.ios {
   color: var(--accent-color) !important;
 }
 
+/* ionic item divider */
+ion-item-divider {
+  --background: var(--background-color);
+  border-bottom: 0;
+}
+
 /* ionic content */
 ion-content,
 ion-toolbar,
@@ -422,7 +428,7 @@ ion-segment-button.ios {
   --indicator-color: var(--background-elements-color);
 }
 ion-segment-button > ion-label {
-  color: var(--primary-text-color);
+  color: var(--primary-text-color) !important;
 }
 
 /* ionic menu button */

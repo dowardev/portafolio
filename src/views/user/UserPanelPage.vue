@@ -22,23 +22,19 @@
         <ion-toolbar>
           <ion-title size="large">{{ pageTitle }}</ion-title>
         </ion-toolbar>
-
-        <ion-toolbar>
-          <ion-segment
-            v-model="mainSegment"
-            scrollable
-            :mode="modeDesignElements"
-          >
-            <ion-segment-button value="profile">
-              <ion-label> Perfil </ion-label>
-            </ion-segment-button>
-
-            <ion-segment-button value="security">
-              <ion-label> Seguridad</ion-label>
-            </ion-segment-button>
-          </ion-segment>
-        </ion-toolbar>
       </ion-header>
+
+      <ion-item-divider sticky>
+        <ion-segment v-model="mainSegment" scrollable>
+          <ion-segment-button value="profile">
+            <ion-label> Perfil </ion-label>
+          </ion-segment-button>
+
+          <ion-segment-button value="security">
+            <ion-label> Seguridad</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-item-divider>
 
       <section v-if="mainSegment == 'profile'">
         <UserProfileComponent></UserProfileComponent>

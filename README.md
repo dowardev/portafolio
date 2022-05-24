@@ -4,7 +4,7 @@ Aplicación móvil(Android), Sitio web y PWA sobre un portafolio/blog.
 
 ## Demo
 
-[Aplicación en producción](https://dowar.xyz)
+<a href="https://dowar.xyz" target="_blank">Aplicación en producción</a>
 
 ## Despliegue en local
 
@@ -35,14 +35,21 @@ Aplicación móvil(Android), Sitio web y PWA sobre un portafolio/blog.
 - Vue3-markdown-it 1
 - Mitt 3
 
+## Recursos
+
+### Iconos
+
+- Telegram: <a href="https://icons8.com/icon/F4ZPUh2Mk5tk/telegram-app" target="_blank">icon8</a>
+- El resto de iconos: <a href="https://ionic.io/ionicons" target="_blank">Ionic icons</a>
+
 ## Información adicional
 
-Las nuevas características y errores encontrados están listados en el siguiente tablero [kanban](https://board.disroot.org/project/portafolio/kanban).
+Las nuevas características y errores encontrados están listados en el siguiente tablero <a href="https://board.disroot.org/project/portafolio/kanban" target="_blank">kanban</a>.
 
 Si te gusta el proyecto puedes contribuir de las siguientes formas
 
 - Contribuyendo a la corrección de errores.
-- Reportar errores, para ello tienes 2 formas: creando un issue dentro de este mismo repositorio o contactarme a través de los medios listados en [dowar.xyz](https://dowar.xyz).
+- Reportar errores, para ello tienes 2 formas: creando un issue dentro de este mismo repositorio o contactarme a través de los medios listados en <a href="https://dowar.xyz" target="_blank">dowar.xyz</a> .
 
 Este es un proyecto de software libre, por lo que podrás utilizar de manera total o parcial el código contenido en él, siempre y cuando se mantenga dentro de las normas establecidas en la licencia con la cual está siendo desarrollado.
 

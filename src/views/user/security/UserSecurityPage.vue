@@ -322,7 +322,6 @@ export default defineComponent({
         if (e.message == "Wrong password") {
           systemService().openToast({
             message: "Contraseña incorrecta",
-            color: "danger",
           });
           return;
         }

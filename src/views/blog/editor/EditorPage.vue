@@ -12,8 +12,8 @@
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <ion-title size="large">{{ pageTitle }}</ion-title>
-        <ion-buttons slot="end">
+        <ion-title>{{ pageTitle }}</ion-title>
+        <ion-buttons slot="end" :collapse="true">
           <ion-button
             @click="save()"
             :disabled="v$.$invalid || spinnerSavePost"
@@ -36,19 +36,35 @@
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
           <ion-title size="large">{{ pageTitle }}</ion-title>
-        </ion-toolbar>
-
-        <ion-toolbar>
-          <ion-segment v-model="segment" :mode="modeDesingElements" scrollable>
-            <ion-segment-button value="editor">
-              <ion-label>Editor</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="result">
-              <ion-label>Resultado</ion-label>
-            </ion-segment-button>
-          </ion-segment>
+          <ion-buttons slot="end" :collapse="true">
+            <ion-button
+              @click="save()"
+              :disabled="v$.$invalid || spinnerSavePost"
+            >
+              <ion-icon
+                :icon="saveOutline"
+                v-if="spinnerSavePost == false"
+              ></ion-icon>
+              <ion-spinner
+                name="crescent"
+                v-if="spinnerSavePost"
+                color="primary"
+              ></ion-spinner>
+            </ion-button>
+          </ion-buttons>
         </ion-toolbar>
       </ion-header>
+
+      <ion-item-divider sticky>
+        <ion-segment v-model="segment" scrollable>
+          <ion-segment-button value="editor">
+            <ion-label>Editor</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="result">
+            <ion-label>Resultado</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-item-divider>
 
       <section v-if="segment == 'editor'">
         <!-- input image -->
@@ -263,6 +279,7 @@ export default defineComponent({
       },
     };
   },
+
   beforeRouteEnter(to, from, next) {
     userService()
       .getUserPermissions()
@@ -277,6 +294,7 @@ export default defineComponent({
         next("/blog");
       });
   },
+
   methods: {
     save() {
       const title = this.postTitle;

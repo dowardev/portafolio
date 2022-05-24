@@ -10,7 +10,7 @@
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
-        <ion-title>Blog</ion-title>
+        <ion-title>{{ pageTitle }}</ion-title>
         <ion-buttons
           slot="end"
           :disabled="spinners.buttonAddNewPost"
@@ -34,10 +34,10 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true" class="ion-padding">
+    <ion-content :fullscreen="true">
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
-          <h1>Blog</h1>
+          <ion-title size="large">{{ pageTitle }}</ion-title>
           <ion-buttons
             slot="end"
             :disabled="spinners.buttonAddNewPost"
@@ -62,46 +62,43 @@
       </ion-header>
 
       <!-- date selector -->
-      <section>
-        <ion-row v-if="dates!.length > 0">
-          <ion-col class="center">
-            <!-- navigation button -->
-            <ion-button fill="clear" @click="previousPage">
-              <ion-icon :icon="chevronBackOutline"></ion-icon>
-            </ion-button>
+      <ion-item-divider sticky v-if="dates!.length > 0">
+        <div style="width: 100%; display: flex; justify-content: center">
+          <ion-button fill="clear" @click="previousPage">
+            <ion-icon :icon="chevronBackOutline"></ion-icon>
+          </ion-button>
 
-            <!-- pages -->
-            <ion-item
-              button="true"
-              id="open-date-input"
-              lines="none"
-              v-if="dates!.length > 0"
-            >
-              <ion-text style="color: var(--accent-color) !important">
-                {{ currentPage }}
-              </ion-text>
-              <ion-popover trigger="open-date-input" :show-backdrop="false">
-                <ion-datetime
-                  :is-date-enabled="getDaysEnabled"
-                  presentation="date"
-                  @ionChange="goToPage($event.detail.value)"
-                  :value="currentPage"
-                  ref="datetime"
-                  firstDayOfWeek="1"
-                ></ion-datetime>
-              </ion-popover>
-            </ion-item>
+          <!-- pages -->
+          <ion-item
+            button="true"
+            id="open-date-input"
+            lines="none"
+            v-if="dates!.length > 0"
+          >
+            <ion-text style="color: var(--accent-color) !important">
+              {{ currentPage }}
+            </ion-text>
+            <ion-popover trigger="open-date-input" :show-backdrop="false">
+              <ion-datetime
+                :is-date-enabled="getDaysEnabled"
+                presentation="date"
+                @ionChange="goToPage($event.detail.value)"
+                :value="currentPage"
+                ref="datetime"
+                firstDayOfWeek="1"
+              ></ion-datetime>
+            </ion-popover>
+          </ion-item>
 
-            <!-- navigation button -->
-            <ion-button fill="clear" @click="nextPage">
-              <ion-icon :icon="chevronForwardOutline"></ion-icon>
-            </ion-button>
-          </ion-col>
-        </ion-row>
-      </section>
+          <!-- navigation button -->
+          <ion-button fill="clear" @click="nextPage">
+            <ion-icon :icon="chevronForwardOutline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item-divider>
 
       <!-- posts -->
-      <section v-if="posts!.length > 0">
+      <section v-if="posts!.length > 0" class="ion-padding">
         <ion-row v-for="(post, index) in posts" :key="post">
           <ion-col size="4">
             <img
@@ -123,15 +120,15 @@
             <ion-button
               fill="clear"
               @click="updatePost(post.id!)"
-              :disabled="spinners.buttonEditPost"
+              :disabled="spinners.buttonEditPost ==post.id!"
             >
               <ion-icon
                 :icon="createOutline"
-                v-if="spinners.buttonEditPost == false"
+                v-if="spinners.buttonEditPost ==''|| spinners.buttonEditPost != post.id!"
               ></ion-icon>
               <ion-spinner
                 name="crescent"
-                v-if="spinners.buttonEditPost"
+                v-if="spinners.buttonEditPost==post.id!"
                 color="primary"
               ></ion-spinner>
             </ion-button>
@@ -139,16 +136,16 @@
             <ion-button
               fill="clear"
               @click="deletePost(post.id!, index)"
-              :disabled="spinners.buttonDeletePost"
+              :disabled="spinners.buttonDeletePost ==post.id!"
             >
               <ion-icon
                 :icon="trashOutline"
                 color="danger"
-                v-if="spinners.buttonDeletePost == false"
+                v-if="spinners.buttonDeletePost==''|| spinners.buttonDeletePost!= post.id!"
               ></ion-icon>
               <ion-spinner
                 name="crescent"
-                v-if="spinners.buttonDeletePost"
+                v-if="spinners.buttonDeletePost==post.id!"
                 color="danger"
               ></ion-spinner>
             </ion-button>
@@ -218,18 +215,21 @@ export default defineComponent({
       trashOutline,
       chevronBackOutline,
       chevronForwardOutline,
+      pageTitle: "Blog",
     };
   },
+
   data() {
     return {
       isUserAdmin: false,
       spinners: {
         buttonAddNewPost: false,
-        buttonEditPost: false,
-        buttonDeletePost: false,
+        buttonEditPost: "",
+        buttonDeletePost: "",
       },
     };
   },
+
   mounted() {
     this.verifyUserAdmin();
     eventBus().emitter.on("refresh-user-content", () => {
@@ -276,31 +276,32 @@ export default defineComponent({
     },
 
     async updatePost(id: string) {
-      this.spinners.buttonEditPost = true;
+      this.spinners.buttonEditPost = id;
       await this.$router.push("/blog/editor/update/" + id);
-      this.spinners.buttonEditPost = false;
+      this.spinners.buttonEditPost = "";
     },
 
     async deletePost(id: string, index: number) {
-      this.spinners.buttonDeletePost = true;
+      this.spinners.buttonDeletePost = id;
 
       const response = await systemService().presentAlertConfirmation({
         message: "¿Desea eliminar el post?",
       });
       if (response == false) {
-        this.spinners.buttonDeletePost = false;
+        this.spinners.buttonDeletePost = "";
         return;
       }
 
       postService()
         .deletePost({ id })
         .then(() => {
-          this.spinners.buttonDeletePost = false;
+          this.spinners.buttonDeletePost = "";
           // eslint-disable-next-line
           this.posts!.splice(index, 1);
+          systemService().openToast({ message: "Post eliminado" });
         })
         .catch((e) => {
-          this.spinners.buttonDeletePost = false;
+          this.spinners.buttonDeletePost = "";
           console.log(e);
         });
     },

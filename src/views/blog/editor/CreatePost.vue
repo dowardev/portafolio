@@ -84,6 +84,7 @@ export default defineComponent({
         this.spinners.savePost = false;
         eventBus().emitter.emit("refresh-content", { event: "new-post" });
         this.clearInputs();
+        systemService().openToast({ message: "Post agregado" });
         this.$router.go(-1);
       } catch (e: any) {
         console.error(e);
