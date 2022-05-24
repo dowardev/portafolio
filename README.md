@@ -1,6 +1,6 @@
 # Porfolio Backend
 
-Backend para la aplicación del [porfolio](https://gitlab.com/gonzam4/portafolio)
+Backend para la aplicación del <a href="https://gitlab.com/gonzam4/portafolio" target="_blank">porfolio</a>
 
 ## Despliegue en local
 
@@ -27,12 +27,12 @@ Backend para la aplicación del [porfolio](https://gitlab.com/gonzam4/portafolio
 
 ## Información adicional
 
-Las nuevas características y errores encontrados están listados en el siguiente tablero [kanban](https://board.disroot.org/project/portafolio/kanban).
+Las nuevas características y errores encontrados están listados en el siguiente tablero <a href="https://board.disroot.org/project/portafolio/kanban" target="_blank">kanban</a>.
 
 Si te gusta el proyecto puedes contribuir de las siguientes formas
 
 - Contribuyendo a la corrección de errores.
-- Reportar errores, para ello tienes 2 formas: creando un issue dentro de este mismo repositorio o contactarme a través de los medios listados en [dowar.xyz](https://dowar.xyz).
+- Reportar errores, para ello tienes 2 formas: creando un issue dentro de este mismo repositorio o contactarme a través de los medios listados en <a href="https://dowar.xyz" target="_blank">dowar.xyz</a>.
 
 Este es un proyecto de software libre, por lo que podrás usar de manera total o parcial el código contenido en él, siempre y cuando se mantenga dentro de las normas establecidas en la licencia con la cual está siendo desarrollado.
 
