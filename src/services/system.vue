@@ -26,43 +26,35 @@ import apolloClient from "../Apollo";
 const apollo = apolloClient;
 
 export default function () {
-  async function getTheme(): Promise<boolean | null> {
-    return await storage.get("darkMode");
+  async function getTheme(): Promise<"aut" | "light" | "dark" | null> {
+    return await storage.get("theme");
   }
 
-  async function setTheme({ status }: Theme): Promise<void> {
-    if (status) {
-      document.getElementsByTagName("body")[0].classList.add("dark");
-    }
-    if (status == false) {
-      document.getElementsByTagName("body")[0].classList.remove("dark");
-    }
-    if (status == null) {
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        document.getElementsByTagName("body")[0].classList.add("dark");
-      }
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches == false) {
+  async function setTheme({ theme }: Theme): Promise<void> {
+    if (theme == "aut") {
+      const value = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (value) document.getElementsByTagName("body")[0].classList.add("dark");
+
+      if (value == false)
         document.getElementsByTagName("body")[0].classList.remove("dark");
-      }
     }
-    saveTheme({ status });
+
+    if (theme == "dark")
+      document.getElementsByTagName("body")[0].classList.add("dark");
+
+    if (theme == "light")
+      document.getElementsByTagName("body")[0].classList.remove("dark");
   }
 
-  async function saveTheme({ status }: Theme): Promise<void> {
-    await storage.set("darkMode", status);
+  async function saveTheme({ theme }: Theme): Promise<void> {
+    await storage.set("theme", theme);
   }
 
   async function detectToggleTheme(): Promise<void> {
     window.matchMedia("(prefers-color-scheme: dark)").addListener(async (e) => {
-      const darkMode = await systemService().getTheme();
-      if (darkMode == null) {
-        if (e.matches) {
-          setTheme({ status: true });
-          saveTheme({ status: null });
-        } else {
-          saveTheme({ status: false });
-          setTheme({ status: null });
-        }
+      const theme = await systemService().getTheme();
+      if (theme == null || theme == "aut") {
+        setTheme({ theme: e.matches == true ? "dark" : "light" });
       }
     });
   }
@@ -73,7 +65,10 @@ export default function () {
     let color = params.color;
 
     if (params.color == undefined)
-      color = (await getTheme()) ? "dark" : "light";
+      color =
+        window.matchMedia("(prefers-color-scheme: dark)").matches == true
+          ? "dark"
+          : "light";
 
     const toast = await toastController.create({
       message: params.message,
@@ -215,6 +210,7 @@ export default function () {
     createFirstCookie,
     getFirstCookie,
     uploadImage,
+    saveTheme,
   };
 }
 </script>

@@ -11,7 +11,6 @@ import CreatePost from "../views/blog/editor/CreatePost.vue";
 import UpdatePost from "../views/blog/editor/UpdatePost.vue";
 import BlogPage from "../views/blog/posts/PostsPage.vue";
 import PostPage from "../views/blog/post/PostPage.vue";
-import PostsPage2 from "../views/blog/posts/PostsPage2.vue";
 // auth
 import LoginPage from "../views/session/login/Login.vue";
 import SignUpPage from "../views/session/signup/SignUpPage.vue";

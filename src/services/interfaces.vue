@@ -102,7 +102,7 @@ interface Toast {
 }
 
 interface Theme {
-  status: boolean | null;
+  theme: "aut" | "light" | "dark";
 }
 
 interface Loading {

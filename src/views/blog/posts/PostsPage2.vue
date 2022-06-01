@@ -62,19 +62,14 @@
       </ion-header>
 
       <!-- date selector -->
-      <ion-item-divider sticky v-if="dates!.length > 0">
+      <ion-item-divider sticky>
         <div style="width: 100%; display: flex; justify-content: center">
           <ion-button fill="clear" @click="previousPage">
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
 
           <!-- pages -->
-          <ion-item
-            button="true"
-            id="open-date-input"
-            lines="none"
-            v-if="dates!.length > 0"
-          >
+          <ion-item button="true" id="open-date-input" lines="none">
             <ion-text style="color: var(--accent-color) !important">
               {{ currentPage }}
             </ion-text>
@@ -86,6 +81,7 @@
                 :value="currentPage"
                 ref="datetime"
                 firstDayOfWeek="1"
+                locale="es-mx"
               ></ion-datetime>
             </ion-popover>
           </ion-item>
@@ -98,7 +94,7 @@
       </ion-item-divider>
 
       <!-- posts -->
-      <section v-if="posts!.length > 0" class="ion-padding">
+      <section class="ion-padding">
         <ion-row v-for="(post, index) in posts" :key="post">
           <ion-col size="4">
             <img
@@ -234,9 +230,6 @@ export default defineComponent({
 
   mounted() {
     this.verifyUserAdmin();
-    eventBus().emitter.on("refresh-user-content", () => {
-      this.verifyUserAdmin();
-    });
   },
 
   methods: {

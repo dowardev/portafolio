@@ -39,16 +39,19 @@ export default defineComponent({
     IonMenu,
     IonSplitPane,
   },
+
   mounted() {
     this.createFirstCookie();
     systemService().detectToggleTheme();
     systemService()
       .getTheme()
       .then((response) => {
-        systemService().setTheme({ status: response });
+        const theme = response == null ? "aut" : response;
+        systemService().setTheme({ theme: theme });
       });
     this.getUser();
   },
+
   methods: {
     async getUser() {
       const query = `

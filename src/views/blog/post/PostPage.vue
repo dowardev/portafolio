@@ -37,11 +37,35 @@
         <ion-toolbar>
           <h1 class="ion-padding-start">{{ post.title }}</h1>
           <ion-buttons slot="end" v-if="isUserAdmin" :collapse="true">
-            <ion-button fill="clear" @click="updatePost()">
-              <ion-icon :icon="createOutline"></ion-icon>
+            <ion-button
+              fill="clear"
+              @click="updatePost()"
+              :disabaled="spinners.buttonUpdate == true"
+            >
+              <ion-icon
+                :icon="createOutline"
+                v-if="spinners.buttonUpdate == false"
+              ></ion-icon>
+              <ion-spinner
+                name="crescent"
+                v-if="spinners.buttonUpdate == true"
+              ></ion-spinner>
             </ion-button>
-            <ion-button fill="clear" @click="deletePost()">
-              <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+
+            <ion-button
+              fill="clear"
+              @click="deletePost()"
+              :disabaled="spinners.buttonDelete == true"
+            >
+              <ion-icon
+                :icon="trashOutline"
+                color="danger"
+                v-if="spinners.buttonDelete == false"
+              ></ion-icon>
+              <ion-spinner
+                name="crescent"
+                v-if="spinners.buttonDelete == true"
+              ></ion-spinner>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
@@ -87,7 +111,8 @@ import {
 } from "ionicons/icons";
 import systemService from "../../../services/system.vue";
 import userService from "../../../services/user.vue";
-import { utcToZonedTime, format } from "date-fns-tz";
+import { format, parseISO } from "date-fns";
+import eventBus from "../../../EventBus";
 
 export default defineComponent({
   name: "PostPage",
@@ -117,12 +142,18 @@ export default defineComponent({
         updated: "",
       },
       isUserAdmin: false,
+      spinners: { buttonUpdate: false, buttonDelete: false },
     };
   },
+
   mounted() {
     this.getPost();
     this.verifyUserAdmin();
+    eventBus().emitter.on("update-post", () => {
+      this.getPost();
+    });
   },
+
   methods: {
     async getPost() {
       const loading = await systemService().presentLoading({
@@ -148,17 +179,18 @@ export default defineComponent({
         const title = response.title ? response.title : "";
         const content = response.content ? response.content : "";
         const coverSource = response.cover.source ? response.cover.source : "";
-        const created = utcToZonedTime(
-          new Date(response.created_at + "Z"),
-          "America/Chihuahua"
+
+        const postCreated = format(
+          // eslint-disable-next-line
+          parseISO(response.created_at!),
+          "dd/MM/yyyy"
         );
 
-        const postCreated = format(created, "P");
-        const updated = utcToZonedTime(
-          new Date(response.updated_at + "Z"),
-          "America/Chihuahua"
+        const postUpdated = format(
+          // eslint-disable-next-line
+          parseISO(response.updated_at!),
+          "dd/MM/yyyy"
         );
-        const postUpdated = format(updated, "P");
 
         this.setData({
           title,
@@ -187,26 +219,34 @@ export default defineComponent({
       this.post.created = data.created;
       this.post.updated = data.updated;
     },
-    updatePost() {
-      this.$router.push("/blog/editor/update/" + this.postId);
-    },
-    async deletePost() {
-      const loading = await systemService().presentLoading({
-        message: "Eliminando publicación",
-      });
-      loading.present();
 
-      postService()
-        .deletePost({ id: this.postId as string })
-        .then(() => {
-          loading.dismiss();
-          this.$router.push("/blog");
-        })
-        .catch((e) => {
-          loading.dismiss();
-          console.error(e);
-          systemService().openToastErrror(e);
-        });
+    async updatePost() {
+      this.spinners.buttonUpdate = true;
+      await this.$router.push("/blog/editor/update/" + this.postId);
+      this.spinners.buttonUpdate = false;
+    },
+
+    async deletePost() {
+      this.spinners.buttonDelete = true;
+
+      const alertResponse = await systemService().presentAlertConfirmation({
+        message: "¿Desea eliminar el post?",
+      });
+
+      if (alertResponse == false) {
+        this.spinners.buttonDelete = false;
+        return;
+      }
+
+      try {
+        await postService().deletePost({ id: this.postId as string });
+        this.spinners.buttonDelete = false;
+        this.$router.go(-1);
+        eventBus().emitter.emit("new-post");
+      } catch (e: any) {
+        this.spinners.buttonDelete = false;
+        systemService().openToastErrror(e);
+      }
     },
 
     async verifyUserAdmin() {

@@ -85,7 +85,7 @@
                 loadingData.dates.status == 'error' &&
                 loadingData.dates.message == 'No dates'
               "
-              @click="loadData()"
+              @click="loadContent()"
             >
               <ion-label v-if="spinners.buttonAddPost == false"
                 ><ion-icon :icon="refreshOutline"></ion-icon
@@ -241,7 +241,7 @@ export default defineComponent({
 
   mounted() {
     this.verifyUserAdmin();
-    this.loadData();
+    this.loadContent();
 
     eventBus().emitter.on("event-posts1-data", (response: any) => {
       if (response.option == "next") this.nextPage(response.currentPage);
@@ -251,68 +251,93 @@ export default defineComponent({
 
       if (response.option == "goTo") this.goToPage(response.currentPage);
 
-      if (response.option == "refresh") this.loadData();
+      if (response.option == "refresh") this.loadContent();
     });
 
-    eventBus().emitter.on("refresh-content", (response: any) => {
-      if (response.event == "new-post") {
-        this.loadData();
-      }
+    eventBus().emitter.on("new-post", () => {
+      this.loadContent();
+    });
+
+    eventBus().emitter.on("update-post", () => {
+      this.loadContent();
     });
   },
 
   methods: {
-    async loadData() {
-      this.loadingData.data.status = "loading";
-      this.loadingData.dates.status = "loading";
-      this.loadingData.posts.status = "loading";
-
+    async loadDates(): Promise<Array<string>> {
       let dates = Array<string>();
       try {
         dates = await this.getPostsDates();
-        if (dates.length == 0) {
-          this.loadingData.dates.status = "error";
-          this.loadingData.dates.message = "No dates";
-          return;
-        }
-        this.loadingData.dates.status = "finished";
+        if (dates.length == 0) return [];
       } catch (e: any) {
         this.loadingData.dates.status = "error";
-        return;
+        return [];
       }
+      this.loadingData.dates.status = "finished";
+      return dates;
+    },
 
-      let currentPage = String();
-      currentPage = this.$route.params.date as string;
+    loadData(params: { dates: Array<string> }): string {
+      let currentPage =
+        this.$route.params.date != undefined
+          ? (this.$route.params.date as string)
+          : this.currentPage;
 
       if (this.$route.path == "/blog" || this.$route.path == "/blog/") {
         try {
-          const date = dates.pop() as string;
+          const date = params.dates.pop() as string;
           currentPage = new Date(date).toISOString().split("T")[0];
-          this.$router.replace("/blog/" + currentPage);
+          // this.$router.replace("/blog/" + currentPage);
         } catch (e: any) {
           if (e.message == "No dates") {
             const today = formatISO(new Date(), {
               representation: "date",
             });
             this.$router.replace("/blog/" + today);
-            return;
+            return "";
           }
-          this.loadingData.data.status = "error";
           console.error(e);
           systemService().openToastErrror(e);
-          return;
+          return "";
         }
+      }
+      return currentPage;
+    },
+
+    async loadPosts(params: { currentPage: string }): Promise<Array<Post>> {
+      let posts = Array<Post>();
+      try {
+        posts = await this.getPosts(params.currentPage);
+      } catch (e: any) {
+        return [];
+      }
+      return posts;
+    },
+
+    async loadContent() {
+      this.loadingData.data.status = "loading";
+      this.loadingData.dates.status = "loading";
+      this.loadingData.posts.status = "loading";
+
+      const dates = await this.loadDates();
+      if (dates.length == 0) {
+        this.loadingData.dates.status = "error";
+        this.loadingData.dates.message = "No dates";
+        return;
       }
       this.loadingData.data.status = "finished";
 
-      let posts = Array<Post>();
+      const currentPage = this.loadData({ dates });
+      if (currentPage == "") {
+        this.loadingData.dates.status = "error";
+      }
+      this.loadingData.dates.status = "finished";
 
-      try {
-        posts = await this.getPosts(currentPage);
-        this.loadingData.posts.status = "finished";
-      } catch (e: any) {
+      const posts = await this.loadPosts({ currentPage });
+      if (posts.length == 0) {
         this.loadingData.posts.status = "error";
       }
+      this.loadingData.posts.status = "finished";
 
       this.currentPage = currentPage;
       this.dates = dates;

@@ -7,25 +7,25 @@
             <ion-icon :icon="closeOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <ion-title>Modo oscuro</ion-title>
+        <ion-title>Tema</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-radio-group v-model="darkMode" @ionChange="setTheme()">
+      <ion-radio-group v-model="theme" @ionChange="setTheme()">
         <ion-item>
-          <ion-label>Activado</ion-label>
-          <ion-radio slot="start" :value="true"></ion-radio>
+          <ion-label>Dia luminoso</ion-label>
+          <ion-radio slot="start" value="light"></ion-radio>
         </ion-item>
 
         <ion-item>
-          <ion-label>Desactivado</ion-label>
-          <ion-radio slot="start" :value="false"></ion-radio>
+          <ion-label>Noche oscura</ion-label>
+          <ion-radio slot="start" value="dark"></ion-radio>
         </ion-item>
 
         <ion-item>
           <ion-label>Automático</ion-label>
-          <ion-radio slot="start" :value="null"></ion-radio>
+          <ion-radio slot="start" value="aut"></ion-radio>
         </ion-item>
       </ion-radio-group>
     </ion-content>
@@ -65,9 +65,8 @@ export default defineComponent({
     return { closeOutline };
   },
   data() {
-    const darkMode = false as boolean | null;
     return {
-      darkMode,
+      theme: "aut" as "aut" | "light" | "dark",
     };
   },
   mounted() {
@@ -77,14 +76,16 @@ export default defineComponent({
     async getTheme() {
       try {
         const response = await systemService().getTheme();
-        this.darkMode = response;
+        this.theme = response == null ? "aut" : response;
       } catch (e: any) {
         console.error(e);
         systemService().openToastErrror(e);
       }
     },
+
     setTheme() {
-      systemService().setTheme({ status: this.darkMode });
+      systemService().setTheme({ theme: this.theme });
+      systemService().saveTheme({ theme: this.theme });
     },
     closeModal() {
       modalController.dismiss();
