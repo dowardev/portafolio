@@ -218,6 +218,22 @@ interface DeleteUserAccount {
   password: string;
 }
 
+// admin
+interface GetUsers {
+  query: string;
+  first: number;
+  page: number;
+}
+interface GetUsersResponse {
+  users: Array<User>;
+  paginatorInfo: {
+    currentPage: number;
+    lastPage: number;
+    hasMorePages: boolean;
+    total: number;
+  };
+}
+
 export {
   Feedback,
   Post,
@@ -253,5 +269,7 @@ export {
   SaveUserData,
   UpdateUserPassword,
   DeleteUserAccount,
+  GetUsers,
+  GetUsersResponse,
 };
 </script>

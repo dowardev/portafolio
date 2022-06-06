@@ -93,5 +93,10 @@ export default defineComponent({
     IonTitle,
     IonToolbar,
   },
+
+  data(){
+    const rq=0;
+    console.log(rq)
+  }
 });
 </script>

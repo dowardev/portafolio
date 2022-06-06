@@ -43,7 +43,8 @@ export default defineComponent({
     IonTitle,
     IonToolbar,
   },
-  data() {
+
+  setup() {
     return {
       pageTitle: "Home",
     };

@@ -9,6 +9,7 @@
         <ion-item lines="none" v-if="userLogged == false">
           <ion-label style="color: white !important">Bienvenido</ion-label>
 
+          <!-- no logged -->
           <ion-button
             fill="clear"
             @click="login()"
@@ -44,6 +45,7 @@
           </ion-button>
         </ion-item>
 
+        <!-- logged -->
         <ion-item lines="none" v-if="userLogged == true">
           <ion-avatar slot="start">
             <img :src="user.imageSource" />
@@ -52,38 +54,85 @@
           <ion-label style="color: white !important">{{ user.user }}</ion-label>
 
           <ion-button
+            @click="setOpenPopOverUserOptions(true, $event)"
             fill="clear"
-            @click="goToUserPanel()"
-            :disabled="spinners.buttonUserPanel"
           >
-            <ion-icon
-              :icon="personOutline"
-              v-if="spinners.buttonUserPanel == false"
-            ></ion-icon>
-            <ion-spinner
-              name="crescent"
-              v-if="spinners.buttonUserPanel"
-              color="primary"
-            >
-            </ion-spinner>
+            <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
           </ion-button>
+          <ion-popover
+            :is-open="isOpenRefPopOverUserOptions"
+            css-class="my-custom-class"
+            :event="eventPopOverUserOptions"
+            @didDismiss="setOpenPopOverUserOptions(false)"
+          >
+            <ion-content>
+              <!-- admin panel -->
+              <ion-item
+                button
+                @click="goToAdminPanel()"
+                :disabled="spinners.buttonAdminPanel"
+                lines="none"
+              >
+                <ion-icon
+                  :icon="cogOutline"
+                  v-if="spinners.buttonAdminPanel == false"
+                  slot="start"
+                ></ion-icon>
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.buttonAdminPanel"
+                  color="primary"
+                  slot="start"
+                >
+                </ion-spinner>
+                <ion-label>Panel administrador</ion-label>
+              </ion-item>
 
-          <ion-button
-            fill="clear"
-            @click="logout()"
-            :disabled="spinners.buttonLogout"
-          >
-            <ion-icon
-              :icon="logOutOutline"
-              v-if="spinners.buttonLogout == false"
-            ></ion-icon>
-            <ion-spinner
-              name="crescent"
-              v-if="spinners.buttonLogout"
-              color="primary"
-            >
-            </ion-spinner>
-          </ion-button>
+              <!-- user panel -->
+              <ion-item
+                button
+                @click="goToUserPanel()"
+                :disabled="spinners.buttonUserPanel"
+                lines="none"
+              >
+                <ion-icon
+                  :icon="personOutline"
+                  v-if="spinners.buttonUserPanel == false"
+                  slot="start"
+                ></ion-icon>
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.buttonUserPanel"
+                  color="primary"
+                  slot="start"
+                >
+                </ion-spinner>
+                <ion-label>Panel usuario</ion-label>
+              </ion-item>
+
+              <!-- logout -->
+              <ion-item
+                button
+                @click="logout()"
+                :disabled="spinners.buttonLogout"
+                lines="none"
+              >
+                <ion-icon
+                  :icon="logOutOutline"
+                  v-if="spinners.buttonLogout == false"
+                  slot="start"
+                ></ion-icon>
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.buttonLogout"
+                  color="primary"
+                  slot="start"
+                >
+                </ion-spinner>
+                <ion-label>Cerrar sesion</ion-label>
+              </ion-item>
+            </ion-content>
+          </ion-popover>
         </ion-item>
       </ion-toolbar>
 
@@ -176,7 +225,7 @@
             <ion-content>
               <ion-item
                 button
-                lines="full"
+                lines="none"
                 href="https://www.gitlab.com/gonzam4/portafolio"
                 target="_blank"
               >
@@ -186,6 +235,7 @@
                 button
                 href="https://gitlab.com/gonzam4/portfolio-backend"
                 target="_blank"
+                lines="none"
               >
                 <ion-label>Backend</ion-label>
               </ion-item>
@@ -244,7 +294,7 @@ import {
   IonIcon,
   IonSpinner,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import {
   brushOutline,
   personAddOutline,
@@ -255,6 +305,8 @@ import {
   appsOutline,
   documentsOutline,
   personOutline,
+  cogOutline,
+  ellipsisVerticalOutline,
 } from "ionicons/icons";
 import DarkMode from "./darkmode/DarkMode.vue";
 import sessionService from "../../services/session.vue";
@@ -277,7 +329,14 @@ export default defineComponent({
     IonIcon,
     IonSpinner,
   },
+
   setup() {
+    const isOpenRefPopOverUserOptions = ref(false);
+    const eventPopOverUserOptions = ref();
+    const setOpenPopOverUserOptions = (state: boolean, ev?: Event) => {
+      eventPopOverUserOptions.value = ev;
+      isOpenRefPopOverUserOptions.value = state;
+    };
     return {
       isAndroidPlatform: isPlatform("android"),
       isIosPlatform: isPlatform("ios"),
@@ -290,8 +349,14 @@ export default defineComponent({
       appsOutline,
       documentsOutline,
       personOutline,
+      cogOutline,
+      ellipsisVerticalOutline,
+      isOpenRefPopOverUserOptions,
+      setOpenPopOverUserOptions,
+      eventPopOverUserOptions,
     };
   },
+
   data() {
     return {
       userLogged: false,
@@ -304,6 +369,7 @@ export default defineComponent({
         buttonSignup: false,
         buttonLogout: false,
         buttonUserPanel: false,
+        buttonAdminPanel: false,
       },
     };
   },
@@ -403,6 +469,7 @@ export default defineComponent({
         console.error(e);
         systemService().openToastErrror(e);
       }
+      this.isOpenRefPopOverUserOptions = false;
       menuController.close();
     },
 
@@ -427,6 +494,15 @@ export default defineComponent({
       this.spinners.buttonUserPanel = true;
       await this.$router.push("/user");
       this.spinners.buttonUserPanel = false;
+      this.isOpenRefPopOverUserOptions = false;
+      if (isPlatform("mobile")) menuController.close();
+    },
+
+    async goToAdminPanel() {
+      this.spinners.buttonAdminPanel = true;
+      await this.$router.push("/admin-panel");
+      this.spinners.buttonAdminPanel = false;
+      this.isOpenRefPopOverUserOptions = false;
       if (isPlatform("mobile")) menuController.close();
     },
   },

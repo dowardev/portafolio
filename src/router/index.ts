@@ -18,6 +18,8 @@ import RestorePasswordPage from "../views/session/restore-password/RestorePasswo
 import PruebaPage from "../views/prueba/Prueba.vue";
 // user
 import UserPanelPage from "../views/user/UserPanelPage.vue";
+// admin
+import AdminPanelPage from "../views/admin/PanelAdminPage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -104,6 +106,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/user",
     name: "UserPanelPage",
     component: UserPanelPage,
+  },
+  {
+    path: "/admin-panel",
+    name: "AdminPanelPage",
+    component: AdminPanelPage,
   },
 ];
 
