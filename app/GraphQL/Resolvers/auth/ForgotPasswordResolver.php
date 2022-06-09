@@ -37,7 +37,7 @@ class ForgotPasswordResolver
 
       Mail::send(
         'emails.emailCodeResetPassword',
-        ['code' => $codeData->code],
+        ['code' => $codeData->code, 'email' => $args['email']],
         function ($message) use ($email) {
           $message->to($email);
           $message->subject('Email Verification Mail');

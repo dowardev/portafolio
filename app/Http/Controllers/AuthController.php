@@ -126,59 +126,6 @@ class AuthController extends Controller
 
     return $message;
   }
-  public function sendCodeResetPassword(Request $request)
-  {
-    try {
-      $data = $request->validate([
-        'email' => 'required|email|exists:users',
-      ]);
-    } catch (\Throwable $th) {
-      return response()->json(['message' => 'Success'], 200);
-    }
-
-    ResetCodePassword::where('email', $request->email)->delete();
-
-    $data['code'] = mt_rand(100000, 999999);
-
-    $codeData = ResetCodePassword::create($data);
-
-    Mail::send(
-      'emails.emailCodeResetPassword',
-      ['code' => $codeData->code],
-      function ($message) use ($request) {
-        $message->to($request->email);
-        $message->subject('Email Verification Mail');
-      }
-    );
-
-    return response()->json(['message' => 'Success'], 200);
-  }
-
-  function verifyCodeResetPassword(Request $request)
-  {
-    $email = $request->email;
-    $code = $request->code;
-    try {
-      $result = ResetCodePassword::where('email', '=', $email)
-        ->where('code', '=', $code)
-        ->get();
-      if (sizeof($result) > 0) {
-        return response()->json(['message' => 'Code valid'], 200);
-      } else {
-        throw new Exception('Code invalid');
-      }
-    } catch (Exception $e) {
-      throw new Exception($e->getMessage());
-    }
-  }
-
-  function resetPassword(Request $request)
-  {
-    ResetCodePassword::where('email', $request->email)->delete();
-    return User::where('email', '=', $request->email)->update([
-      'password' => bcrypt($request->password),
-    ]);
-  }
 
   public function verifyNewEmail(Request $request)
   {
