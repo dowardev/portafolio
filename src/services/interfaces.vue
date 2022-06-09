@@ -127,6 +127,8 @@ interface User {
   email?: string;
   is_admin?: boolean;
   rol?: Array<any>;
+  is_email_verified?: boolean;
+  is_user_disabled?: boolean;
 }
 
 interface GetUser {
@@ -217,6 +219,12 @@ interface UpdateUserPassword {
 interface DeleteUserAccount {
   password: string;
 }
+interface ResendEmailConfirmation {
+  email: string;
+}
+interface ResendEmailConfirmationResponse {
+  message: string;
+}
 
 // admin
 interface GetUsers {
@@ -232,6 +240,35 @@ interface GetUsersResponse {
     hasMorePages: boolean;
     total: number;
   };
+}
+interface SearchUsers {
+  query: string;
+  first: number;
+  page: number;
+  name?: string;
+  email?: string;
+}
+interface SearchUsersResponse {
+  users: Array<User>;
+  paginatorInfo: {
+    currentPage: number;
+    lastPage: number;
+    hasMorePages: boolean;
+    total: number;
+  };
+}
+interface DisableUser {
+  id: string;
+  disableUser: boolean;
+}
+interface DisableUserResponse {
+  message: string;
+}
+interface DeleteUserAccountAdmin {
+  email: string;
+}
+interface DeleteUserAccountAdminResponse {
+  message: string;
 }
 
 export {
@@ -271,5 +308,13 @@ export {
   DeleteUserAccount,
   GetUsers,
   GetUsersResponse,
+  SearchUsers,
+  SearchUsersResponse,
+  DisableUser,
+  DisableUserResponse,
+  ResendEmailConfirmation,
+  ResendEmailConfirmationResponse,
+  DeleteUserAccountAdmin,
+  DeleteUserAccountAdminResponse,
 };
 </script>

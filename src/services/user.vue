@@ -12,6 +12,8 @@ import {
   SetUserData,
   UserToken,
   DeleteUserAccount,
+  ResendEmailConfirmation,
+  ResendEmailConfirmationResponse,
 } from "./interfaces.vue";
 
 const apollo = apolloClient;
@@ -265,6 +267,30 @@ export default function () {
     }
   }
 
+  async function resendEmailConfirmation(
+    params: ResendEmailConfirmation
+  ): Promise<ResendEmailConfirmationResponse> {
+    try {
+      const response = await apollo.defaultClient.mutate({
+        mutation: gql`
+          mutation ($email: String!) {
+            resendEmailConfirmation(input: { email: $email }) {
+              message
+            }
+          }
+        `,
+        variables: {
+          email: params.email,
+        },
+      });
+
+      return { message: response.data.resendEmailConfirmation.message };
+    } catch (e: any) {
+      if (e.graphQLErrors) throw Error(e.graphQLErrors[0].debugMessage);
+      throw Error(e.message);
+    }
+  }
+
   return {
     getUserToken,
     setUserToken,
@@ -276,6 +302,7 @@ export default function () {
     getUserName,
     saveUserData,
     deleteUserAccount,
+    resendEmailConfirmation,
   };
 }
 </script>

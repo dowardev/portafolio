@@ -323,6 +323,7 @@ export default defineComponent({
       this.form.email = "";
     },
 
+    // TODO: replace with new method
     async alertConfirmationEmail() {
       const alert = await alertController.create({
         cssClass: "my-custom-class",
