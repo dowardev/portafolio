@@ -200,8 +200,12 @@ interface CodeResetPassword {
 }
 
 interface ResetPassword {
+  code: string;
   email: string;
   password: string;
+}
+interface ResetPasswordResponse {
+  message: string;
 }
 
 interface SaveUserData {
@@ -316,5 +320,6 @@ export {
   ResendEmailConfirmationResponse,
   DeleteUserAccountAdmin,
   DeleteUserAccountAdminResponse,
+  ResetPasswordResponse,
 };
 </script>

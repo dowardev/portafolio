@@ -323,7 +323,6 @@ export default defineComponent({
       this.form.email = "";
     },
 
-    // TODO: replace with new method
     async alertConfirmationEmail() {
       const alert = await alertController.create({
         cssClass: "my-custom-class",
@@ -336,7 +335,9 @@ export default defineComponent({
         buttons: [
           {
             text: "Continuar",
-            // handler: () => {},
+            handler: () => {
+              userService().resendEmailConfirmation({ email: this.form.email });
+            },
           },
         ],
       });
@@ -353,7 +354,22 @@ export default defineComponent({
 
     async forgotPassword() {
       this.spinners.buttonForgotPassword = true;
-      await this.$router.push("/restore-password");
+
+      const alertResponse = await this.presentAlertRestorePassword();
+      if (alertResponse.role == "cancel") {
+        this.spinners.buttonForgotPassword = false;
+        return;
+      }
+
+      try {
+        await sessionService().sendMailResetPassword({
+          email: alertResponse.email,
+        });
+      } catch (e: any) {
+        console.error(e);
+        systemService().openToastErrror(e);
+      }
+
       this.spinners.buttonForgotPassword = false;
     },
 
@@ -361,6 +377,46 @@ export default defineComponent({
       this.spinners.buttonCreateAccount = true;
       await this.$router.push("/signup");
       this.spinners.buttonCreateAccount = false;
+    },
+
+    async presentAlertRestorePassword(): Promise<{
+      email: string;
+      role: string;
+    }> {
+      const alert = await alertController.create({
+        cssClass: "my-custom-class",
+        header: "Restauracion de contraseña",
+        message:
+          "Te enviaremos un correo electronico con las intrucciones para restablecer tu contraseña.",
+        inputs: [
+          {
+            name: "email",
+            id: "email",
+            placeholder: "Correo electronico",
+            type: "email",
+          },
+        ],
+        buttons: [
+          {
+            text: "Cancelar",
+            role: "cancel",
+            cssClass: "secondary",
+            handler: () => {
+              // console.log("Confirm Cancel");
+            },
+          },
+          {
+            text: "Confirmar",
+            handler: (e) => {
+              // console.log(e);
+            },
+          },
+        ],
+      });
+
+      await alert.present();
+      const response = await alert.onDidDismiss();
+      return { email: response.data.values.email, role: response.role! };
     },
   },
 });

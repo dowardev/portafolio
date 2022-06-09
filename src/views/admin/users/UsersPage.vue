@@ -607,7 +607,6 @@ export default defineComponent({
       }
     },
 
-    // TODO: pending
     async sendMailResetPassword(email: string) {
       const alertResponse = await systemService().presentAlertConfirmation({
         message:
@@ -620,6 +619,8 @@ export default defineComponent({
         await sessionService().sendMailResetPassword({
           email,
         });
+
+        systemService().openToast({ message: "Instrucciones enviadas" });
       } catch (e: any) {
         console.error(e);
         systemService().openToastErrror(e);

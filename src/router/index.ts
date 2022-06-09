@@ -93,7 +93,7 @@ const routes: Array<RouteRecordRaw> = [
     component: SignUpPage,
   },
   {
-    path: "/restore-password",
+    path: "/restore-password/:email/:code",
     name: "RestorePasswordPage",
     component: RestorePasswordPage,
   },

@@ -12,6 +12,7 @@ import {
   UserRegisterResponse,
   UserLoginResponse,
   UpdateUserPassword,
+  ResetPasswordResponse,
 } from "./interfaces.vue";
 
 const apollo = apolloClient;
@@ -110,52 +111,53 @@ export default function () {
     params: EmailResetPassword
   ): Promise<void> {
     try {
-      await axios.post(
-        systemService().getBaseURL() + "api/auth/mail-reset-password",
-        { headers: { Accept: "application/json" } },
-        {
-          params: {
-            email: params.email,
-          },
-        }
-      );
+      await apollo.defaultClient.mutate({
+        mutation: gql`
+          mutation ($email: String!) {
+            forgotPassword(input: { email: $email }) {
+              message
+            }
+          }
+        `,
+        variables: {
+          email: params.email,
+        },
+      });
     } catch (e: any) {
       if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
       throw new Error(e.message);
     }
   }
 
-  async function sendCodeResetPassword(
-    params: CodeResetPassword
-  ): Promise<void> {
+  async function resetPassword(
+    params: ResetPassword
+  ): Promise<ResetPasswordResponse> {
     try {
-      await axios.post(
-        systemService().getBaseURL() + "api/auth/code-reset-password",
-        { headers: { Accept: "application/json" } },
-        {
-          params: {
-            email: params.email,
-            code: params.code,
-          },
-        }
-      );
-    } catch (e: any) {
-      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
-      throw new Error(e.response.data.message);
-    }
-  }
-
-  function resetPassword(params: ResetPassword): Promise<void> {
-    return axios.post(
-      systemService().getBaseURL() + "api/auth/reset-password",
-      { headers: { Accept: "application/json" } },
-      {
-        params: {
+      const response = await apollo.defaultClient.mutate({
+        mutation: gql`
+          mutation ($code: String!, $email: String!, $password: String!) {
+            restoreUserPassword(
+              input: { code: $code, email: $email, password: $password }
+            ) {
+              message
+            }
+          }
+        `,
+        variables: {
+          code: params.code,
           email: params.email,
           password: params.password,
         },
-      }
-    );
+      });
+
+      const message = response.data.restoreUserPassword.message;
+      if (message == "Code invalid") throw new Error("Code invalid");
+
+      return { message };
+    } catch (e: any) {
+      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
+      throw new Error(e.message);
+    }
   }
 
   async function updateUserPassword(params: UpdateUserPassword) {
@@ -197,7 +199,6 @@ export default function () {
     userLogin,
     logout,
     sendMailResetPassword,
-    sendCodeResetPassword,
     resetPassword,
     removeUserCached,
     updateUserPassword,
