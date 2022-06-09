@@ -41,6 +41,7 @@ class GetUserAuthResolver
         'is_admin' => $response->is_admin,
         'rol' => $response->rol,
         'image_source' => $image_source,
+        'is_user_disabled' => $response->is_user_disabled,
       ];
 
       return [

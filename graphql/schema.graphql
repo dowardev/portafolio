@@ -76,6 +76,22 @@ input UpdateUserPasswordInput {
 input DeleteUserAccountInput {
   password: String!
 }
+input GetUsers {
+  users: [User]
+}
+input DisableUser {
+  id: String!
+  user_disabled: Boolean!
+}
+input ResendEmailConfirmation {
+  email: String!
+}
+input DeleteUserAccountAdminInput {
+  email: String!
+}
+type DeleteUserAccountAdminPayload {
+  message: String!
+}
 
 type User {
   id: ID!
@@ -86,6 +102,7 @@ type User {
   rol: [String]
   user: String!
   image_source: String
+  is_user_disabled: Boolean!
 }
 type Post {
   id: ID
@@ -181,6 +198,23 @@ type UpdateUserPasswordPayload {
 type DeleteUserAccountPayload {
   message: String!
 }
+type GetUsersPayload {
+  message: String!
+  code: Int!
+}
+type DisableUserPayload {
+  message: String!
+  code: Int!
+}
+type ResendEmailConfirmationPayload {
+  message: String!
+  code: Int!
+}
+
+enum Prueba {
+  name @enum(value: "name")
+  email @enum(value: "email")
+}
 
 type Query {
   # user(
@@ -212,6 +246,18 @@ type Query {
   getUserAuth: GetUserAuthPayload
     @field(
       resolver: "App\\GraphQL\\Resolvers\\auth\\GetUserAuthResolver@resolve"
+    )
+
+  users: [User]
+    @paginate(
+      defaultCount: 10
+      builder: "App\\GraphQL\\Resolvers\\admin\\GetUsers@resolve"
+    )
+
+  usersSearch(where: _ @whereConditions(columnsEnum: Prueba)): [User]
+    @paginate(
+      defaultCount: 10
+      builder: "App\\GraphQL\\Resolvers\\admin\\GetUsers@resolve"
     )
 }
 
@@ -288,5 +334,22 @@ type Mutation {
   ): DeleteUserAccountPayload
     @field(
       resolver: "App\\GraphQL\\Resolvers\\user\\DeleteUserAccountResolver@resolve"
+    )
+
+  disableUser(input: DisableUser @spread): DisableUserPayload
+    @field(resolver: "App\\GraphQL\\Resolvers\\admin\\DisableUser@resolve")
+
+  resendEmailConfirmation(
+    input: ResendEmailConfirmation @spread
+  ): ResendEmailConfirmationPayload
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\user\\ResendEmailConfirmationResolver@resolve"
+    )
+
+  deleteUserAccountAdmin(
+    input: DeleteUserAccountAdminInput @spread
+  ): DeleteUserAccountAdminPayload
+    @field(
+      resolver: "App\\GraphQL\\Resolvers\\admin\\DeleteUserAccountResolver@resolve"
     )
 }
