@@ -34,6 +34,10 @@ class LoginResolver
       throw new Exception('Not found');
     }
 
+    if ($userData[0]->is_user_disabled) {
+      throw new Exception('Disabled user');
+    }
+
     $credentials = [
       'email' => $userData[0]->email,
       'password' => $password,
