@@ -272,12 +272,10 @@ export default defineComponent({
           email,
           password,
         });
-        console.log(response.message);
 
-        if (response.message == "Updated password")
-          systemService().openToast({
-            message: "Contraseña restaurada",
-          });
+        systemService().openToast({
+          message: "Contraseña restaurada",
+        });
 
         this.$router.push("/login");
         this.spinners.buttonResetPassword = false;

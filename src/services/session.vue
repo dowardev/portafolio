@@ -7,12 +7,10 @@ import {
   UserRegister,
   UserLogin,
   EmailResetPassword,
-  CodeResetPassword,
   ResetPassword,
   UserRegisterResponse,
   UserLoginResponse,
   UpdateUserPassword,
-  ResetPasswordResponse,
 } from "./interfaces.vue";
 
 const apollo = apolloClient;
@@ -62,7 +60,7 @@ export default function () {
     const query = gql`
           mutation ($user: String!, $password: String!) {
             login(input: { user: $user, password: $password }) {
-              ${params.query} 
+              ${params.query}
             }
           }
         `;
@@ -75,7 +73,13 @@ export default function () {
         },
       });
 
-      return response.data.login;
+      return {
+        user: response.data.login.user,
+        auth: {
+          access_token: response.data.login.auth.access_token,
+          token_type: response.data.login.auth.token_type,
+        },
+      };
     } catch (e: any) {
       if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
       throw new Error(e.message);
@@ -129,11 +133,9 @@ export default function () {
     }
   }
 
-  async function resetPassword(
-    params: ResetPassword
-  ): Promise<ResetPasswordResponse> {
+  async function resetPassword(params: ResetPassword): Promise<void> {
     try {
-      const response = await apollo.defaultClient.mutate({
+      await apollo.defaultClient.mutate({
         mutation: gql`
           mutation ($code: String!, $email: String!, $password: String!) {
             restoreUserPassword(
@@ -149,11 +151,6 @@ export default function () {
           password: params.password,
         },
       });
-
-      const message = response.data.restoreUserPassword.message;
-      if (message == "Code invalid") throw new Error("Code invalid");
-
-      return { message };
     } catch (e: any) {
       if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
       throw new Error(e.message);

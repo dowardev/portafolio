@@ -183,10 +183,10 @@ interface UserLogin {
 }
 
 interface UserLoginResponse {
-  user: User;
+  user?: User;
   auth: {
-    access_token: string;
-    token_type: string;
+    access_token?: string;
+    token_type?: string;
   };
 }
 
@@ -194,18 +194,10 @@ interface EmailResetPassword {
   email: string;
 }
 
-interface CodeResetPassword {
-  email: string;
-  code: string;
-}
-
 interface ResetPassword {
   code: string;
   email: string;
   password: string;
-}
-interface ResetPasswordResponse {
-  message: string;
 }
 
 interface SaveUserData {
@@ -289,7 +281,6 @@ export {
   UserRegister,
   UserLogin,
   EmailResetPassword,
-  CodeResetPassword,
   ResetPassword,
   Theme,
   Loading,
@@ -320,6 +311,5 @@ export {
   ResendEmailConfirmationResponse,
   DeleteUserAccountAdmin,
   DeleteUserAccountAdminResponse,
-  ResetPasswordResponse,
 };
 </script>

@@ -288,6 +288,7 @@ export default defineComponent({
       const user = this.form.email.replace(/\s+/g, "");
       const password = this.form.password;
       const query = `
+            message
             auth {
               access_token
         }
@@ -298,9 +299,11 @@ export default defineComponent({
           user,
           password,
         });
-        this.spinners.buttonLogin = false;
+
         const token = "Bearer " + response.auth.access_token;
         userService().setUserToken({ token });
+
+        this.spinners.buttonLogin = false;
         this.clearInputs();
         location.reload();
       } catch (e: any) {
@@ -313,8 +316,16 @@ export default defineComponent({
           this.alertConfirmationEmail();
           return;
         }
+        if (e.message == "Disabled user") {
+          this.presentToast(
+            "Cuenta de usuario deshabilitada, para mas informacion contacte a soporte.",
+            "danger"
+          );
+          return;
+        }
+
         systemService().openToastErrror(e);
-        console.error(e);
+        console.error(e.message);
       }
     },
 
