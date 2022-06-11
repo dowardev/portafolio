@@ -418,7 +418,7 @@ export default defineComponent({
           },
           {
             text: "Confirmar",
-            handler: (e) => {
+            handler: () => {
               // console.log(e);
             },
           },
@@ -427,6 +427,7 @@ export default defineComponent({
 
       await alert.present();
       const response = await alert.onDidDismiss();
+      // eslint-disable-next-line
       return { email: response.data.values.email, role: response.role! };
     },
   },

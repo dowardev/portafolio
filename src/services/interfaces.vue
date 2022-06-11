@@ -218,9 +218,6 @@ interface DeleteUserAccount {
 interface ResendEmailConfirmation {
   email: string;
 }
-interface ResendEmailConfirmationResponse {
-  message: string;
-}
 
 // admin
 interface GetUsers {
@@ -257,14 +254,8 @@ interface DisableUser {
   id: string;
   disableUser: boolean;
 }
-interface DisableUserResponse {
-  message: string;
-}
 interface DeleteUserAccountAdmin {
   email: string;
-}
-interface DeleteUserAccountAdminResponse {
-  message: string;
 }
 
 export {
@@ -306,10 +297,7 @@ export {
   SearchUsers,
   SearchUsersResponse,
   DisableUser,
-  DisableUserResponse,
   ResendEmailConfirmation,
-  ResendEmailConfirmationResponse,
   DeleteUserAccountAdmin,
-  DeleteUserAccountAdminResponse,
 };
 </script>

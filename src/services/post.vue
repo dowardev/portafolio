@@ -31,9 +31,7 @@ export default function () {
                 coverId: $coverId
                 images: $images
               }
-            ) {
-              message
-            }
+            )
           }
         `,
         variables: {
@@ -72,10 +70,7 @@ export default function () {
                 images: $images
                 imagesRemoved: $imagesRemoved
               }
-            ) {
-              message
-            }
-          }
+            ) 
         `,
         variables: {
           id: params.id,
@@ -98,9 +93,7 @@ export default function () {
       await apollo.defaultClient.mutate({
         mutation: gql`
           mutation ($id: ID!) {
-            deletePost(input: { id: $id }) {
-              message
-            }
+            deletePost(input: { id: $id })
           }
         `,
         variables: {
@@ -169,7 +162,6 @@ export default function () {
         mutation: gql`
           query {
             getDates {
-              message
               dates
             }
           }

@@ -13,7 +13,6 @@ import {
   UserToken,
   DeleteUserAccount,
   ResendEmailConfirmation,
-  ResendEmailConfirmationResponse,
 } from "./interfaces.vue";
 
 const apollo = apolloClient;
@@ -229,9 +228,7 @@ export default function () {
                 email: $email
                 imageId: $imageId
               }
-            ) {
-              message
-            }
+            )
           }
         `,
         variables: {
@@ -252,9 +249,7 @@ export default function () {
       await apollo.defaultClient.mutate({
         mutation: gql`
           mutation ($password: String!) {
-            deleteUserAccount(input: { password: $password }) {
-              message
-            }
+            deleteUserAccount(input: { password: $password })
           }
         `,
         variables: {
@@ -269,22 +264,18 @@ export default function () {
 
   async function resendEmailConfirmation(
     params: ResendEmailConfirmation
-  ): Promise<ResendEmailConfirmationResponse> {
+  ): Promise<void> {
     try {
-      const response = await apollo.defaultClient.mutate({
+      await apollo.defaultClient.mutate({
         mutation: gql`
           mutation ($email: String!) {
-            resendEmailConfirmation(input: { email: $email }) {
-              message
-            }
+            resendEmailConfirmation(input: { email: $email })
           }
         `,
         variables: {
           email: params.email,
         },
       });
-
-      return { message: response.data.resendEmailConfirmation.message };
     } catch (e: any) {
       if (e.graphQLErrors) throw Error(e.graphQLErrors[0].debugMessage);
       throw Error(e.message);

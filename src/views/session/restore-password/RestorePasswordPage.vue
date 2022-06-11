@@ -267,7 +267,7 @@ export default defineComponent({
       const password = this.form.password1;
 
       try {
-        const response = await sessionService().resetPassword({
+        await sessionService().resetPassword({
           code,
           email,
           password,

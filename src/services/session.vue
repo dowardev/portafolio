@@ -1,6 +1,4 @@
 <script lang="ts">
-import axios from "axios";
-import systemService from "./system.vue";
 import apolloClient from "../Apollo";
 import gql from "graphql-tag";
 import {
@@ -35,9 +33,7 @@ export default function () {
                 email: $email
                 password: $password
               }
-            ) {
-              message
-            }
+            )
           }
         `,
         variables: {
@@ -91,9 +87,7 @@ export default function () {
       await apollo.defaultClient.mutate({
         mutation: gql`
           mutation {
-            userLogout {
-              message
-            }
+            userLogout
           }
         `,
       });
@@ -118,9 +112,7 @@ export default function () {
       await apollo.defaultClient.mutate({
         mutation: gql`
           mutation ($email: String!) {
-            forgotPassword(input: { email: $email }) {
-              message
-            }
+            forgotPassword(input: { email: $email })
           }
         `,
         variables: {
@@ -140,9 +132,7 @@ export default function () {
           mutation ($code: String!, $email: String!, $password: String!) {
             restoreUserPassword(
               input: { code: $code, email: $email, password: $password }
-            ) {
-              message
-            }
+            )
           }
         `,
         variables: {
@@ -172,9 +162,7 @@ export default function () {
                 newPassword: $newPassword
                 newPasswordRepeat: $newPasswordRepeat
               }
-            ) {
-              message
-            }
+            )
           }
         `,
         variables: {

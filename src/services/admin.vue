@@ -3,9 +3,7 @@ import gql from "graphql-tag";
 import apolloClient from "../Apollo";
 import {
   DeleteUserAccountAdmin,
-  DeleteUserAccountAdminResponse,
   DisableUser,
-  DisableUserResponse,
   GetUsers,
   GetUsersResponse,
   SearchUsers,
@@ -77,16 +75,12 @@ export default function () {
     }
   }
 
-  async function disableUser(
-    params: DisableUser
-  ): Promise<DisableUserResponse> {
+  async function disableUser(params: DisableUser): Promise<void> {
     try {
-      const response = await apollo.defaultClient.mutate({
+      await apollo.defaultClient.mutate({
         mutation: gql`
           mutation ($id: String!, $disableUser: Boolean!) {
-            disableUser(input: { id: $id, user_disabled: $disableUser }) {
-              message
-            }
+            disableUser(input: { id: $id, user_disabled: $disableUser })
           }
         `,
         variables: {
@@ -94,8 +88,6 @@ export default function () {
           disableUser: params.disableUser,
         },
       });
-
-      return { message: response.data.disableUser.message };
     } catch (e: any) {
       if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
       throw new Error(e);
@@ -104,22 +96,18 @@ export default function () {
 
   async function deleteUserAccount(
     params: DeleteUserAccountAdmin
-  ): Promise<DeleteUserAccountAdminResponse> {
+  ): Promise<void> {
     try {
-      const response = await apollo.defaultClient.mutate({
+      await apollo.defaultClient.mutate({
         mutation: gql`
           mutation ($email: String!) {
-            deleteUserAccountAdmin(input: { email: $email }) {
-              message
-            }
+            deleteUserAccountAdmin(input: { email: $email })
           }
         `,
         variables: {
           email: params.email,
         },
       });
-
-      return { message: response.data.deleteUserAccountAdmin.message };
     } catch (e: any) {
       if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
       throw new Error(e);

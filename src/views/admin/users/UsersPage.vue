@@ -586,22 +586,25 @@ export default defineComponent({
       if (alertResponse == false) return;
 
       try {
-        const response = await adminService().disableUser({
+        await adminService().disableUser({
           id: params.id,
           disableUser: params.disableUser,
         });
 
-        if (response.message == "User disabled")
+        if (params.disableUser)
           systemService().openToast({ message: "Usuario deshabilitado" });
-        if (response.message == "User enabled")
+        if (params.disableUser == false)
           systemService().openToast({ message: "Usuario habilitado" });
-        if (response.message == "Can't disable admin")
+
+        this.refreshContent();
+      } catch (e: any) {
+        if (e.message == "Can't disable admin") {
           systemService().openToast({
             message: "No se puede deshabilitar al administrador",
             color: "warning",
           });
-        this.refreshContent();
-      } catch (e: any) {
+          return;
+        }
         console.error(e);
         systemService().openToastErrror({ error: e });
       }
@@ -636,14 +639,14 @@ export default defineComponent({
       if (alertResponse == false) return;
 
       try {
-        const response = await userService().resendEmailConfirmation({ email });
+        await userService().resendEmailConfirmation({ email });
 
-        if (response.message == "Email Sent")
-          systemService().openToast({ message: "Instrucciones enviadas" });
-
-        if (response.message == "User already verified")
-          systemService().openToast({ message: "Ya se encuentra activado" });
+        systemService().openToast({ message: "Instrucciones enviadas" });
       } catch (e: any) {
+        if (e.message == "User already verified") {
+          systemService().openToast({ message: "Ya se encuentra activado" });
+          return;
+        }
         console.error(e);
         systemService().openToastErrror({ error: e });
       }
