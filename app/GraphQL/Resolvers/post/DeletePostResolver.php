@@ -37,6 +37,5 @@ class DeletePostResolver
     Images::where('id', $cover_id)->delete();
 
     Post::where('id', $id)->delete();
-    return ['message' => 'Success'];
   }
 }

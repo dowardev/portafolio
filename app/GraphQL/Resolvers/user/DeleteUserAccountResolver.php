@@ -35,7 +35,5 @@ class DeleteUserAccountResolver
     }
 
     User::find($user->id)->delete();
-
-    return ['message' => 'Success'];
   }
 }

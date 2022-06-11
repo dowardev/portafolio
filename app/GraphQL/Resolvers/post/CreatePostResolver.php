@@ -53,7 +53,6 @@ class CreatePostResolver
         'image_id' => $value,
       ]);
     }
-    return ['message' => 'Success'];
   }
 
   function moveImage($id)

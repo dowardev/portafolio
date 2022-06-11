@@ -44,6 +44,5 @@ class ForgotPasswordResolver
         }
       );
     }
-    return ['message' => 'Success'];
   }
 }

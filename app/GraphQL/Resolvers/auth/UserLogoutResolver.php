@@ -20,8 +20,5 @@ class UserLogoutResolver
         ->token()
         ->revoke();
     }
-    return [
-      'message' => 'Success',
-    ];
   }
 }

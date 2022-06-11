@@ -54,8 +54,6 @@ class SaveUserProfileResolver
         }
       );
     }
-
-    return ['message' => 'Success'];
   }
 
   function moveImage($id)

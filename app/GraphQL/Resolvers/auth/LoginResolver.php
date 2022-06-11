@@ -58,7 +58,6 @@ class LoginResolver
     $token = $userData[0]->createToken('Personal Access Token')->accessToken;
 
     return [
-      'message' => 'Authorized',
       'user' => [
         [
           'name' => $userData[0]->name,

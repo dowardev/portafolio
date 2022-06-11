@@ -72,8 +72,6 @@ class UpdatePostResolver
         'post_id' => $id,
       ]);
     }
-
-    return ['message' => 'Success'];
   }
   function moveImage($id)
   {

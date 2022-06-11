@@ -25,7 +25,5 @@ class DeleteUserAccountResolver
     }
 
     User::where('email', $args['email'])->delete();
-
-    return ['message' => 'User deleted', 'code' => 200];
   }
 }

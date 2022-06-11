@@ -58,6 +58,6 @@ class GetPostsResolver
       ];
       array_push($posts, $post);
     }
-    return ['message' => 'Success', 'posts' => $posts];
+    return ['posts' => $posts];
   }
 }

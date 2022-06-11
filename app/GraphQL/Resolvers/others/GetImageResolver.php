@@ -28,7 +28,6 @@ class GetImageResolver
       ->get();
 
     return [
-      'message' => 'Success',
       'image' => [
         'source' => base64_encode(
           Storage::disk('images_posts')->get($image[0]->name)

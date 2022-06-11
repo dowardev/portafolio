@@ -29,10 +29,7 @@ class DisableUser
     $is_user_admin = User::where('id', $user_id)->get()[0]->is_admin;
 
     if ($is_user_admin) {
-      return [
-        'message' => "Can't disable admin",
-        'code' => 200,
-      ];
+      throw new Exception("Can't disable admin");
     }
 
     try {
@@ -42,9 +39,5 @@ class DisableUser
     } catch (Exception $e) {
       throw new Exception($e);
     }
-
-    $message = $user_disabled == true ? 'User disabled' : 'User enabled';
-
-    return ['message' => $message, 'code' => 200];
   }
 }

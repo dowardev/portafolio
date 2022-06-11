@@ -25,6 +25,6 @@ class PostsDatesResolver
       array_push($dates, explode('+', $date->format(DateTime::ATOM))[0]);
     }
 
-    return ['message' => 'Success', 'dates' => $dates];
+    return ['dates' => $dates];
   }
 }

@@ -3,6 +3,7 @@
 namespace App\GraphQL\Resolvers\user;
 
 use App\Models\User;
+use Exception;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Facades\Mail;
@@ -20,7 +21,7 @@ class ResendEmailConfirmationResolver
 
     $email_verified = User::where('email', $email)->get()[0]->is_email_verified;
     if ($email_verified) {
-      return ['message' => 'User already verified'];
+      throw new Exception('User already verified');
     }
 
     $token = Str::random(64);
@@ -31,7 +32,5 @@ class ResendEmailConfirmationResolver
       $message->to($email);
       $message->subject('Verificacion de correo electrónico');
     });
-
-    return ['message' => 'Email Sent'];
   }
 }

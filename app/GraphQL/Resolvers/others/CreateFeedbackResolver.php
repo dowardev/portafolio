@@ -38,7 +38,5 @@ class CreateFeedbackResolver
       'contact_me' => $contact_me,
       'type' => $type,
     ]);
-
-    return ['message' => 'Success'];
   }
 }

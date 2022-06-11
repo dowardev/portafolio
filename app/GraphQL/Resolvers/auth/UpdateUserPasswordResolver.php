@@ -41,8 +41,6 @@ class UpdateUserPasswordResolver
     User::where('email', '=', $email)->update([
       'password' => bcrypt($args['newPassword']),
     ]);
-
-    return ['message' => 'Success'];
   }
 
   function moveImage($id)

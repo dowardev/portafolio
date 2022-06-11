@@ -89,9 +89,6 @@ input ResendEmailConfirmation {
 input DeleteUserAccountAdminInput {
   email: String!
 }
-type DeleteUserAccountAdminPayload {
-  message: String!
-}
 
 type User {
   id: ID!
@@ -123,11 +120,9 @@ type UserAuth {
   token_type: String!
 }
 type PostsDate {
-  message: String!
   date: String!
 }
 type PostsDates {
-  message: String!
   dates: [String]!
 }
 type PostCover {
@@ -139,33 +134,15 @@ type PostCover {
 
 # payloads
 type LoginPayload {
-  message: String!
   auth: UserAuth!
   user: [User]!
 }
 type RegisterPayload {
-  message: String!
   user: User!
   auth: UserAuth!
 }
-type ForgotPasswordPayload {
-  message: String!
-}
-type RestoreUserPasswordPayload {
-  message: String!
-}
 type GetUserAuthPayload {
-  message: String!
   user: User!
-}
-type CreatePostPayload {
-  message: String!
-}
-type UpdatePostPayload {
-  message: String!
-}
-type DeletePostPayload {
-  message: String!
 }
 type Image {
   id: ID
@@ -174,41 +151,15 @@ type Image {
   source: String!
 }
 type UploadImagePayload {
-  message: String!
   image: Image!
 }
 type GetImagePayload {
-  message: String!
   image: Image!
 }
 type PostImage {
   id: ID
   image_id: ID
   post_id: ID
-}
-type CreateFeedbackPayload {
-  message: String!
-}
-type SaveUserProfilePayload {
-  message: String!
-}
-type UpdateUserPasswordPayload {
-  message: String!
-}
-type DeleteUserAccountPayload {
-  message: String!
-}
-type GetUsersPayload {
-  message: String!
-  code: Int!
-}
-type DisableUserPayload {
-  message: String!
-  code: Int!
-}
-type ResendEmailConfirmationPayload {
-  message: String!
-  code: Int!
 }
 
 enum Prueba {
@@ -268,34 +219,32 @@ type Mutation {
   register(input: RegisterInput @spread): RegisterPayload
     @field(resolver: "App\\GraphQL\\Resolvers\\auth\\RegisterResolver@resolve")
 
-  forgotPassword(input: ForgotPasswordInput @spread): ForgotPasswordPayload
+  forgotPassword(input: ForgotPasswordInput @spread): Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\auth\\ForgotPasswordResolver@resolve"
     )
 
-  restoreUserPassword(
-    input: RestoreUserPasswordInput @spread
-  ): RestoreUserPasswordPayload
+  restoreUserPassword(input: RestoreUserPasswordInput @spread): Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\auth\\RestoreUserPasswordResolver@resolve"
     )
 
-  userLogout: ForgotPasswordPayload
+  userLogout: Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\auth\\UserLogoutResolver@resolve"
     )
 
-  createPost(input: CreatePostInput! @spread): CreatePostPayload
+  createPost(input: CreatePostInput! @spread): Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\post\\CreatePostResolver@resolve"
     )
 
-  updatePost(input: UpdatePostInput @spread): UpdatePostPayload
+  updatePost(input: UpdatePostInput @spread): Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\post\\UpdatePostResolver@resolve"
     )
 
-  deletePost(input: DeletePostInput @spread): DeletePostPayload
+  deletePost(input: DeletePostInput @spread): Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\post\\DeletePostResolver@resolve"
     )
@@ -310,45 +259,35 @@ type Mutation {
   #     resolver: "App\\GraphQL\\Resolvers\\others\\GetImageResolver@resolve"
   #   )
 
-  createFeedback(input: FeedbackInput @spread): CreateFeedbackPayload
+  createFeedback(input: FeedbackInput @spread): Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\others\\CreateFeedbackResolver@resolve"
     )
 
-  updateUserProfile(
-    input: UpdateUserProfileInput @spread
-  ): SaveUserProfilePayload
+  updateUserProfile(input: UpdateUserProfileInput @spread): Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\user\\SaveUserProfileResolver@resolve"
     )
 
-  updateUserPassword(
-    input: UpdateUserPasswordInput @spread
-  ): UpdateUserPasswordPayload
+  updateUserPassword(input: UpdateUserPasswordInput @spread): Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\auth\\UpdateUserPasswordResolver@resolve"
     )
 
-  deleteUserAccount(
-    input: DeleteUserAccountInput @spread
-  ): DeleteUserAccountPayload
+  deleteUserAccount(input: DeleteUserAccountInput @spread): Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\user\\DeleteUserAccountResolver@resolve"
     )
 
-  disableUser(input: DisableUser @spread): DisableUserPayload
+  disableUser(input: DisableUser @spread): Boolean
     @field(resolver: "App\\GraphQL\\Resolvers\\admin\\DisableUser@resolve")
 
-  resendEmailConfirmation(
-    input: ResendEmailConfirmation @spread
-  ): ResendEmailConfirmationPayload
+  resendEmailConfirmation(input: ResendEmailConfirmation @spread): Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\user\\ResendEmailConfirmationResolver@resolve"
     )
 
-  deleteUserAccountAdmin(
-    input: DeleteUserAccountAdminInput @spread
-  ): DeleteUserAccountAdminPayload
+  deleteUserAccountAdmin(input: DeleteUserAccountAdminInput @spread): Boolean
     @field(
       resolver: "App\\GraphQL\\Resolvers\\admin\\DeleteUserAccountResolver@resolve"
     )

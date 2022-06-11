@@ -44,6 +44,5 @@ class RestoreUserPasswordResolver
     User::where('email', '=', $email)->update([
       'password' => bcrypt($args['password']),
     ]);
-    return ['message' => 'Updated password'];
   }
 }

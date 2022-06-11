@@ -45,14 +45,10 @@ class GetUserAuthResolver
       ];
 
       return [
-        'message' => 'Success',
         'user' => $user,
       ];
     } catch (Exception $e) {
       throw new Exception($e->getMessage());
     }
-    return [
-      'message' => 'Unauthorized',
-    ];
   }
 }
