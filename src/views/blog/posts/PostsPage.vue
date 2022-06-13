@@ -285,7 +285,7 @@ export default defineComponent({
 
       if (this.$route.path == "/blog" || this.$route.path == "/blog/") {
         try {
-          const date = params.dates.pop() as string;
+          const date = params.dates[params.dates.length - 1];
           currentPage = new Date(date).toISOString().split("T")[0];
           // this.$router.replace("/blog/" + currentPage);
         } catch (e: any) {

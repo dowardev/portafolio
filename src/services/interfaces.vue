@@ -157,7 +157,6 @@ interface GetUserResponse {
   id?: string;
   name?: string;
   user?: string;
-  password?: string;
   email?: string;
   is_admin?: boolean;
   rol?: Array<any>;

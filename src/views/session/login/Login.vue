@@ -246,6 +246,7 @@ export default defineComponent({
       },
     };
   },
+
   validations() {
     const messageRequired = "Campo requerido";
     return {
@@ -288,7 +289,6 @@ export default defineComponent({
       const user = this.form.email.replace(/\s+/g, "");
       const password = this.form.password;
       const query = `
-            message
             auth {
               access_token
         }

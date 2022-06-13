@@ -146,6 +146,8 @@
                     v-model="(v$.form as any).email.$model"
                     type="email"
                     autocomplete="email"
+                    pattern="email"
+                    inputmode="email"
                   ></ion-input>
                 </ion-item>
                 <div
@@ -505,15 +507,22 @@ export default defineComponent({
 
       try {
         await userService().saveUserData({ name, user, email, imageId });
-        this.spinners.saveUserData = false;
         systemService().openToast({
           message: "Datos actualizados",
         });
         eventBus().emitter.emit("refresh-user-content");
       } catch (e: any) {
-        this.spinners.saveUserData = false;
+        if (e.message == "Email already selected") {
+          systemService().openToast({
+            message: "Correo ya en uso",
+            color: "warning",
+          });
+          return;
+        }
         console.error(e);
         systemService().openToastErrror(e);
+      } finally {
+        this.spinners.saveUserData = false;
       }
     },
 

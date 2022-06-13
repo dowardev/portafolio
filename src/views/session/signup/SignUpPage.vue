@@ -315,6 +315,7 @@ export default defineComponent({
       },
     };
   },
+
   validations() {
     const messageRequired = "Campo requerido";
     const messageAlpha = "Solamente puede contener texto";
@@ -322,10 +323,14 @@ export default defineComponent({
       form: {
         name: {
           required: helpers.withMessage(messageRequired, required),
-          alpha: helpers.withMessage(messageAlpha, alpha),
+          alpha: helpers.withMessage(
+            messageAlpha,
+            helpers.regex(/^[a-zA-Z ]*$/)
+          ),
         },
         user: {
           required: helpers.withMessage(messageRequired, required),
+          space: helpers.withMessage(messageAlpha, helpers.regex(/^\S*$/)),
         },
         email: {
           required: helpers.withMessage(messageRequired, required),

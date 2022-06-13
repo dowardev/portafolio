@@ -64,7 +64,7 @@
       <!-- date selector -->
       <ion-item-divider sticky>
         <div style="width: 100%; display: flex; justify-content: center">
-          <ion-button fill="clear" @click="previousPage">
+          <ion-button fill="clear" @click="previousPage()">
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
 
@@ -87,7 +87,7 @@
           </ion-item>
 
           <!-- navigation button -->
-          <ion-button fill="clear" @click="nextPage">
+          <ion-button fill="clear" @click="nextPage()">
             <ion-icon :icon="chevronForwardOutline"></ion-icon>
           </ion-button>
         </div>
