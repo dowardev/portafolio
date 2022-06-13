@@ -109,7 +109,7 @@ class AuthController extends Controller
   {
     $verifyUser = UserVerify::where('token', $token)->first();
 
-    $message = 'Tu correo electrónico no puede ser identificado.';
+    $message = $token;
 
     if (!is_null($verifyUser)) {
       $user = $verifyUser->user;
@@ -129,9 +129,15 @@ class AuthController extends Controller
 
   public function verifyNewEmail(Request $request)
   {
+    $email = $request->email;
+    $message = 'Invalid link';
     $verifyEmail = UserVerify::where('token', $request->token)->first();
 
-    $message = 'Enlace invalido';
+    $is_email_selected =
+      count(User::where('email', $email)->get()) == 1 ? true : false;
+    if ($is_email_selected) {
+      throw new Exception($message);
+    }
 
     if (!is_null($verifyEmail)) {
       $user = $verifyEmail->user;

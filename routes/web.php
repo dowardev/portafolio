@@ -23,7 +23,7 @@ Route::get('account/verify/{token}', [
   'verifyAccount',
 ])->name('user.verify');
 
-Route::get('account/verify/{params}', [
+Route::get('account/verify/{token}/{email}', [
   AuthController::class,
   'verifyNewEmail',
 ])->name('user.new_email');

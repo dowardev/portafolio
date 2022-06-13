@@ -26,16 +26,21 @@ class SaveUserProfileResolver
       throw new Exception('Unauthorized');
     }
 
-    if ($args['imageId'] != '') {
-      $this->moveImage($args['imageId']);
+    $name = $args['name'];
+    $userName = $args['user'];
+    $email = $args['email'];
+    $image_id = $args['imageId'];
+
+    if ($image_id != '') {
+      $this->moveImage($image_id);
       User::where('id', $user->id)->update([
-        'image_id' => $args['imageId'],
+        'image_id' => $image_id,
       ]);
     }
 
     User::where('id', $user->id)->update([
-      'name' => $args['name'],
-      'user' => $args['user'],
+      'name' => $name,
+      'user' => $userName,
     ]);
 
     $token = Str::random(64);
@@ -44,7 +49,13 @@ class SaveUserProfileResolver
       'token' => $token,
     ]);
 
-    if ($user->email != $args['email']) {
+    $is_email_selected =
+      count(User::where('email', $email)->get()) == 1 ? true : false;
+    if ($is_email_selected) {
+      throw new Exception('Email already selected');
+    }
+
+    if ($user->email != $email) {
       Mail::send(
         'emails.emailVerificationNewEmail',
         ['token' => $token, 'email' => $args['email']],

@@ -24,7 +24,10 @@ class ResendEmailConfirmationResolver
       throw new Exception('User already verified');
     }
 
-    $token = Str::random(64);
+    $user_id = User::where('email', $email)->get()[0]->id;
+    $token = User::find($user_id)->tokenEmailValidation->token;
+
+    // $token = Str::random(64);
 
     Mail::send('emails.emailVerificationEmail', ['token' => $token], function (
       $message
