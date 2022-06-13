@@ -18,7 +18,6 @@
             <ion-card-content>
               <ion-item
                 ><ion-label>Donacion</ion-label>
-
                 <a href="https://liberapay.com/dowar/donate" target="_blank"
                   ><img
                     alt="Donate using Liberapay"
