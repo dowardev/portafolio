@@ -1,0 +1,115 @@
+<template>
+  <ion-page>
+    <ion-header :translucent="true" class="ion-no-border" mode="ios">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button class="close-button" @click="closeModal()">
+            <ion-icon :icon="closeOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title>{{ pageTitle }}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content :fullscreen="true">
+      <ion-row class="center">
+        <ion-col size="12">
+          <ion-card>
+            <ion-card-content>
+              <ion-item
+                ><ion-label>Donacion</ion-label>
+
+                <a href="https://liberapay.com/dowar/donate" target="_blank"
+                  ><img
+                    alt="Donate using Liberapay"
+                    src="https://liberapay.com/assets/widgets/donate.svg"
+                /></a>
+              </ion-item>
+
+              <ion-item>
+                <ion-label>Usando el codigo promocional de Hostinger</ion-label>
+                <ion-label slot="end">1JESUSGONZA24</ion-label>
+              </ion-item>
+
+              <ion-item>
+                <ion-label>Compartir el blog</ion-label>
+              </ion-item>
+
+              <ion-item>
+                <ion-label>Reportar errores</ion-label>
+              </ion-item>
+
+              <ion-item>
+                <ion-label>Mejorar el codigo</ion-label>
+              </ion-item>
+            </ion-card-content>
+          </ion-card>
+          <p class="ion-padding">
+            Sea cual sea la forma en la que me puedas ayudar, ten por seguro que
+            la comunidad y yo te estaremos eternamente agradecidos porque con tu
+            aportación ayudaras a que pueda crear más y mejor contenido.
+          </p>
+        </ion-col>
+      </ion-row>
+    </ion-content>
+  </ion-page>
+</template>
+
+<script lang="ts">
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonLabel,
+  modalController,
+} from "@ionic/vue";
+import { defineComponent } from "vue";
+import {
+  closeOutline,
+  browsersOutline,
+  logoTux,
+  logoAndroid,
+  logoChrome,
+  logoRss,
+  bookOutline,
+  micOutline,
+  videocamOutline,
+  terminalOutline,
+} from "ionicons/icons";
+
+export default defineComponent({
+  name: "DonationsComponent",
+  components: {
+    IonContent,
+    IonHeader,
+    IonPage,
+    IonTitle,
+    IonToolbar,
+    IonLabel,
+  },
+
+  setup() {
+    return {
+      pageTitle: "Contribuir",
+      closeOutline,
+      browsersOutline,
+      logoTux,
+      logoAndroid,
+      logoChrome,
+      logoRss,
+      bookOutline,
+      micOutline,
+      videocamOutline,
+      terminalOutline,
+    };
+  },
+
+  methods: {
+    closeModal() {
+      modalController.dismiss();
+    },
+  },
+});
+</script>

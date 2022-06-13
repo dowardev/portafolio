@@ -217,6 +217,11 @@
     <ion-footer class="ion-no-border">
       <ion-toolbar class="menu-color">
         <ion-buttons slot="end">
+          <!-- more -->
+          <ion-button fill="clear" @click="openModalDonations()">
+            <ion-icon :icon="cashOutline"></ion-icon>
+          </ion-button>
+
           <!-- button source code-->
           <ion-button id="trigger-button-source-code">
             <ion-icon :icon="logoGitlab"></ion-icon>
@@ -307,6 +312,7 @@ import {
   personOutline,
   cogOutline,
   ellipsisVerticalOutline,
+  cashOutline,
 } from "ionicons/icons";
 import DarkMode from "./darkmode/DarkMode.vue";
 import sessionService from "../../services/session.vue";
@@ -314,6 +320,7 @@ import eventBus from "../../EventBus";
 import systemService from "../../services/system.vue";
 import userService from "../../services/user.vue";
 import AppsComponent from "./apps/Apps.vue";
+import DonationsComponent from "./donations/Donations.vue";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -354,6 +361,7 @@ export default defineComponent({
       isOpenRefPopOverUserOptions,
       setOpenPopOverUserOptions,
       eventPopOverUserOptions,
+      cashOutline,
     };
   },
 
@@ -477,9 +485,6 @@ export default defineComponent({
       const modal = await modalController.create({
         component: AppsComponent,
         cssClass: "my-custom-class",
-        componentProps: {
-          title: "New Title",
-        },
       });
       menuController.close();
       return modal.present();
@@ -504,6 +509,15 @@ export default defineComponent({
       this.spinners.buttonAdminPanel = false;
       this.isOpenRefPopOverUserOptions = false;
       if (isPlatform("mobile")) menuController.close();
+    },
+
+    async openModalDonations() {
+      const modal = await modalController.create({
+        cssClass: "my-custom-class",
+        component: DonationsComponent,
+      });
+      menuController.close();
+      return modal.present();
     },
   },
 });
