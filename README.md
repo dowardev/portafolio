@@ -9,21 +9,26 @@ Aplicación móvil(Android), Sitio web y PWA sobre un portafolio/blog.
 ## Despliegue en local
 
 - Tener instalado nodejs(se recomienda que sea la última versión LTS).
-- Instalar Ionic Framework cli.
-  `npm install -g @ionic/cli`
-- Clonar proyecto.
-  `https://gitlab.com/gonzam4/portafolio.git`
-- Acceder con nuestra terminal de comandos a la ubicación del proyecto y ejecutar.
-  `npm i`
+- Instalar Ionic Framework cli `npm install -g @ionic/cli`
+- Clonar proyecto `https://gitlab.com/gonzam4/portafolio.git`
+- Acceder con nuestra terminal de comandos a la ubicación del proyecto y ejecutar `npm i`
 
 ### Web | PWA
 
-- Para iniciar la versión web ejecutamos.
-  `ionic s`
+- Para iniciar la versión web ejecutamos `ionic s`
+
+## Generación de la apk/bundle
+
+Puedes generar dos tipos de apk/bundle la versión de producción o la de testeo.
+
+- Testeo: acceder a la carpeta `Android` y ejecutamos `./gradlew assembleDebug`
+- Producción: Para este tenemos dos opciones:
+  - Con ionic/cli instalado: `ionic capacitor open android`
+  - Sin ionic/cli instalado: abrir la carpeta `Android` con `Android Studio`
 
 ### Nota
 
-- Para el correcto funcionamiento de la aplicacion es necesario tener correctamente clonado y configurado el siguiente [proyecto](https://gitlab.com/gonzam4/portfolio-backend).
+- Para el correcto funcionamiento de la aplicación es necesario tener correctamente clonado y configurado el siguiente [proyecto](https://gitlab.com/gonzam4/portfolio-backend).
 - Si tienes problemas para correr el proyecto dentro de tu sistema puedes contactarme a través de los medios listados en [dowar.xyz](https://dowar.xyz) y con mucho gusto te apoyaré para solucionar el problema.
 
 ## Tecnologías usadas

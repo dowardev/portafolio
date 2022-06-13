@@ -259,7 +259,7 @@ import {
   keyOutline,
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
-import { required, email, helpers, alpha, sameAs } from "@vuelidate/validators";
+import { required, email, helpers, sameAs } from "@vuelidate/validators";
 import userService from "../../../services/user.vue";
 import systemService from "../../../services/system.vue";
 

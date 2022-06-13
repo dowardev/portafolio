@@ -26,7 +26,9 @@
               </ion-item>
 
               <ion-item>
-                <ion-label>Usando el codigo promocional de Hostinger</ion-label>
+                <ion-label class="ion-text-wrap"
+                  >Usando el codigo promocional de Hostinger</ion-label
+                >
                 <ion-label slot="end">1JESUSGONZA24</ion-label>
               </ion-item>
 
