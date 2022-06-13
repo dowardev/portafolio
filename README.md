@@ -50,6 +50,7 @@ Si te gusta el proyecto puedes contribuir de las siguientes formas
 
 - Contribuyendo a la corrección de errores.
 - Reportar errores, para ello tienes 2 formas: creando un issue dentro de este mismo repositorio o contactarme a través de los medios listados en <a href="https://dowar.xyz" target="_blank">dowar.xyz</a> .
+- Realizando una donacion <a href="https://liberapay.com/dowar/donate" target="_blank"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"/></a>
 
 Este es un proyecto de software libre, por lo que podrás utilizar de manera total o parcial el código contenido en él, siempre y cuando se mantenga dentro de las normas establecidas en la licencia con la cual está siendo desarrollado.
 
