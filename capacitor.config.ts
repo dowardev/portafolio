@@ -2,7 +2,7 @@ import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "com.dowar.portfolio",
-  appName: "Portfolio",
+  appName: "Dowar Blog",
   webDir: "dist",
   bundledWebRuntime: false,
   // server: {
