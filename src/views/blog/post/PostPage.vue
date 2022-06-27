@@ -90,6 +90,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   IonContent,
   IonHeader,
@@ -113,6 +114,7 @@ import systemService from "../../../services/system.vue";
 import userService from "../../../services/user.vue";
 import { format, parseISO } from "date-fns";
 import eventBus from "../../../EventBus";
+import { POST_DETAILS, USER_PERMISSIONS } from "../../../services/graphql";
 
 export default defineComponent({
   name: "PostPage",
@@ -161,19 +163,10 @@ export default defineComponent({
       });
       loading.present();
 
-      const query = `
-            title
-            content
-            created_at
-            updated_at
-            cover {
-              source
-            }
-      `;
       try {
         const response = await postService().getPost({
           id: this.postId as string,
-          query,
+          graphql: { name: POST_DETAILS, fragment: "PostDetails" },
         });
 
         const title = response.title ? response.title : "";
@@ -252,8 +245,11 @@ export default defineComponent({
     async verifyUserAdmin() {
       if (navigator.onLine) {
         try {
-          const response = await userService().getUserPermissions();
-          this.isUserAdmin = response.admin ? response.admin != null : false;
+          this.isUserAdmin = (
+            await userService().getUser({
+              graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+            })
+          ).is_admin!;
         } catch (e: any) {
           this.isUserAdmin = false;
           if (e.message == "Unauthorized") return;

@@ -25,12 +25,12 @@
               <ion-item>
                 <ion-label position="floating">Nombre</ion-label>
                 <ion-input
-                  v-model="v$.form['name'].$model"
+                  v-model="(v$ as any).form.name.$model"
                   :disabled="form.id != ''"
                 ></ion-input>
               </ion-item>
               <div
-                v-for="(error, index) of v$.form['name'].$errors"
+                v-for="(error, index) of (v$ as any).form.name.$errors"
                 :key="index"
               >
                 <div class="error">{{ error.$message }}</div>
@@ -39,14 +39,14 @@
               <ion-item>
                 <ion-label position="floating">Correo electrónico</ion-label>
                 <ion-input
-                  v-model="v$.form['email'].$model"
+                  v-model="(v$ as any).form.email.$model"
                   type="email"
                   autocomplete="email"
                   :disabled="form.id != ''"
                 ></ion-input>
               </ion-item>
               <div
-                v-for="(error, index) of v$.form['email'].$errors"
+                v-for="(error, index) of (v$ as any).form.email.$errors"
                 :key="index"
               >
                 <div class="error">{{ error.$message }}</div>
@@ -55,12 +55,12 @@
               <ion-item>
                 <ion-label position="floating">Descripción</ion-label>
                 <ion-textarea
-                  auto-grow="true"
-                  v-model="v$.form['description'].$model"
+                  :auto-grow="true"
+                  v-model="(v$ as any).form.description.$model"
                 ></ion-textarea>
               </ion-item>
               <div
-                v-for="(error, index) of v$.form['description'].$errors"
+                v-for="(error, index) of (v$ as any).form.description.$errors"
                 :key="index"
               >
                 <div class="error">{{ error.$message }}</div>
@@ -76,24 +76,20 @@
                 </ion-label>
               </ion-item>
 
-              <div class="center">
-                <ion-item lines="none">
-                  <ion-button
-                    fill="clear"
-                    expand="block"
-                    :disabled="v$.$invalid || spinners.buttonSendFeedback"
-                    @click="sendFeedback"
-                  >
-                    <ion-label v-if="spinners.buttonSendFeedback == false">
-                      Enviar</ion-label
-                    >
-                    <ion-spinner
-                      name="crescent"
-                      v-if="spinners.buttonSendFeedback"
-                    ></ion-spinner>
-                  </ion-button>
-                </ion-item>
-              </div>
+              <ion-button
+                fill="clear"
+                expand="full"
+                :disabled="v$.$invalid || spinners.buttonSendFeedback"
+                @click="sendFeedback()"
+              >
+                <ion-label v-if="spinners.buttonSendFeedback == false">
+                  Enviar</ion-label
+                >
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.buttonSendFeedback"
+                ></ion-spinner>
+              </ion-button>
             </form>
           </ion-col>
         </ion-row>
@@ -116,6 +112,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   IonContent,
   IonHeader,
@@ -136,6 +133,7 @@ import systemService from "../../services/system.vue";
 import feedbackService from "../../services/feedback.vue";
 import userService from "../../services/user.vue";
 import { ModalFeedback } from "../../services/interfaces.vue";
+import { USER_BASIC_DETAILS } from "../../services/graphql";
 
 export default defineComponent({
   name: "FeedbackPage",
@@ -207,22 +205,15 @@ export default defineComponent({
     closeModal() {
       modalController.dismiss();
     },
+
     async getUser() {
-      const query = `
-            user {
-              id
-              name
-              email
-            }
-      `;
       try {
-        const response = await userService().getUser({ query });
-        // eslint-disable-next-line
-        this.form.id = response.id!;
-        // eslint-disable-next-line
-        this.form.name = response.name!;
-        // eslint-disable-next-line
-        this.form.email = response.email!;
+        const { id, name, email } = await userService().getUser({
+          graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
+        });
+        this.form.id = id!;
+        this.form.name = name!;
+        this.form.email = email!;
       } catch (e: any) {
         console.error(e);
         return;
@@ -239,18 +230,11 @@ export default defineComponent({
       let description = this.form.description;
       const contactMe = this.form.contactMe;
 
-      // eslint-disable-next-line
       if (this.dataProp!.error)
-        // eslint-disable-next-line
         description += "\nError " + JSON.stringify(this.dataProp!.error);
-
-      const query = `
-            message
-      `;
 
       try {
         await feedbackService().createFeedback({
-          query,
           userId,
           name,
           email,

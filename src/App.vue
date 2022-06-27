@@ -9,7 +9,7 @@
         style="--side-max-width: 200px"
         class="menu-color"
       >
-        <Menu></Menu>
+        <MenuComponent></MenuComponent>
       </ion-menu>
       <ion-router-outlet Id="menu-content" />
     </ion-split-pane>
@@ -25,9 +25,8 @@ import {
   toastController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import Menu from "./views/menu/MenuComponent.vue";
+import MenuComponent from "./views/menu/MenuComponent.vue";
 import systemService from "./services/system.vue";
-import userService from "./services/user.vue";
 import { closeOutline } from "ionicons/icons";
 
 export default defineComponent({
@@ -35,7 +34,7 @@ export default defineComponent({
   components: {
     IonApp,
     IonRouterOutlet,
-    Menu,
+    MenuComponent,
     IonMenu,
     IonSplitPane,
   },
@@ -49,36 +48,9 @@ export default defineComponent({
         const theme = response == null ? "aut" : response;
         systemService().setTheme({ theme: theme });
       });
-    this.getUser();
   },
 
   methods: {
-    async getUser() {
-      const query = `
-            user {
-              id
-              name
-              email
-              is_admin
-              rol
-        }
-      `;
-      try {
-        const response = await userService().getUser({ query });
-        const name = response.name;
-        const email = response.email;
-        const rol = response.rol;
-        const is_admin = response.is_admin;
-        userService().setUserData({ name, email, rol, is_admin });
-      } catch (e: any) {
-        if (e.message == "Unauthorized") return;
-        else {
-          systemService().openToastErrror(e);
-          console.error(e);
-        }
-      }
-    },
-
     createFirstCookie() {
       if (systemService().getFirstCookie()) {
         this.openToastOptions();

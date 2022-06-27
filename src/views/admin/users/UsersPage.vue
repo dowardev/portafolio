@@ -40,7 +40,7 @@
                 trigger="trigger-button-filter"
                 @didDismiss="userFilter()"
                 style="max-height: 68vh"
-                show-backdrop="false"
+                :show-backdrop="false"
               >
                 <ion-content :scroll-events="true">
                   <ion-item
@@ -97,7 +97,9 @@
                           <ion-item
                             button
                             lines="none"
-                            @click="disabledUser({id:user.id!,disableUser:false})"
+                            @click="
+                              disabledUser({ id: user.id!, disableUser: false })
+                            "
                             v-if="user.is_user_disabled == true"
                           >
                             <ion-icon
@@ -110,7 +112,9 @@
                           <ion-item
                             button
                             lines="none"
-                            @click="disabledUser({id:user.id!,disableUser:true})"
+                            @click="
+                              disabledUser({ id: user.id!, disableUser: true })
+                            "
                             v-if="user.is_user_disabled == false"
                           >
                             <ion-label>Deshabilitar usuario</ion-label>
@@ -207,7 +211,7 @@
                       interface="popover"
                       slot="end"
                       v-model="paginatorInfo.pagination"
-                      @ionChange="getUsers()"
+                      @ionChange="getUsers({ refetch: false })"
                     >
                       <ion-select-option :value="10">10</ion-select-option>
                       <ion-select-option :value="15">15</ion-select-option>
@@ -223,7 +227,7 @@
                     <ion-button
                       slot="end"
                       fill="clear"
-                      :disabled="paginatorInfo.currentPage == 0"
+                      :disabled="paginatorInfo.currentPage == '0'"
                     >
                       <ion-icon :icon="chevronBackOutline"></ion-icon>
                     </ion-button>
@@ -232,7 +236,7 @@
                       interface="popover"
                       slot="end"
                       v-model="paginatorInfo.currentPage"
-                      @ionChange="getUsers()"
+                      @ionChange="getUsers({ refetch: false })"
                     >
                       <ion-select-option :value="1">1</ion-select-option>
                       <ion-select-option
@@ -303,6 +307,7 @@ import { User } from "../../../services/interfaces.vue";
 import systemService from "../../../services/system.vue";
 import sessionService from "../../../services/session.vue";
 import userService from "../../../services/user.vue";
+import { USERS_ADMINISTRATION_DETAILS } from "../../../services/graphql";
 
 export default defineComponent({
   name: "UserAdminPanel",
@@ -334,7 +339,7 @@ export default defineComponent({
       const elements = [] as any;
       let total = Math.round(
         this.paginatorInfo.totalPaginacionElements /
-          this.paginatorInfo.pagination
+          parseInt(this.paginatorInfo.pagination)
       );
       if (total < 1) total = 1;
 
@@ -369,10 +374,10 @@ export default defineComponent({
       users: Array<User>(),
       searchUsers: Array<User>(),
       paginatorInfo: {
-        currentPage: 1,
+        currentPage: "1",
         hasMorePages: Boolean(),
         totalPaginacionElements: Number(),
-        pagination: 10,
+        pagination: "10",
       },
       searchTerm: "",
       searchMode: false,
@@ -420,43 +425,27 @@ export default defineComponent({
   },
 
   mounted() {
-    this.getUsers();
+    this.getUsers({ refetch: false });
   },
 
   methods: {
-    async getUsers() {
+    async getUsers(params: { refetch: boolean }) {
       this.spinners.refreshContent = true;
 
-      const query = `
-            data {
-              id
-              name
-              email
-              is_email_verified
-              is_admin
-              user
-              is_user_disabled
-            }
-            paginatorInfo {
-              currentPage
-              lastPage
-              hasMorePages
-              perPage,
-              total
-            }
-      `;
-
       try {
-        const usersResponse = await adminService().getUsers({
-          query,
-          first: this.paginatorInfo.pagination,
-          page: this.paginatorInfo.currentPage,
+        const { users, paginatorInfo } = await adminService().getUsers({
+          graphql: {
+            name: USERS_ADMINISTRATION_DETAILS,
+            fragment: "UsersDetails",
+            refetch: params.refetch,
+          },
+          first: parseInt(this.paginatorInfo.pagination),
+          page: parseInt(this.paginatorInfo.currentPage),
         });
 
-        this.displayedUsers = usersResponse.users;
-        this.users = usersResponse.users;
-        this.paginatorInfo.totalPaginacionElements =
-          usersResponse.paginatorInfo.total;
+        this.displayedUsers = users;
+        this.users = users;
+        this.paginatorInfo.totalPaginacionElements = paginatorInfo.total;
         this.userFilter();
         this.spinners.refreshContent = false;
       } catch (e: any) {
@@ -480,30 +469,14 @@ export default defineComponent({
         return;
       }
 
-      const query = `
-            data {
-              id
-              name
-              email
-              is_email_verified
-              is_admin
-              user
-              is_user_disabled
-            }
-            paginatorInfo {
-              currentPage
-              lastPage
-              hasMorePages
-              perPage,
-              total
-            }
-    `;
-
       try {
         const usersResponse = await adminService().searchUsers({
-          query,
-          first: this.paginatorInfo.pagination,
-          page: this.paginatorInfo.currentPage,
+          graphql: {
+            name: USERS_ADMINISTRATION_DETAILS,
+            fragment: "UsersDetails",
+          },
+          first: parseInt(this.paginatorInfo.pagination),
+          page: parseInt(this.paginatorInfo.currentPage),
           name: search,
           email: search,
         });
@@ -566,7 +539,7 @@ export default defineComponent({
 
     refreshContent() {
       if (this.searchMode) this.search();
-      else this.getUsers();
+      else this.getUsers({ refetch: true });
     },
 
     onlyOneUserFilter(index: number) {
@@ -578,10 +551,12 @@ export default defineComponent({
     },
 
     async disabledUser(params: { id: string; disableUser: boolean }) {
-      const alertResponse = await systemService().presentAlertConfirmation({
-        message:
-          "Mientras esté deshabilitada, el usuario no podrá acceder a su cuenta.",
-      });
+      let alertResponse = true;
+      if (params.disableUser == true)
+        alertResponse = await systemService().presentAlertConfirmation({
+          message:
+            "Mientras esté deshabilitada, el usuario no podrá acceder a su cuenta.",
+        });
 
       if (alertResponse == false) return;
 
@@ -595,7 +570,6 @@ export default defineComponent({
           systemService().openToast({ message: "Usuario deshabilitado" });
         if (params.disableUser == false)
           systemService().openToast({ message: "Usuario habilitado" });
-
         this.refreshContent();
       } catch (e: any) {
         if (e.message == "Can't disable admin") {

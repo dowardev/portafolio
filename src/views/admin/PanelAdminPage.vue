@@ -53,6 +53,7 @@ import {
 import { defineComponent } from "vue";
 import userService from "../../services/user.vue";
 import UsersComponent from "./users/UsersPage.vue";
+import { USER_PERMISSIONS } from "../../services/graphql";
 
 export default defineComponent({
   name: "PanelAdminPage",
@@ -80,16 +81,18 @@ export default defineComponent({
 
   beforeRouteEnter(to, from, next) {
     userService()
-      .getUserPermissions()
+      .getUser({
+        graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+      })
       .then((response) => {
-        if (response.admin) {
+        if (response.is_admin) {
           next();
         } else {
-          next("/blog");
+          next("/");
         }
       })
       .catch(() => {
-        next("/blog");
+        next("/");
       });
   },
 });

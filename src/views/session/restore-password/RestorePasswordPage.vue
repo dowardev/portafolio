@@ -37,7 +37,7 @@
                 <ion-label position="floating">Contraseña</ion-label>
                 <ion-input
                   :type="inputTypePassword1"
-                  v-model="(v$.form as any).password1.$model"
+                  v-model="(v$ as any).form.password1.$model"
                   @keyup.enter="resetPassword()"
                 ></ion-input>
                 <ion-button
@@ -60,7 +60,7 @@
                 </ion-button>
               </ion-item>
               <div
-                v-for="(error, index) of (v$.form as any).password1.$errors"
+                v-for="(error, index) of (v$ as any).form.password1.$errors"
                 :key="index"
               >
                 <div class="error">{{ error.$message }}</div>
@@ -75,7 +75,7 @@
                 <ion-label position="floating">Repite la contraseña</ion-label>
                 <ion-input
                   :type="inputTypePassword2"
-                  v-model="(v$.form as any).password2.$model"
+                  v-model="(v$ as any).form.password2.$model"
                   @keyup.enter="resetPassword()"
                 ></ion-input>
                 <ion-button
@@ -98,7 +98,7 @@
                 </ion-button>
               </ion-item>
               <div
-                v-for="(error, index) of (v$.form as any).password2.$errors"
+                v-for="(error, index) of (v$ as any).form.password2.$errors"
                 :key="index"
               >
                 <div class="error">{{ error.$message }}</div>
@@ -107,7 +107,7 @@
               <ion-button
                 expand="full"
                 fill="clear"
-                :disabled="spinners.buttonResetPassword || v$.form.$invalid"
+                :disabled="spinners.buttonResetPassword || (v$ as any).form.$invalid"
                 @click="resetPassword()"
                 ><ion-label v-if="spinners.buttonResetPassword == false"
                   >Enviar</ion-label
@@ -161,6 +161,7 @@ import userService from "../../../services/user.vue";
 import systemService from "../../../services/system.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
+import { USER_NAME } from "../../../services/graphql";
 
 export default defineComponent({
   name: "HomePage",
@@ -185,7 +186,9 @@ export default defineComponent({
   },
 
   setup() {
-    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
+    const modeDesingElements = isPlatform("ios")
+      ? "ios"
+      : ("md" as "ios" | "md");
     return {
       eyeOutline,
       eyeOffOutline,
@@ -206,8 +209,8 @@ export default defineComponent({
         password1: "",
         password2: "",
       },
-      inputTypePassword1: "password",
-      inputTypePassword2: "password",
+      inputTypePassword1: "password" as "text" | "password",
+      inputTypePassword2: "password" as "text" | "password",
       spinners: {
         buttonResetPassword: false,
       },
@@ -216,9 +219,9 @@ export default defineComponent({
 
   beforeRouteEnter(to, from, next) {
     userService()
-      .getUserName()
+      .getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
       .then(() => {
-        next("/blog");
+        next("/");
       })
       .catch(() => {
         next();

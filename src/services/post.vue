@@ -1,6 +1,4 @@
 <script lang="ts">
-import gql from "graphql-tag";
-import apolloClient from "../Apollo";
 import {
   UpdatePost,
   Post,
@@ -8,50 +6,65 @@ import {
   CreatePost,
   GetPost,
   GetPosts,
+  GetPostsDates,
   GetPostsDatesResponse,
 } from "./interfaces.vue";
 
-const apollo = apolloClient;
+import apolloClient from "../Apollo";
+import gql from "graphql-tag";
+import { useQuery, useMutation } from "@vue/apollo-composable";
+import { provideApolloClient } from "@vue/apollo-composable";
+provideApolloClient(apolloClient);
 
 export default function () {
   async function createPost(params: CreatePost): Promise<void> {
-    try {
-      await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation (
-            $title: String!
-            $content: String!
-            $coverId: ID!
-            $images: [ID]
-          ) {
-            createPost(
-              input: {
-                title: $title
-                content: $content
-                coverId: $coverId
-                images: $images
-              }
-            )
-          }
-        `,
+    const {
+      mutate: createPost,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation CreatePost(
+          $title: String!
+          $content: String!
+          $coverId: ID!
+          $images: [ID]
+        ) {
+          createPost(
+            input: {
+              title: $title
+              content: $content
+              coverId: $coverId
+              images: $images
+            }
+          )
+        }
+      `,
+      {
         variables: {
           title: params.title,
           content: params.content,
           coverId: params.coverId,
           images: params.images,
         },
-      });
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
+      }
+    );
+    createPost();
+
+    return new Promise((resolve, reject) => {
+      onDone(() => resolve());
+      onError((error) => reject(error));
+    });
   }
 
   async function updatePost(params: UpdatePost): Promise<void> {
-    try {
-      await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation (
+    const {
+      mutate: updatePost,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+          mutation UpdatePost(
             $id: ID!
             $title: String!
             $content: String!
@@ -72,6 +85,7 @@ export default function () {
               }
             ) 
         `,
+      {
         variables: {
           id: params.id,
           title: params.title,
@@ -81,98 +95,136 @@ export default function () {
           images: params.images,
           imagesRemoved: params.imagesRemoved,
         },
-      });
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
+      }
+    );
+    updatePost();
+
+    return new Promise((resolve, reject) => {
+      onDone(() => resolve());
+      onError((error) => reject(error));
+    });
   }
 
   async function deletePost(params: DeletePost): Promise<void> {
-    try {
-      await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation ($id: ID!) {
-            deletePost(input: { id: $id })
-          }
-        `,
+    const {
+      mutate: deletePost,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation DeletePost($id: ID!) {
+          deletePost(input: { id: $id })
+        }
+      `,
+      {
         variables: {
           id: params.id,
         },
-      });
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
+      }
+    );
+    deletePost();
+
+    return new Promise((resolve, reject) => {
+      onDone(() => resolve());
+      onError((error) => reject(error));
+    });
   }
 
   async function getPosts(params: GetPost): Promise<Array<Post>> {
-    try {
-      const response = await apollo.defaultClient.mutate({
-        mutation: gql`
-        query($date:String!){
-          posts(date:$date) {
-            posts{
-              ${params.query}
+    const { onResult, onError, result, refetch } = useQuery(
+      gql`
+        query GetPosts($date: String!) {
+          posts(date: $date) {
+            posts {
+              ...${params.graphql.fragment}
             }
           }
         }
+        ${params.graphql.name}
       `,
-        variables: {
-          date: params.date,
-        },
-      });
+      {
+        date: params.date,
+      },
+      {
+        fetchPolicy: "cache-first",
+      }
+    );
 
-      if (response.data.posts.posts) return response.data.posts.posts;
-      throw new Error("Bad response");
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
+    return new Promise((resolve, reject) => {
+      if (result.value != undefined && params.refetch == false)
+        resolve(result.value.posts.posts);
+
+      if (params.refetch)
+        refetch()?.then((response) => resolve(response.data.posts.posts));
+
+      onResult((response) => resolve(response.data.posts.posts));
+
+      onError((error) => {
+        reject(error);
+      });
+    });
   }
 
   async function getPost(params: GetPosts): Promise<Post> {
-    try {
-      const response = await apollo.defaultClient.mutate({
-        mutation: gql`
-        query ($id: ID!) {
+    const { onResult, onError, result } = useQuery(
+      gql`
+        query GetPost($id: ID!) {
           post(id: $id) {
             post {
-             ${params.query}
+              ...${params.graphql.fragment}
             }
           }
         }
+        ${params.graphql.name}
       `,
-        variables: {
-          id: params.id,
-        },
-      });
+      {
+        id: params.id,
+      },
+      {
+        fetchPolicy: "cache-first",
+      }
+    );
 
-      if (response.data.post.post) return response.data.post.post;
-      throw new Error("Bad response");
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
+    return new Promise((resolve, reject) => {
+      if (result.value != undefined) resolve(result.value.post.post);
+      else {
+        onResult((response) => resolve(response.data.post.post));
+      }
+
+      onError((error) => {
+        reject(error);
+      });
+    });
   }
 
-  async function getPostsDates(): Promise<Array<GetPostsDatesResponse>> {
-    try {
-      const response = await apollo.defaultClient.mutate({
-        mutation: gql`
-          query {
-            getDates {
-              dates
-            }
+  async function getPostsDates(
+    params: GetPostsDates
+  ): Promise<Array<GetPostsDatesResponse>> {
+    const { onResult, onError, result, refetch } = useQuery(
+      gql`
+        query postsDates {
+          postsDates {
+            ...${params.graphql.fragment}
           }
-        `,
-      });
+        }
+          ${params.graphql.name}
+      `
+    );
 
-      return response.data.getDates.dates;
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
+    return new Promise((resolve, reject) => {
+      if (result.value != undefined) resolve(result.value.postsDates.dates);
+
+      if (params.refetch)
+        refetch()?.then((response) =>
+          resolve(response.data.postsDates.postsDates)
+        );
+
+      onResult((response) => resolve(response.data.postsDates.dates));
+
+      onError((error) => {
+        reject(error);
+      });
+    });
   }
   return {
     createPost,

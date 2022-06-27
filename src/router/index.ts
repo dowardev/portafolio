@@ -24,7 +24,7 @@ import AdminPanelPage from "../views/admin/PanelAdminPage.vue";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/presentation",
+    redirect: "/blog",
   },
   {
     path: "/prueba",

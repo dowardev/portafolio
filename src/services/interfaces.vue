@@ -1,6 +1,14 @@
 <script lang="ts">
+import { DocumentNode } from "graphql";
+
+interface Graphql {
+  name: DocumentNode;
+  fragment: string;
+  refetch?: boolean;
+}
+
 // feedback
-interface Feedback {
+export interface Feedback {
   userId?: string;
   name?: string;
   email?: string;
@@ -9,19 +17,18 @@ interface Feedback {
   type: string;
 }
 
-interface FeedbackParams {
+export interface FeedbackParams {
   userId?: Feedback["userId"];
   name?: Feedback["name"];
   email?: Feedback["email"];
   description: Feedback["description"];
   contactMe: Feedback["contactMe"];
   error?: any;
-  query: string;
   type: Feedback["type"];
 }
 
 // posts
-interface Post {
+export interface Post {
   id?: string;
   title?: string;
   content?: string;
@@ -34,25 +41,25 @@ interface Post {
     source?: string;
   };
 }
-
-interface GetPost {
+export interface GetPost {
   date: string;
-  query: string;
+  refetch?: boolean;
+  graphql: Graphql;
 }
 
-interface GetPosts {
+export interface GetPosts {
   id: Post["id"];
-  query: string;
+  graphql: Graphql;
 }
 
-interface CreatePost {
+export interface CreatePost {
   title: Post["title"];
   content: Post["content"];
   coverId: Post["cover"]["id"];
   images: string[];
 }
 
-interface UpdatePost {
+export interface UpdatePost {
   id: Post["id"];
   title: Post["title"];
   content: Post["content"];
@@ -62,64 +69,64 @@ interface UpdatePost {
   imagesRemoved: string[];
 }
 
-interface GetPostsDatesResponse {
+export interface GetPostsDates {
+  graphql: Graphql;
+  refetch?: boolean;
+}
+
+export interface GetPostsDatesResponse {
   dates: string;
 }
 
-interface GetRecentDatePostsResponse {
-  date: string;
-}
-
-interface DeletePost {
+export interface DeletePost {
   id: Post["id"];
 }
 
 // image
-interface GetImage {
+export interface GetImage {
   id?: Image["id"];
   name?: Image["name"];
-  query: string;
 }
 
-interface Image {
+export interface Image {
   id?: string;
   name?: string;
   path?: string;
   source?: string;
 }
 
-interface UploadImage {
+export interface UploadImage {
   image: any;
-  query: string;
+  graphql: Graphql;
 }
 
 // system
-interface Toast {
+export interface Toast {
   message: string;
   color?: string;
   position?: "top" | "bottom" | "middle";
   duration?: number;
 }
 
-interface Theme {
+export interface Theme {
   theme: "aut" | "light" | "dark";
 }
 
-interface Loading {
+export interface Loading {
   message: string;
 }
 
-interface AlertConfirmation {
+export interface AlertConfirmation {
   message: string;
 }
 
-interface ModalFeedback {
+export interface ModalFeedback {
   error?: object;
   type: "feedback" | "error";
 }
 
 // user
-interface User {
+export interface User {
   id?: string;
   name?: string;
   user?: string;
@@ -129,59 +136,52 @@ interface User {
   rol?: Array<any>;
   is_email_verified?: boolean;
   is_user_disabled?: boolean;
+  image_profile: string;
 }
 
-interface GetUser {
-  query: string;
+export interface GetUser {
+  graphql: Graphql;
 }
 
-interface UserToken {
+export interface GetUserResponse {
+  id?: User["id"];
+  name?: User["user"];
+  email?: User["email"];
+  user?: User["user"];
+  image_profile?: User["image_profile"];
+  is_admin?: User["is_admin"];
+}
+
+export interface UserToken {
   token: string | null;
 }
 
-interface UserRegister {
+export interface UserRegister {
   name: User["name"];
   user: User["user"];
   email: User["email"];
   password: User["password"];
 }
 
-interface SetUserData {
+export interface SetUserData {
   name: User["name"];
   email: User["email"];
   is_admin: User["is_admin"];
   rol: User["rol"];
 }
 
-interface GetUserResponse {
-  id?: string;
-  name?: string;
-  user?: string;
-  email?: string;
-  is_admin?: boolean;
-  rol?: Array<any>;
-  image_source?: string;
-}
-
-interface GetUserPermissionsResponse {
+export interface GetUserPermissionsResponse {
   admin: User["is_admin"];
   rol: User["rol"];
 }
 
-interface UserRegisterResponse {
-  name: User["name"];
-  user: User["user"];
-  email: User["email"];
-  password: User["password"];
-}
-
-interface UserLogin {
+export interface UserLogin {
   user: User["user"];
   password: User["password"];
-  query: string;
+  graphql: Graphql;
 }
 
-interface UserLoginResponse {
+export interface UserLoginResponse {
   user?: User;
   auth: {
     access_token?: string;
@@ -189,42 +189,42 @@ interface UserLoginResponse {
   };
 }
 
-interface EmailResetPassword {
+export interface EmailResetPassword {
   email: string;
 }
 
-interface ResetPassword {
+export interface ResetPassword {
   code: string;
   email: string;
   password: string;
 }
 
-interface SaveUserData {
+export interface SaveUserData {
   name: string;
   user: string;
   email: string;
   imageId?: string;
 }
 
-interface UpdateUserPassword {
+export interface UpdateUserPassword {
   oldPassword: string;
   newPassword: string;
   newPasswordRepeat: string;
 }
-interface DeleteUserAccount {
+export interface DeleteUserAccount {
   password: string;
 }
-interface ResendEmailConfirmation {
+export interface ResendEmailConfirmation {
   email: string;
 }
 
 // admin
-interface GetUsers {
-  query: string;
+export interface GetUsers {
   first: number;
   page: number;
+  graphql: Graphql;
 }
-interface GetUsersResponse {
+export interface GetUsersResponse {
   users: Array<User>;
   paginatorInfo: {
     currentPage: number;
@@ -233,14 +233,14 @@ interface GetUsersResponse {
     total: number;
   };
 }
-interface SearchUsers {
-  query: string;
+export interface SearchUsers {
   first: number;
   page: number;
   name?: string;
   email?: string;
+  graphql: Graphql;
 }
-interface SearchUsersResponse {
+export interface SearchUsersResponse {
   users: Array<User>;
   paginatorInfo: {
     currentPage: number;
@@ -249,54 +249,11 @@ interface SearchUsersResponse {
     total: number;
   };
 }
-interface DisableUser {
+export interface DisableUser {
   id: string;
   disableUser: boolean;
 }
-interface DeleteUserAccountAdmin {
+export interface DeleteUserAccountAdmin {
   email: string;
 }
-
-export {
-  Feedback,
-  Post,
-  UpdatePost,
-  GetImage,
-  DeletePost,
-  Toast,
-  User,
-  CreatePost,
-  GetPost,
-  GetPosts,
-  UserRegister,
-  UserLogin,
-  EmailResetPassword,
-  ResetPassword,
-  Theme,
-  Loading,
-  AlertConfirmation,
-  UserToken,
-  GetUser,
-  Image,
-  UploadImage,
-  FeedbackParams,
-  GetRecentDatePostsResponse,
-  GetPostsDatesResponse,
-  UserRegisterResponse,
-  SetUserData,
-  GetUserResponse,
-  GetUserPermissionsResponse,
-  UserLoginResponse,
-  ModalFeedback,
-  SaveUserData,
-  UpdateUserPassword,
-  DeleteUserAccount,
-  GetUsers,
-  GetUsersResponse,
-  SearchUsers,
-  SearchUsersResponse,
-  DisableUser,
-  ResendEmailConfirmation,
-  DeleteUserAccountAdmin,
-};
 </script>

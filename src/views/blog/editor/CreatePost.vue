@@ -22,6 +22,7 @@ import systemService from "../../../services/system.vue";
 import EditorComponent from "./EditorPage.vue";
 import eventBus from "../../../EventBus";
 import { CreatePost } from "@/services/interfaces.vue";
+import { UPLOAD_IMAGE, USER_PERMISSIONS } from "@/services/graphql";
 
 export default defineComponent({
   name: "EditorPage",
@@ -41,16 +42,18 @@ export default defineComponent({
 
   beforeRouteEnter(to, from, next) {
     userService()
-      .getUserPermissions()
+      .getUser({
+        graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+      })
       .then((response) => {
-        if (response.admin) {
+        if (response.is_admin) {
           next();
         } else {
-          next("/blog");
+          next("/");
         }
       })
       .catch(() => {
-        next("/blog");
+        next("/");
       });
   },
 
@@ -115,15 +118,13 @@ export default defineComponent({
     async uploadImage(e: any) {
       this.spinners.saveImage = true;
       const image = e.image.file;
-      const query = `
-            image {
-              id
-              name
-            }
-              `;
 
       try {
-        const response = await systemService().uploadImage({ query, image });
+        const response = await systemService().uploadImage({
+          graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
+          image,
+        });
+
         const imageName = response.name;
         this.spinners.saveImage = false;
 
@@ -145,13 +146,11 @@ export default defineComponent({
     },
 
     async uploadCover(image: object): Promise<string> {
-      const query = `
-            image {
-              id
-            }
-              `;
       try {
-        const response = await systemService().uploadImage({ image, query });
+        const response = await systemService().uploadImage({
+          image,
+          graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
+        });
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return response.id!;
       } catch (e: any) {

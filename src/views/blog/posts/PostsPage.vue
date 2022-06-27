@@ -167,9 +167,9 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   IonPage,
-  // IonRouterOutlet,
   IonChip,
   IonLabel,
   IonItem,
@@ -190,12 +190,16 @@ import {
 } from "ionicons/icons";
 import userService from "../../../services/user.vue";
 import PostsComponent from "./PostsPage2.vue";
+import {
+  ALL_POSTS_DETAILS,
+  POST_DATES,
+  USER_PERMISSIONS,
+} from "../../../services/graphql";
 
 export default defineComponent({
   name: "PostsPage",
   components: {
     IonPage,
-    // IonRouterOutlet,
     IonChip,
     IonLabel,
     IonItem,
@@ -251,7 +255,7 @@ export default defineComponent({
 
       if (response.option == "goTo") this.goToPage(response.currentPage);
 
-      if (response.option == "refresh") this.loadContent();
+      if (response.option == "refresh") this.loadContent(true);
     });
 
     eventBus().emitter.on("new-post", () => {
@@ -264,15 +268,29 @@ export default defineComponent({
   },
 
   methods: {
-    async loadDates(): Promise<Array<string>> {
-      let dates = Array<string>();
+    async getPostsDates(params: { refetch: boolean }): Promise<Array<string>> {
+      const dates = Array<string>();
       try {
-        dates = await this.getPostsDates();
-        if (dates.length == 0) return [];
+        const response = await postService().getPostsDates({
+          refetch: params.refetch,
+          graphql: { name: POST_DATES, fragment: "PostDates" },
+        });
+        response.forEach((element: any) => {
+          dates.push(
+            formatISO(new Date(element), {
+              representation: "date",
+            }).replaceAll("/", "-")
+          );
+        });
+
+        this.dates = dates;
       } catch (e: any) {
         this.loadingData.dates.status = "error";
-        return [];
+        console.error(e);
+        systemService().openToastErrror(e);
+        throw new Error(e.message);
       }
+
       this.loadingData.dates.status = "finished";
       return dates;
     },
@@ -304,22 +322,31 @@ export default defineComponent({
       return currentPage;
     },
 
-    async loadPosts(params: { currentPage: string }): Promise<Array<Post>> {
-      let posts = Array<Post>();
+    async getPosts(params: {
+      currentPage: string;
+      refetch?: boolean;
+    }): Promise<Array<Post>> {
       try {
-        posts = await this.getPosts(params.currentPage);
+        const response = await postService().getPosts({
+          date: params.currentPage,
+          refetch: params.refetch,
+          graphql: { name: ALL_POSTS_DETAILS, fragment: "PostsDetails" },
+        });
+
+        return response;
       } catch (e: any) {
-        return [];
+        console.error(e);
+        systemService().openToastErrror(e);
+        throw new Error(e.message);
       }
-      return posts;
     },
 
-    async loadContent() {
+    async loadContent(refetch = false) {
       this.loadingData.data.status = "loading";
       this.loadingData.dates.status = "loading";
       this.loadingData.posts.status = "loading";
 
-      const dates = await this.loadDates();
+      const dates = await this.getPostsDates({ refetch });
       if (dates.length == 0) {
         this.loadingData.dates.status = "error";
         this.loadingData.dates.message = "No dates";
@@ -333,7 +360,7 @@ export default defineComponent({
       }
       this.loadingData.dates.status = "finished";
 
-      const posts = await this.loadPosts({ currentPage });
+      const posts = await this.getPosts({ currentPage, refetch });
       if (posts.length == 0) {
         this.loadingData.posts.status = "error";
       }
@@ -357,7 +384,7 @@ export default defineComponent({
       let posts = Array<Post>();
 
       try {
-        posts = await this.getPosts(date);
+        posts = await this.getPosts({ currentPage: date });
         this.loadingData.posts.status = "finished";
       } catch (e: any) {
         this.loadingData.posts.status = "error";
@@ -381,7 +408,7 @@ export default defineComponent({
 
       let posts = Array<Post>();
       try {
-        posts = await this.getPosts(date);
+        posts = await this.getPosts({ currentPage: date });
         this.loadingData.posts.status = "finished";
       } catch (e: any) {
         this.loadingData.posts.status = "error";
@@ -400,7 +427,7 @@ export default defineComponent({
 
       let posts = Array<Post>();
       try {
-        posts = await this.getPosts(date);
+        posts = await this.getPosts({ currentPage: date });
         this.loadingData.posts.status = "finished";
       } catch (e: any) {
         this.loadingData.posts.status = "error";
@@ -411,58 +438,16 @@ export default defineComponent({
       this.$router.replace("/blog/" + date);
     },
 
-    async getPosts(date: string): Promise<Array<Post>> {
-      const query = `
-            id
-            title
-            cover {
-              source
-            }
-      `;
-
-      let posts = Array<Post>();
-      try {
-        posts = await postService().getPosts({
-          date: date,
-          query,
-        });
-
-        return posts;
-      } catch (e: any) {
-        console.error(e);
-        systemService().openToastErrror(e);
-        throw new Error(e.message);
-      }
-    },
-
-    async getPostsDates(): Promise<Array<string>> {
-      try {
-        const response = await postService().getPostsDates();
-
-        const dates = Array<string>();
-        response.forEach((element: any) => {
-          dates.push(
-            formatISO(new Date(element), {
-              representation: "date",
-            }).replaceAll("/", "-")
-          );
-        });
-
-        this.dates = dates;
-        return dates;
-      } catch (e: any) {
-        console.error(e);
-        systemService().openToastErrror(e);
-        throw new Error(e.message);
-      }
-    },
-
     async verifyUserAdmin() {
       if (navigator.onLine) {
         try {
-          const response = await userService().getUserPermissions();
-          this.isUserAdmin = response.admin ? response.admin != null : false;
+          this.isUserAdmin = (
+            await userService().getUser({
+              graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+            })
+          ).is_admin!;
         } catch (e: any) {
+          this.isUserAdmin = false;
           if (e.message == "Unauthorized") return;
           else {
             systemService().openToastErrror(e);

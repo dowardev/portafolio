@@ -27,7 +27,7 @@
               color="primary"
             ></ion-spinner>
           </ion-button>
-          <ion-button @click="refreshContent">
+          <ion-button @click="refreshContent()">
             <ion-icon :icon="refreshOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -77,10 +77,10 @@
               <ion-datetime
                 :is-date-enabled="getDaysEnabled"
                 presentation="date"
-                @ionChange="goToPage($event.detail.value)"
+                @ionChange="goToPage($event.detail.value!)"
                 :value="currentPage"
                 ref="datetime"
-                firstDayOfWeek="1"
+                :firstDayOfWeek="1"
                 locale="es-mx"
               ></ion-datetime>
             </ion-popover>
@@ -154,6 +154,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   IonContent,
   IonHeader,
@@ -182,6 +183,7 @@ import systemService from "../../../services/system.vue";
 import postService from "../../../services/post.vue";
 import formatISO from "date-fns/formatISO";
 import { Post } from "@/services/interfaces.vue";
+import { USER_PERMISSIONS } from "../../../services/graphql";
 
 export default defineComponent({
   name: "PostsPage",
@@ -236,9 +238,13 @@ export default defineComponent({
     async verifyUserAdmin() {
       if (navigator.onLine) {
         try {
-          const response = await userService().getUserPermissions();
-          this.isUserAdmin = response.admin ? response.admin != null : false;
+          this.isUserAdmin = (
+            await userService().getUser({
+              graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+            })
+          ).is_admin!;
         } catch (e: any) {
+          this.isUserAdmin = false;
           if (e.message == "Unauthorized") return;
           else {
             systemService().openToastErrror(e);

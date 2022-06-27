@@ -1,6 +1,4 @@
 <script lang="ts">
-import gql from "graphql-tag";
-import apolloClient from "../Apollo";
 import {
   DeleteUserAccountAdmin,
   DisableUser,
@@ -10,42 +8,64 @@ import {
   SearchUsersResponse,
 } from "./interfaces.vue";
 
-const apollo = apolloClient;
+import apolloClient from "../Apollo";
+import gql from "graphql-tag";
+import { useQuery, useMutation } from "@vue/apollo-composable";
+import { provideApolloClient } from "@vue/apollo-composable";
+provideApolloClient(apolloClient);
 
 export default function () {
   async function getUsers(params: GetUsers): Promise<GetUsersResponse> {
-    try {
-      const response = await apollo.defaultClient.mutate({
-        mutation: gql`
-        query ($first: Int!,$page:Int!) {
+    const { onResult, onError, result, refetch } = useQuery(
+      gql`
+        query users($first: Int!,$page:Int!) {
           users(first:$first,page:$page) {
-             ${params.query}
+            ...${params.graphql.fragment}
           }
         }
+        ${params.graphql.name}
       `,
-        variables: {
-          first: params.first,
-          page: params.page,
-        },
-      });
+      {
+        first: params.first,
+        page: params.page,
+      }
+    );
 
-      return {
-        users: response.data.users.data,
-        paginatorInfo: response.data.users.paginatorInfo,
-      };
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
+    return new Promise((resolve, reject) => {
+      if (result.value != undefined && params.graphql.refetch == false)
+        resolve({
+          users: result.value.users.data,
+          paginatorInfo: result.value.users.paginatorInfo,
+        });
+
+      if (params.graphql.refetch) {
+        refetch()?.then((response) =>
+          resolve({
+            users: response.data.users.data,
+            paginatorInfo: response.data.users.paginatorInfo,
+          })
+        );
+      }
+
+      onResult((response) =>
+        resolve({
+          users: response.data.users.data,
+          paginatorInfo: response.data.users.paginatorInfo,
+        })
+      );
+
+      onError((error) => {
+        reject(error);
+      });
+    });
   }
 
   async function searchUsers(
     params: SearchUsers
   ): Promise<SearchUsersResponse> {
-    try {
-      const response = await apollo.defaultClient.mutate({
-        mutation: gql`
-        query ($first: Int!,$page:Int!,$name:Mixed,$email:Mixed) {
+    const { onResult, onError, result } = useQuery(
+      gql`
+        query SearchUsers($first: Int!,$page:Int!,$name:Mixed,$email:Mixed) {
           usersSearch(first:$first,page:$page,where:{
               OR: [
                { column: name, operator: EQ, value: $name },
@@ -53,65 +73,91 @@ export default function () {
               ]
            }
 ) {
-             ${params.query}
+             ...${params.graphql.fragment}
           }
         }
+          ...${params.graphql.name}
       `,
-        variables: {
-          first: params.first,
-          page: params.page,
-          name: params.name,
-          email: params.email,
-        },
-      });
+      {
+        first: params.first,
+        page: params.page,
+        name: params.name,
+        email: params.email,
+      }
+    );
 
-      return {
-        users: response.data.usersSearch.data,
-        paginatorInfo: response.data.usersSearch.paginatorInfo,
-      };
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
+    return new Promise((resolve, reject) => {
+      if (result.value != undefined)
+        resolve({
+          users: result.value.usersSearch.data,
+          paginatorInfo: result.value.usersSearch.paginatorInfo,
+        });
+      else {
+        onResult((response) =>
+          resolve({
+            users: response.data.usersSearch.data,
+            paginatorInfo: response.data.usersSearch.paginatorInfo,
+          })
+        );
+      }
+
+      onError((error) => {
+        reject(error);
+      });
+    });
   }
 
   async function disableUser(params: DisableUser): Promise<void> {
-    try {
-      await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation ($id: String!, $disableUser: Boolean!) {
-            disableUser(input: { id: $id, user_disabled: $disableUser })
-          }
-        `,
+    const {
+      mutate: disableUser,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation DisableUser($id: String!, $disableUser: Boolean!) {
+          disableUser(input: { id: $id, user_disabled: $disableUser })
+        }
+      `,
+      {
         variables: {
           id: params.id,
           disableUser: params.disableUser,
         },
-      });
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
+      }
+    );
+    disableUser();
+
+    return new Promise((resolve, reject) => {
+      onDone(() => resolve());
+      onError((error) => reject(error));
+    });
   }
 
   async function deleteUserAccount(
     params: DeleteUserAccountAdmin
   ): Promise<void> {
-    try {
-      await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation ($email: String!) {
-            deleteUserAccountAdmin(input: { email: $email })
-          }
-        `,
+    const {
+      mutate: deleteUserAccount,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation DeleteUserAccountAdmin($email: String!) {
+          deleteUserAccountAdmin(input: { email: $email })
+        }
+      `,
+      {
         variables: {
           email: params.email,
         },
-      });
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
+      }
+    );
+    deleteUserAccount();
+
+    return new Promise((resolve, reject) => {
+      onDone(() => resolve());
+      onError((error) => reject(error));
+    });
   }
 
   return {

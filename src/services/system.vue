@@ -2,6 +2,7 @@
 import { Storage } from "@ionic/storage";
 const storage = new Storage();
 storage.create();
+
 import {
   toastController,
   loadingController,
@@ -20,10 +21,12 @@ import {
 } from "./interfaces.vue";
 import { alertCircleOutline, closeOutline } from "ionicons/icons";
 import FeedbackPage from "../components/feedback/FeedbackPage.vue";
-import gql from "graphql-tag";
-import apolloClient from "../Apollo";
 
-const apollo = apolloClient;
+import apolloClient from "../Apollo";
+import gql from "graphql-tag";
+import { useMutation } from "@vue/apollo-composable";
+import { provideApolloClient } from "@vue/apollo-composable";
+provideApolloClient(apolloClient);
 
 export default function () {
   async function getTheme(): Promise<"aut" | "light" | "dark" | null> {
@@ -88,6 +91,7 @@ export default function () {
       // return "https://prueba-blogb.dowar.xyz/";
     }
   }
+
   async function presentLoading(params: Loading) {
     const loading = await loadingController.create({
       cssClass: "my-custom-class",
@@ -176,25 +180,31 @@ export default function () {
   }
 
   async function uploadImage(params: UploadImage): Promise<Image> {
-    try {
-      const response = await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation ($file: String!) {
-            uploadImage(input: { file: $file }) {
-              ${params.query}
-            }
+    const {
+      mutate: uploadImage,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation UploadImage($file: String!) {
+          uploadImage(input: { file: $file }) {
+            ...${params.graphql.fragment}
           }
-        `,
+        }
+        ${params.graphql.name}
+      `,
+      {
         variables: {
           file: params.image,
         },
-      });
+      }
+    );
+    uploadImage();
 
-      return response.data.uploadImage.image;
-    } catch (e: any) {
-      if (e.graphQLErrors[0]) throw e.graphQLErrors[0];
-      throw new Error(e);
-    }
+    return new Promise((resolve, reject) => {
+      onDone((response) => resolve(response.data.uploadImage.image));
+      onError((error) => reject(error));
+    });
   }
 
   return {

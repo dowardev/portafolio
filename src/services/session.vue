@@ -1,182 +1,220 @@
 <script lang="ts">
-import apolloClient from "../Apollo";
-import gql from "graphql-tag";
 import {
   UserRegister,
   UserLogin,
   EmailResetPassword,
   ResetPassword,
-  UserRegisterResponse,
   UserLoginResponse,
   UpdateUserPassword,
 } from "./interfaces.vue";
 
-const apollo = apolloClient;
+import apolloClient from "../Apollo";
+import gql from "graphql-tag";
+import { useMutation } from "@vue/apollo-composable";
+import { provideApolloClient } from "@vue/apollo-composable";
+provideApolloClient(apolloClient);
 
 export default function () {
-  async function userRegister(
-    params: UserRegister
-  ): Promise<UserRegisterResponse> {
-    try {
-      const response = await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation (
-            $name: String!
-            $user: String!
-            $email: String!
-            $password: String!
-          ) {
-            register(
-              input: {
-                name: $name
-                user: $user
-                email: $email
-                password: $password
-              }
-            )
-          }
-        `,
+  async function userRegister(params: UserRegister): Promise<void> {
+    const {
+      mutate: register,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation UserRegister(
+          $name: String!
+          $user: String!
+          $email: String!
+          $password: String!
+        ) {
+          register(
+            input: {
+              name: $name
+              user: $user
+              email: $email
+              password: $password
+            }
+          )
+        }
+      `,
+      {
         variables: {
           name: params.name,
           user: params.user,
           email: params.email,
           password: params.password,
         },
+      }
+    );
+    register();
+
+    return new Promise((resolve, reject) => {
+      onDone(() => {
+        resolve();
       });
 
-      if (response.data) return response.data;
-      throw new Error("Bad response");
-    } catch (e: any) {
-      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
-      throw new Error(e.message);
-    }
+      onError((error) => reject(error));
+    });
   }
 
   async function userLogin(params: UserLogin): Promise<UserLoginResponse> {
-    const query = gql`
-          mutation ($user: String!, $password: String!) {
-            login(input: { user: $user, password: $password }) {
-              ${params.query}
-            }
+    const {
+      mutate: login,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation UserLogin($user: String!, $password: String!) {
+          login(input: { user: $user, password: $password }) {
+            ...${params.graphql.fragment}
           }
-        `;
-    try {
-      const response = await apollo.defaultClient.mutate({
-        mutation: query,
+        }
+        ${params.graphql.name}
+      `,
+      {
         variables: {
           user: params.user,
           password: params.password,
         },
+      }
+    );
+    login();
+
+    return new Promise((resolve, reject) => {
+      onDone((response) => {
+        resolve({
+          user: response.data.login.user,
+          auth: {
+            access_token: response.data.login.auth.access_token,
+            token_type: response.data.login.auth.token_type,
+          },
+        });
       });
 
-      return {
-        user: response.data.login.user,
-        auth: {
-          access_token: response.data.login.auth.access_token,
-          token_type: response.data.login.auth.token_type,
-        },
-      };
-    } catch (e: any) {
-      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
-      throw new Error(e.message);
-    }
+      onError((error) => reject(error));
+    });
   }
 
   async function logout(): Promise<void> {
-    try {
-      await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation {
-            userLogout
-          }
-        `,
-      });
-    } catch (e: any) {
-      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
-      throw new Error(e.message);
-    }
-  }
+    const {
+      mutate: logout,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation Logout {
+          userLogout
+        }
+      `
+    );
+    logout();
 
-  function removeUserCached(): void {
-    try {
-      apollo.defaultClient.cache.evict({ fieldName: "user" });
-    } catch (e: any) {
-      console.error(e);
-    }
+    return new Promise((resolve, reject) => {
+      onDone(() => resolve());
+      onError((error) => reject(error));
+    });
   }
 
   async function sendMailResetPassword(
     params: EmailResetPassword
   ): Promise<void> {
-    try {
-      await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation ($email: String!) {
-            forgotPassword(input: { email: $email })
-          }
-        `,
+    const {
+      mutate: forgotPassword,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation SendMailResetPassword($email: String!) {
+          forgotPassword(input: { email: $email })
+        }
+      `,
+
+      {
         variables: {
           email: params.email,
         },
-      });
-    } catch (e: any) {
-      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
-      throw new Error(e.message);
-    }
+      }
+    );
+    forgotPassword();
+
+    return new Promise((resolve, reject) => {
+      onDone(() => resolve());
+      onError((error) => reject(error));
+    });
   }
 
   async function resetPassword(params: ResetPassword): Promise<void> {
-    try {
-      await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation ($code: String!, $email: String!, $password: String!) {
-            restoreUserPassword(
-              input: { code: $code, email: $email, password: $password }
-            )
-          }
-        `,
+    const {
+      mutate: restoreUserPassword,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation ResetPassword(
+          $code: String!
+          $email: String!
+          $password: String!
+        ) {
+          restoreUserPassword(
+            input: { code: $code, email: $email, password: $password }
+          )
+        }
+      `,
+      {
         variables: {
           code: params.code,
           email: params.email,
           password: params.password,
         },
-      });
-    } catch (e: any) {
-      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
-      throw new Error(e.message);
-    }
+      }
+    );
+    restoreUserPassword();
+
+    return new Promise((resolve, reject) => {
+      onDone(() => resolve());
+      onError((error) => reject(error));
+    });
   }
 
-  async function updateUserPassword(params: UpdateUserPassword) {
-    try {
-      const response = await apollo.defaultClient.mutate({
-        mutation: gql`
-          mutation (
-            $oldPassword: String!
-            $newPassword: String!
-            $newPasswordRepeat: String!
-          ) {
-            updateUserPassword(
-              input: {
-                oldPassword: $oldPassword
-                newPassword: $newPassword
-                newPasswordRepeat: $newPasswordRepeat
-              }
-            )
-          }
-        `,
+  async function updateUserPassword(params: UpdateUserPassword): Promise<void> {
+    const {
+      mutate: updateUserPassword,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation UpdateUserPassword(
+          $oldPassword: String!
+          $newPassword: String!
+          $newPasswordRepeat: String!
+        ) {
+          updateUserPassword(
+            input: {
+              oldPassword: $oldPassword
+              newPassword: $newPassword
+              newPasswordRepeat: $newPasswordRepeat
+            }
+          )
+        }
+      `,
+      {
         variables: {
           oldPassword: params.oldPassword,
           newPassword: params.newPassword,
           newPasswordRepeat: params.newPasswordRepeat,
         },
+      }
+    );
+    updateUserPassword();
+
+    return new Promise((resolve, reject) => {
+      onDone(() => {
+        resolve();
       });
 
-      return response.data;
-    } catch (e: any) {
-      if (e.graphQLErrors) throw new Error(e.graphQLErrors[0].debugMessage);
-      throw new Error(e.message);
-    }
+      onError((error) => reject(error));
+    });
   }
 
   return {
@@ -185,7 +223,6 @@ export default function () {
     logout,
     sendMailResetPassword,
     resetPassword,
-    removeUserCached,
     updateUserPassword,
   };
 }

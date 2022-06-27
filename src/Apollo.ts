@@ -1,8 +1,6 @@
-import {
-  ApolloClient,
-  createHttpLink,
-  InMemoryCache,
-} from "@apollo/client/core";
+import { ApolloClient, InMemoryCache } from "@apollo/client/core";
+
+const cache = new InMemoryCache();
 
 const name = "token=";
 const cDecoded = decodeURIComponent(document.cookie);
@@ -22,22 +20,11 @@ if (mode == "development") {
 // uri = "https://dowar-blog.dowar.xyz/graphql";
 // uri = "https://prueba-blogb.dowar.xyz/graphql";
 
-const httpLink = createHttpLink({
+const apolloClient = new ApolloClient({
+  cache,
   uri,
   headers: {
     Authorization: token,
   },
 });
-
-const cache = new InMemoryCache();
-
-const apolloClient = new ApolloClient({
-  link: httpLink,
-  cache,
-});
-
-import { createApolloProvider } from "@vue/apollo-option";
-const apolloProvider = createApolloProvider({
-  defaultClient: apolloClient,
-});
-export default apolloProvider;
+export default apolloClient;

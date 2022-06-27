@@ -72,6 +72,7 @@
                 @click="goToAdminPanel()"
                 :disabled="spinners.buttonAdminPanel"
                 lines="none"
+                v-if="isUserAdmin"
               >
                 <ion-icon
                   :icon="cogOutline"
@@ -284,6 +285,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   IonContent,
   IonPage,
@@ -321,6 +323,7 @@ import systemService from "../../services/system.vue";
 import userService from "../../services/user.vue";
 import AppsComponent from "./apps/Apps.vue";
 import DonationsComponent from "./donations/Donations.vue";
+import { USER_MENU, USER_PERMISSIONS } from "../../services/graphql";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -379,14 +382,18 @@ export default defineComponent({
         buttonUserPanel: false,
         buttonAdminPanel: false,
       },
+      isUserAdmin: false,
     };
   },
+
   mounted() {
     eventBus().emitter.on("refresh-user-content", () => {
       this.getUser();
     });
     this.getUser();
+    this.verifyUserAdmin();
   },
+
   methods: {
     async openModalThemeDesktop() {
       const modal = await modalController.create({
@@ -415,29 +422,23 @@ export default defineComponent({
     },
 
     async getUser() {
-      const query = `
-          user {
-            user 
-            image_source
-          }
-    `;
       try {
-        const response = await userService().getUser({ query });
-        // eslint-disable-next-line
-        this.user.user = response.user!;
+        const { user, image_profile } = await userService().getUser({
+          graphql: { name: USER_MENU, fragment: "UserMenu" },
+        });
 
-        if (response.image_source) {
-          this.user.imageSource =
-            // eslint-disable-next-line
-            "data:image/png;base64," + response.image_source!;
+        this.user.user = user!;
+
+        const userImageProfile = image_profile;
+
+        if (userImageProfile) {
+          this.user.imageSource = "data:image/png;base64," + userImageProfile;
         }
         this.userLogged = true;
       } catch (e: any) {
         if (e.message == "Unauthorized") return;
-        else {
-          systemService().openToastErrror(e);
-          console.error(e);
-        }
+        systemService().openToastErrror(e);
+        console.error(e);
       }
     },
 
@@ -470,7 +471,6 @@ export default defineComponent({
           "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
         userService().setUserToken({ token });
         this.userLogged = false;
-        sessionService().removeUserCached();
         location.reload();
       } catch (e: any) {
         this.spinners.buttonLogout = false;
@@ -518,6 +518,25 @@ export default defineComponent({
       });
       menuController.close();
       return modal.present();
+    },
+
+    async verifyUserAdmin() {
+      if (navigator.onLine) {
+        try {
+          this.isUserAdmin = (
+            await userService().getUser({
+              graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+            })
+          ).is_admin!;
+        } catch (e: any) {
+          this.isUserAdmin = false;
+          if (e.message == "Unauthorized") return;
+          else {
+            systemService().openToastErrror(e);
+            console.error(e);
+          }
+        }
+      }
     },
   },
 });

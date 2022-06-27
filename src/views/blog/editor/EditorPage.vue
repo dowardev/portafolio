@@ -16,7 +16,7 @@
         <ion-buttons slot="end" :collapse="true">
           <ion-button
             @click="save()"
-            :disabled="v$.$invalid || spinnerSavePost"
+            :disabled="(v$ as any).$invalid || spinnerSavePost"
           >
             <ion-icon
               :icon="saveOutline"
@@ -101,14 +101,17 @@
         <ion-item>
           <ion-label position="floating">Titulo</ion-label>
           <ion-input
-            v-model="v$.postTitle.$model"
+            v-model="(v$ as any).postTitle.$model"
             :spellcheck="true"
             autocorrect="on"
             pattern="text"
           >
           </ion-input>
         </ion-item>
-        <div v-for="(error, index) of v$.postTitle.$errors" :key="index">
+        <div
+          v-for="(error, index) of (v$ as any).postTitle.$errors"
+          :key="index"
+        >
           <div class="error">{{ error.$message }}</div>
         </div>
 
@@ -128,22 +131,28 @@
           />
           <ion-label slot="end">{{ coverName }}</ion-label>
         </ion-item>
-        <div v-for="(error, index) of v$.coverSource.$errors" :key="index">
+        <div
+          v-for="(error, index) of (v$ as any).coverSource.$errors"
+          :key="index"
+        >
           <div class="error">{{ error.$message }}</div>
         </div>
 
         <ion-item>
           <ion-label position="floating">Editor</ion-label>
           <ion-textarea
-            auto-grow="true"
+            :auto-grow="true"
             placeholder="Contenido"
-            v-model="v$.postContent.$model"
+            v-model="(v$ as any).postContent.$model"
             :spellcheck="true"
             autocorrect="on"
             pattern="text"
           ></ion-textarea>
         </ion-item>
-        <div v-for="(error, index) of v$.postContent.$errors" :key="index">
+        <div
+          v-for="(error, index) of (v$ as any).postContent.$errors"
+          :key="index"
+        >
           <div class="error">{{ error.$message }}</div>
         </div>
       </section>
@@ -198,6 +207,7 @@ import {
 import userService from "../../../services/user.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
+import { USER_PERMISSIONS } from "../../../services/graphql";
 
 export default defineComponent({
   name: "EditorPage",
@@ -284,16 +294,18 @@ export default defineComponent({
 
   beforeRouteEnter(to, from, next) {
     userService()
-      .getUserPermissions()
+      .getUser({
+        graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+      })
       .then((response) => {
-        if (response.admin) {
+        if (response.is_admin) {
           next();
         } else {
-          next("/blog");
+          next("/");
         }
       })
       .catch(() => {
-        next("/blog");
+        next("/");
       });
   },
 

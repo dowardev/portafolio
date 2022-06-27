@@ -23,6 +23,11 @@ import userService from "../../../services/user.vue";
 import systemService from "../../../services/system.vue";
 import EditorComponent from "./EditorPage.vue";
 import eventBus from "../../../EventBus";
+import {
+  POSTS_UPDATE_DETAILS,
+  UPLOAD_IMAGE,
+  USER_PERMISSIONS,
+} from "../../../services/graphql";
 
 export default defineComponent({
   name: "EditorPage",
@@ -46,16 +51,18 @@ export default defineComponent({
 
   beforeRouteEnter(to, from, next) {
     userService()
-      .getUserPermissions()
+      .getUser({
+        graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+      })
       .then((response) => {
-        if (response.admin) {
+        if (response.is_admin) {
           next();
         } else {
-          next("/blog");
+          next("/");
         }
       })
       .catch(() => {
-        next("/blog");
+        next("/");
       });
   },
 
@@ -70,23 +77,13 @@ export default defineComponent({
       });
       loading.present();
 
-      const query = `
-              id
-              title
-              content
-              created_at
-              updated_at
-              cover {
-                id
-                name
-                source
-              }
-      `;
-
       try {
         const response = await postService().getPost({
           id: this.idPost as string,
-          query,
+          graphql: {
+            name: POSTS_UPDATE_DETAILS,
+            fragment: "PostUpdateDetails",
+          },
         });
         const title = response.title ? response.title : "";
         const content = response.content ? response.content : "";
@@ -201,15 +198,12 @@ export default defineComponent({
     async uploadImage(e: any) {
       this.spinners.saveImage = true;
       const image = e.image.file;
-      const query = `
-            image {
-              id
-              name
-            }
-              `;
 
       try {
-        const response = await systemService().uploadImage({ query, image });
+        const response = await systemService().uploadImage({
+          graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
+          image,
+        });
         const imageName = response.name;
         this.spinners.saveImage = false;
 
@@ -231,14 +225,11 @@ export default defineComponent({
     },
 
     async uploadCover(image: object): Promise<string | undefined> {
-      const query = `
-            image {
-              id
-        }
-      `;
-
       try {
-        const response = await systemService().uploadImage({ image, query });
+        const response = await systemService().uploadImage({
+          graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
+          image,
+        });
         return response.id;
       } catch (e: any) {
         console.error(e);

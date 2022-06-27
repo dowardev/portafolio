@@ -1,23 +1,41 @@
 <script lang="ts">
-import gql from "graphql-tag";
-import apolloClient from "../Apollo";
 import { FeedbackParams } from "./interfaces.vue";
 
-const apollo = apolloClient;
+import apolloClient from "../Apollo";
+import gql from "graphql-tag";
+import { useMutation } from "@vue/apollo-composable";
+import { provideApolloClient } from "@vue/apollo-composable";
+provideApolloClient(apolloClient);
 
 export default function () {
   async function createFeedback(params: FeedbackParams): Promise<void> {
-    try {
-      await apollo.defaultClient.mutate({
-        mutation: gql`
-        mutation($user_id:String,$name:String,$email:String,
-          $description:String!,$contact_me:Boolean!,$type:String!) {
-          createFeedback(input:{user_id:$user_id,name:$name,email:$email,
-            description:$description,contact_me:$contact_me,type:$type}) {
-           ${params.query} 
-          }
+    const {
+      mutate: createFeedback,
+      onDone,
+      onError,
+    } = useMutation(
+      gql`
+        mutation CreateFeedback(
+          $user_id: String
+          $name: String
+          $email: String
+          $description: String!
+          $contact_me: Boolean!
+          $type: String!
+        ) {
+          createFeedback(
+            input: {
+              user_id: $user_id
+              name: $name
+              email: $email
+              description: $description
+              contact_me: $contact_me
+              type: $type
+            }
+          )
         }
       `,
+      {
         variables: {
           user_id: params.userId,
           name: params.name,
@@ -26,13 +44,14 @@ export default function () {
           contact_me: params.contactMe,
           type: params.type,
         },
-      });
-    } catch (e: any) {
-      console.error(e);
-      // throw e.graphQLErrors[0];
-      if (e.graphQLErrors[0]) throw new Error(e.graphQLErrors[0].debugMessage);
-      throw new Error(e.message);
-    }
+      }
+    );
+    createFeedback();
+
+    return new Promise((resolve, reject) => {
+      onDone(() => resolve());
+      onError((error) => reject(error));
+    });
   }
 
   return {

@@ -48,11 +48,14 @@
                   <ion-label position="floating">
                     Usuario o correo electrónico
                   </ion-label>
-                  <ion-input v-model="v$.form['email'].$model" type="email">
+                  <ion-input
+                    v-model="(v$ as any).form.email.$model"
+                    type="email"
+                  >
                   </ion-input>
                 </ion-item>
                 <div
-                  v-for="(error, index) of v$.form['email'].$errors"
+                  v-for="(error, index) of (v$ as any).form['email'].$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
@@ -67,7 +70,7 @@
                   </ion-icon>
                   <ion-label position="floating">Contraseña</ion-label>
                   <ion-input
-                    v-model="v$.form['password'].$model"
+                    v-model="(v$ as any).form.password.$model"
                     :type="inputTypePassword"
                   >
                   </ion-input>
@@ -92,30 +95,27 @@
                 </ion-item>
 
                 <div
-                  v-for="(error, index) of v$.form['password'].$errors"
+                  v-for="(error, index) of (v$ as any).form.password.$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
                 </div>
               </form>
 
-              <div class="center">
-                <ion-item lines="none">
-                  <ion-button
-                    fill="clear"
-                    v-on:click="login()"
-                    :disabled="v$.form.$invalid || spinners.buttonLogin"
-                  >
-                    <ion-label v-if="spinners.buttonLogin == false">
-                      Iniciar sesión</ion-label
-                    >
-                    <ion-spinner
-                      name="crescent"
-                      v-if="spinners.buttonLogin"
-                    ></ion-spinner>
-                  </ion-button>
-                </ion-item>
-              </div>
+              <ion-button
+                fill="clear"
+                v-on:click="login()"
+                :disabled="(v$ as any).form.$invalid || spinners.buttonLogin"
+                expand="full"
+              >
+                <ion-label v-if="spinners.buttonLogin == false">
+                  Iniciar sesión</ion-label
+                >
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.buttonLogin"
+                ></ion-spinner>
+              </ion-button>
             </ion-card-content>
           </ion-card>
 
@@ -199,6 +199,7 @@ import userService from "../../../services/user.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import systemService from "../../../services/system.vue";
+import { USER_LOGIN, USER_NAME } from "../../../services/graphql";
 
 export default defineComponent({
   name: "LoginPage",
@@ -234,7 +235,7 @@ export default defineComponent({
 
   data() {
     return {
-      inputTypePassword: "password",
+      inputTypePassword: "password" as "text" | "password",
       form: {
         email: "",
         password: "",
@@ -263,9 +264,9 @@ export default defineComponent({
 
   beforeRouteEnter(to, from, next) {
     userService()
-      .getUserName()
+      .getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
       .then(() => {
-        next("/blog");
+        next("/");
       })
       .catch(() => {
         next();
@@ -288,16 +289,12 @@ export default defineComponent({
 
       const user = this.form.email.replace(/\s+/g, "");
       const password = this.form.password;
-      const query = `
-            auth {
-              access_token
-        }
-      `;
+
       try {
         const response = await sessionService().userLogin({
-          query,
           user,
           password,
+          graphql: { name: USER_LOGIN, fragment: "UserLogin" },
         });
 
         const token = "Bearer " + response.auth.access_token;
@@ -338,6 +335,7 @@ export default defineComponent({
       const alert = await alertController.create({
         cssClass: "my-custom-class",
         header: "Alerta",
+
         subHeader: "Confirmación",
         message:
           "Hemos enviado un correo electrónico a " +

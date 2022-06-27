@@ -71,7 +71,7 @@
                 ></ion-icon>
                 <ion-label position="floating">Contraseña actual</ion-label>
                 <ion-input
-                  v-model="(v$.form as any).oldPassword.$model"
+                  v-model="(v$ as any).form.oldPassword.$model"
                   :type="inputTypePassword1"
                   autocomplete="current-password"
                 ></ion-input>
@@ -95,7 +95,7 @@
                 </ion-button>
               </ion-item>
               <div
-                v-for="(error, index) of (v$.form as any).oldPassword.$errors"
+                v-for="(error, index) of (v$ as any).form.oldPassword.$errors"
                 :key="index"
               >
                 <div class="error">{{ error.$message }}</div>
@@ -109,7 +109,7 @@
                 ></ion-icon>
                 <ion-label position="floating">Contraseña nueva</ion-label>
                 <ion-input
-                  v-model="(v$.form as any).newPassword.$model"
+                  v-model="(v$ as any).form.newPassword.$model"
                   :type="inputTypePassword2"
                   autocomplete="new-password"
                 ></ion-input>
@@ -133,7 +133,7 @@
                 </ion-button>
               </ion-item>
               <div
-                v-for="(error, index) of (v$.form as any).newPassword.$errors"
+                v-for="(error, index) of (v$ as any).form.newPassword.$errors"
                 :key="index"
               >
                 <div class="error">{{ error.$message }}</div>
@@ -147,7 +147,7 @@
                 ></ion-icon>
                 <ion-label position="floating">Repetir contraseña</ion-label>
                 <ion-input
-                  v-model="(v$.form as any).newPasswordRepeat.$model"
+                  v-model="(v$ as any).form.newPasswordRepeat.$model"
                   :type="inputTypePassword3"
                 ></ion-input>
                 <ion-button
@@ -170,7 +170,7 @@
                 </ion-button>
               </ion-item>
               <div
-                v-for="(error, index) of (v$.form as any).newPasswordRepeat.$errors"
+                v-for="(error, index) of (v$ as any).form.newPasswordRepeat.$errors"
                 :key="index"
               >
                 <div class="error">{{ error.$message }}</div>
@@ -181,7 +181,7 @@
                   <ion-button
                     fill="clear"
                     @click="saveUserPassword()"
-                    :disabled="(v$.form as any).$invalid"
+                    :disabled="(v$ as any).form.$invalid"
                   >
                     <ion-spinner
                       name="crescent"
@@ -261,9 +261,9 @@ export default defineComponent({
       spinners: {
         saveUserPassword: false,
       },
-      inputTypePassword1: "password",
-      inputTypePassword2: "password",
-      inputTypePassword3: "password",
+      inputTypePassword1: "password" as "text" | "password",
+      inputTypePassword2: "password" as "text" | "password",
+      inputTypePassword3: "password" as "text" | "password",
       information: [
         {
           cardPassword: [

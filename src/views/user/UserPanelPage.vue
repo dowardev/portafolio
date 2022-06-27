@@ -63,6 +63,7 @@ import { defineComponent } from "vue";
 import userService from "../../services/user.vue";
 import UserProfileComponent from "./profile/UserProfilePage.vue";
 import UserSecurityComponent from "./security/UserSecurityPage.vue";
+import { USER_NAME } from "../../services/graphql";
 
 export default defineComponent({
   name: "UserPanelPage",
@@ -90,12 +91,12 @@ export default defineComponent({
 
   beforeRouteEnter(to, from, next) {
     userService()
-      .getUserName()
+      .getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
       .then(() => {
         next();
       })
       .catch(() => {
-        next("/login");
+        next("/");
       });
   },
 });

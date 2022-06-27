@@ -48,12 +48,12 @@
                       ></ion-icon>
                       <ion-label position="floating">Nombre</ion-label>
                       <ion-input
-                        v-model="(v$.form as any).name.$model"
+                        v-model="(v$ as any).form.name.$model"
                         autocomplete="name"
                       ></ion-input>
                     </ion-item>
                     <div
-                      v-for="(error, index) of (v$.form as any).name.$errors"
+                      v-for="(error, index) of (v$ as any).form.name.$errors"
                       :key="index"
                     >
                       <div class="error">{{ error.$message }}</div>
@@ -67,11 +67,11 @@
                       ></ion-icon>
                       <ion-label position="floating">Usuario</ion-label>
                       <ion-input
-                        v-model="(v$.form as any).user.$model"
+                        v-model="(v$ as any).form.user.$model"
                       ></ion-input>
                     </ion-item>
                     <div
-                      v-for="(error, index) of (v$.form as any).user.$errors"
+                      v-for="(error, index) of (v$ as any).form.user.$errors"
                       :key="index"
                     >
                       <div class="error">{{ error.$message }}</div>
@@ -87,12 +87,12 @@
                         >Correo electrónico</ion-label
                       >
                       <ion-input
-                        v-model="(v$.form as any).email.$model"
+                        v-model="(v$ as any).form.email.$model"
                         autocomplete="email"
                       ></ion-input>
                     </ion-item>
                     <div
-                      v-for="(error, index) of (v$.form as any).email.$errors"
+                      v-for="(error, index) of (v$ as any).form.email.$errors"
                       :key="index"
                     >
                       <div class="error">{{ error.$message }}</div>
@@ -106,9 +106,8 @@
                       ></ion-icon>
                       <ion-label position="floating">Contraseña</ion-label>
                       <ion-input
-                        v-model="(v$.form as any).password.$model"
+                        v-model="(v$ as any).form.password.$model"
                         :type="inputTypePassword1"
-                        autocomplete="password"
                       ></ion-input>
                       <ion-button
                         slot="end"
@@ -130,7 +129,7 @@
                       </ion-button>
                     </ion-item>
                     <div
-                      v-for="(error, index) of (v$.form as any).password.$errors"
+                      v-for="(error, index) of (v$ as any).form.password.$errors"
                       :key="index"
                     >
                       <div class="error">{{ error.$message }}</div>
@@ -146,7 +145,7 @@
                         >Repite contraseña</ion-label
                       >
                       <ion-input
-                        v-model="(v$.form as any).password2.$model"
+                        v-model="(v$ as any).form.password2.$model"
                         :type="inputTypePassword2"
                       ></ion-input>
                       <ion-button
@@ -169,7 +168,7 @@
                       </ion-button>
                     </ion-item>
                     <div
-                      v-for="(error, index) of (v$.form as any).password2.$errors"
+                      v-for="(error, index) of (v$ as any).form.password2.$errors"
                       :key="index"
                     >
                       <div class="error">{{ error.$message }}</div>
@@ -178,24 +177,21 @@
                 </section>
 
                 <section>
-                  <div class="center">
-                    <ion-item lines="none">
-                      <ion-button
-                        fill="clear"
-                        v-on:click="register()"
-                        :disabled="(v$.form as any).$invalid||spinners.buttonSignup"
-                      >
-                        <ion-label v-if="spinners.buttonSignup == false">
-                          Registrar</ion-label
-                        >
-                        <ion-spinner
-                          name="crescent"
-                          v-if="spinners.buttonSignup"
-                          color="primary"
-                        ></ion-spinner>
-                      </ion-button>
-                    </ion-item>
-                  </div>
+                  <ion-button
+                    fill="clear"
+                    v-on:click="register()"
+                    :disabled="(v$ as any).form.$invalid||spinners.buttonSignup"
+                    expand="full"
+                  >
+                    <ion-label v-if="spinners.buttonSignup == false">
+                      Registrar</ion-label
+                    >
+                    <ion-spinner
+                      name="crescent"
+                      v-if="spinners.buttonSignup"
+                      color="primary"
+                    ></ion-spinner>
+                  </ion-button>
                 </section>
               </ion-card-content>
             </ion-card>
@@ -262,6 +258,7 @@ import useVuelidate from "@vuelidate/core";
 import { required, email, helpers, sameAs } from "@vuelidate/validators";
 import userService from "../../../services/user.vue";
 import systemService from "../../../services/system.vue";
+import { USER_NAME } from "../../../services/graphql";
 
 export default defineComponent({
   name: "RegisterPage",
@@ -285,7 +282,9 @@ export default defineComponent({
   },
 
   setup() {
-    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
+    const modeDesingElements = isPlatform("ios")
+      ? "ios"
+      : ("md" as "ios" | "md");
     return {
       eyeOutline,
       eyeOffOutline,
@@ -300,8 +299,8 @@ export default defineComponent({
 
   data() {
     return {
-      inputTypePassword1: "password",
-      inputTypePassword2: "password",
+      inputTypePassword1: "password" as "text" | "password",
+      inputTypePassword2: "password" as "text" | "password",
       form: {
         user: "",
         name: "",
@@ -355,9 +354,9 @@ export default defineComponent({
 
   beforeRouteEnter(to, from, next) {
     userService()
-      .getUserName()
+      .getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
       .then(() => {
-        next("/blog");
+        next("/");
       })
       .catch(() => {
         next();

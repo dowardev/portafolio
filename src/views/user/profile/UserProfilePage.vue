@@ -103,13 +103,13 @@
                   ></ion-icon>
                   <ion-label position="floating">Nombre</ion-label>
                   <ion-input
-                    v-model="(v$.form as any).name.$model"
+                    v-model="(v$ as any).form.name.$model"
                     type="text"
                     autocomplete="name"
                   ></ion-input>
                 </ion-item>
                 <div
-                  v-for="(error, index) of (v$.form as any).name.$errors"
+                  v-for="(error, index) of (v$ as any).form.name.$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
@@ -123,13 +123,13 @@
                   ></ion-icon>
                   <ion-label position="floating">Usuario</ion-label>
                   <ion-input
-                    v-model="(v$.form as any).user.$model"
+                    v-model="(v$ as any).form.user.$model"
                     type="text"
                     autocomplete="username"
                   ></ion-input>
                 </ion-item>
                 <div
-                  v-for="(error, index) of (v$.form as any).user.$errors"
+                  v-for="(error, index) of (v$ as any).form.user.$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
@@ -143,7 +143,7 @@
                   ></ion-icon>
                   <ion-label position="floating">Correo electronico</ion-label>
                   <ion-input
-                    v-model="(v$.form as any).email.$model"
+                    v-model="(v$ as any).form.email.$model"
                     type="email"
                     autocomplete="email"
                     pattern="email"
@@ -151,7 +151,7 @@
                   ></ion-input>
                 </ion-item>
                 <div
-                  v-for="(error, index) of (v$.form as any).email.$errors"
+                  v-for="(error, index) of (v$ as any).form.email.$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
@@ -162,7 +162,7 @@
                     <ion-button
                       fill="clear"
                       @click="saveUserData()"
-                      :disabled="(v$.form as any).$invalid"
+                      :disabled="(v$ as any).form.$invalid"
                     >
                       <ion-spinner name="crescent" v-if="spinners.saveUserData">
                       </ion-spinner>
@@ -253,9 +253,9 @@
                   ></ion-icon>
                   <ion-label position="floating">Contraseña</ion-label>
                   <ion-input
-                    v-model="(v$.formDeleteAccount as any).password.$model"
+                    v-model="(v$ as any).formDeleteAccount.password.$model"
                     :type="inputTypePassword"
-                    autocomplete="password"
+                    autocomplete="current-password"
                   ></ion-input>
                   <ion-button
                     slot="end"
@@ -277,7 +277,7 @@
                   </ion-button>
                 </ion-item>
                 <div
-                  v-for="(error, index) of (v$.formDeleteAccount as any).password.$errors"
+                  v-for="(error, index) of (v$ as any).formDeleteAccount.password.$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
@@ -288,7 +288,7 @@
                     <ion-button
                       fill="clear"
                       @click="deleteUserAccount()"
-                      :disabled="(v$.formDeleteAccount as any).$invalid"
+                      :disabled="(v$ as any).formDeleteAccount.$invalid"
                       color="danger"
                     >
                       <ion-spinner
@@ -313,6 +313,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   IonItem,
   IonLabel,
@@ -343,7 +344,7 @@ import {
 } from "ionicons/icons";
 import sessionService from "../../../services/session.vue";
 import eventBus from "../../../EventBus";
-
+import { UPLOAD_IMAGE, USER_BASIC_DETAILS } from "../../../services/graphql";
 export default defineComponent({
   name: "UserProfileComponent",
   components: {
@@ -389,7 +390,7 @@ export default defineComponent({
       },
       oldEmail: "",
       userImage: require("../../../../public/assets/otros/user.png"),
-      inputTypePassword: "password",
+      inputTypePassword: "password" as "password" | "text",
       formDeleteAccount: { password: "" },
       information: [
         {
@@ -453,34 +454,23 @@ export default defineComponent({
 
   async mounted() {
     await this.getUser();
-    // eslint-disable-next-line
     this.oldEmail = this.form.email!;
   },
 
   methods: {
     async getUser() {
-      const query = `
-          user {
-            name
-            user
-            email
-            image_source
-          }
-    `;
       try {
-        const response = await userService().getUser({ query });
-        // eslint-disable-next-line
-        this.form.name = response.name!;
+        const { name, user, email, image_profile } =
+          await userService().getUser({
+            graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
+          });
+        this.form.name = name!;
+        this.form.user = user!;
+        this.form.email = email!;
+        const userProfileImage = image_profile!;
 
-        // eslint-disable-next-line
-        this.form.user = response.user!;
-
-        // eslint-disable-next-line
-        this.form.email = response.email!;
-
-        if (response.image_source) {
-          // eslint-disable-next-line
-          this.userImage = "data:image/png;base64," + response.image_source!;
+        if (userProfileImage) {
+          this.userImage = "data:image/png;base64," + userProfileImage;
         }
       } catch (e: any) {
         if (e.message == "Unauthorized") return;
@@ -493,12 +483,9 @@ export default defineComponent({
 
     async saveUserData() {
       this.spinners.saveUserData = true;
-      // eslint-disable-next-line
       const name = this.form.name!;
-      // eslint-disable-next-line
       const user = this.form.user!;
-      // eslint-disable-next-line
-      let email = this.form.email!;
+      const email = this.form.email!;
       const imageId = this.form.userImageId;
 
       if (email != this.oldEmail) {
@@ -553,23 +540,14 @@ export default defineComponent({
       this.spinners.uploadImage = true;
       const image = await this.getImageBase64(e);
 
-      const query = `
-            image {
-              id
-              name
-              source
-            }
-              `;
-
       try {
         const response = await systemService().uploadImage({
-          query,
           image,
+          graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
         });
         this.spinners.uploadImage = false;
         if (response.name) {
           this.userImage = "data:image/png;base64," + response.source;
-          // eslint-disable-next-line
           this.form.userImageId = response.id!;
         }
       } catch (e: any) {
@@ -652,7 +630,6 @@ export default defineComponent({
         const token = (document.cookie =
           "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
         userService().setUserToken({ token });
-        sessionService().removeUserCached();
         location.reload();
       } catch (e: any) {
         console.error(e);
