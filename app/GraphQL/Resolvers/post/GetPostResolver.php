@@ -4,10 +4,8 @@ namespace App\GraphQL\Resolvers\post;
 
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
-use App\Models\Post;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use stdClass;
 
 class GetPostResolver
 {

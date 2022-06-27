@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Post;
 use App\Models\Images;
 use Illuminate\Support\Facades\Auth;
-use Exception;
+use GraphQL\Error\Error;
 
 class DeletePostResolver
 {
@@ -19,7 +19,7 @@ class DeletePostResolver
     ResolveInfo $resolveInfo
   ) {
     if (Auth::guard('api')->user()->is_admin == false) {
-      throw new Exception('Unauthorized');
+      return Error::createLocatedError('Unauthorized');
     }
 
     $id = $args['id'];

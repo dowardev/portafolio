@@ -2,16 +2,11 @@
 
 namespace App\GraphQL\Resolvers\user;
 
-use App\Models\Images;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Facades\Auth;
-use Exception;
 use App\Models\User;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
-use App\Models\UserVerify;
-use Illuminate\Support\Facades\Storage;
+use GraphQL\Error\Error;
 
 class DeleteUserAccountResolver
 {
@@ -31,7 +26,7 @@ class DeleteUserAccountResolver
     ];
 
     if (!Auth::guard('web')->attempt($credentials)) {
-      throw new Exception('Wrong password');
+      return Error::createLocatedError('Wrong password');
     }
 
     User::find($user->id)->delete();

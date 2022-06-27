@@ -6,7 +6,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Exception;
+use GraphQL\Error\Error;
 
 class LoginResolver
 {
@@ -20,10 +20,10 @@ class LoginResolver
     $password = $args['password'];
 
     if ($user == '' || $user == 'null') {
-      throw new Exception('User is required');
+      return Error::createLocatedError('User is required');
     }
     if ($password == '' || $password == 'null') {
-      throw new Exception('Password is required');
+      return Error::createLocatedError('Password is required');
     }
 
     $userData = User::where('user', '=', $user)
@@ -31,11 +31,11 @@ class LoginResolver
       ->get();
 
     if (count($userData) == 0) {
-      throw new Exception('Not found');
+      return Error::createLocatedError('Not found');
     }
 
     if ($userData[0]->is_user_disabled) {
-      throw new Exception('Disabled user');
+      return Error::createLocatedError('Disabled user');
     }
 
     $credentials = [
@@ -44,7 +44,7 @@ class LoginResolver
     ];
     try {
       if (count($userData) == 0 || !Auth::guard('web')->attempt($credentials)) {
-        throw new Exception('Unauthorized');
+        return Error::createLocatedError('Unauthorized');
       }
     } catch (\Throwable $error) {
       $errorPool = app(\Nuwave\Lighthouse\Execution\ErrorPool::class);
@@ -52,7 +52,7 @@ class LoginResolver
     }
 
     if (!$userData[0]->is_email_verified) {
-      throw new Exception('Unverified email');
+      return Error::createLocatedError('Unverified email');
     }
 
     $token = $userData[0]->createToken('Personal Access Token')->accessToken;

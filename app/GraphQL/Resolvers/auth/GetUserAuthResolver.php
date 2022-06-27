@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Exception;
 use App\Models\Images;
 use Illuminate\Support\Facades\Storage;
+use GraphQL\Error\Error;
 
 class GetUserAuthResolver
 {
@@ -20,7 +21,7 @@ class GetUserAuthResolver
     try {
       $response = Auth::guard('api')->user();
       if ($response == null) {
-        throw new Exception('Unauthorized');
+        return Error::createLocatedError('Unauthorized');
       }
 
       $image_source = '';
@@ -40,7 +41,7 @@ class GetUserAuthResolver
         'is_email_verified' => $response->is_email_verified,
         'is_admin' => $response->is_admin,
         'rol' => $response->rol,
-        'image_source' => $image_source,
+        'image_profile' => $image_source,
         'is_user_disabled' => $response->is_user_disabled,
       ];
 

@@ -6,12 +6,12 @@ use App\Models\Images;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Facades\Auth;
-use Exception;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Models\UserVerify;
 use Illuminate\Support\Facades\Storage;
+use GraphQL\Error\Error;
 
 class SaveUserProfileResolver
 {
@@ -23,7 +23,7 @@ class SaveUserProfileResolver
   ) {
     $user = Auth::guard('api')->user();
     if ($user == null) {
-      throw new Exception('Unauthorized');
+      return Error::createLocatedError('Unauthorized');
     }
 
     $name = $args['name'];
@@ -52,7 +52,7 @@ class SaveUserProfileResolver
     $is_email_selected =
       count(User::where('email', $email)->get()) == 1 ? true : false;
     if ($is_email_selected) {
-      throw new Exception('Email already selected');
+      return Error::createLocatedError('Email already selected');
     }
 
     if ($user->email != $email) {

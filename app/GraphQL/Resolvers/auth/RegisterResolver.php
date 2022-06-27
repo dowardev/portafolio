@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\UserVerify;
 use Illuminate\Support\Facades\Mail;
-use Exception;
+use GraphQL\Error\Error;
 
 class RegisterResolver
 {
@@ -24,22 +24,22 @@ class RegisterResolver
     $password = $args['password'];
 
     if ($name == '' || $name == 'null') {
-      throw new Exception('Name is required');
+      return Error::createLocatedError('Name is required');
     }
     if ($user == '' || $user == 'null') {
-      throw new Exception('User is required');
+      return Error::createLocatedError('User is required');
     }
     if ($email == '' || $email == 'null') {
-      throw new Exception('Email is required');
+      return Error::createLocatedError('Email is required');
     }
     if ($password == '' || $password == 'null') {
-      throw new Exception('Password is required');
+      return Error::createLocatedError('Password is required');
     }
     if (count(User::where('user', '=', $user)->get())) {
-      throw new Exception('The user has already been selected');
+      return Error::createLocatedError('The user has already been selected');
     }
     if (count(User::where('email', '=', $email)->get())) {
-      throw new Exception('The email has already been selected');
+      return Error::createLocatedError('The email has already been selected');
     }
 
     $newUser = new User([

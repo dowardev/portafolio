@@ -5,8 +5,8 @@ namespace App\GraphQL\Resolvers\admin;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\User;
-use Exception;
 use Illuminate\Support\Facades\Auth;
+use GraphQL\Error\Error;
 
 class DeleteUserAccountResolver
 {
@@ -17,11 +17,11 @@ class DeleteUserAccountResolver
     ResolveInfo $resolveInfo
   ) {
     if (Auth::guard('api')->user() == null) {
-      throw new Exception('Unauthorized');
+      return Error::createLocatedError('Unauthorized');
     }
 
     if (Auth::guard('api')->user()->is_admin == false) {
-      throw new Exception('Unauthorized');
+      return Error::createLocatedError('Unauthorized');
     }
 
     User::where('email', $args['email'])->delete();

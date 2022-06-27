@@ -7,7 +7,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ResetCodePassword;
 use App\Models\User;
-use Exception;
+use GraphQL\Error\Error;
 
 class ForgotPasswordResolver
 {
@@ -20,7 +20,7 @@ class ForgotPasswordResolver
     $email = $args['email'];
 
     if ($email == '' || $email == 'null') {
-      throw new Exception('Email is required');
+      return Error::createLocatedError('Email is required');
     }
     $user = User::where('email', '=', $email)->get();
 

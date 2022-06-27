@@ -4,9 +4,9 @@ namespace App\GraphQL\Resolvers\admin;
 
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use GraphQL\Error\Error;
 
 class GetUsers
 {
@@ -17,11 +17,11 @@ class GetUsers
     ResolveInfo $resolveInfo
   ) {
     if (Auth::guard('api')->user() == null) {
-      throw new Exception('Unauthorized');
+      return Error::createLocatedError('Unauthorized');
     }
 
     if (Auth::guard('api')->user()->is_admin == false) {
-      throw new Exception('Unauthorized');
+      return Error::createLocatedError('Unauthorized');
     }
 
     return DB::table('users');

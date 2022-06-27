@@ -6,9 +6,9 @@ use App\Models\Images;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Facades\Auth;
-use Exception;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use GraphQL\Error\Error;
 
 class UpdateUserPasswordResolver
 {
@@ -20,7 +20,7 @@ class UpdateUserPasswordResolver
   ) {
     $user = Auth::guard('api')->user();
     if ($user == null) {
-      throw new Exception('Unauthorized');
+      return Error::createLocatedError('Unauthorized');
     }
 
     $email = $user->email;
@@ -31,11 +31,11 @@ class UpdateUserPasswordResolver
     ];
 
     if (!Auth::guard('web')->attempt($credentials, false, false)) {
-      throw new Exception('Wrong password');
+      return Error::createLocatedError('Wrong password');
     }
 
     if ($args['newPassword'] != $args['newPasswordRepeat']) {
-      throw new Exception('Passwords are not the same');
+      return Error::createLocatedError('Passwords are not the same');
     }
 
     User::where('email', '=', $email)->update([

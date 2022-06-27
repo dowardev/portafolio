@@ -6,7 +6,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\ResetCodePassword;
 use App\Models\User;
-use Exception;
+use GraphQL\Error\Error;
 
 class RestoreUserPasswordResolver
 {
@@ -21,13 +21,13 @@ class RestoreUserPasswordResolver
     $password = $args['password'];
 
     if ($email == '' || $email == 'null') {
-      throw new Exception('Email is required');
+      return Error::createLocatedError('Email is required');
     }
     if ($code == '' || $code == 'null') {
-      throw new Exception('Code is required');
+      return Error::createLocatedError('Code is required');
     }
     if ($password == '' || $password == null) {
-      throw new Exception('Password is required');
+      return Error::createLocatedError('Password is required');
     }
 
     $result = ResetCodePassword::where('email', '=', $email)
@@ -35,7 +35,7 @@ class RestoreUserPasswordResolver
       ->get();
 
     if (sizeof($result) == 0) {
-      throw new Exception('Code invalid');
+      return Error::createLocatedError('Code invalid');
     }
 
     ResetCodePassword::where('email', '=', $email)

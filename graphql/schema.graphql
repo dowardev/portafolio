@@ -14,23 +14,18 @@ type Query {
   # users(name: String @where(operator: "like")): [User!]!
   #   @paginate(defaultCount: 10)
 
-  post(id: ID): GetPost
+  post(id: ID): PostPayload
     @field(resolver: "App\\GraphQL\\Resolvers\\post\\GetPostResolver@resolve")
 
   posts(date: String): GetPosts
     @field(resolver: "App\\GraphQL\\Resolvers\\post\\GetPostsResolver@resolve")
 
-  # getNextPostDate(date: String, option: String): PostsDates!
-  #   @field(
-  #     resolver: "App\\GraphQL\\Resolvers\\post\\PostsDatesResolver@resolve"
-  #   )
-
-  getDates: PostsDates!
+  postsDates: PostsDates!
     @field(
       resolver: "App\\GraphQL\\Resolvers\\post\\PostsDatesResolver@resolve"
     )
 
-  getUserAuth: GetUserAuthPayload
+  userAuth: UserAuthPayload
     @field(
       resolver: "App\\GraphQL\\Resolvers\\auth\\GetUserAuthResolver@resolve"
     )
@@ -205,9 +200,6 @@ input UpdateUserPasswordInput {
 input DeleteUserAccountInput {
   password: String!
 }
-input GetUsers {
-  users: [User]
-}
 input DisableUser {
   id: String!
   user_disabled: Boolean!
@@ -234,7 +226,7 @@ type User {
   is_admin: Boolean!
   rol: [String]
   user: String!
-  image_source: String
+  image_profile: String
   is_user_disabled: Boolean!
 }
 type Post {
@@ -248,7 +240,7 @@ type Post {
 type GetPosts {
   posts: [Post]!
 }
-type GetPost {
+type PostPayload {
   post: Post
 }
 type UserAuth {
@@ -273,7 +265,7 @@ type LoginPayload {
   auth: UserAuth!
   user: [User]!
 }
-type GetUserAuthPayload {
+type UserAuthPayload {
   user: User!
 }
 type Image {

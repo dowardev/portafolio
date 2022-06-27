@@ -6,8 +6,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\Images;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
-use Exception;
+use GraphQL\Error\Error;
 
 class UploadImageResolver
 {
@@ -25,7 +24,7 @@ class UploadImageResolver
     Storage::disk('tmp')->put($filename, base64_decode($file_data));
 
     if ($file == '' || $file == 'null') {
-      throw new Exception('File is required');
+      return Error::createLocatedError('File is required');
     }
 
     $image = Images::create([

@@ -7,6 +7,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Exception;
+use GraphQL\Error\Error;
 
 class GetPostsResolver
 {
@@ -33,10 +34,10 @@ class GetPostsResolver
         ->get();
 
       if ($result == null) {
-        throw new Exception('No posts');
+        return Error::createLocatedError('No posts');
       }
     } catch (Exception $e) {
-      throw new Exception($e->getMessage());
+      return Error::createLocatedError($e->getMessage());
     }
 
     $posts = [];

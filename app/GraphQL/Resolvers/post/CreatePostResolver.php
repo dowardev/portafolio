@@ -7,9 +7,9 @@ use GraphQL\Type\Definition\ResolveInfo;
 use App\Models\Post;
 use App\Models\PostImage;
 use Illuminate\Support\Facades\Auth;
-use Exception;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Images;
+use GraphQL\Error\Error;
 
 class CreatePostResolver
 {
@@ -20,7 +20,7 @@ class CreatePostResolver
     ResolveInfo $resolveInfo
   ) {
     if (Auth::guard('api')->user()->is_admin == false) {
-      throw new Exception('Unauthorized');
+      return Error::createLocatedError('Unauthorized');
     }
 
     $title = $args['title'];
@@ -29,13 +29,13 @@ class CreatePostResolver
     $images = array_key_exists('images', $args) ? $args['images'] : [];
 
     if ($title == '' || $title == 'null') {
-      throw new Exception('Title is required');
+      return Error::createLocatedError('Title is required');
     }
     if ($content == '' || $content == 'null') {
-      throw new Exception('Content is required');
+      return Error::createLocatedError('Content is required');
     }
     if ($cover_id == '' || $cover_id == null) {
-      throw new Exception('CoverId is required');
+      return Error::createLocatedError('CoverId is required');
     }
 
     $this->moveImage($args['coverId']);

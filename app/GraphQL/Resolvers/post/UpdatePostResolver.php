@@ -9,7 +9,7 @@ use App\Models\Post;
 use App\Models\Images;
 use App\Models\PostImage;
 use Illuminate\Support\Facades\Auth;
-use Exception;
+use GraphQL\Error\Error;
 
 class UpdatePostResolver
 {
@@ -20,7 +20,7 @@ class UpdatePostResolver
     ResolveInfo $resolveInfo
   ) {
     if (Auth::guard('api')->user()->is_admin == false) {
-      throw new Exception('Unauthorized');
+      return Error::createLocatedError('Unauthorized');
     }
 
     $id = intval($args['id']);
@@ -39,10 +39,10 @@ class UpdatePostResolver
       : [];
 
     if ($title == '' || $title == 'null') {
-      throw new Exception('Title is required');
+      return Error::createLocatedError('Title is required');
     }
     if ($content == '' || $content == 'null') {
-      throw new Exception('Content is required');
+      return Error::createLocatedError('Content is required');
     }
 
     Post::where('id', '=', $id)->update([
