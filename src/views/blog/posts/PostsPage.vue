@@ -1,168 +1,313 @@
 <template>
   <ion-page>
-    <section
-      :class="{
-        loadContent:
-          loadingData.posts.status == 'loading' ||
-          loadingData.data.status == 'loading' ||
-          loadingData.data.status == 'loading',
-      }"
+    <ion-header
+      collapse="fade"
+      :translucent="true"
+      mode="ios"
+      class="ion-no-border"
     >
-      <PostsComponent
-        :dates="dates"
-        :posts="posts"
-        :currentPage="currentPage"
-        @nextPage="nextPage($event)"
-        @previousPage="previousPage($event)"
-        @goToPage="goToPage($event)"
-      ></PostsComponent>
-    </section>
-
-    <div style="background-color: var(--background-color); height: 100%">
-      <section
-        class="align-vertical"
-        v-if="
-          loadingData.posts.status != 'finished' ||
-          (loadingData.data.status == 'error' &&
-            loadingData.data.status == 'error')
-        "
-      >
-        <!-- dates -->
-        <div class="center">
-          <ion-item lines="none">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button menu="mainMenu"></ion-menu-button>
+        </ion-buttons>
+        <ion-title>{{ pageTitle }}</ion-title>
+        <ion-buttons
+          slot="end"
+          :disabled="spinners.buttonAddNewPost"
+          :collapse="true"
+        >
+          <ion-button @click="addPost()" v-if="isUserAdmin">
+            <ion-icon
+              :icon="addOutline"
+              v-if="spinners.buttonAddNewPost == false"
+            ></ion-icon>
             <ion-spinner
               name="crescent"
-              slot="start"
-              v-if="
-                loadingData.dates.status == 'loading' &&
-                loadingData.data.status != 'error' &&
-                loadingData.posts.status != 'error'
-              "
-            >
-            </ion-spinner>
-            <ion-icon
-              :icon="checkmarkOutline"
-              v-if="loadingData.dates.status == 'finished'"
-              slot="start"
-            ></ion-icon>
-            <ion-icon
-              :icon="closeOutline"
-              v-if="loadingData.dates.status == 'error'"
-              slot="start"
-              color="danger"
-            ></ion-icon>
-            <ion-label
-              v-if="
-                loadingData.dates.status == 'loading' ||
-                loadingData.dates.status == 'finished'
-              "
-              >Cargando fechas</ion-label
-            >
-            <ion-chip color="danger" v-if="loadingData.dates.status == 'error'">
-              <ion-label class="error">No se encontraron posts</ion-label>
-            </ion-chip>
-            <ion-button
-              fill="clear"
-              v-if="
-                loadingData.dates.status == 'error' &&
-                loadingData.dates.message == 'No dates' &&
-                isUserAdmin
-              "
-              @click="addPost()"
-            >
-              <ion-label v-if="spinners.buttonAddPost == false"
-                ><ion-icon :icon="addOutline"></ion-icon
-              ></ion-label>
+              v-if="spinners.buttonAddNewPost"
+              color="primary"
+            ></ion-spinner>
+          </ion-button>
+          <ion-button @click="refreshContent()">
+            <ion-icon :icon="refreshOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content :fullscreen="true">
+      <ion-header collapse="condense" mode="ios">
+        <ion-toolbar>
+          <ion-title size="large">{{ pageTitle }}</ion-title>
+          <ion-buttons
+            slot="end"
+            :disabled="spinners.buttonAddNewPost"
+            :collapse="true"
+          >
+            <ion-button @click="addPost()" v-if="isUserAdmin">
+              <ion-icon
+                :icon="addOutline"
+                v-if="spinners.buttonAddNewPost == false"
+              ></ion-icon>
               <ion-spinner
                 name="crescent"
-                v-if="spinners.buttonAddPost"
+                v-if="spinners.buttonAddNewPost"
+                color="primary"
               ></ion-spinner>
             </ion-button>
-
-            <ion-button
-              fill="clear"
-              v-if="
-                loadingData.dates.status == 'error' &&
-                loadingData.dates.message == 'No dates'
-              "
-              @click="loadContent()"
-            >
-              <ion-label v-if="spinners.buttonAddPost == false"
-                ><ion-icon :icon="refreshOutline"></ion-icon
-              ></ion-label>
+            <ion-button @click="refreshContent">
+              <ion-icon :icon="refreshOutline"></ion-icon>
             </ion-button>
-          </ion-item>
-        </div>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
 
-        <!-- data -->
-        <div class="center">
-          <ion-item lines="none">
-            <ion-spinner
-              name="crescent"
-              slot="start"
-              v-if="
-                loadingData.data.status == 'loading' &&
-                loadingData.dates.status != 'error' &&
-                loadingData.posts.status != 'error'
-              "
-            >
-            </ion-spinner>
-            <ion-icon
-              :icon="checkmarkOutline"
-              v-if="loadingData.data.status == 'finished'"
-              slot="start"
-            ></ion-icon>
-            <ion-icon
-              :icon="closeOutline"
-              v-if="loadingData.data.status == 'error'"
-              slot="start"
-              color="danger"
-            ></ion-icon>
-            <ion-label
-              v-if="
-                loadingData.data.status == 'loading' ||
-                loadingData.data.status == 'finished'
-              "
-              >Cargando datos</ion-label
-            >
-          </ion-item>
-        </div>
+      <section
+        :class="{
+          loadContent:
+            loadingData.posts.status == 'loading' ||
+            loadingData.data.status == 'loading' ||
+            loadingData.data.status == 'loading',
+        }"
+      >
+        <!-- date selector -->
+        <ion-item-divider sticky>
+          <div style="width: 100%; display: flex; justify-content: center">
+            <ion-button fill="clear" @click="previousPage({ currentPage })">
+              <ion-icon :icon="chevronBackOutline"></ion-icon>
+            </ion-button>
+
+            <!-- pages -->
+            <ion-item :button="true" id="open-date-input" lines="none">
+              <ion-text style="color: var(--accent-color) !important">
+                {{ currentPage }}
+              </ion-text>
+              <ion-popover trigger="open-date-input" :show-backdrop="false">
+                <ion-datetime
+                  :is-date-enabled="getDaysEnabled"
+                  presentation="date"
+                  @ionChange="goToPage({ currentPage: $event.detail.value! })"
+                  :value="currentPage"
+                  ref="datetime"
+                  :firstDayOfWeek="1"
+                  locale="es-mx"
+                ></ion-datetime>
+              </ion-popover>
+            </ion-item>
+
+            <!-- navigation button -->
+            <ion-button fill="clear" @click="nextPage({ currentPage })">
+              <ion-icon :icon="chevronForwardOutline"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-item-divider>
 
         <!-- posts -->
-        <div class="center">
-          <ion-item lines="none">
-            <ion-spinner
-              name="crescent"
-              slot="start"
-              v-if="
-                loadingData.posts.status == 'loading' &&
-                loadingData.data.status != 'error' &&
-                loadingData.dates.status != 'error'
-              "
-            >
-            </ion-spinner>
-            <ion-icon
-              :icon="checkmarkOutline"
-              v-if="loadingData.posts.status == 'finished'"
-              slot="start"
-            ></ion-icon>
-            <ion-icon
-              :icon="closeOutline"
-              v-if="loadingData.posts.status == 'error'"
-              slot="start"
-              color="danger"
-            ></ion-icon>
-            <ion-label
-              v-if="
-                loadingData.posts.status == 'loading' ||
-                loadingData.posts.status == 'finished'
-              "
-              >Cargando posts</ion-label
-            >
-          </ion-item>
-        </div>
+        <section class="ion-padding">
+          <ion-row v-for="(post, index) in posts" :key="post">
+            <ion-col size="4">
+              <img
+                :src="coverToBase64(post.cover.source!)"
+                @click="openPost(post.id!)"
+                style="cursor: pointer"
+              />
+            </ion-col>
+            <ion-col size="8">
+              <h2
+                style="margin-top: 4px; cursor: pointer"
+                @click="openPost(post.id!)"
+              >
+                {{ post.title }}
+              </h2>
+            </ion-col>
+
+            <ion-col size="12" v-if="isUserAdmin">
+              <ion-button
+                fill="clear"
+                @click="updatePost(post.id!)"
+                :disabled="spinners.buttonEditPost ==post.id!"
+              >
+                <ion-icon
+                  :icon="createOutline"
+                  v-if="spinners.buttonEditPost ==''|| spinners.buttonEditPost != post.id!"
+                ></ion-icon>
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.buttonEditPost==post.id!"
+                  color="primary"
+                ></ion-spinner>
+              </ion-button>
+
+              <ion-button
+                fill="clear"
+                @click="deletePost(post.id!, index)"
+                :disabled="spinners.buttonDeletePost ==post.id!"
+              >
+                <ion-icon
+                  :icon="trashOutline"
+                  color="danger"
+                  v-if="spinners.buttonDeletePost==''|| spinners.buttonDeletePost!= post.id!"
+                ></ion-icon>
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.buttonDeletePost==post.id!"
+                  color="danger"
+                ></ion-spinner>
+              </ion-button>
+            </ion-col>
+            <hr />
+          </ion-row>
+        </section>
       </section>
-    </div>
+
+      <div style="background-color: var(--background-color); height: 100%">
+        <section
+          class="align-vertical"
+          v-if="
+            loadingData.posts.status != 'finished' ||
+            (loadingData.data.status == 'error' &&
+              loadingData.data.status == 'error')
+          "
+        >
+          <!-- dates -->
+          <div class="center">
+            <ion-item lines="none">
+              <ion-spinner
+                name="crescent"
+                slot="start"
+                v-if="
+                  loadingData.dates.status == 'loading' &&
+                  loadingData.data.status != 'error' &&
+                  loadingData.posts.status != 'error'
+                "
+              >
+              </ion-spinner>
+              <ion-icon
+                :icon="checkmarkOutline"
+                v-if="loadingData.dates.status == 'finished'"
+                slot="start"
+              ></ion-icon>
+              <ion-icon
+                :icon="closeOutline"
+                v-if="loadingData.dates.status == 'error'"
+                slot="start"
+                color="danger"
+              ></ion-icon>
+              <ion-label
+                v-if="
+                  loadingData.dates.status == 'loading' ||
+                  loadingData.dates.status == 'finished'
+                "
+                >Cargando fechas</ion-label
+              >
+              <ion-chip
+                color="danger"
+                v-if="loadingData.dates.status == 'error'"
+              >
+                <ion-label class="error">No se encontraron posts</ion-label>
+              </ion-chip>
+              <ion-button
+                fill="clear"
+                v-if="
+                  loadingData.dates.status == 'error' &&
+                  loadingData.dates.message == 'No dates' &&
+                  isUserAdmin
+                "
+                @click="addPost()"
+              >
+                <ion-label v-if="spinners.buttonAddPost == false"
+                  ><ion-icon :icon="addOutline"></ion-icon
+                ></ion-label>
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.buttonAddPost"
+                ></ion-spinner>
+              </ion-button>
+
+              <ion-button
+                fill="clear"
+                v-if="
+                  loadingData.dates.status == 'error' &&
+                  loadingData.dates.message == 'No dates'
+                "
+                @click="loadContent()"
+              >
+                <ion-label v-if="spinners.buttonAddPost == false"
+                  ><ion-icon :icon="refreshOutline"></ion-icon
+                ></ion-label>
+              </ion-button>
+            </ion-item>
+          </div>
+
+          <!-- data -->
+          <div class="center">
+            <ion-item lines="none">
+              <ion-spinner
+                name="crescent"
+                slot="start"
+                v-if="
+                  loadingData.data.status == 'loading' &&
+                  loadingData.dates.status != 'error' &&
+                  loadingData.posts.status != 'error'
+                "
+              >
+              </ion-spinner>
+              <ion-icon
+                :icon="checkmarkOutline"
+                v-if="loadingData.data.status == 'finished'"
+                slot="start"
+              ></ion-icon>
+              <ion-icon
+                :icon="closeOutline"
+                v-if="loadingData.data.status == 'error'"
+                slot="start"
+                color="danger"
+              ></ion-icon>
+              <ion-label
+                v-if="
+                  loadingData.data.status == 'loading' ||
+                  loadingData.data.status == 'finished'
+                "
+                >Cargando datos</ion-label
+              >
+            </ion-item>
+          </div>
+
+          <!-- posts -->
+          <div class="center">
+            <ion-item lines="none">
+              <ion-spinner
+                name="crescent"
+                slot="start"
+                v-if="
+                  loadingData.posts.status == 'loading' &&
+                  loadingData.data.status != 'error' &&
+                  loadingData.dates.status != 'error'
+                "
+              >
+              </ion-spinner>
+              <ion-icon
+                :icon="checkmarkOutline"
+                v-if="loadingData.posts.status == 'finished'"
+                slot="start"
+              ></ion-icon>
+              <ion-icon
+                :icon="closeOutline"
+                v-if="loadingData.posts.status == 'error'"
+                slot="start"
+                color="danger"
+              ></ion-icon>
+              <ion-label
+                v-if="
+                  loadingData.posts.status == 'loading' ||
+                  loadingData.posts.status == 'finished'
+                "
+                >Cargando posts</ion-label
+              >
+            </ion-item>
+          </div>
+        </section>
+      </div>
+    </ion-content>
   </ion-page>
 </template>
 
@@ -175,21 +320,41 @@ import {
   IonItem,
   IonSpinner,
   IonIcon,
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonButton,
+  IonButtons,
+  IonDatetime,
+  IonPopover,
+  IonItemDivider,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { getPosts, getPostsDates } from "../../../services/post";
+import {
+  getPosts as getPostsService,
+  getPostsDates as getPostsDatesService,
+  deletePost as deletePostService,
+} from "../../../services/post";
 import formatISO from "date-fns/formatISO";
 import eventBus from "../../../EventBus";
-import { openToastErrror } from "../../../services/system";
+import {
+  openToastErrror,
+  openToast,
+  presentAlertConfirmation,
+} from "../../../services/system";
 import { Post } from "@/services/interfaces";
 import {
   checkmarkOutline,
   closeOutline,
   addOutline,
   refreshOutline,
+  createOutline,
+  trashOutline,
+  chevronBackOutline,
+  chevronForwardOutline,
 } from "ionicons/icons";
 import { getUser } from "../../../services/user";
-import PostsComponent from "./PostsPage2.vue";
 import {
   ALL_POSTS_DETAILS,
   POST_DATES,
@@ -205,7 +370,15 @@ export default defineComponent({
     IonItem,
     IonSpinner,
     IonIcon,
-    PostsComponent,
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonButton,
+    IonButtons,
+    IonDatetime,
+    IonPopover,
+    IonItemDivider,
   },
 
   setup() {
@@ -214,11 +387,16 @@ export default defineComponent({
       closeOutline,
       addOutline,
       refreshOutline,
+      createOutline,
+      trashOutline,
+      chevronBackOutline,
+      chevronForwardOutline,
     };
   },
 
   data() {
     return {
+      pageTitle: "Blog",
       dates: Array<string>(),
       posts: Array<Post>(),
       currentPage: String(),
@@ -239,6 +417,9 @@ export default defineComponent({
       isUserAdmin: false,
       spinners: {
         buttonAddPost: false,
+        buttonAddNewPost: false,
+        buttonEditPost: "",
+        buttonDeletePost: "",
       },
     };
   },
@@ -247,31 +428,31 @@ export default defineComponent({
     this.verifyUserAdmin();
     this.loadContent();
 
-    eventBus().emitter.on("event-posts1-data", (response: any) => {
-      if (response.option == "next") this.nextPage(response.currentPage);
+    // eventBus().emitter.on("event-posts1-data", (response: any) => {
+    //   if (response.option == "next") this.nextPage(response.currentPage);
 
-      if (response.option == "previous")
-        this.previousPage(response.currentPage);
+    //   if (response.option == "previous")
+    //     this.previousPage(response.currentPage);
 
-      if (response.option == "goTo") this.goToPage(response.currentPage);
+    //   if (response.option == "goTo") this.goToPage(response.currentPage);
 
-      if (response.option == "refresh") this.loadContent(true);
-    });
+    //   if (response.option == "refresh") this.loadContent(true);
+    // });
 
-    eventBus().emitter.on("new-post", () => {
-      this.loadContent();
-    });
+    // eventBus().emitter.on("new-post", () => {
+    //   this.loadContent();
+    // });
 
-    eventBus().emitter.on("update-post", () => {
-      this.loadContent();
-    });
+    // eventBus().emitter.on("update-post", () => {
+    //   this.loadContent();
+    // });
   },
 
   methods: {
     async getPostsDates(params: { refetch: boolean }): Promise<Array<string>> {
       const dates = Array<string>();
       try {
-        const response = await getPostsDates({
+        const response = await getPostsDatesService({
           refetch: params.refetch,
           graphql: { name: POST_DATES, fragment: "PostDates" },
         });
@@ -327,7 +508,7 @@ export default defineComponent({
       refetch?: boolean;
     }): Promise<Array<Post>> {
       try {
-        const response = await getPosts({
+        const response = await getPostsService({
           date: params.currentPage,
           refetch: params.refetch,
           graphql: { name: ALL_POSTS_DETAILS, fragment: "PostsDetails" },
@@ -360,7 +541,7 @@ export default defineComponent({
       }
       this.loadingData.dates.status = "finished";
 
-      const posts = await this.getPosts({ currentPage, refetch });
+      const posts = await this.getPosts({ currentPage, refetch: true });
       if (posts.length == 0) {
         this.loadingData.posts.status = "error";
       }
@@ -427,7 +608,7 @@ export default defineComponent({
 
       let posts = Array<Post>();
       try {
-        posts = await this.getPosts({ currentPage: date });
+        posts = await this.getPosts({ currentPage: date, refetch: true });
         this.loadingData.posts.status = "finished";
       } catch (e: any) {
         this.loadingData.posts.status = "error";
@@ -461,6 +642,60 @@ export default defineComponent({
       this.spinners.buttonAddPost = true;
       await this.$router.push("/blog/editor/create");
       this.spinners.buttonAddPost = false;
+    },
+
+    getDaysEnabled(date: string) {
+      // eslint-disable-next-line
+      const result = this.dates!.filter((element) => element == date);
+      if (result.length > 0) {
+        return true;
+      }
+      return false;
+    },
+
+    coverToBase64(cover: string) {
+      return "data:image/png;base64," + cover;
+    },
+
+    openPost(id: string) {
+      this.$router.push({ name: "PostPage", params: { id } });
+    },
+
+    async updatePost(id: string) {
+      this.spinners.buttonEditPost = id;
+      await this.$router.push("/blog/editor/update/" + id);
+      this.spinners.buttonEditPost = "";
+    },
+
+    async deletePost(id: string, index: number) {
+      this.spinners.buttonDeletePost = id;
+
+      const response = await presentAlertConfirmation({
+        message: "¿Desea eliminar el post?",
+      });
+      if (response == false) {
+        this.spinners.buttonDeletePost = "";
+        return;
+      }
+
+      deletePostService({ id })
+        .then(() => {
+          this.spinners.buttonDeletePost = "";
+          // eslint-disable-next-line
+          this.posts!.splice(index, 1);
+          openToast({ message: "Post eliminado" });
+        })
+        .catch((e) => {
+          this.spinners.buttonDeletePost = "";
+          console.error(e);
+        });
+    },
+
+    async refreshContent() {
+      eventBus().emitter.emit("event-posts1-data", {
+        option: "refresh",
+        currentPage: this.currentPage,
+      });
     },
   },
 });
