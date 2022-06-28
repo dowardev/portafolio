@@ -317,10 +317,10 @@ import {
   cashOutline,
 } from "ionicons/icons";
 import DarkMode from "./darkmode/DarkMode.vue";
-import sessionService from "../../services/session.vue";
+import { logout } from "../../services/session";
 import eventBus from "../../EventBus";
-import systemService from "../../services/system.vue";
-import userService from "../../services/user.vue";
+import { openToastErrror, openModalFeedback } from "../../services/system";
+import { getUser, setUserToken } from "../../services/user";
 import AppsComponent from "./apps/Apps.vue";
 import DonationsComponent from "./donations/Donations.vue";
 import { USER_MENU, USER_PERMISSIONS } from "../../services/graphql";
@@ -423,7 +423,7 @@ export default defineComponent({
 
     async getUser() {
       try {
-        const { user, image_profile } = await userService().getUser({
+        const { user, image_profile } = await getUser({
           graphql: { name: USER_MENU, fragment: "UserMenu" },
         });
 
@@ -437,13 +437,13 @@ export default defineComponent({
         this.userLogged = true;
       } catch (e: any) {
         if (e.message == "Unauthorized") return;
-        systemService().openToastErrror(e);
+        openToastErrror(e);
         console.error(e);
       }
     },
 
     async openModalFeedback() {
-      systemService().openModalFeedback({ type: "feedback" });
+      openModalFeedback({ type: "feedback" });
       menuController.close();
     },
 
@@ -465,17 +465,17 @@ export default defineComponent({
       this.spinners.buttonLogout = true;
 
       try {
-        await sessionService().logout();
+        await logout();
         this.spinners.buttonLogout = false;
         const token = (document.cookie =
           "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
-        userService().setUserToken({ token });
+        setUserToken({ token });
         this.userLogged = false;
         location.reload();
       } catch (e: any) {
         this.spinners.buttonLogout = false;
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
       this.isOpenRefPopOverUserOptions = false;
       menuController.close();
@@ -524,7 +524,7 @@ export default defineComponent({
       if (navigator.onLine) {
         try {
           this.isUserAdmin = (
-            await userService().getUser({
+            await getUser({
               graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
             })
           ).is_admin!;
@@ -532,7 +532,7 @@ export default defineComponent({
           this.isUserAdmin = false;
           if (e.message == "Unauthorized") return;
           else {
-            systemService().openToastErrror(e);
+            openToastErrror(e);
             console.error(e);
           }
         }

@@ -104,14 +104,18 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import Markdown from "vue3-markdown-it";
-import postService from "../../../services/post.vue";
+import { getPost, deletePost } from "../../../services/post";
 import {
   chevronBackOutline,
   createOutline,
   trashOutline,
 } from "ionicons/icons";
-import systemService from "../../../services/system.vue";
-import userService from "../../../services/user.vue";
+import {
+  presentLoading,
+  presentAlertConfirmation,
+  openToastErrror,
+} from "../../../services/system";
+import { getUser } from "../../../services/user";
 import { format, parseISO } from "date-fns";
 import eventBus from "../../../EventBus";
 import { POST_DETAILS, USER_PERMISSIONS } from "../../../services/graphql";
@@ -158,13 +162,13 @@ export default defineComponent({
 
   methods: {
     async getPost() {
-      const loading = await systemService().presentLoading({
+      const loading = await presentLoading({
         message: "Obteniendo publicación",
       });
       loading.present();
 
       try {
-        const response = await postService().getPost({
+        const response = await getPost({
           id: this.postId as string,
           graphql: { name: POST_DETAILS, fragment: "PostDetails" },
         });
@@ -195,7 +199,7 @@ export default defineComponent({
         loading.dismiss();
       } catch (e: any) {
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
         loading.dismiss();
       }
     },
@@ -222,7 +226,7 @@ export default defineComponent({
     async deletePost() {
       this.spinners.buttonDelete = true;
 
-      const alertResponse = await systemService().presentAlertConfirmation({
+      const alertResponse = await presentAlertConfirmation({
         message: "¿Desea eliminar el post?",
       });
 
@@ -232,13 +236,13 @@ export default defineComponent({
       }
 
       try {
-        await postService().deletePost({ id: this.postId as string });
+        await deletePost({ id: this.postId as string });
         this.spinners.buttonDelete = false;
         this.$router.go(-1);
         eventBus().emitter.emit("new-post");
       } catch (e: any) {
         this.spinners.buttonDelete = false;
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
 
@@ -246,7 +250,7 @@ export default defineComponent({
       if (navigator.onLine) {
         try {
           this.isUserAdmin = (
-            await userService().getUser({
+            await getUser({
               graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
             })
           ).is_admin!;
@@ -254,7 +258,7 @@ export default defineComponent({
           this.isUserAdmin = false;
           if (e.message == "Unauthorized") return;
           else {
-            systemService().openToastErrror(e);
+            openToastErrror(e);
             console.error(e);
           }
         }

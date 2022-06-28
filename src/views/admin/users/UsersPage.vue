@@ -288,7 +288,12 @@ import {
   IonSpinner,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import adminService from "../../../services/admin.vue";
+import {
+  getUsers,
+  disableUser,
+  deleteUserAccount,
+  searchUsers,
+} from "../../../services/admin";
 import {
   refreshOutline,
   ellipsisVerticalOutline,
@@ -303,10 +308,14 @@ import {
   checkmarkOutline,
   thumbsUpOutline,
 } from "ionicons/icons";
-import { User } from "../../../services/interfaces.vue";
-import systemService from "../../../services/system.vue";
-import sessionService from "../../../services/session.vue";
-import userService from "../../../services/user.vue";
+import { User } from "../../../services/interfaces";
+import {
+  openToast,
+  openToastErrror,
+  presentAlertConfirmation,
+} from "../../../services/system";
+import { sendMailResetPassword } from "../../../services/session";
+import { resendEmailConfirmation } from "../../../services/user";
 import { USERS_ADMINISTRATION_DETAILS } from "../../../services/graphql";
 
 export default defineComponent({
@@ -433,7 +442,7 @@ export default defineComponent({
       this.spinners.refreshContent = true;
 
       try {
-        const { users, paginatorInfo } = await adminService().getUsers({
+        const { users, paginatorInfo } = await getUsers({
           graphql: {
             name: USERS_ADMINISTRATION_DETAILS,
             fragment: "UsersDetails",
@@ -450,7 +459,7 @@ export default defineComponent({
         this.spinners.refreshContent = false;
       } catch (e: any) {
         console.error(e);
-        systemService().openToastErrror({ error: e });
+        openToastErrror({ error: e });
       }
     },
 
@@ -470,7 +479,7 @@ export default defineComponent({
       }
 
       try {
-        const usersResponse = await adminService().searchUsers({
+        const usersResponse = await searchUsers({
           graphql: {
             name: USERS_ADMINISTRATION_DETAILS,
             fragment: "UsersDetails",
@@ -488,7 +497,7 @@ export default defineComponent({
         this.userFilter();
       } catch (e: any) {
         console.error(e);
-        systemService().openToastErrror({ error: e });
+        openToastErrror({ error: e });
       }
     },
 
@@ -553,7 +562,7 @@ export default defineComponent({
     async disabledUser(params: { id: string; disableUser: boolean }) {
       let alertResponse = true;
       if (params.disableUser == true)
-        alertResponse = await systemService().presentAlertConfirmation({
+        alertResponse = await presentAlertConfirmation({
           message:
             "Mientras esté deshabilitada, el usuario no podrá acceder a su cuenta.",
         });
@@ -561,31 +570,30 @@ export default defineComponent({
       if (alertResponse == false) return;
 
       try {
-        await adminService().disableUser({
+        await disableUser({
           id: params.id,
           disableUser: params.disableUser,
         });
 
-        if (params.disableUser)
-          systemService().openToast({ message: "Usuario deshabilitado" });
+        if (params.disableUser) openToast({ message: "Usuario deshabilitado" });
         if (params.disableUser == false)
-          systemService().openToast({ message: "Usuario habilitado" });
+          openToast({ message: "Usuario habilitado" });
         this.refreshContent();
       } catch (e: any) {
         if (e.message == "Can't disable admin") {
-          systemService().openToast({
+          openToast({
             message: "No se puede deshabilitar al administrador",
             color: "warning",
           });
           return;
         }
         console.error(e);
-        systemService().openToastErrror({ error: e });
+        openToastErrror({ error: e });
       }
     },
 
     async sendMailResetPassword(email: string) {
-      const alertResponse = await systemService().presentAlertConfirmation({
+      const alertResponse = await presentAlertConfirmation({
         message:
           "Se enviarán las instrucciones para restaurar la contraseña al correo electrónico del usuario.",
       });
@@ -593,19 +601,19 @@ export default defineComponent({
       if (alertResponse == false) return;
 
       try {
-        await sessionService().sendMailResetPassword({
+        await sendMailResetPassword({
           email,
         });
 
-        systemService().openToast({ message: "Instrucciones enviadas" });
+        openToast({ message: "Instrucciones enviadas" });
       } catch (e: any) {
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
 
     async resendEmailConfirmation(email: string) {
-      const alertResponse = await systemService().presentAlertConfirmation({
+      const alertResponse = await presentAlertConfirmation({
         message:
           "Se enviarán las instrucciones para la verificación de la cuenta al correo electrónico del usuario.",
       });
@@ -613,34 +621,34 @@ export default defineComponent({
       if (alertResponse == false) return;
 
       try {
-        await userService().resendEmailConfirmation({ email });
+        await resendEmailConfirmation({ email });
 
-        systemService().openToast({ message: "Instrucciones enviadas" });
+        openToast({ message: "Instrucciones enviadas" });
       } catch (e: any) {
         if (e.message == "User already verified") {
-          systemService().openToast({ message: "Ya se encuentra activado" });
+          openToast({ message: "Ya se encuentra activado" });
           return;
         }
         console.error(e);
-        systemService().openToastErrror({ error: e });
+        openToastErrror({ error: e });
       }
     },
 
     async deleteUser(email: string) {
-      const alertResponse = await systemService().presentAlertConfirmation({
+      const alertResponse = await presentAlertConfirmation({
         message: "Esta acción no es reversible.",
       });
 
       if (alertResponse == false) return;
 
       try {
-        await adminService().deleteUserAccount({ email });
+        await deleteUserAccount({ email });
 
-        systemService().openToast({ message: "Usuario eliminado" });
+        openToast({ message: "Usuario eliminado" });
         this.refreshContent();
       } catch (e: any) {
         console.error(e);
-        systemService().openToastErrror({ error: e });
+        openToastErrror({ error: e });
       }
     },
   },

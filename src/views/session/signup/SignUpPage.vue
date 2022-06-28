@@ -245,7 +245,7 @@ import {
   isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import sessionService from "../../../services/session.vue";
+import { userRegister } from "../../../services/session";
 import {
   eyeOutline,
   eyeOffOutline,
@@ -256,8 +256,8 @@ import {
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, email, helpers, sameAs } from "@vuelidate/validators";
-import userService from "../../../services/user.vue";
-import systemService from "../../../services/system.vue";
+import { getUser } from "../../../services/user";
+import { openToastErrror, openToast } from "../../../services/system";
 import { USER_NAME } from "../../../services/graphql";
 
 export default defineComponent({
@@ -353,8 +353,7 @@ export default defineComponent({
   },
 
   beforeRouteEnter(to, from, next) {
-    userService()
-      .getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
+    getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
       .then(() => {
         next("/");
       })
@@ -372,7 +371,7 @@ export default defineComponent({
       const email = this.form.email.replace(/\s+/g, "");
       const password = this.form.password;
       try {
-        await sessionService().userRegister({
+        await userRegister({
           name,
           user,
           email,
@@ -385,21 +384,21 @@ export default defineComponent({
       } catch (e: any) {
         this.spinners.buttonSignup = false;
         if (e.message == "The email has already been selected") {
-          systemService().openToast({
+          openToast({
             message: "Correo ya en uso",
             color: "warning",
           });
           return;
         }
         if (e.message == "The user has already been selected") {
-          systemService().openToast({
+          openToast({
             message: "Usuario ya en uso",
             color: "warning",
           });
           return;
         }
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
 

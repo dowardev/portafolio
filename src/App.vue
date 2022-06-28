@@ -26,7 +26,13 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import MenuComponent from "./views/menu/MenuComponent.vue";
-import systemService from "./services/system.vue";
+import {
+  detectToggleTheme,
+  createFirstCookie,
+  getFirstCookie,
+  setTheme,
+  getTheme,
+} from "./services/system";
 import { closeOutline } from "ionicons/icons";
 
 export default defineComponent({
@@ -41,20 +47,18 @@ export default defineComponent({
 
   mounted() {
     this.createFirstCookie();
-    systemService().detectToggleTheme();
-    systemService()
-      .getTheme()
-      .then((response) => {
-        const theme = response == null ? "aut" : response;
-        systemService().setTheme({ theme: theme });
-      });
+    detectToggleTheme();
+    getTheme().then((response) => {
+      const theme = response == null ? "aut" : response;
+      setTheme({ theme: theme });
+    });
   },
 
   methods: {
     createFirstCookie() {
-      if (systemService().getFirstCookie()) {
+      if (getFirstCookie()) {
         this.openToastOptions();
-        systemService().createFirstCookie();
+        createFirstCookie();
       }
     },
 

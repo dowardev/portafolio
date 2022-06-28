@@ -177,18 +177,18 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import postService from "../../../services/post.vue";
+import { getPosts, getPostsDates } from "../../../services/post";
 import formatISO from "date-fns/formatISO";
 import eventBus from "../../../EventBus";
-import systemService from "../../../services/system.vue";
-import { Post } from "@/services/interfaces.vue";
+import { openToastErrror } from "../../../services/system";
+import { Post } from "@/services/interfaces";
 import {
   checkmarkOutline,
   closeOutline,
   addOutline,
   refreshOutline,
 } from "ionicons/icons";
-import userService from "../../../services/user.vue";
+import { getUser } from "../../../services/user";
 import PostsComponent from "./PostsPage2.vue";
 import {
   ALL_POSTS_DETAILS,
@@ -271,7 +271,7 @@ export default defineComponent({
     async getPostsDates(params: { refetch: boolean }): Promise<Array<string>> {
       const dates = Array<string>();
       try {
-        const response = await postService().getPostsDates({
+        const response = await getPostsDates({
           refetch: params.refetch,
           graphql: { name: POST_DATES, fragment: "PostDates" },
         });
@@ -287,7 +287,7 @@ export default defineComponent({
       } catch (e: any) {
         this.loadingData.dates.status = "error";
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
         throw new Error(e.message);
       }
 
@@ -315,7 +315,7 @@ export default defineComponent({
             return "";
           }
           console.error(e);
-          systemService().openToastErrror(e);
+          openToastErrror(e);
           return "";
         }
       }
@@ -327,7 +327,7 @@ export default defineComponent({
       refetch?: boolean;
     }): Promise<Array<Post>> {
       try {
-        const response = await postService().getPosts({
+        const response = await getPosts({
           date: params.currentPage,
           refetch: params.refetch,
           graphql: { name: ALL_POSTS_DETAILS, fragment: "PostsDetails" },
@@ -336,7 +336,7 @@ export default defineComponent({
         return response;
       } catch (e: any) {
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
         throw new Error(e.message);
       }
     },
@@ -442,7 +442,7 @@ export default defineComponent({
       if (navigator.onLine) {
         try {
           this.isUserAdmin = (
-            await userService().getUser({
+            await getUser({
               graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
             })
           ).is_admin!;
@@ -450,7 +450,7 @@ export default defineComponent({
           this.isUserAdmin = false;
           if (e.message == "Unauthorized") return;
           else {
-            systemService().openToastErrror(e);
+            openToastErrror(e);
             console.error(e);
           }
         }

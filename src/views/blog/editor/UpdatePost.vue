@@ -18,9 +18,15 @@
 <script lang="ts">
 import { IonPage } from "@ionic/vue";
 import { defineComponent } from "vue";
-import postService from "../../../services/post.vue";
-import userService from "../../../services/user.vue";
-import systemService from "../../../services/system.vue";
+import { getPost, updatePost } from "../../../services/post";
+import { getUser } from "../../../services/user";
+import {
+  openToast,
+  openToastErrror,
+  uploadImage,
+  getBaseURL,
+  presentLoading,
+} from "../../../services/system";
 import EditorComponent from "./EditorPage.vue";
 import eventBus from "../../../EventBus";
 import {
@@ -50,10 +56,9 @@ export default defineComponent({
   },
 
   beforeRouteEnter(to, from, next) {
-    userService()
-      .getUser({
-        graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
-      })
+    getUser({
+      graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+    })
       .then((response) => {
         if (response.is_admin) {
           next();
@@ -72,13 +77,13 @@ export default defineComponent({
 
   methods: {
     async getPost() {
-      const loading = await systemService().presentLoading({
+      const loading = await presentLoading({
         message: "Obteniendo publicación",
       });
       loading.present();
 
       try {
-        const response = await postService().getPost({
+        const response = await getPost({
           id: this.idPost as string,
           graphql: {
             name: POSTS_UPDATE_DETAILS,
@@ -98,7 +103,7 @@ export default defineComponent({
       } catch (e: any) {
         console.error(e);
         loading.dismiss();
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
 
@@ -144,7 +149,7 @@ export default defineComponent({
         } catch (e: any) {
           console.error(e);
           this.spinners.savePost = false;
-          systemService().openToastErrror(e);
+          openToastErrror(e);
           return;
         }
       }
@@ -161,13 +166,13 @@ export default defineComponent({
         });
         this.spinners.savePost = false;
         this.clearInputs();
-        systemService().openToast({ message: "Post actualizado" });
+        openToast({ message: "Post actualizado" });
         this.$router.go(-1);
         eventBus().emitter.emit("update-post");
       } catch (e: any) {
         console.error(e);
         this.spinners.savePost = false;
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
 
@@ -181,7 +186,7 @@ export default defineComponent({
       imagesRemoved: Array<string>;
     }): Promise<void> {
       try {
-        postService().updatePost({
+        updatePost({
           id: data.id,
           title: data.title,
           content: data.content,
@@ -200,17 +205,14 @@ export default defineComponent({
       const image = e.image.file;
 
       try {
-        const response = await systemService().uploadImage({
+        const response = await uploadImage({
           graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
           image,
         });
         const imageName = response.name;
         this.spinners.saveImage = false;
 
-        const api =
-          systemService().getBaseURL() +
-          "api/get-image-posts?name=" +
-          imageName;
+        const api = getBaseURL() + "api/get-image-posts?name=" + imageName;
         this.content =
           '<div class="center"><img src="' +
           api +
@@ -220,20 +222,20 @@ export default defineComponent({
       } catch (e: any) {
         console.error(e);
         this.spinners.saveImage = false;
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
 
     async uploadCover(image: object): Promise<string | undefined> {
       try {
-        const response = await systemService().uploadImage({
+        const response = await uploadImage({
           graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
           image,
         });
         return response.id;
       } catch (e: any) {
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
 

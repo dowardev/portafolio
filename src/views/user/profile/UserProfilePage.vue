@@ -329,8 +329,17 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import systemService from "../../../services/system.vue";
-import userService from "../../../services/user.vue";
+import {
+  openToastErrror,
+  openToast,
+  uploadImage,
+} from "../../../services/system";
+import {
+  getUser,
+  setUserToken,
+  saveUserData,
+  deleteUserAccount,
+} from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email, alpha } from "@vuelidate/validators";
 import {
@@ -342,7 +351,7 @@ import {
   mailOpenOutline,
   keyOutline,
 } from "ionicons/icons";
-import sessionService from "../../../services/session.vue";
+import { logout } from "../../../services/session";
 import eventBus from "../../../EventBus";
 import { UPLOAD_IMAGE, USER_BASIC_DETAILS } from "../../../services/graphql";
 export default defineComponent({
@@ -460,10 +469,9 @@ export default defineComponent({
   methods: {
     async getUser() {
       try {
-        const { name, user, email, image_profile } =
-          await userService().getUser({
-            graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
-          });
+        const { name, user, email, image_profile } = await getUser({
+          graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
+        });
         this.form.name = name!;
         this.form.user = user!;
         this.form.email = email!;
@@ -475,7 +483,7 @@ export default defineComponent({
       } catch (e: any) {
         if (e.message == "Unauthorized") return;
         else {
-          systemService().openToastErrror(e);
+          openToastErrror(e);
           console.error(e);
         }
       }
@@ -493,21 +501,21 @@ export default defineComponent({
       }
 
       try {
-        await userService().saveUserData({ name, user, email, imageId });
-        systemService().openToast({
+        await saveUserData({ name, user, email, imageId });
+        openToast({
           message: "Datos actualizados",
         });
         eventBus().emitter.emit("refresh-user-content");
       } catch (e: any) {
         if (e.message == "Email already selected") {
-          systemService().openToast({
+          openToast({
             message: "Correo ya en uso",
             color: "warning",
           });
           return;
         }
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       } finally {
         this.spinners.saveUserData = false;
       }
@@ -541,7 +549,7 @@ export default defineComponent({
       const image = await this.getImageBase64(e);
 
       try {
-        const response = await systemService().uploadImage({
+        const response = await uploadImage({
           image,
           graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
         });
@@ -553,7 +561,7 @@ export default defineComponent({
       } catch (e: any) {
         this.spinners.uploadImage = false;
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
 
@@ -594,11 +602,11 @@ export default defineComponent({
 
       if (alertResponse.data)
         try {
-          await userService().deleteUserAccount({
+          await deleteUserAccount({
             password: this.formDeleteAccount.password,
           });
 
-          systemService().openToast({
+          openToast({
             message: "Hasta pronto",
           });
 
@@ -607,18 +615,18 @@ export default defineComponent({
         } catch (e: any) {
           this.spinners.deleteUserAccount = false;
           if (e.message == "Wrong password") {
-            systemService().openToast({
+            openToast({
               message: "Contraseña incorrecta",
               color: "danger",
             });
             return;
           }
           console.error(e);
-          systemService().openToastErrror(e);
+          openToastErrror(e);
         }
 
       if (alertResponse.data == false) this.spinners.deleteUserAccount = false;
-      systemService().openToast({
+      openToast({
         message: "Gracias por quedarte, prometo no fallarte",
         color: "success",
       });
@@ -626,14 +634,14 @@ export default defineComponent({
 
     async logout() {
       try {
-        await sessionService().logout();
+        await logout();
         const token = (document.cookie =
           "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
-        userService().setUserToken({ token });
+        setUserToken({ token });
         location.reload();
       } catch (e: any) {
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
   },

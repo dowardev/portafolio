@@ -204,7 +204,7 @@ import {
   chevronBackOutline,
   imagesOutline,
 } from "ionicons/icons";
-import userService from "../../../services/user.vue";
+import { getUser } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { USER_PERMISSIONS } from "../../../services/graphql";
@@ -293,10 +293,9 @@ export default defineComponent({
   },
 
   beforeRouteEnter(to, from, next) {
-    userService()
-      .getUser({
-        graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
-      })
+    getUser({
+      graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+    })
       .then((response) => {
         if (response.is_admin) {
           next();

@@ -1,4 +1,3 @@
-<script lang="ts">
 import { DocumentNode } from "graphql";
 
 interface Graphql {
@@ -256,4 +255,3 @@ export interface DisableUser {
 export interface DeleteUserAccountAdmin {
   email: string;
 }
-</script>

@@ -156,9 +156,9 @@ import {
   shieldOutline,
 } from "ionicons/icons";
 import { defineComponent } from "vue";
-import sessionService from "../../../services/session.vue";
-import userService from "../../../services/user.vue";
-import systemService from "../../../services/system.vue";
+import { resetPassword } from "../../../services/session";
+import { getUser } from "../../../services/user";
+import { openToast, openToastErrror } from "../../../services/system";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
 import { USER_NAME } from "../../../services/graphql";
@@ -218,8 +218,7 @@ export default defineComponent({
   },
 
   beforeRouteEnter(to, from, next) {
-    userService()
-      .getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
+    getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
       .then(() => {
         next("/");
       })
@@ -270,13 +269,13 @@ export default defineComponent({
       const password = this.form.password1;
 
       try {
-        await sessionService().resetPassword({
+        await resetPassword({
           code,
           email,
           password,
         });
 
-        systemService().openToast({
+        openToast({
           message: "Contraseña restaurada",
         });
 
@@ -285,13 +284,13 @@ export default defineComponent({
       } catch (e: any) {
         this.spinners.buttonResetPassword = false;
         if (e.message == "Code invalid") {
-          systemService().openToast({
+          openToast({
             message: "Codigo invalido",
             color: "warning",
           });
         } else {
           console.error(e);
-          systemService().openToastErrror(e);
+          openToastErrror(e);
         }
       }
     },

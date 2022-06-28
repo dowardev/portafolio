@@ -60,7 +60,7 @@ import {
   IonItemDivider,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import userService from "../../services/user.vue";
+import { getUser } from "../../services/user";
 import UserProfileComponent from "./profile/UserProfilePage.vue";
 import UserSecurityComponent from "./security/UserSecurityPage.vue";
 import { USER_NAME } from "../../services/graphql";
@@ -90,8 +90,7 @@ export default defineComponent({
   },
 
   beforeRouteEnter(to, from, next) {
-    userService()
-      .getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
+    getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
       .then(() => {
         next();
       })

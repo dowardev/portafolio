@@ -16,12 +16,17 @@
 <script lang="ts">
 import { IonPage } from "@ionic/vue";
 import { defineComponent } from "vue";
-import postService from "../../../services/post.vue";
-import userService from "../../../services/user.vue";
-import systemService from "../../../services/system.vue";
+import { createPost } from "../../../services/post";
+import { getUser } from "../../../services/user";
+import {
+  openToastErrror,
+  openToast,
+  uploadImage,
+  getBaseURL,
+} from "../../../services/system";
 import EditorComponent from "./EditorPage.vue";
 import eventBus from "../../../EventBus";
-import { CreatePost } from "@/services/interfaces.vue";
+import { CreatePost } from "@/services/interfaces";
 import { UPLOAD_IMAGE, USER_PERMISSIONS } from "@/services/graphql";
 
 export default defineComponent({
@@ -41,10 +46,9 @@ export default defineComponent({
   },
 
   beforeRouteEnter(to, from, next) {
-    userService()
-      .getUser({
-        graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
-      })
+    getUser({
+      graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+    })
       .then((response) => {
         if (response.is_admin) {
           next();
@@ -73,7 +77,7 @@ export default defineComponent({
       } catch (e: any) {
         console.error(e);
         this.spinners.savePost = false;
-        systemService().openToastErrror(e);
+        openToastErrror(e);
         return;
       }
 
@@ -86,13 +90,13 @@ export default defineComponent({
         });
         this.spinners.savePost = false;
         this.clearInputs();
-        systemService().openToast({ message: "Post agregado" });
+        openToast({ message: "Post agregado" });
         this.$router.go(-1);
         eventBus().emitter.emit("new-post");
       } catch (e: any) {
         console.error(e);
         this.spinners.savePost = false;
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
 
@@ -103,7 +107,7 @@ export default defineComponent({
       images,
     }: CreatePost): Promise<void> {
       try {
-        await postService().createPost({
+        await createPost({
           title,
           content,
           coverId,
@@ -120,7 +124,7 @@ export default defineComponent({
       const image = e.image.file;
 
       try {
-        const response = await systemService().uploadImage({
+        const response = await uploadImage({
           graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
           image,
         });
@@ -128,10 +132,7 @@ export default defineComponent({
         const imageName = response.name;
         this.spinners.saveImage = false;
 
-        const api =
-          systemService().getBaseURL() +
-          "api/get-image-posts?name=" +
-          imageName;
+        const api = getBaseURL() + "api/get-image-posts?name=" + imageName;
         this.content =
           '<div class="center"><img src="' +
           api +
@@ -141,13 +142,13 @@ export default defineComponent({
       } catch (e: any) {
         console.error(e);
         this.spinners.saveImage = false;
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
 
     async uploadCover(image: object): Promise<string> {
       try {
-        const response = await systemService().uploadImage({
+        const response = await uploadImage({
           image,
           graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
         });

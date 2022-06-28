@@ -218,8 +218,8 @@ import {
 import { defineComponent } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
-import sessionService from "../../../services/session.vue";
-import systemService from "../../../services/system.vue";
+import { updateUserPassword } from "../../../services/session";
+import { openToastErrror, openToast } from "../../../services/system";
 import {
   eyeOutline,
   eyeOffOutline,
@@ -311,22 +311,22 @@ export default defineComponent({
     async saveUserPassword() {
       this.spinners.saveUserPassword = true;
       try {
-        await sessionService().updateUserPassword(this.form);
+        await updateUserPassword(this.form);
         this.spinners.saveUserPassword = false;
-        systemService().openToast({
+        openToast({
           message: "Contraseña actualizada",
           color: "success",
         });
       } catch (e: any) {
         this.spinners.saveUserPassword = false;
         if (e.message == "Wrong password") {
-          systemService().openToast({
+          openToast({
             message: "Contraseña incorrecta",
           });
           return;
         }
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
   },

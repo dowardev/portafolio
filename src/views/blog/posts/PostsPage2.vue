@@ -177,12 +177,16 @@ import {
   chevronBackOutline,
   chevronForwardOutline,
 } from "ionicons/icons";
-import userService from "../../../services/user.vue";
+import { getUser } from "../../../services/user";
 import eventBus from "../../../EventBus";
-import systemService from "../../../services/system.vue";
-import postService from "../../../services/post.vue";
+import {
+  openToastErrror,
+  openToast,
+  presentAlertConfirmation,
+} from "../../../services/system";
+import { deletePost } from "../../../services/post";
 import formatISO from "date-fns/formatISO";
-import { Post } from "@/services/interfaces.vue";
+import { Post } from "@/services/interfaces";
 import { USER_PERMISSIONS } from "../../../services/graphql";
 
 export default defineComponent({
@@ -239,7 +243,7 @@ export default defineComponent({
       if (navigator.onLine) {
         try {
           this.isUserAdmin = (
-            await userService().getUser({
+            await getUser({
               graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
             })
           ).is_admin!;
@@ -247,7 +251,7 @@ export default defineComponent({
           this.isUserAdmin = false;
           if (e.message == "Unauthorized") return;
           else {
-            systemService().openToastErrror(e);
+            openToastErrror(e);
             console.error(e);
           }
         }
@@ -285,7 +289,7 @@ export default defineComponent({
     async deletePost(id: string, index: number) {
       this.spinners.buttonDeletePost = id;
 
-      const response = await systemService().presentAlertConfirmation({
+      const response = await presentAlertConfirmation({
         message: "¿Desea eliminar el post?",
       });
       if (response == false) {
@@ -293,13 +297,12 @@ export default defineComponent({
         return;
       }
 
-      postService()
-        .deletePost({ id })
+      deletePost({ id })
         .then(() => {
           this.spinners.buttonDeletePost = "";
           // eslint-disable-next-line
           this.posts!.splice(index, 1);
-          systemService().openToast({ message: "Post eliminado" });
+          openToast({ message: "Post eliminado" });
         })
         .catch((e) => {
           this.spinners.buttonDeletePost = "";

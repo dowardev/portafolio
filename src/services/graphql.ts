@@ -46,7 +46,7 @@ export const POST_DATES = gql`
 
 // system
 export const UPLOAD_IMAGE = gql`
-  fragment UploadImage on Image {
+  fragment UploadImage on UploadImagePayload {
     image {
       id
       name

@@ -194,11 +194,15 @@ import {
   fingerPrintOutline,
   mailOpenOutline,
 } from "ionicons/icons";
-import sessionService from "../../../services/session.vue";
-import userService from "../../../services/user.vue";
+import { userLogin, sendMailResetPassword } from "../../../services/session";
+import {
+  getUser,
+  setUserToken,
+  resendEmailConfirmation,
+} from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import systemService from "../../../services/system.vue";
+import { openToastErrror } from "../../../services/system";
 import { USER_LOGIN, USER_NAME } from "../../../services/graphql";
 
 export default defineComponent({
@@ -263,8 +267,7 @@ export default defineComponent({
   },
 
   beforeRouteEnter(to, from, next) {
-    userService()
-      .getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
+    getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
       .then(() => {
         next("/");
       })
@@ -291,14 +294,14 @@ export default defineComponent({
       const password = this.form.password;
 
       try {
-        const response = await sessionService().userLogin({
+        const response = await userLogin({
           user,
           password,
           graphql: { name: USER_LOGIN, fragment: "UserLogin" },
         });
 
         const token = "Bearer " + response.auth.access_token;
-        userService().setUserToken({ token });
+        setUserToken({ token });
 
         this.spinners.buttonLogin = false;
         this.clearInputs();
@@ -321,7 +324,7 @@ export default defineComponent({
           return;
         }
 
-        systemService().openToastErrror(e);
+        openToastErrror(e);
         console.error(e.message);
       }
     },
@@ -345,7 +348,7 @@ export default defineComponent({
           {
             text: "Continuar",
             handler: () => {
-              userService().resendEmailConfirmation({ email: this.form.email });
+              resendEmailConfirmation({ email: this.form.email });
             },
           },
         ],
@@ -371,12 +374,12 @@ export default defineComponent({
       }
 
       try {
-        await sessionService().sendMailResetPassword({
+        await sendMailResetPassword({
           email: alertResponse.email,
         });
       } catch (e: any) {
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
 
       this.spinners.buttonForgotPassword = false;

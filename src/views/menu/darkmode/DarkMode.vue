@@ -46,7 +46,12 @@ import {
   modalController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import systemService from "../../../services/system.vue";
+import {
+  openToastErrror,
+  getTheme,
+  setTheme,
+  saveTheme,
+} from "../../../services/system";
 import { closeOutline } from "ionicons/icons";
 
 export default defineComponent({
@@ -75,17 +80,17 @@ export default defineComponent({
   methods: {
     async getTheme() {
       try {
-        const response = await systemService().getTheme();
+        const response = await getTheme();
         this.theme = response == null ? "aut" : response;
       } catch (e: any) {
         console.error(e);
-        systemService().openToastErrror(e);
+        openToastErrror(e);
       }
     },
 
     setTheme() {
-      systemService().setTheme({ theme: this.theme });
-      systemService().saveTheme({ theme: this.theme });
+      setTheme({ theme: this.theme });
+      saveTheme({ theme: this.theme });
     },
     closeModal() {
       modalController.dismiss();

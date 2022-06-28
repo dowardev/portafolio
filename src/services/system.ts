@@ -1,0 +1,205 @@
+import { Storage } from "@ionic/storage";
+const storage = new Storage();
+storage.create();
+
+import {
+  toastController,
+  loadingController,
+  alertController,
+  modalController,
+} from "@ionic/vue";
+import {
+  AlertConfirmation,
+  Image,
+  Loading,
+  ModalFeedback,
+  Theme,
+  Toast,
+  UploadImage,
+} from "./interfaces";
+import { alertCircleOutline, closeOutline } from "ionicons/icons";
+import FeedbackPage from "../components/feedback/FeedbackPage.vue";
+
+import apolloClient from "../Apollo";
+import gql from "graphql-tag";
+import { useMutation } from "@vue/apollo-composable";
+import { provideApolloClient } from "@vue/apollo-composable";
+provideApolloClient(apolloClient);
+
+export async function getTheme(): Promise<"aut" | "light" | "dark" | null> {
+  return await storage.get("theme");
+}
+
+export async function setTheme({ theme }: Theme): Promise<void> {
+  if (theme == "aut") {
+    const value = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (value) document.getElementsByTagName("body")[0].classList.add("dark");
+
+    if (value == false)
+      document.getElementsByTagName("body")[0].classList.remove("dark");
+  }
+
+  if (theme == "dark")
+    document.getElementsByTagName("body")[0].classList.add("dark");
+
+  if (theme == "light")
+    document.getElementsByTagName("body")[0].classList.remove("dark");
+}
+
+export async function saveTheme({ theme }: Theme): Promise<void> {
+  await storage.set("theme", theme);
+}
+
+export async function detectToggleTheme(): Promise<void> {
+  window.matchMedia("(prefers-color-scheme: dark)").addListener(async (e) => {
+    const theme = await getTheme();
+    if (theme == null || theme == "aut") {
+      setTheme({ theme: e.matches == true ? "dark" : "light" });
+    }
+  });
+}
+
+export async function openToast(params: Toast): Promise<void> {
+  const duration = params.duration == undefined ? 2000 : params.duration;
+  const position = params.position == undefined ? "bottom" : params.position;
+  let color = params.color;
+
+  if (params.color == undefined)
+    color =
+      window.matchMedia("(prefers-color-scheme: dark)").matches == true
+        ? "dark"
+        : "light";
+
+  const toast = await toastController.create({
+    message: params.message,
+    duration,
+    color: color,
+    position,
+  });
+  return toast.present();
+}
+
+export function getBaseURL(): string {
+  const mode = process.env.NODE_ENV;
+  if (mode == "development") {
+    return "http://127.0.0.1:8000/";
+  } else {
+    return "https://dowar-blog.dowar.xyz/";
+    // return "https://prueba-blogb.dowar.xyz/";
+  }
+}
+
+export async function presentLoading(params: Loading) {
+  const loading = await loadingController.create({
+    cssClass: "my-custom-class",
+    message: params.message,
+  });
+  return loading;
+}
+
+export async function presentAlertConfirmation(
+  params: AlertConfirmation
+): Promise<boolean> {
+  const alert = await alertController.create({
+    cssClass: "my-custom-class",
+    header: "Confirmacion",
+    message: params.message,
+    buttons: [
+      {
+        text: "Cancelar",
+        role: "cancel",
+        cssClass: "secondary",
+        id: "cancel-button",
+      },
+      {
+        text: "Confirmar",
+        id: "confirm-button",
+        role: "confirm",
+      },
+    ],
+  });
+  await alert.present();
+
+  const { role } = await alert.onDidDismiss();
+  return role == "confirm" ? true : false;
+}
+
+export async function openToastErrror(error: object) {
+  const toast = await toastController.create({
+    header: "Ocurrio un error",
+    message: "¿Quieres reportar el error?",
+    icon: alertCircleOutline,
+    position: "bottom",
+    color: "danger",
+    buttons: [
+      {
+        text: "Reportar",
+        handler: () => {
+          openModalFeedback({ error, type: "error" });
+        },
+      },
+      {
+        icon: closeOutline,
+        role: "cancel",
+        handler: () => {
+          // console.log("Cancel clicked");
+        },
+      },
+    ],
+  });
+  await toast.present();
+}
+
+export async function openModalFeedback(data: ModalFeedback) {
+  const modal = await modalController.create({
+    component: FeedbackPage,
+    // cssClass: "my-custom-class",
+    componentProps: {
+      dataProp: data,
+    },
+  });
+  await modal.present();
+}
+
+export function createFirstCookie() {
+  document.cookie = "firstAccess=" + false;
+}
+
+export function getFirstCookie(): boolean {
+  const name = "firstAccess=";
+  const cDecoded = decodeURIComponent(document.cookie);
+  const cArr = cDecoded.split("; ");
+  let access = true;
+  cArr.forEach((val) => {
+    if (val.indexOf(name) === 0) access = false;
+  });
+  return access;
+}
+
+export async function uploadImage(params: UploadImage): Promise<Image> {
+  const {
+    mutate: uploadImage,
+    onDone,
+    onError,
+  } = useMutation(
+    gql`
+        mutation UploadImage($file: String!) {
+          uploadImage(input: { file: $file }) {
+            ...${params.graphql.fragment}
+          }
+        }
+        ${params.graphql.name}
+      `,
+    {
+      variables: {
+        file: params.image,
+      },
+    }
+  );
+  uploadImage();
+
+  return new Promise((resolve, reject) => {
+    onDone((response) => resolve(response.data.uploadImage.image));
+    onError((error) => reject(error));
+  });
+}

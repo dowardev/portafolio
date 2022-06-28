@@ -129,10 +129,10 @@ import { defineComponent } from "vue";
 import { closeOutline, chevronBackOutline, bugOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email, minLength } from "@vuelidate/validators";
-import systemService from "../../services/system.vue";
-import feedbackService from "../../services/feedback.vue";
-import userService from "../../services/user.vue";
-import { ModalFeedback } from "../../services/interfaces.vue";
+import { openToast } from "../../services/system";
+import { createFeedback } from "../../services/feedback";
+import { getUser } from "../../services/user";
+import { ModalFeedback } from "../../services/interfaces";
 import { USER_BASIC_DETAILS } from "../../services/graphql";
 
 export default defineComponent({
@@ -208,7 +208,7 @@ export default defineComponent({
 
     async getUser() {
       try {
-        const { id, name, email } = await userService().getUser({
+        const { id, name, email } = await getUser({
           graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
         });
         this.form.id = id!;
@@ -234,7 +234,7 @@ export default defineComponent({
         description += "\nError " + JSON.stringify(this.dataProp!.error);
 
       try {
-        await feedbackService().createFeedback({
+        await createFeedback({
           userId,
           name,
           email,
@@ -243,16 +243,16 @@ export default defineComponent({
           type,
         });
         this.spinners.buttonSendFeedback = false;
-        systemService().openToast({
+        openToast({
           message: "Gracias por tus comentarios",
           color: "success",
         });
         this.clearInputs;
-        systemService().openToast({ message: "Gracias por tus comentarios" });
+        openToast({ message: "Gracias por tus comentarios" });
         this.closeModal();
       } catch (e) {
         this.spinners.buttonSendFeedback = false;
-        systemService().openToast({
+        openToast({
           message: "Ocurrió un error",
           color: "danger",
         });

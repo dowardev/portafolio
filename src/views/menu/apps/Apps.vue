@@ -62,7 +62,12 @@
                     </ion-item>
 
                     <ion-list slot="content">
-                      <ion-item lines="none">
+                      <ion-item
+                        lines="none"
+                        href="https://appgallery.huawei.com/app/C106170885"
+                        button
+                        target="_blank"
+                      >
                         <img
                           src="../../../../public/assets/otros/huawei-appgallery.svg"
                           alt=""
@@ -70,9 +75,6 @@
                           slot="start"
                         />
                         <ion-label>AppGallery</ion-label>
-                        <ion-chip>
-                          <ion-label>Proximamente</ion-label>
-                        </ion-chip>
                       </ion-item>
 
                       <ion-item lines="none">
