@@ -165,10 +165,10 @@ export default defineComponent({
           imagesRemoved,
         });
         this.spinners.savePost = false;
-        this.clearInputs();
+        // this.clearInputs();
         openToast({ message: "Post actualizado" });
-        this.$router.go(-1);
-        eventBus().emitter.emit("update-post");
+        // this.$router.go(-1);
+        // eventBus().emitter.emit("update-post");
       } catch (e: any) {
         console.error(e);
         this.spinners.savePost = false;

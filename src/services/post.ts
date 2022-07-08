@@ -62,27 +62,28 @@ export async function updatePost(params: UpdatePost): Promise<void> {
     onError,
   } = useMutation(
     gql`
-          mutation UpdatePost(
-            $id: ID!
-            $title: String!
-            $content: String!
-            $coverId: ID!
-            $newCoverId: ID!
-            $images: [String]
-            $imagesRemoved: [String]
-          ) {
-            updatePost(
-              input: {
-                id: $id
-                title: $title
-                content: $content
-                coverId: $coverId
-                newCoverId: $newCoverId
-                images: $images
-                imagesRemoved: $imagesRemoved
-              }
-            ) 
-        `,
+      mutation UpdatePost(
+        $id: ID!
+        $title: String!
+        $content: String!
+        $coverId: ID!
+        $newCoverId: ID!
+        $images: [String]
+        $imagesRemoved: [String]
+      ) {
+        updatePost(
+          input: {
+            id: $id
+            title: $title
+            content: $content
+            coverId: $coverId
+            newCoverId: $newCoverId
+            images: $images
+            imagesRemoved: $imagesRemoved
+          }
+        )
+      }
+    `,
     {
       variables: {
         id: params.id,
