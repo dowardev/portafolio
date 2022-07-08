@@ -33,6 +33,7 @@
                 lines="none"
                 v-for="technology in datosProyecto.technologies"
                 :key="technology"
+                class="transparent"
               >
                 <ion-icon slot="start" :icon="technology.icon"></ion-icon>
                 <ion-label>{{ technology.name }}</ion-label>

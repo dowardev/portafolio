@@ -95,7 +95,7 @@
                   ref="inputUserImage"
                   :disabled="spinners.uploadImage == true"
                 />
-                <ion-item>
+                <ion-item class="transparent">
                   <ion-icon
                     :icon="manOutline"
                     slot="start"
@@ -115,7 +115,7 @@
                   <div class="error">{{ error.$message }}</div>
                 </div>
 
-                <ion-item>
+                <ion-item class="transparent">
                   <ion-icon
                     :icon="personOutline"
                     slot="start"
@@ -135,7 +135,7 @@
                   <div class="error">{{ error.$message }}</div>
                 </div>
 
-                <ion-item>
+                <ion-item class="transparent">
                   <ion-icon
                     :icon="mailOpenOutline"
                     slot="start"
@@ -157,21 +157,16 @@
                   <div class="error">{{ error.$message }}</div>
                 </div>
 
-                <div class="center">
-                  <ion-item lines="none">
-                    <ion-button
-                      fill="clear"
-                      @click="saveUserData()"
-                      :disabled="(v$ as any).form.$invalid"
-                    >
-                      <ion-spinner name="crescent" v-if="spinners.saveUserData">
-                      </ion-spinner>
-                      <ion-label v-if="!spinners.saveUserData">
-                        Guardar
-                      </ion-label>
-                    </ion-button>
-                  </ion-item>
-                </div>
+                <ion-button
+                  fill="clear"
+                  @click="saveUserData()"
+                  :disabled="(v$ as any).form.$invalid"
+                  expand="full"
+                >
+                  <ion-spinner name="crescent" v-if="spinners.saveUserData">
+                  </ion-spinner>
+                  <ion-label v-if="!spinners.saveUserData"> Guardar </ion-label>
+                </ion-button>
               </form>
             </ion-card-content>
           </ion-card>
@@ -245,7 +240,7 @@
               </p>
 
               <form>
-                <ion-item>
+                <ion-item class="transparent">
                   <ion-icon
                     :icon="keyOutline"
                     slot="start"
@@ -283,26 +278,23 @@
                   <div class="error">{{ error.$message }}</div>
                 </div>
 
-                <div class="center">
-                  <ion-item lines="none">
-                    <ion-button
-                      fill="clear"
-                      @click="deleteUserAccount()"
-                      :disabled="(v$ as any).formDeleteAccount.$invalid"
-                      color="danger"
-                    >
-                      <ion-spinner
-                        name="crescent"
-                        v-if="spinners.deleteUserAccount"
-                        color="danger"
-                      >
-                      </ion-spinner>
-                      <ion-label v-if="!spinners.deleteUserAccount">
-                        Borrar cuenta
-                      </ion-label>
-                    </ion-button>
-                  </ion-item>
-                </div>
+                <ion-button
+                  fill="clear"
+                  @click="deleteUserAccount()"
+                  :disabled="(v$ as any).formDeleteAccount.$invalid"
+                  color="danger"
+                  expand="full"
+                >
+                  <ion-spinner
+                    name="crescent"
+                    v-if="spinners.deleteUserAccount"
+                    color="danger"
+                  >
+                  </ion-spinner>
+                  <ion-label v-if="!spinners.deleteUserAccount">
+                    Borrar cuenta
+                  </ion-label>
+                </ion-button>
               </form>
             </ion-card-content>
           </ion-card>

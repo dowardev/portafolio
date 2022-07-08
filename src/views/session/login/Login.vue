@@ -38,7 +38,7 @@
                 />
               </div>
               <form>
-                <ion-item lines="inset">
+                <ion-item lines="inset" class="transparent">
                   <ion-icon
                     :icon="mailOpenOutline"
                     class="item-icon"
@@ -61,7 +61,7 @@
                   <div class="error">{{ error.$message }}</div>
                 </div>
 
-                <ion-item lines="inset">
+                <ion-item lines="inset" class="transparent">
                   <ion-icon
                     :icon="fingerPrintOutline"
                     class="item-icon"
@@ -121,7 +121,7 @@
 
           <section>
             <div class="center">
-              <ion-item lines="none">
+              <ion-item lines="none" class="transparent">
                 <ion-button
                   @click="forgotPassword()"
                   class="options"
@@ -139,25 +139,22 @@
               </ion-item>
             </div>
 
-            <div class="center">
-              <ion-item lines="none">
-                <ion-button
-                  @click="createAccount()"
-                  class="options"
-                  fill="clear"
-                  :disabled="spinners.buttonCreateAccount"
-                >
-                  <ion-label v-if="spinners.buttonCreateAccount == false"
-                    >Crear cuenta</ion-label
-                  >
-                  <ion-spinner
-                    name="crescent"
-                    v-if="spinners.buttonCreateAccount"
-                    color="primary"
-                  ></ion-spinner>
-                </ion-button>
-              </ion-item>
-            </div>
+            <ion-button
+              @click="createAccount()"
+              class="options"
+              fill="clear"
+              :disabled="spinners.buttonCreateAccount"
+              expand="full"
+            >
+              <ion-label v-if="spinners.buttonCreateAccount == false"
+                >Crear cuenta</ion-label
+              >
+              <ion-spinner
+                name="crescent"
+                v-if="spinners.buttonCreateAccount"
+                color="primary"
+              ></ion-spinner>
+            </ion-button>
           </section>
         </ion-col>
       </ion-row>

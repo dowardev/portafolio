@@ -16,31 +16,32 @@
         <ion-col size="12">
           <ion-card>
             <ion-card-content>
-              <ion-item
-                ><ion-label>Donacion</ion-label>
-                <a href="https://liberapay.com/dowar/donate" target="_blank"
-                  ><img
+              <ion-item class="transparent">
+                <ion-label>Donacion</ion-label>
+                <a href="https://liberapay.com/dowar/donate" target="_blank">
+                  <img
                     alt="Donate using Liberapay"
                     src="https://liberapay.com/assets/widgets/donate.svg"
-                /></a>
+                  />
+                </a>
               </ion-item>
 
-              <ion-item>
+              <ion-item class="transparent">
                 <ion-label class="ion-text-wrap"
                   >Usando el codigo promocional de Hostinger</ion-label
                 >
                 <ion-label slot="end">1JESUSGONZA24</ion-label>
               </ion-item>
 
-              <ion-item>
+              <ion-item class="transparent">
                 <ion-label>Compartir el blog</ion-label>
               </ion-item>
 
-              <ion-item>
+              <ion-item class="transparent">
                 <ion-label>Reportar errores</ion-label>
               </ion-item>
 
-              <ion-item>
+              <ion-item class="transparent">
                 <ion-label>Mejorar el codigo</ion-label>
               </ion-item>
             </ion-card-content>

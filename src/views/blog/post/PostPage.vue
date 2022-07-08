@@ -269,6 +269,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
+@import "highlight.js/styles/atom-one-dark.css";
 .post-date {
   font-size: 12px !important;
 }

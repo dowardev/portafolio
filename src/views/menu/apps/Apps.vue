@@ -16,16 +16,18 @@
         <ion-list-header>
           <ion-label> Nuestras aplicaciones </ion-label>
         </ion-list-header>
+
         <ion-row class="center">
           <ion-col size="12">
             <ion-card>
               <ion-card-header>
                 <ion-card-title>PWA</ion-card-title>
               </ion-card-header>
+
               <ion-card-content>
                 <ion-accordion-group>
-                  <ion-accordion value="pwa">
-                    <ion-item slot="header">
+                  <ion-accordion value="pwa" class="transparent">
+                    <ion-item slot="header" class="transparent">
                       <ion-icon :icon="browsersOutline" slot="start"></ion-icon>
                       <ion-label>Navegador web</ion-label>
                     </ion-item>
@@ -55,8 +57,8 @@
 
               <ion-card-content>
                 <ion-accordion-group>
-                  <ion-accordion value="app-mobile">
-                    <ion-item slot="header">
+                  <ion-accordion value="app-mobile" class="transparent">
+                    <ion-item slot="header" class="transparent">
                       <ion-icon :icon="logoAndroid" slot="start"></ion-icon>
                       <ion-label>Android</ion-label>
                     </ion-item>
@@ -104,8 +106,8 @@
 
               <ion-card-content>
                 <ion-accordion-group>
-                  <ion-accordion value="app-mobile">
-                    <ion-item slot="header">
+                  <ion-accordion value="app-mobile" class="transparent">
+                    <ion-item slot="header" class="transparent">
                       <ion-icon :icon="logoTux" slot="start"></ion-icon>
                       <ion-label>GNU Linux</ion-label>
                     </ion-item>
@@ -145,8 +147,8 @@
 
               <ion-card-content>
                 <ion-accordion-group>
-                  <ion-accordion value="magazine">
-                    <ion-item slot="header">
+                  <ion-accordion value="magazine" class="transparent">
+                    <ion-item slot="header" class="transparent">
                       <ion-icon :icon="bookOutline" slot="start"></ion-icon>
                       <ion-label>Contenido escrito</ion-label>
                     </ion-item>
@@ -177,8 +179,8 @@
                     </ion-list>
                   </ion-accordion>
 
-                  <ion-accordion value="audiovisual">
-                    <ion-item slot="header">
+                  <ion-accordion value="audiovisual" class="transparent">
+                    <ion-item slot="header" class="transparent">
                       <ion-icon :icon="videocamOutline" slot="start"></ion-icon>
                       <ion-label>Contenido audiovisual</ion-label>
                     </ion-item>
@@ -201,8 +203,8 @@
                     </ion-list>
                   </ion-accordion>
 
-                  <ion-accordion value="audio">
-                    <ion-item slot="header">
+                  <ion-accordion value="audio" class="transparent">
+                    <ion-item slot="header" class="transparent">
                       <ion-icon :icon="micOutline" slot="start"></ion-icon>
                       <ion-label>Contenido auditivo</ion-label>
                     </ion-item>

@@ -25,7 +25,7 @@
 
         <div>
           <ion-card>
-            <ion-item lines="none">
+            <ion-item lines="none" class="transparent">
               <ion-searchbar
                 mode="ios"
                 @ionChange="search()"
@@ -65,7 +65,11 @@
               <section>
                 <ion-accordion-group>
                   <div v-for="user in displayedUsers" :key="user.id">
-                    <ion-item lines="none" v-if="user.is_admin != true">
+                    <ion-item
+                      lines="none"
+                      v-if="user.is_admin != true"
+                      class="transparent"
+                    >
                       <ion-icon :icon="personOutline" slot="start"></ion-icon>
                       <ion-label>{{ user.email }}</ion-label>
 
@@ -154,8 +158,9 @@
                     <ion-accordion
                       :value="user.id"
                       v-if="user.is_admin != true"
+                      class="transparent"
                     >
-                      <ion-item slot="header">
+                      <ion-item slot="header" class="transparent">
                         <ion-label>Informacion</ion-label>
                       </ion-item>
 
@@ -205,7 +210,7 @@
 
               <section class="pagination">
                 <div>
-                  <ion-item lines="none">
+                  <ion-item lines="none" class="transparent">
                     <ion-label slot="end">Usuarios a mostrar</ion-label>
                     <ion-select
                       interface="popover"
@@ -223,7 +228,7 @@
                 </div>
 
                 <div>
-                  <ion-item lines="none">
+                  <ion-item lines="none" class="transparent">
                     <ion-button
                       slot="end"
                       fill="clear"

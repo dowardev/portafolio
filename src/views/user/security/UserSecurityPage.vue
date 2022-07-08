@@ -63,7 +63,7 @@
             </ion-card-header>
 
             <ion-card-content>
-              <ion-item>
+              <ion-item class="transparent">
                 <ion-icon
                   :icon="keyOutline"
                   slot="start"
@@ -101,7 +101,7 @@
                 <div class="error">{{ error.$message }}</div>
               </div>
 
-              <ion-item>
+              <ion-item class="transparent">
                 <ion-icon
                   :icon="keyOutline"
                   slot="start"
@@ -139,7 +139,7 @@
                 <div class="error">{{ error.$message }}</div>
               </div>
 
-              <ion-item>
+              <ion-item class="transparent">
                 <ion-icon
                   :icon="keyOutline"
                   slot="start"
@@ -176,23 +176,18 @@
                 <div class="error">{{ error.$message }}</div>
               </div>
 
-              <div class="center">
-                <ion-item lines="none">
-                  <ion-button
-                    fill="clear"
-                    @click="saveUserPassword()"
-                    :disabled="(v$ as any).form.$invalid"
-                  >
-                    <ion-spinner
-                      name="crescent"
-                      v-if="spinners.saveUserPassword"
-                    ></ion-spinner>
-                    <ion-label v-if="!spinners.saveUserPassword"
-                      >Guardar</ion-label
-                    >
-                  </ion-button>
-                </ion-item>
-              </div>
+              <ion-button
+                fill="clear"
+                @click="saveUserPassword()"
+                :disabled="(v$ as any).form.$invalid"
+                expand="full"
+              >
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.saveUserPassword"
+                ></ion-spinner>
+                <ion-label v-if="!spinners.saveUserPassword">Guardar</ion-label>
+              </ion-button>
             </ion-card-content>
           </ion-card>
         </ion-col>

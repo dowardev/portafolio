@@ -40,7 +40,7 @@
               <ion-card-content>
                 <section>
                   <form>
-                    <ion-item lines="inset">
+                    <ion-item lines="inset" class="transparent">
                       <ion-icon
                         :icon="manOutline"
                         slot="start"
@@ -59,7 +59,7 @@
                       <div class="error">{{ error.$message }}</div>
                     </div>
 
-                    <ion-item lines="inset">
+                    <ion-item lines="inset" class="transparent">
                       <ion-icon
                         :icon="personOutline"
                         slot="start"
@@ -77,7 +77,7 @@
                       <div class="error">{{ error.$message }}</div>
                     </div>
 
-                    <ion-item lines="inset">
+                    <ion-item lines="inset" class="transparent">
                       <ion-icon
                         :icon="mailOpenOutline"
                         slot="start"
@@ -98,7 +98,7 @@
                       <div class="error">{{ error.$message }}</div>
                     </div>
 
-                    <ion-item lines="inset">
+                    <ion-item lines="inset" class="transparent">
                       <ion-icon
                         :icon="keyOutline"
                         slot="start"
@@ -135,7 +135,7 @@
                       <div class="error">{{ error.$message }}</div>
                     </div>
 
-                    <ion-item lines="inset">
+                    <ion-item lines="inset" class="transparent">
                       <ion-icon
                         :icon="keyOutline"
                         slot="start"
@@ -198,24 +198,21 @@
           </section>
 
           <section>
-            <div class="center">
-              <ion-item lines="none">
-                <ion-button
-                  @click="login()"
-                  fill="clear"
-                  :disabled="spinners.buttonLogin"
-                >
-                  <ion-label v-if="spinners.buttonLogin == false"
-                    >¿Ya tienes cuenta?</ion-label
-                  >
-                  <ion-spinner
-                    name="crescent"
-                    v-if="spinners.buttonLogin"
-                    color="primary"
-                  ></ion-spinner>
-                </ion-button>
-              </ion-item>
-            </div>
+            <ion-button
+              @click="login()"
+              fill="clear"
+              :disabled="spinners.buttonLogin"
+              expand="full"
+            >
+              <ion-label v-if="spinners.buttonLogin == false"
+                >¿Ya tienes cuenta?</ion-label
+              >
+              <ion-spinner
+                name="crescent"
+                v-if="spinners.buttonLogin"
+                color="primary"
+              ></ion-spinner>
+            </ion-button>
           </section>
         </ion-col>
       </ion-row>

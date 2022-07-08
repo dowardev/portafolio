@@ -167,7 +167,12 @@
         <ion-row class="ion-padding">
           <h1>{{ postTitle }}</h1>
           <ion-col size="12">
-            <Markdown :source="postContent" :html="true" />
+            <Markdown
+              :source="postContent"
+              :html="true"
+              :linkify="true"
+              :highlightjs="true"
+            />
           </ion-col>
         </ion-row>
       </section>
@@ -350,3 +355,8 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+/* @import "highlight.js/styles/androidstudio.css"; */
+@import "highlight.js/styles/monokai.css";
+</style>

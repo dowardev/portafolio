@@ -1,12 +1,12 @@
 <template>
   <ion-page>
-    <ion-content class="menu-color">
-      <ion-toolbar class="menu-color">
+    <ion-content>
+      <ion-toolbar>
         <img src="../../../public/assets/portafolio/dowar.png" />
       </ion-toolbar>
 
       <ion-toolbar class="menu-color">
-        <ion-item lines="none" v-if="userLogged == false">
+        <ion-item lines="none" v-if="userLogged == false" class="transparent">
           <ion-label style="color: white !important">Bienvenido</ion-label>
 
           <!-- no logged -->
@@ -46,7 +46,7 @@
         </ion-item>
 
         <!-- logged -->
-        <ion-item lines="none" v-if="userLogged == true">
+        <ion-item lines="none" v-if="userLogged == true" class="transparent">
           <ion-avatar slot="start">
             <img :src="user.imageSource" />
           </ion-avatar>
@@ -141,7 +141,7 @@
         lines="none"
         button
         @click="openRoute('/presentation')"
-        class="ion-item-menu"
+        class="transparent"
       >
         <ion-label
           v-bind:class="{
@@ -156,7 +156,7 @@
         lines="none"
         button
         @click="openRoute('/history')"
-        class="ion-item-menu"
+        class="transparent"
       >
         <ion-label
           v-bind:class="{
@@ -171,7 +171,7 @@
         lines="none"
         button
         @click="openRoute('/skills')"
-        class="ion-item-menu"
+        class="transparent"
       >
         <ion-label
           v-bind:class="{
@@ -186,7 +186,7 @@
         lines="none"
         button
         @click="openRoute('/portfolio')"
-        class="ion-item-menu"
+        class="transparent"
       >
         <ion-label
           v-bind:class="{
@@ -201,7 +201,7 @@
         lines="none"
         button
         @click="openRoute('/blog')"
-        class="ion-item-menu"
+        class="transparent"
       >
         <ion-label
           v-bind:class="{
@@ -211,20 +211,23 @@
         >
           Blog
         </ion-label>
-        <ion-chip color="success">BETA</ion-chip>
       </ion-item>
     </ion-content>
 
     <ion-footer class="ion-no-border">
-      <ion-toolbar class="menu-color">
+      <ion-toolbar>
         <ion-buttons slot="end">
           <!-- more -->
-          <ion-button fill="clear" @click="openModalDonations()">
+          <ion-button
+            fill="clear"
+            @click="openModalDonations()"
+            color="primary"
+          >
             <ion-icon :icon="cashOutline"></ion-icon>
           </ion-button>
 
           <!-- button source code-->
-          <ion-button id="trigger-button-source-code">
+          <ion-button id="trigger-button-source-code" color="primary">
             <ion-icon :icon="logoGitlab"></ion-icon>
           </ion-button>
           <ion-popover trigger="trigger-button-source-code">
@@ -249,7 +252,7 @@
           </ion-popover>
 
           <!-- button feedback -->
-          <ion-button @click="openModalFeedback">
+          <ion-button @click="openModalFeedback" color="primary">
             <ion-icon :icon="thumbsUpOutline"></ion-icon>
           </ion-button>
 
@@ -258,6 +261,7 @@
             fill="clear"
             @click="openModalThemeDesktop()"
             v-if="!isAndroidPlatform && !isIosPlatform"
+            color="primary"
           >
             <ion-icon :icon="brushOutline"></ion-icon>
           </ion-button>
@@ -265,17 +269,18 @@
             fill="clear"
             @click="openModalThemeMobile()"
             v-if="isAndroidPlatform || isIosPlatform"
+            color="primary"
           >
             <ion-icon :icon="brushOutline"></ion-icon>
           </ion-button>
 
           <!-- more -->
-          <ion-button fill="clear" @click="openModalApps()">
+          <ion-button fill="clear" @click="openModalApps()" color="primary">
             <ion-icon :icon="appsOutline"></ion-icon>
           </ion-button>
 
           <!-- policies -->
-          <ion-button fill="clear" @click="goToPoliciesPage()">
+          <ion-button fill="clear" @click="goToPoliciesPage()" color="primary">
             <ion-icon :icon="documentsOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -544,16 +549,13 @@ export default defineComponent({
 
 <style scoped>
 .optionSelected {
-  color: var(--accent-color) !important;
+  color: var(--ion-color-primary) !important;
 }
 .optionNoSelected {
   color: white !important;
 }
-.menu-color,
-.ion-item-menu {
-  --background: var(--secondary-color);
-}
-.ion-item-menu {
-  --detail-icon-color: white;
+ion-content,
+ion-toolbar {
+  --background: #2e3440;
 }
 </style>
