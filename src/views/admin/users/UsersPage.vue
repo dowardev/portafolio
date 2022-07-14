@@ -8,10 +8,7 @@
             <ion-icon :icon="addOutline"></ion-icon>
           </ion-button>
 
-          <ion-button
-            @click="refreshContent()"
-            :disabled="spinners.refreshContent == true"
-          >
+          <ion-button @click="refreshContent()" :disabled="status == 'loading'">
             <ion-icon
               :icon="refreshOutline"
               v-if="spinners.refreshContent == false"
@@ -28,19 +25,31 @@
             <ion-item lines="none" class="transparent">
               <ion-searchbar
                 mode="ios"
-                @ionChange="search()"
+                @ionChange="filterContent()"
                 v-model="searchTerm"
+                :debounce="500"
+                :disabled="status == 'loading'"
               ></ion-searchbar>
 
-              <ion-button id="trigger-button-filter" fill="clear">
-                <ion-icon :icon="filterOutline"></ion-icon>
+              <!-- filter -->
+              <ion-button
+                id="trigger-button-filter"
+                fill="clear"
+                :disabled="status == 'loading'"
+              >
+                <ion-icon
+                  :icon="filterOutline"
+                  v-if="spinners.filter == false"
+                ></ion-icon>
+                <ion-spinner
+                  name="crescent"
+                  v-if="spinners.filter == true"
+                ></ion-spinner>
               </ion-button>
-              <!-- NOTE: show backdrop false -->
               <ion-popover
                 trigger="trigger-button-filter"
-                @didDismiss="userFilter()"
-                style="max-height: 68vh"
-                :show-backdrop="false"
+                @didDismiss="filterContent()"
+                :dismiss-on-select="true"
               >
                 <ion-content :scroll-events="true">
                   <ion-item
@@ -62,9 +71,9 @@
             </ion-item>
 
             <ion-card-content>
-              <section>
+              <section style="overflow-y: scroll; height: 42vh">
                 <ion-accordion-group>
-                  <div v-for="user in displayedUsers" :key="user.id">
+                  <div v-for="user in users" :key="user.id">
                     <ion-item
                       lines="none"
                       v-if="user.is_admin != true"
@@ -77,8 +86,18 @@
                         :id="'trigger-button-' + user.id"
                         fill="clear"
                         slot="end"
+                        :disabled="
+                          status == 'loading' || spinners.optionsUser == user.id
+                        "
                       >
-                        <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
+                        <ion-icon
+                          :icon="ellipsisVerticalOutline"
+                          v-if="spinners.optionsUser != user.id"
+                        ></ion-icon>
+                        <ion-spinner
+                          name="crescent"
+                          v-if="spinners.optionsUser == user.id"
+                        ></ion-spinner>
                       </ion-button>
 
                       <ion-popover
@@ -209,58 +228,55 @@
               </section>
 
               <section class="pagination">
-                <div>
-                  <ion-item lines="none" class="transparent">
-                    <ion-label slot="end">Usuarios a mostrar</ion-label>
-                    <ion-select
-                      interface="popover"
-                      slot="end"
-                      v-model="paginatorInfo.pagination"
-                      @ionChange="getUsers({ refetch: false })"
-                    >
-                      <ion-select-option :value="10">10</ion-select-option>
-                      <ion-select-option :value="15">15</ion-select-option>
-                      <ion-select-option :value="20">20</ion-select-option>
-                      <ion-select-option :value="50">50</ion-select-option>
-                      <ion-select-option :value="100">100</ion-select-option>
-                    </ion-select>
-                  </ion-item>
-                </div>
+                <ion-item lines="none" class="transparent">
+                  <ion-label slot="end">Usuarios a mostrar</ion-label>
+                  <ion-select
+                    interface="popover"
+                    slot="end"
+                    v-model="paginatorInfo.pagination"
+                    @ionChange="setUsersDisplay()"
+                    v-if="spinners.showUsers == false"
+                    :disabled="status == 'loading'"
+                  >
+                    <ion-select-option value="10">10</ion-select-option>
+                    <ion-select-option value="15">15</ion-select-option>
+                    <ion-select-option value="20">20</ion-select-option>
+                    <ion-select-option value="50">50</ion-select-option>
+                    <ion-select-option value="100">100</ion-select-option>
+                  </ion-select>
+                  <ion-spinner
+                    name="crescent"
+                    v-if="spinners.showUsers == true"
+                    slot="end"
+                    color="primary"
+                  ></ion-spinner>
+                </ion-item>
 
-                <div>
-                  <ion-item lines="none" class="transparent">
-                    <ion-button
-                      slot="end"
-                      fill="clear"
-                      :disabled="paginatorInfo.currentPage == '0'"
-                    >
-                      <ion-icon :icon="chevronBackOutline"></ion-icon>
-                    </ion-button>
-
-                    <ion-select
-                      interface="popover"
-                      slot="end"
-                      v-model="paginatorInfo.currentPage"
-                      @ionChange="getUsers({ refetch: false })"
-                    >
-                      <ion-select-option :value="1">1</ion-select-option>
-                      <ion-select-option
-                        v-for="item in calculatePages"
-                        :key="item"
-                        :value="item"
-                        >{{ item }}
-                      </ion-select-option>
-                    </ion-select>
-
-                    <ion-button
-                      slot="end"
-                      fill="clear"
-                      :disabled="paginatorInfo.hasMorePages == false"
-                    >
-                      <ion-icon :icon="chevronForwardOutline"></ion-icon>
-                    </ion-button>
-                  </ion-item>
-                </div>
+                <ion-item lines="none" class="transparent">
+                  <ion-label slot="end">Pagina</ion-label>
+                  <ion-select
+                    interface="popover"
+                    slot="end"
+                    v-model="paginatorInfo.currentPage"
+                    @ionChange="setUsersPage()"
+                    v-if="spinners.pageUsers == false"
+                    :disabled="status == 'loading'"
+                  >
+                    <ion-select-option value="1">1</ion-select-option>
+                    <ion-select-option
+                      v-for="item in calculatePages"
+                      :key="item"
+                      :value="item"
+                      >{{ item }}
+                    </ion-select-option>
+                  </ion-select>
+                  <ion-spinner
+                    name="crescent"
+                    v-if="spinners.pageUsers == true"
+                    slot="end"
+                    color="primary"
+                  ></ion-spinner>
+                </ion-item>
               </section>
             </ion-card-content>
           </ion-card>
@@ -358,7 +374,7 @@ export default defineComponent({
       if (total < 1) total = 1;
 
       for (let index = 2; index <= total; index++) {
-        elements.push(index);
+        elements.push(index.toString());
       }
       return elements;
     },
@@ -384,9 +400,7 @@ export default defineComponent({
 
   data() {
     return {
-      displayedUsers: Array<User>(),
       users: Array<User>(),
-      searchUsers: Array<User>(),
       paginatorInfo: {
         currentPage: "1",
         hasMorePages: Boolean(),
@@ -398,7 +412,7 @@ export default defineComponent({
       filterOptions: [
         {
           label: "Sin filtro",
-          value: "no filter",
+          value: "unfiltered",
           isChecked: true,
         },
         {
@@ -434,54 +448,29 @@ export default defineComponent({
       ],
       spinners: {
         refreshContent: false,
+        filter: false,
+        showUsers: false,
+        pageUsers: false,
+        optionsUser: "",
       },
+      status: "loaded" as "loading" | "loaded",
     };
   },
 
   mounted() {
-    this.getUsers({ refetch: false });
+    this.loadContent();
   },
 
   methods: {
+    async loadContent() {
+      this.status = "loading";
+      await this.getUsers({ refetch: true });
+      this.status = "loaded";
+    },
+
     async getUsers(params: { refetch: boolean }) {
-      this.spinners.refreshContent = true;
-
-      try {
-        const { users, paginatorInfo } = await getUsers({
-          graphql: {
-            name: USERS_ADMINISTRATION_DETAILS,
-            fragment: "UsersDetails",
-            refetch: params.refetch,
-          },
-          first: parseInt(this.paginatorInfo.pagination),
-          page: parseInt(this.paginatorInfo.currentPage),
-        });
-
-        this.displayedUsers = users;
-        this.users = users;
-        this.paginatorInfo.totalPaginacionElements = paginatorInfo.total;
-        this.userFilter();
-        this.spinners.refreshContent = false;
-      } catch (e: any) {
-        console.error(e);
-        openToastErrror({ error: e });
-      }
-    },
-
-    setData(params: { users: Array<any>; paginatorInfo: any }) {
-      this.paginatorInfo.totalPaginacionElements = params.paginatorInfo.total;
-      this.users = params.users;
-    },
-
-    async search() {
       this.searchMode = true;
-      const search = this.searchTerm;
-
-      if (search == "") {
-        this.displayedUsers = this.users;
-        this.searchMode = false;
-        return;
-      }
+      const search = this.searchTerm.replace(/ /g, "");
 
       try {
         const usersResponse = await searchUsers({
@@ -491,69 +480,26 @@ export default defineComponent({
           },
           first: parseInt(this.paginatorInfo.pagination),
           page: parseInt(this.paginatorInfo.currentPage),
-          name: search,
-          email: search,
+          search,
+          filterOptions: JSON.stringify(this.getFilterOptions()),
+          refetch: params.refetch,
         });
 
-        this.displayedUsers = usersResponse.users;
-        this.searchUsers = usersResponse.users;
+        this.users = usersResponse.users;
         this.paginatorInfo.totalPaginacionElements =
           usersResponse.paginatorInfo.total;
-        this.userFilter();
       } catch (e: any) {
         console.error(e);
         openToastErrror({ error: e });
       }
     },
 
-    userFilter() {
-      const users = this.searchMode ? this.searchUsers : this.users;
-
-      this.filterOptions.forEach((option) => {
-        if (option.value == "no filter" && option.isChecked)
-          this.displayedUsers = users;
-
-        if (option.value == "verified" && option.isChecked) {
-          this.displayedUsers = users.filter((item) => {
-            return item.is_email_verified == true;
-          });
-        }
-
-        if (option.value == "no verified" && option.isChecked) {
-          this.displayedUsers = users.filter((item) => {
-            return item.is_email_verified == false;
-          });
-        }
-
-        if (option.value == "enabled" && option.isChecked) {
-          this.displayedUsers = users.filter((item) => {
-            return item.is_user_disabled == true;
-          });
-        }
-
-        if (option.value == "disabled" && option.isChecked) {
-          this.displayedUsers = users.filter((item) => {
-            return item.is_user_disabled == false;
-          });
-        }
-
-        if (option.value == "admin" && option.isChecked) {
-          this.displayedUsers = users.filter((item) => {
-            return item.is_admin == true;
-          });
-        }
-
-        if (option.value == "no admin" && option.isChecked) {
-          this.displayedUsers = users.filter((item) => {
-            return item.is_admin == false;
-          });
-        }
-      });
-    },
-
-    refreshContent() {
-      if (this.searchMode) this.search();
-      else this.getUsers({ refetch: true });
+    async refreshContent() {
+      this.spinners.refreshContent = true;
+      this.status = "loading";
+      await this.getUsers({ refetch: true });
+      this.spinners.refreshContent = false;
+      this.status = "loaded";
     },
 
     onlyOneUserFilter(index: number) {
@@ -565,6 +511,9 @@ export default defineComponent({
     },
 
     async disabledUser(params: { id: string; disableUser: boolean }) {
+      this.spinners.optionsUser = params.id;
+      this.status = "loading";
+
       let alertResponse = true;
       if (params.disableUser == true)
         alertResponse = await presentAlertConfirmation({
@@ -595,9 +544,13 @@ export default defineComponent({
         console.error(e);
         openToastErrror({ error: e });
       }
+      this.spinners.optionsUser = "";
+      this.status = "loaded";
     },
 
     async sendMailResetPassword(email: string) {
+      // this.spinners.optionsUser = true;
+
       const alertResponse = await presentAlertConfirmation({
         message:
           "Se enviarán las instrucciones para restaurar la contraseña al correo electrónico del usuario.",
@@ -615,9 +568,12 @@ export default defineComponent({
         console.error(e);
         openToastErrror(e);
       }
+      // this.spinners.optionsUser = false;
     },
 
     async resendEmailConfirmation(email: string) {
+      // this.spinners.optionsUser = true;
+
       const alertResponse = await presentAlertConfirmation({
         message:
           "Se enviarán las instrucciones para la verificación de la cuenta al correo electrónico del usuario.",
@@ -637,9 +593,12 @@ export default defineComponent({
         console.error(e);
         openToastErrror({ error: e });
       }
+      // this.spinners.optionsUser = false;
     },
 
     async deleteUser(email: string) {
+      // this.spinners.optionsUser = true;
+
       const alertResponse = await presentAlertConfirmation({
         message: "Esta acción no es reversible.",
       });
@@ -655,6 +614,39 @@ export default defineComponent({
         console.error(e);
         openToastErrror({ error: e });
       }
+      // this.spinners.optionsUser = false;
+    },
+
+    getFilterOptions(): Array<string> {
+      const options = Array<string>();
+      this.filterOptions.forEach((element) => {
+        if (element.isChecked) options.push(element.value);
+      });
+      return options;
+    },
+
+    async filterContent() {
+      this.spinners.filter = true;
+      this.status = "loading";
+      await this.getUsers({ refetch: false });
+      this.spinners.filter = false;
+      this.status = "loaded";
+    },
+
+    async setUsersDisplay() {
+      this.spinners.showUsers = true;
+      this.status = "loading";
+      await this.getUsers({ refetch: false });
+      this.spinners.showUsers = false;
+      this.status = "loaded";
+    },
+
+    async setUsersPage() {
+      this.spinners.pageUsers = true;
+      this.status = "loading";
+      await this.getUsers({ refetch: false });
+      this.spinners.pageUsers = false;
+      this.status = "loaded";
     },
   },
 });

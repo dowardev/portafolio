@@ -61,43 +61,44 @@ export async function getUsers(params: GetUsers): Promise<GetUsersResponse> {
 export async function searchUsers(
   params: SearchUsers
 ): Promise<SearchUsersResponse> {
-  const { onResult, onError, result } = useQuery(
+  const { onResult, onError, result, refetch } = useQuery(
     gql`
-        query SearchUsers($first: Int!,$page:Int!,$name:Mixed,$email:Mixed) {
-          usersSearch(first:$first,page:$page,where:{
-              OR: [
-               { column: name, operator: EQ, value: $name },
-               { column: email, operator: EQ, value: $email }
-              ]
-           }
-) {
+        query UsersSearch($first: Int!,$page:Int!,$search:String,$filterOptions:String!) {
+          usersSearch(first:$first,page:$page,search:$search,filterOptions:$filterOptions) {
              ...${params.graphql.fragment}
           }
         }
-          ...${params.graphql.name}
+          ${params.graphql.name}
       `,
     {
       first: params.first,
       page: params.page,
-      name: params.name,
-      email: params.email,
+      search: "%" + params.search + "%",
+      filterOptions: params.filterOptions,
     }
   );
 
   return new Promise((resolve, reject) => {
-    if (result.value != undefined)
+    if (result.value != undefined && params.refetch == false)
       resolve({
         users: result.value.usersSearch.data,
         paginatorInfo: result.value.usersSearch.paginatorInfo,
       });
-    else {
-      onResult((response) =>
+
+    if (params.refetch)
+      refetch()?.then((response) =>
         resolve({
           users: response.data.usersSearch.data,
           paginatorInfo: response.data.usersSearch.paginatorInfo,
         })
       );
-    }
+
+    onResult((response) =>
+      resolve({
+        users: response.data.usersSearch.data,
+        paginatorInfo: response.data.usersSearch.paginatorInfo,
+      })
+    );
 
     onError((error) => {
       reject(error);

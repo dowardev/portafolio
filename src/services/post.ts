@@ -130,8 +130,6 @@ export async function deletePost(params: DeletePost): Promise<void> {
 }
 
 export async function getPosts(params: GetPost): Promise<Array<Post>> {
-  const refetchData = params.refetch ? true : false;
-
   const { onResult, onError, result, refetch } = useQuery(
     gql`
         query GetPosts($date: String!) {
@@ -149,7 +147,7 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
   );
 
   return new Promise((resolve, reject) => {
-    if (result.value != undefined && refetchData == false)
+    if (result.value != undefined && params.refetch == false)
       resolve(result.value.posts.posts);
 
     if (params.refetch)

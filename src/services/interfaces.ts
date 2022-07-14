@@ -235,9 +235,10 @@ export interface GetUsersResponse {
 export interface SearchUsers {
   first: number;
   page: number;
-  name?: string;
-  email?: string;
+  search?: string;
+  filterOptions: String;
   graphql: Graphql;
+  refetch?: boolean;
 }
 export interface SearchUsersResponse {
   users: Array<User>;
