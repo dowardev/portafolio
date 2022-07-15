@@ -36,10 +36,10 @@ type Query {
       builder: "App\\GraphQL\\Resolvers\\admin\\GetUsers@resolve"
     )
 
-  usersSearch(where: _ @whereConditions(columnsEnum: UserSearch)): [User]
+  usersSearch(search: String, filterOptions: String!): [User]
     @paginate(
       defaultCount: 10
-      builder: "App\\GraphQL\\Resolvers\\admin\\GetUsers@resolve"
+      builder: "App\\GraphQL\\Resolvers\\admin\\UsersFilterResolver@resolve"
     )
 }
 
@@ -213,6 +213,9 @@ input DeleteUserAccountAdminInput {
 input SendConfirmationNewEmail {
   email: String!
 }
+input UserFilter {
+  value: String!
+}
 
 type Prueba {
   message: String
@@ -284,9 +287,4 @@ type PostImage {
   id: ID
   image_id: ID
   post_id: ID
-}
-
-enum UserSearch {
-  name @enum(value: "name")
-  email @enum(value: "email")
 }
