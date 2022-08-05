@@ -117,19 +117,19 @@
 
 @font-face {
   font-family: "OpenSans-Regular";
-  src: url("../../public/assets/fonts/open_sans/static/OpenSans/OpenSans-Regular.ttf");
+  src: url("@/assets/fonts/open_sans/static/OpenSans/OpenSans-Regular.ttf");
 }
 @font-face {
   font-family: "OpenSans-Medium";
-  src: url("../../public/assets/fonts/open_sans/static/OpenSans/OpenSans-Medium.ttf");
+  src: url("@/assets/fonts/open_sans/static/OpenSans/OpenSans-Medium.ttf");
 }
 @font-face {
   font-family: "Comfortaa-Bold";
-  src: url("../../public/assets/fonts/comfortaa/Comfortaa-Bold.ttf");
+  src: url("@/assets/fonts/comfortaa/Comfortaa-Bold.ttf");
 }
 @font-face {
   font-family: "Comfortaa-Light";
-  src: url("../../public/assets/fonts/comfortaa/Comfortaa-Light.ttf");
+  src: url("@/assets/fonts/comfortaa/Comfortaa-Light.ttf");
 }
 
 /* text */
@@ -165,6 +165,5 @@ ul {
   color: var(--ion-color-danger);
 }
 .item-icon {
-  font-size: 20px;
-  margin-top: 24px;
+  margin-top: 28px;
 }

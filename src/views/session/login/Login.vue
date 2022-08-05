@@ -139,22 +139,26 @@
               </ion-item>
             </div>
 
-            <ion-button
-              @click="createAccount()"
-              class="options"
-              fill="clear"
-              :disabled="spinners.buttonCreateAccount"
-              expand="full"
-            >
-              <ion-label v-if="spinners.buttonCreateAccount == false"
-                >Crear cuenta</ion-label
-              >
-              <ion-spinner
-                name="crescent"
-                v-if="spinners.buttonCreateAccount"
-                color="primary"
-              ></ion-spinner>
-            </ion-button>
+            <div class="center">
+              <ion-item lines="none" class="transparent">
+                <ion-button
+                  @click="createAccount()"
+                  class="options"
+                  fill="clear"
+                  :disabled="spinners.buttonCreateAccount"
+                  expand="full"
+                >
+                  <ion-label v-if="spinners.buttonCreateAccount == false"
+                    >Crear cuenta</ion-label
+                  >
+                  <ion-spinner
+                    name="crescent"
+                    v-if="spinners.buttonCreateAccount"
+                    color="primary"
+                  ></ion-spinner>
+                </ion-button>
+              </ion-item>
+            </div>
           </section>
         </ion-col>
       </ion-row>

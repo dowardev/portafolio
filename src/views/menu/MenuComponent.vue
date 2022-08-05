@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content>
       <ion-toolbar>
-        <img src="../../../public/assets/portafolio/dowar.png" />
+        <img src="@/assets/portafolio/dowar.png" />
       </ion-toolbar>
 
       <ion-toolbar class="menu-color">
@@ -329,6 +329,7 @@ import { getUser, setUserToken } from "../../services/user";
 import AppsComponent from "./apps/Apps.vue";
 import DonationsComponent from "./donations/Donations.vue";
 import { USER_MENU, USER_PERMISSIONS } from "../../services/graphql";
+import userAvatar from "@/assets/otros/user.png";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -378,7 +379,7 @@ export default defineComponent({
       userLogged: false,
       user: {
         user: "",
-        imageSource: require("../../../public/assets/otros/user.png"),
+        imageSource: userAvatar,
       },
       spinners: {
         buttonLogin: false,

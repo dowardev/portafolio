@@ -1,64 +1,16 @@
-# Portafolio web
+# Vue 3 + TypeScript + Vite
 
-Aplicación móvil(Android), Sitio web y PWA sobre un portafolio/blog.
+This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
-## Demo
+## Recommended IDE Setup
 
-<a href="https://dowar.xyz" target="_blank">Aplicación en producción</a>
+- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
 
-## Despliegue en local
+## Type Support For `.vue` Imports in TS
 
-- Tener instalado nodejs(se recomienda que sea la última versión LTS).
-- Instalar Ionic Framework cli `npm install -g @ionic/cli`
-- Clonar proyecto `https://gitlab.com/gonzam4/portafolio.git`
-- Acceder con nuestra terminal de comandos a la ubicación del proyecto y ejecutar `npm i`
+Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
 
-### Web | PWA
+1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
+2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
 
-- Para iniciar la versión web ejecutamos `ionic s`
-
-## Generación de la apk/bundle
-
-Puedes generar dos tipos de apk/bundle la versión de producción o la de testeo.
-
-- Testeo: acceder a la carpeta `Android` y ejecutamos `./gradlew assembleDebug`
-- Producción: Para este tenemos dos opciones:
-  - Con ionic/cli instalado: `ionic capacitor open android`
-  - Sin ionic/cli instalado: abrir la carpeta `Android` con `Android Studio`
-
-### Nota
-
-- Para el correcto funcionamiento de la aplicación es necesario tener correctamente clonado y configurado el siguiente [proyecto](https://gitlab.com/gonzam4/portfolio-backend).
-- Si tienes problemas para correr el proyecto dentro de tu sistema puedes contactarme a través de los medios listados en [dowar.xyz](https://dowar.xyz) y con mucho gusto te apoyaré para solucionar el problema.
-
-## Tecnologías usadas
-
-- Ionic Framework 6
-- Vuejs 3
-- Capacitorjs 3
-- Vue Apollo 4
-- Vue3-markdown-it 1
-- Mitt 3
-
-## Recursos
-
-### Iconos
-
-- Telegram: <a href="https://icons8.com/icon/F4ZPUh2Mk5tk/telegram-app" target="_blank">icon8</a>
-- El resto de iconos: <a href="https://ionic.io/ionicons" target="_blank">Ionic icons</a>
-
-## Información adicional
-
-Las nuevas características y errores encontrados están listados en el siguiente tablero <a href="https://board.disroot.org/project/portafolio/kanban" target="_blank">kanban</a>.
-
-Si te gusta el proyecto puedes contribuir de las siguientes formas
-
-- Contribuyendo a la corrección de errores.
-- Reportar errores, para ello tienes 2 formas: creando un issue dentro de este mismo repositorio o contactarme a través de los medios listados en <a href="https://dowar.xyz" target="_blank">dowar.xyz</a> .
-- Realizando una donacion <a href="https://liberapay.com/dowar/donate" target="_blank"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"/></a>
-
-Este es un proyecto de software libre, por lo que podrás utilizar de manera total o parcial el código contenido en él, siempre y cuando se mantenga dentro de las normas establecidas en la licencia con la cual está siendo desarrollado.
-
-## Licencia
-
-Este proyecto está desarrollado bajo la licencia GPLv3.
+You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).

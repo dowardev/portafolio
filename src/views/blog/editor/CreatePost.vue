@@ -26,8 +26,8 @@ import {
 } from "../../../services/system";
 import EditorComponent from "./EditorPage.vue";
 import eventBus from "../../../EventBus";
-import { CreatePost } from "@/services/interfaces";
-import { UPLOAD_IMAGE, USER_PERMISSIONS } from "@/services/graphql";
+import { CreatePost } from "../../../services/interfaces";
+import { UPLOAD_IMAGE, USER_PERMISSIONS } from "../../../services/graphql";
 
 export default defineComponent({
   name: "EditorPage",

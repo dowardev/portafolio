@@ -343,7 +343,7 @@ import {
   openToast,
   presentAlertConfirmation,
 } from "../../../services/system";
-import { Post } from "@/services/interfaces";
+import { Post } from "../../../services/interfaces";
 import {
   checkmarkOutline,
   closeOutline,
