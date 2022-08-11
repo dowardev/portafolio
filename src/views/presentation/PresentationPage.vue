@@ -19,7 +19,7 @@
             <ion-col size="12">
               <div class="center">
                 <img
-                  src="../../../public/assets/portafolio/foto_perfil.jpg"
+                  src="../../assets/portafolio/foto_perfil.jpg"
                   alt=""
                   class="img-perfil"
                 />
@@ -244,6 +244,7 @@ import {
 import { defineComponent } from "vue";
 import { mail, logoMastodon, logoGitlab, logoLinkedin } from "ionicons/icons";
 import { App } from "@capacitor/app";
+import telegramLogo from "../../assets/otros/icons8-telegram-app.svg";
 
 export default defineComponent({
   name: "PresentationPage",
@@ -265,7 +266,7 @@ export default defineComponent({
       logoGitlab,
       logoLinkedin,
       modeDesingElements,
-      iconTelegram: require("../../../public/assets/otros/icons8-telegram-app.svg"),
+      iconTelegram: telegramLogo,
     };
   },
 

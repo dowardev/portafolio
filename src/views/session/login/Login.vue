@@ -32,7 +32,7 @@
             <ion-card-content>
               <div class="center">
                 <img
-                  src="../../../../public/assets/otros/key.png"
+                  src="../../../assets/otros/key.png"
                   alt=""
                   class="imagen-usuario"
                 />

@@ -28,7 +28,7 @@
                 <ion-accordion-group>
                   <ion-accordion value="pwa" class="transparent">
                     <ion-item slot="header" class="transparent">
-                      <ion-icon :icon="browsersOutline" slot="start"></ion-icon>
+                      <ion-icon slot="start" :icon="browsersOutline"></ion-icon>
                       <ion-label>Navegador web</ion-label>
                     </ion-item>
 
@@ -39,7 +39,7 @@
                         href="https://support.google.com/chrome/answer/9658361?hl=es&co=GENIE.Platform%3DDesktop"
                         target="_blank"
                       >
-                        <ion-icon :icon="logoChrome" slot="start"></ion-icon>
+                        <ion-icon slot="start" :icon="logoChrome"></ion-icon>
                         <ion-label>Chrome</ion-label>
                       </ion-item>
                     </ion-list>
@@ -59,7 +59,7 @@
                 <ion-accordion-group>
                   <ion-accordion value="app-mobile" class="transparent">
                     <ion-item slot="header" class="transparent">
-                      <ion-icon :icon="logoAndroid" slot="start"></ion-icon>
+                      <ion-icon slot="start" :icon="logoAndroid"></ion-icon>
                       <ion-label>Android</ion-label>
                     </ion-item>
 
@@ -71,20 +71,20 @@
                         target="_blank"
                       >
                         <img
-                          src="../../../../public/assets/otros/huawei-appgallery.svg"
+                          slot="start"
+                          src="../../../assets/otros/huawei-appgallery.svg"
                           alt=""
                           style="width: 5%"
-                          slot="start"
                         />
                         <ion-label>AppGallery</ion-label>
                       </ion-item>
 
                       <ion-item lines="none">
                         <img
-                          src="../../../../public/assets/otros/f-droid-svgrepo-com.svg"
+                          slot="start"
+                          src="../../../assets/otros/f-droid-svgrepo-com.svg"
                           alt=""
                           style="width: 5%"
-                          slot="start"
                         />
                         <ion-label>F-Droid</ion-label>
                         <ion-chip>
@@ -108,15 +108,15 @@
                 <ion-accordion-group>
                   <ion-accordion value="app-mobile" class="transparent">
                     <ion-item slot="header" class="transparent">
-                      <ion-icon :icon="logoTux" slot="start"></ion-icon>
+                      <ion-icon slot="start" :icon="logoTux"></ion-icon>
                       <ion-label>GNU Linux</ion-label>
                     </ion-item>
 
                     <ion-list slot="content">
                       <ion-item lines="none">
                         <ion-icon
-                          :icon="browsersOutline"
                           slot="start"
+                          :icon="browsersOutline"
                         ></ion-icon>
                         <ion-label>Ejecutable</ion-label>
                         <ion-chip>
@@ -149,7 +149,7 @@
                 <ion-accordion-group>
                   <ion-accordion value="magazine" class="transparent">
                     <ion-item slot="header" class="transparent">
-                      <ion-icon :icon="bookOutline" slot="start"></ion-icon>
+                      <ion-icon slot="start" :icon="bookOutline"></ion-icon>
                       <ion-label>Contenido escrito</ion-label>
                     </ion-item>
 
@@ -161,16 +161,16 @@
                         target="_blank"
                       >
                         <img
-                          src="../../../../public/assets/otros/flipboard.png"
+                          slot="start"
+                          src="../../../assets/otros/flipboard.png"
                           alt=""
                           style="width: 5%"
-                          slot="start"
                         />
                         <ion-label>Flipboard</ion-label>
                       </ion-item>
 
                       <ion-item lines="none">
-                        <ion-icon :icon="logoRss" slot="start"></ion-icon>
+                        <ion-icon slot="start" :icon="logoRss"></ion-icon>
                         <ion-label>RSS</ion-label>
                         <ion-chip>
                           <ion-label>Proximamente</ion-label>
@@ -181,7 +181,7 @@
 
                   <ion-accordion value="audiovisual" class="transparent">
                     <ion-item slot="header" class="transparent">
-                      <ion-icon :icon="videocamOutline" slot="start"></ion-icon>
+                      <ion-icon slot="start" :icon="videocamOutline"></ion-icon>
                       <ion-label>Contenido audiovisual</ion-label>
                     </ion-item>
 
@@ -193,10 +193,10 @@
                         target="_blank"
                       >
                         <img
-                          src="../../../../public/assets/otros/dailymotion-icon.svg"
+                          slot="start"
+                          src="../../../assets/otros/dailymotion-icon.svg"
                           alt=""
                           style="width: 5%"
-                          slot="start"
                         />
                         <ion-label>Dailymotion</ion-label>
                       </ion-item>
@@ -205,17 +205,17 @@
 
                   <ion-accordion value="audio" class="transparent">
                     <ion-item slot="header" class="transparent">
-                      <ion-icon :icon="micOutline" slot="start"></ion-icon>
+                      <ion-icon slot="start" :icon="micOutline"></ion-icon>
                       <ion-label>Contenido auditivo</ion-label>
                     </ion-item>
 
                     <ion-list slot="content">
                       <ion-item lines="none">
                         <img
-                          src="../../../../public/assets/otros/spotify-icon.svg"
+                          slot="start"
+                          src="../../../assets/otros/spotify-icon.svg"
                           alt=""
                           style="width: 5%"
-                          slot="start"
                         />
                         <ion-label>Spotify Podcast</ion-label>
                         <ion-chip>

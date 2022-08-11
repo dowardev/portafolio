@@ -151,7 +151,7 @@ import {
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "HomePage",
+  name: "HistoryPage",
   components: {
     IonContent,
     IonHeader,
@@ -176,7 +176,7 @@ export default defineComponent({
 });
 </script>
 
-<style scope>
+<style>
 /* The actual timeline (the vertical ruler) */
 .timeline {
   position: relative;
@@ -189,7 +189,7 @@ export default defineComponent({
   content: "";
   position: absolute;
   width: 6px;
-  background-color: var(--secondary-color);
+  background-color: var(--ion-color-primary);
   top: 0;
   bottom: 0;
   left: 50%;
@@ -212,7 +212,7 @@ export default defineComponent({
   height: 25px;
   right: -17px;
   background-color: white;
-  border: 4px solid var(--accent-color);
+  border: 4px solid var(--ion-color-primary);
   top: 15px;
   border-radius: 50%;
   z-index: 1;

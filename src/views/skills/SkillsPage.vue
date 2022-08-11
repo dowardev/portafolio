@@ -28,11 +28,11 @@
 
       <ion-row>
         <ion-col
+          v-for="(habilidad, indexHabilidad) in skills[0].tipo"
+          :key="indexHabilidad"
           size-md="6"
           size-sm="12"
           size="12"
-          v-for="(habilidad, indexHabilidad) in skills[0].tipo"
-          :key="indexHabilidad"
         >
           <ion-card>
             <ion-card-header>
@@ -79,6 +79,22 @@ import {
   isPlatform,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
+import htmlLogo from "../../assets/otros/html-1.svg";
+import cssLogo from "../../assets/otros/css-3.svg";
+import javascriptLogo from "../../assets/otros/logo-javascript.svg";
+import phpLogo from "../../assets/otros/php-1.svg";
+import graphqlLogo from "../../assets/otros/GraphQL.svg";
+import angularLogo from "../../assets/otros/angular-icon-1.svg";
+import electronLogo from "../../assets/otros/electron-1.svg";
+import ionicLogo from "../../assets/otros/ionicframework-icon.svg";
+import vueLogo from "../../assets/otros/vue-js-1.svg";
+import laravelLogo from "../../assets/otros/laravel-2.svg";
+import firebaseLogo from "../../assets/otros/Firebase_Logo_Logomark.svg";
+import mysqlLogo from "../../assets/otros/mysql-6.svg";
+import gitLogo from "../../assets/otros/git-icon.svg";
+import tuxLogo from "../../assets/otros/linux-tux-2.svg";
+import viteLogo from "../../assets/otros/vite-color.svg";
+import piniaLogo from "../../assets/otros/pinia.svg";
 
 export default defineComponent({
   name: "HomePage",
@@ -118,9 +134,8 @@ export default defineComponent({
                   name: "Html",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/html-1.svg"),
+                      path: htmlLogo,
                       size: "24px",
-                      color: "red",
                     },
                   ],
                 },
@@ -128,9 +143,8 @@ export default defineComponent({
                   name: "Css",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/css-3.svg"),
+                      path: cssLogo,
                       size: "24px",
-                      color: "red",
                     },
                   ],
                 },
@@ -138,9 +152,8 @@ export default defineComponent({
                   name: "JavaScript",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/logo-javascript.svg"),
+                      path: javascriptLogo,
                       size: "27px",
-                      color: "red",
                     },
                   ],
                 },
@@ -148,9 +161,8 @@ export default defineComponent({
                   name: "Php",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/php-1.svg"),
+                      path: phpLogo,
                       size: "51px",
-                      color: "red",
                     },
                   ],
                 },
@@ -158,9 +170,8 @@ export default defineComponent({
                   name: "GraphQL",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/GraphQL.svg"),
+                      path: graphqlLogo,
                       size: "27px",
-                      color: "red",
                     },
                   ],
                 },
@@ -173,9 +184,8 @@ export default defineComponent({
                   name: "Angular",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/angular-icon-1.svg"),
+                      path: angularLogo,
                       size: "25px",
-                      color: "red",
                     },
                   ],
                 },
@@ -183,9 +193,8 @@ export default defineComponent({
                   name: "Electron",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/electron-1.svg"),
+                      path: electronLogo,
                       size: "25px",
-                      color: "red",
                     },
                   ],
                 },
@@ -193,9 +202,8 @@ export default defineComponent({
                   name: "Ionic",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/ionicframework-icon.svg"),
+                      path: ionicLogo,
                       size: "27px",
-                      color: "red",
                     },
                   ],
                 },
@@ -203,7 +211,7 @@ export default defineComponent({
                   name: "Vue",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/vue-js-1.svg"),
+                      path: vueLogo,
                       size: "31px",
                     },
                   ],
@@ -212,7 +220,7 @@ export default defineComponent({
                   name: "Laravel",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/laravel-2.svg"),
+                      path: laravelLogo,
                       size: "26px",
                     },
                   ],
@@ -226,7 +234,7 @@ export default defineComponent({
                   name: "Firebase",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/Firebase_Logo_Logomark.svg"),
+                      path: firebaseLogo,
                       size: "22px",
                     },
                   ],
@@ -235,7 +243,7 @@ export default defineComponent({
                   name: "Mysql",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/mysql-6.svg"),
+                      path: mysqlLogo,
                       size: "29px",
                     },
                   ],
@@ -249,9 +257,8 @@ export default defineComponent({
                   name: "Git",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/git-icon.svg"),
+                      path: gitLogo,
                       size: "30px",
-                      color: "red",
                     },
                   ],
                 },
@@ -259,9 +266,27 @@ export default defineComponent({
                   name: "Linux",
                   image: [
                     {
-                      path: require("../../../public/assets/otros/linux-tux-2.svg"),
+                      path: tuxLogo,
                       size: "30px",
-                      color: "red",
+                    },
+                  ],
+                },
+                {
+                  name: "Vite",
+                  image: [
+                    {
+                      path: viteLogo,
+                      size: "30px",
+                    },
+                  ],
+                },
+
+                {
+                  name: "Pinia",
+                  image: [
+                    {
+                      path: piniaLogo,
+                      size: "20px",
                     },
                   ],
                 },

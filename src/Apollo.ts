@@ -17,7 +17,6 @@ if (mode == "development") {
 } else {
   uri = "https://dowar-blog.dowar.xyz/graphql";
 }
-// uri = "https://dowar-blog.dowar.xyz/graphql";
 // uri = "https://prueba-blogb.dowar.xyz/graphql";
 
 const apolloClient = new ApolloClient({

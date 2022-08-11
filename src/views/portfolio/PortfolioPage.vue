@@ -36,54 +36,117 @@
                 >
               </ion-list-header>
 
-              <ion-list>
+              <ion-accordion-group>
                 <ion-row>
-                  <ion-col
-                    size="12"
-                    size-md="4"
-                    size-lg="3"
-                    v-for="(project, index) in proyectos"
-                    :key="index"
-                  >
+                  <ion-col size="12" size-md="6" size-lg="4">
                     <ion-card
-                      @click="openModalProject(project)"
-                      class="fancy_card card-click"
+                      v-for="(project, index) in proyectos"
+                      :key="index"
+                      class="card-click"
                     >
-                      <ion-card-header>
-                        <div class="center">
-                          <img
-                            :src="project.image[0].route"
-                            alt=""
-                            :style="{
-                              maxWidth: project.image[0].width,
-                              height: project.image[0].height,
-                            }"
-                          />
-                        </div>
-                      </ion-card-header>
-                      <ion-card-content>
-                        <ion-row>
-                          <ion-col size="12">
-                            <ion-chip :color="project.color">
-                              <ion-label>{{ project.status }}</ion-label>
-                            </ion-chip>
-                          </ion-col>
-                          <ion-col size="12">
-                            <ion-button
+                      <ion-accordion>
+                        <ion-card-header slot="header">
+                          <div class="center">
+                            <img
+                              :src="project.image[0].route"
+                              alt=""
+                              :style="{
+                                maxWidth: project.image[0].width,
+                                height: project.image[0].height,
+                              }"
+                            />
+                          </div>
+
+                          <ion-card-title class="center"
+                            >{{ project.name }}
+                          </ion-card-title>
+
+                          <div class="center ion-padding-bottom">
+                            <ion-label>{{ project.status }}</ion-label>
+                          </div>
+
+                          <div class="center">
+                            <ion-icon
                               v-for="icon in project.type"
                               :key="icon"
                               fill="clear"
                               size="small"
+                              :icon="icon"
+                              class="ion-padding-end"
+                              color="primary"
+                            ></ion-icon>
+                          </div>
+                        </ion-card-header>
+
+                        <ion-card-content slot="content">
+                          <ion-list>
+                            <ion-list-header>Tecnologías</ion-list-header>
+                            <ion-row>
+                              <ion-col
+                                v-for="tech in project.technologies"
+                                :key="tech.icon"
+                                size-xs="2"
+                                size-md="3"
+                                size-lg="3"
+                                size-xl="2"
+                              >
+                                <ion-button
+                                  :href="tech.route"
+                                  target="_blank"
+                                  fill="clear"
+                                >
+                                  <ion-icon
+                                    v-if="tech.type == 'icon'"
+                                    slot="start"
+                                    :icon="tech.icon"
+                                    color="primary"
+                                  ></ion-icon>
+                                  <img
+                                    v-if="tech.type == 'svg'"
+                                    :src="tech.icon"
+                                    alt=""
+                                    style="max-width: 1.4rem"
+                                  />
+                                </ion-button>
+                              </ion-col>
+                            </ion-row>
+                          </ion-list>
+
+                          <ion-list>
+                            <ion-list-header
+                              >Enlaces de interes</ion-list-header
                             >
-                              <ion-icon :icon="icon"></ion-icon>
-                            </ion-button>
-                          </ion-col>
-                        </ion-row>
-                      </ion-card-content>
+                            <ion-item lines="none">
+                              <ion-button
+                                fill="clear"
+                                :href="project.page"
+                                target="_blank"
+                              >
+                                <ion-icon :icon="globeOutline"></ion-icon>
+                              </ion-button>
+                              <ion-button
+                                v-for="source in project.sourceCode"
+                                :key="source.page"
+                                :href="source.page"
+                                fill="clear"
+                                target="_blank"
+                              >
+                                <ion-icon
+                                  :icon="
+                                    source.name == 'FrontEnd'
+                                      ? browsersOutline
+                                      : serverOutline
+                                  "
+                                ></ion-icon>
+                              </ion-button>
+                            </ion-item>
+                          </ion-list>
+                        </ion-card-content>
+                      </ion-accordion>
                     </ion-card>
                   </ion-col>
                 </ion-row>
-              </ion-list>
+              </ion-accordion-group>
             </ion-list>
           </ion-col>
         </ion-row>
@@ -100,11 +163,11 @@
 
               <ion-row>
                 <ion-col
+                  v-for="participacion in participaciones"
+                  :key="participacion"
                   size="12"
                   size-md="4"
                   size-lg="3"
-                  v-for="participacion in participaciones"
-                  :key="participacion"
                 >
                   <ion-card
                     class="card-click"
@@ -133,7 +196,6 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  modalController,
   IonButtons,
   IonRow,
   IonCol,
@@ -141,7 +203,6 @@ import {
   IonCard,
   IonCardHeader,
   IonCardContent,
-  IonChip,
   IonLabel,
   IonButton,
   IonCardTitle,
@@ -152,13 +213,21 @@ import { Plugins } from "@capacitor/core";
 const { Browser } = Plugins;
 import {
   logoIonic,
-  logoFirebase,
-  logoPaypal,
-  logoWordpress,
   logoAndroid,
+  browsersOutline,
+  logoWindows,
+  logoTux,
+  serverOutline,
+  logoFirefox,
+  logoChrome,
   globeOutline,
+  logoVue,
+  logoLaravel,
 } from "ionicons/icons";
-import ProjectModal from "./project/ProjectPage.vue";
+import lifelineLogo from "../../assets/otros/lifeline_v1.webp";
+import mariaDBLogo from "../../assets/otros/mariadb-icon.svg";
+import graphqlLogo from "../../assets/otros/graphql-clear.svg";
+import viteLogo from "../../assets/otros/vite.svg";
 
 export default defineComponent({
   name: "PortfolioPage",
@@ -175,7 +244,6 @@ export default defineComponent({
     IonCard,
     IonCardHeader,
     IonCardContent,
-    IonChip,
     IonLabel,
     IonButton,
     IonCardTitle,
@@ -187,64 +255,68 @@ export default defineComponent({
       pageTitle: "Portfolio",
       proyectos: [
         {
-          name: "Petstread",
-          status: "Finalizado",
-          type: [logoAndroid],
-          color: "success",
+          name: "Lifeline",
+          status: "En desarrollo",
+          type: [
+            logoAndroid,
+            browsersOutline,
+            logoFirefox,
+            logoChrome,
+            logoWindows,
+            logoTux,
+          ],
+          color: "primary",
           image: [
             {
-              route: require("../../../public/assets/otros/Petstread.svg"),
+              route: lifelineLogo,
               width: "134px",
               height: "112px",
             },
           ],
-          description:
-            "Petstread es una tienda de alimentos y accesorios para diversos tipos de mascotas siendo esta una aplicación para PWA, Android y IOs, el proyecto fue adquirido por medio de la plataforma de workana.",
+          description: "",
           technologies: [
             {
-              name: "Ionic",
               route: "https://ionicframework.com/",
               icon: logoIonic,
-              type: "FrontEnd",
+              type: "icon",
             },
             {
-              name: "Firebase",
-              route: "https://firebase.google.com/",
-              icon: logoFirebase,
-              type: "BackEnd",
+              route: "https://vuejs.org",
+              icon: logoVue,
+              type: "icon",
             },
             {
-              name: "Paypal",
-              route: "https://www.paypal.com/mx/",
-              icon: logoPaypal,
-              type: "FrontEnd",
+              route: "https://vitejs.dev",
+              icon: viteLogo,
+              type: "svg",
+            },
+            {
+              route: "https://laravel.com",
+              icon: logoLaravel,
+              type: "icon",
+            },
+            {
+              route: "https://mariadb.org",
+              icon: mariaDBLogo,
+              type: "svg",
+            },
+            {
+              route: "https://graphql.org",
+              icon: graphqlLogo,
+              type: "svg",
             },
           ],
-          page: "https://petstread-ab119.web.app/inicio",
-        },
-        {
-          name: "Thinkers",
-          status: "Finalizado",
-          type: [globeOutline],
-          color: "success",
-          image: [
+          page: "https://lifeline.dowar.xyz",
+          sourceCode: [
             {
-              route: require("../../../public/assets/otros/thinkers.png"),
-              width: "134px",
-              height: "112px",
+              name: "FrontEnd",
+              page: "https://gitlab.com/gonzam4/lifeline",
+            },
+            {
+              name: "BackEnd",
+              page: "https://gitlab.com/gonzam4/lifeline-backend",
             },
           ],
-          description:
-            "Thinkers fue desarrollado como un landing page para una compañía de desarrolladores de software, el proyecto fue asignado como un proyecto de la plataforma de Workana.",
-          technologies: [
-            {
-              name: "Wordpress",
-              route: "https://es-mx.wordpress.org/",
-              icon: logoWordpress,
-              type: "CMS",
-            },
-          ],
-          page: "https://thinkers.com.ec/",
         },
       ],
       participaciones: [
@@ -254,7 +326,7 @@ export default defineComponent({
           color: "secondary",
           image: [
             {
-              route: require("../../../public/assets/otros/workana.png"),
+              // route: workanaLogo,
               width: "189px",
               height: "82px",
             },
@@ -267,7 +339,7 @@ export default defineComponent({
           color: "secondary",
           image: [
             {
-              route: require("../../../public/assets/otros/init.png"),
+              // route: initLogo,
               width: "134px",
               height: "82px",
             },
@@ -276,6 +348,11 @@ export default defineComponent({
         },
       ],
       modeDesingElements,
+      serverOutline,
+      browsersOutline,
+      logoFirefox,
+      logoChrome,
+      globeOutline,
     };
   },
 
@@ -286,17 +363,6 @@ export default defineComponent({
 
     async openPage(page: string) {
       window.open(page, "_blank");
-    },
-
-    async openModalProject(project: any) {
-      const modal = await modalController.create({
-        component: ProjectModal,
-        cssClass: "my-custom-class",
-        componentProps: {
-          project,
-        },
-      });
-      return modal.present();
     },
   },
 });
