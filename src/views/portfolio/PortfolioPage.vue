@@ -164,7 +164,7 @@
               <ion-row>
                 <ion-col
                   v-for="participacion in participaciones"
-                  :key="participacion"
+                  :key="participacion.name"
                   size="12"
                   size-md="4"
                   size-lg="3"
@@ -250,7 +250,9 @@ export default defineComponent({
   },
 
   setup() {
-    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
+    const modeDesingElements = isPlatform("ios")
+      ? "ios"
+      : ("md" as "ios" | "md");
     return {
       pageTitle: "Portfolio",
       proyectos: [

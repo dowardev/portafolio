@@ -9,12 +9,12 @@
         <ion-modal
           trigger="trigger-basicCardInformation"
           :breakpoints="[0.1, 0.5, 1]"
-          :initialBreakpoint="0.5"
+          :initial-breakpoint="0.5"
         >
           <ion-content class="ion-padding">
             <ul
               v-for="item in information[0].basicCardInformation"
-              :key="item[0]"
+              :key="item.title"
             >
               <li>
                 <span class="important-text"> {{ item.title }} </span>
@@ -33,7 +33,7 @@
         >
           <ul
             v-for="item in information[0].basicCardInformation"
-            :key="item[0]"
+            :key="item.title"
           >
             <li>
               <span class="important-text"> {{ item.title }} </span>
@@ -59,8 +59,8 @@
                 </div>
                 <div>
                   <ion-button
-                    fill="clear"
                     id="trigger-basicCardInformation"
+                    fill="clear"
                     class="ion-hide-lg-up"
                   >
                     <ion-icon :icon="informationCircleOutline"></ion-icon>
@@ -84,21 +84,21 @@
                   />
                 </div>
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.uploadImage == true"
+                  name="crescent"
                 ></ion-spinner>
                 <input
+                  ref="inputUserImage"
                   accept="image/*"
                   type="file"
-                  @change="uploadUserImage($event)"
                   style="display: none"
-                  ref="inputUserImage"
                   :disabled="spinners.uploadImage == true"
+                  @ion-change="uploadUserImage($event)"
                 />
                 <ion-item class="transparent">
                   <ion-icon
-                    :icon="manOutline"
                     slot="start"
+                    :icon="manOutline"
                     class="item-icon"
                   ></ion-icon>
                   <ion-label position="floating">Nombre</ion-label>
@@ -117,8 +117,8 @@
 
                 <ion-item class="transparent">
                   <ion-icon
-                    :icon="personOutline"
                     slot="start"
+                    :icon="personOutline"
                     class="item-icon"
                   ></ion-icon>
                   <ion-label position="floating">Usuario</ion-label>
@@ -137,8 +137,8 @@
 
                 <ion-item class="transparent">
                   <ion-icon
-                    :icon="mailOpenOutline"
                     slot="start"
+                    :icon="mailOpenOutline"
                     class="item-icon"
                   ></ion-icon>
                   <ion-label position="floating">Correo electronico</ion-label>
@@ -159,11 +159,11 @@
 
                 <ion-button
                   fill="clear"
-                  @click="saveUserData()"
                   :disabled="(v$ as any).form.$invalid"
                   expand="full"
+                  @click="saveUserData()"
                 >
-                  <ion-spinner name="crescent" v-if="spinners.saveUserData">
+                  <ion-spinner v-if="spinners.saveUserData" name="crescent">
                   </ion-spinner>
                   <ion-label v-if="!spinners.saveUserData"> Guardar </ion-label>
                 </ion-button>
@@ -185,10 +185,13 @@
         <ion-modal
           trigger="trigger-cardDeleteAccount"
           :breakpoints="[0.1, 0.5, 1]"
-          :initialBreakpoint="0.5"
+          :initial-breakpoint="0.5"
         >
           <ion-content class="ion-padding">
-            <ul v-for="item in information[0].cardDeleteAccount" :key="item[0]">
+            <ul
+              v-for="item in information[0].cardDeleteAccount"
+              :key="item.content"
+            >
               <li>{{ item.content }}</li>
             </ul>
           </ion-content>
@@ -201,7 +204,10 @@
           size-xl="4"
           class="ion-hide-lg-down"
         >
-          <ul v-for="item in information[0].cardDeleteAccount" :key="item[0]">
+          <ul
+            v-for="item in information[0].cardDeleteAccount"
+            :key="item.content"
+          >
             <li>{{ item.content }}</li>
           </ul>
         </ion-col>
@@ -223,8 +229,8 @@
                 </div>
                 <div>
                   <ion-button
-                    fill="clear"
                     id="trigger-cardDeleteAccount"
+                    fill="clear"
                     class="ion-hide-lg-up"
                   >
                     <ion-icon :icon="informationCircleOutline"></ion-icon>
@@ -242,8 +248,8 @@
               <form>
                 <ion-item class="transparent">
                   <ion-icon
-                    :icon="keyOutline"
                     slot="start"
+                    :icon="keyOutline"
                     class="item-icon"
                   ></ion-icon>
                   <ion-label position="floating">Contraseña</ion-label>
@@ -253,20 +259,20 @@
                     autocomplete="current-password"
                   ></ion-input>
                   <ion-button
-                    slot="end"
-                    fill="clear"
                     v-if="inputTypePassword == 'text'"
-                    v-on:click="inputTypePassword = 'password'"
+                    slot="end"
                     style="margin-top: 20px"
+                    fill="clear"
+                    @click="inputTypePassword = 'password'"
                   >
                     <ion-icon :icon="eyeOffOutline"></ion-icon>
                   </ion-button>
                   <ion-button
+                    v-if="inputTypePassword == 'password'"
                     slot="end"
                     fill="clear"
-                    v-if="inputTypePassword == 'password'"
-                    v-on:click="inputTypePassword = 'text'"
                     style="margin-top: 20px"
+                    @click="inputTypePassword = 'text'"
                   >
                     <ion-icon :icon="eyeOutline"></ion-icon>
                   </ion-button>
@@ -280,14 +286,14 @@
 
                 <ion-button
                   fill="clear"
-                  @click="deleteUserAccount()"
                   :disabled="(v$ as any).formDeleteAccount.$invalid"
                   color="danger"
                   expand="full"
+                  @click="deleteUserAccount()"
                 >
                   <ion-spinner
-                    name="crescent"
                     v-if="spinners.deleteUserAccount"
+                    name="crescent"
                     color="danger"
                   >
                   </ion-spinner>
@@ -346,6 +352,8 @@ import {
 import { logout } from "../../../services/session";
 import eventBus from "../../../EventBus";
 import { UPLOAD_IMAGE, USER_BASIC_DETAILS } from "../../../services/graphql";
+import userAvatar from "../../../assets/otros/user.png";
+
 export default defineComponent({
   name: "UserProfileComponent",
   components: {
@@ -390,7 +398,7 @@ export default defineComponent({
         deleteUserAccount: false,
       },
       oldEmail: "",
-      userImage: require("../../../../public/assets/otros/user.png"),
+      userImage: userAvatar,
       inputTypePassword: "password" as "password" | "text",
       formDeleteAccount: { password: "" },
       information: [

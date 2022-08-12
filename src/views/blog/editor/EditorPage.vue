@@ -15,16 +15,16 @@
         <ion-title>{{ pageTitle }}</ion-title>
         <ion-buttons slot="end" :collapse="true">
           <ion-button
-            @click="save()"
             :disabled="(v$ as any).$invalid || spinnerSavePost"
+            @click="save()"
           >
             <ion-icon
-              :icon="saveOutline"
               v-if="spinnerSavePost == false"
+              :icon="saveOutline"
             ></ion-icon>
             <ion-spinner
-              name="crescent"
               v-if="spinnerSavePost"
+              name="crescent"
               color="primary"
             ></ion-spinner>
           </ion-button>
@@ -38,16 +38,16 @@
           <ion-title size="large">{{ pageTitle }}</ion-title>
           <ion-buttons slot="end" :collapse="true">
             <ion-button
-              @click="save()"
               :disabled="v$.$invalid || spinnerSavePost"
+              @click="save()"
             >
               <ion-icon
-                :icon="saveOutline"
                 v-if="spinnerSavePost == false"
+                :icon="saveOutline"
               ></ion-icon>
               <ion-spinner
-                name="crescent"
                 v-if="spinnerSavePost"
+                name="crescent"
                 color="primary"
               ></ion-spinner>
             </ion-button>
@@ -74,27 +74,27 @@
               <ion-button
                 slot="end"
                 fill="clear"
-                @click="($refs as any).inputImage.click()"
                 :disabled="spinnerSaveImage"
+                @click="($refs as any).inputImage.click()"
               >
                 <ion-icon
-                  :icon="imagesOutline"
                   v-if="spinnerSaveImage == false"
+                  :icon="imagesOutline"
                 ></ion-icon>
                 <ion-spinner
-                  name="crescent"
                   v-if="spinnerSaveImage"
+                  name="crescent"
                   color="primary"
                 ></ion-spinner>
               </ion-button>
             </ion-item>
           </div>
           <input
+            ref="inputImage"
             accept="image/*"
             type="file"
-            @change="uploadImage($event)"
             style="display: none"
-            ref="inputImage"
+            @change="uploadImage($event)"
           />
         </div>
 
@@ -118,16 +118,16 @@
         <!-- input cover -->
         <ion-item
           button
-          @click="($refs as any).inputCover.click()"
           lines="full"
+          @click="($refs as any).inputCover.click()"
         >
           <ion-label slot="start">Portada</ion-label>
           <input
+            ref="inputCover"
+            style="display: none"
             accept="image/*"
             type="file"
             @change="uploadCover($event)"
-            style="display: none"
-            ref="inputCover"
           />
           <ion-label slot="end">{{ coverName }}</ion-label>
         </ion-item>
@@ -141,9 +141,9 @@
         <ion-item>
           <ion-label position="floating">Editor</ion-label>
           <ion-textarea
+            v-model="(v$ as any).postContent.$model"
             :auto-grow="true"
             placeholder="Contenido"
-            v-model="(v$ as any).postContent.$model"
             :spellcheck="true"
             autocorrect="on"
             pattern="text"
@@ -202,7 +202,8 @@ import {
   IonItemDivider,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import Markdown from "vue3-markdown-it";
+// @ts-ignore
+import { Markdown } from "vue3-markdown-it";
 import {
   saveOutline,
   imageOutline,
@@ -237,13 +238,36 @@ export default defineComponent({
     IonItemDivider,
   },
 
+  beforeRouteEnter(to, from, next) {
+    getUser({
+      graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
+    })
+      .then((response) => {
+        if (response.is_admin) {
+          next();
+        } else {
+          next("/");
+        }
+      })
+      .catch(() => {
+        next("/");
+      });
+  },
+
   props: {
-    title: String,
-    content: String,
-    cover: {},
+    title: { default: "", type: String },
+    content: { default: "", type: String },
+    cover: {
+      default() {
+        return {};
+      },
+      type: Object,
+    },
     spinnerSavePost: Boolean,
     spinnerSaveImage: Boolean,
   },
+
+  emits: ["save", "uploadImage"],
 
   setup() {
     const modeDesingElements = isPlatform("ios") ? "ios" : "md";
@@ -295,22 +319,6 @@ export default defineComponent({
         required: helpers.withMessage(messageRequired, required),
       },
     };
-  },
-
-  beforeRouteEnter(to, from, next) {
-    getUser({
-      graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
-    })
-      .then((response) => {
-        if (response.is_admin) {
-          next();
-        } else {
-          next("/");
-        }
-      })
-      .catch(() => {
-        next("/");
-      });
   },
 
   methods: {

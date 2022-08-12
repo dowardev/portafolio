@@ -16,14 +16,14 @@
           :disabled="spinners.buttonAddNewPost"
           :collapse="true"
         >
-          <ion-button @click="addPost()" v-if="isUserAdmin">
+          <ion-button v-if="isUserAdmin" @click="addPost()">
             <ion-icon
-              :icon="addOutline"
               v-if="spinners.buttonAddNewPost == false"
+              :icon="addOutline"
             ></ion-icon>
             <ion-spinner
-              name="crescent"
               v-if="spinners.buttonAddNewPost"
+              name="crescent"
               color="primary"
             ></ion-spinner>
           </ion-button>
@@ -43,14 +43,14 @@
             :disabled="spinners.buttonAddNewPost"
             :collapse="true"
           >
-            <ion-button @click="addPost()" v-if="isUserAdmin">
+            <ion-button v-if="isUserAdmin" @click="addPost()">
               <ion-icon
-                :icon="addOutline"
                 v-if="spinners.buttonAddNewPost == false"
+                :icon="addOutline"
               ></ion-icon>
               <ion-spinner
-                name="crescent"
                 v-if="spinners.buttonAddNewPost"
+                name="crescent"
                 color="primary"
               ></ion-spinner>
             </ion-button>
@@ -77,19 +77,21 @@
             </ion-button>
 
             <!-- pages -->
-            <ion-item :button="true" id="open-date-input" lines="none">
+            <ion-item id="open-date-input" :button="true" lines="none">
               <ion-text style="color: var(--accent-color) !important">
                 {{ currentPage }}
               </ion-text>
               <ion-popover trigger="open-date-input" :show-backdrop="false">
                 <ion-datetime
+                  ref="datetime"
                   :is-date-enabled="getDaysEnabled"
                   presentation="date"
-                  @ionChange="goToPage({ currentPage: $event.detail.value! })"
                   :value="currentPage"
-                  ref="datetime"
-                  :firstDayOfWeek="1"
+                  :first-day-of-week="1"
                   locale="es-mx"
+                  @ion-change="
+                    goToPage({ currentPage: $event.detail.value as string })
+                  "
                 ></ion-datetime>
               </ion-popover>
             </ion-item>
@@ -107,8 +109,8 @@
             <ion-col size="4">
               <img
                 :src="coverToBase64(post.cover.source!)"
-                @click="openPost(post.id!)"
                 style="cursor: pointer"
+                @click="openPost(post.id!)"
               />
             </ion-col>
             <ion-col size="8">
@@ -120,36 +122,36 @@
               </h2>
             </ion-col>
 
-            <ion-col size="12" v-if="isUserAdmin">
+            <ion-col v-if="isUserAdmin" size="12">
               <ion-button
                 fill="clear"
-                @click="updatePost(post.id!)"
                 :disabled="spinners.buttonEditPost ==post.id!"
+                @click="updatePost(post.id!)"
               >
                 <ion-icon
-                  :icon="createOutline"
                   v-if="spinners.buttonEditPost ==''|| spinners.buttonEditPost != post.id!"
+                  :icon="createOutline"
                 ></ion-icon>
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.buttonEditPost==post.id!"
+                  name="crescent"
                   color="primary"
                 ></ion-spinner>
               </ion-button>
 
               <ion-button
                 fill="clear"
-                @click="deletePost(post.id!, index)"
                 :disabled="spinners.buttonDeletePost ==post.id!"
+                @click="deletePost(post.id!, index)"
               >
                 <ion-icon
+                  v-if="spinners.buttonDeletePost==''|| spinners.buttonDeletePost!= post.id!"
                   :icon="trashOutline"
                   color="danger"
-                  v-if="spinners.buttonDeletePost==''|| spinners.buttonDeletePost!= post.id!"
                 ></ion-icon>
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.buttonDeletePost==post.id!"
+                  name="crescent"
                   color="danger"
                 ></ion-spinner>
               </ion-button>
@@ -161,35 +163,35 @@
 
       <div style="background-color: var(--background-color); height: 100%">
         <section
-          class="align-vertical"
           v-if="
             loadingData.posts.status != 'finished' ||
             (loadingData.data.status == 'error' &&
               loadingData.data.status == 'error')
           "
+          class="align-vertical"
         >
           <!-- dates -->
           <div class="center">
             <ion-item lines="none">
               <ion-spinner
-                name="crescent"
-                slot="start"
                 v-if="
                   loadingData.dates.status == 'loading' &&
                   loadingData.data.status != 'error' &&
                   loadingData.posts.status != 'error'
                 "
+                slot="start"
+                name="crescent"
               >
               </ion-spinner>
               <ion-icon
-                :icon="checkmarkOutline"
                 v-if="loadingData.dates.status == 'finished'"
                 slot="start"
+                :icon="checkmarkOutline"
               ></ion-icon>
               <ion-icon
-                :icon="closeOutline"
                 v-if="loadingData.dates.status == 'error'"
                 slot="start"
+                :icon="closeOutline"
                 color="danger"
               ></ion-icon>
               <ion-label
@@ -200,35 +202,35 @@
                 >Cargando fechas</ion-label
               >
               <ion-chip
-                color="danger"
                 v-if="loadingData.dates.status == 'error'"
+                color="danger"
               >
                 <ion-label class="error">No se encontraron posts</ion-label>
               </ion-chip>
               <ion-button
-                fill="clear"
                 v-if="
                   loadingData.dates.status == 'error' &&
                   loadingData.dates.message == 'No dates' &&
                   isUserAdmin
                 "
+                fill="clear"
                 @click="addPost()"
               >
                 <ion-label v-if="spinners.buttonAddPost == false"
                   ><ion-icon :icon="addOutline"></ion-icon
                 ></ion-label>
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.buttonAddPost"
+                  name="crescent"
                 ></ion-spinner>
               </ion-button>
 
               <ion-button
-                fill="clear"
                 v-if="
                   loadingData.dates.status == 'error' &&
                   loadingData.dates.message == 'No dates'
                 "
+                fill="clear"
                 @click="loadContent()"
               >
                 <ion-label v-if="spinners.buttonAddPost == false"
@@ -242,24 +244,24 @@
           <div class="center">
             <ion-item lines="none">
               <ion-spinner
-                name="crescent"
-                slot="start"
                 v-if="
                   loadingData.data.status == 'loading' &&
                   loadingData.dates.status != 'error' &&
                   loadingData.posts.status != 'error'
                 "
+                slot="start"
+                name="crescent"
               >
               </ion-spinner>
               <ion-icon
-                :icon="checkmarkOutline"
                 v-if="loadingData.data.status == 'finished'"
                 slot="start"
+                :icon="checkmarkOutline"
               ></ion-icon>
               <ion-icon
-                :icon="closeOutline"
                 v-if="loadingData.data.status == 'error'"
                 slot="start"
+                :icon="closeOutline"
                 color="danger"
               ></ion-icon>
               <ion-label
@@ -276,24 +278,24 @@
           <div class="center">
             <ion-item lines="none">
               <ion-spinner
-                name="crescent"
-                slot="start"
                 v-if="
                   loadingData.posts.status == 'loading' &&
                   loadingData.data.status != 'error' &&
                   loadingData.dates.status != 'error'
                 "
+                slot="start"
+                name="crescent"
               >
               </ion-spinner>
               <ion-icon
-                :icon="checkmarkOutline"
                 v-if="loadingData.posts.status == 'finished'"
                 slot="start"
+                :icon="checkmarkOutline"
               ></ion-icon>
               <ion-icon
-                :icon="closeOutline"
                 v-if="loadingData.posts.status == 'error'"
                 slot="start"
+                :icon="closeOutline"
                 color="danger"
               ></ion-icon>
               <ion-label

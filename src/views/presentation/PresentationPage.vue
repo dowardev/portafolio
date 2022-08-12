@@ -259,7 +259,9 @@ export default defineComponent({
   },
 
   setup() {
-    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
+    const modeDesingElements = isPlatform("ios")
+      ? "ios"
+      : ("md" as "ios" | "md");
     return {
       mail,
       logoMastodon,

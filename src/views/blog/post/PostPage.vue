@@ -15,7 +15,7 @@
         <ion-title>
           {{ post.title }}
         </ion-title>
-        <ion-buttons slot="end" v-if="isUserAdmin" :collapse="true">
+        <ion-buttons v-if="isUserAdmin" slot="end" :collapse="true">
           <ion-button fill="clear" @click="updatePost()">
             <ion-icon :icon="createOutline"></ion-icon>
           </ion-button>
@@ -36,35 +36,35 @@
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
           <h1 class="ion-padding-start">{{ post.title }}</h1>
-          <ion-buttons slot="end" v-if="isUserAdmin" :collapse="true">
+          <ion-buttons v-if="isUserAdmin" slot="end" :collapse="true">
             <ion-button
               fill="clear"
-              @click="updatePost()"
               :disabaled="spinners.buttonUpdate == true"
+              @click="updatePost()"
             >
               <ion-icon
-                :icon="createOutline"
                 v-if="spinners.buttonUpdate == false"
+                :icon="createOutline"
               ></ion-icon>
               <ion-spinner
-                name="crescent"
                 v-if="spinners.buttonUpdate == true"
+                name="crescent"
               ></ion-spinner>
             </ion-button>
 
             <ion-button
               fill="clear"
-              @click="deletePost()"
               :disabaled="spinners.buttonDelete == true"
+              @click="deletePost()"
             >
               <ion-icon
+                v-if="spinners.buttonDelete == false"
                 :icon="trashOutline"
                 color="danger"
-                v-if="spinners.buttonDelete == false"
               ></ion-icon>
               <ion-spinner
-                name="crescent"
                 v-if="spinners.buttonDelete == true"
+                name="crescent"
               ></ion-spinner>
             </ion-button>
           </ion-buttons>
@@ -103,6 +103,7 @@ import {
   IonCol,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
+// @ts-ignore
 import Markdown from "vue3-markdown-it";
 import { getPost, deletePost } from "../../../services/post";
 import {

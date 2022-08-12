@@ -34,7 +34,7 @@
             <ion-label>Privacidad</ion-label>
           </ion-segment-button>
 
-          <ion-segment-button value="tc" disabled="true">
+          <ion-segment-button value="tc" :disabled="true">
             <ion-label>Terminos y condiciones</ion-label>
           </ion-segment-button>
         </ion-segment>
@@ -188,7 +188,9 @@ export default defineComponent({
   },
 
   setup() {
-    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
+    const modeDesingElements = isPlatform("ios")
+      ? "ios"
+      : ("md" as "ios" | "md");
     return {
       modeDesingElements,
     };

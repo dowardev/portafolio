@@ -9,10 +9,10 @@
         <ion-modal
           trigger="trigger-cardDeleteAccount"
           :breakpoints="[0.1, 0.5, 1]"
-          :initialBreakpoint="0.5"
+          :initial-breakpoint="0.5"
         >
           <ion-content class="ion-padding">
-            <ul v-for="item in information[0].cardPassword" :key="item[0]">
+            <ul v-for="item in information[0].cardPassword" :key="item.content">
               <li>
                 {{ item.content }}
               </li>
@@ -28,7 +28,7 @@
           class="ion-padding-start ion-hide-lg-down"
         >
           <p>Una buena contraña debe incluir</p>
-          <ul v-for="item in information[0].cardPassword" :key="item[0]">
+          <ul v-for="item in information[0].cardPassword" :key="item.content">
             <li>
               {{ item.content }}
             </li>
@@ -52,8 +52,8 @@
                 </div>
                 <div>
                   <ion-button
-                    fill="clear"
                     id="trigger-cardDeleteAccount"
+                    fill="clear"
                     class="ion-hide-lg-up"
                   >
                     <ion-icon :icon="informationCircleOutline"></ion-icon>
@@ -65,8 +65,8 @@
             <ion-card-content>
               <ion-item class="transparent">
                 <ion-icon
-                  :icon="keyOutline"
                   slot="start"
+                  :icon="keyOutline"
                   class="item-icon"
                 ></ion-icon>
                 <ion-label position="floating">Contraseña actual</ion-label>
@@ -76,20 +76,20 @@
                   autocomplete="current-password"
                 ></ion-input>
                 <ion-button
+                  v-if="inputTypePassword1 == 'text'"
                   slot="end"
                   fill="clear"
-                  v-if="inputTypePassword1 == 'text'"
-                  v-on:click="inputTypePassword1 = 'password'"
                   style="margin-top: 20px"
+                  @click="inputTypePassword1 = 'password'"
                 >
                   <ion-icon :icon="eyeOffOutline"></ion-icon>
                 </ion-button>
                 <ion-button
+                  v-if="inputTypePassword1 == 'password'"
                   slot="end"
                   fill="clear"
-                  v-if="inputTypePassword1 == 'password'"
-                  v-on:click="inputTypePassword1 = 'text'"
                   style="margin-top: 20px"
+                  @click="inputTypePassword1 = 'text'"
                 >
                   <ion-icon :icon="eyeOutline"></ion-icon>
                 </ion-button>
@@ -103,8 +103,8 @@
 
               <ion-item class="transparent">
                 <ion-icon
-                  :icon="keyOutline"
                   slot="start"
+                  :icon="keyOutline"
                   class="item-icon"
                 ></ion-icon>
                 <ion-label position="floating">Contraseña nueva</ion-label>
@@ -114,20 +114,20 @@
                   autocomplete="new-password"
                 ></ion-input>
                 <ion-button
+                  v-if="inputTypePassword2 == 'text'"
                   slot="end"
                   fill="clear"
-                  v-if="inputTypePassword2 == 'text'"
-                  v-on:click="inputTypePassword2 = 'password'"
                   style="margin-top: 20px"
+                  @click="inputTypePassword2 = 'password'"
                 >
                   <ion-icon :icon="eyeOffOutline"></ion-icon>
                 </ion-button>
                 <ion-button
+                  v-if="inputTypePassword2 == 'password'"
                   slot="end"
                   fill="clear"
-                  v-if="inputTypePassword2 == 'password'"
-                  v-on:click="inputTypePassword2 = 'text'"
                   style="margin-top: 20px"
+                  @click="inputTypePassword2 = 'text'"
                 >
                   <ion-icon :icon="eyeOutline"></ion-icon>
                 </ion-button>
@@ -141,8 +141,8 @@
 
               <ion-item class="transparent">
                 <ion-icon
-                  :icon="keyOutline"
                   slot="start"
+                  :icon="keyOutline"
                   class="item-icon"
                 ></ion-icon>
                 <ion-label position="floating">Repetir contraseña</ion-label>
@@ -151,20 +151,20 @@
                   :type="inputTypePassword3"
                 ></ion-input>
                 <ion-button
+                  v-if="inputTypePassword3 == 'text'"
                   slot="end"
                   fill="clear"
-                  v-if="inputTypePassword3 == 'text'"
-                  v-on:click="inputTypePassword3 = 'password'"
                   style="margin-top: 20px"
+                  @click="inputTypePassword3 = 'password'"
                 >
                   <ion-icon :icon="eyeOffOutline"></ion-icon>
                 </ion-button>
                 <ion-button
+                  v-if="inputTypePassword3 == 'password'"
                   slot="end"
                   fill="clear"
-                  v-if="inputTypePassword3 == 'password'"
-                  v-on:click="inputTypePassword3 = 'text'"
                   style="margin-top: 20px"
+                  @click="inputTypePassword3 = 'text'"
                 >
                   <ion-icon :icon="eyeOutline"></ion-icon>
                 </ion-button>
@@ -178,13 +178,13 @@
 
               <ion-button
                 fill="clear"
-                @click="saveUserPassword()"
                 :disabled="(v$ as any).form.$invalid"
                 expand="full"
+                @click="saveUserPassword()"
               >
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.saveUserPassword"
+                  name="crescent"
                 ></ion-spinner>
                 <ion-label v-if="!spinners.saveUserPassword">Guardar</ion-label>
               </ion-button>
