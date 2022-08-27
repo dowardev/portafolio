@@ -6,39 +6,43 @@
       </ion-toolbar>
 
       <ion-toolbar class="menu-color">
-        <ion-item lines="none" v-if="userLogged == false" class="transparent">
+        <!-- no logged -->
+        <ion-item
+          v-if="useUser.isLogged.value == false"
+          lines="none"
+          class="transparent"
+        >
           <ion-label style="color: white !important">Bienvenido</ion-label>
 
-          <!-- no logged -->
           <ion-button
+            :disabled="spinners.buttonLogin"
             fill="clear"
             @click="login()"
-            :disabled="spinners.buttonLogin"
           >
             <ion-icon
-              :icon="logInOutline"
               v-if="spinners.buttonLogin == false"
+              :icon="logInOutline"
             ></ion-icon>
             <ion-spinner
-              name="crescent"
               v-if="spinners.buttonLogin"
+              name="crescent"
               color="primary"
             >
             </ion-spinner>
           </ion-button>
 
           <ion-button
+            :disabled="spinners.buttonSignup"
             fill="clear"
             @click="signup()"
-            :disabled="spinners.buttonSignup"
           >
             <ion-icon
-              :icon="personAddOutline"
               v-if="spinners.buttonSignup == false"
+              :icon="personAddOutline"
             ></ion-icon>
             <ion-spinner
-              name="crescent"
               v-if="spinners.buttonSignup"
+              name="crescent"
               color="primary"
             >
             </ion-spinner>
@@ -46,16 +50,22 @@
         </ion-item>
 
         <!-- logged -->
-        <ion-item lines="none" v-if="userLogged == true" class="transparent">
+        <ion-item
+          v-if="useUser.isLogged.value == true"
+          lines="none"
+          class="transparent"
+        >
           <ion-avatar slot="start">
-            <img :src="user.imageSource" />
+            <img :src="useUser.imageProfile.value.toString()" />
           </ion-avatar>
 
-          <ion-label style="color: white !important">{{ user.user }}</ion-label>
+          <ion-label style="color: white !important">{{
+            useUser.user.value.user
+          }}</ion-label>
 
           <ion-button
-            @click="setOpenPopOverUserOptions(true, $event)"
             fill="clear"
+            @click="setOpenPopOverUserOptions(true, $event)"
           >
             <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
           </ion-button>
@@ -63,27 +73,27 @@
             :is-open="isOpenRefPopOverUserOptions"
             css-class="my-custom-class"
             :event="eventPopOverUserOptions"
-            @didDismiss="setOpenPopOverUserOptions(false)"
+            @did-dismiss="setOpenPopOverUserOptions(false)"
           >
             <ion-content>
               <!-- admin panel -->
               <ion-item
+                v-if="useUser.user.value.isAdmin"
                 button
-                @click="goToAdminPanel()"
                 :disabled="spinners.buttonAdminPanel"
                 lines="none"
-                v-if="isUserAdmin"
+                @click="goToAdminPanel()"
               >
                 <ion-icon
-                  :icon="cogOutline"
                   v-if="spinners.buttonAdminPanel == false"
                   slot="start"
+                  :icon="cogOutline"
                 ></ion-icon>
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.buttonAdminPanel"
-                  color="primary"
                   slot="start"
+                  color="primary"
+                  name="crescent"
                 >
                 </ion-spinner>
                 <ion-label>Panel administrador</ion-label>
@@ -91,21 +101,21 @@
 
               <!-- user panel -->
               <ion-item
-                button
-                @click="goToUserPanel()"
                 :disabled="spinners.buttonUserPanel"
+                button
                 lines="none"
+                @click="goToUserPanel()"
               >
                 <ion-icon
-                  :icon="personOutline"
                   v-if="spinners.buttonUserPanel == false"
                   slot="start"
+                  :icon="personOutline"
                 ></ion-icon>
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.buttonUserPanel"
-                  color="primary"
                   slot="start"
+                  color="primary"
+                  name="crescent"
                 >
                 </ion-spinner>
                 <ion-label>Panel usuario</ion-label>
@@ -113,21 +123,21 @@
 
               <!-- logout -->
               <ion-item
-                button
-                @click="logout()"
                 :disabled="spinners.buttonLogout"
+                button
                 lines="none"
+                @click="logout()"
               >
                 <ion-icon
-                  :icon="logOutOutline"
                   v-if="spinners.buttonLogout == false"
                   slot="start"
+                  :icon="logOutOutline"
                 ></ion-icon>
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.buttonLogout"
-                  color="primary"
                   slot="start"
+                  color="primary"
+                  name="crescent"
                 >
                 </ion-spinner>
                 <ion-label>Cerrar sesion</ion-label>
@@ -139,12 +149,12 @@
 
       <ion-item
         lines="none"
+        class="transparent"
         button
         @click="openRoute('/presentation')"
-        class="transparent"
       >
         <ion-label
-          v-bind:class="{
+          :class="{
             optionSelected: $route.path == '/presentation',
             optionNoSelected: $route.path != '/presentation',
           }"
@@ -155,11 +165,11 @@
       <ion-item
         lines="none"
         button
-        @click="openRoute('/history')"
         class="transparent"
+        @click="openRoute('/history')"
       >
         <ion-label
-          v-bind:class="{
+          :class="{
             optionSelected: $route.path == '/history',
             optionNoSelected: $route.path != '/history',
           }"
@@ -168,13 +178,13 @@
         </ion-label>
       </ion-item>
       <ion-item
+        class="transparent"
         lines="none"
         button
         @click="openRoute('/skills')"
-        class="transparent"
       >
         <ion-label
-          v-bind:class="{
+          :class="{
             optionSelected: $route.path == '/skills',
             optionNoSelected: $route.path != '/skills',
           }"
@@ -184,12 +194,12 @@
       </ion-item>
       <ion-item
         lines="none"
+        class="transparent"
         button
         @click="openRoute('/portfolio')"
-        class="transparent"
       >
         <ion-label
-          v-bind:class="{
+          :class="{
             optionSelected: $route.path == '/portfolio',
             optionNoSelected: $route.path != '/portfolio',
           }"
@@ -199,12 +209,12 @@
       </ion-item>
       <ion-item
         lines="none"
+        class="transparent"
         button
         @click="openRoute('/blog')"
-        class="transparent"
       >
         <ion-label
-          v-bind:class="{
+          :class="{
             optionSelected: $route.path == '/blog' || $route.params.date,
             optionNoSelected: $route.path != '/blog' && !$route.params.date,
           }"
@@ -220,8 +230,8 @@
           <!-- more -->
           <ion-button
             fill="clear"
-            @click="openModalDonations()"
             color="primary"
+            @click="openModalDonations()"
           >
             <ion-icon :icon="cashOutline"></ion-icon>
           </ion-button>
@@ -252,35 +262,35 @@
           </ion-popover>
 
           <!-- button feedback -->
-          <ion-button @click="openModalFeedback" color="primary">
+          <ion-button color="primary" @click="openModalFeedback">
             <ion-icon :icon="thumbsUpOutline"></ion-icon>
           </ion-button>
 
           <!-- dark button -->
           <ion-button
-            fill="clear"
-            @click="openModalThemeDesktop()"
             v-if="!isAndroidPlatform && !isIosPlatform"
+            fill="clear"
             color="primary"
+            @click="openModalThemeDesktop()"
           >
             <ion-icon :icon="brushOutline"></ion-icon>
           </ion-button>
           <ion-button
-            fill="clear"
-            @click="openModalThemeMobile()"
             v-if="isAndroidPlatform || isIosPlatform"
+            fill="clear"
             color="primary"
+            @click="openModalThemeMobile()"
           >
             <ion-icon :icon="brushOutline"></ion-icon>
           </ion-button>
 
           <!-- more -->
-          <ion-button fill="clear" @click="openModalApps()" color="primary">
+          <ion-button fill="clear" color="primary" @click="openModalApps()">
             <ion-icon :icon="appsOutline"></ion-icon>
           </ion-button>
 
           <!-- policies -->
-          <ion-button fill="clear" @click="goToPoliciesPage()" color="primary">
+          <ion-button fill="clear" color="primary" @click="goToPoliciesPage()">
             <ion-icon :icon="documentsOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -323,13 +333,12 @@ import {
 } from "ionicons/icons";
 import DarkMode from "./darkmode/DarkMode.vue";
 import { logout } from "../../services/session";
-import eventBus from "../../EventBus";
 import { openToastErrror, openModalFeedback } from "../../services/system";
-import { getUser, setUserToken } from "../../services/user";
+import { setUserToken } from "../../services/user";
 import AppsComponent from "./apps/Apps.vue";
 import DonationsComponent from "./donations/Donations.vue";
-import { USER_MENU, USER_PERMISSIONS } from "../../services/graphql";
-import userAvatar from "@/assets/otros/user.png";
+import { useUser } from "../../composables/useUser";
+import { USER_MENU } from "../../services/graphql";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -371,16 +380,12 @@ export default defineComponent({
       setOpenPopOverUserOptions,
       eventPopOverUserOptions,
       cashOutline,
+      useUser: useUser(),
     };
   },
 
   data() {
     return {
-      userLogged: false,
-      user: {
-        user: "",
-        imageSource: userAvatar,
-      },
       spinners: {
         buttonLogin: false,
         buttonSignup: false,
@@ -388,16 +393,11 @@ export default defineComponent({
         buttonUserPanel: false,
         buttonAdminPanel: false,
       },
-      isUserAdmin: false,
     };
   },
 
   mounted() {
-    eventBus().emitter.on("refresh-user-content", () => {
-      this.getUser();
-    });
     this.getUser();
-    this.verifyUserAdmin();
   },
 
   methods: {
@@ -428,24 +428,9 @@ export default defineComponent({
     },
 
     async getUser() {
-      try {
-        const { user, image_profile } = await getUser({
-          graphql: { name: USER_MENU, fragment: "UserMenu" },
-        });
-
-        this.user.user = user!;
-
-        const userImageProfile = image_profile;
-
-        if (userImageProfile) {
-          this.user.imageSource = "data:image/png;base64," + userImageProfile;
-        }
-        this.userLogged = true;
-      } catch (e: any) {
-        if (e.message == "Unauthorized") return;
-        openToastErrror(e);
-        console.error(e);
-      }
+      this.useUser.loadUser({
+        graphql: { name: USER_MENU, fragment: "UserMenu" },
+      });
     },
 
     async openModalFeedback() {
@@ -469,22 +454,9 @@ export default defineComponent({
 
     async logout() {
       this.spinners.buttonLogout = true;
-
-      try {
-        await logout();
-        this.spinners.buttonLogout = false;
-        const token = (document.cookie =
-          "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
-        setUserToken({ token });
-        this.userLogged = false;
-        location.reload();
-      } catch (e: any) {
-        this.spinners.buttonLogout = false;
-        console.error(e);
-        openToastErrror(e);
-      }
-      this.isOpenRefPopOverUserOptions = false;
-      menuController.close();
+      await this.useUser.logout();
+      this.spinners.buttonLogout = false;
+      location.reload();
     },
 
     async openModalApps() {
@@ -524,25 +496,6 @@ export default defineComponent({
       });
       menuController.close();
       return modal.present();
-    },
-
-    async verifyUserAdmin() {
-      if (navigator.onLine) {
-        try {
-          this.isUserAdmin = (
-            await getUser({
-              graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
-            })
-          ).is_admin!;
-        } catch (e: any) {
-          this.isUserAdmin = false;
-          if (e.message == "Unauthorized") return;
-          else {
-            openToastErrror(e);
-            console.error(e);
-          }
-        }
-      }
     },
   },
 });

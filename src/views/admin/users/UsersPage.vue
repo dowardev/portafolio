@@ -70,15 +70,12 @@
               </ion-popover>
             </ion-item>
 
+            <!-- users -->
             <ion-card-content>
               <section style="overflow-y: scroll; height: 42vh">
                 <ion-accordion-group>
-                  <div v-for="user in users" :key="user.id">
-                    <ion-item
-                      lines="none"
-                      v-if="user.is_admin != true"
-                      class="transparent"
-                    >
+                  <div v-for="user in useUsers.users.value" :key="user.id">
+                    <ion-item lines="none" class="transparent">
                       <ion-icon :icon="personOutline" slot="start"></ion-icon>
                       <ion-label>{{ user.email }}</ion-label>
 
@@ -104,6 +101,7 @@
                         :trigger="'trigger-button-' + user.id"
                         dismiss-on-select
                       >
+                        <!-- user options -->
                         <ion-content>
                           <ion-item
                             button
@@ -123,7 +121,7 @@
                             @click="
                               disabledUser({ id: user.id!, disableUser: false })
                             "
-                            v-if="user.is_user_disabled == true"
+                            v-if="user.isUserDisabled == true"
                           >
                             <ion-icon
                               :icon="checkmarkOutline"
@@ -138,7 +136,7 @@
                             @click="
                               disabledUser({ id: user.id!, disableUser: true })
                             "
-                            v-if="user.is_user_disabled == false"
+                            v-if="user.isUserDisabled == false"
                           >
                             <ion-label>Deshabilitar usuario</ion-label>
                             <ion-icon
@@ -174,11 +172,7 @@
                       </ion-popover>
                     </ion-item>
 
-                    <ion-accordion
-                      :value="user.id"
-                      v-if="user.is_admin != true"
-                      class="transparent"
-                    >
+                    <ion-accordion :value="user.id" class="transparent">
                       <ion-item slot="header" class="transparent">
                         <ion-label>Informacion</ion-label>
                       </ion-item>
@@ -198,12 +192,12 @@
                           <ion-label>Email verificado</ion-label>
                           <ion-label
                             slot="end"
-                            v-if="user.is_email_verified == true"
+                            v-if="user.isEmailVerified == true"
                             >Si</ion-label
                           >
                           <ion-label
                             slot="end"
-                            v-if="user.is_email_verified == false"
+                            v-if="user.isEmailVerified == false"
                             >No</ion-label
                           >
                         </ion-item>
@@ -212,12 +206,12 @@
                           <ion-label>Deshabilitado</ion-label>
                           <ion-label
                             slot="end"
-                            v-if="user.is_user_disabled == true"
+                            v-if="user.isUserDisabled == true"
                             >Si</ion-label
                           >
                           <ion-label
                             slot="end"
-                            v-if="user.is_user_disabled == false"
+                            v-if="user.isUserDisabled == false"
                             >No</ion-label
                           >
                         </ion-item>
@@ -338,6 +332,7 @@ import {
 import { sendMailResetPassword } from "../../../services/session";
 import { resendEmailConfirmation } from "../../../services/user";
 import { USERS_ADMINISTRATION_DETAILS } from "../../../services/graphql";
+import { useUsers } from "../../../composables/useUsers";
 
 export default defineComponent({
   name: "UserAdminPanel",
@@ -395,6 +390,7 @@ export default defineComponent({
       keyOutline,
       checkmarkOutline,
       thumbsUpOutline,
+      useUsers: useUsers(),
     };
   },
 
@@ -473,24 +469,24 @@ export default defineComponent({
       const search = this.searchTerm.replace(/ /g, "");
 
       try {
-        const usersResponse = await searchUsers({
+        const { users, paginatorInfo } = await this.useUsers.loadUsers({
           graphql: {
             name: USERS_ADMINISTRATION_DETAILS,
             fragment: "UsersDetails",
+            refetch: params.refetch,
           },
-          first: parseInt(this.paginatorInfo.pagination),
-          page: parseInt(this.paginatorInfo.currentPage),
+          paginatorInfo: {
+            pagination: parseInt(this.paginatorInfo.pagination),
+            page: parseInt(this.paginatorInfo.currentPage),
+          },
           search,
           filterOptions: JSON.stringify(this.getFilterOptions()),
-          refetch: params.refetch,
         });
 
-        this.users = usersResponse.users;
-        this.paginatorInfo.totalPaginacionElements =
-          usersResponse.paginatorInfo.total;
+        this.useUsers.updateUsers({ users });
+        this.paginatorInfo.totalPaginacionElements = paginatorInfo.total;
       } catch (e: any) {
         console.error(e);
-        openToastErrror({ error: e });
       }
     },
 

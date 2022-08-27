@@ -40,9 +40,9 @@
               <form>
                 <ion-item lines="inset" class="transparent">
                   <ion-icon
+                    slot="start"
                     :icon="mailOpenOutline"
                     class="item-icon"
-                    slot="start"
                   >
                   </ion-icon>
                   <ion-label position="floating">
@@ -63,9 +63,9 @@
 
                 <ion-item lines="inset" class="transparent">
                   <ion-icon
+                    slot="start"
                     :icon="fingerPrintOutline"
                     class="item-icon"
-                    slot="start"
                   >
                   </ion-icon>
                   <ion-label position="floating">Contraseña</ion-label>
@@ -75,20 +75,20 @@
                   >
                   </ion-input>
                   <ion-button
-                    slot="end"
-                    fill="clear"
                     v-if="inputTypePassword == 'text'"
-                    v-on:click="inputTypePassword = 'password'"
+                    slot="end"
                     style="margin-top: 20px"
+                    fill="clear"
+                    @click="inputTypePassword = 'password'"
                   >
                     <ion-icon :icon="eyeOffOutline"></ion-icon>
                   </ion-button>
                   <ion-button
+                    v-if="inputTypePassword == 'password'"
                     slot="end"
                     fill="clear"
-                    v-if="inputTypePassword == 'password'"
-                    v-on:click="inputTypePassword = 'text'"
                     style="margin-top: 20px"
+                    @click="inputTypePassword = 'text'"
                   >
                     <ion-icon :icon="eyeOutline"></ion-icon>
                   </ion-button>
@@ -104,16 +104,16 @@
 
               <ion-button
                 fill="clear"
-                v-on:click="login()"
                 :disabled="(v$ as any).form.$invalid || spinners.buttonLogin"
                 expand="full"
+                @click="login()"
               >
                 <ion-label v-if="spinners.buttonLogin == false">
                   Iniciar sesión</ion-label
                 >
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.buttonLogin"
+                  name="crescent"
                 ></ion-spinner>
               </ion-button>
             </ion-card-content>
@@ -123,17 +123,17 @@
             <div class="center">
               <ion-item lines="none" class="transparent">
                 <ion-button
-                  @click="forgotPassword()"
                   class="options"
                   fill="clear"
                   :disabled="spinners.buttonForgotPassword"
+                  @click="forgotPassword()"
                 >
                   <ion-label v-if="spinners.buttonForgotPassword == false"
                     >¿Olvidaste la contraseña?</ion-label
                   >
                   <ion-spinner
-                    name="crescent"
                     v-if="spinners.buttonForgotPassword"
+                    name="crescent"
                   ></ion-spinner>
                 </ion-button>
               </ion-item>
@@ -142,18 +142,18 @@
             <div class="center">
               <ion-item lines="none" class="transparent">
                 <ion-button
-                  @click="createAccount()"
                   class="options"
                   fill="clear"
                   :disabled="spinners.buttonCreateAccount"
                   expand="full"
+                  @click="createAccount()"
                 >
                   <ion-label v-if="spinners.buttonCreateAccount == false"
                     >Crear cuenta</ion-label
                   >
                   <ion-spinner
-                    name="crescent"
                     v-if="spinners.buttonCreateAccount"
+                    name="crescent"
                     color="primary"
                   ></ion-spinner>
                 </ion-button>
@@ -265,16 +265,6 @@ export default defineComponent({
         },
       },
     };
-  },
-
-  beforeRouteEnter(to, from, next) {
-    getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
-      .then(() => {
-        next("/");
-      })
-      .catch(() => {
-        next();
-      });
   },
 
   methods: {

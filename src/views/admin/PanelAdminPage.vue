@@ -78,21 +78,5 @@ export default defineComponent({
       mainSegment: "users",
     };
   },
-
-  beforeRouteEnter(to, from, next) {
-    getUser({
-      graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
-    })
-      .then((response) => {
-        if (response.is_admin) {
-          next();
-        } else {
-          next("/");
-        }
-      })
-      .catch(() => {
-        next("/");
-      });
-  },
 });
 </script>

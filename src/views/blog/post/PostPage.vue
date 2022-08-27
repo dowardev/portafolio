@@ -12,10 +12,16 @@
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <ion-title>
-          {{ post.title }}
+        <ion-title
+          v-if="usePost.getPost({ id: postId as string })! != undefined"
+        >
+          {{ usePost.getPost({ id: postId })!.title }}
         </ion-title>
-        <ion-buttons v-if="isUserAdmin" slot="end" :collapse="true">
+        <ion-buttons
+          v-if="useUser.user.value.isAdmin"
+          slot="end"
+          :collapse="true"
+        >
           <ion-button fill="clear" @click="updatePost()">
             <ion-icon :icon="createOutline"></ion-icon>
           </ion-button>
@@ -27,64 +33,79 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-row>
-        <ion-col size="12">
-          <img :src="post.cover" alt="" />
-        </ion-col>
-      </ion-row>
+      <section v-if="usePost.getPost({ id: postId }) != undefined">
+        <ion-row>
+          <ion-col size="12">
+            <img :src="usePost.getPost({ id: postId })!.cover.source" alt="" />
+          </ion-col>
+        </ion-row>
 
-      <ion-header collapse="condense" mode="ios">
-        <ion-toolbar>
-          <h1 class="ion-padding-start">{{ post.title }}</h1>
-          <ion-buttons v-if="isUserAdmin" slot="end" :collapse="true">
-            <ion-button
-              fill="clear"
-              :disabaled="spinners.buttonUpdate == true"
-              @click="updatePost()"
+        <ion-header collapse="condense" mode="ios">
+          <ion-toolbar>
+            <h1 class="ion-padding-start">
+              {{ usePost.getPost({ id: postId })!.title }}
+            </h1>
+            <ion-buttons
+              v-if="useUser.user.value.isAdmin"
+              slot="end"
+              :collapse="true"
             >
-              <ion-icon
-                v-if="spinners.buttonUpdate == false"
-                :icon="createOutline"
-              ></ion-icon>
-              <ion-spinner
-                v-if="spinners.buttonUpdate == true"
-                name="crescent"
-              ></ion-spinner>
-            </ion-button>
+              <ion-button
+                fill="clear"
+                :disabaled="spinners.buttonUpdate == true"
+                @click="updatePost()"
+              >
+                <ion-icon
+                  v-if="spinners.buttonUpdate == false"
+                  :icon="createOutline"
+                ></ion-icon>
+                <ion-spinner
+                  v-if="spinners.buttonUpdate == true"
+                  name="crescent"
+                ></ion-spinner>
+              </ion-button>
 
-            <ion-button
-              fill="clear"
-              :disabaled="spinners.buttonDelete == true"
-              @click="deletePost()"
-            >
-              <ion-icon
-                v-if="spinners.buttonDelete == false"
-                :icon="trashOutline"
-                color="danger"
-              ></ion-icon>
-              <ion-spinner
-                v-if="spinners.buttonDelete == true"
-                name="crescent"
-              ></ion-spinner>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
+              <ion-button
+                fill="clear"
+                :disabaled="spinners.buttonDelete == true"
+                @click="deletePost()"
+              >
+                <ion-icon
+                  v-if="spinners.buttonDelete == false"
+                  :icon="trashOutline"
+                  color="danger"
+                ></ion-icon>
+                <ion-spinner
+                  v-if="spinners.buttonDelete == true"
+                  name="crescent"
+                ></ion-spinner>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
 
-      <ion-row class="ion-padding-start">
-        <ion-col>
-          <p class="post-date">Creación del post: {{ post.created }}</p>
-          <p class="post-date">
-            Ultimá actualización del post: {{ post.updated }}
-          </p>
-        </ion-col>
-      </ion-row>
+        <ion-row class="ion-padding-start">
+          <ion-col>
+            <p class="post-date">
+              Creación del post:
+              {{ usePost.getPost({ id: postId })!.created_at }}
+            </p>
+            <p class="post-date">
+              Ultimá actualización del post:
+              {{ usePost.getPost({ id: postId })!.updated_at }}
+            </p>
+          </ion-col>
+        </ion-row>
 
-      <ion-row class="ion-padding-start">
-        <ion-col size="12">
-          <Markdown :source="post.content" :html="true" />
-        </ion-col>
-      </ion-row>
+        <ion-row class="ion-padding-start">
+          <ion-col size="12">
+            <Markdown
+              :source="usePost.getPost({ id: postId })!.content"
+              :html="true"
+            />
+          </ion-col>
+        </ion-row>
+      </section>
     </ion-content>
   </ion-page>
 </template>
@@ -120,6 +141,8 @@ import { getUser } from "../../../services/user";
 import { format, parseISO } from "date-fns";
 import eventBus from "../../../EventBus";
 import { POST_DETAILS, USER_PERMISSIONS } from "../../../services/graphql";
+import { usePost } from "../../../composables/usePost";
+import { useUser } from "../../../composables/useUser";
 
 export default defineComponent({
   name: "PostPage",
@@ -135,12 +158,20 @@ export default defineComponent({
     IonRow,
     IonCol,
   },
+
   setup() {
-    return { chevronBackOutline, createOutline, trashOutline };
+    return {
+      chevronBackOutline,
+      createOutline,
+      trashOutline,
+      useUser: useUser(),
+      usePost: usePost(),
+    };
   },
+
   data() {
     return {
-      postId: this.$route.params.id,
+      postId: this.$route.params.id as string,
       post: {
         title: "",
         content: "",
@@ -148,17 +179,12 @@ export default defineComponent({
         created: "",
         updated: "",
       },
-      isUserAdmin: false,
       spinners: { buttonUpdate: false, buttonDelete: false },
     };
   },
 
   mounted() {
     this.getPost();
-    this.verifyUserAdmin();
-    eventBus().emitter.on("update-post", () => {
-      this.getPost();
-    });
   },
 
   methods: {
@@ -169,34 +195,42 @@ export default defineComponent({
       loading.present();
 
       try {
-        const response = await getPost({
+        await this.usePost.loadPost({
           id: this.postId as string,
-          graphql: { name: POST_DETAILS, fragment: "PostDetails" },
+          graphql: {
+            name: POST_DETAILS,
+            fragment: "PostDetails",
+            refetch: true,
+          },
         });
+        // const response = await getPost({
+        //   id: this.postId as string,
+        //   graphql: { name: POST_DETAILS, fragment: "PostDetails" },
+        // });
 
-        const title = response.title ? response.title : "";
-        const content = response.content ? response.content : "";
-        const coverSource = response.cover.source ? response.cover.source : "";
+        // const title = response.title ? response.title : "";
+        // const content = response.content ? response.content : "";
+        // const coverSource = response.cover.source ? response.cover.source : "";
 
-        const postCreated = format(
-          // eslint-disable-next-line
-          parseISO(response.created_at!),
-          "dd/MM/yyyy"
-        );
+        // const postCreated = format(
+        //   // eslint-disable-next-line
+        //   parseISO(response.created_at!),
+        //   "dd/MM/yyyy"
+        // );
 
-        const postUpdated = format(
-          // eslint-disable-next-line
-          parseISO(response.updated_at!),
-          "dd/MM/yyyy"
-        );
+        // const postUpdated = format(
+        //   // eslint-disable-next-line
+        //   parseISO(response.updated_at!),
+        //   "dd/MM/yyyy"
+        // );
 
-        this.setData({
-          title,
-          content,
-          coverSource,
-          created: postCreated,
-          updated: postUpdated,
-        });
+        // this.setData({
+        //   title,
+        //   content,
+        //   coverSource,
+        //   created: postCreated,
+        //   updated: postUpdated,
+        // });
         loading.dismiss();
       } catch (e: any) {
         console.error(e);
@@ -244,25 +278,6 @@ export default defineComponent({
       } catch (e: any) {
         this.spinners.buttonDelete = false;
         openToastErrror(e);
-      }
-    },
-
-    async verifyUserAdmin() {
-      if (navigator.onLine) {
-        try {
-          this.isUserAdmin = (
-            await getUser({
-              graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
-            })
-          ).is_admin!;
-        } catch (e: any) {
-          this.isUserAdmin = false;
-          if (e.message == "Unauthorized") return;
-          else {
-            openToastErrror(e);
-            console.error(e);
-          }
-        }
       }
     },
   },

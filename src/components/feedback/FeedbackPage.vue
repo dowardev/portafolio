@@ -9,7 +9,7 @@
         </ion-buttons>
         <ion-title>Comentarios</ion-title>
 
-        <ion-buttons slot="end" v-if="dataProp?.type == 'error'">
+        <ion-buttons v-if="dataProp?.type == 'error'" slot="end">
           <ion-button @click="displayError = true">
             <ion-icon :icon="bugOutline"></ion-icon>
           </ion-button>
@@ -55,8 +55,8 @@
               <ion-item>
                 <ion-label position="floating">Descripción</ion-label>
                 <ion-textarea
-                  :auto-grow="true"
                   v-model="(v$ as any).form.description.$model"
+                  :auto-grow="true"
                 ></ion-textarea>
               </ion-item>
               <div
@@ -67,7 +67,7 @@
               </div>
 
               <ion-item lines="full">
-                <ion-checkbox v-model="form.contactMe" slot="start">
+                <ion-checkbox slot="start" v-model="form.contactMe">
                 </ion-checkbox>
                 <ion-label class="ion-text-wrap">
                   Acepto que se pongan en contacto conmigo por medio del correo
@@ -86,8 +86,8 @@
                   Enviar</ion-label
                 >
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.buttonSendFeedback"
+                  name="crescent"
                 ></ion-spinner>
               </ion-button>
             </form>
@@ -97,7 +97,7 @@
 
       <section v-if="displayError">
         <ion-item button @click="displayError = false">
-          <ion-icon :icon="chevronBackOutline" slot="start"></ion-icon>
+          <ion-icon slot="start" :icon="chevronBackOutline"></ion-icon>
           <ion-label>Regresar al formulario</ion-label>
         </ion-item>
 
@@ -134,6 +134,7 @@ import { createFeedback } from "../../services/feedback";
 import { getUser } from "../../services/user";
 import { ModalFeedback } from "../../services/interfaces";
 import { USER_BASIC_DETAILS } from "../../services/graphql";
+import { useUser } from "../../composables/useUser";
 
 export default defineComponent({
   name: "FeedbackPage",
@@ -148,12 +149,26 @@ export default defineComponent({
     IonCheckbox,
     IonItem,
   },
+
   props: {
-    dataProp: { type: Object as () => ModalFeedback },
+    dataProp: {
+      type: Object as () => ModalFeedback,
+      default() {
+        return {} as ModalFeedback;
+      },
+    },
   },
+
   setup() {
-    return { closeOutline, v$: useVuelidate(), chevronBackOutline, bugOutline };
+    return {
+      closeOutline,
+      v$: useVuelidate(),
+      chevronBackOutline,
+      bugOutline,
+      useUser: useUser(),
+    };
   },
+
   data() {
     return {
       form: {
@@ -170,6 +185,7 @@ export default defineComponent({
       },
     };
   },
+
   validations() {
     const messageRequired = "Campo requerido";
     return {
@@ -208,12 +224,13 @@ export default defineComponent({
 
     async getUser() {
       try {
-        const { id, name, email } = await getUser({
+        await this.useUser.loadUser({
           graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
         });
-        this.form.id = id!;
-        this.form.name = name!;
-        this.form.email = email!;
+
+        this.form.id = this.useUser.user.value.id!;
+        this.form.name = this.useUser.user.value.name!;
+        this.form.email = this.useUser.user.value.email!;
       } catch (e: any) {
         console.error(e);
         return;

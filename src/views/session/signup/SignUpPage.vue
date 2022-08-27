@@ -42,8 +42,8 @@
                   <form>
                     <ion-item lines="inset" class="transparent">
                       <ion-icon
-                        :icon="manOutline"
                         slot="start"
+                        :icon="manOutline"
                         class="item-icon"
                       ></ion-icon>
                       <ion-label position="floating">Nombre</ion-label>
@@ -61,8 +61,8 @@
 
                     <ion-item lines="inset" class="transparent">
                       <ion-icon
-                        :icon="personOutline"
                         slot="start"
+                        :icon="personOutline"
                         class="item-icon"
                       ></ion-icon>
                       <ion-label position="floating">Usuario</ion-label>
@@ -79,8 +79,8 @@
 
                     <ion-item lines="inset" class="transparent">
                       <ion-icon
-                        :icon="mailOpenOutline"
                         slot="start"
+                        :icon="mailOpenOutline"
                         class="item-icon"
                       ></ion-icon>
                       <ion-label position="floating"
@@ -100,8 +100,8 @@
 
                     <ion-item lines="inset" class="transparent">
                       <ion-icon
-                        :icon="keyOutline"
                         slot="start"
+                        :icon="keyOutline"
                         class="item-icon"
                       ></ion-icon>
                       <ion-label position="floating">Contraseña</ion-label>
@@ -110,20 +110,20 @@
                         :type="inputTypePassword1"
                       ></ion-input>
                       <ion-button
+                        v-if="inputTypePassword1 == 'text'"
                         slot="end"
                         fill="clear"
-                        v-if="inputTypePassword1 == 'text'"
-                        v-on:click="inputTypePassword1 = 'password'"
                         style="margin-top: 20px"
+                        @click="inputTypePassword1 = 'password'"
                       >
                         <ion-icon :icon="eyeOffOutline"></ion-icon>
                       </ion-button>
                       <ion-button
+                        v-if="inputTypePassword1 == 'password'"
                         slot="end"
                         fill="clear"
-                        v-if="inputTypePassword1 == 'password'"
-                        v-on:click="inputTypePassword1 = 'text'"
                         style="margin-top: 20px"
+                        @click="inputTypePassword1 = 'text'"
                       >
                         <ion-icon :icon="eyeOutline"></ion-icon>
                       </ion-button>
@@ -137,8 +137,8 @@
 
                     <ion-item lines="inset" class="transparent">
                       <ion-icon
-                        :icon="keyOutline"
                         slot="start"
+                        :icon="keyOutline"
                         class="item-icon"
                       ></ion-icon>
                       <ion-label position="floating"
@@ -149,20 +149,20 @@
                         :type="inputTypePassword2"
                       ></ion-input>
                       <ion-button
+                        v-if="inputTypePassword2 == 'text'"
                         slot="end"
                         fill="clear"
-                        v-if="inputTypePassword2 == 'text'"
-                        v-on:click="inputTypePassword2 = 'password'"
                         style="margin-top: 20px"
+                        @click="inputTypePassword2 = 'password'"
                       >
                         <ion-icon :icon="eyeOffOutline"></ion-icon>
                       </ion-button>
                       <ion-button
+                        v-if="inputTypePassword2 == 'password'"
                         slot="end"
                         fill="clear"
-                        v-if="inputTypePassword2 == 'password'"
-                        v-on:click="inputTypePassword2 = 'text'"
                         style="margin-top: 20px"
+                        @click="inputTypePassword2 = 'text'"
                       >
                         <ion-icon :icon="eyeOutline"></ion-icon>
                       </ion-button>
@@ -179,16 +179,16 @@
                 <section>
                   <ion-button
                     fill="clear"
-                    v-on:click="register()"
                     :disabled="(v$ as any).form.$invalid||spinners.buttonSignup"
                     expand="full"
+                    @click="register()"
                   >
                     <ion-label v-if="spinners.buttonSignup == false">
                       Registrar</ion-label
                     >
                     <ion-spinner
-                      name="crescent"
                       v-if="spinners.buttonSignup"
+                      name="crescent"
                       color="primary"
                     ></ion-spinner>
                   </ion-button>
@@ -199,17 +199,17 @@
 
           <section>
             <ion-button
-              @click="login()"
               fill="clear"
               :disabled="spinners.buttonLogin"
               expand="full"
+              @click="login()"
             >
               <ion-label v-if="spinners.buttonLogin == false"
                 >¿Ya tienes cuenta?</ion-label
               >
               <ion-spinner
-                name="crescent"
                 v-if="spinners.buttonLogin"
+                name="crescent"
                 color="primary"
               ></ion-spinner>
             </ion-button>
@@ -347,16 +347,6 @@ export default defineComponent({
         },
       },
     };
-  },
-
-  beforeRouteEnter(to, from, next) {
-    getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
-      .then(() => {
-        next("/");
-      })
-      .catch(() => {
-        next();
-      });
   },
 
   methods: {

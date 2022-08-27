@@ -42,6 +42,7 @@
           </ul>
         </ion-col>
 
+        <!-- user fields -->
         <ion-col
           size-xs="12"
           size-md="12"
@@ -93,7 +94,7 @@
                   type="file"
                   style="display: none"
                   :disabled="spinners.uploadImage == true"
-                  @ion-change="uploadUserImage($event)"
+                  @change="uploadUserImage($event)"
                 />
                 <ion-item class="transparent">
                   <ion-icon
@@ -333,7 +334,6 @@ import {
   uploadImage,
 } from "../../../services/system";
 import {
-  getUser,
   setUserToken,
   saveUserData,
   deleteUserAccount,
@@ -350,9 +350,9 @@ import {
   keyOutline,
 } from "ionicons/icons";
 import { logout } from "../../../services/session";
-import eventBus from "../../../EventBus";
 import { UPLOAD_IMAGE, USER_BASIC_DETAILS } from "../../../services/graphql";
 import userAvatar from "../../../assets/otros/user.png";
+import { useUser } from "../../../composables/useUser";
 
 export default defineComponent({
   name: "UserProfileComponent",
@@ -380,6 +380,7 @@ export default defineComponent({
       personOutline,
       mailOpenOutline,
       keyOutline,
+      useUser: useUser(),
     };
   },
 
@@ -400,7 +401,7 @@ export default defineComponent({
       oldEmail: "",
       userImage: userAvatar,
       inputTypePassword: "password" as "password" | "text",
-      formDeleteAccount: { password: "" },
+      formDeleteAccount: { password: "1" },
       information: [
         {
           basicCardInformation: [
@@ -442,7 +443,10 @@ export default defineComponent({
       form: {
         name: {
           required: helpers.withMessage(messageRequired, required),
-          alpha: helpers.withMessage(messageAlpha, alpha),
+          alpha: helpers.withMessage(
+            messageAlpha,
+            helpers.regex(/^[a-zA-Z ]*$/)
+          ),
         },
         user: {
           required: helpers.withMessage(messageRequired, required),
@@ -468,25 +472,14 @@ export default defineComponent({
 
   methods: {
     async getUser() {
-      try {
-        const { name, user, email, image_profile } = await getUser({
-          graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
-        });
-        this.form.name = name!;
-        this.form.user = user!;
-        this.form.email = email!;
-        const userProfileImage = image_profile!;
+      await useUser().loadUser({
+        graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
+      });
 
-        if (userProfileImage) {
-          this.userImage = "data:image/png;base64," + userProfileImage;
-        }
-      } catch (e: any) {
-        if (e.message == "Unauthorized") return;
-        else {
-          openToastErrror(e);
-          console.error(e);
-        }
-      }
+      this.form.name = this.useUser.user.value.name!;
+      this.form.user = this.useUser.user.value.user!;
+      this.form.email = this.useUser.user.value.email!;
+      this.userImage = this.useUser.imageProfile.value.toString()!;
     },
 
     async saveUserData() {
@@ -502,10 +495,10 @@ export default defineComponent({
 
       try {
         await saveUserData({ name, user, email, imageId });
+        this.getUser();
         openToast({
           message: "Datos actualizados",
         });
-        eventBus().emitter.emit("refresh-user-content");
       } catch (e: any) {
         if (e.message == "Email already selected") {
           openToast({
@@ -553,15 +546,22 @@ export default defineComponent({
           image,
           graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
         });
+
         this.spinners.uploadImage = false;
         if (response.name) {
           this.userImage = "data:image/png;base64," + response.source;
           this.form.userImageId = response.id!;
         }
+        this.useUser.updateUserProps({
+          user: {
+            imageProfile: response.source,
+          },
+        });
       } catch (e: any) {
-        this.spinners.uploadImage = false;
         console.error(e);
         openToastErrror(e);
+      } finally {
+        this.spinners.uploadImage = false;
       }
     },
 
@@ -596,40 +596,42 @@ export default defineComponent({
 
     async deleteUserAccount() {
       this.spinners.deleteUserAccount = true;
+
       const alertResponse = await (
         await this.presentAlertDeleteAccount()
       ).onDidDismiss();
 
-      if (alertResponse.data)
+      if (alertResponse.data == false) {
+        this.spinners.deleteUserAccount = false;
+        openToast({
+          message: "Gracias por quedarte, prometo no fallarte",
+        });
+        return;
+      }
+
+      if (alertResponse.data) {
         try {
-          await deleteUserAccount({
+          await useUser().deleteAccount({
             password: this.formDeleteAccount.password,
           });
 
           openToast({
             message: "Hasta pronto",
           });
-
-          this.spinners.deleteUserAccount = false;
-          this.logout();
+          location.reload();
         } catch (e: any) {
-          this.spinners.deleteUserAccount = false;
           if (e.message == "Wrong password") {
             openToast({
               message: "Contraseña incorrecta",
               color: "danger",
             });
-            return;
           }
           console.error(e);
           openToastErrror(e);
+        } finally {
+          this.spinners.deleteUserAccount = false;
         }
-
-      if (alertResponse.data == false) this.spinners.deleteUserAccount = false;
-      openToast({
-        message: "Gracias por quedarte, prometo no fallarte",
-        color: "success",
-      });
+      }
     },
 
     async logout() {

@@ -147,10 +147,10 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
   );
 
   return new Promise((resolve, reject) => {
-    if (result.value != undefined && params.refetch == false)
+    if (result.value != undefined && params.graphql.refetch == false)
       resolve(result.value.posts.posts);
 
-    if (params.refetch)
+    if (params.graphql.refetch)
       refetch()?.then((response) => resolve(response.data.posts.posts));
 
     onResult((response) => resolve(response.data.posts.posts));
@@ -161,7 +161,7 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
   });
 }
 
-export async function getPost(params: GetPosts): Promise<Post> {
+export async function getPost(params: GetPosts): Promise<Array<Post>> {
   const { onResult, onError, result } = useQuery(
     gql`
         query GetPost($id: ID!) {
@@ -195,7 +195,7 @@ export async function getPost(params: GetPosts): Promise<Post> {
 
 export async function getPostsDates(
   params: GetPostsDates
-): Promise<Array<GetPostsDatesResponse>> {
+): Promise<Array<string>> {
   const { onResult, onError, result, refetch } = useQuery(
     gql`
         query postsDates {

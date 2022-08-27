@@ -35,7 +35,7 @@ export default defineComponent({
 
   data() {
     const rq = 0;
-    console.log(rq);
+    // console.log(rq);
   },
 });
 </script>

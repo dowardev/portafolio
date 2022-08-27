@@ -11,6 +11,7 @@ import apolloClient from "../Apollo";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@vue/apollo-composable";
 import { provideApolloClient } from "@vue/apollo-composable";
+import { computed, watch } from "vue";
 provideApolloClient(apolloClient);
 
 export async function getUsers(params: GetUsers): Promise<GetUsersResponse> {
@@ -58,9 +59,7 @@ export async function getUsers(params: GetUsers): Promise<GetUsersResponse> {
   });
 }
 
-export async function searchUsers(
-  params: SearchUsers
-): Promise<SearchUsersResponse> {
+export async function searchUsers(params: SearchUsers): Promise<any> {
   const { onResult, onError, result, refetch } = useQuery(
     gql`
         query UsersSearch($first: Int!,$page:Int!,$search:String,$filterOptions:String!) {
@@ -78,32 +77,41 @@ export async function searchUsers(
     }
   );
 
-  return new Promise((resolve, reject) => {
-    if (result.value != undefined && params.refetch == false)
+  let queryResult = "" as any;
+  queryResult = new Promise((resolve, reject) => {
+    if (params.graphql.refetch) {
+      refetch()?.then((response) => resolve(response));
+    }
+
+    if (result.value != undefined)
       resolve({
-        users: result.value.usersSearch.data,
+        users: JSON.parse(JSON.stringify(result.value.usersSearch.data)),
         paginatorInfo: result.value.usersSearch.paginatorInfo,
       });
 
-    if (params.refetch)
-      refetch()?.then((response) =>
+    if (result.value == undefined)
+      onResult(async (response) => {
         resolve({
-          users: response.data.usersSearch.data,
-          paginatorInfo: response.data.usersSearch.paginatorInfo,
-        })
-      );
-
-    onResult((response) =>
-      resolve({
-        users: response.data.usersSearch.data,
-        paginatorInfo: response.data.usersSearch.paginatorInfo,
-      })
-    );
-
-    onError((error) => {
-      reject(error);
-    });
+          users: JSON.parse(
+            JSON.stringify(await response.data.usersSearch.data)
+          ),
+          paginatorInfo: await response.data.usersSearch.paginatorInfo,
+        });
+      });
   });
+
+  (await queryResult).users.map((element: any) => {
+    element.isAdmin = element.is_admin;
+    delete element.is_admin;
+
+    element.isEmailVerified = element.is_email_verified;
+    delete element.is_email_verified;
+
+    element.isUserDisabled = element.is_user_disabled;
+    delete element.is_user_disabled;
+    return element;
+  });
+  return queryResult;
 }
 
 export async function disableUser(params: DisableUser): Promise<void> {

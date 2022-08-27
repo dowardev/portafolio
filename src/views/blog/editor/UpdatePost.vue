@@ -30,16 +30,23 @@ import {
 import EditorComponent from "./EditorPage.vue";
 import eventBus from "../../../EventBus";
 import {
+  ALL_POSTS_DETAILS,
   POSTS_UPDATE_DETAILS,
+  POST_DATES,
   UPLOAD_IMAGE,
   USER_PERMISSIONS,
 } from "../../../services/graphql";
+import { usePost } from "../../../composables/usePost";
 
 export default defineComponent({
   name: "EditorPage",
   components: {
     IonPage,
     EditorComponent,
+  },
+
+  setup() {
+    return { usePost: usePost() };
   },
 
   data() {
@@ -53,22 +60,6 @@ export default defineComponent({
       images: Array<string>(),
       spinners: { savePost: false, saveImage: false },
     };
-  },
-
-  beforeRouteEnter(to, from, next) {
-    getUser({
-      graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
-    })
-      .then((response) => {
-        if (response.is_admin) {
-          next();
-        } else {
-          next("/");
-        }
-      })
-      .catch(() => {
-        next("/");
-      });
   },
 
   mounted() {
@@ -164,11 +155,11 @@ export default defineComponent({
           images,
           imagesRemoved,
         });
-        this.spinners.savePost = false;
+        await this.refreshPostsCotent();
         this.clearInputs();
-        openToast({ message: "Post actualizado" });
+        this.spinners.savePost = false;
         this.$router.go(-1);
-        eventBus().emitter.emit("update-post");
+        openToast({ message: "Post actualizado" });
       } catch (e: any) {
         console.error(e);
         this.spinners.savePost = false;
@@ -261,6 +252,37 @@ export default defineComponent({
         }
       });
       return imagesRemoved;
+    },
+
+    async refreshPostsCotent() {
+      const currentPage = this.usePost.getCurrentPage();
+      if (currentPage == "") return;
+
+      try {
+        await this.usePost.loadDates({
+          refetch: true,
+          graphql: { name: POST_DATES, fragment: "PostDates", refetch: true },
+        });
+      } catch (e: any) {
+        console.error(e);
+        openToastErrror(e);
+        throw e;
+      }
+
+      try {
+        await this.usePost.loadPosts({
+          date: currentPage,
+          graphql: {
+            name: ALL_POSTS_DETAILS,
+            fragment: "PostsDetails",
+            refetch: true,
+          },
+        });
+      } catch (e: any) {
+        console.error(e);
+        openToastErrror(e);
+        throw e;
+      }
     },
   },
 });

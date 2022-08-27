@@ -13,6 +13,7 @@ export const ALL_POSTS_DETAILS = gql`
 
 export const POST_DETAILS = gql`
   fragment PostDetails on Post {
+    id
     title
     content
     created_at
@@ -55,6 +56,15 @@ export const UPLOAD_IMAGE = gql`
   }
 `;
 
+export const ROUTER_USER_VALIDATION = gql`
+  fragment RouterUserValidation on UserAuthPayload {
+    user {
+      user
+      is_admin
+    }
+  }
+`;
+
 // auth
 export const USER_LOGIN = gql`
   fragment UserLogin on LoginPayload {
@@ -93,6 +103,7 @@ export const USER_BASIC_DETAILS = gql`
       name
       user
       email
+      image_profile
     }
   }
 `;

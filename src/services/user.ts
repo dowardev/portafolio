@@ -7,7 +7,7 @@ import {
   DeleteUserAccount,
   ResendEmailConfirmation,
   GetUser,
-  GetUserResponse,
+  User,
 } from "./interfaces";
 
 import apolloClient from "../Apollo";
@@ -20,7 +20,7 @@ export function setUserToken({ token }: UserToken): void {
   document.cookie = "token=" + token;
 }
 
-export async function getUserToken(): Promise<string> {
+export function getUserToken(): string {
   const name = "token=";
   const cDecoded = decodeURIComponent(document.cookie);
   const cArr = cDecoded.split("; ");
@@ -31,8 +31,8 @@ export async function getUserToken(): Promise<string> {
   return token;
 }
 
-export async function getUser(params: GetUser): Promise<GetUserResponse> {
-  const { onResult, onError, result } = useQuery(
+export async function getUser(params: GetUser): Promise<User> {
+  const { onResult, onError, result, refetch } = useQuery(
     gql`
         query GetUser {
           userAuth {
@@ -49,10 +49,37 @@ export async function getUser(params: GetUser): Promise<GetUserResponse> {
 
   return new Promise((resolve, reject) => {
     if (result.value && result.value.userAuth.user != undefined)
-      resolve(result.value.userAuth.user);
-    else {
-      onResult((response) => resolve(response.data.userAuth.user));
-    }
+      resolve({
+        id: result.value.userAuth.user.id,
+        name: result.value.userAuth.user.name,
+        email: result.value.userAuth.user.email,
+        user: result.value.userAuth.user.user,
+        imageProfile: result.value.userAuth.user.image_profile,
+        isAdmin: result.value.userAuth.user.is_admin,
+      });
+
+    if (params.graphql.refetch)
+      refetch()?.then((response) =>
+        resolve({
+          id: response.data.userAuth.user.id,
+          name: response.data.userAuth.user.name,
+          email: response.data.userAuth.user.email,
+          user: response.data.userAuth.user.user,
+          imageProfile: response.data.userAuth.user.image_profile,
+          isAdmin: response.data.userAuth.user.is_admin,
+        })
+      );
+
+    onResult((response) =>
+      resolve({
+        id: response.data.userAuth.user.id,
+        name: response.data.userAuth.user.name,
+        email: response.data.userAuth.user.email,
+        user: response.data.userAuth.user.user,
+        imageProfile: response.data.userAuth.user.image_profile,
+        isAdmin: response.data.userAuth.user.is_admin,
+      })
+    );
 
     onError((error) => {
       reject(error);
@@ -75,10 +102,15 @@ export async function saveUserData(params: SaveUserData): Promise<void> {
         $name: String!
         $user: String!
         $email: String!
-        $imageId: String
+        $image_id: String
       ) {
         updateUserProfile(
-          input: { name: $name, user: $user, email: $email, imageId: $imageId }
+          input: {
+            name: $name
+            user: $user
+            email: $email
+            image_id: $image_id
+          }
         )
       }
     `,
@@ -87,7 +119,7 @@ export async function saveUserData(params: SaveUserData): Promise<void> {
         name: params.name,
         user: params.user,
         email: params.email,
-        imageId: params.imageId,
+        image_id: params.imageId,
       },
     }
   );

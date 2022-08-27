@@ -310,7 +310,6 @@ export default defineComponent({
         this.spinners.saveUserPassword = false;
         openToast({
           message: "Contraseña actualizada",
-          color: "success",
         });
       } catch (e: any) {
         this.spinners.saveUserPassword = false;

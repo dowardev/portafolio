@@ -1,9 +1,9 @@
 <template>
   <ion-app>
-    <ion-split-pane when="md" contentId="menu-content">
+    <ion-split-pane content-id="menu-content" when="md">
       <ion-menu
-        contentId="menu-content"
-        menuId="mainMenu"
+        content-id="menu-content"
+        menu-id="mainMenu"
         side="start"
         type="overlay"
         style="--side-max-width: 200px"
@@ -11,7 +11,7 @@
       >
         <MenuComponent></MenuComponent>
       </ion-menu>
-      <ion-router-outlet Id="menu-content" />
+      <ion-router-outlet id="menu-content" />
     </ion-split-pane>
   </ion-app>
 </template>
@@ -34,6 +34,8 @@ import {
   getTheme,
 } from "./services/system";
 import { closeOutline } from "ionicons/icons";
+import { useUser } from "./composables/useUser";
+import { getUserToken } from "./services/user";
 
 export default defineComponent({
   name: "App",
@@ -45,6 +47,10 @@ export default defineComponent({
     IonSplitPane,
   },
 
+  setup() {
+    return { useUser: useUser() };
+  },
+
   mounted() {
     this.createFirstCookie();
     detectToggleTheme();
@@ -52,6 +58,7 @@ export default defineComponent({
       const theme = response == null ? "aut" : response;
       setTheme({ theme: theme });
     });
+    this.loadUserProps();
   },
 
   methods: {
@@ -59,6 +66,15 @@ export default defineComponent({
       if (getFirstCookie()) {
         this.openToastOptions();
         createFirstCookie();
+      }
+    },
+
+    loadUserProps() {
+      const userToken = getUserToken();
+      if (userToken != "") {
+        this.useUser.updateUserLoggedProp(true);
+        this.useUser.updateUserToken(userToken);
+        this.useUser.updateUserAdminProp({ refetch: true });
       }
     },
 

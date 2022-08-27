@@ -3,11 +3,11 @@
     <ion-content :fullscreen="true">
       <EditorComponent
         ref="editorRef"
-        @uploadImage="uploadImage($event)"
-        @save="save($event)"
+        :spinner-save-post="spinners.savePost"
         :content="content"
-        :spinnerSavePost="spinners.savePost"
-        :spinnerSaveImage="spinners.saveImage"
+        :spinner-save-image="spinners.saveImage"
+        @upload-image="uploadImage($event)"
+        @save="save($event)"
       ></EditorComponent>
     </ion-content>
   </ion-page>
@@ -27,13 +27,25 @@ import {
 import EditorComponent from "./EditorPage.vue";
 import eventBus from "../../../EventBus";
 import { CreatePost } from "../../../services/interfaces";
-import { UPLOAD_IMAGE, USER_PERMISSIONS } from "../../../services/graphql";
+import {
+  ALL_POSTS_DETAILS,
+  POST_DATES,
+  UPLOAD_IMAGE,
+  USER_PERMISSIONS,
+} from "../../../services/graphql";
+import { usePost } from "../../../composables/usePost";
+import gql from "graphql-tag";
+import { useQuery } from "@vue/apollo-composable";
 
 export default defineComponent({
   name: "EditorPage",
   components: {
     IonPage,
     EditorComponent,
+  },
+
+  setup() {
+    return { usePost: usePost() };
   },
 
   data() {
@@ -43,22 +55,6 @@ export default defineComponent({
       images: Array<string>(),
       spinners: { savePost: false, saveImage: false },
     };
-  },
-
-  beforeRouteEnter(to, from, next) {
-    getUser({
-      graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
-    })
-      .then((response) => {
-        if (response.is_admin) {
-          next();
-        } else {
-          next("/");
-        }
-      })
-      .catch(() => {
-        next("/");
-      });
   },
 
   methods: {
@@ -88,11 +84,11 @@ export default defineComponent({
           coverId,
           images,
         });
-        this.spinners.savePost = false;
+        await this.refreshPostsCotent();
         this.clearInputs();
-        openToast({ message: "Post agregado" });
+        this.spinners.savePost = false;
         this.$router.go(-1);
-        eventBus().emitter.emit("new-post");
+        openToast({ message: "Post agregado" });
       } catch (e: any) {
         console.error(e);
         this.spinners.savePost = false;
@@ -161,6 +157,37 @@ export default defineComponent({
 
     clearInputs() {
       (this.$refs.editorRef as any).clearInputs();
+    },
+
+    async refreshPostsCotent() {
+      const currentPage = this.usePost.getCurrentPage();
+      if (currentPage == "") return;
+
+      try {
+        await this.usePost.loadDates({
+          refetch: true,
+          graphql: { name: POST_DATES, fragment: "PostDates", refetch: true },
+        });
+      } catch (e: any) {
+        console.error(e);
+        openToastErrror(e);
+        throw e;
+      }
+
+      try {
+        await this.usePost.loadPosts({
+          date: currentPage,
+          graphql: {
+            name: ALL_POSTS_DETAILS,
+            fragment: "PostsDetails",
+            refetch: true,
+          },
+        });
+      } catch (e: any) {
+        console.error(e);
+        openToastErrror(e);
+        throw e;
+      }
     },
   },
 });

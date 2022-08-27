@@ -21,6 +21,39 @@ import UserPanelPage from "../views/user/UserPanelPage.vue";
 // admin
 import AdminPanelPage from "../views/admin/PanelAdminPage.vue";
 
+import { useUser } from "../composables/useUser";
+import { ROUTER_USER_VALIDATION } from "../services/graphql";
+
+async function loadUser() {
+  await useUser().loadUser({
+    graphql: {
+      name: ROUTER_USER_VALIDATION,
+      fragment: "RouterUserValidation",
+    },
+  });
+}
+
+async function adminGuard() {
+  await loadUser();
+  const isAdmin = useUser().user.value.isAdmin;
+  if (isAdmin == true) return true;
+  return "/";
+}
+
+async function userLoggedGuard() {
+  await loadUser();
+  const user = useUser().user.value.user;
+  if (user) return true;
+  return "/login";
+}
+
+async function userSignOutGuard() {
+  await loadUser();
+  const user = useUser().user.value.user;
+  if (user) return "/";
+  return true;
+}
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
@@ -55,11 +88,17 @@ const routes: Array<RouteRecordRaw> = [
     path: "/blog/editor/create",
     name: "CreatePost",
     component: CreatePost,
+    beforeEnter: async (to, from) => {
+      return await adminGuard();
+    },
   },
   {
     path: "/blog/editor/update/:id",
     name: "UpdatePost",
     component: UpdatePost,
+    beforeEnter: async (to, from) => {
+      return await adminGuard();
+    },
   },
   {
     path: "/blog",
@@ -86,16 +125,25 @@ const routes: Array<RouteRecordRaw> = [
     path: "/login",
     name: "LoginPage",
     component: LoginPage,
+    beforeEnter: async (to, from) => {
+      return await userSignOutGuard();
+    },
   },
   {
     path: "/signup",
     name: "SignUpPage",
     component: SignUpPage,
+    beforeEnter: async (to, from) => {
+      return await userSignOutGuard();
+    },
   },
   {
     path: "/restore-password/:email/:code",
     name: "RestorePasswordPage",
     component: RestorePasswordPage,
+    beforeEnter: async (to, from) => {
+      return await userSignOutGuard();
+    },
   },
   {
     path: "/policies",
@@ -106,16 +154,22 @@ const routes: Array<RouteRecordRaw> = [
     path: "/user",
     name: "UserPanelPage",
     component: UserPanelPage,
+    beforeEnter: async (to, from) => {
+      return await userLoggedGuard();
+    },
   },
   {
     path: "/admin-panel",
     name: "AdminPanelPage",
     component: AdminPanelPage,
+    beforeEnter: async (to, from) => {
+      return await adminGuard();
+    },
   },
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes,
 });
 

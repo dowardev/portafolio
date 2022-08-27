@@ -16,7 +16,7 @@
           :disabled="spinners.buttonAddNewPost"
           :collapse="true"
         >
-          <ion-button v-if="isUserAdmin" @click="addPost()">
+          <ion-button v-if="useUser.user.value.isAdmin" @click="addPost()">
             <ion-icon
               v-if="spinners.buttonAddNewPost == false"
               :icon="addOutline"
@@ -27,7 +27,15 @@
               color="primary"
             ></ion-spinner>
           </ion-button>
-          <ion-button @click="refreshContent()">
+          <ion-button
+            :class="{
+              loadContent:
+                loadingData.posts.status == 'loading' ||
+                loadingData.data.status == 'loading' ||
+                loadingData.data.status == 'loading',
+            }"
+            @click="refreshContent()"
+          >
             <ion-icon :icon="refreshOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -43,7 +51,7 @@
             :disabled="spinners.buttonAddNewPost"
             :collapse="true"
           >
-            <ion-button v-if="isUserAdmin" @click="addPost()">
+            <ion-button v-if="useUser.user.value.isAdmin" @click="addPost()">
               <ion-icon
                 v-if="spinners.buttonAddNewPost == false"
                 :icon="addOutline"
@@ -54,7 +62,15 @@
                 color="primary"
               ></ion-spinner>
             </ion-button>
-            <ion-button @click="refreshContent">
+            <ion-button
+              :class="{
+                loadContent:
+                  loadingData.posts.status == 'loading' ||
+                  loadingData.data.status == 'loading' ||
+                  loadingData.data.status == 'loading',
+              }"
+              @click="refreshContent"
+            >
               <ion-icon :icon="refreshOutline"></ion-icon>
             </ion-button>
           </ion-buttons>
@@ -72,32 +88,51 @@
         <!-- date selector -->
         <ion-item-divider sticky>
           <div style="width: 100%; display: flex; justify-content: center">
-            <ion-button fill="clear" @click="previousPage({ currentPage })">
+            <ion-button
+              fill="clear"
+              @click="
+                goToPage({
+                  currentPage: usePost.getCurrentPage()!,
+                  option: 'prev',
+                })
+              "
+            >
               <ion-icon :icon="chevronBackOutline"></ion-icon>
             </ion-button>
 
             <!-- pages -->
             <ion-item id="open-date-input" :button="true" lines="none">
               <ion-text style="color: var(--accent-color) !important">
-                {{ currentPage }}
+                {{ extractDate({ dateTime: usePost.getCurrentPage()! }) }}
               </ion-text>
               <ion-popover trigger="open-date-input" :show-backdrop="false">
                 <ion-datetime
                   ref="datetime"
                   :is-date-enabled="getDaysEnabled"
                   presentation="date"
-                  :value="currentPage"
+                  :value="usePost.getCurrentPage()"
                   :first-day-of-week="1"
                   locale="es-mx"
                   @ion-change="
-                    goToPage({ currentPage: $event.detail.value as string })
+                    goToPage({
+                      currentPage: $event.detail.value as string,
+                      option: 'custom',
+                    })
                   "
                 ></ion-datetime>
               </ion-popover>
             </ion-item>
 
             <!-- navigation button -->
-            <ion-button fill="clear" @click="nextPage({ currentPage })">
+            <ion-button
+              fill="clear"
+              @click="
+                goToPage({
+                  currentPage: usePost.getCurrentPage()!,
+                  option: 'next',
+                })
+              "
+            >
               <ion-icon :icon="chevronForwardOutline"></ion-icon>
             </ion-button>
           </div>
@@ -105,10 +140,15 @@
 
         <!-- posts -->
         <section class="ion-padding">
-          <ion-row v-for="(post, index) in posts" :key="post">
+          <ion-row
+            v-for="(post, index) in usePost.getPosts({
+              date: usePost.getCurrentPage()!,
+            })"
+            :key="post"
+          >
             <ion-col size="4">
               <img
-                :src="coverToBase64(post.cover.source!)"
+                :src="(post.cover.source!)"
                 style="cursor: pointer"
                 @click="openPost(post.id!)"
               />
@@ -122,7 +162,7 @@
               </h2>
             </ion-col>
 
-            <ion-col v-if="isUserAdmin" size="12">
+            <ion-col v-if="useUser.user.value.isAdmin" size="12">
               <ion-button
                 fill="clear"
                 :disabled="spinners.buttonEditPost ==post.id!"
@@ -142,7 +182,7 @@
               <ion-button
                 fill="clear"
                 :disabled="spinners.buttonDeletePost ==post.id!"
-                @click="deletePost(post.id!, index)"
+                @click="deletePost({ id: post.id! })"
               >
                 <ion-icon
                   v-if="spinners.buttonDeletePost==''|| spinners.buttonDeletePost!= post.id!"
@@ -211,7 +251,7 @@
                 v-if="
                   loadingData.dates.status == 'error' &&
                   loadingData.dates.message == 'No dates' &&
-                  isUserAdmin
+                  useUser.user.isAdmin
                 "
                 fill="clear"
                 @click="addPost()"
@@ -231,7 +271,7 @@
                   loadingData.dates.message == 'No dates'
                 "
                 fill="clear"
-                @click="loadContent()"
+                @click="loadContent({ refetch: true })"
               >
                 <ion-label v-if="spinners.buttonAddPost == false"
                   ><ion-icon :icon="refreshOutline"></ion-icon
@@ -334,18 +374,10 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
-  getPosts as getPostsService,
-  getPostsDates as getPostsDatesService,
-  deletePost as deletePostService,
-} from "../../../services/post";
-import formatISO from "date-fns/formatISO";
-import eventBus from "../../../EventBus";
-import {
   openToastErrror,
   openToast,
   presentAlertConfirmation,
 } from "../../../services/system";
-import { Post } from "../../../services/interfaces";
 import {
   checkmarkOutline,
   closeOutline,
@@ -356,12 +388,9 @@ import {
   chevronBackOutline,
   chevronForwardOutline,
 } from "ionicons/icons";
-import { getUser } from "../../../services/user";
-import {
-  ALL_POSTS_DETAILS,
-  POST_DATES,
-  USER_PERMISSIONS,
-} from "../../../services/graphql";
+import { ALL_POSTS_DETAILS, POST_DATES } from "../../../services/graphql";
+import { useUser } from "../../../composables/useUser";
+import { usePost } from "../../../composables/usePost";
 
 export default defineComponent({
   name: "PostsPage",
@@ -393,15 +422,14 @@ export default defineComponent({
       trashOutline,
       chevronBackOutline,
       chevronForwardOutline,
+      useUser: useUser(),
+      usePost: usePost(),
     };
   },
 
   data() {
     return {
       pageTitle: "Blog",
-      dates: Array<string>(),
-      posts: Array<Post>(),
-      currentPage: String(),
       loadingData: {
         data: {
           status: "loading | finished | error",
@@ -416,7 +444,6 @@ export default defineComponent({
           message: "",
         },
       },
-      isUserAdmin: false,
       spinners: {
         buttonAddPost: false,
         buttonAddNewPost: false,
@@ -427,216 +454,144 @@ export default defineComponent({
   },
 
   mounted() {
-    this.verifyUserAdmin();
-    this.loadContent();
-
-    // eventBus().emitter.on("event-posts1-data", (response: any) => {
-    //   if (response.option == "next") this.nextPage(response.currentPage);
-
-    //   if (response.option == "previous")
-    //     this.previousPage(response.currentPage);
-
-    //   if (response.option == "goTo") this.goToPage(response.currentPage);
-
-    //   if (response.option == "refresh") this.loadContent(true);
-    // });
-
-    // eventBus().emitter.on("new-post", () => {
-    //   this.loadContent();
-    // });
-
-    // eventBus().emitter.on("update-post", () => {
-    //   this.loadContent();
-    // });
+    this.loadContent({ refetch: true });
   },
 
   methods: {
-    async getPostsDates(params: { refetch: boolean }): Promise<Array<string>> {
-      const dates = Array<string>();
-      try {
-        const response = await getPostsDatesService({
-          refetch: params.refetch,
-          graphql: { name: POST_DATES, fragment: "PostDates" },
-        });
-        response.forEach((element: any) => {
-          dates.push(
-            formatISO(new Date(element), {
-              representation: "date",
-            }).replaceAll("/", "-")
-          );
-        });
+    async loadContent(params: { refetch: boolean }) {
+      const refetch = params.refetch == false ? false : true;
 
-        this.dates = dates;
-      } catch (e: any) {
-        this.loadingData.dates.status = "error";
-        console.error(e);
-        openToastErrror(e);
-        throw new Error(e.message);
-      }
-
-      this.loadingData.dates.status = "finished";
-      return dates;
-    },
-
-    loadData(params: { dates: Array<string> }): string {
-      let currentPage =
-        this.$route.params.date != undefined
-          ? (this.$route.params.date as string)
-          : this.currentPage;
-
-      if (this.$route.path == "/blog" || this.$route.path == "/blog/") {
-        try {
-          const date = params.dates[params.dates.length - 1];
-          currentPage = new Date(date).toISOString().split("T")[0];
-          // this.$router.replace("/blog/" + currentPage);
-        } catch (e: any) {
-          if (e.message == "No dates") {
-            const today = formatISO(new Date(), {
-              representation: "date",
-            });
-            this.$router.replace("/blog/" + today);
-            return "";
-          }
-          console.error(e);
-          openToastErrror(e);
-          return "";
-        }
-      }
-      return currentPage;
-    },
-
-    async getPosts(params: {
-      currentPage: string;
-      refetch?: boolean;
-    }): Promise<Array<Post>> {
-      try {
-        const response = await getPostsService({
-          date: params.currentPage,
-          refetch: params.refetch,
-          graphql: { name: ALL_POSTS_DETAILS, fragment: "PostsDetails" },
-        });
-
-        return response;
-      } catch (e: any) {
-        console.error(e);
-        openToastErrror(e);
-        throw new Error(e.message);
-      }
-    },
-
-    async loadContent(refetch = false) {
       this.loadingData.data.status = "loading";
       this.loadingData.dates.status = "loading";
       this.loadingData.posts.status = "loading";
 
-      const dates = await this.getPostsDates({ refetch });
-      if (dates.length == 0) {
+      try {
+        await this.getPostsDates({ refetch });
+        this.loadingData.data.status = "finished";
+      } catch {
         this.loadingData.dates.status = "error";
         this.loadingData.dates.message = "No dates";
         return;
       }
-      this.loadingData.data.status = "finished";
+      let dates = Array<string>();
+      try {
+        dates = this.usePost.getDates()!;
+      } catch (error: any) {
+        console.error(error);
+        return;
+      }
 
-      const currentPage = this.loadData({ dates });
-      if (currentPage == "") {
+      let currentPage = "";
+      try {
+        currentPage = this.loadData({ dates });
+        // currentPage = this.usePost.getDates()![0];
+        this.loadingData.dates.status = "finished";
+        this.usePost.updateCurrentPage({ currentPage });
+      } catch (error) {
         this.loadingData.dates.status = "error";
       }
-      this.loadingData.dates.status = "finished";
-
-      const posts = await this.getPosts({ currentPage, refetch: true });
-      if (posts.length == 0) {
-        this.loadingData.posts.status = "error";
-      }
-      this.loadingData.posts.status = "finished";
-
-      this.currentPage = currentPage;
-      this.dates = dates;
-      this.posts = posts;
-    },
-
-    async nextPage(params: { currentPage: string }) {
-      this.loadingData.posts.status = "loading";
-      const index = this.dates.indexOf(params.currentPage);
-
-      if (index == 0) {
-        this.loadingData.posts.status = "finished";
-        return;
-      }
-
-      const date = this.dates[index - 1];
-      let posts = Array<Post>();
 
       try {
-        posts = await this.getPosts({ currentPage: date });
+        await this.getPosts({
+          currentPage,
+          refetch,
+        });
         this.loadingData.posts.status = "finished";
-      } catch (e: any) {
+      } catch (error) {
         this.loadingData.posts.status = "error";
       }
-
-      this.currentPage = date;
-      this.posts = posts;
-      this.$router.replace("/blog/" + date.replaceAll("/", "-"));
     },
 
-    async previousPage(params: { currentPage: string }) {
-      this.loadingData.posts.status = "loading";
-      const index = this.dates.indexOf(params.currentPage);
-
-      if (index == this.dates.length - 1) {
-        this.loadingData.posts.status = "finished";
-        return;
-      }
-
-      const date = this.dates[index + 1];
-
-      let posts = Array<Post>();
+    async getPostsDates(params: { refetch: boolean }): Promise<void> {
       try {
-        posts = await this.getPosts({ currentPage: date });
-        this.loadingData.posts.status = "finished";
+        await this.usePost.loadDates({
+          refetch: params.refetch,
+          graphql: { name: POST_DATES, fragment: "PostDates" },
+        });
       } catch (e: any) {
-        this.loadingData.posts.status = "error";
+        this.loadingData.dates.status = "error";
+        console.error(e);
+        openToastErrror(e);
+        throw e;
       }
-
-      this.currentPage = date;
-      this.posts = posts;
-      this.$router.replace("/blog/" + date);
     },
 
-    async goToPage(params: { currentPage: string }) {
-      this.loadingData.posts.status = "loading";
-      const date = this.dates.filter(
-        (element) => element == params.currentPage
-      )[0];
+    loadData(params: { dates: Array<string> }): string {
+      let currentPage = "";
+      if (this.$route.params.date != undefined) {
+        currentPage = params.dates.filter((element) => {
+          if (
+            this.extractDate({ dateTime: element }) == this.$route.params.date
+          )
+            return element;
+        })[0];
+      } else {
+        currentPage = params.dates[0];
+      }
+      return currentPage;
+    },
 
-      let posts = Array<Post>();
+    async getPosts(params: { currentPage: string; refetch?: boolean }) {
+      const refetch = params.refetch ? params.refetch : false;
       try {
-        posts = await this.getPosts({ currentPage: date, refetch: true });
-        this.loadingData.posts.status = "finished";
+        await this.usePost.loadPosts({
+          date: params.currentPage,
+          graphql: {
+            name: ALL_POSTS_DETAILS,
+            fragment: "PostsDetails",
+            refetch,
+          },
+        });
       } catch (e: any) {
-        this.loadingData.posts.status = "error";
+        console.error(e);
+        openToastErrror(e);
+        throw e;
       }
-
-      this.currentPage = date;
-      this.posts = posts;
-      this.$router.replace("/blog/" + date);
     },
 
-    async verifyUserAdmin() {
-      if (navigator.onLine) {
-        try {
-          this.isUserAdmin = (
-            await getUser({
-              graphql: { name: USER_PERMISSIONS, fragment: "UserPermissions" },
-            })
-          ).is_admin!;
-        } catch (e: any) {
-          this.isUserAdmin = false;
-          if (e.message == "Unauthorized") return;
-          else {
-            openToastErrror(e);
-            console.error(e);
-          }
-        }
+    async goToPage(params: {
+      currentPage: string;
+      option: "prev" | "next" | "custom";
+    }) {
+      const date = params.currentPage;
+      const dates = this.usePost.getDates()!;
+      let index = dates.indexOf(date);
+
+      if (params.option == "prev") {
+        index--;
+        if (index == -1) return;
+      }
+
+      if (params.option == "next") {
+        index++;
+        if (index == dates.length) return;
+      }
+
+      if (params.option == "custom") {
+        const customDate = dates.filter((element) => {
+          if (
+            this.extractDate({ dateTime: element }) ==
+            this.extractDate({ dateTime: params.currentPage })
+          )
+            return parseInt(element);
+        })[0];
+        index = dates.indexOf(customDate);
+      }
+
+      this.loadingData.posts.status = "loading";
+      this.usePost.updateCurrentPage({ currentPage: dates[index] });
+      try {
+        await this.getPosts({
+          currentPage: dates[index],
+        });
+
+        this.$router.replace(
+          "/blog/" + this.extractDate({ dateTime: dates[index] })
+        );
+        this.loadingData.posts.status = "finished";
+      } catch (error) {
+        console.error(error);
+        this.loadingData.posts.status = "error";
       }
     },
 
@@ -647,16 +602,12 @@ export default defineComponent({
     },
 
     getDaysEnabled(date: string) {
-      // eslint-disable-next-line
-      const result = this.dates!.filter((element) => element == date);
+      const dates = this.usePost.getDates()!;
+      const result = dates.filter((element) => element.split("T")[0] == date);
       if (result.length > 0) {
         return true;
       }
       return false;
-    },
-
-    coverToBase64(cover: string) {
-      return "data:image/png;base64," + cover;
     },
 
     openPost(id: string) {
@@ -669,7 +620,9 @@ export default defineComponent({
       this.spinners.buttonEditPost = "";
     },
 
-    async deletePost(id: string, index: number) {
+    async deletePost(params: { id: string }) {
+      const id = params.id;
+
       this.spinners.buttonDeletePost = id;
 
       const response = await presentAlertConfirmation({
@@ -680,24 +633,23 @@ export default defineComponent({
         return;
       }
 
-      deletePostService({ id })
-        .then(() => {
-          this.spinners.buttonDeletePost = "";
-          // eslint-disable-next-line
-          this.posts!.splice(index, 1);
-          openToast({ message: "Post eliminado" });
-        })
-        .catch((e) => {
-          this.spinners.buttonDeletePost = "";
-          console.error(e);
-        });
+      try {
+        await this.usePost.deletePost({ id });
+        this.loadContent({ refetch: true });
+        openToast({ message: "Post eliminado" });
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.spinners.buttonDeletePost = "";
+      }
     },
 
     async refreshContent() {
-      eventBus().emitter.emit("event-posts1-data", {
-        option: "refresh",
-        currentPage: this.currentPage,
-      });
+      this.loadContent({ refetch: true });
+    },
+
+    extractDate(params: { dateTime: string }): string {
+      return params.dateTime.split("T")[0];
     },
   },
 });

@@ -60,10 +60,8 @@ import {
   IonItemDivider,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { getUser } from "../../services/user";
 import UserProfileComponent from "./profile/UserProfilePage.vue";
 import UserSecurityComponent from "./security/UserSecurityPage.vue";
-import { USER_NAME } from "../../services/graphql";
 
 export default defineComponent({
   name: "UserPanelPage",
@@ -79,6 +77,7 @@ export default defineComponent({
     UserSecurityComponent,
     IonItemDivider,
   },
+
   data() {
     const modeDesignElements = isPlatform("ios") ? "ios" : "md";
 
@@ -87,16 +86,6 @@ export default defineComponent({
       mainSegment: "profile",
       modeDesignElements,
     };
-  },
-
-  beforeRouteEnter(to, from, next) {
-    getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
-      .then(() => {
-        next();
-      })
-      .catch(() => {
-        next("/");
-      });
   },
 });
 </script>

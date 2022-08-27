@@ -1,6 +1,6 @@
 import { DocumentNode } from "graphql";
 
-interface Graphql {
+export interface Graphql {
   name: DocumentNode;
   fragment: string;
   refetch?: boolean;
@@ -42,7 +42,6 @@ export interface Post {
 }
 export interface GetPost {
   date: string;
-  refetch?: boolean;
   graphql: Graphql;
 }
 
@@ -71,10 +70,6 @@ export interface UpdatePost {
 export interface GetPostsDates {
   graphql: Graphql;
   refetch?: boolean;
-}
-
-export interface GetPostsDatesResponse {
-  dates: string;
 }
 
 export interface DeletePost {
@@ -131,25 +126,25 @@ export interface User {
   user?: string;
   password?: string;
   email?: string;
-  is_admin?: boolean;
+  isAdmin?: boolean;
   rol?: Array<any>;
-  is_email_verified?: boolean;
-  is_user_disabled?: boolean;
-  image_profile: string;
+  isEmailVerified?: boolean;
+  isDisabled?: boolean;
+  imageProfile?: string;
 }
 
 export interface GetUser {
   graphql: Graphql;
 }
 
-export interface GetUserResponse {
-  id?: User["id"];
-  name?: User["user"];
-  email?: User["email"];
-  user?: User["user"];
-  image_profile?: User["image_profile"];
-  is_admin?: User["is_admin"];
-}
+// export interface GetUserResponse {
+//   id?: User["id"];
+//   name?: User["user"];
+//   email?: User["email"];
+//   user?: User["user"];
+//   imageProfile?: User["image_profile"];
+//   isAdmin?: User["is_admin"];
+// }
 
 export interface UserToken {
   token: string | null;
@@ -165,12 +160,12 @@ export interface UserRegister {
 export interface SetUserData {
   name: User["name"];
   email: User["email"];
-  is_admin: User["is_admin"];
+  is_admin: User["isAdmin"];
   rol: User["rol"];
 }
 
 export interface GetUserPermissionsResponse {
-  admin: User["is_admin"];
+  admin: User["isAdmin"];
   rol: User["rol"];
 }
 
