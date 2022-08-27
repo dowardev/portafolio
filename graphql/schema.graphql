@@ -1,290 +1,296 @@
 scalar DateTime
-  @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 scalar Upload
-  @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
 
 type Query {
-  # user(
-  #   id: ID @eq @rules(apply: ["prohibits:email", "required_without:email"])
-  #   email: String
-  #     @eq
-  #     @rules(apply: ["prohibits:id", "required_without:id", "email"])
-  # ): User @find
+    # user(
+    #   id: ID @eq @rules(apply: ["prohibits:email", "required_without:email"])
+    #   email: String
+    #     @eq
+    #     @rules(apply: ["prohibits:id", "required_without:id", "email"])
+    # ): User @find
 
-  # users(name: String @where(operator: "like")): [User!]!
-  #   @paginate(defaultCount: 10)
+    # users(name: String @where(operator: "like")): [User!]!
+    #   @paginate(defaultCount: 10)
 
-  post(id: ID): PostPayload
-    @field(resolver: "App\\GraphQL\\Resolvers\\post\\GetPostResolver@resolve")
+    post(id: ID): PostPayload
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\post\\GetPostResolver@resolve"
+        )
 
-  posts(date: String): GetPosts
-    @field(resolver: "App\\GraphQL\\Resolvers\\post\\GetPostsResolver@resolve")
+    posts(date: String): GetPosts
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\post\\GetPostsResolver@resolve"
+        )
 
-  postsDates: PostsDates!
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\post\\PostsDatesResolver@resolve"
-    )
+    postsDates: PostsDates!
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\post\\PostsDatesResolver@resolve"
+        )
 
-  userAuth: UserAuthPayload
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\auth\\GetUserAuthResolver@resolve"
-    )
+    userAuth: UserAuthPayload
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\auth\\GetUserAuthResolver@resolve"
+        )
 
-  users: [User]
-    @paginate(
-      defaultCount: 10
-      builder: "App\\GraphQL\\Resolvers\\admin\\GetUsers@resolve"
-    )
+    users: [User]
+        @paginate(
+            defaultCount: 10
+            builder: "App\\GraphQL\\Resolvers\\admin\\GetUsers@resolve"
+        )
 
-  usersSearch(search: String, filterOptions: String!): [User]
-    @paginate(
-      defaultCount: 10
-      builder: "App\\GraphQL\\Resolvers\\admin\\UsersFilterResolver@resolve"
-    )
+    usersSearch(search: String, filterOptions: String!): [User]
+        @paginate(
+            defaultCount: 10
+            builder: "App\\GraphQL\\Resolvers\\admin\\UsersFilterResolver@resolve"
+        )
 }
 
 type Mutation {
-  login(input: LoginInput @spread): LoginPayload
-    @field(resolver: "App\\GraphQL\\Resolvers\\auth\\LoginResolver@resolve")
+    login(input: LoginInput @spread): LoginPayload
+        @field(resolver: "App\\GraphQL\\Resolvers\\auth\\LoginResolver@resolve")
 
-  register(input: RegisterInput @spread): Boolean
-    @field(resolver: "App\\GraphQL\\Resolvers\\auth\\RegisterResolver@resolve")
+    register(input: RegisterInput @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\auth\\RegisterResolver@resolve"
+        )
 
-  forgotPassword(input: ForgotPasswordInput @spread): Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\auth\\ForgotPasswordResolver@resolve"
-    )
+    forgotPassword(input: ForgotPasswordInput @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\auth\\ForgotPasswordResolver@resolve"
+        )
 
-  restoreUserPassword(input: RestoreUserPasswordInput @spread): Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\auth\\RestoreUserPasswordResolver@resolve"
-    )
+    restoreUserPassword(input: RestoreUserPasswordInput @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\auth\\RestoreUserPasswordResolver@resolve"
+        )
 
-  userLogout: Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\auth\\UserLogoutResolver@resolve"
-    )
+    userLogout: Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\auth\\UserLogoutResolver@resolve"
+        )
 
-  createPost(input: CreatePostInput! @spread): Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\post\\CreatePostResolver@resolve"
-    )
+    createPost(input: CreatePostInput! @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\post\\CreatePostResolver@resolve"
+        )
 
-  updatePost(input: UpdatePostInput @spread): Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\post\\UpdatePostResolver@resolve"
-    )
+    updatePost(input: UpdatePostInput @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\post\\UpdatePostResolver@resolve"
+        )
 
-  deletePost(input: DeletePostInput @spread): Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\post\\DeletePostResolver@resolve"
-    )
+    deletePost(input: DeletePostInput @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\post\\DeletePostResolver@resolve"
+        )
 
-  uploadImage(input: FileInput @spread): UploadImagePayload
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\others\\UploadImageResolver@resolve"
-    )
+    uploadImage(input: FileInput @spread): UploadImagePayload
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\others\\UploadImageResolver@resolve"
+        )
 
-  # getImage(input: ImageInput @spread): GetImagePayload
-  #   @field(
-  #     resolver: "App\\GraphQL\\Resolvers\\others\\GetImageResolver@resolve"
-  #   )
+    # getImage(input: ImageInput @spread): GetImagePayload
+    #   @field(
+    #     resolver: "App\\GraphQL\\Resolvers\\others\\GetImageResolver@resolve"
+    #   )
 
-  createFeedback(input: FeedbackInput @spread): Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\others\\CreateFeedbackResolver@resolve"
-    )
+    createFeedback(input: FeedbackInput @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\others\\CreateFeedbackResolver@resolve"
+        )
 
-  updateUserProfile(input: UpdateUserProfileInput @spread): Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\user\\SaveUserProfileResolver@resolve"
-    )
+    updateUserProfile(input: UpdateUserProfileInput @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\user\\SaveUserProfileResolver@resolve"
+        )
 
-  updateUserPassword(input: UpdateUserPasswordInput @spread): Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\auth\\UpdateUserPasswordResolver@resolve"
-    )
+    updateUserPassword(input: UpdateUserPasswordInput @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\auth\\UpdateUserPasswordResolver@resolve"
+        )
 
-  deleteUserAccount(input: DeleteUserAccountInput @spread): Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\user\\DeleteUserAccountResolver@resolve"
-    )
+    deleteUserAccount(input: DeleteUserAccountInput @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\user\\DeleteUserAccountResolver@resolve"
+        )
 
-  disableUser(input: DisableUser @spread): Boolean
-    @field(resolver: "App\\GraphQL\\Resolvers\\admin\\DisableUser@resolve")
+    disableUser(input: DisableUser @spread): Boolean
+        @field(resolver: "App\\GraphQL\\Resolvers\\admin\\DisableUser@resolve")
 
-  resendEmailConfirmation(input: ResendEmailConfirmation @spread): Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\user\\ResendEmailConfirmationResolver@resolve"
-    )
+    resendEmailConfirmation(input: ResendEmailConfirmation @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\user\\ResendEmailConfirmationResolver@resolve"
+        )
 
-  deleteUserAccountAdmin(input: DeleteUserAccountAdminInput @spread): Boolean
-    @field(
-      resolver: "App\\GraphQL\\Resolvers\\admin\\DeleteUserAccountResolver@resolve"
-    )
+    deleteUserAccountAdmin(input: DeleteUserAccountAdminInput @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\admin\\DeleteUserAccountResolver@resolve"
+        )
 
-  prueba: Prueba
-    @field(resolver: "App\\GraphQL\\Resolvers\\PruebaResolver@resolve")
+    prueba: Prueba
+        @field(resolver: "App\\GraphQL\\Resolvers\\PruebaResolver@resolve")
 }
 
 input LoginInput {
-  user: String!
-  password: String!
+    user: String!
+    password: String!
 }
 input RegisterInput {
-  name: String!
-  user: String!
-  email: String!
-  password: String!
+    name: String!
+    user: String!
+    email: String!
+    password: String!
 }
 input ForgotPasswordInput {
-  email: String!
+    email: String!
 }
 input CodeForgotPasswordInput {
-  email: String!
-  code: Int!
+    email: String!
+    code: Int!
 }
 input RestoreUserPasswordInput {
-  code: String!
-  email: String!
-  password: String!
+    code: String!
+    email: String!
+    password: String!
 }
 input CreatePostInput {
-  title: String!
-  content: String!
-  coverId: ID!
-  images: [ID]
+    title: String!
+    content: String!
+    coverId: ID!
+    images: [ID]
 }
 input UpdatePostInput {
-  id: ID!
-  title: String!
-  content: String!
-  coverId: ID
-  newCoverId: ID
-  images: [String]
-  imagesRemoved: [String]
+    id: ID!
+    title: String!
+    content: String!
+    coverId: ID
+    newCoverId: ID
+    images: [String]
+    imagesRemoved: [String]
 }
 input DeletePostInput {
-  id: ID!
+    id: ID!
 }
 input FileInput {
-  file: String!
+    file: String!
 }
 input ImageInput {
-  id: String
-  name: String
+    id: String
+    name: String
 }
 input PostsInput {
-  title: String!
-  content: String!
+    title: String!
+    content: String!
 }
 input FeedbackInput {
-  user_id: String
-  name: String
-  email: String
-  description: String!
-  contact_me: Boolean!
-  type: String!
+    user_id: String
+    name: String
+    email: String
+    description: String!
+    contact_me: Boolean!
+    type: String!
 }
 input UpdateUserProfileInput {
-  name: String!
-  user: String!
-  email: String!
-  imageId: String
+    name: String
+    user: String
+    email: String
+    image_id: String
 }
 input UpdateUserPasswordInput {
-  oldPassword: String!
-  newPassword: String!
-  newPasswordRepeat: String!
+    oldPassword: String!
+    newPassword: String!
+    newPasswordRepeat: String!
 }
 input DeleteUserAccountInput {
-  password: String!
+    password: String!
 }
 input DisableUser {
-  id: String!
-  user_disabled: Boolean!
+    id: String!
+    user_disabled: Boolean!
 }
 input ResendEmailConfirmation {
-  email: String!
+    email: String!
 }
 input DeleteUserAccountAdminInput {
-  email: String!
+    email: String!
 }
 input SendConfirmationNewEmail {
-  email: String!
+    email: String!
 }
 input UserFilter {
-  value: String!
+    value: String!
 }
 
 type Prueba {
-  message: String
+    message: String
 }
 
 type User {
-  id: ID!
-  name: String!
-  email: String!
-  is_email_verified: String!
-  is_admin: Boolean!
-  rol: [String]
-  user: String!
-  image_profile: String
-  is_user_disabled: Boolean!
+    id: ID!
+    name: String!
+    email: String!
+    is_email_verified: String!
+    is_admin: Boolean!
+    rol: [String]
+    user: String!
+    image_profile: String
+    is_user_disabled: Boolean!
 }
 type Post {
-  id: ID
-  title: String
-  content: String
-  cover: PostCover
-  created_at: String
-  updated_at: String
+    id: ID
+    title: String
+    content: String
+    cover: PostCover
+    created_at: String
+    updated_at: String
 }
 type GetPosts {
-  posts: [Post]!
+    posts: [Post]!
 }
 type PostPayload {
-  post: Post
+    post: Post
 }
 type UserAuth {
-  access_token: String!
-  token_type: String!
+    access_token: String!
+    token_type: String!
 }
 type PostsDate {
-  date: String!
+    date: String!
 }
 type PostsDates {
-  dates: [String]!
+    dates: [String]!
 }
 type PostCover {
-  id: String!
-  name: String!
-  path: String!
-  source: String!
+    id: String!
+    name: String!
+    path: String!
+    source: String!
 }
 
 # payloads
 type LoginPayload {
-  auth: UserAuth!
-  user: [User]!
+    auth: UserAuth!
+    user: [User]!
 }
 type UserAuthPayload {
-  user: User!
+    user: User!
 }
 type Image {
-  id: ID
-  name: String!
-  path: String!
-  source: String!
+    id: ID
+    name: String!
+    path: String!
+    source: String!
 }
 type UploadImagePayload {
-  image: Image!
+    image: Image!
 }
 type GetImagePayload {
-  image: Image!
+    image: Image!
 }
 type PostImage {
-  id: ID
-  image_id: ID
-  post_id: ID
+    id: ID
+    image_id: ID
+    post_id: ID
 }

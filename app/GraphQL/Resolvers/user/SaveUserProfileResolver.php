@@ -15,61 +15,67 @@ use GraphQL\Error\Error;
 
 class SaveUserProfileResolver
 {
-  public function resolve(
-    $rootValue,
-    array $args,
-    GraphQLContext $context = null,
-    ResolveInfo $resolveInfo
-  ) {
-    $user = Auth::guard('api')->user();
-    if ($user == null) {
-      return Error::createLocatedError('Unauthorized');
-    }
-
-    $name = $args['name'];
-    $userName = $args['user'];
-    $email = $args['email'];
-    $image_id = $args['imageId'];
-
-    if ($image_id != '') {
-      $this->moveImage($image_id);
-      User::where('id', $user->id)->update([
-        'image_id' => $image_id,
-      ]);
-    }
-
-    User::where('id', $user->id)->update([
-      'name' => $name,
-      'user' => $userName,
-    ]);
-
-    $token = Str::random(64);
-    UserVerify::create([
-      'user_id' => $user->id,
-      'token' => $token,
-    ]);
-
-    $is_email_selected =
-      count(User::where('email', $email)->get()) == 1 ? true : false;
-    if ($is_email_selected) {
-      return Error::createLocatedError('Email already selected');
-    }
-
-    if ($user->email != $email) {
-      Mail::send(
-        'emails.emailVerificationNewEmail',
-        ['token' => $token, 'email' => $args['email']],
-        function ($message) use ($args) {
-          $message->to($args['email']);
-          $message->subject('Verificacion de nuevo correo electrónico');
+    public function resolve(
+        $rootValue,
+        array $args,
+        GraphQLContext $context = null,
+        ResolveInfo $resolveInfo
+    ) {
+        $user = Auth::guard("api")->user();
+        if ($user == null) {
+            return Error::createLocatedError("Unauthorized");
         }
-      );
-    }
-  }
 
-  function moveImage($id)
-  {
-    $imageName = Images::find($id)->name;
-    Storage::move('tmp/' . $imageName, 'user_images_profile/' . $imageName);
-  }
+        $name = array_key_exists("name", $args) ? $args["name"] : "";
+        $user_name = array_key_exists("user", $args) ? $args["user"] : "";
+        $email = array_key_exists("email", $args) ? $args["email"] : "";
+        $image_id = array_key_exists("image_id", $args)
+            ? $args["image_id"]
+            : "";
+        $queryUser = User::where("id", $user->id);
+
+        if ($name != "") {
+            $queryUser->update([
+                "name" => $name,
+            ]);
+        }
+
+        if ($user_name != "") {
+            $queryUser->update([
+                "user" => $user_name,
+            ]);
+        }
+
+        if ($image_id != "") {
+            $this->moveImage($image_id);
+            $queryUser->update([
+                "image_id" => $image_id,
+            ]);
+        }
+
+        $token = Str::random(64);
+        UserVerify::create([
+            "user_id" => $user->id,
+            "token" => $token,
+        ]);
+
+        if ($email != "" && $user->email != $email) {
+            Mail::send(
+                "emails.emailVerificationNewEmail",
+                ["token" => $token, "email" => $email],
+                function ($message) use ($email) {
+                    $message->to($email);
+                    $message->subject(
+                        "Verificacion de nuevo correo electrónico"
+                    );
+                }
+            );
+        }
+    }
+
+    function moveImage($id)
+    {
+        $imageName = Images::find($id)->name;
+        Storage::move("tmp/" . $imageName, "user_images_profile/" . $imageName);
+    }
 }
