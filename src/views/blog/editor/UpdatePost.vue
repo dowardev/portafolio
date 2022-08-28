@@ -19,7 +19,6 @@
 import { IonPage } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { getPost, updatePost } from "../../../services/post";
-import { getUser } from "../../../services/user";
 import {
   openToast,
   openToastErrror,
@@ -28,13 +27,12 @@ import {
   presentLoading,
 } from "../../../services/system";
 import EditorComponent from "./EditorPage.vue";
-import eventBus from "../../../EventBus";
 import {
   ALL_POSTS_DETAILS,
   POSTS_UPDATE_DETAILS,
   POST_DATES,
+  POST_DETAILS,
   UPLOAD_IMAGE,
-  USER_PERMISSIONS,
 } from "../../../services/graphql";
 import { usePost } from "../../../composables/usePost";
 
@@ -51,7 +49,7 @@ export default defineComponent({
 
   data() {
     return {
-      idPost: this.$route.params.id,
+      idPost: this.$route.params.id as string,
       segment: "editor",
       title: "",
       content: "",
@@ -74,22 +72,27 @@ export default defineComponent({
       loading.present();
 
       try {
-        const response = await getPost({
-          id: this.idPost as string,
+        await this.usePost.loadPost({
+          id: this.idPost,
           graphql: {
-            name: POSTS_UPDATE_DETAILS,
-            fragment: "PostUpdateDetails",
+            name: POST_DETAILS,
+            fragment: "PostDetails",
           },
         });
-        const title = response.title ? response.title : "";
-        const content = response.content ? response.content : "";
-        const coverName = response.cover.name ? response.cover.name : "";
-        const coverId = response.cover.id ? response.cover.id : "";
-        const coverSource = response.cover.source ? response.cover.source : "";
 
-        if (response) {
+        const post = this.usePost.getPost({
+          id: this.idPost,
+        })!;
+        const title = post.title ? post.title : "";
+        const content = post.content ? post.content : "";
+        const coverName = post.cover.name ? post.cover.name : "";
+        const coverId = post.cover.id ? post.cover.id : "";
+        const coverSource = post.cover.source ? post.cover.source : "";
+
+        if (post) {
           this.setData({ title, content, coverId, coverName, coverSource });
         }
+
         loading.dismiss();
       } catch (e: any) {
         console.error(e);
@@ -255,7 +258,7 @@ export default defineComponent({
     },
 
     async refreshPostsCotent() {
-      const currentPage = this.usePost.getCurrentPage();
+      const currentPage = this.usePost.getCurrentPage()!;
       if (currentPage == "") return;
 
       try {

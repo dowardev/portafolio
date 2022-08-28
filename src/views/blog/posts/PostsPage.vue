@@ -251,7 +251,7 @@
                 v-if="
                   loadingData.dates.status == 'error' &&
                   loadingData.dates.message == 'No dates' &&
-                  useUser.user.isAdmin
+                  useUser.user.value.isAdmin
                 "
                 fill="clear"
                 @click="addPost()"

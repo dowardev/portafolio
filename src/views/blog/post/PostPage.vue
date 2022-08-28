@@ -196,41 +196,14 @@ export default defineComponent({
 
       try {
         await this.usePost.loadPost({
-          id: this.postId as string,
+          id: this.postId,
           graphql: {
             name: POST_DETAILS,
             fragment: "PostDetails",
             refetch: true,
           },
         });
-        // const response = await getPost({
-        //   id: this.postId as string,
-        //   graphql: { name: POST_DETAILS, fragment: "PostDetails" },
-        // });
 
-        // const title = response.title ? response.title : "";
-        // const content = response.content ? response.content : "";
-        // const coverSource = response.cover.source ? response.cover.source : "";
-
-        // const postCreated = format(
-        //   // eslint-disable-next-line
-        //   parseISO(response.created_at!),
-        //   "dd/MM/yyyy"
-        // );
-
-        // const postUpdated = format(
-        //   // eslint-disable-next-line
-        //   parseISO(response.updated_at!),
-        //   "dd/MM/yyyy"
-        // );
-
-        // this.setData({
-        //   title,
-        //   content,
-        //   coverSource,
-        //   created: postCreated,
-        //   updated: postUpdated,
-        // });
         loading.dismiss();
       } catch (e: any) {
         console.error(e);

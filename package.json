@@ -41,6 +41,7 @@
     "vue3-markdown-it": "^1.0.10"
   },
   "devDependencies": {
+    "@types/node": "^18.7.13",
     "@typescript-eslint/eslint-plugin": "^5.35.1",
     "@typescript-eslint/parser": "^5.35.1",
     "@vitejs/plugin-vue": "^3.0.3",

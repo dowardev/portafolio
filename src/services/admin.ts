@@ -4,14 +4,12 @@ import {
   GetUsers,
   GetUsersResponse,
   SearchUsers,
-  SearchUsersResponse,
 } from "./interfaces";
 
 import apolloClient from "../Apollo";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@vue/apollo-composable";
 import { provideApolloClient } from "@vue/apollo-composable";
-import { computed, watch } from "vue";
 provideApolloClient(apolloClient);
 
 export async function getUsers(params: GetUsers): Promise<GetUsersResponse> {

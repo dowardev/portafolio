@@ -17,7 +17,6 @@
 import { IonPage } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { createPost } from "../../../services/post";
-import { getUser } from "../../../services/user";
 import {
   openToastErrror,
   openToast,
@@ -25,17 +24,13 @@ import {
   getBaseURL,
 } from "../../../services/system";
 import EditorComponent from "./EditorPage.vue";
-import eventBus from "../../../EventBus";
 import { CreatePost } from "../../../services/interfaces";
 import {
   ALL_POSTS_DETAILS,
   POST_DATES,
   UPLOAD_IMAGE,
-  USER_PERMISSIONS,
 } from "../../../services/graphql";
 import { usePost } from "../../../composables/usePost";
-import gql from "graphql-tag";
-import { useQuery } from "@vue/apollo-composable";
 
 export default defineComponent({
   name: "EditorPage",
@@ -160,7 +155,7 @@ export default defineComponent({
     },
 
     async refreshPostsCotent() {
-      const currentPage = this.usePost.getCurrentPage();
+      const currentPage = this.usePost.getCurrentPage()!;
       if (currentPage == "") return;
 
       try {

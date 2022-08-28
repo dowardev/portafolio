@@ -6,7 +6,6 @@ import {
   GetPost,
   GetPosts,
   GetPostsDates,
-  GetPostsDatesResponse,
 } from "./interfaces";
 
 import apolloClient from "../Apollo";
@@ -181,16 +180,34 @@ export async function getPost(params: GetPosts): Promise<Array<Post>> {
     }
   );
 
-  return new Promise((resolve, reject) => {
-    if (result.value != undefined) resolve(result.value.post.post);
-    else {
-      onResult((response) => resolve(response.data.post.post));
-    }
+  let queryResult = "" as any;
+  queryResult = new Promise((resolve, reject) => {
+    // if (params.graphql.refetch) {
+    //   refetch()?.then((response) => resolve(response));
+    // }
 
-    onError((error) => {
-      reject(error);
-    });
+    if (result.value != undefined)
+      resolve({
+        post: JSON.parse(JSON.stringify(result.value.post.post)),
+      });
+
+    if (result.value == undefined)
+      onResult(async (response) => {
+        resolve({
+          post: JSON.parse(JSON.stringify(await response.data.post.post)),
+        });
+      });
   });
+
+  const post = (await queryResult).post;
+
+  post.createdAt = post.created_at;
+  delete post.created_at;
+
+  post.updatedAt = post.updated_at;
+  delete post.updated_at;
+
+  return post;
 }
 
 export async function getPostsDates(

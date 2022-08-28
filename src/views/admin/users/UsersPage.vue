@@ -121,7 +121,7 @@
                             @click="
                               disabledUser({ id: user.id!, disableUser: false })
                             "
-                            v-if="user.isUserDisabled == true"
+                            v-if="user.isDisabled == true"
                           >
                             <ion-icon
                               :icon="checkmarkOutline"
@@ -136,7 +136,7 @@
                             @click="
                               disabledUser({ id: user.id!, disableUser: true })
                             "
-                            v-if="user.isUserDisabled == false"
+                            v-if="user.isDisabled == false"
                           >
                             <ion-label>Deshabilitar usuario</ion-label>
                             <ion-icon
@@ -204,14 +204,10 @@
 
                         <ion-item>
                           <ion-label>Deshabilitado</ion-label>
-                          <ion-label
-                            slot="end"
-                            v-if="user.isUserDisabled == true"
+                          <ion-label slot="end" v-if="user.isDisabled == true"
                             >Si</ion-label
                           >
-                          <ion-label
-                            slot="end"
-                            v-if="user.isUserDisabled == false"
+                          <ion-label slot="end" v-if="user.isDisabled == false"
                             >No</ion-label
                           >
                         </ion-item>

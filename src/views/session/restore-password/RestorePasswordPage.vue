@@ -217,16 +217,6 @@ export default defineComponent({
     };
   },
 
-  beforeRouteEnter(to, from, next) {
-    getUser({ graphql: { name: USER_NAME, fragment: "UserName" } })
-      .then(() => {
-        next("/");
-      })
-      .catch(() => {
-        next();
-      });
-  },
-
   validations() {
     const messageRequired = "Campo requerido";
     return {
