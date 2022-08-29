@@ -96,6 +96,10 @@ export async function searchUsers(params: SearchUsers): Promise<any> {
           paginatorInfo: await response.data.usersSearch.paginatorInfo,
         });
       });
+
+    onError((error) => {
+      reject(error);
+    });
   });
 
   (await queryResult).users.map((element: any) => {

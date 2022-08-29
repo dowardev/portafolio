@@ -18,7 +18,7 @@
 <script lang="ts">
 import { IonPage } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { getPost, updatePost } from "../../../services/post";
+import { updatePost } from "../../../services/post";
 import {
   openToast,
   openToastErrror,
@@ -75,8 +75,9 @@ export default defineComponent({
         await this.usePost.loadPost({
           id: this.idPost,
           graphql: {
-            name: POST_DETAILS,
-            fragment: "PostDetails",
+            name: POSTS_UPDATE_DETAILS,
+            fragment: "PostUpdateDetails",
+            refetch: true,
           },
         });
 
@@ -149,7 +150,7 @@ export default defineComponent({
       }
 
       try {
-        this.updatePost({
+        await this.updatePost({
           id,
           title,
           content,
@@ -159,9 +160,9 @@ export default defineComponent({
           imagesRemoved,
         });
         await this.refreshPostsCotent();
-        this.clearInputs();
         this.spinners.savePost = false;
         this.$router.go(-1);
+        this.clearInputs();
         openToast({ message: "Post actualizado" });
       } catch (e: any) {
         console.error(e);
@@ -180,7 +181,7 @@ export default defineComponent({
       imagesRemoved: Array<string>;
     }): Promise<void> {
       try {
-        updatePost({
+        await updatePost({
           id: data.id,
           title: data.title,
           content: data.content,
@@ -258,33 +259,17 @@ export default defineComponent({
     },
 
     async refreshPostsCotent() {
-      const currentPage = this.usePost.getCurrentPage()!;
-      if (currentPage == "") return;
-
       try {
-        await this.usePost.loadDates({
-          refetch: true,
-          graphql: { name: POST_DATES, fragment: "PostDates", refetch: true },
-        });
-      } catch (e: any) {
-        console.error(e);
-        openToastErrror(e);
-        throw e;
-      }
-
-      try {
-        await this.usePost.loadPosts({
-          date: currentPage,
+        await this.usePost.loadPost({
+          id: this.idPost,
           graphql: {
-            name: ALL_POSTS_DETAILS,
-            fragment: "PostsDetails",
+            name: POST_DETAILS,
+            fragment: "PostDetails",
             refetch: true,
           },
         });
       } catch (e: any) {
         console.error(e);
-        openToastErrror(e);
-        throw e;
       }
     },
   },

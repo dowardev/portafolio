@@ -473,7 +473,11 @@ export default defineComponent({
   methods: {
     async getUser() {
       await useUser().loadUser({
-        graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
+        graphql: {
+          name: USER_BASIC_DETAILS,
+          fragment: "UserBasicDetails",
+          refetch: true,
+        },
       });
 
       this.form.name = this.useUser.user.value.name!;

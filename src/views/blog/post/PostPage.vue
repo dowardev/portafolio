@@ -84,15 +84,46 @@
           </ion-toolbar>
         </ion-header>
 
-        <ion-row class="ion-padding-start">
+        <ion-row
+          v-if="usePost.getPost({ id: postId })!.createdAt"
+          class="ion-padding-start"
+        >
           <ion-col>
             <p class="post-date">
               Creación del post:
-              {{ usePost.getPost({ id: postId })!.created_at }}
+              {{
+                format(
+                  new Date(
+                    usePost.getPost({ id: postId })!.createdAt as string
+                  ),
+                  "P"
+                ) +
+                " " +
+                format(
+                  new Date(
+                    usePost.getPost({ id: postId })!.createdAt as string
+                  ),
+                  "p"
+                )
+              }}
             </p>
             <p class="post-date">
               Ultimá actualización del post:
-              {{ usePost.getPost({ id: postId })!.updated_at }}
+              {{
+                format(
+                  new Date(
+                    usePost.getPost({ id: postId })!.updatedAt as string
+                  ),
+                  "P"
+                ) +
+                " " +
+                format(
+                  new Date(
+                    usePost.getPost({ id: postId })!.updatedAt as string
+                  ),
+                  "p"
+                )
+              }}
             </p>
           </ion-col>
         </ion-row>
@@ -126,7 +157,7 @@ import {
 import { defineComponent } from "vue";
 // @ts-ignore
 import Markdown from "vue3-markdown-it";
-import { getPost, deletePost } from "../../../services/post";
+import { deletePost } from "../../../services/post";
 import {
   chevronBackOutline,
   createOutline,
@@ -137,12 +168,11 @@ import {
   presentAlertConfirmation,
   openToastErrror,
 } from "../../../services/system";
-import { getUser } from "../../../services/user";
-import { format, parseISO } from "date-fns";
 import eventBus from "../../../EventBus";
-import { POST_DETAILS, USER_PERMISSIONS } from "../../../services/graphql";
+import { POST_DETAILS } from "../../../services/graphql";
 import { usePost } from "../../../composables/usePost";
 import { useUser } from "../../../composables/useUser";
+import { format } from "date-fns";
 
 export default defineComponent({
   name: "PostPage",
@@ -166,6 +196,7 @@ export default defineComponent({
       trashOutline,
       useUser: useUser(),
       usePost: usePost(),
+      format: format,
     };
   },
 
@@ -200,17 +231,16 @@ export default defineComponent({
           graphql: {
             name: POST_DETAILS,
             fragment: "PostDetails",
-            refetch: true,
+            refetch: false,
           },
         });
-
-        loading.dismiss();
       } catch (e: any) {
         console.error(e);
-        openToastErrror(e);
+      } finally {
         loading.dismiss();
       }
     },
+
     setData(data: {
       title: string;
       content: string;

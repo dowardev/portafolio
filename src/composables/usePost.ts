@@ -73,7 +73,7 @@ export const usePost = () => {
   }
 
   function getCurrentPage() {
-    return postRefs.currentPage ? postRefs.currentPage.value : undefined;
+    return postRefs.currentPage.value ? postRefs.currentPage.value : undefined;
   }
 
   function updateCurrentPage(params: { currentPage: string }) {
@@ -92,14 +92,14 @@ export const usePost = () => {
 
   return {
     // functions
-    loadPosts,
-    loadDates,
-    loadPost,
+    deletePost,
+    getCurrentPage,
+    getDates,
     getPost,
     getPosts,
-    getDates,
+    loadDates,
+    loadPost,
+    loadPosts,
     updateCurrentPage,
-    getCurrentPage,
-    deletePost,
   };
 };

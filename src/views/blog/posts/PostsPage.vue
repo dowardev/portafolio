@@ -86,6 +86,7 @@
         }"
       >
         <!-- date selector -->
+        <!-- prev date -->
         <ion-item-divider sticky>
           <div style="width: 100%; display: flex; justify-content: center">
             <ion-button
@@ -100,30 +101,15 @@
               <ion-icon :icon="chevronBackOutline"></ion-icon>
             </ion-button>
 
-            <!-- pages -->
-            <ion-item id="open-date-input" :button="true" lines="none">
-              <ion-text style="color: var(--accent-color) !important">
-                {{ extractDate({ dateTime: usePost.getCurrentPage()! }) }}
-              </ion-text>
-              <ion-popover trigger="open-date-input" :show-backdrop="false">
-                <ion-datetime
-                  ref="datetime"
-                  :is-date-enabled="getDaysEnabled"
-                  presentation="date"
-                  :value="usePost.getCurrentPage()"
-                  :first-day-of-week="1"
-                  locale="es-mx"
-                  @ion-change="
-                    goToPage({
-                      currentPage: $event.detail.value as string,
-                      option: 'custom',
-                    })
-                  "
-                ></ion-datetime>
-              </ion-popover>
-            </ion-item>
+            <ion-button
+              v-if="usePost.getCurrentPage()!"
+              fill="clear"
+              @click="openPopover({ event: $event })"
+            >
+              {{ extractDate({ dateTime: usePost.getCurrentPage()! }) }}
+            </ion-button>
 
-            <!-- navigation button -->
+            <!-- next date -->
             <ion-button
               fill="clear"
               @click="
@@ -141,7 +127,7 @@
         <!-- posts -->
         <section class="ion-padding">
           <ion-row
-            v-for="(post, index) in usePost.getPosts({
+            v-for="(post ) in usePost.getPosts({
               date: usePost.getCurrentPage()!,
             })"
             :key="post"
@@ -368,9 +354,8 @@ import {
   IonToolbar,
   IonButton,
   IonButtons,
-  IonDatetime,
-  IonPopover,
   IonItemDivider,
+  popoverController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
@@ -391,6 +376,7 @@ import {
 import { ALL_POSTS_DETAILS, POST_DATES } from "../../../services/graphql";
 import { useUser } from "../../../composables/useUser";
 import { usePost } from "../../../composables/usePost";
+import Popover from "./Popover.vue";
 
 export default defineComponent({
   name: "PostsPage",
@@ -407,8 +393,6 @@ export default defineComponent({
     IonToolbar,
     IonButton,
     IonButtons,
-    IonDatetime,
-    IonPopover,
     IonItemDivider,
   },
 
@@ -484,7 +468,6 @@ export default defineComponent({
       let currentPage = "";
       try {
         currentPage = this.loadData({ dates });
-        // currentPage = this.usePost.getDates()![0];
         this.loadingData.dates.status = "finished";
         this.usePost.updateCurrentPage({ currentPage });
       } catch (error) {
@@ -552,7 +535,7 @@ export default defineComponent({
     async goToPage(params: {
       currentPage: string;
       option: "prev" | "next" | "custom";
-    }) {
+    }): Promise<void> {
       const date = params.currentPage;
       const dates = this.usePost.getDates()!;
       let index = dates.indexOf(date);
@@ -601,15 +584,6 @@ export default defineComponent({
       this.spinners.buttonAddPost = false;
     },
 
-    getDaysEnabled(date: string) {
-      const dates = this.usePost.getDates()!;
-      const result = dates.filter((element) => element.split("T")[0] == date);
-      if (result.length > 0) {
-        return true;
-      }
-      return false;
-    },
-
     openPost(id: string) {
       this.$router.push({ name: "PostPage", params: { id } });
     },
@@ -650,6 +624,21 @@ export default defineComponent({
 
     extractDate(params: { dateTime: string }): string {
       return params.dateTime.split("T")[0];
+    },
+
+    async openPopover(params: { event: Event }) {
+      const event = params.event;
+      const popover = await popoverController.create({
+        component: Popover,
+        event: event,
+      });
+      await popover.present();
+
+      const { data } = await popover.onDidDismiss();
+      this.goToPage({
+        currentPage: data,
+        option: "custom",
+      });
     },
   },
 });

@@ -89,7 +89,7 @@ export const usePostStore = defineStore("post", {
         const postMerge = this.posts.filter((element) => {
           return (element.id as any) == id;
         })[0];
-        const merge = { ...post, ...postMerge };
+        const merge = { ...postMerge, ...post };
         this.posts = this.posts.map((element) => {
           if ((element.id as any) == id) (element as any) = merge;
           return element;

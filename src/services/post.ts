@@ -146,11 +146,7 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
   );
 
   return new Promise((resolve, reject) => {
-    if (result.value != undefined && params.graphql.refetch == false)
-      resolve(result.value.posts.posts);
-
-    if (params.graphql.refetch)
-      refetch()?.then((response) => resolve(response.data.posts.posts));
+    if (params.graphql.refetch) refetch();
 
     onResult((response) => resolve(response.data.posts.posts));
 
@@ -160,8 +156,9 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
   });
 }
 
-export async function getPost(params: GetPosts): Promise<Array<Post>> {
-  const { onResult, onError, result } = useQuery(
+export async function getPost(params: GetPosts): Promise<Post> {
+  const isRefetchEnabled = params.graphql.refetch;
+  const { onResult, onError, result, refetch } = useQuery(
     gql`
         query GetPost($id: ID!) {
           post(id: $id) {
@@ -182,21 +179,15 @@ export async function getPost(params: GetPosts): Promise<Array<Post>> {
 
   let queryResult = "" as any;
   queryResult = new Promise((resolve, reject) => {
-    // if (params.graphql.refetch) {
-    //   refetch()?.then((response) => resolve(response));
-    // }
+    if (params.graphql.refetch) refetch();
 
-    if (result.value != undefined)
-      resolve({
-        post: JSON.parse(JSON.stringify(result.value.post.post)),
-      });
+    onResult((response) =>
+      resolve({ post: JSON.parse(JSON.stringify(response.data.post.post)) })
+    );
 
-    if (result.value == undefined)
-      onResult(async (response) => {
-        resolve({
-          post: JSON.parse(JSON.stringify(await response.data.post.post)),
-        });
-      });
+    onError((error) => {
+      reject(error);
+    });
   });
 
   const post = (await queryResult).post;
