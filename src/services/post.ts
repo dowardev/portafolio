@@ -216,12 +216,7 @@ export async function getPostsDates(
   );
 
   return new Promise((resolve, reject) => {
-    if (result.value != undefined) resolve(result.value.postsDates.dates);
-
-    if (params.refetch)
-      refetch()?.then((response) =>
-        resolve(response.data.postsDates.postsDates)
-      );
+    if (params.refetch) refetch();
 
     onResult((response) => resolve(response.data.postsDates.dates));
 

@@ -48,27 +48,7 @@ export async function getUser(params: GetUser): Promise<User> {
   );
 
   return new Promise((resolve, reject) => {
-    if (result.value && result.value.userAuth.user != undefined)
-      resolve({
-        id: result.value.userAuth.user.id,
-        name: result.value.userAuth.user.name,
-        email: result.value.userAuth.user.email,
-        user: result.value.userAuth.user.user,
-        imageProfile: result.value.userAuth.user.image_profile,
-        isAdmin: result.value.userAuth.user.is_admin,
-      });
-
-    if (params.graphql.refetch)
-      refetch()?.then((response) =>
-        resolve({
-          id: response.data.userAuth.user.id,
-          name: response.data.userAuth.user.name,
-          email: response.data.userAuth.user.email,
-          user: response.data.userAuth.user.user,
-          imageProfile: response.data.userAuth.user.image_profile,
-          isAdmin: response.data.userAuth.user.is_admin,
-        })
-      );
+    if (params.graphql.refetch) refetch();
 
     onResult((response) =>
       resolve({

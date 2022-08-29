@@ -29,6 +29,7 @@ async function loadUser() {
     graphql: {
       name: ROUTER_USER_VALIDATION,
       fragment: "RouterUserValidation",
+      refetch: true,
     },
   });
 }

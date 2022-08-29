@@ -19,6 +19,7 @@ export const useUser = () => {
         graphql: {
           name: params.graphql.name,
           fragment: params.graphql.fragment,
+          refetch: params.graphql.refetch,
         },
       });
 

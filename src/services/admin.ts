@@ -29,20 +29,7 @@ export async function getUsers(params: GetUsers): Promise<GetUsersResponse> {
   );
 
   return new Promise((resolve, reject) => {
-    if (result.value != undefined && params.graphql.refetch == false)
-      resolve({
-        users: result.value.users.data,
-        paginatorInfo: result.value.users.paginatorInfo,
-      });
-
-    if (params.graphql.refetch) {
-      refetch()?.then((response) =>
-        resolve({
-          users: response.data.users.data,
-          paginatorInfo: response.data.users.paginatorInfo,
-        })
-      );
-    }
+    if (params.graphql.refetch) refetch();
 
     onResult((response) =>
       resolve({
@@ -77,25 +64,14 @@ export async function searchUsers(params: SearchUsers): Promise<any> {
 
   let queryResult = "" as any;
   queryResult = new Promise((resolve, reject) => {
-    if (params.graphql.refetch) {
-      refetch()?.then((response) => resolve(response));
-    }
+    if (params.graphql.refetch) refetch();
 
-    if (result.value != undefined)
+    onResult(async (response) => {
       resolve({
-        users: JSON.parse(JSON.stringify(result.value.usersSearch.data)),
-        paginatorInfo: result.value.usersSearch.paginatorInfo,
+        users: JSON.parse(JSON.stringify(await response.data.usersSearch.data)),
+        paginatorInfo: await response.data.usersSearch.paginatorInfo,
       });
-
-    if (result.value == undefined)
-      onResult(async (response) => {
-        resolve({
-          users: JSON.parse(
-            JSON.stringify(await response.data.usersSearch.data)
-          ),
-          paginatorInfo: await response.data.usersSearch.paginatorInfo,
-        });
-      });
+    });
 
     onError((error) => {
       reject(error);
