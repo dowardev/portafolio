@@ -106,7 +106,7 @@
               fill="clear"
               @click="openPopover({ event: $event })"
             >
-              {{ extractDate({ dateTime: usePost.getCurrentPage()! }) }}
+              {{ usePost.getCurrentPage()! }}
             </ion-button>
 
             <!-- next date -->
@@ -488,8 +488,11 @@ export default defineComponent({
     async getPostsDates(params: { refetch: boolean }): Promise<void> {
       try {
         await this.usePost.loadDates({
-          refetch: params.refetch,
-          graphql: { name: POST_DATES, fragment: "PostDates" },
+          graphql: {
+            name: POST_DATES,
+            fragment: "PostDates",
+            refetch: params.refetch,
+          },
         });
       } catch (e: any) {
         this.loadingData.dates.status = "error";
@@ -503,10 +506,7 @@ export default defineComponent({
       let currentPage = "";
       if (this.$route.params.date != undefined) {
         currentPage = params.dates.filter((element) => {
-          if (
-            this.extractDate({ dateTime: element }) == this.$route.params.date
-          )
-            return element;
+          if (element == this.$route.params.date) return element;
         })[0];
       } else {
         currentPage = params.dates[0];
@@ -552,11 +552,7 @@ export default defineComponent({
 
       if (params.option == "custom") {
         const customDate = dates.filter((element) => {
-          if (
-            this.extractDate({ dateTime: element }) ==
-            this.extractDate({ dateTime: params.currentPage })
-          )
-            return parseInt(element);
+          if (element == params.currentPage) return parseInt(element);
         })[0];
         index = dates.indexOf(customDate);
       }
@@ -568,9 +564,7 @@ export default defineComponent({
           currentPage: dates[index],
         });
 
-        this.$router.replace(
-          "/blog/" + this.extractDate({ dateTime: dates[index] })
-        );
+        this.$router.replace("/blog/" + dates[index]);
         this.loadingData.posts.status = "finished";
       } catch (error) {
         console.error(error);
@@ -620,10 +614,6 @@ export default defineComponent({
 
     async refreshContent() {
       this.loadContent({ refetch: true });
-    },
-
-    extractDate(params: { dateTime: string }): string {
-      return params.dateTime.split("T")[0];
     },
 
     async openPopover(params: { event: Event }) {

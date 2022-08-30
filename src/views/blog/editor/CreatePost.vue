@@ -160,7 +160,6 @@ export default defineComponent({
 
       try {
         await this.usePost.loadDates({
-          refetch: true,
           graphql: { name: POST_DATES, fragment: "PostDates", refetch: true },
         });
       } catch (e: any) {

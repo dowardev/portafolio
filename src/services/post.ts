@@ -148,7 +148,8 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
   return new Promise((resolve, reject) => {
     if (params.graphql.refetch) refetch();
 
-    onResult((response) => resolve(response.data.posts.posts));
+    if (result.value != undefined) resolve(result.value.posts.posts);
+    else onResult((response) => resolve(response.data.posts.posts));
 
     onError((error) => {
       reject(error);
@@ -216,7 +217,7 @@ export async function getPostsDates(
   );
 
   return new Promise((resolve, reject) => {
-    if (params.refetch) refetch();
+    if (params.graphql.refetch) refetch();
 
     onResult((response) => resolve(response.data.postsDates.dates));
 

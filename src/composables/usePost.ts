@@ -27,10 +27,9 @@ export const usePost = () => {
     }
   }
 
-  async function loadDates(params: { refetch: boolean; graphql: Graphql }) {
+  async function loadDates(params: { graphql: Graphql }) {
     try {
       const dates = await getPostsDates({
-        refetch: params.refetch,
         graphql: params.graphql,
       });
 
