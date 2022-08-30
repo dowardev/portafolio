@@ -16,7 +16,6 @@ class PostsDatesResolver
         ResolveInfo $resolveInfo
     ) {
         $postDates = Post::select("created_at")
-            ->groupBy("created_at")
             ->orderBy("created_at", "desc")
             ->get();
 
@@ -25,6 +24,15 @@ class PostsDatesResolver
             $date = $value->created_at;
             array_push($dates, explode("+", $date->format(DateTime::ATOM))[0]);
         }
+
+        $group = [];
+        foreach ($dates as $key => $value) {
+            $date = date("Y-m-d", strtotime($value));
+            if (array_search($date, $group, true) == false) {
+                array_push($group, $date);
+            }
+        }
+        $dates = $group;
 
         return ["dates" => $dates];
     }
