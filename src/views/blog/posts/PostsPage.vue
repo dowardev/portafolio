@@ -376,7 +376,7 @@ import {
 import { ALL_POSTS_DETAILS, POST_DATES } from "../../../services/graphql";
 import { useUser } from "../../../composables/useUser";
 import { usePost } from "../../../composables/usePost";
-import Popover from "./Popover.vue";
+import PopoverDateSelector from "./PopoverDateSelector.vue";
 
 export default defineComponent({
   name: "PostsPage",
@@ -619,7 +619,7 @@ export default defineComponent({
     async openPopover(params: { event: Event }) {
       const event = params.event;
       const popover = await popoverController.create({
-        component: Popover,
+        component: PopoverDateSelector,
         event: event,
       });
       await popover.present();

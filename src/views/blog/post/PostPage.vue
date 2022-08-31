@@ -173,6 +173,7 @@ import { POST_DETAILS } from "../../../services/graphql";
 import { usePost } from "../../../composables/usePost";
 import { useUser } from "../../../composables/useUser";
 import { format } from "date-fns";
+import "highlight.js/styles/atom-one-dark.css";
 
 export default defineComponent({
   name: "PostPage",
@@ -288,7 +289,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@import "highlight.js/styles/atom-one-dark.css";
 .post-date {
   font-size: 12px !important;
 }

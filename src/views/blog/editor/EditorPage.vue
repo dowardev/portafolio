@@ -203,17 +203,16 @@ import {
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 // @ts-ignore
-import { Markdown } from "vue3-markdown-it";
+import Markdown from "vue3-markdown-it";
 import {
   saveOutline,
   imageOutline,
   chevronBackOutline,
   imagesOutline,
 } from "ionicons/icons";
-import { getUser } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import { USER_PERMISSIONS } from "../../../services/graphql";
+import "highlight.js/styles/monokai.css";
 
 export default defineComponent({
   name: "EditorPage",
@@ -350,5 +349,4 @@ export default defineComponent({
 
 <style scoped>
 /* @import "highlight.js/styles/androidstudio.css"; */
-@import "highlight.js/styles/monokai.css";
 </style>

@@ -37,7 +37,7 @@ export default defineComponent({
       popoverController.dismiss(date);
     },
 
-    getDaysEnabled(date: string): Boolean {
+    getDaysEnabled(date: string) {
       const dates = this.usePost.getDates()!;
       const result = dates.filter((element) => element.split("T")[0] == date);
       if (result.length > 0) {

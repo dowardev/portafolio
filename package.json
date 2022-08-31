@@ -1,5 +1,5 @@
 {
-  "name": "prueba",
+  "name": "Dowar Blog",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -41,6 +41,7 @@
     "vue3-markdown-it": "^1.0.10"
   },
   "devDependencies": {
+    "@capacitor/cli": "^4.1.0",
     "@types/node": "^18.7.13",
     "@typescript-eslint/eslint-plugin": "^5.35.1",
     "@typescript-eslint/parser": "^5.35.1",
