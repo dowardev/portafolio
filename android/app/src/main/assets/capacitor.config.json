@@ -2,9 +2,5 @@
 	"appId": "com.dowar.portfolio",
 	"appName": "Dowar Blog",
 	"webDir": "dist",
-	"bundledWebRuntime": false,
-	"server": {
-		"url": "http://192.168.0.8:5173/",
-		"cleartext": true
-	}
+	"bundledWebRuntime": false
 }
