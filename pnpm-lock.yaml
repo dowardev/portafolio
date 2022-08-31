@@ -10,16 +10,16 @@ specifiers:
   '@capacitor/keyboard': ^4.0.1
   '@capacitor/status-bar': ^4.0.1
   '@ionic/storage': ^3.0.6
-  '@ionic/vue': ^6.2.4
-  '@ionic/vue-router': ^6.2.4
+  '@ionic/vue': ^6.2.5
+  '@ionic/vue-router': ^6.2.5
   '@kangc/v-md-editor': ^1.7.11
-  '@types/node': ^18.7.13
-  '@typescript-eslint/eslint-plugin': ^5.35.1
-  '@typescript-eslint/parser': ^5.35.1
+  '@types/node': ^18.7.14
+  '@typescript-eslint/eslint-plugin': ^5.36.1
+  '@typescript-eslint/parser': ^5.36.1
   '@vitejs/plugin-vue': ^3.0.3
   '@vue/apollo-composable': 4.0.0-alpha.19
   '@vue/apollo-option': 4.0.0-alpha.20
-  '@vue/compiler-sfc': ^3.2.37
+  '@vue/compiler-sfc': ^3.2.38
   '@vuelidate/core': 2.0.0-alpha.44
   '@vuelidate/validators': 2.0.0-alpha.31
   core-js: ^3.25.0
@@ -37,9 +37,9 @@ specifiers:
   register-service-worker: ^1.7.2
   typescript: ^4.8.2
   vite: 3.0.9
-  vue: ^3.2.37
+  vue: ^3.2.38
   vue-router: 4.1.5
-  vue-tsc: ^0.40.1
+  vue-tsc: ^0.40.5
   vue3-markdown-it: ^1.0.10
 
 dependencies:
@@ -51,8 +51,8 @@ dependencies:
   '@capacitor/keyboard': 4.0.1_@capacitor+core@4.1.0
   '@capacitor/status-bar': 4.0.1_@capacitor+core@4.1.0
   '@ionic/storage': 3.0.6
-  '@ionic/vue': 6.2.4
-  '@ionic/vue-router': 6.2.4
+  '@ionic/vue': 6.2.5
+  '@ionic/vue-router': 6.2.5
   '@kangc/v-md-editor': 1.7.11_jku6dembb3xu3pdgttql5jegiq
   '@vue/apollo-composable': 4.0.0-alpha.19_5uojy75trik7hxhdpq5lxyqimi
   '@vue/apollo-option': 4.0.0-alpha.20_yodlnmwztjfzbwfl2tdfd3tw2a
@@ -282,8 +282,8 @@ packages:
       - supports-color
     dev: true
 
-  /@ionic/core/6.2.4:
-    resolution: {integrity: sha512-LDRIwG5plwTHELxQ/j3uEfLJ7YkzJzR1V4QGE+X59aE/l7XoXZyLb1NWFjY7glBbFHGQgSuPFWNhXFkyRBxRFQ==}
+  /@ionic/core/6.2.5:
+    resolution: {integrity: sha512-PLnG182RYydXB71cjkMk2TLxFVKabvEc9wjeK5SsvxI1/QE9+wPfxDnvKWag8UeXgaGUhby1bitWkV5pniDaXA==}
     dependencies:
       '@stencil/core': 2.17.4
       ionicons: 6.0.3
@@ -385,16 +385,16 @@ packages:
       - supports-color
     dev: true
 
-  /@ionic/vue-router/6.2.4:
-    resolution: {integrity: sha512-7gwX1o8V2pCm6sCk7fD/Ws2X6iRCobCDZyJc7jzHynqANhQfr0OsUjqhthedR4NNkC3ZmZBsENDu9/6CZzoVjw==}
+  /@ionic/vue-router/6.2.5:
+    resolution: {integrity: sha512-bitEsfgh7cUslc1ZLEY7BGu05bV4t2L18iSlFNdMDrWN5TCURzh1q1qkLgKw5TRXaJUa/szAXgJrkfMHlNmN3A==}
     dependencies:
-      '@ionic/vue': 6.2.4
+      '@ionic/vue': 6.2.5
     dev: false
 
-  /@ionic/vue/6.2.4:
-    resolution: {integrity: sha512-SbLew1VJiUnBBkOvDrbgOwdxkVpmF+3pzp1wUwqxNVVBTn4QKTbL/agfgx7IbLY+i+jz36pntKvzGB/Keljh9g==}
+  /@ionic/vue/6.2.5:
+    resolution: {integrity: sha512-8mfUVb6jogmw0NLTIzcrcCQztsTLCk3MEPFOGH6UqeynHUMqP0XT/RBzNTG/dYc1XcKDgO3LFod4sEY4aKuceg==}
     dependencies:
-      '@ionic/core': 6.2.4
+      '@ionic/core': 6.2.5
       ionicons: 6.0.3
     dev: false
 
