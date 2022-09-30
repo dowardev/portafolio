@@ -20,6 +20,7 @@ import PruebaPage from "../views/prueba/Prueba.vue";
 import UserPanelPage from "../views/user/UserPanelPage.vue";
 // admin
 import AdminPanelPage from "../views/admin/PanelAdminPage.vue";
+import NoFoundPage from "../views/404/404Page.vue";
 
 import { useUser } from "../composables/useUser";
 import { ROUTER_USER_VALIDATION } from "../services/graphql";
@@ -60,6 +61,7 @@ const routes: Array<RouteRecordRaw> = [
     path: "/",
     redirect: "/blog",
   },
+  { path: "/:catchAll(.*)", component: NoFoundPage, name: "NoFoundPage" },
   {
     path: "/prueba",
     name: "PruebaPage",

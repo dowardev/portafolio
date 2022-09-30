@@ -114,8 +114,8 @@ export interface AlertConfirmation {
   message: string;
 }
 
-export interface ModalFeedback {
-  error?: object;
+export interface ReportError {
+  error?: any;
   type: "feedback" | "error";
 }
 

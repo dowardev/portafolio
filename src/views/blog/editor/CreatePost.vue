@@ -17,12 +17,7 @@
 import { IonPage } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { createPost } from "../../../services/post";
-import {
-  openToastErrror,
-  openToast,
-  uploadImage,
-  getBaseURL,
-} from "../../../services/system";
+import { openToast, uploadImage, getBaseURL } from "../../../services/system";
 import EditorComponent from "./EditorPage.vue";
 import { CreatePost } from "../../../services/interfaces";
 import {
@@ -31,6 +26,7 @@ import {
   UPLOAD_IMAGE,
 } from "../../../services/graphql";
 import { usePost } from "../../../composables/usePost";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
   name: "EditorPage",
@@ -40,7 +36,7 @@ export default defineComponent({
   },
 
   setup() {
-    return { usePost: usePost() };
+    return { usePost: usePost(), openToastError: useSystem().openToastError };
   },
 
   data() {
@@ -68,7 +64,7 @@ export default defineComponent({
       } catch (e: any) {
         console.error(e);
         this.spinners.savePost = false;
-        openToastErrror(e);
+        this.openToastError(e);
         return;
       }
 
@@ -87,7 +83,7 @@ export default defineComponent({
       } catch (e: any) {
         console.error(e);
         this.spinners.savePost = false;
-        openToastErrror(e);
+        this.openToastError(e);
       }
     },
 
@@ -133,7 +129,7 @@ export default defineComponent({
       } catch (e: any) {
         console.error(e);
         this.spinners.saveImage = false;
-        openToastErrror(e);
+        this.openToastError(e);
       }
     },
 
@@ -164,7 +160,7 @@ export default defineComponent({
         });
       } catch (e: any) {
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
         throw e;
       }
 
@@ -179,7 +175,7 @@ export default defineComponent({
         });
       } catch (e: any) {
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
         throw e;
       }
     },

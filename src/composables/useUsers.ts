@@ -1,9 +1,11 @@
 import { useUsersStore } from "../store/usersStore";
 import { storeToRefs } from "pinia";
 import { Graphql, SearchUsersResponse, User } from "../services/interfaces";
-import { deleteUserAccount, getUser } from "../services/user";
-import { openToastErrror } from "../services/system";
+import { deleteUserAccount } from "../services/user";
+import { useSystem } from "./useSystem";
 import { searchUsers } from "../services/admin";
+
+const openToastError = useSystem().openToastError;
 
 export const useUsers = () => {
   const usersStore = useUsersStore();
@@ -39,7 +41,7 @@ export const useUsers = () => {
       return response;
     } catch (error: any) {
       if (error.message == "Unauthorized") console.log("Unauthorized user");
-      openToastErrror(error);
+      openToastError(error);
       throw error;
     }
   }

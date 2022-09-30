@@ -6,19 +6,15 @@ import {
   toastController,
   loadingController,
   alertController,
-  modalController,
 } from "@ionic/vue";
 import {
   AlertConfirmation,
   Image,
   Loading,
-  ModalFeedback,
   Theme,
   Toast,
   UploadImage,
 } from "./interfaces";
-import { alertCircleOutline, closeOutline } from "ionicons/icons";
-import FeedbackPage from "../components/feedback/FeedbackPage.vue";
 
 import apolloClient from "../Apollo";
 import gql from "graphql-tag";
@@ -122,43 +118,6 @@ export async function presentAlertConfirmation(
 
   const { role } = await alert.onDidDismiss();
   return role == "confirm" ? true : false;
-}
-
-export async function openToastErrror(error: object) {
-  const toast = await toastController.create({
-    header: "Ocurrio un error",
-    message: "¿Quieres reportar el error?",
-    icon: alertCircleOutline,
-    position: "bottom",
-    color: "danger",
-    buttons: [
-      {
-        text: "Reportar",
-        handler: () => {
-          openModalFeedback({ error, type: "error" });
-        },
-      },
-      {
-        icon: closeOutline,
-        role: "cancel",
-        handler: () => {
-          // console.log("Cancel clicked");
-        },
-      },
-    ],
-  });
-  await toast.present();
-}
-
-export async function openModalFeedback(data: ModalFeedback) {
-  const modal = await modalController.create({
-    component: FeedbackPage,
-    // cssClass: "my-custom-class",
-    componentProps: {
-      dataProp: data,
-    },
-  });
-  await modal.present();
 }
 
 export function createFirstCookie() {

@@ -328,11 +328,7 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import {
-  openToastErrror,
-  openToast,
-  uploadImage,
-} from "../../../services/system";
+import { openToast, uploadImage } from "../../../services/system";
 import {
   setUserToken,
   saveUserData,
@@ -353,6 +349,7 @@ import { logout } from "../../../services/session";
 import { UPLOAD_IMAGE, USER_BASIC_DETAILS } from "../../../services/graphql";
 import userAvatar from "../../../assets/otros/user.png";
 import { useUser } from "../../../composables/useUser";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
   name: "UserProfileComponent",
@@ -381,6 +378,7 @@ export default defineComponent({
       mailOpenOutline,
       keyOutline,
       useUser: useUser(),
+      openToastError: useSystem().openToastError,
     };
   },
 
@@ -512,7 +510,7 @@ export default defineComponent({
           return;
         }
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
       } finally {
         this.spinners.saveUserData = false;
       }
@@ -563,7 +561,7 @@ export default defineComponent({
         });
       } catch (e: any) {
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
       } finally {
         this.spinners.uploadImage = false;
       }
@@ -631,7 +629,7 @@ export default defineComponent({
             });
           }
           console.error(e);
-          openToastErrror(e);
+          this.openToastError(e);
         } finally {
           this.spinners.deleteUserAccount = false;
         }
@@ -647,7 +645,7 @@ export default defineComponent({
         location.reload();
       } catch (e: any) {
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
       }
     },
   },

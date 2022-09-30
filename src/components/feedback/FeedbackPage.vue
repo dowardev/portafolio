@@ -96,10 +96,15 @@
       </section>
 
       <section v-if="displayError">
-        <ion-item button @click="displayError = false">
+        <ion-item-divider
+          class="blur-effect blur-effect-color"
+          :sticky="true"
+          button
+          @click="displayError = false"
+        >
           <ion-icon slot="start" :icon="chevronBackOutline"></ion-icon>
           <ion-label>Regresar al formulario</ion-label>
-        </ion-item>
+        </ion-item-divider>
 
         <pre style="color: var(--primary-text-color)">
           <code>
@@ -131,8 +136,7 @@ import useVuelidate from "@vuelidate/core";
 import { required, helpers, email, minLength } from "@vuelidate/validators";
 import { openToast } from "../../services/system";
 import { createFeedback } from "../../services/feedback";
-import { getUser } from "../../services/user";
-import { ModalFeedback } from "../../services/interfaces";
+import { ReportError } from "../../services/interfaces";
 import { USER_BASIC_DETAILS } from "../../services/graphql";
 import { useUser } from "../../composables/useUser";
 
@@ -152,9 +156,9 @@ export default defineComponent({
 
   props: {
     dataProp: {
-      type: Object as () => ModalFeedback,
+      type: Object as () => ReportError,
       default() {
-        return {} as ModalFeedback;
+        return {} as ReportError;
       },
     },
   },

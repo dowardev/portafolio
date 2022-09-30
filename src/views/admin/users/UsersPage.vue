@@ -8,14 +8,14 @@
             <ion-icon :icon="addOutline"></ion-icon>
           </ion-button>
 
-          <ion-button @click="refreshContent()" :disabled="status == 'loading'">
+          <ion-button :disabled="status == 'loading'" @click="refreshContent()">
             <ion-icon
-              :icon="refreshOutline"
               v-if="spinners.refreshContent == false"
+              :icon="refreshOutline"
             ></ion-icon>
             <ion-spinner
-              name="crescent"
               v-if="spinners.refreshContent == true"
+              name="crescent"
             ></ion-spinner>
           </ion-button>
         </ion-list-header>
@@ -24,11 +24,11 @@
           <ion-card>
             <ion-item lines="none" class="transparent">
               <ion-searchbar
-                mode="ios"
-                @ionChange="filterContent()"
                 v-model="searchTerm"
+                mode="ios"
                 :debounce="500"
                 :disabled="status == 'loading'"
+                @ion-change="filterContent()"
               ></ion-searchbar>
 
               <!-- filter -->
@@ -38,24 +38,24 @@
                 :disabled="status == 'loading'"
               >
                 <ion-icon
-                  :icon="filterOutline"
                   v-if="spinners.filter == false"
+                  :icon="filterOutline"
                 ></ion-icon>
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.filter == true"
+                  name="crescent"
                 ></ion-spinner>
               </ion-button>
               <ion-popover
                 trigger="trigger-button-filter"
-                @didDismiss="filterContent()"
                 :dismiss-on-select="true"
+                @did-dismiss="filterContent()"
               >
                 <ion-content :scroll-events="true">
                   <ion-item
-                    button
                     v-for="(option, index) in filterOptions"
                     :key="option.value"
+                    button
                     @click="onlyOneUserFilter(index)"
                   >
                     <ion-checkbox
@@ -76,24 +76,24 @@
                 <ion-accordion-group>
                   <div v-for="user in useUsers.users.value" :key="user.id">
                     <ion-item lines="none" class="transparent">
-                      <ion-icon :icon="personOutline" slot="start"></ion-icon>
+                      <ion-icon slot="start" :icon="personOutline"></ion-icon>
                       <ion-label>{{ user.email }}</ion-label>
 
                       <ion-button
                         :id="'trigger-button-' + user.id"
-                        fill="clear"
                         slot="end"
+                        fill="clear"
                         :disabled="
                           status == 'loading' || spinners.optionsUser == user.id
                         "
                       >
                         <ion-icon
-                          :icon="ellipsisVerticalOutline"
                           v-if="spinners.optionsUser != user.id"
+                          :icon="ellipsisVerticalOutline"
                         ></ion-icon>
                         <ion-spinner
-                          name="crescent"
                           v-if="spinners.optionsUser == user.id"
+                          name="crescent"
                         ></ion-spinner>
                       </ion-button>
 
@@ -109,39 +109,39 @@
                             @click="deleteUser(user.email!)"
                           >
                             <ion-icon
-                              :icon="trashOutline"
                               slot="start"
+                              :icon="trashOutline"
                             ></ion-icon>
                             <ion-label>Borrar Usuario</ion-label>
                           </ion-item>
 
                           <ion-item
+                            v-if="user.isDisabled == true"
                             button
                             lines="none"
                             @click="
                               disabledUser({ id: user.id!, disableUser: false })
                             "
-                            v-if="user.isDisabled == true"
                           >
                             <ion-icon
-                              :icon="checkmarkOutline"
                               slot="start"
+                              :icon="checkmarkOutline"
                             ></ion-icon>
                             <ion-label>Habilitar usuario</ion-label>
                           </ion-item>
 
                           <ion-item
+                            v-if="user.isDisabled == false"
                             button
                             lines="none"
                             @click="
                               disabledUser({ id: user.id!, disableUser: true })
                             "
-                            v-if="user.isDisabled == false"
                           >
                             <ion-label>Deshabilitar usuario</ion-label>
                             <ion-icon
-                              :icon="banOutline"
                               slot="start"
+                              :icon="banOutline"
                             ></ion-icon>
                           </ion-item>
 
@@ -152,8 +152,8 @@
                           >
                             <ion-label>Reiniciar contraseña</ion-label>
                             <ion-icon
-                              :icon="keyOutline"
                               slot="start"
+                              :icon="keyOutline"
                             ></ion-icon>
                           </ion-item>
 
@@ -164,8 +164,8 @@
                           >
                             <ion-label>Verificar usuario</ion-label>
                             <ion-icon
-                              :icon="thumbsUpOutline"
                               slot="start"
+                              :icon="thumbsUpOutline"
                             ></ion-icon>
                           </ion-item>
                         </ion-content>
@@ -191,23 +191,23 @@
                         <ion-item>
                           <ion-label>Email verificado</ion-label>
                           <ion-label
-                            slot="end"
                             v-if="user.isEmailVerified == true"
+                            slot="end"
                             >Si</ion-label
                           >
                           <ion-label
-                            slot="end"
                             v-if="user.isEmailVerified == false"
+                            slot="end"
                             >No</ion-label
                           >
                         </ion-item>
 
                         <ion-item>
                           <ion-label>Deshabilitado</ion-label>
-                          <ion-label slot="end" v-if="user.isDisabled == true"
+                          <ion-label v-if="user.isDisabled == true" slot="end"
                             >Si</ion-label
                           >
-                          <ion-label slot="end" v-if="user.isDisabled == false"
+                          <ion-label v-if="user.isDisabled == false" slot="end"
                             >No</ion-label
                           >
                         </ion-item>
@@ -221,12 +221,12 @@
                 <ion-item lines="none" class="transparent">
                   <ion-label slot="end">Usuarios a mostrar</ion-label>
                   <ion-select
-                    interface="popover"
+                    v-if="spinners.showUsers == false"
                     slot="end"
                     v-model="paginatorInfo.pagination"
-                    @ionChange="setUsersDisplay()"
-                    v-if="spinners.showUsers == false"
+                    interface="popover"
                     :disabled="status == 'loading'"
+                    @ion-change="setUsersDisplay()"
                   >
                     <ion-select-option value="10">10</ion-select-option>
                     <ion-select-option value="15">15</ion-select-option>
@@ -235,9 +235,9 @@
                     <ion-select-option value="100">100</ion-select-option>
                   </ion-select>
                   <ion-spinner
-                    name="crescent"
                     v-if="spinners.showUsers == true"
                     slot="end"
+                    name="crescent"
                     color="primary"
                   ></ion-spinner>
                 </ion-item>
@@ -245,12 +245,12 @@
                 <ion-item lines="none" class="transparent">
                   <ion-label slot="end">Pagina</ion-label>
                   <ion-select
-                    interface="popover"
+                    v-if="spinners.pageUsers == false"
                     slot="end"
                     v-model="paginatorInfo.currentPage"
-                    @ionChange="setUsersPage()"
-                    v-if="spinners.pageUsers == false"
+                    interface="popover"
                     :disabled="status == 'loading'"
+                    @ion-change="setUsersPage()"
                   >
                     <ion-select-option value="1">1</ion-select-option>
                     <ion-select-option
@@ -261,9 +261,9 @@
                     </ion-select-option>
                   </ion-select>
                   <ion-spinner
-                    name="crescent"
                     v-if="spinners.pageUsers == true"
                     slot="end"
+                    name="crescent"
                     color="primary"
                   ></ion-spinner>
                 </ion-item>
@@ -320,15 +320,12 @@ import {
   thumbsUpOutline,
 } from "ionicons/icons";
 import { User } from "../../../services/interfaces";
-import {
-  openToast,
-  openToastErrror,
-  presentAlertConfirmation,
-} from "../../../services/system";
+import { openToast, presentAlertConfirmation } from "../../../services/system";
 import { sendMailResetPassword } from "../../../services/session";
 import { resendEmailConfirmation } from "../../../services/user";
 import { USERS_ADMINISTRATION_DETAILS } from "../../../services/graphql";
 import { useUsers } from "../../../composables/useUsers";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
   name: "UserAdminPanel",
@@ -355,22 +352,6 @@ export default defineComponent({
     IonSpinner,
   },
 
-  computed: {
-    calculatePages() {
-      const elements = [] as any;
-      let total = Math.round(
-        this.paginatorInfo.totalPaginacionElements /
-          parseInt(this.paginatorInfo.pagination)
-      );
-      if (total < 1) total = 1;
-
-      for (let index = 2; index <= total; index++) {
-        elements.push(index.toString());
-      }
-      return elements;
-    },
-  },
-
   setup() {
     return {
       pageTitle: "Administracion de usuarios",
@@ -387,6 +368,7 @@ export default defineComponent({
       checkmarkOutline,
       thumbsUpOutline,
       useUsers: useUsers(),
+      openToastError: useSystem().openToastError,
     };
   },
 
@@ -447,6 +429,22 @@ export default defineComponent({
       },
       status: "loaded" as "loading" | "loaded",
     };
+  },
+
+  computed: {
+    calculatePages() {
+      const elements = [] as any;
+      let total = Math.round(
+        this.paginatorInfo.totalPaginacionElements /
+          parseInt(this.paginatorInfo.pagination)
+      );
+      if (total < 1) total = 1;
+
+      for (let index = 2; index <= total; index++) {
+        elements.push(index.toString());
+      }
+      return elements;
+    },
   },
 
   mounted() {
@@ -534,7 +532,7 @@ export default defineComponent({
           return;
         }
         console.error(e);
-        openToastErrror({ error: e });
+        this.openToastError({ error: e });
       }
       this.spinners.optionsUser = "";
       this.status = "loaded";
@@ -558,7 +556,7 @@ export default defineComponent({
         openToast({ message: "Instrucciones enviadas" });
       } catch (e: any) {
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
       }
       // this.spinners.optionsUser = false;
     },
@@ -583,7 +581,7 @@ export default defineComponent({
           return;
         }
         console.error(e);
-        openToastErrror({ error: e });
+        this.openToastError({ error: e });
       }
       // this.spinners.optionsUser = false;
     },
@@ -604,7 +602,7 @@ export default defineComponent({
         this.refreshContent();
       } catch (e: any) {
         console.error(e);
-        openToastErrror({ error: e });
+        this.openToastError({ error: e });
       }
       // this.spinners.optionsUser = false;
     },

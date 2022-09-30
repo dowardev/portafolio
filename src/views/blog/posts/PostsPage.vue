@@ -27,15 +27,7 @@
               color="primary"
             ></ion-spinner>
           </ion-button>
-          <ion-button
-            :class="{
-              loadContent:
-                loadingData.posts.status == 'loading' ||
-                loadingData.data.status == 'loading' ||
-                loadingData.data.status == 'loading',
-            }"
-            @click="refreshContent()"
-          >
+          <ion-button @click="refreshContent()">
             <ion-icon :icon="refreshOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -62,29 +54,14 @@
                 color="primary"
               ></ion-spinner>
             </ion-button>
-            <ion-button
-              :class="{
-                loadContent:
-                  loadingData.posts.status == 'loading' ||
-                  loadingData.data.status == 'loading' ||
-                  loadingData.data.status == 'loading',
-              }"
-              @click="refreshContent"
-            >
+            <ion-button @click="refreshContent">
               <ion-icon :icon="refreshOutline"></ion-icon>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
 
-      <section
-        :class="{
-          loadContent:
-            loadingData.posts.status == 'loading' ||
-            loadingData.data.status == 'loading' ||
-            loadingData.data.status == 'loading',
-        }"
-      >
+      <section v-if="getPosts!.length > 0">
         <!-- date selector -->
         <!-- prev date -->
         <ion-item-divider sticky>
@@ -123,218 +100,79 @@
             </ion-button>
           </div>
         </ion-item-divider>
-
-        <!-- posts -->
-        <section class="ion-padding">
-          <ion-row
-            v-for="(post ) in usePost.getPosts({
-              date: usePost.getCurrentPage()!,
-            })"
-            :key="post"
-          >
-            <ion-col size="4">
-              <img
-                :src="(post.cover.source!)"
-                style="cursor: pointer"
-                @click="openPost(post.id!)"
-              />
-            </ion-col>
-            <ion-col size="8">
-              <h2
-                style="margin-top: 4px; cursor: pointer"
-                @click="openPost(post.id!)"
-              >
-                {{ post.title }}
-              </h2>
-            </ion-col>
-
-            <ion-col v-if="useUser.user.value.isAdmin" size="12">
-              <ion-button
-                fill="clear"
-                :disabled="spinners.buttonEditPost ==post.id!"
-                @click="updatePost(post.id!)"
-              >
-                <ion-icon
-                  v-if="spinners.buttonEditPost ==''|| spinners.buttonEditPost != post.id!"
-                  :icon="createOutline"
-                ></ion-icon>
-                <ion-spinner
-                  v-if="spinners.buttonEditPost==post.id!"
-                  name="crescent"
-                  color="primary"
-                ></ion-spinner>
-              </ion-button>
-
-              <ion-button
-                fill="clear"
-                :disabled="spinners.buttonDeletePost ==post.id!"
-                @click="deletePost({ id: post.id! })"
-              >
-                <ion-icon
-                  v-if="spinners.buttonDeletePost==''|| spinners.buttonDeletePost!= post.id!"
-                  :icon="trashOutline"
-                  color="danger"
-                ></ion-icon>
-                <ion-spinner
-                  v-if="spinners.buttonDeletePost==post.id!"
-                  name="crescent"
-                  color="danger"
-                ></ion-spinner>
-              </ion-button>
-            </ion-col>
-            <hr />
-          </ion-row>
-        </section>
       </section>
 
-      <div style="background-color: var(--background-color); height: 100%">
-        <section
-          v-if="
-            loadingData.posts.status != 'finished' ||
-            (loadingData.data.status == 'error' &&
-              loadingData.data.status == 'error')
-          "
-          class="align-vertical"
-        >
-          <!-- dates -->
+      <!-- posts -->
+      <section v-if="getPosts!.length > 0" class="ion-padding">
+        <ion-row v-for="post in getPosts" :key="post">
+          <ion-col size="4">
+            <img
+              :src="(post.cover.source!)"
+              style="cursor: pointer"
+              @click="openPost(post.id!)"
+            />
+          </ion-col>
+          <ion-col size="8">
+            <h2
+              style="margin-top: 4px; cursor: pointer"
+              @click="openPost(post.id!)"
+            >
+              {{ post.title }}
+            </h2>
+          </ion-col>
+
+          <ion-col v-if="useUser.user.value.isAdmin" size="12">
+            <ion-button
+              fill="clear"
+              :disabled="spinners.buttonEditPost ==post.id!"
+              @click="updatePost(post.id!)"
+            >
+              <ion-icon
+                v-if="spinners.buttonEditPost ==''|| spinners.buttonEditPost != post.id!"
+                :icon="createOutline"
+              ></ion-icon>
+              <ion-spinner
+                v-if="spinners.buttonEditPost==post.id!"
+                name="crescent"
+                color="primary"
+              ></ion-spinner>
+            </ion-button>
+
+            <ion-button
+              fill="clear"
+              :disabled="spinners.buttonDeletePost ==post.id!"
+              @click="deletePost({ id: post.id! })"
+            >
+              <ion-icon
+                v-if="spinners.buttonDeletePost==''|| spinners.buttonDeletePost!= post.id!"
+                :icon="trashOutline"
+                color="danger"
+              ></ion-icon>
+              <ion-spinner
+                v-if="spinners.buttonDeletePost==post.id!"
+                name="crescent"
+                color="danger"
+              ></ion-spinner>
+            </ion-button>
+          </ion-col>
+          <hr />
+        </ion-row>
+      </section>
+
+      <section v-if="getPosts!.length == 0">
+        <div class="align-vertical">
           <div class="center">
             <ion-item lines="none">
-              <ion-spinner
-                v-if="
-                  loadingData.dates.status == 'loading' &&
-                  loadingData.data.status != 'error' &&
-                  loadingData.posts.status != 'error'
-                "
-                slot="start"
-                name="crescent"
-              >
-              </ion-spinner>
               <ion-icon
-                v-if="loadingData.dates.status == 'finished'"
                 slot="start"
-                :icon="checkmarkOutline"
-              ></ion-icon>
-              <ion-icon
-                v-if="loadingData.dates.status == 'error'"
-                slot="start"
-                :icon="closeOutline"
+                :icon="banOutline"
                 color="danger"
               ></ion-icon>
-              <ion-label
-                v-if="
-                  loadingData.dates.status == 'loading' ||
-                  loadingData.dates.status == 'finished'
-                "
-                >Cargando fechas</ion-label
-              >
-              <ion-chip
-                v-if="loadingData.dates.status == 'error'"
-                color="danger"
-              >
-                <ion-label class="error">No se encontraron posts</ion-label>
-              </ion-chip>
-              <ion-button
-                v-if="
-                  loadingData.dates.status == 'error' &&
-                  loadingData.dates.message == 'No dates' &&
-                  useUser.user.value.isAdmin
-                "
-                fill="clear"
-                @click="addPost()"
-              >
-                <ion-label v-if="spinners.buttonAddPost == false"
-                  ><ion-icon :icon="addOutline"></ion-icon
-                ></ion-label>
-                <ion-spinner
-                  v-if="spinners.buttonAddPost"
-                  name="crescent"
-                ></ion-spinner>
-              </ion-button>
-
-              <ion-button
-                v-if="
-                  loadingData.dates.status == 'error' &&
-                  loadingData.dates.message == 'No dates'
-                "
-                fill="clear"
-                @click="loadContent({ refetch: true })"
-              >
-                <ion-label v-if="spinners.buttonAddPost == false"
-                  ><ion-icon :icon="refreshOutline"></ion-icon
-                ></ion-label>
-              </ion-button>
+              <ion-label color="danger">No se encontraron datos</ion-label>
             </ion-item>
           </div>
-
-          <!-- data -->
-          <div class="center">
-            <ion-item lines="none">
-              <ion-spinner
-                v-if="
-                  loadingData.data.status == 'loading' &&
-                  loadingData.dates.status != 'error' &&
-                  loadingData.posts.status != 'error'
-                "
-                slot="start"
-                name="crescent"
-              >
-              </ion-spinner>
-              <ion-icon
-                v-if="loadingData.data.status == 'finished'"
-                slot="start"
-                :icon="checkmarkOutline"
-              ></ion-icon>
-              <ion-icon
-                v-if="loadingData.data.status == 'error'"
-                slot="start"
-                :icon="closeOutline"
-                color="danger"
-              ></ion-icon>
-              <ion-label
-                v-if="
-                  loadingData.data.status == 'loading' ||
-                  loadingData.data.status == 'finished'
-                "
-                >Cargando datos</ion-label
-              >
-            </ion-item>
-          </div>
-
-          <!-- posts -->
-          <div class="center">
-            <ion-item lines="none">
-              <ion-spinner
-                v-if="
-                  loadingData.posts.status == 'loading' &&
-                  loadingData.data.status != 'error' &&
-                  loadingData.dates.status != 'error'
-                "
-                slot="start"
-                name="crescent"
-              >
-              </ion-spinner>
-              <ion-icon
-                v-if="loadingData.posts.status == 'finished'"
-                slot="start"
-                :icon="checkmarkOutline"
-              ></ion-icon>
-              <ion-icon
-                v-if="loadingData.posts.status == 'error'"
-                slot="start"
-                :icon="closeOutline"
-                color="danger"
-              ></ion-icon>
-              <ion-label
-                v-if="
-                  loadingData.posts.status == 'loading' ||
-                  loadingData.posts.status == 'finished'
-                "
-                >Cargando posts</ion-label
-              >
-            </ion-item>
-          </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </ion-content>
   </ion-page>
 </template>
@@ -343,9 +181,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   IonPage,
-  IonChip,
-  IonLabel,
-  IonItem,
   IonSpinner,
   IonIcon,
   IonContent,
@@ -358,11 +193,7 @@ import {
   popoverController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import {
-  openToastErrror,
-  openToast,
-  presentAlertConfirmation,
-} from "../../../services/system";
+import { openToast, presentAlertConfirmation } from "../../../services/system";
 import {
   checkmarkOutline,
   closeOutline,
@@ -372,19 +203,19 @@ import {
   trashOutline,
   chevronBackOutline,
   chevronForwardOutline,
+  banOutline,
 } from "ionicons/icons";
 import { ALL_POSTS_DETAILS, POST_DATES } from "../../../services/graphql";
 import { useUser } from "../../../composables/useUser";
 import { usePost } from "../../../composables/usePost";
 import PopoverDateSelector from "./PopoverDateSelector.vue";
+import { Post } from "../../../services/interfaces";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
   name: "PostsPage",
   components: {
     IonPage,
-    IonChip,
-    IonLabel,
-    IonItem,
     IonSpinner,
     IonIcon,
     IonContent,
@@ -408,26 +239,14 @@ export default defineComponent({
       chevronForwardOutline,
       useUser: useUser(),
       usePost: usePost(),
+      banOutline,
+      openToastError: useSystem().openToastError,
     };
   },
 
   data() {
     return {
       pageTitle: "Blog",
-      loadingData: {
-        data: {
-          status: "loading | finished | error",
-          message: "",
-        },
-        dates: {
-          status: "loading | finished | error",
-          message: "",
-        },
-        posts: {
-          status: "loading | finished | error",
-          message: "",
-        },
-      },
       spinners: {
         buttonAddPost: false,
         buttonAddNewPost: false,
@@ -435,6 +254,14 @@ export default defineComponent({
         buttonDeletePost: "",
       },
     };
+  },
+
+  computed: {
+    getPosts(): Post[] | undefined {
+      return this.usePost.getPosts({
+        date: this.usePost.getCurrentPage()!,
+      });
+    },
   },
 
   mounted() {
@@ -445,44 +272,20 @@ export default defineComponent({
     async loadContent(params: { refetch: boolean }) {
       const refetch = params.refetch == false ? false : true;
 
-      this.loadingData.data.status = "loading";
-      this.loadingData.dates.status = "loading";
-      this.loadingData.posts.status = "loading";
+      await this.getPostsDates({ refetch });
 
-      try {
-        await this.getPostsDates({ refetch });
-        this.loadingData.data.status = "finished";
-      } catch {
-        this.loadingData.dates.status = "error";
-        this.loadingData.dates.message = "No dates";
-        return;
-      }
       let dates = Array<string>();
-      try {
-        dates = this.usePost.getDates()!;
-      } catch (error: any) {
-        console.error(error);
-        return;
-      }
+      dates = this.usePost.getDates()!;
+      if (dates.length == 0) return;
 
       let currentPage = "";
-      try {
-        currentPage = this.loadData({ dates });
-        this.loadingData.dates.status = "finished";
-        this.usePost.updateCurrentPage({ currentPage });
-      } catch (error) {
-        this.loadingData.dates.status = "error";
-      }
+      currentPage = this.loadData({ dates });
+      this.usePost.updateCurrentPage({ currentPage });
 
-      try {
-        await this.getPosts({
-          currentPage,
-          refetch,
-        });
-        this.loadingData.posts.status = "finished";
-      } catch (error) {
-        this.loadingData.posts.status = "error";
-      }
+      await this.loadPosts({
+        currentPage,
+        refetch,
+      });
     },
 
     async getPostsDates(params: { refetch: boolean }): Promise<void> {
@@ -495,9 +298,8 @@ export default defineComponent({
           },
         });
       } catch (e: any) {
-        this.loadingData.dates.status = "error";
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
         throw e;
       }
     },
@@ -514,7 +316,7 @@ export default defineComponent({
       return currentPage;
     },
 
-    async getPosts(params: { currentPage: string; refetch?: boolean }) {
+    async loadPosts(params: { currentPage: string; refetch?: boolean }) {
       const refetch = params.refetch ? params.refetch : false;
       try {
         await this.usePost.loadPosts({
@@ -527,7 +329,7 @@ export default defineComponent({
         });
       } catch (e: any) {
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
         throw e;
       }
     },
@@ -557,18 +359,15 @@ export default defineComponent({
         index = dates.indexOf(customDate);
       }
 
-      this.loadingData.posts.status = "loading";
       this.usePost.updateCurrentPage({ currentPage: dates[index] });
       try {
-        await this.getPosts({
+        await this.loadPosts({
           currentPage: dates[index],
         });
 
         this.$router.replace("/blog/" + dates[index]);
-        this.loadingData.posts.status = "finished";
       } catch (error) {
         console.error(error);
-        this.loadingData.posts.status = "error";
       }
     },
 

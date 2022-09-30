@@ -253,9 +253,8 @@ import {
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, email, helpers, sameAs } from "@vuelidate/validators";
-import { getUser } from "../../../services/user";
-import { openToastErrror, openToast } from "../../../services/system";
-import { USER_NAME } from "../../../services/graphql";
+import { openToast } from "../../../services/system";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
   name: "RegisterPage",
@@ -291,6 +290,7 @@ export default defineComponent({
       mailOpenOutline,
       keyOutline,
       modeDesingElements,
+      openToastError: useSystem().openToastError,
     };
   },
 
@@ -385,7 +385,7 @@ export default defineComponent({
           return;
         }
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
       }
     },
 

@@ -3,7 +3,7 @@ import { storeToRefs } from "pinia";
 import { Graphql, User } from "../services/interfaces";
 import { deleteUserAccount, getUser } from "../services/user";
 import { USER_PERMISSIONS } from "../services/graphql";
-import { openToastErrror } from "../services/system";
+import { useSystem } from "./useSystem";
 import { logout as userLogout } from "../services/session";
 
 export const useUser = () => {
@@ -12,6 +12,7 @@ export const useUser = () => {
   const imageProfile = storeToRefs(userStore).imageProfile;
   const token = storeToRefs(userStore).token;
   const isLogged = storeToRefs(userStore).isLogged;
+  const openToastError = useSystem().openToastError;
 
   async function loadUser(params: { graphql: Graphql }) {
     try {
@@ -26,7 +27,7 @@ export const useUser = () => {
       updateUserProps({ user });
     } catch (error: any) {
       if (error.message == "Unauthorized") return;
-      openToastErrror(error);
+      openToastError(error);
       throw error.message;
     }
   }
@@ -47,7 +48,7 @@ export const useUser = () => {
       userStore.updateUserProps({ isAdmin });
     } catch (error: any) {
       if (error.message == "Unauthorized") return;
-      openToastErrror(error);
+      openToastError(error);
       throw error.messge;
     }
   }
@@ -70,7 +71,7 @@ export const useUser = () => {
         "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     } catch (e: any) {
       console.error(e);
-      openToastErrror(e);
+      openToastError(e);
     }
   }
 

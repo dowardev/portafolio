@@ -166,7 +166,6 @@ import {
 import {
   presentLoading,
   presentAlertConfirmation,
-  openToastErrror,
 } from "../../../services/system";
 import eventBus from "../../../EventBus";
 import { POST_DETAILS } from "../../../services/graphql";
@@ -174,6 +173,7 @@ import { usePost } from "../../../composables/usePost";
 import { useUser } from "../../../composables/useUser";
 import { format } from "date-fns";
 import "highlight.js/styles/atom-one-dark.css";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
   name: "PostPage",
@@ -198,6 +198,7 @@ export default defineComponent({
       useUser: useUser(),
       usePost: usePost(),
       format: format,
+      openToastError: useSystem().openToastError,
     };
   },
 
@@ -281,7 +282,7 @@ export default defineComponent({
         eventBus().emitter.emit("new-post");
       } catch (e: any) {
         this.spinners.buttonDelete = false;
-        openToastErrror(e);
+        this.openToastError(e);
       }
     },
   },

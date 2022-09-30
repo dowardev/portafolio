@@ -333,12 +333,11 @@ import {
 } from "ionicons/icons";
 import DarkMode from "./darkmode/DarkMode.vue";
 import { logout } from "../../services/session";
-import { openToastErrror, openModalFeedback } from "../../services/system";
-import { setUserToken } from "../../services/user";
 import AppsComponent from "./apps/Apps.vue";
 import DonationsComponent from "./donations/Donations.vue";
 import { useUser } from "../../composables/useUser";
 import { USER_MENU } from "../../services/graphql";
+import { useSystem } from "../../composables/useSystem";
 
 export default defineComponent({
   name: "MenuComponent",
@@ -381,6 +380,7 @@ export default defineComponent({
       eventPopOverUserOptions,
       cashOutline,
       useUser: useUser(),
+      reportFeedback: useSystem().reportError,
     };
   },
 
@@ -434,7 +434,7 @@ export default defineComponent({
     },
 
     async openModalFeedback() {
-      openModalFeedback({ type: "feedback" });
+      this.reportFeedback({ type: "feedback" });
       menuController.close();
     },
 

@@ -1,13 +1,15 @@
 import { usePostStore } from "../store/postStore";
 import { storeToRefs } from "pinia";
 import { Graphql, Post } from "../services/interfaces";
-import { openToastErrror } from "../services/system";
+import { useSystem } from "./useSystem";
 import {
   getPosts as getPostsService,
   getPost as getPostService,
   getPostsDates,
   deletePost as deletePostService,
 } from "../services/post";
+
+const openToastError = useSystem().openToastError;
 
 export const usePost = () => {
   const postStore = usePostStore();
@@ -22,7 +24,7 @@ export const usePost = () => {
 
       postStore.updatePosts({ posts: JSON.parse(JSON.stringify(posts)) });
     } catch (e: any) {
-      openToastErrror(e);
+      openToastError(e);
       throw e;
     }
   }
@@ -35,7 +37,7 @@ export const usePost = () => {
 
       postStore.updateDates(dates);
     } catch (e: any) {
-      openToastErrror(e);
+      openToastError(e);
       throw e;
     }
   }
@@ -50,7 +52,7 @@ export const usePost = () => {
 
       postStore.updatePost({ id, post: JSON.parse(JSON.stringify(post)) });
     } catch (e: any) {
-      openToastErrror(e);
+      openToastError(e);
       throw e;
     }
   }

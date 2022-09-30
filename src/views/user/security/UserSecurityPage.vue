@@ -214,13 +214,14 @@ import { defineComponent } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
 import { updateUserPassword } from "../../../services/session";
-import { openToastErrror, openToast } from "../../../services/system";
+import { openToast } from "../../../services/system";
 import {
   eyeOutline,
   eyeOffOutline,
   informationCircleOutline,
   keyOutline,
 } from "ionicons/icons";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
   name: "UserProfileComponent",
@@ -237,6 +238,7 @@ export default defineComponent({
     IonCol,
     IonIcon,
   },
+
   setup() {
     return {
       v$: useVuelidate(),
@@ -244,14 +246,16 @@ export default defineComponent({
       eyeOffOutline,
       informationCircleOutline,
       keyOutline,
+      openToastError: useSystem().openToastError,
     };
   },
+
   data() {
     return {
       form: {
-        oldPassword: "d3D9jFEubBSRo",
-        newPassword: "d3D9jFEubBSRo",
-        newPasswordRepeat: "d3D9jFEubBSRo",
+        oldPassword: "",
+        newPassword: "",
+        newPasswordRepeat: "",
       },
       spinners: {
         saveUserPassword: false,
@@ -320,7 +324,7 @@ export default defineComponent({
           return;
         }
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
       }
     },
   },

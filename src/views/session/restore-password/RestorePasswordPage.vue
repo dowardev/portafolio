@@ -30,31 +30,31 @@
             <ion-card-content>
               <ion-item lines="inset">
                 <ion-icon
+                  slot="start"
                   :icon="keyOutline"
                   class="item-icon"
-                  slot="start"
                 ></ion-icon>
                 <ion-label position="floating">Contraseña</ion-label>
                 <ion-input
-                  :type="inputTypePassword1"
                   v-model="(v$ as any).form.password1.$model"
+                  :type="inputTypePassword1"
                   @keyup.enter="resetPassword()"
                 ></ion-input>
                 <ion-button
+                  v-if="inputTypePassword1 == 'text'"
                   slot="end"
                   fill="clear"
-                  v-if="inputTypePassword1 == 'text'"
-                  v-on:click="inputTypePassword1 = 'password'"
                   style="margin-top: 20px"
+                  @click="inputTypePassword1 = 'password'"
                 >
                   <ion-icon :icon="eyeOffOutline"></ion-icon>
                 </ion-button>
                 <ion-button
+                  v-if="inputTypePassword1 == 'password'"
                   slot="end"
                   fill="clear"
-                  v-if="inputTypePassword1 == 'password'"
-                  v-on:click="inputTypePassword1 = 'text'"
                   style="margin-top: 20px"
+                  @click="inputTypePassword1 = 'text'"
                 >
                   <ion-icon :icon="eyeOutline"></ion-icon>
                 </ion-button>
@@ -68,31 +68,31 @@
 
               <ion-item lines="inset">
                 <ion-icon
+                  slot="start"
                   :icon="keyOutline"
                   class="item-icon"
-                  slot="start"
                 ></ion-icon>
                 <ion-label position="floating">Repite la contraseña</ion-label>
                 <ion-input
-                  :type="inputTypePassword2"
                   v-model="(v$ as any).form.password2.$model"
+                  :type="inputTypePassword2"
                   @keyup.enter="resetPassword()"
                 ></ion-input>
                 <ion-button
+                  v-if="inputTypePassword2 == 'text'"
                   slot="end"
                   fill="clear"
-                  v-if="inputTypePassword2 == 'text'"
-                  v-on:click="inputTypePassword2 = 'password'"
                   style="margin-top: 20px"
+                  @click="inputTypePassword2 = 'password'"
                 >
                   <ion-icon :icon="eyeOffOutline"></ion-icon>
                 </ion-button>
                 <ion-button
+                  v-if="inputTypePassword2 == 'password'"
                   slot="end"
                   fill="clear"
-                  v-if="inputTypePassword2 == 'password'"
-                  v-on:click="inputTypePassword2 = 'text'"
                   style="margin-top: 20px"
+                  @click="inputTypePassword2 = 'text'"
                 >
                   <ion-icon :icon="eyeOutline"></ion-icon>
                 </ion-button>
@@ -113,8 +113,8 @@
                   >Enviar</ion-label
                 >
                 <ion-spinner
-                  name="crescent"
                   v-if="spinners.buttonResetPassword"
+                  name="crescent"
                   color="primary"
                 ></ion-spinner>
               </ion-button>
@@ -157,11 +157,10 @@ import {
 } from "ionicons/icons";
 import { defineComponent } from "vue";
 import { resetPassword } from "../../../services/session";
-import { getUser } from "../../../services/user";
-import { openToast, openToastErrror } from "../../../services/system";
+import { openToast } from "../../../services/system";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
-import { USER_NAME } from "../../../services/graphql";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
   name: "HomePage",
@@ -198,6 +197,7 @@ export default defineComponent({
       shieldOutline,
       modeDesingElements,
       pageTitle: "Restablecer contraseña",
+      openToastError: useSystem().openToastError,
     };
   },
 
@@ -280,7 +280,7 @@ export default defineComponent({
           });
         } else {
           console.error(e);
-          openToastErrror(e);
+          this.openToastError(e);
         }
       }
     },

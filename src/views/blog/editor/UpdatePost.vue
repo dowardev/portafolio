@@ -3,13 +3,13 @@
     <ion-content :fullscreen="true">
       <EditorComponent
         ref="editorRef"
-        @uploadImage="uploadImage($event)"
-        @save="save($event)"
         :title="title"
         :content="content"
         :cover="cover"
-        :spinnerSavePost="spinners.savePost"
-        :spinnerSaveImage="spinners.saveImage"
+        :spinner-save-post="spinners.savePost"
+        :spinner-save-image="spinners.saveImage"
+        @upload-image="uploadImage($event)"
+        @save="save($event)"
       ></EditorComponent>
     </ion-content>
   </ion-page>
@@ -21,7 +21,6 @@ import { defineComponent } from "vue";
 import { updatePost } from "../../../services/post";
 import {
   openToast,
-  openToastErrror,
   uploadImage,
   getBaseURL,
   presentLoading,
@@ -35,6 +34,7 @@ import {
   UPLOAD_IMAGE,
 } from "../../../services/graphql";
 import { usePost } from "../../../composables/usePost";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
   name: "EditorPage",
@@ -44,7 +44,7 @@ export default defineComponent({
   },
 
   setup() {
-    return { usePost: usePost() };
+    return { usePost: usePost(), openToastError: useSystem().openToastError };
   },
 
   data() {
@@ -98,7 +98,7 @@ export default defineComponent({
       } catch (e: any) {
         console.error(e);
         loading.dismiss();
-        openToastErrror(e);
+        this.openToastError(e);
       }
     },
 
@@ -144,7 +144,7 @@ export default defineComponent({
         } catch (e: any) {
           console.error(e);
           this.spinners.savePost = false;
-          openToastErrror(e);
+          this.openToastError(e);
           return;
         }
       }
@@ -167,7 +167,7 @@ export default defineComponent({
       } catch (e: any) {
         console.error(e);
         this.spinners.savePost = false;
-        openToastErrror(e);
+        this.openToastError(e);
       }
     },
 
@@ -217,7 +217,7 @@ export default defineComponent({
       } catch (e: any) {
         console.error(e);
         this.spinners.saveImage = false;
-        openToastErrror(e);
+        this.openToastError(e);
       }
     },
 
@@ -230,7 +230,7 @@ export default defineComponent({
         return response.id;
       } catch (e: any) {
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
       }
     },
 

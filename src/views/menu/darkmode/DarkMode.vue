@@ -12,7 +12,7 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-radio-group v-model="theme" @ionChange="setTheme()">
+      <ion-radio-group v-model="theme" @ion-change="setTheme()">
         <ion-item>
           <ion-label>Dia luminoso</ion-label>
           <ion-radio slot="start" value="light"></ion-radio>
@@ -46,13 +46,9 @@ import {
   modalController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import {
-  openToastErrror,
-  getTheme,
-  setTheme,
-  saveTheme,
-} from "../../../services/system";
+import { getTheme, setTheme, saveTheme } from "../../../services/system";
 import { closeOutline } from "ionicons/icons";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
   components: {
@@ -66,17 +62,21 @@ export default defineComponent({
     IonItem,
     IonLabel,
   },
+
   setup() {
-    return { closeOutline };
+    return { closeOutline, openToastError: useSystem().openToastError };
   },
+
   data() {
     return {
       theme: "aut" as "aut" | "light" | "dark",
     };
   },
+
   mounted() {
     this.getTheme();
   },
+
   methods: {
     async getTheme() {
       try {
@@ -84,7 +84,7 @@ export default defineComponent({
         this.theme = response == null ? "aut" : response;
       } catch (e: any) {
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
       }
     },
 

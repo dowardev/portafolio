@@ -203,8 +203,8 @@ import {
 } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import { openToastErrror } from "../../../services/system";
 import { USER_LOGIN, USER_NAME } from "../../../services/graphql";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
   name: "LoginPage",
@@ -235,6 +235,7 @@ export default defineComponent({
       fingerPrintOutline,
       mailOpenOutline,
       modeDesingElements,
+      openToastError: useSystem().openToastError,
     };
   },
 
@@ -315,7 +316,7 @@ export default defineComponent({
           return;
         }
 
-        openToastErrror(e);
+        this.openToastError(e);
         console.error(e.message);
       }
     },
@@ -370,7 +371,7 @@ export default defineComponent({
         });
       } catch (e: any) {
         console.error(e);
-        openToastErrror(e);
+        this.openToastError(e);
       }
 
       this.spinners.buttonForgotPassword = false;
