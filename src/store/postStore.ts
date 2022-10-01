@@ -29,8 +29,7 @@ export const usePostStore = defineStore("post", {
     },
 
     getPosts(state) {
-      return (params: { date: string }) => {
-        const date = params.date;
+      return () => {
         let posts = JSON.parse(JSON.stringify(state.posts));
         posts = posts.map((element: Post) => {
           element.cover.source =

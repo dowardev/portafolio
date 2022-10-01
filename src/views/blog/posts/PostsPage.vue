@@ -258,9 +258,7 @@ export default defineComponent({
 
   computed: {
     getPosts(): Post[] | undefined {
-      return this.usePost.getPosts({
-        date: this.usePost.getCurrentPage()!,
-      });
+      return this.usePost.getPosts();
     },
   },
 

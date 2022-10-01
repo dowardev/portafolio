@@ -100,7 +100,6 @@ export default defineComponent({
           coverId,
           images,
         });
-        return;
       } catch (e: any) {
         throw new Error(e);
       }
@@ -139,7 +138,6 @@ export default defineComponent({
           image,
           graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
         });
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return response.id!;
       } catch (e: any) {
         throw new Error(e);
@@ -151,8 +149,8 @@ export default defineComponent({
     },
 
     async refreshPostsCotent() {
-      const currentPage = this.usePost.getCurrentPage()!;
-      if (currentPage == "") return;
+      let currentPage = this.usePost.getCurrentPage()!;
+      if (currentPage == undefined) currentPage = "";
 
       try {
         await this.usePost.loadDates({

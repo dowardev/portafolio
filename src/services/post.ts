@@ -147,9 +147,11 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
 
   return new Promise((resolve, reject) => {
     if (params.graphql.refetch) refetch();
-
-    if (result.value != undefined) resolve(result.value.posts.posts);
-    else onResult((response) => resolve(response.data.posts.posts));
+    if (result.value && result.value.posts.posts != undefined)
+      resolve(result.value.posts.posts);
+    else {
+      onResult((response) => resolve(response.data.posts.posts));
+    }
 
     onError((error) => {
       reject(error);

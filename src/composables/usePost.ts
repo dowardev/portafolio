@@ -63,9 +63,8 @@ export const usePost = () => {
     return post ? post : undefined;
   }
 
-  function getPosts(params: { date: string }): Post[] | undefined {
-    const date = params.date;
-    const posts = postStore.getPosts({ date: date });
+  function getPosts(): Post[] | undefined {
+    const posts = postStore.getPosts();
     return posts ? posts : undefined;
   }
 
