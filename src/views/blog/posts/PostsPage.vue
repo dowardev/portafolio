@@ -1,11 +1,6 @@
 <template>
   <ion-page>
-    <ion-header
-      collapse="fade"
-      :translucent="true"
-      mode="ios"
-      class="ion-no-border"
-    >
+    <ion-header collapse="fade" :translucent="true" mode="ios">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
@@ -61,10 +56,10 @@
         </ion-toolbar>
       </ion-header>
 
-      <section v-if="getPosts!.length > 0">
+      <section v-if="getPosts!.length > 0" class="sticky">
         <!-- date selector -->
         <!-- prev date -->
-        <ion-item-divider sticky>
+        <ion-item-divider class="blur-effect blur-effect-color">
           <div style="width: 100%; display: flex; justify-content: center">
             <ion-button
               fill="clear"
@@ -422,10 +417,11 @@ export default defineComponent({
       await popover.present();
 
       const { data } = await popover.onDidDismiss();
-      this.goToPage({
-        currentPage: data,
-        option: "custom",
-      });
+      if (data != undefined)
+        this.goToPage({
+          currentPage: data,
+          option: "custom",
+        });
     },
   },
 });
@@ -441,5 +437,10 @@ export default defineComponent({
 }
 .loadContent {
   display: none !important;
+}
+.sticky {
+  position: sticky;
+  z-index: 3;
+  top: 0px;
 }
 </style>

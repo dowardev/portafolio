@@ -75,6 +75,7 @@
   /* others */
   --ion-toolbar-background: #ffffff;
   --background-color: 255, 255, 255;
+  --text-color: #4c566a;
 }
 
 *.dark {
@@ -115,6 +116,7 @@
   /* others */
   --text-opacity: 0.7;
   --background-color: 46, 52, 64;
+  --text-color: #eceff4;
 }
 
 @font-face {
@@ -150,9 +152,9 @@ ion-text,
 ol,
 ul {
   font-family: OpenSans-Regular;
-  opacity: var(--text-opacity);
   font-size: 1.2rem;
   line-height: 2em;
+  color: var(--text-color);
 }
 
 .transparent {

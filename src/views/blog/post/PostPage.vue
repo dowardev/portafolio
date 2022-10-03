@@ -130,9 +130,8 @@
 
         <ion-row class="ion-padding-start">
           <ion-col size="12">
-            <Markdown
+            <MarkdownItComponent
               :source="usePost.getPost({ id: postId })!.content"
-              :html="true"
             />
           </ion-col>
         </ion-row>
@@ -155,8 +154,6 @@ import {
   IonCol,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-// @ts-ignore
-import Markdown from "vue3-markdown-it";
 import { deletePost } from "../../../services/post";
 import {
   chevronBackOutline,
@@ -174,6 +171,7 @@ import { useUser } from "../../../composables/useUser";
 import { format } from "date-fns";
 import "highlight.js/styles/atom-one-dark.css";
 import { useSystem } from "../../../composables/useSystem";
+import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
 
 export default defineComponent({
   name: "PostPage",
@@ -183,11 +181,11 @@ export default defineComponent({
     IonPage,
     IonTitle,
     IonToolbar,
-    Markdown,
     IonButtons,
     IonIcon,
     IonRow,
     IonCol,
+    MarkdownItComponent,
   },
 
   setup() {

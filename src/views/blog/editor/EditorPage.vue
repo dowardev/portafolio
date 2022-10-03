@@ -167,12 +167,7 @@
         <ion-row class="ion-padding">
           <h1>{{ postTitle }}</h1>
           <ion-col size="12">
-            <Markdown
-              :source="postContent"
-              :html="true"
-              :linkify="true"
-              :highlightjs="true"
-            />
+            <MarkdownItComponent :source="postContent" />
           </ion-col>
         </ion-row>
       </section>
@@ -202,8 +197,6 @@ import {
   IonItemDivider,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-// @ts-ignore
-import Markdown from "vue3-markdown-it";
 import {
   saveOutline,
   imageOutline,
@@ -212,7 +205,7 @@ import {
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import "highlight.js/styles/monokai.css";
+import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
 
 export default defineComponent({
   name: "EditorPage",
@@ -221,7 +214,6 @@ export default defineComponent({
     IonHeader,
     IonTitle,
     IonToolbar,
-    Markdown,
     IonSegment,
     IonSegmentButton,
     IonTextarea,
@@ -235,6 +227,7 @@ export default defineComponent({
     IonCol,
     IonPage,
     IonItemDivider,
+    MarkdownItComponent,
   },
 
   props: {

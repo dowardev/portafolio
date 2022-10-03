@@ -22,7 +22,7 @@ import { defineComponent } from "vue";
 import { usePost } from "../../../composables/usePost";
 
 export default defineComponent({
-  name: "Popover",
+  name: "PopoverComponent",
   components: { IonContent, IonDatetime },
 
   setup() {
