@@ -1,6 +1,11 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header 
+      :translucent="true"
+      collapse="fade"
+      mode="ios"
+      class="ion-no-border"
+>
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button
@@ -23,9 +28,10 @@
           <h1 style="color: white !important">Bienvenido</h1>
         </ion-col>
       </ion-row>
+
       <ion-row class="center center-vertical-card-login">
         <ion-col size="12" size-lg="6" size-xl="4" class="card-form">
-          <section>
+          <section class="center">
             <ion-card>
               <ion-card-header>
                 <div class="center">
@@ -198,21 +204,24 @@
           </section>
 
           <section>
-            <ion-button
-              fill="clear"
-              :disabled="spinners.buttonLogin"
-              expand="full"
-              @click="login()"
-            >
-              <ion-label v-if="spinners.buttonLogin == false"
-                >¿Ya tienes cuenta?</ion-label
+            <div class="center">
+              <ion-button
+                fill="clear"
+                :disabled="spinners.buttonLogin"
+                expand="full"
+                size="small"
+                @click="login()"
               >
-              <ion-spinner
-                v-if="spinners.buttonLogin"
-                name="crescent"
-                color="primary"
-              ></ion-spinner>
-            </ion-button>
+                <ion-label v-if="spinners.buttonLogin == false"
+                  >¿Ya tienes cuenta?</ion-label
+                >
+                <ion-spinner
+                  v-if="spinners.buttonLogin"
+                  name="crescent"
+                  color="primary"
+                ></ion-spinner>
+              </ion-button>
+            </div>
           </section>
         </ion-col>
       </ion-row>

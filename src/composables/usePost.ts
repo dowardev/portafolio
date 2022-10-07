@@ -1,19 +1,18 @@
 import { usePostStore } from "../store/postStore";
 import { storeToRefs } from "pinia";
 import { Graphql, Post } from "../services/interfaces";
-import { useSystem } from "./useSystem";
 import {
   getPosts as getPostsService,
   getPost as getPostService,
   getPostsDates,
   deletePost as deletePostService,
 } from "../services/post";
-
-const openToastError = useSystem().openToastError;
+import { useSystem } from "./useSystem";
 
 export const usePost = () => {
   const postStore = usePostStore();
   const postRefs = storeToRefs(postStore);
+  const openToastError = useSystem().openToastError;
 
   async function loadPosts(params: { date: string; graphql: Graphql }) {
     try {

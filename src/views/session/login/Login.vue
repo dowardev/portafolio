@@ -1,6 +1,11 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header 
+      :translucent="true"
+      collapse="fade"
+      mode="ios"
+      class="ion-no-border"
+>
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button
@@ -28,136 +33,137 @@
 
       <ion-row class="center center-vertical-card-login">
         <ion-col size="12" size-lg="6" size-xl="4" class="card-form">
-          <ion-card>
-            <ion-card-content>
-              <div class="center">
-                <img
-                  src="../../../assets/otros/key.png"
-                  alt=""
-                  class="imagen-usuario"
-                />
-              </div>
-              <form>
-                <ion-item lines="inset" class="transparent">
-                  <ion-icon
-                    slot="start"
-                    :icon="mailOpenOutline"
-                    class="item-icon"
-                  >
-                  </ion-icon>
-                  <ion-label position="floating">
-                    Usuario o correo electrónico
-                  </ion-label>
-                  <ion-input
-                    v-model="(v$ as any).form.email.$model"
-                    type="email"
-                  >
-                  </ion-input>
-                </ion-item>
-                <div
-                  v-for="(error, index) of (v$ as any).form['email'].$errors"
-                  :key="index"
-                >
-                  <div class="error">{{ error.$message }}</div>
+          <section class="center">
+            <ion-card>
+              <ion-card-content>
+                <div class="center">
+                  <img
+                    src="../../../assets/otros/key.png"
+                    alt=""
+                    class="imagen-usuario"
+                  />
                 </div>
+                <form>
+                  <ion-item lines="inset" class="transparent">
+                    <ion-icon
+                      slot="start"
+                      :icon="mailOpenOutline"
+                      class="item-icon"
+                    >
+                    </ion-icon>
+                    <ion-label position="floating">
+                      Usuario o correo electrónico
+                    </ion-label>
+                    <ion-input
+                      v-model="(v$ as any).form.email.$model"
+                      type="email"
+                    >
+                    </ion-input>
+                  </ion-item>
+                  <div
+                    v-for="(error, index) of (v$ as any).form['email'].$errors"
+                    :key="index"
+                  >
+                    <div class="error">{{ error.$message }}</div>
+                  </div>
 
-                <ion-item lines="inset" class="transparent">
-                  <ion-icon
-                    slot="start"
-                    :icon="fingerPrintOutline"
-                    class="item-icon"
-                  >
-                  </ion-icon>
-                  <ion-label position="floating">Contraseña</ion-label>
-                  <ion-input
-                    v-model="(v$ as any).form.password.$model"
-                    :type="inputTypePassword"
-                  >
-                  </ion-input>
-                  <ion-button
-                    v-if="inputTypePassword == 'text'"
-                    slot="end"
-                    style="margin-top: 20px"
-                    fill="clear"
-                    @click="inputTypePassword = 'password'"
-                  >
-                    <ion-icon :icon="eyeOffOutline"></ion-icon>
-                  </ion-button>
-                  <ion-button
-                    v-if="inputTypePassword == 'password'"
-                    slot="end"
-                    fill="clear"
-                    style="margin-top: 20px"
-                    @click="inputTypePassword = 'text'"
-                  >
-                    <ion-icon :icon="eyeOutline"></ion-icon>
-                  </ion-button>
-                </ion-item>
+                  <ion-item lines="inset" class="transparent">
+                    <ion-icon
+                      slot="start"
+                      :icon="fingerPrintOutline"
+                      class="item-icon"
+                    >
+                    </ion-icon>
+                    <ion-label position="floating">Contraseña</ion-label>
+                    <ion-input
+                      v-model="(v$ as any).form.password.$model"
+                      :type="inputTypePassword"
+                    >
+                    </ion-input>
+                    <ion-button
+                      v-if="inputTypePassword == 'text'"
+                      slot="end"
+                      style="margin-top: 20px"
+                      fill="clear"
+                      @click="inputTypePassword = 'password'"
+                    >
+                      <ion-icon :icon="eyeOffOutline"></ion-icon>
+                    </ion-button>
+                    <ion-button
+                      v-if="inputTypePassword == 'password'"
+                      slot="end"
+                      fill="clear"
+                      style="margin-top: 20px"
+                      @click="inputTypePassword = 'text'"
+                    >
+                      <ion-icon :icon="eyeOutline"></ion-icon>
+                    </ion-button>
+                  </ion-item>
 
-                <div
-                  v-for="(error, index) of (v$ as any).form.password.$errors"
-                  :key="index"
+                  <div
+                    v-for="(error, index) of (v$ as any).form.password.$errors"
+                    :key="index"
+                  >
+                    <div class="error">{{ error.$message }}</div>
+                  </div>
+                </form>
+
+                <ion-button
+                  fill="clear"
+                  :disabled="(v$ as any).form.$invalid || spinners.buttonLogin"
+                  expand="full"
+                  @click="login()"
                 >
-                  <div class="error">{{ error.$message }}</div>
-                </div>
-              </form>
-
-              <ion-button
-                fill="clear"
-                :disabled="(v$ as any).form.$invalid || spinners.buttonLogin"
-                expand="full"
-                @click="login()"
-              >
-                <ion-label v-if="spinners.buttonLogin == false">
-                  Iniciar sesión</ion-label
-                >
-                <ion-spinner
-                  v-if="spinners.buttonLogin"
-                  name="crescent"
-                ></ion-spinner>
-              </ion-button>
-            </ion-card-content>
-          </ion-card>
+                  <ion-label v-if="spinners.buttonLogin == false">
+                    Iniciar sesión</ion-label
+                  >
+                  <ion-spinner
+                    v-if="spinners.buttonLogin"
+                    name="crescent"
+                  ></ion-spinner>
+                </ion-button>
+              </ion-card-content>
+            </ion-card>
+          </section>
 
           <section>
             <div class="center">
-              <ion-item lines="none" class="transparent">
-                <ion-button
-                  class="options"
-                  fill="clear"
-                  :disabled="spinners.buttonForgotPassword"
-                  @click="forgotPassword()"
+              <ion-button
+                class="options"
+                fill="clear"
+                :disabled="spinners.buttonForgotPassword"
+                expand="full"
+                size="small"
+                @click="forgotPassword()"
+              >
+                <ion-label v-if="spinners.buttonForgotPassword == false"
+                  >¿Olvidaste la contraseña?</ion-label
                 >
-                  <ion-label v-if="spinners.buttonForgotPassword == false"
-                    >¿Olvidaste la contraseña?</ion-label
-                  >
-                  <ion-spinner
-                    v-if="spinners.buttonForgotPassword"
-                    name="crescent"
-                  ></ion-spinner>
-                </ion-button>
-              </ion-item>
+                <ion-spinner
+                  v-if="spinners.buttonForgotPassword"
+                  name="crescent"
+                ></ion-spinner>
+              </ion-button>
             </div>
 
             <div class="center">
-              <ion-item lines="none" class="transparent">
-                <ion-button
-                  class="options"
-                  fill="clear"
-                  :disabled="spinners.buttonCreateAccount"
-                  expand="full"
-                  @click="createAccount()"
+              <ion-button
+                class="options"
+                fill="clear"
+                :disabled="spinners.buttonCreateAccount"
+                expand="full"
+                size="small"
+                @click="createAccount()"
+              >
+                <ion-label v-if="spinners.buttonCreateAccount == false"
+                  >Crear cuenta</ion-label
                 >
-                  <ion-label v-if="spinners.buttonCreateAccount == false"
-                    >Crear cuenta</ion-label
-                  >
-                  <ion-spinner
-                    v-if="spinners.buttonCreateAccount"
-                    name="crescent"
-                    color="primary"
-                  ></ion-spinner>
-                </ion-button>
-              </ion-item>
+                <ion-spinner
+                  v-if="spinners.buttonCreateAccount"
+                  name="crescent"
+                  color="primary"
+                ></ion-spinner>
+              </ion-button>
             </div>
           </section>
         </ion-col>
@@ -360,6 +366,7 @@ export default defineComponent({
       this.spinners.buttonForgotPassword = true;
 
       const alertResponse = await this.presentAlertRestorePassword();
+      console.log(alertResponse);
       if (alertResponse.role == "cancel") {
         this.spinners.buttonForgotPassword = false;
         return;
@@ -420,8 +427,8 @@ export default defineComponent({
 
       await alert.present();
       const response = await alert.onDidDismiss();
-      // eslint-disable-next-line
-      return { email: response.data.values.email, role: response.role! };
+      if (response.data == undefined) return { email: "", role: "cancel" };
+      else return { email: response.data.values.email, role: response.role! };
     },
   },
 });

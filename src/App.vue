@@ -6,7 +6,7 @@
         menu-id="mainMenu"
         side="start"
         type="overlay"
-        style="--side-max-width: 200px"
+        :style="changeSizeMenu"
         class="menu-color"
       >
         <MenuComponent></MenuComponent>
@@ -25,7 +25,7 @@ import {
   toastController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import MenuComponent from "./views/menu/MenuComponent.vue";
+import MenuComponent from "./components/menu/MenuComponent.vue";
 import {
   detectToggleTheme,
   createFirstCookie,
@@ -36,6 +36,7 @@ import {
 import { closeOutline } from "ionicons/icons";
 import { useUser } from "./composables/useUser";
 import { getUserToken } from "./services/user";
+import { useSystem } from "./composables/useSystem";
 
 export default defineComponent({
   name: "App",
@@ -48,7 +49,47 @@ export default defineComponent({
   },
 
   setup() {
-    return { useUser: useUser() };
+    return {
+      useUser: useUser(),
+      detectMenuCollapse: useSystem().detectMenuCollapse,
+    };
+  },
+
+  data() {
+    return {
+      menuSize: {
+        min: "280%",
+        max: "280%",
+      },
+      windowSize: {
+        min: window.innerWidth,
+        max: window.innerWidth,
+      },
+      isMenuCollapsed: false,
+    };
+  },
+
+  computed: {
+    changeSizeMenu() {
+      const option = this.detectMenuCollapse().value;
+
+      let size = {
+        min: "280px",
+        max: "280px",
+      };
+      if (window.innerWidth <= 767) {
+        size = {
+          min: "100%",
+          max: "100%",
+        };
+      }
+      if (option == true && window.innerWidth >= 768)
+        size = {
+          min: "88px",
+          max: "88px",
+        };
+      return { "min-width": size.min, "max-width": size.max };
+    },
   },
 
   mounted() {

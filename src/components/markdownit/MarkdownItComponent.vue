@@ -19,10 +19,6 @@ export default defineComponent({
       default: "",
     },
   },
-
-  mounted() {
-    console.log(this.source);
-  },
 });
 </script>
 

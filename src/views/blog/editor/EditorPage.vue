@@ -12,14 +12,18 @@
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
+
         <ion-title>{{ pageTitle }}</ion-title>
+
         <ion-buttons slot="end" :collapse="true">
+          <!-- save -->
           <ion-button
-            :disabled="(v$ as any).$invalid || spinnerSavePost"
+            :disabled="v$.$invalid || spinnerSavePost"
             @click="save()"
           >
             <ion-icon
               v-if="spinnerSavePost == false"
+              slot="start"
               :icon="saveOutline"
             ></ion-icon>
             <ion-spinner
@@ -28,6 +32,68 @@
               color="primary"
             ></ion-spinner>
           </ion-button>
+
+          <ion-button id="click-trigger-more-options">
+            <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
+          </ion-button>
+          <ion-popover
+            trigger="click-trigger-more-options"
+            trigger-action="click"
+            :backdrop-dismiss="true"
+            :mode="modeDesingElements"
+          >
+            <ion-content>
+              <MqResponsive target="xs">
+                <ion-item button @click="activatePreviewMode()">
+                  <ion-icon
+                    slot="start"
+                    :icon="eyeOutline"
+                    color="primary"
+                  ></ion-icon>
+                  <ion-label class="ion-text-wrap">Previsualizacion</ion-label>
+                </ion-item>
+              </MqResponsive>
+
+              <ion-item button @click="isEditorMaximized = !isEditorMaximized">
+                <ion-icon
+                  slot="start"
+                  :icon="expandOutline"
+                  color="primary"
+                ></ion-icon>
+                <ion-label class="ion-text-wrap">Maximizar editor</ion-label>
+              </ion-item>
+
+              <!-- input image -->
+              <ion-item
+                button
+                lines="none"
+                :disabled="spinnerSaveImage"
+                @click="($refs as any).inputImage.click()"
+              >
+                <ion-icon
+                  v-if="spinnerSaveImage == false"
+                  slot="start"
+                  :icon="imagesOutline"
+                  color="primary"
+                ></ion-icon>
+
+                <ion-label class="ion-text-wrap">Subir multimedia</ion-label>
+
+                <ion-spinner
+                  v-if="spinnerSaveImage"
+                  name="crescent"
+                  color="primary"
+                ></ion-spinner>
+              </ion-item>
+              <input
+                ref="inputImage"
+                accept="image/*"
+                type="file"
+                style="display: none"
+                @change="uploadImage($event)"
+              />
+            </ion-content>
+          </ion-popover>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -36,40 +102,19 @@
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
           <ion-title size="large">{{ pageTitle }}</ion-title>
+
           <ion-buttons slot="end" :collapse="true">
-            <ion-button
-              :disabled="v$.$invalid || spinnerSavePost"
-              @click="save()"
-            >
-              <ion-icon
-                v-if="spinnerSavePost == false"
-                :icon="saveOutline"
-              ></ion-icon>
-              <ion-spinner
-                v-if="spinnerSavePost"
-                name="crescent"
-                color="primary"
-              ></ion-spinner>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
+            <MqResponsive target="xs">
+              <ion-button @click="activatePreviewMode()"
+                ><ion-icon :icon="eyeOutline"></ion-icon
+              ></ion-button>
+            </MqResponsive>
 
-      <ion-item-divider sticky>
-        <ion-segment v-model="segment" scrollable>
-          <ion-segment-button value="editor">
-            <ion-label>Editor</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="result">
-            <ion-label>Resultado</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </ion-item-divider>
+            <ion-button @click="isEditorMaximized = !isEditorMaximized"
+              ><ion-icon :icon="expandOutline"></ion-icon
+            ></ion-button>
 
-      <section v-if="segment == 'editor'">
-        <!-- input image -->
-        <div style="display: inline-block; width: 100%">
-          <div style="float: right">
+            <!-- input image -->
             <ion-item lines="none">
               <ion-button
                 slot="end"
@@ -88,89 +133,104 @@
                 ></ion-spinner>
               </ion-button>
             </ion-item>
-          </div>
-          <input
-            ref="inputImage"
-            accept="image/*"
-            type="file"
-            style="display: none"
-            @change="uploadImage($event)"
-          />
-        </div>
+            <input
+              ref="inputImage"
+              accept="image/*"
+              type="file"
+              style="display: none"
+              @change="uploadImage($event)"
+            />
 
-        <ion-item>
-          <ion-label position="floating">Titulo</ion-label>
-          <ion-input
-            v-model="(v$ as any).postTitle.$model"
-            :spellcheck="true"
-            autocorrect="on"
-            pattern="text"
+            <ion-button
+              :disabled="v$.$invalid || spinnerSavePost"
+              @click="save()"
+            >
+              <ion-icon
+                v-if="spinnerSavePost == false"
+                :icon="saveOutline"
+              ></ion-icon>
+              <ion-spinner
+                v-if="spinnerSavePost"
+                name="crescent"
+                color="primary"
+              ></ion-spinner>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-row v-if="isEditorMaximized == false">
+        <ion-col size="12" size-md="6">
+          <!-- title -->
+          <ion-item>
+            <ion-label position="floating">Titulo</ion-label>
+            <ion-input
+              v-model="(v$ as any).postTitle.$model"
+              :spellcheck="true"
+              autocorrect="on"
+              pattern="text"
+            >
+            </ion-input>
+          </ion-item>
+          <div
+            v-for="(error, index) of (v$ as any).postTitle.$errors"
+            :key="index"
           >
-          </ion-input>
-        </ion-item>
-        <div
-          v-for="(error, index) of (v$ as any).postTitle.$errors"
-          :key="index"
-        >
-          <div class="error">{{ error.$message }}</div>
-        </div>
+            <div class="error">{{ error.$message }}</div>
+          </div>
 
-        <!-- input cover -->
-        <ion-item
-          button
-          lines="full"
-          @click="($refs as any).inputCover.click()"
-        >
-          <ion-label slot="start">Portada</ion-label>
-          <input
-            ref="inputCover"
-            style="display: none"
-            accept="image/*"
-            type="file"
-            @change="uploadCover($event)"
+          <!-- input cover -->
+          <ion-item
+            button
+            lines="full"
+            @click="($refs as any).inputCover.click()"
+          >
+            <ion-label slot="start">Portada</ion-label>
+            <input
+              ref="inputCover"
+              style="display: none"
+              accept="image/*"
+              type="file"
+              @change="uploadCover($event)"
+            />
+            <ion-label slot="end">{{ coverName }}</ion-label>
+          </ion-item>
+          <div
+            v-for="(error, index) of (v$ as any).coverSource.$errors"
+            :key="index"
+          >
+            <div class="error">{{ error.$message }}</div>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" size-md="6">
+          <!-- content -->
+          <textarea
+            id="editor"
+            v-model="postContent"
+            :contenteditable="true"
+            class="editor"
+            style="width: 100%; font-size: 18px"
+            @scroll="scrollEditor()"
+          ></textarea>
+        </ion-col>
+
+        <ion-col size="12" size-md="6">
+          <!-- view -->
+          <MarkdownItComponent
+            id="viewer"
+            :source="postContent"
+            style="
+              height: calc(87vh - 50px);
+              overflow: scroll;
+              width: 100%;
+              margin-top: 18px;
+            "
           />
-          <ion-label slot="end">{{ coverName }}</ion-label>
-        </ion-item>
-        <div
-          v-for="(error, index) of (v$ as any).coverSource.$errors"
-          :key="index"
-        >
-          <div class="error">{{ error.$message }}</div>
-        </div>
-
-        <ion-item>
-          <ion-label position="floating">Editor</ion-label>
-          <ion-textarea
-            v-model="(v$ as any).postContent.$model"
-            :auto-grow="true"
-            placeholder="Contenido"
-            :spellcheck="true"
-            autocorrect="on"
-            pattern="text"
-          ></ion-textarea>
-        </ion-item>
-        <div
-          v-for="(error, index) of (v$ as any).postContent.$errors"
-          :key="index"
-        >
-          <div class="error">{{ error.$message }}</div>
-        </div>
-      </section>
-
-      <!-- view -->
-      <section v-if="segment == 'result'">
-        <ion-row>
-          <ion-col size="12">
-            <img :src="coverSource" />
-          </ion-col>
-        </ion-row>
-        <ion-row class="ion-padding">
-          <h1>{{ postTitle }}</h1>
-          <ion-col size="12">
-            <MarkdownItComponent :source="postContent" />
-          </ion-col>
-        </ion-row>
-      </section>
+        </ion-col>
+      </ion-row>
     </ion-content>
   </ion-page>
 </template>
@@ -182,9 +242,6 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonSegment,
-  IonSegmentButton,
-  IonTextarea,
   IonInput,
   IonButtons,
   IonItem,
@@ -194,7 +251,8 @@ import {
   IonRow,
   IonCol,
   isPlatform,
-  IonItemDivider,
+  modalController,
+  IonPopover,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
@@ -202,10 +260,15 @@ import {
   imageOutline,
   chevronBackOutline,
   imagesOutline,
+  expandOutline,
+  eyeOutline,
+  ellipsisVerticalOutline,
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
+import PreviewModal from "./PreviewModal.vue";
+import { MqResponsive } from "vue3-mq";
 
 export default defineComponent({
   name: "EditorPage",
@@ -214,9 +277,6 @@ export default defineComponent({
     IonHeader,
     IonTitle,
     IonToolbar,
-    IonSegment,
-    IonSegmentButton,
-    IonTextarea,
     IonInput,
     IonButtons,
     IonItem,
@@ -226,8 +286,9 @@ export default defineComponent({
     IonRow,
     IonCol,
     IonPage,
-    IonItemDivider,
     MarkdownItComponent,
+    IonPopover,
+    MqResponsive,
   },
 
   props: {
@@ -246,7 +307,9 @@ export default defineComponent({
   emits: ["save", "uploadImage"],
 
   setup() {
-    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
+    const modeDesingElements = isPlatform("ios")
+      ? "ios"
+      : ("md" as "md" | "ios");
     return {
       saveOutline,
       imageOutline,
@@ -255,6 +318,9 @@ export default defineComponent({
       v$: useVuelidate(),
       modeDesingElements,
       pageTitle: "Editor",
+      expandOutline,
+      eyeOutline,
+      ellipsisVerticalOutline,
     };
   },
 
@@ -266,7 +332,15 @@ export default defineComponent({
       coverName: "",
       coverSource: "",
       newCoverStatus: false,
+      isEditorMaximized: false,
+      previewMode: false,
     };
+  },
+
+  computed: {
+    windowWidth() {
+      return window.innerWidth;
+    },
   },
 
   watch: {
@@ -336,10 +410,61 @@ export default defineComponent({
       this.coverName = "";
       this.v$.$reset();
     },
+
+    saveContent(e: any) {
+      this.postContent = e.target.innerText;
+    },
+
+    scrollEditor() {
+      try {
+        const editor = document.getElementById("editor");
+        document.getElementById("viewer")!.scrollTop = editor!.scrollTop;
+      } catch (e) {
+        //
+      }
+    },
+
+    activatePreviewMode() {
+      if (window.innerWidth <= 767) this.openModalPreview();
+      else this.previewMode = !this.previewMode;
+    },
+
+    async openModalPreview() {
+      const position = document.getElementById("editor")!.scrollTop;
+      const content = this.postContent;
+
+      const modal = await modalController.create({
+        component: PreviewModal,
+        componentProps: {
+          content,
+          position,
+        },
+      });
+      modal.present();
+    },
   },
 });
 </script>
 
 <style scoped>
-/* @import "highlight.js/styles/androidstudio.css"; */
+.stick {
+  position: sticky;
+  z-index: 3;
+  top: 0px;
+}
+.editor {
+  height: calc(87vh - 50px);
+  overflow: scroll;
+  font-size: 1.2rem;
+  line-height: 2em;
+}
+@media only screen and (min-width: 768px) {
+  .editor {
+    height: calc(87vh - 50px);
+    overflow: scroll;
+    font-size: 1.2rem;
+    line-height: 2em;
+    margin-top: 20px;
+  }
+}
 </style>

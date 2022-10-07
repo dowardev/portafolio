@@ -5,11 +5,10 @@ import { deleteUserAccount } from "../services/user";
 import { useSystem } from "./useSystem";
 import { searchUsers } from "../services/admin";
 
-const openToastError = useSystem().openToastError;
-
 export const useUsers = () => {
   const usersStore = useUsersStore();
   const users = storeToRefs(usersStore).users;
+  const openToastError = useSystem().openToastError;
 
   async function loadUsers(params: {
     graphql: Graphql;

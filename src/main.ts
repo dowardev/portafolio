@@ -27,7 +27,16 @@ import "./theme/variables.css";
 import { createPinia } from "pinia";
 const pinia = createPinia();
 
-const app = createApp(App).use(IonicVue).use(pinia).use(router);
+// vue3-mq
+import { Vue3Mq } from "vue3-mq";
+
+const app = createApp(App)
+  .use(IonicVue)
+  .use(pinia)
+  .use(Vue3Mq, {
+    preset: "bootstrap5",
+  })
+  .use(router);
 
 router.isReady().then(() => {
   app.mount("#app");

@@ -2,7 +2,10 @@
   <ion-page>
     <ion-content>
       <ion-toolbar>
-        <img src="@/assets/portafolio/dowar.png" />
+        <img
+          src="@/assets/portafolio/dowar.png"
+          style="max-width: 230px; margin-left: 14px"
+        />
       </ion-toolbar>
 
       <ion-toolbar class="menu-color">
@@ -153,6 +156,14 @@
         button
         @click="openRoute('/presentation')"
       >
+        <ion-icon
+          slot="start"
+          :icon="personOutline"
+          :class="{
+            optionSelected: $route.path == '/presentation',
+            optionNoSelected: $route.path != '/presentation',
+          }"
+        ></ion-icon>
         <ion-label
           :class="{
             optionSelected: $route.path == '/presentation',
@@ -162,12 +173,21 @@
           Presentación
         </ion-label>
       </ion-item>
+
       <ion-item
         lines="none"
         button
         class="transparent"
         @click="openRoute('/history')"
       >
+        <ion-icon
+          slot="start"
+          :icon="bookOutline"
+          :class="{
+            optionSelected: $route.path == '/history',
+            optionNoSelected: $route.path != '/history',
+          }"
+        ></ion-icon>
         <ion-label
           :class="{
             optionSelected: $route.path == '/history',
@@ -177,12 +197,21 @@
           Historia
         </ion-label>
       </ion-item>
+
       <ion-item
         class="transparent"
         lines="none"
         button
         @click="openRoute('/skills')"
       >
+        <ion-icon
+          slot="start"
+          :icon="constructOutline"
+          :class="{
+            optionSelected: $route.path == '/skills',
+            optionNoSelected: $route.path != '/skills',
+          }"
+        ></ion-icon>
         <ion-label
           :class="{
             optionSelected: $route.path == '/skills',
@@ -192,12 +221,21 @@
           Habilidades</ion-label
         >
       </ion-item>
+
       <ion-item
         lines="none"
         class="transparent"
         button
         @click="openRoute('/portfolio')"
       >
+        <ion-icon
+          slot="start"
+          :icon="fileTrayOutline"
+          :class="{
+            optionSelected: $route.path == '/portfolio',
+            optionNoSelected: $route.path != '/portfolio',
+          }"
+        ></ion-icon>
         <ion-label
           :class="{
             optionSelected: $route.path == '/portfolio',
@@ -207,12 +245,21 @@
           Portfolio
         </ion-label>
       </ion-item>
+
       <ion-item
         lines="none"
         class="transparent"
         button
         @click="openRoute('/blog')"
       >
+        <ion-icon
+          slot="start"
+          :icon="libraryOutline"
+          :class="{
+            optionSelected: $route.path == '/blog' || $route.params.date,
+            optionNoSelected: $route.path != '/blog' && !$route.params.date,
+          }"
+        ></ion-icon>
         <ion-label
           :class="{
             optionSelected: $route.path == '/blog' || $route.params.date,
@@ -224,6 +271,7 @@
       </ion-item>
     </ion-content>
 
+    <!-- footer -->
     <ion-footer class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="end">
@@ -275,6 +323,7 @@
           >
             <ion-icon :icon="brushOutline"></ion-icon>
           </ion-button>
+
           <ion-button
             v-if="isAndroidPlatform || isIosPlatform"
             fill="clear"
@@ -292,6 +341,16 @@
           <!-- policies -->
           <ion-button fill="clear" color="primary" @click="goToPoliciesPage()">
             <ion-icon :icon="documentsOutline"></ion-icon>
+          </ion-button>
+
+          <!-- collapse menu -->
+          <ion-button
+            v-if="windowSize.width >= 767"
+            fill="clear"
+            color="primary"
+            @click="changeMenuCollapse({ option: true })"
+          >
+            <ion-icon :icon="chevronForwardOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
@@ -330,17 +389,23 @@ import {
   cogOutline,
   ellipsisVerticalOutline,
   cashOutline,
+  bookOutline,
+  constructOutline,
+  fileTrayOutline,
+  libraryOutline,
+  chevronBackOutline,
+  chevronForwardOutline,
 } from "ionicons/icons";
-import DarkMode from "./darkmode/DarkMode.vue";
-import { logout } from "../../services/session";
-import AppsComponent from "./apps/Apps.vue";
-import DonationsComponent from "./donations/Donations.vue";
-import { useUser } from "../../composables/useUser";
-import { USER_MENU } from "../../services/graphql";
-import { useSystem } from "../../composables/useSystem";
+import DarkMode from "../darkmode/DarkMode.vue";
+import { logout } from "../../../services/session";
+import AppsComponent from "../apps/Apps.vue";
+import DonationsComponent from "../donations/Donations.vue";
+import { useUser } from "../../../composables/useUser";
+import { USER_MENU } from "../../../services/graphql";
+import { useSystem } from "../../../composables/useSystem";
 
 export default defineComponent({
-  name: "MenuComponent",
+  name: "DefaultMenuComponent",
   components: {
     IonContent,
     IonPage,
@@ -381,6 +446,13 @@ export default defineComponent({
       cashOutline,
       useUser: useUser(),
       reportFeedback: useSystem().reportError,
+      bookOutline,
+      constructOutline,
+      fileTrayOutline,
+      libraryOutline,
+      chevronBackOutline,
+      chevronForwardOutline,
+      changeMenuCollapse: useSystem().changeMenuCollapse,
     };
   },
 
@@ -393,11 +465,17 @@ export default defineComponent({
         buttonUserPanel: false,
         buttonAdminPanel: false,
       },
+        windowSize: {
+          width: window.innerWidth,
+        },
     };
   },
 
   mounted() {
     this.getUser();
+    window.addEventListener("resize", () => {
+      this.windowSize.width = window.innerWidth;
+    });
   },
 
   methods: {
