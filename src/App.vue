@@ -38,6 +38,11 @@ import { useUser } from "./composables/useUser";
 import { getUserToken } from "./services/user";
 import { useSystem } from "./composables/useSystem";
 
+import { Storage } from "@ionic/storage";
+
+const store = new Storage();
+await store.create();
+
 export default defineComponent({
   name: "App",
   components: {
@@ -52,6 +57,7 @@ export default defineComponent({
     return {
       useUser: useUser(),
       detectMenuCollapse: useSystem().detectMenuCollapse,
+      changeMenuCollapse: useSystem().changeMenuCollapse,
     };
   },
 
@@ -100,6 +106,7 @@ export default defineComponent({
       setTheme({ theme: theme });
     });
     this.loadUserProps();
+    this.loadMenuCollapsedOption()
   },
 
   methods: {
@@ -144,6 +151,11 @@ export default defineComponent({
         ],
       });
       await toast.present();
+    },
+
+    async loadMenuCollapsedOption() {
+      const option = await store.get("menu-collapsed");
+      this.changeMenuCollapse({ option });
     },
   },
 });

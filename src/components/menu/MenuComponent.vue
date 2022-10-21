@@ -1,6 +1,5 @@
 <template>
   <ion-page>
-    <ion-content> </ion-content>
     <DefaultMenuComponent v-if="detectMenuCollapse().value == false" />
     <MenuCollapsed v-if="detectMenuCollapse().value == true" />
   </ion-page>

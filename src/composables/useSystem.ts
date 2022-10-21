@@ -4,6 +4,10 @@ import { storeToRefs } from "pinia";
 import FeedbackPage from "../components/feedback/FeedbackPage.vue";
 import { ReportError } from "../services/interfaces";
 import { useSystemStore } from "../store/systemStore";
+import { Storage } from "@ionic/storage";
+
+const store = new Storage();
+await store.create();
 
 export const useSystem = () => {
   const systemStore = useSystemStore();
@@ -48,9 +52,10 @@ export const useSystem = () => {
     await toast.present();
   }
 
-  function changeMenuCollapse(params: { option: boolean }) {
+  async function changeMenuCollapse(params: { option: boolean }) {
     const option = params.option;
     useSystemStore().changeMenuCollapse({ option });
+    await store.set("menu-collapsed", option);
   }
 
   function detectMenuCollapse() {
