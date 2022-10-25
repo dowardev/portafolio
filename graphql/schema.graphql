@@ -131,6 +131,11 @@ type Mutation {
 
     prueba: Prueba
         @field(resolver: "App\\GraphQL\\Resolvers\\PruebaResolver@resolve")
+
+    createContactMessage(input: ContactInput @spread): Boolean
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\others\\CreateContactResolver@resolve"
+        )
 }
 
 input LoginInput {
@@ -293,4 +298,10 @@ type PostImage {
     id: ID
     image_id: ID
     post_id: ID
+}
+input ContactInput {
+    name: String!
+    email: String!
+    subject: String!
+    description: String!
 }
