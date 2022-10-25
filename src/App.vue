@@ -41,7 +41,7 @@ import { useSystem } from "./composables/useSystem";
 import { Storage } from "@ionic/storage";
 
 const store = new Storage();
-await store.create();
+store.create();
 
 export default defineComponent({
   name: "App",

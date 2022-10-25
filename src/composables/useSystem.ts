@@ -7,7 +7,7 @@ import { useSystemStore } from "../store/systemStore";
 import { Storage } from "@ionic/storage";
 
 const store = new Storage();
-await store.create();
+store.create();
 
 export const useSystem = () => {
   const systemStore = useSystemStore();
