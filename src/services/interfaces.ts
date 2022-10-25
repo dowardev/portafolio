@@ -251,3 +251,11 @@ export interface DisableUser {
 export interface DeleteUserAccountAdmin {
   email: string;
 }
+
+// contact
+export interface ContactMessage {
+  name: string;
+  subject: string;
+  email: string;
+  description: string;
+}

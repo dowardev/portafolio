@@ -3,7 +3,6 @@ import { RouteRecordRaw } from "vue-router";
 // portfolio
 import PresentationPage from "../views/presentation/PresentationPage.vue";
 import HistoryPage from "../views/history/HistoryPage.vue";
-import SkillsPage from "../views/skills/SkillsPage.vue";
 import PortfolioPage from "../views/portfolio/PortfolioPage.vue";
 import PoliciesPage from "../views/policies/PoliciesPage.vue";
 // posts
@@ -76,11 +75,6 @@ const routes: Array<RouteRecordRaw> = [
     path: "/history",
     name: "HistoryPage",
     component: HistoryPage,
-  },
-  {
-    path: "/skills",
-    name: "SkillsPage",
-    component: SkillsPage,
   },
   {
     path: "/portfolio",

@@ -22,6 +22,13 @@
           <CardsInformationComponent />
         </ion-col>
       </ion-row>
+
+      <ion-row>
+        <ion-col>
+          <p class=center>Habilidades</p>
+          <SkillsPage />
+        </ion-col>
+      </ion-row>
     </ion-content>
   </ion-page>
 </template>
@@ -42,6 +49,7 @@ import { defineComponent } from "vue";
 import { App } from "@capacitor/app";
 import CardsInformationComponent from "./cards_information/CardInformationComponent.vue";
 import InformationComponent from "./information/InformationComponent.vue";
+import SkillsPage from "../skills/SkillsPage.vue";
 
 export default defineComponent({
   name: "PresentationPage",
@@ -54,6 +62,7 @@ export default defineComponent({
     IonCol,
     CardsInformationComponent,
     InformationComponent,
+    SkillsPage,
   },
 
   setup() {

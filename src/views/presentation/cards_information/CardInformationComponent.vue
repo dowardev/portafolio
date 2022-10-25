@@ -129,6 +129,24 @@
             </ion-content>
           </ion-popover>
         </ion-item>
+
+        <ion-item
+          id="open-modal"
+          button
+          lines="none"
+          @mouseover="fillContactForm = '#4dba87'"
+          @mouseleave="fillContactForm = defaultColorFill"
+        >
+          <ion-icon
+            slot="start"
+            :icon="chatbubble"
+            :style="{ color: fillContactForm }"
+          ></ion-icon>
+          <ion-label>Formulario de contacto</ion-label>
+        </ion-item>
+        <ion-modal ref="modal" trigger="open-modal">
+          <ContactModal />
+        </ion-modal>
       </ion-card-content>
     </ion-card>
   </ion-list>
@@ -388,7 +406,7 @@
 </template>
 
 <script lang="ts">
-import { IonContent, isPlatform } from "@ionic/vue";
+import { IonContent, isPlatform, IonModal } from "@ionic/vue";
 import { defineComponent } from "vue";
 import {
   mail,
@@ -398,13 +416,17 @@ import {
   copyOutline,
   openOutline,
   ellipsisVerticalOutline,
+  chatbubble,
 } from "ionicons/icons";
 import telegramLogo from "../../../assets/otros/icons8-telegram-app.svg";
+import ContactModal from "../../contact/ContactPage.vue";
 
 export default defineComponent({
   name: "CardInformationComponent",
   components: {
     IonContent,
+    IonModal,
+    ContactModal,
   },
 
   setup() {
@@ -421,18 +443,22 @@ export default defineComponent({
       copyOutline,
       openOutline,
       ellipsisVerticalOutline,
+      chatbubble,
     };
   },
 
   data() {
+    const defaultColorFill = "#777777";
     return {
-      fillTelegramGroup: "#777777",
-      fillTelegramChannel: "#777777",
-      fillEmailContact: "#777777",
-      fillEmailHelp: "#777777",
-      fillMastodon: "#777777",
-      fillLinkedIn: "#777777",
-      fillDev: "#777777",
+      defaultColorFill,
+      fillTelegramGroup: defaultColorFill,
+      fillTelegramChannel: defaultColorFill,
+      fillEmailContact: defaultColorFill,
+      fillEmailHelp: defaultColorFill,
+      fillMastodon: defaultColorFill,
+      fillLinkedIn: defaultColorFill,
+      fillDev: defaultColorFill,
+      fillContactForm: defaultColorFill,
     };
   },
 

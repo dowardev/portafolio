@@ -1,31 +1,4 @@
 <template>
-  <ion-page>
-    <ion-header
-      :translucent="true"
-      collapse="fade"
-      mode="ios"
-      class="ion-no-border"
-    >
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-menu-button
-            menu="mainMenu"
-            :mode="modeDesingElements"
-          ></ion-menu-button>
-        </ion-buttons>
-        <ion-title>
-          {{ pageTitle }}
-        </ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense" mode="ios">
-        <ion-toolbar>
-          <ion-title size="large">{{ pageTitle }}</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
       <ion-row>
         <ion-col
           v-for="(habilidad, indexHabilidad) in skills[0].tipo"
@@ -57,8 +30,6 @@
           </ion-card>
         </ion-col>
       </ion-row>
-    </ion-content>
-  </ion-page>
 </template>
 
 <script lang="ts">
@@ -99,13 +70,6 @@ import piniaLogo from "../../assets/otros/pinia.svg";
 export default defineComponent({
   name: "HomePage",
   components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonButtons,
-    IonMenuButton,
     IonRow,
     IonCol,
     IonCard,

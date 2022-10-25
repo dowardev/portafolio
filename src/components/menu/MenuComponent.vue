@@ -7,7 +7,7 @@
 
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { IonContent, IonPage } from "@ionic/vue";
+import {  IonPage } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { useSystem } from "../../composables/useSystem";
 import DefaultMenuComponent from "./default_menu/DefaultMenuComponent.vue";
@@ -16,7 +16,6 @@ import MenuCollapsed from "./menu_collapsed/MenuCollapsedComponent.vue";
 export default defineComponent({
   name: "MenuComponent",
   components: {
-    IonContent,
     IonPage,
     DefaultMenuComponent,
     MenuCollapsed,

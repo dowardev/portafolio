@@ -106,7 +106,7 @@ export default defineComponent({
       setTheme({ theme: theme });
     });
     this.loadUserProps();
-    this.loadMenuCollapsedOption()
+    this.loadMenuCollapsedOption();
   },
 
   methods: {
@@ -154,7 +154,8 @@ export default defineComponent({
     },
 
     async loadMenuCollapsedOption() {
-      const option = await store.get("menu-collapsed");
+      let option = await store.get("menu-collapsed");
+      if (option == null) option = false;
       this.changeMenuCollapse({ option });
     },
   },
