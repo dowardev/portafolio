@@ -103,7 +103,7 @@
                   </h2>
                 </ion-col>
 
-                <ion-col size="2">
+                <ion-col v-if="useUser.user.value.isAdmin" size="2">
                   <ion-button :id="post.id" fill="clear">
                     <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
                   </ion-button>
