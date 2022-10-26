@@ -6,11 +6,7 @@
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
         <ion-title>{{ pageTitle }}</ion-title>
-        <ion-buttons
-          slot="end"
-          :disabled="spinners.buttonAddNewPost"
-          :collapse="true"
-        >
+        <ion-buttons slot="end" :disabled="spinners.buttonAddNewPost">
           <ion-button v-if="useUser.user.value.isAdmin" @click="addPost()">
             <ion-icon
               v-if="spinners.buttonAddNewPost == false"
@@ -33,26 +29,6 @@
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
           <ion-title size="large">{{ pageTitle }}</ion-title>
-          <ion-buttons
-            slot="end"
-            :disabled="spinners.buttonAddNewPost"
-            :collapse="true"
-          >
-            <ion-button v-if="useUser.user.value.isAdmin" @click="addPost()">
-              <ion-icon
-                v-if="spinners.buttonAddNewPost == false"
-                :icon="addOutline"
-              ></ion-icon>
-              <ion-spinner
-                v-if="spinners.buttonAddNewPost"
-                name="crescent"
-                color="primary"
-              ></ion-spinner>
-            </ion-button>
-            <ion-button @click="refreshContent">
-              <ion-icon :icon="refreshOutline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
         </ion-toolbar>
       </ion-header>
 
@@ -98,59 +74,68 @@
       </section>
 
       <!-- posts -->
-      <section v-if="getPosts!.length > 0" class="ion-padding">
-        <ion-row v-for="post in getPosts" :key="post">
-          <ion-col size="4">
-            <img
-              :src="(post.cover.source!)"
-              style="cursor: pointer"
-              @click="openPost(post.id!)"
-            />
-          </ion-col>
-          <ion-col size="8">
-            <h2
-              style="margin-top: 4px; cursor: pointer"
-              @click="openPost(post.id!)"
-            >
-              {{ post.title }}
-            </h2>
-          </ion-col>
+      <section v-if="getPosts!.length > 0">
+        <ion-row class="center">
+          <ion-col
+            v-for="post in getPosts"
+            :key="post"
+            size-xs="12"
+            size-md="12"
+            size-lg="10"
+            size-xl="8"
+          >
+            <ion-card>
+              <ion-row class="ion-padding-top ion-padding-start ion-padding-bottom">
+                <ion-col size="4">
+                  <img
+                    :src="(post.cover.source!)"
+                    style="cursor: pointer"
+                    @click="openPost(post.id!)"
+                  />
+                </ion-col>
 
-          <ion-col v-if="useUser.user.value.isAdmin" size="12">
-            <ion-button
-              fill="clear"
-              :disabled="spinners.buttonEditPost ==post.id!"
-              @click="updatePost(post.id!)"
-            >
-              <ion-icon
-                v-if="spinners.buttonEditPost ==''|| spinners.buttonEditPost != post.id!"
-                :icon="createOutline"
-              ></ion-icon>
-              <ion-spinner
-                v-if="spinners.buttonEditPost==post.id!"
-                name="crescent"
-                color="primary"
-              ></ion-spinner>
-            </ion-button>
+                <ion-col size="6">
+                  <h2
+                    style="margin-top: 4px; cursor: pointer; font-size: 18px"
+                    @click="openPost(post.id!)"
+                  >
+                    {{ post.title }}
+                  </h2>
+                </ion-col>
 
-            <ion-button
-              fill="clear"
-              :disabled="spinners.buttonDeletePost ==post.id!"
-              @click="deletePost({ id: post.id! })"
-            >
-              <ion-icon
-                v-if="spinners.buttonDeletePost==''|| spinners.buttonDeletePost!= post.id!"
-                :icon="trashOutline"
-                color="danger"
-              ></ion-icon>
-              <ion-spinner
-                v-if="spinners.buttonDeletePost==post.id!"
-                name="crescent"
-                color="danger"
-              ></ion-spinner>
-            </ion-button>
+                <ion-col size="2">
+                  <ion-button :id="post.id" fill="clear">
+                    <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
+                  </ion-button>
+                  <ion-popover :trigger="post.id" :dismiss-on-select="true">
+                    <ion-content>
+                      <ion-item
+                        button
+                        :disabled="spinners.buttonEditPost ==post.id!"
+                        @click="updatePost(post.id!)"
+                      >
+                        <ion-icon
+                          v-if="spinners.buttonEditPost ==''|| spinners.buttonEditPost != post.id!"
+                          slot="start"
+                          :icon="createOutline"
+                        ></ion-icon>
+                        <ion-label>Editar</ion-label>
+                      </ion-item>
+
+                      <ion-item button @click="deletePost({ id: post.id! })">
+                        <ion-icon
+                          slot="start"
+                          :icon="trashOutline"
+                          color="danger"
+                        ></ion-icon>
+                        <ion-label>Borrar</ion-label>
+                      </ion-item>
+                    </ion-content>
+                  </ion-popover>
+                </ion-col>
+              </ion-row>
+            </ion-card>
           </ion-col>
-          <hr />
         </ion-row>
       </section>
 
@@ -186,6 +171,8 @@ import {
   IonButtons,
   IonItemDivider,
   popoverController,
+  loadingController,
+  IonPopover,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { openToast, presentAlertConfirmation } from "../../../services/system";
@@ -199,6 +186,7 @@ import {
   chevronBackOutline,
   chevronForwardOutline,
   banOutline,
+  ellipsisVerticalOutline,
 } from "ionicons/icons";
 import { ALL_POSTS_DETAILS, POST_DATES } from "../../../services/graphql";
 import { useUser } from "../../../composables/useUser";
@@ -220,6 +208,7 @@ export default defineComponent({
     IonButton,
     IonButtons,
     IonItemDivider,
+    IonPopover,
   },
 
   setup() {
@@ -236,6 +225,7 @@ export default defineComponent({
       usePost: usePost(),
       banOutline,
       openToastError: useSystem().openToastError,
+      ellipsisVerticalOutline,
     };
   },
 
@@ -246,7 +236,6 @@ export default defineComponent({
         buttonAddPost: false,
         buttonAddNewPost: false,
         buttonEditPost: "",
-        buttonDeletePost: "",
       },
     };
   },
@@ -312,7 +301,7 @@ export default defineComponent({
     async loadPosts(params: { currentPage: string; refetch?: boolean }) {
       const refetch = params.refetch ? params.refetch : false;
       try {
-        await this.usePost.loadPosts({
+        const p = await this.usePost.loadPosts({
           date: params.currentPage,
           graphql: {
             name: ALL_POSTS_DETAILS,
@@ -382,17 +371,17 @@ export default defineComponent({
 
     async deletePost(params: { id: string }) {
       const id = params.id;
-
-      this.spinners.buttonDeletePost = id;
-
       const response = await presentAlertConfirmation({
         message: "¿Desea eliminar el post?",
       });
-      if (response == false) {
-        this.spinners.buttonDeletePost = "";
-        return;
-      }
 
+      if (response == false) return;
+
+      const loading = await loadingController.create({
+        message: "Eliminando publicacion",
+      });
+
+      loading.present();
       try {
         await this.usePost.deletePost({ id });
         this.loadContent({ refetch: true });
@@ -400,7 +389,7 @@ export default defineComponent({
       } catch (error) {
         console.error(error);
       } finally {
-        this.spinners.buttonDeletePost = "";
+        loading.dismiss();
       }
     },
 

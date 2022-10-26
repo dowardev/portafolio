@@ -179,6 +179,6 @@ ul {
   background-color: rgba(var(--background-color), 0.8);
 }
 
-ion-card{
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+ion-card {
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
 }
