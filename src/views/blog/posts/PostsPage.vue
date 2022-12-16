@@ -85,7 +85,9 @@
             size-xl="8"
           >
             <ion-card>
-              <ion-row class="ion-padding-top ion-padding-start ion-padding-bottom">
+              <ion-row
+                class="ion-padding-top ion-padding-start ion-padding-bottom"
+              >
                 <ion-col size="4">
                   <img
                     :src="(post.cover.source!)"
@@ -139,7 +141,7 @@
         </ion-row>
       </section>
 
-      <section v-if="getPosts!.length == 0">
+      <section v-if="getPosts!.length == 0 && loadFinished">
         <div class="align-vertical">
           <div class="center">
             <ion-item lines="none">
@@ -149,6 +151,17 @@
                 color="danger"
               ></ion-icon>
               <ion-label color="danger">No se encontraron datos</ion-label>
+            </ion-item>
+          </div>
+        </div>
+      </section>
+
+      <section v-if="getPosts!.length == 0 && loadFinished==false">
+        <div class="align-vertical">
+          <div class="center">
+            <ion-item lines="none">
+              <ion-spinner slot="start" name="crescent"></ion-spinner>
+              <ion-label>Cargando</ion-label>
             </ion-item>
           </div>
         </div>
@@ -237,6 +250,7 @@ export default defineComponent({
         buttonAddNewPost: false,
         buttonEditPost: "",
       },
+      loadFinished: false,
     };
   },
 
@@ -258,7 +272,10 @@ export default defineComponent({
 
       let dates = Array<string>();
       dates = this.usePost.getDates()!;
-      if (dates.length == 0) return;
+      if (dates.length == 0) {
+        this.loadFinished = true;
+        return;
+      }
 
       let currentPage = "";
       currentPage = this.loadData({ dates });
@@ -268,6 +285,7 @@ export default defineComponent({
         currentPage,
         refetch,
       });
+      this.loadFinished = true;
     },
 
     async getPostsDates(params: { refetch: boolean }): Promise<void> {

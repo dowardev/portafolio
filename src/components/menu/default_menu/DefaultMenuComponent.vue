@@ -176,78 +176,6 @@
 
       <ion-item
         lines="none"
-        button
-        class="transparent"
-        @click="openRoute('/history')"
-      >
-        <ion-icon
-          slot="start"
-          :icon="bookOutline"
-          :class="{
-            optionSelected: $route.path == '/history',
-            optionNoSelected: $route.path != '/history',
-          }"
-        ></ion-icon>
-        <ion-label
-          :class="{
-            optionSelected: $route.path == '/history',
-            optionNoSelected: $route.path != '/history',
-          }"
-        >
-          Historia
-        </ion-label>
-      </ion-item>
-
-      <ion-item
-        class="transparent"
-        lines="none"
-        button
-        @click="openRoute('/skills')"
-      >
-        <ion-icon
-          slot="start"
-          :icon="constructOutline"
-          :class="{
-            optionSelected: $route.path == '/skills',
-            optionNoSelected: $route.path != '/skills',
-          }"
-        ></ion-icon>
-        <ion-label
-          :class="{
-            optionSelected: $route.path == '/skills',
-            optionNoSelected: $route.path != '/skills',
-          }"
-        >
-          Habilidades</ion-label
-        >
-      </ion-item>
-
-      <ion-item
-        lines="none"
-        class="transparent"
-        button
-        @click="openRoute('/portfolio')"
-      >
-        <ion-icon
-          slot="start"
-          :icon="fileTrayOutline"
-          :class="{
-            optionSelected: $route.path == '/portfolio',
-            optionNoSelected: $route.path != '/portfolio',
-          }"
-        ></ion-icon>
-        <ion-label
-          :class="{
-            optionSelected: $route.path == '/portfolio',
-            optionNoSelected: $route.path != '/portfolio',
-          }"
-        >
-          Portfolio
-        </ion-label>
-      </ion-item>
-
-      <ion-item
-        lines="none"
         class="transparent"
         button
         @click="openRoute('/blog')"
@@ -465,9 +393,9 @@ export default defineComponent({
         buttonUserPanel: false,
         buttonAdminPanel: false,
       },
-        windowSize: {
-          width: window.innerWidth,
-        },
+      windowSize: {
+        width: window.innerWidth,
+      },
     };
   },
 

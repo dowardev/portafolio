@@ -170,54 +170,6 @@
 
         <ion-item
           lines="none"
-          button
-          class="transparent"
-          @click="openRoute('/history')"
-        >
-          <ion-icon
-            :icon="bookOutline"
-            :class="{
-              optionSelected: $route.path == '/history',
-              optionNoSelected: $route.path != '/history',
-            }"
-            class="item-icon-center"
-          ></ion-icon>
-        </ion-item>
-
-        <ion-item
-          class="transparent"
-          lines="none"
-          button
-          @click="openRoute('/skills')"
-        >
-          <ion-icon
-            :icon="constructOutline"
-            :class="{
-              optionSelected: $route.path == '/skills',
-              optionNoSelected: $route.path != '/skills',
-            }"
-            class="item-icon-center"
-          ></ion-icon>
-        </ion-item>
-
-        <ion-item
-          lines="none"
-          class="transparent"
-          button
-          @click="openRoute('/portfolio')"
-        >
-          <ion-icon
-            :icon="fileTrayOutline"
-            :class="{
-              optionSelected: $route.path == '/portfolio',
-              optionNoSelected: $route.path != '/portfolio',
-            }"
-            class="item-icon-center"
-          ></ion-icon>
-        </ion-item>
-
-        <ion-item
-          lines="none"
           class="transparent"
           button
           @click="openRoute('/blog')"
@@ -235,6 +187,7 @@
 
       <hr />
 
+      <!-- more -->
       <section>
         <ion-item
           lines="none"
@@ -353,8 +306,8 @@
 
     <ion-footer class="ion-no-border">
       <ion-toolbar>
-        <!-- collapse menu -->
-        <div class="center">
+        <!-- button collapse menu -->
+        <div class="center" >
           <ion-button
             fill="clear"
             color="primary"
