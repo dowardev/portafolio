@@ -32,46 +32,46 @@
         </ion-toolbar>
       </ion-header>
 
-      <section v-if="getPosts!.length > 0" class="sticky">
-        <!-- date selector -->
-        <!-- prev date -->
-        <ion-item-divider class="blur-effect blur-effect-color">
-          <div style="width: 100%; display: flex; justify-content: center">
-            <ion-button
-              fill="clear"
-              @click="
-                goToPage({
-                  currentPage: usePost.getCurrentPage()!,
-                  option: 'prev',
-                })
-              "
-            >
-              <ion-icon :icon="chevronBackOutline"></ion-icon>
-            </ion-button>
+      <ion-header mode="ios" :translucent="true" class='sticky'>
+        <ion-toolbar >
+          <ion-item-divider style='--background: transparent;'>
+            <div style="width: 100%; display: flex; justify-content: center">
+              <ion-button
+                fill="clear"
+                @click="
+                  goToPage({
+                    currentPage: usePost.getCurrentPage()!,
+                    option: 'prev',
+                  })
+                "
+              >
+                <ion-icon :icon="chevronBackOutline"></ion-icon>
+              </ion-button>
 
-            <ion-button
-              v-if="usePost.getCurrentPage()!"
-              fill="clear"
-              @click="openPopover({ event: $event })"
-            >
-              {{ usePost.getCurrentPage()! }}
-            </ion-button>
+              <ion-button
+                v-if="usePost.getCurrentPage()!"
+                fill="clear"
+                @click="openPopover({ event: $event })"
+              >
+                {{ usePost.getCurrentPage()! }}
+              </ion-button>
 
-            <!-- next date -->
-            <ion-button
-              fill="clear"
-              @click="
-                goToPage({
-                  currentPage: usePost.getCurrentPage()!,
-                  option: 'next',
-                })
-              "
-            >
-              <ion-icon :icon="chevronForwardOutline"></ion-icon>
-            </ion-button>
-          </div>
-        </ion-item-divider>
-      </section>
+              <!-- next date -->
+              <ion-button
+                fill="clear"
+                @click="
+                  goToPage({
+                    currentPage: usePost.getCurrentPage()!,
+                    option: 'next',
+                  })
+                "
+              >
+                <ion-icon :icon="chevronForwardOutline"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-item-divider>
+        </ion-toolbar>
+      </ion-header>
 
       <!-- posts -->
       <section v-if="getPosts!.length > 0">

@@ -297,16 +297,8 @@
             id="click-trigger-matrix"
             lines="none"
             fill="clear"
-            @mouseleave="
-              matrixImage = getImage({
-                path: '../../../assets/otros/matrix-logo-gray.svg',
-              })
-            "
-            @mouseover="
-              matrixImage = getImage({
-                path: '../../../assets/otros/matrix-logo-black.svg',
-              })
-            "
+            @mouseleave="matrixImage = matrixGrayImage"
+            @mouseover="matrixImage = matrixBlackImage"
           >
             <img :src="matrixImage" style="width: 26px" />
           </ion-button>
@@ -378,6 +370,8 @@ import {
 import { App } from "@capacitor/app";
 import telegramLogo from "../../../assets/otros/icons8-telegram-app.svg";
 import ContactModal from "../../contact/ContactPage.vue";
+import matrixGrayImage from "../../../assets/otros/matrix-logo-gray.svg";
+import matrixBlackImage from "../../../assets/otros/matrix-logo-black.svg";
 
 export default defineComponent({
   name: "InformationComponent",
@@ -403,6 +397,8 @@ export default defineComponent({
       openOutline,
       ellipsisVerticalOutline,
       chatbubble,
+      matrixGrayImage,
+      matrixBlackImage,
     };
   },
 
@@ -418,9 +414,7 @@ export default defineComponent({
       fillDev: "#777777",
       fillContactForm: defaultColorFill,
       defaultColorFill,
-      matrixImage: this.getImage({
-        path: "../../../assets/otros/matrix-logo-gray.svg",
-      }),
+      matrixImage: matrixGrayImage,
     };
   },
 
@@ -473,11 +467,6 @@ export default defineComponent({
       const mail = params.mail;
       const subject = params.subject;
       location.href = `mailto:${mail}?Subject=${subject}`;
-    },
-
-    getImage(params: { path: string }) {
-      const path = params.path;
-      return new URL(path, import.meta.url).href;
     },
   },
 });

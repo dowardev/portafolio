@@ -13,6 +13,54 @@
       </ion-menu>
       <ion-router-outlet id="menu-content" />
     </ion-split-pane>
+
+    <div
+      style="
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      "
+      :class="{ hideInstallPWA: isOpenMenuAddPWA == false }"
+    >
+      <div
+        style="
+          background: var(--ion-background-color);
+          display: flex;
+          justify-content: center;
+          border-color: var(--ion-color-primary);
+          border-style: solid;
+          border-width: 3px;
+          border-radius: 4px;
+        "
+      >
+        <ion-item>
+          <ion-button fill="clear" @click="installPWA()"
+            >Instalar aplicacion</ion-button
+          >
+          <ion-button slot="end" fill="clear" @click="dismissPWA()">
+            <ion-icon :icon="closeOutline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </div>
+    </div>
+
+    <!-- <ion-alert -->
+    <!--   :is-open="isOpenAlertAddPWA" -->
+    <!--   header="Instalar Aplicacion" -->
+    <!--   message="¿Añadir Dowar Blog a la pantalla de inicio?" -->
+    <!--   :buttons="buttonsAlertPWA" -->
+    <!--   @did-dismiss="isOpenAlertAddPWA = false" -->
+    <!-- ></ion-alert> -->
+
+    <!-- <ion-alert -->
+    <!--   :is-open="isOpenAlertRefreshPWA" -->
+    <!--   header="Nueva actualizacion" -->
+    <!--   message="¿Actualizar aplicacion?" -->
+    <!--   :buttons="buttonsAlertRefreshContent" -->
+    <!--   @did-dismiss="isOpenAlertRefreshPWA = false" -->
+    <!-- ></ion-alert> -->
   </ion-app>
 </template>
 
@@ -23,6 +71,7 @@ import {
   IonMenu,
   IonSplitPane,
   toastController,
+  IonAlert,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
@@ -33,11 +82,15 @@ import {
   setTheme,
   getTheme,
 } from "./services/system";
-import { closeOutline } from "ionicons/icons";
+import {
+  closeOutline,
+  downloadOutline,
+  checkmarkOutline,
+} from "ionicons/icons";
 import { useUser } from "./composables/useUser";
 import { getUserToken } from "./services/user";
 import { useSystem } from "./composables/useSystem";
-
+import { useRegisterSW } from "virtual:pwa-register/vue";
 import { Storage } from "@ionic/storage";
 
 const store = new Storage();
@@ -54,10 +107,29 @@ export default defineComponent({
   },
 
   setup() {
+    const intervalMS = 60 * 60 * 1000;
+    const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW({
+      onRegistered(r) {
+        r &&
+          setInterval(() => {
+            r.update();
+          }, intervalMS);
+      },
+    });
+
+    const close = async () => {
+      offlineReady.value = false;
+      needRefresh.value = false;
+    };
     return {
       useUser: useUser(),
       detectMenuCollapse: useSystem().detectMenuCollapse,
       changeMenuCollapse: useSystem().changeMenuCollapse,
+      offlineReady,
+      updateServiceWorker,
+      downloadOutline,
+      isOpenMenuRefreshPWA: needRefresh,
+      closeOutline,
     };
   },
 
@@ -72,6 +144,43 @@ export default defineComponent({
         max: window.innerWidth,
       },
       isMenuCollapsed: false,
+      deferredPrompt: null as any,
+      isOpenMenuAddPWA: false,
+      buttonsAlertPWA: [
+        {
+          text: "Instalar",
+          icon: checkmarkOutline,
+          handler: () => {
+            this.installPWA();
+          },
+        },
+
+        {
+          text: "Cancelar",
+          icon: closeOutline,
+          role: "cancel",
+          handler: () => {
+            this.dismissPWA();
+          },
+        },
+      ],
+      buttonsAlertRefreshContent: [
+        {
+          text: "Actualizar",
+          icon: downloadOutline,
+          handler: () => {
+            this.updateServiceWorker();
+          },
+        },
+        {
+          text: "Cancelar",
+          icon: closeOutline,
+          role: "cancel",
+          handler: () => {
+            this.close();
+          },
+        },
+      ],
     };
   },
 
@@ -96,6 +205,18 @@ export default defineComponent({
         };
       return { "min-width": size.min, "max-width": size.max };
     },
+  },
+
+  created() {
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      this.deferredPrompt = e;
+      this.isOpenMenuAddPWA = true;
+    });
+    window.addEventListener("appinstalled", () => {
+      this.deferredPrompt = null;
+      this.isOpenMenuAddPWA = false;
+    });
   },
 
   mounted() {
@@ -158,6 +279,15 @@ export default defineComponent({
       if (option == null) option = false;
       this.changeMenuCollapse({ option });
     },
+
+    installPWA() {
+      this.deferredPrompt.prompt();
+    },
+
+    dismissPWA() {
+      this.deferredPrompt = null;
+      this.isOpenMenuAddPWA=false
+    },
   },
 });
 </script>
@@ -167,5 +297,8 @@ export default defineComponent({
   .menu-color {
     background-color: var(--secondary-color);
   }
+}
+.hideInstallPWA {
+  display: none !important;
 }
 </style>
