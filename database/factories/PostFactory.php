@@ -19,7 +19,7 @@ class PostFactory extends Factory
     public function definition()
     {
         $timestamp = mt_rand(1, time());
-        $randomDate = date("d M Y", $timestamp);
+        $randomDate = date("d M Y", time());
         return [
             "title" => $this->faker->title(),
             "content" => Str::random(5000),

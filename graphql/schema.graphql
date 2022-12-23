@@ -45,6 +45,11 @@ type Query {
             defaultCount: 10
             builder: "App\\GraphQL\\Resolvers\\admin\\UsersFilterResolver@resolve"
         )
+
+    searchPosts(search: String): [searchPosts!]!
+        @field(
+            resolver: "App\\GraphQL\\Resolvers\\post\\SearchPostsResolver@resolve"
+        )
 }
 
 type Mutation {
@@ -304,4 +309,8 @@ input ContactInput {
     email: String!
     subject: String!
     description: String!
+}
+type searchPosts {
+    id: ID!
+    title: String!
 }
