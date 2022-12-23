@@ -1,8 +1,8 @@
 import { DocumentNode } from "graphql";
 
 export interface Graphql {
-  name: DocumentNode;
-  fragment: string;
+  name?: DocumentNode;
+  fragment?: string;
   refetch?: boolean;
 }
 

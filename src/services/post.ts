@@ -6,6 +6,7 @@ import {
   GetPost,
   GetPosts,
   GetPostsDates,
+  Graphql,
 } from "./interfaces";
 
 import apolloClient from "../Apollo";
@@ -225,6 +226,37 @@ export async function getPostsDates(
     if (params.graphql.refetch) refetch();
 
     onResult((response) => resolve(response.data.postsDates.dates));
+
+    onError((error) => {
+      reject(error);
+    });
+  });
+}
+
+export async function searchPosts(params: {
+  search: string;
+  graphql: Graphql;
+}): Promise<Array<{ id: string; title: string }>> {
+  const { onResult, onError, result, refetch } = useQuery(
+    gql`
+      query searchPosts($search: String!) {
+        searchPosts(search: $search) {
+          id
+          title
+        }
+      }
+    `,
+    {
+      search: params.search,
+    }
+  );
+
+  return new Promise((resolve, reject) => {
+    if (params.graphql.refetch) refetch();
+    if (result.value && result.value != undefined) resolve(result.value.searchPosts);
+    else {
+      onResult((response) => resolve(response.data.searchPosts));
+    }
 
     onError((error) => {
       reject(error);

@@ -5,7 +5,9 @@
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
+
         <ion-title>{{ pageTitle }}</ion-title>
+
         <ion-buttons slot="end" :disabled="spinners.buttonAddNewPost">
           <ion-button v-if="useUser.user.value.isAdmin" @click="addPost()">
             <ion-icon
@@ -18,6 +20,51 @@
               color="primary"
             ></ion-spinner>
           </ion-button>
+
+          <ion-button id="open-modal">
+            <ion-icon :icon="searchOutline"></ion-icon>
+          </ion-button>
+          <ion-modal
+            ref="modalSearchPosts"
+            trigger="open-modal"
+            :mode="modeDesingElements"
+          >
+            <ion-header mode="ios">
+              <ion-toolbar>
+                <ion-buttons slot="start">
+                  <ion-button @click="closeModalSearchPosts()">
+                    <ion-icon :icon="closeOutline"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+
+                <ion-title>Busqueda</ion-title>
+              </ion-toolbar>
+
+              <ion-toolbar>
+                <ion-searchbar
+                  :debounce="350"
+                  @ion-change="
+                    searchPosts({
+                      search: $event.detail.value as string,
+                      refetch: true,
+                    })
+                  "
+                ></ion-searchbar>
+              </ion-toolbar>
+            </ion-header>
+
+            <ion-content class="ion-padding">
+              <ion-item
+                v-for="result in searchResult"
+                :key="result.id"
+                button
+                @click="openPostSearch({ id: result.id })"
+              >
+                <ion-label>{{ result.title }}</ion-label>
+              </ion-item>
+            </ion-content>
+          </ion-modal>
+
           <ion-button @click="refreshContent()">
             <ion-icon :icon="refreshOutline"></ion-icon>
           </ion-button>
@@ -32,9 +79,9 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-header mode="ios" :translucent="true" class='sticky'>
-        <ion-toolbar >
-          <ion-item-divider style='--background: transparent;'>
+      <ion-header mode="ios" :translucent="true" class="sticky">
+        <ion-toolbar>
+          <ion-item-divider style="--background: transparent">
             <div style="width: 100%; display: flex; justify-content: center">
               <ion-button
                 fill="clear"
@@ -113,11 +160,11 @@
                     <ion-content>
                       <ion-item
                         button
-                        :disabled="spinners.buttonEditPost ==post.id!"
+                        :disabled="spinners.buttonEditPost == post.id!"
                         @click="updatePost(post.id!)"
                       >
                         <ion-icon
-                          v-if="spinners.buttonEditPost ==''|| spinners.buttonEditPost != post.id!"
+                          v-if="spinners.buttonEditPost == '' || spinners.buttonEditPost != post.id!"
                           slot="start"
                           :icon="createOutline"
                         ></ion-icon>
@@ -136,6 +183,33 @@
                   </ion-popover>
                 </ion-col>
               </ion-row>
+
+              <ion-item button lines="none">
+                <ion-button
+                  slot="end"
+                  :disabled="spinners.buttonEditPost == post.id!"
+                  fill="clear"
+                  @click="updatePost(post.id!)"
+                >
+                  <ion-icon
+                    v-if="spinners.buttonEditPost == '' || spinners.buttonEditPost != post.id!"
+                    slot="start"
+                    :icon="createOutline"
+                  ></ion-icon>
+                </ion-button>
+
+                <ion-button
+                  slot="end"
+                  fill="clear"
+                  @click="deletePost({ id: post.id! })"
+                >
+                  <ion-icon
+                    slot="start"
+                    :icon="trashOutline"
+                    color="danger"
+                  ></ion-icon>
+                </ion-button>
+              </ion-item>
             </ion-card>
           </ion-col>
         </ion-row>
@@ -156,7 +230,7 @@
         </div>
       </section>
 
-      <section v-if="getPosts!.length == 0 && loadFinished==false">
+      <section v-if="getPosts!.length == 0 && loadFinished == false">
         <div class="align-vertical">
           <div class="center">
             <ion-item lines="none">
@@ -186,6 +260,9 @@ import {
   popoverController,
   loadingController,
   IonPopover,
+  IonModal,
+  isPlatform,
+  IonSearchbar,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { openToast, presentAlertConfirmation } from "../../../services/system";
@@ -200,6 +277,7 @@ import {
   chevronForwardOutline,
   banOutline,
   ellipsisVerticalOutline,
+  searchOutline,
 } from "ionicons/icons";
 import { ALL_POSTS_DETAILS, POST_DATES } from "../../../services/graphql";
 import { useUser } from "../../../composables/useUser";
@@ -222,9 +300,14 @@ export default defineComponent({
     IonButtons,
     IonItemDivider,
     IonPopover,
+    IonModal,
+    IonSearchbar,
   },
 
   setup() {
+    const modeDesingElements = isPlatform("ios")
+      ? "ios"
+      : ("md" as "ios" | "md");
     return {
       checkmarkOutline,
       closeOutline,
@@ -239,6 +322,8 @@ export default defineComponent({
       banOutline,
       openToastError: useSystem().openToastError,
       ellipsisVerticalOutline,
+      searchOutline,
+      modeDesingElements,
     };
   },
 
@@ -251,6 +336,7 @@ export default defineComponent({
         buttonEditPost: "",
       },
       loadFinished: false,
+      searchResult: Array<{ id: string; title: string }>(),
     };
   },
 
@@ -319,7 +405,7 @@ export default defineComponent({
     async loadPosts(params: { currentPage: string; refetch?: boolean }) {
       const refetch = params.refetch ? params.refetch : false;
       try {
-        const p = await this.usePost.loadPosts({
+         await this.usePost.loadPosts({
           date: params.currentPage,
           graphql: {
             name: ALL_POSTS_DETAILS,
@@ -430,6 +516,29 @@ export default defineComponent({
           option: "custom",
         });
     },
+
+    closeModalSearchPosts() {
+      (this.$refs.modalSearchPosts as any).$el.dismiss(null, "cancel");
+    },
+
+    async searchPosts(params: { search: string; refetch: boolean }) {
+      const search = params.search;
+      const refetch = params.refetch;
+
+      const searchResult = await usePost().searchPosts({
+        search,
+        graphql: {
+          refetch,
+        },
+      });
+      this.searchResult = searchResult;
+    },
+
+    async openPostSearch(params: { id: string }) {
+      const id = params.id;
+      await this.$router.push({ name: "PostPage", params: { id } });
+      this.closeModalSearchPosts();
+    },
   },
 });
 </script>
@@ -442,9 +551,11 @@ export default defineComponent({
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
+
 .loadContent {
   display: none !important;
 }
+
 .sticky {
   position: sticky;
   z-index: 3;

@@ -90,13 +90,17 @@
         >
           <ion-col>
             <p class="post-date">
+              {{
+              formatDate({date:usePost.getPost({ id: postId })!.createdAt as string})
+              }}
               Creación del post:
               {{
                 format(
                   new Date(
                     usePost.getPost({ id: postId })!.createdAt as string
                   ),
-                  "P"
+                  "P",
+                  { locale: locale.es }
                 ) +
                 " " +
                 format(
@@ -168,10 +172,11 @@ import eventBus from "../../../EventBus";
 import { POST_DETAILS } from "../../../services/graphql";
 import { usePost } from "../../../composables/usePost";
 import { useUser } from "../../../composables/useUser";
-import { format } from "date-fns";
+import { format, formatISO } from "date-fns";
 import "highlight.js/styles/atom-one-dark.css";
 import { useSystem } from "../../../composables/useSystem";
 import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
+import { es } from "date-fns/locale";
 
 export default defineComponent({
   name: "PostPage",
@@ -197,6 +202,8 @@ export default defineComponent({
       usePost: usePost(),
       format: format,
       openToastError: useSystem().openToastError,
+      locale: { es: es },
+      formatISO,
     };
   },
 
@@ -282,6 +289,17 @@ export default defineComponent({
         this.spinners.buttonDelete = false;
         this.openToastError(e);
       }
+    },
+
+    formatDate(params: { date: string }): string {
+      const date = params.date;
+      console.log(date)
+      // const date = new Date;
+      // const isoFormated = formatISO(new Date());
+      // console.log(isoFormated)
+      // const dateFormated = format(new Date(isoFormated), "Pp");
+      // console.log(dateFormated)
+      return "";
     },
   },
 });

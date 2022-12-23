@@ -45,22 +45,6 @@
         </ion-item>
       </div>
     </div>
-
-    <!-- <ion-alert -->
-    <!--   :is-open="isOpenAlertAddPWA" -->
-    <!--   header="Instalar Aplicacion" -->
-    <!--   message="¿Añadir Dowar Blog a la pantalla de inicio?" -->
-    <!--   :buttons="buttonsAlertPWA" -->
-    <!--   @did-dismiss="isOpenAlertAddPWA = false" -->
-    <!-- ></ion-alert> -->
-
-    <!-- <ion-alert -->
-    <!--   :is-open="isOpenAlertRefreshPWA" -->
-    <!--   header="Nueva actualizacion" -->
-    <!--   message="¿Actualizar aplicacion?" -->
-    <!--   :buttons="buttonsAlertRefreshContent" -->
-    <!--   @did-dismiss="isOpenAlertRefreshPWA = false" -->
-    <!-- ></ion-alert> -->
   </ion-app>
 </template>
 
@@ -71,7 +55,6 @@ import {
   IonMenu,
   IonSplitPane,
   toastController,
-  IonAlert,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
@@ -117,10 +100,6 @@ export default defineComponent({
       },
     });
 
-    const close = async () => {
-      offlineReady.value = false;
-      needRefresh.value = false;
-    };
     return {
       useUser: useUser(),
       detectMenuCollapse: useSystem().detectMenuCollapse,
@@ -146,41 +125,6 @@ export default defineComponent({
       isMenuCollapsed: false,
       deferredPrompt: null as any,
       isOpenMenuAddPWA: false,
-      buttonsAlertPWA: [
-        {
-          text: "Instalar",
-          icon: checkmarkOutline,
-          handler: () => {
-            this.installPWA();
-          },
-        },
-
-        {
-          text: "Cancelar",
-          icon: closeOutline,
-          role: "cancel",
-          handler: () => {
-            this.dismissPWA();
-          },
-        },
-      ],
-      buttonsAlertRefreshContent: [
-        {
-          text: "Actualizar",
-          icon: downloadOutline,
-          handler: () => {
-            this.updateServiceWorker();
-          },
-        },
-        {
-          text: "Cancelar",
-          icon: closeOutline,
-          role: "cancel",
-          handler: () => {
-            this.close();
-          },
-        },
-      ],
     };
   },
 

@@ -11,7 +11,7 @@ export default defineConfig({
       registerType: "prompt",
       manifest: {
         name: "Dowar Blog",
-        short_name: "Calendario",
+        short_name: "Dowar Blog",
         start_url: "/",
         id: "/",
         icons: [

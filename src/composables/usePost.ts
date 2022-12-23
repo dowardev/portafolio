@@ -6,6 +6,7 @@ import {
   getPost as getPostService,
   getPostsDates,
   deletePost as deletePostService,
+  searchPosts as searchPostsService,
 } from "../services/post";
 import { useSystem } from "./useSystem";
 
@@ -89,6 +90,25 @@ export const usePost = () => {
     }
   }
 
+  async function searchPosts(params: {
+    search: string;
+    graphql: Graphql;
+  }): Promise<Array<{ id: string; title: string }>> {
+    const search = params.search;
+
+    try {
+      const result = await searchPostsService({
+        search: params.search,
+        graphql: params.graphql,
+      });
+
+      return result;
+    } catch (e: any) {
+      openToastError(e);
+      throw e;
+    }
+  }
+
   return {
     // functions
     deletePost,
@@ -100,5 +120,6 @@ export const usePost = () => {
     loadPost,
     loadPosts,
     updateCurrentPage,
+    searchPosts,
   };
 };
