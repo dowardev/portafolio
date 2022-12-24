@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Resolvers\post;
 
+use DateTime;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Facades\DB;
@@ -36,8 +37,12 @@ class GetPostResolver
         'id' => $value->post_id,
         'title' => $value->post_title,
         'content' => $value->post_content,
-        'created_at' => $value->post_created_at,
-        'updated_at' => $value->post_updated_at,
+        'created_at' => (new DateTime($value->post_created_at))->format(
+                    DateTime::ATOM
+                ),
+        'updated_at' => (new DateTime($value->post_updated_at))->format(
+                    DateTime::ATOM
+                ),
         'cover' => [
           'id' => $value->image_id,
           'name' => $value->image_name,

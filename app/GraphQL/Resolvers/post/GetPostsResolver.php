@@ -49,7 +49,9 @@ class GetPostsResolver
                 "id" => $value->post_id,
                 "title" => $value->post_title,
                 "content" => $value->post_content,
-                "created_at" => $value->post_created_at,
+                "created_at" => (new DateTime($value->post_created_at))->format(
+                    DateTime::ATOM
+                ),
                 "updated_at" => $value->post_updated_at,
                 "cover" => [
                     "id" => $value->image_id,
