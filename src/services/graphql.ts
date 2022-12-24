@@ -8,6 +8,7 @@ export const ALL_POSTS_DETAILS = gql`
     cover {
       source
     }
+    created_at
   }
 `;
 

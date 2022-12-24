@@ -121,66 +121,32 @@
       </ion-header>
 
       <!-- posts -->
-      <section v-if="getPosts!.length > 0">
+      <section v-if="usePost.getPosts()!.length>0">
         <ion-row class="center">
           <ion-col
-            v-for="post in getPosts"
+            v-for="post in usePost.getPosts()!"
             :key="post"
             size-xs="12"
             size-md="12"
             size-lg="10"
             size-xl="8"
           >
-            <ion-card>
+            <ion-card
+              v-if="(post.createdAt!).split('T')[0]==usePost.getCurrentPage() as string"
+              style="cursor: pointer"
+              @click="openPost(post.id!)"
+            >
               <ion-row
                 class="ion-padding-top ion-padding-start ion-padding-bottom"
               >
-                <ion-col size="4">
-                  <img
-                    :src="(post.cover.source!)"
-                    style="cursor: pointer"
-                    @click="openPost(post.id!)"
-                  />
+                <ion-col size-xs="12" size-md="4">
+                  <img :src="(post.cover.source!)" />
                 </ion-col>
 
-                <ion-col size="6">
-                  <h2
-                    style="margin-top: 4px; cursor: pointer; font-size: 18px"
-                    @click="openPost(post.id!)"
-                  >
+                <ion-col size-xs="12" size-md="6">
+                  <h2 style="margin-top: 4px; font-size: 18px">
                     {{ post.title }}
                   </h2>
-                </ion-col>
-
-                <ion-col v-if="useUser.user.value.isAdmin" size="2">
-                  <ion-button :id="post.id" fill="clear">
-                    <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
-                  </ion-button>
-                  <ion-popover :trigger="post.id" :dismiss-on-select="true">
-                    <ion-content>
-                      <ion-item
-                        button
-                        :disabled="spinners.buttonEditPost == post.id!"
-                        @click="updatePost(post.id!)"
-                      >
-                        <ion-icon
-                          v-if="spinners.buttonEditPost == '' || spinners.buttonEditPost != post.id!"
-                          slot="start"
-                          :icon="createOutline"
-                        ></ion-icon>
-                        <ion-label>Editar</ion-label>
-                      </ion-item>
-
-                      <ion-item button @click="deletePost({ id: post.id! })">
-                        <ion-icon
-                          slot="start"
-                          :icon="trashOutline"
-                          color="danger"
-                        ></ion-icon>
-                        <ion-label>Borrar</ion-label>
-                      </ion-item>
-                    </ion-content>
-                  </ion-popover>
                 </ion-col>
               </ion-row>
 
@@ -215,7 +181,7 @@
         </ion-row>
       </section>
 
-      <section v-if="getPosts!.length == 0 && loadFinished">
+      <section v-if="usePost.getPosts()!.length == 0 && loadFinished">
         <div class="align-vertical">
           <div class="center">
             <ion-item lines="none">
@@ -230,7 +196,7 @@
         </div>
       </section>
 
-      <section v-if="getPosts!.length == 0 && loadFinished == false">
+      <section v-if="usePost.getPosts()!.length == 0 && loadFinished == false">
         <div class="align-vertical">
           <div class="center">
             <ion-item lines="none">
@@ -259,7 +225,6 @@ import {
   IonItemDivider,
   popoverController,
   loadingController,
-  IonPopover,
   IonModal,
   isPlatform,
   IonSearchbar,
@@ -283,8 +248,8 @@ import { ALL_POSTS_DETAILS, POST_DATES } from "../../../services/graphql";
 import { useUser } from "../../../composables/useUser";
 import { usePost } from "../../../composables/usePost";
 import PopoverDateSelector from "./PopoverDateSelector.vue";
-import { Post } from "../../../services/interfaces";
 import { useSystem } from "../../../composables/useSystem";
+import { format, isEqual } from "date-fns";
 
 export default defineComponent({
   name: "PostsPage",
@@ -299,7 +264,6 @@ export default defineComponent({
     IonButton,
     IonButtons,
     IonItemDivider,
-    IonPopover,
     IonModal,
     IonSearchbar,
   },
@@ -324,6 +288,8 @@ export default defineComponent({
       ellipsisVerticalOutline,
       searchOutline,
       modeDesingElements,
+      format,
+      isEqual,
     };
   },
 
@@ -338,12 +304,6 @@ export default defineComponent({
       loadFinished: false,
       searchResult: Array<{ id: string; title: string }>(),
     };
-  },
-
-  computed: {
-    getPosts(): Post[] | undefined {
-      return this.usePost.getPosts();
-    },
   },
 
   mounted() {
@@ -405,7 +365,7 @@ export default defineComponent({
     async loadPosts(params: { currentPage: string; refetch?: boolean }) {
       const refetch = params.refetch ? params.refetch : false;
       try {
-         await this.usePost.loadPosts({
+        await this.usePost.loadPosts({
           date: params.currentPage,
           graphql: {
             name: ALL_POSTS_DETAILS,

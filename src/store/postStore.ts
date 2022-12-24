@@ -57,43 +57,29 @@ export const usePostStore = defineStore("post", {
   },
 
   actions: {
-    updatePosts(params: { posts: Post[] }) {
-      const posts = params.posts;
+    addPost(params: { post: Post }) {
+      const post = params.post;
 
-      if (this.posts.length == 0) this.posts = posts;
+      if (this.posts.length == 0) this.posts = [post];
       else {
-        const id = this.posts[0].id;
-        const post = this.posts[0];
-        const postMerge = posts.filter((element) => {
-          return (element.id as any) == id;
-        })[0];
-        const result = { ...post, ...postMerge };
-        this.posts = posts.map((element) => {
-          if ((element.id as any) == id) element = result;
-          return element;
+        let exists = false as boolean;
+        this.posts.forEach((element) => {
+          if (element.id == post.id) exists = true;
         });
+
+        if (exists == false) this.posts.push(post);
+
+        if (exists == true) {
+          this.posts = this.posts.map((element) => {
+            if (element.id == post.id) element = { ...element, ...post };
+            return element;
+          });
+        }
       }
     },
 
     updateDates(dates: Array<string>) {
       this.dates = dates;
-    },
-
-    updatePost(params: { id: string; post: Array<Post> }) {
-      const post = params.post;
-
-      if (this.posts.length == 0) this.posts.push(post as any);
-      else {
-        const id = parseInt(params.id);
-        const postMerge = this.posts.filter((element) => {
-          return (element.id as any) == id;
-        })[0];
-        const merge = { ...postMerge, ...post };
-        this.posts = this.posts.map((element) => {
-          if ((element.id as any) == id) (element as any) = merge;
-          return element;
-        });
-      }
     },
 
     updateCurrentPage(params: { currentPage: string }) {

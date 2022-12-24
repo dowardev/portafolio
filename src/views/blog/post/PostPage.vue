@@ -90,9 +90,6 @@
         >
           <ion-col>
             <p class="post-date">
-              {{
-              formatDate({date:usePost.getPost({ id: postId })!.createdAt as string})
-              }}
               Creación del post:
               {{
                 format(
@@ -111,6 +108,14 @@
                 )
               }}
             </p>
+          </ion-col>
+        </ion-row>
+
+        <ion-row
+          v-if="usePost.getPost({ id: postId })!.updatedAt"
+          class="ion-padding-start"
+        >
+          <ion-col>
             <p class="post-date">
               Ultimá actualización del post:
               {{
@@ -289,17 +294,6 @@ export default defineComponent({
         this.spinners.buttonDelete = false;
         this.openToastError(e);
       }
-    },
-
-    formatDate(params: { date: string }): string {
-      const date = params.date;
-      console.log(date)
-      // const date = new Date;
-      // const isoFormated = formatISO(new Date());
-      // console.log(isoFormated)
-      // const dateFormated = format(new Date(isoFormated), "Pp");
-      // console.log(dateFormated)
-      return "";
     },
   },
 });

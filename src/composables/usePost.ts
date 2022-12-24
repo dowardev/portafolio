@@ -22,7 +22,10 @@ export const usePost = () => {
         graphql: params.graphql,
       });
 
-      postStore.updatePosts({ posts: JSON.parse(JSON.stringify(posts)) });
+      posts.forEach((element) => {
+        // console.log(JSON.parse(JSON.stringify(element)))
+        postStore.addPost({ post: element });
+      });
     } catch (e: any) {
       openToastError(e);
       throw e;
@@ -49,8 +52,7 @@ export const usePost = () => {
         id,
         graphql: params.graphql,
       });
-
-      postStore.updatePost({ id, post: JSON.parse(JSON.stringify(post)) });
+      postStore.addPost({ post });
     } catch (e: any) {
       openToastError(e);
       throw e;
@@ -72,7 +74,7 @@ export const usePost = () => {
     return postRefs.dates ? postRefs.dates.value : undefined;
   }
 
-  function getCurrentPage() {
+  function getCurrentPage(): any {
     return postRefs.currentPage.value ? postRefs.currentPage.value : undefined;
   }
 
@@ -98,7 +100,7 @@ export const usePost = () => {
 
     try {
       const result = await searchPostsService({
-        search: params.search,
+        search,
         graphql: params.graphql,
       });
 

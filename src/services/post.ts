@@ -148,10 +148,26 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
 
   return new Promise((resolve, reject) => {
     if (params.graphql.refetch) refetch();
-    if (result.value && result.value.posts.posts != undefined)
+    if (result.value && result.value.posts.posts != undefined) {
+      const posts = JSON.parse(JSON.stringify(result.value.posts.posts)).map(
+        (element: any) => {
+          element.createdAt = element.created_at;
+          delete element.created_at;
+          return element;
+        }
+      );
       resolve(result.value.posts.posts);
-    else {
-      onResult((response) => resolve(response.data.posts.posts));
+    } else {
+      onResult((response) => {
+        const posts = JSON.parse(JSON.stringify(response.data.posts.posts)).map(
+          (element: any) => {
+            element.createdAt = element.created_at;
+            delete element.created_at;
+            return element;
+          }
+        );
+        resolve(posts);
+      });
     }
 
     onError((error) => {
@@ -253,7 +269,8 @@ export async function searchPosts(params: {
 
   return new Promise((resolve, reject) => {
     if (params.graphql.refetch) refetch();
-    if (result.value && result.value != undefined) resolve(result.value.searchPosts);
+    if (result.value && result.value != undefined)
+      resolve(result.value.searchPosts);
     else {
       onResult((response) => resolve(response.data.searchPosts));
     }
