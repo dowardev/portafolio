@@ -1,6 +1,6 @@
 {
 	"appId": "com.dowar.portfolio",
-	"appName": "Dowar Blog",
+	"appName": "Dowar",
 	"webDir": "dist",
 	"bundledWebRuntime": false
 }
