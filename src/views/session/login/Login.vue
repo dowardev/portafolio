@@ -1,11 +1,11 @@
 <template>
   <ion-page>
-    <ion-header 
+    <ion-header
       :translucent="true"
       collapse="fade"
       mode="ios"
       class="ion-no-border"
->
+    >
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button
@@ -51,12 +51,15 @@
                       class="item-icon"
                     >
                     </ion-icon>
+
                     <ion-label position="floating">
                       Usuario o correo electrónico
                     </ion-label>
+
                     <ion-input
                       v-model="(v$ as any).form.email.$model"
                       type="email"
+                      @keydown.enter="($refs as any).inputPassword.$el.setFocus()"
                     >
                     </ion-input>
                   </ion-item>
@@ -76,8 +79,10 @@
                     </ion-icon>
                     <ion-label position="floating">Contraseña</ion-label>
                     <ion-input
+                      ref="inputPassword"
                       v-model="(v$ as any).form.password.$model"
                       :type="inputTypePassword"
+                      @keydown.enter="login()"
                     >
                     </ion-input>
                     <ion-button

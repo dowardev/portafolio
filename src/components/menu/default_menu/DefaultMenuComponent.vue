@@ -8,14 +8,10 @@
         />
       </ion-toolbar>
 
-      <ion-toolbar class="menu-color">
+      <ion-toolbar>
         <!-- no logged -->
-        <ion-item
-          v-if="useUser.isLogged.value == false"
-          lines="none"
-          class="transparent"
-        >
-          <ion-label style="color: white !important">Bienvenido</ion-label>
+        <ion-item v-if="useUser.isLogged.value == false" lines="none">
+          <ion-label>Bienvenido</ion-label>
 
           <ion-button
             :disabled="spinners.buttonLogin"
@@ -53,18 +49,12 @@
         </ion-item>
 
         <!-- logged -->
-        <ion-item
-          v-if="useUser.isLogged.value == true"
-          lines="none"
-          class="transparent"
-        >
+        <ion-item v-if="useUser.isLogged.value == true" lines="none">
           <ion-avatar slot="start">
             <img :src="useUser.imageProfile.value.toString()" />
           </ion-avatar>
 
-          <ion-label style="color: white !important">{{
-            useUser.user.value.user
-          }}</ion-label>
+          <ion-label>{{ useUser.user.value.user }}</ion-label>
 
           <ion-button
             fill="clear"
@@ -150,137 +140,130 @@
         </ion-item>
       </ion-toolbar>
 
-      <ion-item
-        lines="none"
-        class="transparent"
-        button
-        @click="openRoute('/presentation')"
+      <div
+        :class="{
+          optionSelected: $route.path == '/presentation',
+        }"
       >
-        <ion-icon
-          slot="start"
-          :icon="personOutline"
-          :class="{
-            optionSelected: $route.path == '/presentation',
-            optionNoSelected: $route.path != '/presentation',
-          }"
-        ></ion-icon>
-        <ion-label
-          :class="{
-            optionSelected: $route.path == '/presentation',
-            optionNoSelected: $route.path != '/presentation',
-          }"
+        <ion-item
+          lines="none"
+          class="transparent"
+          button
+          @click="openRoute('/presentation')"
         >
-          Presentación
-        </ion-label>
-      </ion-item>
+          <ion-icon slot="start" :icon="personOutline"></ion-icon>
+          <ion-label> Presentación </ion-label>
+        </ion-item>
+      </div>
 
       <ion-item
         lines="none"
         class="transparent"
         button
+        :class="{
+          optionSelected: $route.path == '/blog' || $route.params.date,
+        }"
         @click="openRoute('/blog')"
       >
-        <ion-icon
-          slot="start"
-          :icon="libraryOutline"
-          :class="{
-            optionSelected: $route.path == '/blog' || $route.params.date,
-            optionNoSelected: $route.path != '/blog' && !$route.params.date,
-          }"
-        ></ion-icon>
-        <ion-label
-          :class="{
-            optionSelected: $route.path == '/blog' || $route.params.date,
-            optionNoSelected: $route.path != '/blog' && !$route.params.date,
-          }"
-        >
-          Blog
-        </ion-label>
+        <ion-icon slot="start" :icon="libraryOutline"></ion-icon>
+        <ion-label> Blog </ion-label>
       </ion-item>
     </ion-content>
 
     <!-- footer -->
     <ion-footer class="ion-no-border">
+      <ion-accordion-group>
+        <ion-accordion value="first">
+          <ion-item slot="header">
+            <ion-label>Mas opciones</ion-label>
+          </ion-item>
+
+          <!-- contribute -->
+          <div slot="content">
+            <ion-item lines="none" button @click="openModalDonations()">
+              <ion-icon slot="start" :icon="cashOutline"></ion-icon>
+              <ion-label>Contribuir</ion-label>
+            </ion-item>
+
+            <!-- source code options -->
+            <ion-item id="trigger-button-source-code" lines="none" button>
+              <ion-icon slot="start" :icon="logoGitlab"></ion-icon>
+              <ion-label>Codigo fuente</ion-label>
+            </ion-item>
+            <ion-popover trigger="trigger-button-source-code">
+              <ion-content>
+                <ion-item
+                  button
+                  lines="none"
+                  href="https://www.gitlab.com/gonzam4/portafolio"
+                  target="_blank"
+                >
+                  <ion-label>FrontEnd</ion-label>
+                </ion-item>
+                <ion-item
+                  button
+                  href="https://gitlab.com/gonzam4/portfolio-backend"
+                  target="_blank"
+                  lines="none"
+                >
+                  <ion-label>Backend</ion-label>
+                </ion-item>
+              </ion-content>
+            </ion-popover>
+
+            <!-- button feedback -->
+            <ion-item lines="none" button @click="openModalFeedback">
+              <ion-icon slot="start" :icon="thumbsUpOutline"></ion-icon>
+              <ion-label>Comentarios</ion-label>
+            </ion-item>
+
+            <!-- dark button desktop-->
+            <ion-item
+              v-if="!isAndroidPlatform && !isIosPlatform"
+              lines="none"
+              button
+              @click="openModalThemeDesktop"
+            >
+              <ion-icon slot="start" :icon="brushOutline"></ion-icon>
+              <ion-label>Tema</ion-label>
+            </ion-item>
+
+            <!-- dark button mobile -->
+            <ion-item
+              v-if="isAndroidPlatform || isIosPlatform"
+              lines="none"
+              button
+              @click="openModalThemeDesktop"
+            >
+              <ion-icon slot="start" :icon="brushOutline"></ion-icon>
+              <ion-label>Tema</ion-label>
+            </ion-item>
+
+            <!-- more -->
+            <ion-item lines="none" button @click="openModalApps">
+              <ion-icon slot="start" :icon="appsOutline"></ion-icon>
+              <ion-label>Mas</ion-label>
+            </ion-item>
+
+            <!-- policies -->
+            <ion-item lines="none" button @click="goToPoliciesPage">
+              <ion-icon slot="start" :icon="documentsOutline"></ion-icon>
+              <ion-label>Politicas</ion-label>
+            </ion-item>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+
       <ion-toolbar>
-        <ion-buttons slot="end">
-          <!-- more -->
-          <ion-button
-            fill="clear"
-            color="primary"
-            @click="openModalDonations()"
-          >
-            <ion-icon :icon="cashOutline"></ion-icon>
-          </ion-button>
-
-          <!-- button source code-->
-          <ion-button id="trigger-button-source-code" color="primary">
-            <ion-icon :icon="logoGitlab"></ion-icon>
-          </ion-button>
-          <ion-popover trigger="trigger-button-source-code">
-            <ion-content>
-              <ion-item
-                button
-                lines="none"
-                href="https://www.gitlab.com/gonzam4/portafolio"
-                target="_blank"
-              >
-                <ion-label>FrontEnd</ion-label>
-              </ion-item>
-              <ion-item
-                button
-                href="https://gitlab.com/gonzam4/portfolio-backend"
-                target="_blank"
-                lines="none"
-              >
-                <ion-label>Backend</ion-label>
-              </ion-item>
-            </ion-content>
-          </ion-popover>
-
-          <!-- button feedback -->
-          <ion-button color="primary" @click="openModalFeedback">
-            <ion-icon :icon="thumbsUpOutline"></ion-icon>
-          </ion-button>
-
-          <!-- dark button -->
-          <ion-button
-            v-if="!isAndroidPlatform && !isIosPlatform"
-            fill="clear"
-            color="primary"
-            @click="openModalThemeDesktop()"
-          >
-            <ion-icon :icon="brushOutline"></ion-icon>
-          </ion-button>
-
-          <ion-button
-            v-if="isAndroidPlatform || isIosPlatform"
-            fill="clear"
-            color="primary"
-            @click="openModalThemeMobile()"
-          >
-            <ion-icon :icon="brushOutline"></ion-icon>
-          </ion-button>
-
-          <!-- more -->
-          <ion-button fill="clear" color="primary" @click="openModalApps()">
-            <ion-icon :icon="appsOutline"></ion-icon>
-          </ion-button>
-
-          <!-- policies -->
-          <ion-button fill="clear" color="primary" @click="goToPoliciesPage()">
-            <ion-icon :icon="documentsOutline"></ion-icon>
-          </ion-button>
-
-          <!-- collapse menu -->
-          <ion-button
-            v-if="windowSize.width >= 767"
-            fill="clear"
-            color="primary"
-            @click="changeMenuCollapse({ option: true })"
-          >
-            <ion-icon :icon="chevronForwardOutline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
+        <!-- collapse menu -->
+        <ion-item
+          v-if="windowSize.width >= 767"
+          lines="none"
+          @click="changeMenuCollapse({ option: true })"
+        >
+          <ion-label>Contraer menu</ion-label>
+          <ion-icon :icon="chevronForwardOutline"></ion-icon>
+        </ion-item>
       </ion-toolbar>
     </ion-footer>
   </ion-page>
@@ -299,7 +282,6 @@ import {
   IonItem,
   IonButton,
   IonFooter,
-  IonButtons,
   IonIcon,
   IonSpinner,
 } from "@ionic/vue";
@@ -342,7 +324,6 @@ export default defineComponent({
     IonItem,
     IonButton,
     IonFooter,
-    IonButtons,
     IonIcon,
     IonSpinner,
   },
@@ -509,13 +490,7 @@ export default defineComponent({
 
 <style scoped>
 .optionSelected {
-  color: var(--ion-color-primary) !important;
-}
-.optionNoSelected {
-  color: white !important;
-}
-ion-content,
-ion-toolbar {
-  --background: #2e3440;
+  box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
+  background: var(--menu-color-selected);
 }
 </style>

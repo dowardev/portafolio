@@ -1,180 +1,41 @@
 <template>
-    <!-- Projects -->
-    <section>
-      <ion-row>
-        <ion-col size="12">
-          <ion-list>
-            <ion-list-header>
-              <ion-label>Proyectos</ion-label>
-              <ion-button href="https://gitlab.com/gonzam4" target="_blank"
-                >Ver todo</ion-button
-              >
-            </ion-list-header>
+  <!-- Projects -->
+  <section>
+    <ion-item-divider sticky style="top: 49px;">
+      <ion-select v-model="typeContent" interface="popover">
+        <ion-select-option value="shares">Participaciones</ion-select-option>
+        <ion-select-option value="projectsB"
+          >Proyectos del blog</ion-select-option
+        >
+        <ion-select-option value="projectsP"
+          >Proyectos profesionales</ion-select-option
+        >
+      </ion-select>
+    </ion-item-divider>
 
-            <ion-accordion-group>
-              <ion-row>
-                <ion-col size="12" size-md="6" size-lg="4">
-                  <ion-card
-                    v-for="(project, index) in proyectos"
-                    :key="index"
-                    class="card-click"
-                  >
-                    <ion-accordion>
-                      <ion-card-header slot="header">
-                        <div class="center">
-                          <img
-                            :src="project.image[0].route"
-                            alt=""
-                            :style="{
-                              maxWidth: project.image[0].width,
-                              height: project.image[0].height,
-                            }"
-                          />
-                        </div>
+    <div class="center">
+      <div v-if="typeContent=='projectsP'">
+        <ProfessionalProjectsPage></ProfessionalProjectsPage>
+      </div>
 
-                        <ion-card-title class="center"
-                          >{{ project.name }}
-                        </ion-card-title>
+      <div v-if="typeContent=='shares'">
+        <participationsPage></participationsPage>
+      </div>
 
-                        <div class="center ion-padding-bottom">
-                          <ion-label>{{ project.status }}</ion-label>
-                        </div>
-
-                        <div class="center">
-                          <ion-icon
-                            v-for="icon in project.type"
-                            :key="icon"
-                            fill="clear"
-                            size="small"
-                            :icon="icon"
-                            class="ion-padding-end"
-                            color="primary"
-                          ></ion-icon>
-                        </div>
-                      </ion-card-header>
-
-                      <ion-card-content slot="content">
-                        <ion-list>
-                          <ion-list-header>Tecnologías</ion-list-header>
-                          <ion-row>
-                            <ion-col
-                              v-for="tech in project.technologies"
-                              :key="tech.icon"
-                              size-xs="2"
-                              size-md="3"
-                              size-lg="3"
-                              size-xl="2"
-                            >
-                              <ion-button
-                                :href="tech.route"
-                                target="_blank"
-                                fill="clear"
-                              >
-                                <ion-icon
-                                  v-if="tech.type == 'icon'"
-                                  slot="start"
-                                  :icon="tech.icon"
-                                  color="primary"
-                                ></ion-icon>
-                                <img
-                                  v-if="tech.type == 'svg'"
-                                  :src="tech.icon"
-                                  alt=""
-                                  style="max-width: 1.4rem"
-                                />
-                              </ion-button>
-                            </ion-col>
-                          </ion-row>
-                        </ion-list>
-
-                        <ion-list>
-                          <ion-list-header>Enlaces de interes</ion-list-header>
-                          <ion-item lines="none">
-                            <ion-button
-                              fill="clear"
-                              :href="project.page"
-                              target="_blank"
-                            >
-                              <ion-icon :icon="globeOutline"></ion-icon>
-                            </ion-button>
-                            <ion-button
-                              v-for="source in project.sourceCode"
-                              :key="source.page"
-                              :href="source.page"
-                              fill="clear"
-                              target="_blank"
-                            >
-                              <ion-icon
-                                :icon="
-                                  source.name == 'FrontEnd'
-                                    ? browsersOutline
-                                    : serverOutline
-                                "
-                              ></ion-icon>
-                            </ion-button>
-                          </ion-item>
-                        </ion-list>
-                      </ion-card-content>
-                    </ion-accordion>
-                  </ion-card>
-                </ion-col>
-              </ion-row>
-            </ion-accordion-group>
-          </ion-list>
-        </ion-col>
-      </ion-row>
-    </section>
-
-    <!-- Holdings -->
-    <section>
-      <ion-row>
-        <ion-col size="12">
-          <ion-list>
-            <ion-list-header>
-              <ion-label>Participaciones</ion-label>
-            </ion-list-header>
-
-            <ion-row>
-              <ion-col
-                v-for="participacion in participaciones"
-                :key="participacion.name"
-                size="12"
-                size-md="4"
-                size-lg="3"
-              >
-                <ion-card
-                  class="card-click"
-                  @click="openPage(participacion.page)"
-                >
-                  <ion-card-header>
-                    <ion-card-title>
-                      {{ participacion.name }}
-                    </ion-card-title>
-                  </ion-card-header>
-                </ion-card>
-              </ion-col>
-            </ion-row>
-          </ion-list>
-        </ion-col>
-      </ion-row>
-    </section>
+      <div v-if="typeContent=='projectsB'">
+        <BloglProjectsPage></BloglProjectsPage>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script lang="ts">
 import {
-  IonRow,
-  IonCol,
-  IonCard,
-  IonCardHeader,
-  IonCardContent,
-  IonLabel,
-  IonButton,
-  IonCardTitle,
   isPlatform,
+  IonSelect,
+  IonSelectOption,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import { Plugins } from "@capacitor/core";
-const { Browser } = Plugins;
 import {
   logoIonic,
   logoAndroid,
@@ -193,17 +54,17 @@ import mariaDBLogo from "../../assets/otros/mariadb-icon.svg";
 import graphqlLogo from "../../assets/otros/graphql-clear.svg";
 import viteLogo from "../../assets/otros/vite.svg";
 
+import ProfessionalProjectsPage from "../../components/portfolio/professional-projects/ProfessionalProjectsPage.vue";
+import ParticipationsPage from "../../components/portfolio/participations/ParticipationsPage.vue";
+import BloglProjectsPage from "../../components/portfolio/blog-projects/BlogProjectsPage.vue";
+
 export default defineComponent({
   name: "PortfolioPage",
   components: {
-    IonRow,
-    IonCol,
-    IonCard,
-    IonCardHeader,
-    IonCardContent,
-    IonLabel,
-    IonButton,
-    IonCardTitle,
+    IonSelect,
+    IonSelectOption,
+    ProfessionalProjectsPage,
+    ParticipationsPage,BloglProjectsPage
   },
 
   setup() {
@@ -315,11 +176,13 @@ export default defineComponent({
     };
   },
 
-  methods: {
-    async navegador(url: string) {
-      await Browser.open({ url });
-    },
+  data() {
+    return {
+      typeContent: "projectsP",
+    };
+  },
 
+  methods: {
     async openPage(page: string) {
       window.open(page, "_blank");
     },

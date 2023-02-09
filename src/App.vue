@@ -68,7 +68,6 @@ import {
 import {
   closeOutline,
   downloadOutline,
-  checkmarkOutline,
 } from "ionicons/icons";
 import { useUser } from "./composables/useUser";
 import { getUserToken } from "./services/user";

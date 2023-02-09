@@ -1,4 +1,3 @@
-
 # Portafolio web
 
 Sitio web aplicación móvil(Android), PWA diseñado para desarrolladores, el cual les permite mostrar sus conocimientos y proyectos realizados además de un editor para publicar contenido en un blog.
