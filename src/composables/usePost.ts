@@ -74,7 +74,7 @@ export const usePost = () => {
     return postRefs.dates ? postRefs.dates.value : undefined;
   }
 
-  function getCurrentPage(): any {
+  function getCurrentPage(): String|undefined{
     return postRefs.currentPage.value ? postRefs.currentPage.value : undefined;
   }
 

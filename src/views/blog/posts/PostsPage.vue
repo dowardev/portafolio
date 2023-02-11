@@ -79,46 +79,22 @@
         </ion-toolbar>
       </ion-header>
 
+      <!-- date selector -->
       <ion-header mode="ios" :translucent="true" class="sticky">
         <ion-toolbar>
-          <ion-item-divider style="--background: transparent">
-            <div style="width: 100%; display: flex; justify-content: center">
-              <ion-button
-                fill="clear"
-                @click="
-                  goToPage({
-                    currentPage: usePost.getCurrentPage()!,
-                    option: 'prev',
-                  })
-                "
-              >
-                <ion-icon :icon="chevronBackOutline"></ion-icon>
-              </ion-button>
-
-              <ion-button
-                v-if="usePost.getCurrentPage()!"
-                fill="clear"
-                @click="openPopover({ event: $event })"
-              >
-                {{ usePost.getCurrentPage()! }}
-              </ion-button>
-
-              <!-- next date -->
-              <ion-button
-                fill="clear"
-                @click="
-                  goToPage({
-                    currentPage: usePost.getCurrentPage()!,
-                    option: 'next',
-                  })
-                "
-              >
-                <ion-icon :icon="chevronForwardOutline"></ion-icon>
-              </ion-button>
-            </div>
+          <ion-item-divider
+            v-if="usePost.getDates()!.length>0&&usePost.getCurrentPage()!=undefined"
+            style="--background: transparent"
+          >
+            <DateSelectorComponent
+              @current-date-change="
+                loadPosts({ currentPage: usePost.getCurrentPage() as string })
+              "
+            ></DateSelectorComponent>
           </ion-item-divider>
         </ion-toolbar>
       </ion-header>
+      <!-- end dae selector -->
 
       <!-- posts -->
       <section v-if="usePost.getPosts()!.length>0">
@@ -180,6 +156,7 @@
           </ion-col>
         </ion-row>
       </section>
+      <!-- end posts -->
 
       <section v-if="usePost.getPosts()!.length == 0 && loadFinished">
         <div class="align-vertical">
@@ -251,6 +228,8 @@ import PopoverDateSelector from "./PopoverDateSelector.vue";
 import { useSystem } from "../../../composables/useSystem";
 import { format, isEqual } from "date-fns";
 
+import DateSelectorComponent from "../../../components/posts/DateSelectorComponent.vue";
+
 export default defineComponent({
   name: "PostsPage",
   components: {
@@ -266,6 +245,7 @@ export default defineComponent({
     IonItemDivider,
     IonModal,
     IonSearchbar,
+    DateSelectorComponent,
   },
 
   setup() {

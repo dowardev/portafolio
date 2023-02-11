@@ -5,14 +5,14 @@ import formatISO from "date-fns/formatISO";
 interface PostState {
   posts: Array<Post>;
   dates: Array<string>;
-  currentPage: string;
+  currentPage: string | undefined;
 }
 
 export const usePostStore = defineStore("post", {
   state: (): PostState => ({
     posts: Array<Post>(),
     dates: Array<string>(),
-    currentPage: "",
+    currentPage: undefined
   }),
 
   getters: {
