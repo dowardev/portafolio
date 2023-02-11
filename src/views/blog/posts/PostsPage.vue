@@ -224,7 +224,6 @@ import {
 import { ALL_POSTS_DETAILS, POST_DATES } from "../../../services/graphql";
 import { useUser } from "../../../composables/useUser";
 import { usePost } from "../../../composables/usePost";
-import PopoverDateSelector from "./PopoverDateSelector.vue";
 import { useSystem } from "../../../composables/useSystem";
 import { format, isEqual } from "date-fns";
 
@@ -360,43 +359,6 @@ export default defineComponent({
       }
     },
 
-    async goToPage(params: {
-      currentPage: string;
-      option: "prev" | "next" | "custom";
-    }): Promise<void> {
-      const date = params.currentPage;
-      const dates = this.usePost.getDates()!;
-      let index = dates.indexOf(date);
-
-      if (params.option == "prev") {
-        index--;
-        if (index == -1) return;
-      }
-
-      if (params.option == "next") {
-        index++;
-        if (index == dates.length) return;
-      }
-
-      if (params.option == "custom") {
-        const customDate = dates.filter((element) => {
-          if (element == params.currentPage) return parseInt(element);
-        })[0];
-        index = dates.indexOf(customDate);
-      }
-
-      this.usePost.updateCurrentPage({ currentPage: dates[index] });
-      try {
-        await this.loadPosts({
-          currentPage: dates[index],
-        });
-
-        this.$router.replace("/blog/" + dates[index]);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
     async addPost() {
       this.spinners.buttonAddPost = true;
       await this.$router.push("/blog/editor/create");
@@ -439,22 +401,6 @@ export default defineComponent({
 
     async refreshContent() {
       this.loadContent({ refetch: true });
-    },
-
-    async openPopover(params: { event: Event }) {
-      const event = params.event;
-      const popover = await popoverController.create({
-        component: PopoverDateSelector,
-        event: event,
-      });
-      await popover.present();
-
-      const { data } = await popover.onDidDismiss();
-      if (data != undefined)
-        this.goToPage({
-          currentPage: data,
-          option: "custom",
-        });
     },
 
     closeModalSearchPosts() {
