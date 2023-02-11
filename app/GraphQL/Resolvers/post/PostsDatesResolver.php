@@ -25,14 +25,11 @@ class PostsDatesResolver
             array_push($dates, explode("+", $date->format(DateTime::ATOM))[0]);
         }
 
-        $group = [];
-        foreach ($dates as $key => $value) {
-            $date = date("Y-m-d", strtotime($value));
-            if (array_search($date, $group, true) == false) {
-                array_push($group, $date);
-            }
-        }
-        $dates = $group;
+        $dates= array_map(function ($date) {
+            return date("Y-m-d", strtotime($date));
+        }, $dates);
+
+        $dates=array_unique($dates);
 
         return ["dates" => $dates];
     }
