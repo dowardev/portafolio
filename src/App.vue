@@ -59,7 +59,6 @@ import {
 import { defineComponent } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
 import {
-  detectToggleTheme,
   createFirstCookie,
   getFirstCookie,
   setTheme,
