@@ -102,10 +102,6 @@ export interface Toast {
   duration?: number;
 }
 
-export interface Theme {
-  theme: "aut" | "light" | "dark";
-}
-
 export interface Loading {
   message: string;
 }

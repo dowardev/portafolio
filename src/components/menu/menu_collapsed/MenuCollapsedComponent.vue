@@ -10,7 +10,7 @@
         </div>
       </ion-toolbar>
 
-      <ion-toolbar class="menu-color">
+      <ion-toolbar >
         <!-- no logged -->
         <section>
           <ion-item
@@ -358,13 +358,13 @@ import {
   chevronBackOutline,
   chevronForwardOutline,
 } from "ionicons/icons";
-import DarkMode from "../darkmode/DarkMode.vue";
 import { logout } from "../../../services/session";
 import AppsComponent from "../apps/Apps.vue";
 import DonationsComponent from "../donations/Donations.vue";
 import { useUser } from "../../../composables/useUser";
 import { USER_MENU } from "../../../services/graphql";
 import { useSystem } from "../../../composables/useSystem";
+import ThemeComponente from '@/components/theme/ThemeComponente.vue'
 
 export default defineComponent({
   name: "MenuCollapsedComponent",
@@ -436,7 +436,7 @@ export default defineComponent({
   methods: {
     async openModalThemeDesktop() {
       const modal = await modalController.create({
-        component: DarkMode,
+        component: ThemeComponente,
         cssClass: "my-custom-class",
         componentProps: {
           title: "New Title",
@@ -447,7 +447,7 @@ export default defineComponent({
 
     async openModalThemeMobile() {
       const modal = await modalController.create({
-        component: DarkMode,
+        component: ThemeComponente,
         initialBreakpoint: 0.5,
         breakpoints: [0, 0.5, 1],
       });
@@ -540,10 +540,6 @@ export default defineComponent({
 }
 .optionNoSelected {
   color: white !important;
-}
-ion-content,
-ion-toolbar {
-  --background: #2e3440;
 }
 .item-icon-center {
   width: 100%;

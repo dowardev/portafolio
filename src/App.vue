@@ -164,9 +164,8 @@ export default defineComponent({
 
   mounted() {
     this.createFirstCookie();
-    detectToggleTheme();
     getTheme().then((response) => {
-      const theme = response == null ? "aut" : response;
+      const theme = response 
       setTheme({ theme: theme });
     });
     this.loadUserProps();

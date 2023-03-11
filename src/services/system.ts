@@ -11,7 +11,6 @@ import {
   AlertConfirmation,
   Image,
   Loading,
-  Theme,
   Toast,
   UploadImage,
 } from "./interfaces";
@@ -20,39 +19,28 @@ import apolloClient from "../Apollo";
 import gql from "graphql-tag";
 import { useMutation } from "@vue/apollo-composable";
 import { provideApolloClient } from "@vue/apollo-composable";
+import { Theme } from "./types";
 provideApolloClient(apolloClient);
 
-export async function getTheme(): Promise<"aut" | "light" | "dark" | null> {
+export async function getTheme(): Promise<Theme> {
   return await storage.get("theme");
 }
 
-export async function setTheme({ theme }: Theme): Promise<void> {
-  if (theme == "aut") {
-    const value = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    if (value) document.getElementsByTagName("body")[0].classList.add("dark");
+export async function setTheme(params: { theme: Theme }) {
+  const theme = params.theme;
+  const currentTheme = await getTheme();
 
-    if (value == false)
-      document.getElementsByTagName("body")[0].classList.remove("dark");
+  if (theme == null) {
+    document.getElementsByTagName("body")[0].classList.add("light");
+  } else {
+    document.getElementsByTagName("body")[0].classList.remove(currentTheme);
+    document.getElementsByTagName("body")[0].classList.add(theme);
   }
-
-  if (theme == "dark")
-    document.getElementsByTagName("body")[0].classList.add("dark");
-
-  if (theme == "light")
-    document.getElementsByTagName("body")[0].classList.remove("dark");
 }
 
-export async function saveTheme({ theme }: Theme): Promise<void> {
+export async function saveTheme(params: { theme: Theme }): Promise<void> {
+  const theme = params.theme;
   await storage.set("theme", theme);
-}
-
-export async function detectToggleTheme(): Promise<void> {
-  window.matchMedia("(prefers-color-scheme: dark)").addListener(async (e) => {
-    const theme = await getTheme();
-    if (theme == null || theme == "aut") {
-      setTheme({ theme: e.matches == true ? "dark" : "light" });
-    }
-  });
 }
 
 export async function openToast(params: Toast): Promise<void> {
