@@ -80,7 +80,4 @@
   --ion-color-step-850: #6b7484;
   --ion-color-step-900: #626b7d;
   --ion-color-step-950: #5a6375;
-
-  --menu-color-selected-option: var(--ion-color-primary);
-  --menu-color-selected-icon: var(--ion-color-primary);
 }

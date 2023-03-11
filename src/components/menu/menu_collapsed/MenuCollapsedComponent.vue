@@ -162,7 +162,6 @@
             :icon="personOutline"
             :class="{
               optionSelected: $route.path == '/presentation',
-              optionNoSelected: $route.path != '/presentation',
             }"
             class="item-icon-center"
           ></ion-icon>
@@ -177,8 +176,7 @@
           <ion-icon
             :icon="libraryOutline"
             :class="{
-              optionSelected: $route.path == '/blog' || $route.params.date,
-              optionNoSelected: $route.path != '/blog' && !$route.params.date,
+              optionSelected: $route.path == '/blog' || $route.params.id,
             }"
             class="item-icon-center"
           ></ion-icon>
@@ -536,10 +534,10 @@ export default defineComponent({
 
 <style scoped>
 .optionSelected {
-  color: var(--ion-color-primary) !important;
-}
-.optionNoSelected {
-  color: white !important;
+  background: var(--ion-color-primary);
+  border-radius: 6px;
+  padding: 8px;
+  color: white;
 }
 .item-icon-center {
   width: 100%;
@@ -549,10 +547,5 @@ hr {
   border-color: #3c424d;
   border-width: 1px;
   border-style: solid;
-}
-.sticky {
-  position: sticky;
-  z-index: 3;
-  top: 0px;
 }
 </style>

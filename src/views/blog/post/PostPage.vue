@@ -187,13 +187,13 @@ import {
 import {
   presentLoading,
   presentAlertConfirmation,
+  getTheme,
 } from "../../../services/system";
 import eventBus from "../../../EventBus";
 import { POST_DETAILS } from "../../../services/graphql";
 import { usePost } from "../../../composables/usePost";
 import { useUser } from "../../../composables/useUser";
 import { format, formatISO } from "date-fns";
-import "highlight.js/styles/atom-one-dark.css";
 import { useSystem } from "../../../composables/useSystem";
 import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
 import { es } from "date-fns/locale";
@@ -243,6 +243,7 @@ export default defineComponent({
 
   mounted() {
     this.getPost();
+    this.setThemeCodePreview();
   },
 
   methods: {
@@ -309,6 +310,28 @@ export default defineComponent({
         this.spinners.buttonDelete = false;
         this.openToastError(e);
       }
+    },
+
+    async setThemeCodePreview() {
+      const theme = await getTheme();
+      let file = "" as any;
+
+      if (theme == "nord")
+        file = await import(
+          "../../../../node_modules/highlight.js/styles/atom-one-dark.css"
+        );
+      if (theme == "gruvbox")
+        file = await import(
+          "../../../../node_modules/highlight.js/styles/dark.css"
+        );
+      if (theme == "light")
+        file = await import(
+          "../../../../node_modules/highlight.js/styles/atom-one-light.css"
+        );
+
+      const cssNode = document.createElement("style");
+      cssNode.innerHTML = file.default;
+      document.head.appendChild(cssNode);
     },
   },
 });

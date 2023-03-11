@@ -147,7 +147,7 @@
           button
           @click="openRoute('/presentation')"
         >
-          <div slot=start>
+          <div slot="start">
             <ion-icon
               :icon="personOutline"
               :class="{
@@ -158,9 +158,7 @@
           </div>
 
           <ion-label
-            :class="{
-              labelOptionSelected: $route.path == '/presentation',
-            }"
+            class="labelOptionMenu"
           >
             Presentación
           </ion-label>
@@ -173,9 +171,7 @@
         button
         @click="openRoute('/blog')"
       >
-        <div
-          slot="start"
-        >
+        <div slot="start">
           <ion-icon
             :icon="libraryOutline"
             :class="{
@@ -186,9 +182,7 @@
         </div>
 
         <ion-label
-          :class="{
-            labelOptionSelected: $route.path == '/blog' || $route.params.id,
-          }"
+          class="labelOptionMenu"
         >
           Blog
         </ion-label>
@@ -284,6 +278,7 @@
         <ion-item
           v-if="windowSize.width >= 767"
           lines="none"
+          button
           @click="changeMenuCollapse({ option: true })"
         >
           <ion-label>Contraer menu</ion-label>
@@ -337,7 +332,7 @@ import DonationsComponent from "../donations/Donations.vue";
 import { useUser } from "../../../composables/useUser";
 import { USER_MENU } from "../../../services/graphql";
 import { useSystem } from "../../../composables/useSystem";
-import ThemeComponente from '@/components/theme/ThemeComponente.vue'
+import ThemeComponente from "@/components/theme/ThemeComponente.vue";
 
 export default defineComponent({
   name: "DefaultMenuComponent",
@@ -515,22 +510,17 @@ export default defineComponent({
 
 <style scoped>
 .iconOptionSelected {
-  background: var(--menu-color-selected-icon);
+  background: var(--ion-color-primary);
   border-radius: 6px;
   padding: 8px;
-  /* border-color: #7ba9e1; */
-  /* border-style: solid; */
-  color:white
+  color: white;
 }
 
 .iconOptionNoSelected {
-  /* background: var(--menu-color-selected); */
-  /* border-radius: 6px; */
   padding: 8px;
 }
 
-.labelOptionSelected {
-  color: var(--menu-color-selected-option);
+.labelOptionMenu {
+  color: var(--ion-color-primary);
 }
-
 </style>
