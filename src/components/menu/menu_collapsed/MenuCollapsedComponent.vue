@@ -5,7 +5,7 @@
         <div class="center">
           <img
             src="@/assets/portafolio/logo_dowar_2.1.png"
-            style="max-width: 7vw"
+            style="max-width: 4vw;margin: 1rem;"
           />
         </div>
       </ion-toolbar>

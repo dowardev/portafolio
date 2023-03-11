@@ -82,7 +82,8 @@
   --ion-color-step-900: #626b7d;
   --ion-color-step-950: #5a6375;
 
-  --menu-color-selected: #eceff4;
+  --menu-color-selected-option: var(--ion-color-primary);
+  --menu-color-selected-icon: var(--ion-color-primary);
 }
 
 *.dark {
@@ -112,7 +113,8 @@
   --ion-color-step-900: #d9dce2;
   --ion-color-step-950: #e3e6eb;
 
-  --menu-color-selected: #363b47;
+  --menu-color-selected-option: var(--ion-color-primary);
+  --menu-color-selected-icon: var(--ion-color-primary);
 }
 
 @font-face {

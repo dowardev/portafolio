@@ -126,7 +126,7 @@
                 </ion-col>
               </ion-row>
 
-              <ion-item button lines="none">
+              <ion-item v-if="useUser.user.value.isAdmin" button lines="none" >
                 <ion-button
                   slot="end"
                   :disabled="spinners.buttonEditPost == post.id!"

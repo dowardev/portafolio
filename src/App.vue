@@ -1,6 +1,6 @@
 <template>
   <ion-app>
-    <ion-split-pane content-id="menu-content" when="md">
+    <ion-split-pane content-id="menu-content" when="lg">
       <ion-menu
         content-id="menu-content"
         menu-id="mainMenu"
@@ -150,17 +150,17 @@ export default defineComponent({
     },
   },
 
-  created() {
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      this.deferredPrompt = e;
-      this.isOpenMenuAddPWA = true;
-    });
-    window.addEventListener("appinstalled", () => {
-      this.deferredPrompt = null;
-      this.isOpenMenuAddPWA = false;
-    });
-  },
+  // created() {
+  //   window.addEventListener("beforeinstallprompt", (e) => {
+  //     e.preventDefault();
+  //     this.deferredPrompt = e;
+  //     this.isOpenMenuAddPWA = true;
+  //   });
+  //   window.addEventListener("appinstalled", () => {
+  //     this.deferredPrompt = null;
+  //     this.isOpenMenuAddPWA = false;
+  //   });
+  // },
 
   mounted() {
     this.createFirstCookie();

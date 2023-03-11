@@ -140,19 +140,30 @@
         </ion-item>
       </ion-toolbar>
 
-      <div
-        :class="{
-          optionSelected: $route.path == '/presentation',
-        }"
-      >
+      <div>
         <ion-item
           lines="none"
           class="transparent"
           button
           @click="openRoute('/presentation')"
         >
-          <ion-icon slot="start" :icon="personOutline"></ion-icon>
-          <ion-label> Presentación </ion-label>
+          <div slot=start>
+            <ion-icon
+              :icon="personOutline"
+              :class="{
+                iconOptionSelected: $route.path == '/presentation',
+                iconOptionNoSelected: $route.path != '/presentation',
+              }"
+            ></ion-icon>
+          </div>
+
+          <ion-label
+            :class="{
+              labelOptionSelected: $route.path == '/presentation',
+            }"
+          >
+            Presentación
+          </ion-label>
         </ion-item>
       </div>
 
@@ -160,13 +171,27 @@
         lines="none"
         class="transparent"
         button
-        :class="{
-          optionSelected: $route.path == '/blog' || $route.params.date,
-        }"
         @click="openRoute('/blog')"
       >
-        <ion-icon slot="start" :icon="libraryOutline"></ion-icon>
-        <ion-label> Blog </ion-label>
+        <div
+          slot="start"
+        >
+          <ion-icon
+            :icon="libraryOutline"
+            :class="{
+              iconOptionSelected: $route.path == '/blog' || $route.params.id,
+              iconOptionNoSelected: $route.path != '/blog' || $route.params.id,
+            }"
+          ></ion-icon>
+        </div>
+
+        <ion-label
+          :class="{
+            labelOptionSelected: $route.path == '/blog' || $route.params.id,
+          }"
+        >
+          Blog
+        </ion-label>
       </ion-item>
     </ion-content>
 
@@ -489,8 +514,23 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.optionSelected {
-  box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
-  background: var(--menu-color-selected);
+.iconOptionSelected {
+  background: var(--menu-color-selected-icon);
+  border-radius: 6px;
+  padding: 8px;
+  /* border-color: #7ba9e1; */
+  /* border-style: solid; */
+  color:white
 }
+
+.iconOptionNoSelected {
+  /* background: var(--menu-color-selected); */
+  /* border-radius: 6px; */
+  padding: 8px;
+}
+
+.labelOptionSelected {
+  color: var(--menu-color-selected-option);
+}
+
 </style>
