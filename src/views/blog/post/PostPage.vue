@@ -32,134 +32,209 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
-      <section v-if="usePost.getPost({ id: postId }) != undefined">
-        <ion-row>
-          <ion-col size="12" class="center">
-            <img
-              :src="usePost.getPost({ id: postId })!.cover.source"
-              alt=""
-              style="max-width: 80vw"
-            />
-          </ion-col>
-        </ion-row>
-
-        <ion-header collapse="condense" mode="ios">
-          <ion-toolbar>
-            <div class="content">
-              <div>
-                <!-- post title -->
-                <h1>
-                  {{ usePost.getPost({ id: postId })!.title }}
-                </h1>
-
-                <!-- options post -->
-                <ion-buttons
-                  v-if="useUser.user.value.isAdmin"
-                  slot="end"
-                  :collapse="true"
+    <ion-content
+      v-if="usePost.getPost({ id: postId }) != undefined"
+      :fullscreen="true"
+    >
+      <div>
+        <section class="content-container">
+          <div>
+            <div>
+              <ion-row class="hidde-scroll">
+                <ion-col
+                  size="4"
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                  "
                 >
-                  <ion-button
-                    fill="clear"
-                    :disabaled="spinners.buttonUpdate == true"
-                    @click="updatePost()"
-                  >
-                    <ion-icon
-                      v-if="spinners.buttonUpdate == false"
-                      :icon="createOutline"
-                    ></ion-icon>
-                    <ion-spinner
-                      v-if="spinners.buttonUpdate == true"
-                      name="crescent"
-                    ></ion-spinner>
-                  </ion-button>
+                  <div>
+                    <img
+                      :src="usePost.getPost({ id: postId })!.cover.source"
+                      alt=""
+                    />
+                  </div>
+                </ion-col>
 
-                  <ion-button
-                    fill="clear"
-                    :disabaled="spinners.buttonDelete == true"
-                    @click="deletePost()"
-                  >
-                    <ion-icon
-                      v-if="spinners.buttonDelete == false"
-                      :icon="trashOutline"
-                      color="danger"
-                    ></ion-icon>
-                    <ion-spinner
-                      v-if="spinners.buttonDelete == true"
-                      name="crescent"
-                    ></ion-spinner>
-                  </ion-button>
-                </ion-buttons>
+                <ion-col size="8">
+                  <section>
+                    <ion-header collapse="condense" mode="ios">
+                      <ion-toolbar>
+                        <div>
+                          <div>
+                            <!-- post title -->
+                            <h1>
+                              {{ usePost.getPost({ id: postId })!.title }}
+                            </h1>
+
+                            <!-- options post -->
+                            <ion-buttons
+                              v-if="useUser.user.value.isAdmin"
+                              slot="end"
+                              :collapse="true"
+                            >
+                              <ion-button
+                                fill="clear"
+                                :disabaled="spinners.buttonUpdate == true"
+                                @click="updatePost()"
+                              >
+                                <ion-icon
+                                  v-if="spinners.buttonUpdate == false"
+                                  :icon="createOutline"
+                                ></ion-icon>
+                                <ion-spinner
+                                  v-if="spinners.buttonUpdate == true"
+                                  name="crescent"
+                                ></ion-spinner>
+                              </ion-button>
+
+                              <ion-button
+                                fill="clear"
+                                :disabaled="spinners.buttonDelete == true"
+                                @click="deletePost()"
+                              >
+                                <ion-icon
+                                  v-if="spinners.buttonDelete == false"
+                                  :icon="trashOutline"
+                                  color="danger"
+                                ></ion-icon>
+                                <ion-spinner
+                                  v-if="spinners.buttonDelete == true"
+                                  name="crescent"
+                                ></ion-spinner>
+                              </ion-button>
+                            </ion-buttons>
+                          </div>
+                        </div>
+                      </ion-toolbar>
+                    </ion-header>
+                  </section>
+
+                  <!-- post data -->
+                  <section>
+                    <!-- date created -->
+                    <div>
+                      <div>
+                        <p
+                          v-if="usePost.getPost({ id: postId })!.createdAt"
+                          class="post-date"
+                        >
+                          Creación del post:
+                          {{
+                            format(
+                              new Date(
+                                usePost.getPost({ id: postId })!
+                                  .createdAt as string
+                              ),
+                              "P",
+                              { locale: locale.es }
+                            ) +
+                            " " +
+                            format(
+                              new Date(
+                                usePost.getPost({ id: postId })!
+                                  .createdAt as string
+                              ),
+                              "p"
+                            )
+                          }}
+                        </p>
+
+                        <!-- date updates -->
+                        <p
+                          v-if="usePost.getPost({ id: postId })!.updatedAt"
+                          class="post-date"
+                        >
+                          Ultimá actualización del post:
+                          {{
+                            format(
+                              new Date(
+                                usePost.getPost({ id: postId })!
+                                  .updatedAt as string
+                              ),
+                              "P"
+                            ) +
+                            " " +
+                            format(
+                              new Date(
+                                usePost.getPost({ id: postId })!
+                                  .updatedAt as string
+                              ),
+                              "p"
+                            )
+                          }}
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+                </ion-col>
+              </ion-row>
+
+              <!-- content -->
+              <ion-row>
+                <ion-col>
+                  <MarkdownItComponent
+                    :source="usePost.getPost({ id: postId })!.content"
+                  />
+                </ion-col>
+              </ion-row>
+            </div>
+          </div>
+        </section>
+
+        <section class="indexContent">
+          <ion-item>
+            <ion-label>Contenido</ion-label>
+            <ion-chip outline>Beta</ion-chip>
+          </ion-item>
+
+          <div style="display: flex;opacity: .5;" class="ion-padding-start">
+            <div
+              style="
+                margin-right: 16px;
+                display: flex;
+                align-content: center;
+                align-items: center;
+              "
+            >
+              <ion-icon :icon="alertCircleOutline"></ion-icon>
+            </div>
+            <div
+              style="display: flex; align-content: center; align-items: center"
+            >
+              <ion-label>Pasa el mouse por encima</ion-label>
+            </div>
+          </div>
+
+          <div
+            id="indexContent"
+            style="overflow: auto; height: 80vh"
+            class="hidde-scroll ion-padding-start"
+          >
+            <div
+              v-for="element in index"
+              :key="element.id"
+              style="margin-bottom: 10px"
+            >
+              <div
+                :class="{
+                  h3Button: element.type == 'h3',
+                  h4Button: element.type == 'h4',
+                  h5Button: element.type == 'h5',
+                  h6Button: element.type == 'h6',
+                }"
+              >
+                <span
+                  style="color: var(--ion-color-primary); cursor: pointer"
+                  @click="goToSection({ id: element.id })"
+                  >{{ element.name }}</span
+                >
               </div>
             </div>
-          </ion-toolbar>
-        </ion-header>
-
-        <!-- post data -->
-        <section>
-          <!-- date created -->
-          <div class="content">
-            <div>
-              <p
-                v-if="usePost.getPost({ id: postId })!.createdAt"
-                class="post-date"
-              >
-                Creación del post:
-                {{
-                  format(
-                    new Date(
-                      usePost.getPost({ id: postId })!.createdAt as string
-                    ),
-                    "P",
-                    { locale: locale.es }
-                  ) +
-                  " " +
-                  format(
-                    new Date(
-                      usePost.getPost({ id: postId })!.createdAt as string
-                    ),
-                    "p"
-                  )
-                }}
-              </p>
-
-              <!-- date updates -->
-              <p
-                v-if="usePost.getPost({ id: postId })!.updatedAt"
-                class="post-date"
-              >
-                Ultimá actualización del post:
-                {{
-                  format(
-                    new Date(
-                      usePost.getPost({ id: postId })!.updatedAt as string
-                    ),
-                    "P"
-                  ) +
-                  " " +
-                  format(
-                    new Date(
-                      usePost.getPost({ id: postId })!.updatedAt as string
-                    ),
-                    "p"
-                  )
-                }}
-              </p>
-            </div>
           </div>
         </section>
-
-        <!-- content -->
-        <section>
-          <div class="content">
-            <div>
-              <MarkdownItComponent
-                :source="usePost.getPost({ id: postId })!.content"
-              />
-            </div>
-          </div>
-        </section>
-      </section>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -180,6 +255,7 @@ import {
 import { defineComponent } from "vue";
 import { deletePost } from "../../../services/post";
 import {
+  alertCircleOutline,
   chevronBackOutline,
   createOutline,
   trashOutline,
@@ -224,6 +300,7 @@ export default defineComponent({
       openToastError: useSystem().openToastError,
       locale: { es: es },
       formatISO,
+      alertCircleOutline,
     };
   },
 
@@ -238,15 +315,21 @@ export default defineComponent({
         updated: "",
       },
       spinners: { buttonUpdate: false, buttonDelete: false },
+      index: [] as Array<{ name: string; id: string; type: string }>,
     };
   },
 
   mounted() {
-    this.getPost();
-    this.setThemeCodePreview();
+    this.start();
   },
 
   methods: {
+    async start() {
+      await this.getPost();
+      await this.setThemeCodePreview();
+      this.generarIndexContent();
+    },
+
     async getPost() {
       const loading = await presentLoading({
         message: "Obteniendo publicación",
@@ -333,6 +416,36 @@ export default defineComponent({
       cssNode.innerHTML = file.default;
       document.head.appendChild(cssNode);
     },
+
+    generarIndexContent() {
+      const headings = this.$el.querySelectorAll("h2, h3, h4, h5, h6");
+
+      let count = 0;
+      headings.forEach(
+        (heading: { id: string; textContent: string; tagName: string }) => {
+          heading.id = count.toString();
+
+          this.index.push({
+            name: heading.textContent as string,
+            id: count.toString(),
+            type: heading.tagName.toLowerCase(),
+          });
+
+          count++;
+        }
+      );
+    },
+
+    goToSection(params: { id: string }) {
+      const id = params.id;
+      const element = document.getElementById(id);
+      if (element)
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+          inline: "nearest",
+        });
+    },
   },
 });
 </script>
@@ -342,30 +455,85 @@ export default defineComponent({
   font-size: 12px !important;
 }
 
-.content {
-  display: flex;
-  justify-content: center;
+.content-container {
+  width: 50%;
 }
 
-.content > div {
-  width: 88vw;
+.indexContent {
+  position: fixed;
+  top: 8vh;
+  right: 0;
+  width: 24%;
+  display: none;
+  word-wrap: break-word;
+}
+
+.indexContent > #indexContent {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.indexContent:hover #indexContent {
+  opacity: 1;
 }
 
 @media only screen and (min-width: 768px) {
-  .content > div {
+  .content-container {
     width: 62vw;
   }
 }
 
 @media only screen and (min-width: 992px) {
-  .content > div {
-    width: 54vw;
+  .content-container {
+    width: 70%;
+  }
+
+  .content-container > div {
+    display: flex;
+    justify-content: center;
+  }
+
+  .content-container > div > div {
+    width: 60%;
   }
 }
 
 @media only screen and (min-width: 1200px) {
-  .content > div {
-    width: 40vw;
+  .content-container {
+    width: 70%;
   }
+  
+  .content-container > div {
+    display: flex;
+    justify-content: center;
+  }
+
+  .content-container > div > div {
+    width: 60%;
+  }
+
+  .indexContent {
+    display: block;
+  }
+}
+
+.hidde-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.h3Button {
+  margin-left: 10px;
+}
+
+.h4Button {
+  margin-left: 15px;
+}
+
+.h5Button {
+  margin-left: 20px;
+}
+
+.h6Button {
+  margin-left: 25px;
 }
 </style>

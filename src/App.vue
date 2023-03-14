@@ -1,50 +1,16 @@
 <template>
   <ion-app>
-    <ion-split-pane content-id="menu-content" when="lg">
-      <ion-menu
-        content-id="menu-content"
-        menu-id="mainMenu"
-        side="start"
-        type="overlay"
-        :style="changeSizeMenu"
-        class="menu-color"
-      >
+    <ion-split-pane when="lg" content-id="main" type="overlay">
+      <ion-menu content-id="main" :style="changeSizeMenu">
         <MenuComponent></MenuComponent>
       </ion-menu>
-      <ion-router-outlet id="menu-content" />
-    </ion-split-pane>
 
-    <div
-      style="
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-      "
-      :class="{ hideInstallPWA: isOpenMenuAddPWA == false }"
-    >
-      <div
-        style="
-          background: var(--ion-background-color);
-          display: flex;
-          justify-content: center;
-          border-color: var(--ion-color-primary);
-          border-style: solid;
-          border-width: 3px;
-          border-radius: 4px;
-        "
-      >
-        <ion-item>
-          <ion-button fill="clear" @click="installPWA()"
-            >Instalar aplicacion</ion-button
-          >
-          <ion-button slot="end" fill="clear" @click="dismissPWA()">
-            <ion-icon :icon="closeOutline"></ion-icon>
-          </ion-button>
-        </ion-item>
+      <div id="main" class="ion-page">
+        <ion-content class="ion-padding">
+          <ion-router-outlet />
+        </ion-content>
       </div>
-    </div>
+    </ion-split-pane>
   </ion-app>
 </template>
 
@@ -64,10 +30,7 @@ import {
   setTheme,
   getTheme,
 } from "./services/system";
-import {
-  closeOutline,
-  downloadOutline,
-} from "ionicons/icons";
+import { closeOutline, downloadOutline } from "ionicons/icons";
 import { useUser } from "./composables/useUser";
 import { getUserToken } from "./services/user";
 import { useSystem } from "./composables/useSystem";
@@ -164,7 +127,7 @@ export default defineComponent({
   mounted() {
     this.createFirstCookie();
     getTheme().then((response) => {
-      const theme = response 
+      const theme = response;
       setTheme({ theme: theme });
     });
     this.loadUserProps();
@@ -227,18 +190,13 @@ export default defineComponent({
 
     dismissPWA() {
       this.deferredPrompt = null;
-      this.isOpenMenuAddPWA=false
+      this.isOpenMenuAddPWA = false;
     },
   },
 });
 </script>
 
 <style scoped>
-@media only screen and (min-width: 768px) {
-  .menu-color {
-    background-color: var(--secondary-color);
-  }
-}
 .hideInstallPWA {
   display: none !important;
 }
