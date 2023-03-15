@@ -32,6 +32,15 @@
             <ion-icon :icon="trashOutline" color="danger"></ion-icon>
           </ion-button>
         </ion-buttons>
+
+        <ion-buttons slot="end">
+          <ion-button
+            v-if="hideIndexContentComponentvalue == false"
+            @click="openModalIndexContent()"
+          >
+            <ion-icon :icon="menuOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
@@ -187,10 +196,10 @@
         </section>
 
         <!-- index content -->
-        <section class="indexContent" >
+        <section v-if="hideIndexContentComponentvalue" class="indexContent">
           <indexContentComponent
             :index-content="indexContent"
-            :auto-hide-content=false
+            :auto-hide-content="hideContentIndexValue"
             @element-id="goToSection({ id: $event })"
           />
         </section>
@@ -210,6 +219,8 @@ import {
   IonIcon,
   IonRow,
   IonCol,
+  isPlatform,
+  modalController,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { deletePost } from "../../../services/post";
@@ -217,6 +228,7 @@ import {
   alertCircleOutline,
   chevronBackOutline,
   createOutline,
+  menuOutline,
   trashOutline,
 } from "ionicons/icons";
 import {
@@ -233,6 +245,7 @@ import { useSystem } from "../../../composables/useSystem";
 import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
 import { es } from "date-fns/locale";
 import indexContentComponent from "./indexContentComponent.vue";
+import modalIndexContent from "./modalIndexContent.vue";
 
 export default defineComponent({
   name: "PostPage",
@@ -251,6 +264,10 @@ export default defineComponent({
   },
 
   setup() {
+    const hideContentIndexValue = isPlatform("desktop") == true ? true : false;
+    const hideIndexContentComponentvalue =
+      isPlatform("desktop") == true ? true : false;
+
     return {
       chevronBackOutline,
       createOutline,
@@ -262,6 +279,9 @@ export default defineComponent({
       locale: { es: es },
       formatISO,
       alertCircleOutline,
+      hideContentIndexValue,
+      hideIndexContentComponentvalue,
+      menuOutline,
     };
   },
 
@@ -407,6 +427,22 @@ export default defineComponent({
           inline: "nearest",
         });
     },
+
+    async openModalIndexContent() {
+      const modal = await modalController.create({
+        component: modalIndexContent,
+        componentProps: {
+          indexContent: this.indexContent,
+        },
+      });
+      modal.present();
+
+      const { data } = await modal.onWillDismiss();
+      if (data != null) {
+        const elementId = data.elementId;
+        this.goToSection({ id: elementId });
+      }
+    },
   },
 });
 </script>
@@ -417,7 +453,16 @@ export default defineComponent({
 }
 
 .content-container {
-  width: 50%;
+  width: 100%;
+}
+
+.content-container > div {
+  display: flex;
+  justify-content: center;
+}
+
+.content-container > div > div {
+  width: 90%;
 }
 
 .indexContent {
@@ -428,10 +473,18 @@ export default defineComponent({
   display: none;
 }
 
-
 @media only screen and (min-width: 768px) {
   .content-container {
-    width: 62vw;
+    width: 100%;
+  }
+
+  .content-container > div {
+    display: flex;
+    justify-content: center;
+  }
+
+  .content-container > div > div {
+    width: 70%;
   }
 }
 
