@@ -12,11 +12,13 @@
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
+
         <ion-title
           v-if="usePost.getPost({ id: postId as string })! != undefined"
         >
           {{ usePost.getPost({ id: postId })!.title }}
         </ion-title>
+
         <ion-buttons
           v-if="useUser.user.value.isAdmin"
           slot="end"
@@ -25,6 +27,7 @@
           <ion-button fill="clear" @click="updatePost()">
             <ion-icon :icon="createOutline"></ion-icon>
           </ion-button>
+
           <ion-button fill="clear" @click="deletePost()">
             <ion-icon :icon="trashOutline" color="danger"></ion-icon>
           </ion-button>
@@ -183,56 +186,13 @@
           </div>
         </section>
 
-        <section class="indexContent">
-          <ion-item>
-            <ion-label>Contenido</ion-label>
-            <ion-chip outline>Beta</ion-chip>
-          </ion-item>
-
-          <div style="display: flex;opacity: .5;" class="ion-padding-start">
-            <div
-              style="
-                margin-right: 16px;
-                display: flex;
-                align-content: center;
-                align-items: center;
-              "
-            >
-              <ion-icon :icon="alertCircleOutline"></ion-icon>
-            </div>
-            <div
-              style="display: flex; align-content: center; align-items: center"
-            >
-              <ion-label>Pasa el mouse por encima</ion-label>
-            </div>
-          </div>
-
-          <div
-            id="indexContent"
-            style="overflow: auto; height: 80vh"
-            class="hidde-scroll ion-padding-start"
-          >
-            <div
-              v-for="element in index"
-              :key="element.id"
-              style="margin-bottom: 10px"
-            >
-              <div
-                :class="{
-                  h3Button: element.type == 'h3',
-                  h4Button: element.type == 'h4',
-                  h5Button: element.type == 'h5',
-                  h6Button: element.type == 'h6',
-                }"
-              >
-                <span
-                  style="color: var(--ion-color-primary); cursor: pointer"
-                  @click="goToSection({ id: element.id })"
-                  >{{ element.name }}</span
-                >
-              </div>
-            </div>
-          </div>
+        <!-- index content -->
+        <section class="indexContent" >
+          <indexContentComponent
+            :index-content="indexContent"
+            :auto-hide-content=false
+            @element-id="goToSection({ id: $event })"
+          />
         </section>
       </div>
     </ion-content>
@@ -240,7 +200,6 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   IonContent,
   IonHeader,
@@ -273,6 +232,7 @@ import { format, formatISO } from "date-fns";
 import { useSystem } from "../../../composables/useSystem";
 import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
 import { es } from "date-fns/locale";
+import indexContentComponent from "./indexContentComponent.vue";
 
 export default defineComponent({
   name: "PostPage",
@@ -287,6 +247,7 @@ export default defineComponent({
     IonRow,
     IonCol,
     MarkdownItComponent,
+    indexContentComponent,
   },
 
   setup() {
@@ -315,7 +276,7 @@ export default defineComponent({
         updated: "",
       },
       spinners: { buttonUpdate: false, buttonDelete: false },
-      index: [] as Array<{ name: string; id: string; type: string }>,
+      indexContent: [] as Array<{ name: string; id: string; type: string }>,
     };
   },
 
@@ -425,7 +386,7 @@ export default defineComponent({
         (heading: { id: string; textContent: string; tagName: string }) => {
           heading.id = count.toString();
 
-          this.index.push({
+          this.indexContent.push({
             name: heading.textContent as string,
             id: count.toString(),
             type: heading.tagName.toLowerCase(),
@@ -465,17 +426,8 @@ export default defineComponent({
   right: 0;
   width: 24%;
   display: none;
-  word-wrap: break-word;
 }
 
-.indexContent > #indexContent {
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.indexContent:hover #indexContent {
-  opacity: 1;
-}
 
 @media only screen and (min-width: 768px) {
   .content-container {
@@ -502,7 +454,7 @@ export default defineComponent({
   .content-container {
     width: 70%;
   }
-  
+
   .content-container > div {
     display: flex;
     justify-content: center;
@@ -515,25 +467,5 @@ export default defineComponent({
   .indexContent {
     display: block;
   }
-}
-
-.hidde-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.h3Button {
-  margin-left: 10px;
-}
-
-.h4Button {
-  margin-left: 15px;
-}
-
-.h5Button {
-  margin-left: 20px;
-}
-
-.h6Button {
-  margin-left: 25px;
 }
 </style>
