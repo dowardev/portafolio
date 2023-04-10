@@ -126,7 +126,7 @@
                 </ion-col>
               </ion-row>
 
-              <ion-item v-if="useUser.user.value.isAdmin" button lines="none" >
+              <ion-item v-if="useUser.user.value.isAdmin" button lines="none">
                 <ion-button
                   slot="end"
                   :disabled="spinners.buttonEditPost == post.id!"
@@ -188,7 +188,6 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   IonPage,
   IonSpinner,
@@ -200,7 +199,6 @@ import {
   IonButton,
   IonButtons,
   IonItemDivider,
-  popoverController,
   loadingController,
   IonModal,
   isPlatform,

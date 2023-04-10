@@ -1,7 +1,7 @@
 <template>
   <ion-app>
     <ion-split-pane when="lg" content-id="main" type="overlay">
-      <ion-menu content-id="main" :style="changeSizeMenu">
+      <ion-menu content-id="main" :style="changeSizeMenu" menu-id="mainMenu">
         <MenuComponent></MenuComponent>
       </ion-menu>
 
