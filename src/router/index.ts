@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from "@ionic/vue-router";
-import { RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHistory } from '@ionic/vue-router';
+import { RouteRecordRaw } from 'vue-router';
 // portfolio
 import PresentationPage from "../views/presentation/PresentationPage.vue";
 import HistoryPage from "../views/history/HistoryPage.vue";
@@ -166,8 +166,8 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
-});
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes
+})
 
-export default router;
+export default router
