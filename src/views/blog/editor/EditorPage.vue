@@ -8,7 +8,7 @@
     >
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button fill="clear" @click="$router.go(-1)">
+          <ion-button fill="clear" @click="router.go(-1)">
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -235,7 +235,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -254,7 +254,7 @@ import {
   modalController,
   IonPopover,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import {
   saveOutline,
   imageOutline,
@@ -269,189 +269,138 @@ import { required, helpers } from "@vuelidate/validators";
 import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
 import PreviewModal from "./PreviewModal.vue";
 import { MqResponsive } from "vue3-mq";
+import { useRouter } from "vue-router";
 
-export default defineComponent({
-  name: "EditorPage",
-  components: {
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonInput,
-    IonButtons,
-    IonItem,
-    IonButton,
-    IonIcon,
-    IonLabel,
-    IonRow,
-    IonCol,
-    IonPage,
-    MarkdownItComponent,
-    IonPopover,
-    MqResponsive,
+const router = useRouter();
+
+const props = defineProps({
+  title: { default: "", type: String },
+  content: { default: "", type: String },
+  cover: {
+    default() {
+      return {};
+    },
+    type: Object,
   },
-
-  props: {
-    title: { default: "", type: String },
-    content: { default: "", type: String },
-    cover: {
-      default() {
-        return {};
-      },
-      type: Object,
-    },
-    spinnerSavePost: Boolean,
-    spinnerSaveImage: Boolean,
-  },
-
-  emits: ["save", "uploadImage"],
-
-  setup() {
-    const modeDesingElements = isPlatform("ios")
-      ? "ios"
-      : ("md" as "md" | "ios");
-    return {
-      saveOutline,
-      imageOutline,
-      chevronBackOutline,
-      imagesOutline,
-      v$: useVuelidate(),
-      modeDesingElements,
-      pageTitle: "Editor",
-      expandOutline,
-      eyeOutline,
-      ellipsisVerticalOutline,
-    };
-  },
-
-  data() {
-    return {
-      segment: "editor",
-      postTitle: "",
-      postContent: "",
-      coverName: "",
-      coverSource: "",
-      newCoverStatus: false,
-      isEditorMaximized: false,
-      previewMode: false,
-    };
-  },
-
-  computed: {
-    windowWidth() {
-      return window.innerWidth;
-    },
-  },
-
-  watch: {
-    title: function (newVal) {
-      this.postTitle = newVal;
-    },
-    content: function (newVal) {
-      this.postContent += newVal;
-    },
-    cover: function (newVal) {
-      this.coverName = newVal.name;
-      this.coverSource = "data:image/png;base64," + newVal.source;
-    },
-  },
-
-  validations() {
-    const messageRequired = "Campo requerido";
-    return {
-      postTitle: {
-        required: helpers.withMessage(messageRequired, required),
-      },
-      postContent: {
-        required: helpers.withMessage(messageRequired, required),
-      },
-      coverSource: {
-        required: helpers.withMessage(messageRequired, required),
-      },
-    };
-  },
-
-  methods: {
-    save() {
-      const title = this.postTitle;
-      const content = this.postContent;
-      const cover = this.coverSource;
-      const newCoverStatus = this.newCoverStatus;
-      this.$emit("save", { title, content, cover, newCoverStatus });
-    },
-
-    async getImageBase64(e: any): Promise<{ file: string; name: string }> {
-      return new Promise((resolve) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = async (e: any) => {
-          const fileData = e.target.result;
-          resolve({ file: fileData, name: file.name });
-        };
-        reader.readAsDataURL(file);
-      });
-    },
-
-    async uploadImage(e: any) {
-      const image = await this.getImageBase64(e);
-      this.$emit("uploadImage", { image });
-    },
-
-    async uploadCover(e: any) {
-      const image = await this.getImageBase64(e);
-      this.coverSource = image.file;
-      this.coverName = image.name;
-      this.newCoverStatus = true;
-    },
-
-    clearInputs() {
-      this.postTitle = "";
-      this.postContent = "";
-      this.coverName = "";
-      this.v$.$reset();
-    },
-
-    saveContent(e: any) {
-      this.postContent = e.target.innerText;
-    },
-
-    scrollEditor() {
-      try {
-        const editor = document.getElementById("editor");
-        document.getElementById("viewer")!.scrollTop = editor!.scrollTop;
-      } catch (e) {
-        //
-      }
-    },
-
-    activatePreviewMode() {
-      if (window.innerWidth <= 767) this.openModalPreview();
-      else this.previewMode = !this.previewMode;
-    },
-
-    async openModalPreview() {
-      const position = document.getElementById("editor")!.scrollTop;
-      const content = this.postContent;
-
-      const modal = await modalController.create({
-        component: PreviewModal,
-        componentProps: {
-          content,
-          position,
-        },
-      });
-      modal.present();
-    },
-  },
+  spinnerSavePost: Boolean,
+  spinnerSaveImage: Boolean,
 });
+
+const emits = defineEmits(["save", "uploadImage"]);
+
+const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "md" | "ios");
+v$: useVuelidate();
+modeDesingElements;
+const pageTitle = "Editor";
+
+const segment = "editor";
+const postTitle = ref("");
+const postContent = ref("");
+const coverName = ref("");
+const coverSource = ref("");
+const newCoverStatus = ref(false);
+const isEditorMaximized = false;
+const previewMode = ref(false);
+
+const messageError = {
+  required: "Campo requerido",
+};
+const rules = {
+  postTitle: {
+    required: helpers.withMessage(messageError.required, required),
+  },
+  postContent: {
+    required: helpers.withMessage(messageError.required, required),
+  },
+  coverSource: {
+    required: helpers.withMessage(messageError.required, required),
+  },
+};
+const v$ = useVuelidate(rules, { postTitle, postContent, coverSource });
+
+// watch
+watch(
+  () => props.title,
+  (newVal) => {
+    postTitle.value = newVal;
+  }
+);
+watch(
+  () => props.content,
+  (newVal) => {
+    postContent.value += newVal;
+  }
+);
+watch(
+  () => props.cover,
+  (newVal) => {
+    coverName.value = newVal.name;
+    coverSource.value = "data:image/png;base64," + newVal.source;
+  }
+);
+
+// functions
+function save() {
+  const title = postTitle;
+  const content = postContent;
+  const cover = coverSource;
+  emits("save", { title, content, cover, newCoverStatus });
+}
+
+async function getImageBase64(e: any): Promise<{ file: string; name: string }> {
+  return new Promise((resolve) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = async (e: any) => {
+      const fileData = e.target.result;
+      resolve({ file: fileData, name: file.name });
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadImage(e: any) {
+  const image = await getImageBase64(e);
+  emits("uploadImage", { image });
+}
+
+async function uploadCover(e: any) {
+  const image = await getImageBase64(e);
+  coverSource.value = image.file;
+  coverName.value = image.name;
+  newCoverStatus.value = true;
+}
+
+function scrollEditor() {
+  try {
+    const editor = document.getElementById("editor");
+    document.getElementById("viewer")!.scrollTop = editor!.scrollTop;
+  } catch (e) {
+    //
+  }
+}
+
+function activatePreviewMode() {
+  if (window.innerWidth <= 767) openModalPreview();
+  else previewMode.value = !previewMode.value;
+}
+
+async function openModalPreview() {
+  const position = document.getElementById("editor")!.scrollTop;
+  const content = postContent;
+
+  const modal = await modalController.create({
+    component: PreviewModal,
+    componentProps: {
+      content,
+      position,
+    },
+  });
+  modal.present();
+}
 </script>
 
 <style scoped>
-.stick {
-  position: sticky;
-  z-index: 3;
-  top: 0px;
-}
 .editor {
   height: calc(87vh - 50px);
   overflow: scroll;

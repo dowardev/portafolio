@@ -40,7 +40,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -50,33 +50,9 @@ import {
   IonSegment,
   IonSegmentButton,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
-import { getUser } from "../../services/user";
+import { ref } from "vue";
 import UsersComponent from "./users/UsersPage.vue";
-import { USER_PERMISSIONS } from "../../services/graphql";
 
-export default defineComponent({
-  name: "PanelAdminPage",
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonSegment,
-    IonSegmentButton,
-    UsersComponent,
-  },
-
-  setup() {
-    return {
-      pageTitle: "Panel Administrador",
-    };
-  },
-  data() {
-    return {
-      mainSegment: "users",
-    };
-  },
-});
+const pageTitle = "Panel Administrador";
+const mainSegment = ref("users");
 </script>

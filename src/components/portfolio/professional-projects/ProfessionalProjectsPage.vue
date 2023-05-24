@@ -109,7 +109,7 @@
   </ion-row>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {} from "@ionic/vue";
 import { defineComponent } from "vue";
 
@@ -121,82 +121,64 @@ import viteLogo from "../../../assets/otros/vite.svg";
 import {
   logoIonic,
   logoAndroid,
-  browsersOutline,
   logoWindows,
   logoTux,
-  serverOutline,
   logoFirefox,
   logoChrome,
-  globeOutline,
   logoVue,
   logoLaravel,
 } from "ionicons/icons";
 
-export default defineComponent({
-  name: "ProfessionalProjectsPage",
-  components: {},
-
-  setup() {
-    return {
-      pageTitle: "Home",
-      proyectos: [
-        {
-          name: "Lifeline",
-          status: "En desarrollo",
-          type: [logoAndroid, logoFirefox, logoChrome, logoWindows, logoTux],
-          color: "primary",
-          image: [
-            {
-              route: lifelineLogo,
-              width: "134px",
-              height: "112px",
-            },
-          ],
-          description: "Proyecto para la administracion de tiempo",
-          technologies: [
-            {
-              route: "https://ionicframework.com/",
-              icon: logoIonic,
-              type: "icon",
-            },
-            {
-              route: "https://vuejs.org",
-              icon: logoVue,
-              type: "icon",
-            },
-            {
-              route: "https://vitejs.dev",
-              icon: viteLogo,
-              type: "svg",
-            },
-            {
-              route: "https://laravel.com",
-              icon: logoLaravel,
-              type: "icon",
-            },
-            {
-              route: "https://mariadb.org",
-              icon: mariaDBLogo,
-              type: "svg",
-            },
-            {
-              route: "https://graphql.org",
-              icon: graphqlLogo,
-              type: "svg",
-            },
-          ],
-          page: "https://lifeline.dowar.xyz",
-          sourceCode: "https://gitlab.com/gonzam4/lifeline",
-        },
-      ],
-      serverOutline,
-      browsersOutline,
-      logoFirefox,
-      logoChrome,
-      globeOutline,
-    };
+const proyectos = [
+  {
+    name: "Lifeline",
+    status: "En desarrollo",
+    type: [logoAndroid, logoFirefox, logoChrome, logoWindows, logoTux],
+    color: "primary",
+    image: [
+      {
+        route: lifelineLogo,
+        width: "134px",
+        height: "112px",
+      },
+    ],
+    description: "Proyecto para la administracion de tiempo",
+    technologies: [
+      {
+        route: "https://ionicframework.com/",
+        icon: logoIonic,
+        type: "icon",
+      },
+      {
+        route: "https://vuejs.org",
+        icon: logoVue,
+        type: "icon",
+      },
+      {
+        route: "https://vitejs.dev",
+        icon: viteLogo,
+        type: "svg",
+      },
+      {
+        route: "https://laravel.com",
+        icon: logoLaravel,
+        type: "icon",
+      },
+      {
+        route: "https://mariadb.org",
+        icon: mariaDBLogo,
+        type: "svg",
+      },
+      {
+        route: "https://graphql.org",
+        icon: graphqlLogo,
+        type: "svg",
+      },
+    ],
+    page: "https://lifeline.dowar.xyz",
+    sourceCode: "https://gitlab.com/gonzam4/lifeline",
   },
-});
+];
 </script>
 
 <style scope>

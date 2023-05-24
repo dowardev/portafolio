@@ -1,20 +1,20 @@
 <template>
   <ion-page>
-    <ion-content >
+    <ion-content>
       <ion-toolbar>
         <div class="center">
           <img
             src="@/assets/portafolio/logo_dowar_2.1.png"
-            style="max-width: 4vw;margin: 1rem;"
+            style="max-width: 4vw; margin: 1rem"
           />
         </div>
       </ion-toolbar>
 
-      <ion-toolbar >
+      <ion-toolbar>
         <!-- no logged -->
         <section>
           <ion-item
-            v-if="useUser.isLogged.value == false"
+            v-if="useUser().isLogged.value == false"
             button
             lines="none"
             class="transparent"
@@ -24,7 +24,7 @@
               v-if="spinners.buttonLogin == false"
               :icon="logInOutline"
               class="item-icon-center"
-            color='primary'
+              color="primary"
             ></ion-icon>
             <ion-spinner
               v-if="spinners.buttonLogin"
@@ -35,7 +35,7 @@
           </ion-item>
 
           <ion-item
-            v-if="useUser.isLogged.value == false"
+            v-if="useUser().isLogged.value == false"
             button
             lines="none"
             class="transparent"
@@ -45,7 +45,7 @@
               v-if="spinners.buttonSignup == false"
               :icon="personAddOutline"
               class="item-icon-center"
-            color='primary'
+              color="primary"
             ></ion-icon>
             <ion-spinner
               v-if="spinners.buttonSignup"
@@ -59,7 +59,7 @@
 
         <!-- logged -->
         <ion-item
-          v-if="useUser.isLogged.value == true"
+          v-if="useUser().isLogged.value == true"
           lines="none"
           class="transparent"
           button
@@ -68,7 +68,7 @@
           <ion-avatar style="width: 100%">
             <div class="center">
               <img
-                :src="useUser.imageProfile.value.toString()"
+                :src="useUser().imageProfile.value.toString()"
                 style="width: 40px"
               />
             </div>
@@ -83,7 +83,7 @@
           <ion-content>
             <!-- admin panel -->
             <ion-item
-              v-if="useUser.user.value.isAdmin"
+              v-if="useUser().user.value.isAdmin"
               button
               :disabled="spinners.buttonAdminPanel"
               lines="none"
@@ -305,11 +305,11 @@
     <ion-footer class="ion-no-border">
       <ion-toolbar>
         <!-- button collapse menu -->
-        <div class="center" >
+        <div class="center">
           <ion-button
             fill="clear"
             color="primary"
-            @click="changeMenuCollapse({ option: false })"
+            @click="useSystem().changeMenuCollapse({ option: false })"
           >
             <ion-icon :icon="chevronForwardOutline"></ion-icon>
           </ion-button>
@@ -319,8 +319,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+<script setup lang="ts">
 import {
   IonContent,
   IonPage,
@@ -335,7 +334,7 @@ import {
   IonIcon,
   IonSpinner,
 } from "@ionic/vue";
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import {
   brushOutline,
   personAddOutline,
@@ -356,180 +355,135 @@ import {
   chevronBackOutline,
   chevronForwardOutline,
 } from "ionicons/icons";
-import { logout } from "../../../services/session";
 import AppsComponent from "../apps/Apps.vue";
 import DonationsComponent from "../donations/Donations.vue";
 import { useUser } from "../../../composables/useUser";
 import { USER_MENU } from "../../../services/graphql";
 import { useSystem } from "../../../composables/useSystem";
-import ThemeComponente from '@/components/theme/ThemeComponente.vue'
+import ThemeComponente from "@/components/theme/ThemeComponente.vue";
+import { useRouter } from "vue-router";
 
-export default defineComponent({
-  name: "MenuCollapsedComponent",
-  components: {
-    IonContent,
-    IonPage,
-    IonToolbar,
-    IonLabel,
-    IonItem,
-    IonButton,
-    IonFooter,
-    IonIcon,
-    IonSpinner,
-  },
+const router = useRouter();
 
-  setup() {
-    const isOpenRefPopOverUserOptions = ref(false);
-    const eventPopOverUserOptions = ref();
-    const setOpenPopOverUserOptions = (state: boolean, ev?: Event) => {
-      eventPopOverUserOptions.value = ev;
-      isOpenRefPopOverUserOptions.value = state;
-    };
-    return {
-      isAndroidPlatform: isPlatform("android"),
-      isIosPlatform: isPlatform("ios"),
-      brushOutline,
-      personAddOutline,
-      logInOutline,
-      logOutOutline,
-      thumbsUpOutline,
-      logoGitlab,
-      appsOutline,
-      documentsOutline,
-      personOutline,
-      cogOutline,
-      ellipsisVerticalOutline,
-      isOpenRefPopOverUserOptions,
-      setOpenPopOverUserOptions,
-      eventPopOverUserOptions,
-      cashOutline,
-      useUser: useUser(),
-      reportFeedback: useSystem().reportError,
-      bookOutline,
-      constructOutline,
-      fileTrayOutline,
-      libraryOutline,
-      chevronBackOutline,
-      chevronForwardOutline,
-      changeMenuCollapse: useSystem().changeMenuCollapse,
-    };
-  },
+const isOpenRefPopOverUserOptions = ref(false);
+const eventPopOverUserOptions = ref();
+const setOpenPopOverUserOptions = (state: boolean, ev?: Event) => {
+  eventPopOverUserOptions.value = ev;
+  isOpenRefPopOverUserOptions.value = state;
+};
+const isAndroidPlatform = isPlatform("android");
+const isIosPlatform = isPlatform("ios");
 
-  data() {
-    return {
-      spinners: {
-        buttonLogin: false,
-        buttonSignup: false,
-        buttonLogout: false,
-        buttonUserPanel: false,
-        buttonAdminPanel: false,
-      },
-    };
-  },
+const spinners = {
+  buttonLogin: false,
+  buttonSignup: false,
+  buttonLogout: false,
+  buttonUserPanel: false,
+  buttonAdminPanel: false,
+};
 
-  mounted() {
-    this.getUser();
-  },
-
-  methods: {
-    async openModalThemeDesktop() {
-      const modal = await modalController.create({
-        component: ThemeComponente,
-        cssClass: "my-custom-class",
-        componentProps: {
-          title: "New Title",
-        },
-      });
-      return modal.present();
-    },
-
-    async openModalThemeMobile() {
-      const modal = await modalController.create({
-        component: ThemeComponente,
-        initialBreakpoint: 0.5,
-        breakpoints: [0, 0.5, 1],
-      });
-      modal.present();
-      menuController.close();
-    },
-
-    openRoute(route: string) {
-      this.$router.push(route);
-      menuController.close();
-    },
-
-    async getUser() {
-      this.useUser.loadUser({
-        graphql: { name: USER_MENU, fragment: "UserMenu" },
-      });
-    },
-
-    async openModalFeedback() {
-      this.reportFeedback({ type: "feedback" });
-      menuController.close();
-    },
-
-    async login() {
-      this.spinners.buttonLogin = true;
-      await this.$router.push("/login");
-      this.spinners.buttonLogin = false;
-      menuController.close();
-    },
-
-    async signup() {
-      this.spinners.buttonSignup = true;
-      await this.$router.push("/signup");
-      this.spinners.buttonSignup = false;
-      menuController.close();
-    },
-
-    async logout() {
-      this.spinners.buttonLogout = true;
-      await this.useUser.logout();
-      this.spinners.buttonLogout = false;
-      location.reload();
-    },
-
-    async openModalApps() {
-      const modal = await modalController.create({
-        component: AppsComponent,
-        cssClass: "my-custom-class",
-      });
-      menuController.close();
-      return modal.present();
-    },
-
-    goToPoliciesPage() {
-      this.$router.push("/policies");
-      if (isPlatform("mobile")) menuController.close();
-    },
-
-    async goToUserPanel() {
-      this.spinners.buttonUserPanel = true;
-      await this.$router.push("/user");
-      this.spinners.buttonUserPanel = false;
-      this.isOpenRefPopOverUserOptions = false;
-      if (isPlatform("mobile")) menuController.close();
-    },
-
-    async goToAdminPanel() {
-      this.spinners.buttonAdminPanel = true;
-      await this.$router.push("/admin-panel");
-      this.spinners.buttonAdminPanel = false;
-      this.isOpenRefPopOverUserOptions = false;
-      if (isPlatform("mobile")) menuController.close();
-    },
-
-    async openModalDonations() {
-      const modal = await modalController.create({
-        cssClass: "my-custom-class",
-        component: DonationsComponent,
-      });
-      menuController.close();
-      return modal.present();
-    },
-  },
+// mounted
+onMounted(() => {
+  getUser();
 });
+
+// functions
+async function openModalThemeDesktop() {
+  const modal = await modalController.create({
+    component: ThemeComponente,
+    cssClass: "my-custom-class",
+    componentProps: {
+      title: "New Title",
+    },
+  });
+  return modal.present();
+}
+
+async function openModalThemeMobile() {
+  const modal = await modalController.create({
+    component: ThemeComponente,
+    initialBreakpoint: 0.5,
+    breakpoints: [0, 0.5, 1],
+  });
+  modal.present();
+  menuController.close();
+}
+
+function openRoute(route: string) {
+  router.push(route);
+  menuController.close();
+}
+
+async function getUser() {
+  useUser().loadUser({
+    graphql: { name: USER_MENU, fragment: "UserMenu" },
+  });
+}
+
+async function openModalFeedback() {
+  useSystem().reportError({ type: "feedback" });
+  menuController.close();
+}
+
+async function login() {
+  spinners.buttonLogin = true;
+  await router.push("/login");
+  spinners.buttonLogin = false;
+  menuController.close();
+}
+
+async function signup() {
+  spinners.buttonSignup = true;
+  await router.push("/signup");
+  spinners.buttonSignup = false;
+  menuController.close();
+}
+
+async function logout() {
+  spinners.buttonLogout = true;
+  await useUser().logout();
+  spinners.buttonLogout = false;
+  location.reload();
+}
+
+async function openModalApps() {
+  const modal = await modalController.create({
+    component: AppsComponent,
+    cssClass: "my-custom-class",
+  });
+  menuController.close();
+  return modal.present();
+}
+
+function goToPoliciesPage() {
+  router.push("/policies");
+  if (isPlatform("mobile")) menuController.close();
+}
+
+async function goToUserPanel() {
+  spinners.buttonUserPanel = true;
+  await router.push("/user");
+  spinners.buttonUserPanel = false;
+  isOpenRefPopOverUserOptions.value = false;
+  if (isPlatform("mobile")) menuController.close();
+}
+
+async function goToAdminPanel() {
+  spinners.buttonAdminPanel = true;
+  await router.push("/admin-panel");
+  spinners.buttonAdminPanel = false;
+  isOpenRefPopOverUserOptions.value = false;
+  if (isPlatform("mobile")) menuController.close();
+}
+
+async function openModalDonations() {
+  const modal = await modalController.create({
+    cssClass: "my-custom-class",
+    component: DonationsComponent,
+  });
+  menuController.close();
+  return modal.present();
+}
 </script>
 
 <style scoped>

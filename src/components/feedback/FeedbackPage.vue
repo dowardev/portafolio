@@ -9,7 +9,7 @@
         </ion-buttons>
         <ion-title>Comentarios</ion-title>
 
-        <ion-buttons v-if="dataProp?.type == 'error'" slot="end">
+        <ion-buttons v-if="props.data.type == 'error'" slot="end">
           <ion-button @click="displayError = true">
             <ion-icon :icon="bugOutline"></ion-icon>
           </ion-button>
@@ -108,7 +108,7 @@
 
         <pre style="color: var(--primary-text-color)">
           <code>
-           {{dataProp?.error}} 
+           {{props.data.error}} 
           </code>
         </pre>
       </section>
@@ -116,8 +116,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -130,7 +129,7 @@ import {
   IonCheckbox,
   IonItem,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { onMounted, ref } from "vue";
 import { closeOutline, chevronBackOutline, bugOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email, minLength } from "@vuelidate/validators";
@@ -140,153 +139,123 @@ import { ReportError } from "../../services/interfaces";
 import { USER_BASIC_DETAILS } from "../../services/graphql";
 import { useUser } from "../../composables/useUser";
 
-export default defineComponent({
-  name: "FeedbackPage",
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonInput,
-    IonTextarea,
-    IonCheckbox,
-    IonItem,
-  },
-
-  props: {
-    dataProp: {
-      type: Object as () => ReportError,
-      default() {
-        return {} as ReportError;
-      },
-    },
-  },
-
-  setup() {
-    return {
-      closeOutline,
-      v$: useVuelidate(),
-      chevronBackOutline,
-      bugOutline,
-      useUser: useUser(),
-    };
-  },
-
-  data() {
-    return {
-      form: {
-        id: String(),
-        name: String(),
-        email: String(),
-        description: String(),
-        contactMe: false,
-        type: String(),
-      },
-      displayError: false,
-      spinners: {
-        buttonSendFeedback: false,
-      },
-    };
-  },
-
-  validations() {
-    const messageRequired = "Campo requerido";
-    return {
-      form: {
-        name: {
-          required: helpers.withMessage(messageRequired, required),
-        },
-        email: {
-          required: helpers.withMessage(messageRequired, required),
-          email: helpers.withMessage("Correo no valido", email),
-        },
-        description: {
-          required: helpers.withMessage(messageRequired, required),
-          minLength: helpers.withMessage(
-            "Platicanos un poco mas",
-            minLength(20)
-          ),
-        },
-        type: {
-          required: helpers.withMessage(messageRequired, required),
-        },
-      },
-    };
-  },
-
-  mounted() {
-    // eslint-disable-next-line
-    this.form.type = this.dataProp!.type;
-    this.getUser();
-  },
-
-  methods: {
-    closeModal() {
-      modalController.dismiss();
-    },
-
-    async getUser() {
-      try {
-        await this.useUser.loadUser({
-          graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
-        });
-
-        this.form.id = this.useUser.user.value.id!;
-        this.form.name = this.useUser.user.value.name!;
-        this.form.email = this.useUser.user.value.email!;
-      } catch (e: any) {
-        console.error(e);
-        return;
-      }
-    },
-
-    async sendFeedback() {
-      this.spinners.buttonSendFeedback = true;
-
-      const userId = this.form.id;
-      const type = this.form.type;
-      const name = this.form.name;
-      const email = this.form.email;
-      let description = this.form.description;
-      const contactMe = this.form.contactMe;
-
-      if (this.dataProp!.error)
-        description += "\nError " + JSON.stringify(this.dataProp!.error);
-
-      try {
-        await createFeedback({
-          userId,
-          name,
-          email,
-          description,
-          contactMe,
-          type,
-        });
-        this.spinners.buttonSendFeedback = false;
-        openToast({
-          message: "Gracias por tus comentarios",
-          color: "success",
-        });
-        this.clearInputs;
-        openToast({ message: "Gracias por tus comentarios" });
-        this.closeModal();
-      } catch (e) {
-        this.spinners.buttonSendFeedback = false;
-        openToast({
-          message: "Ocurrió un error",
-          color: "danger",
-        });
-        console.error(e);
-      }
-    },
-
-    clearInputs() {
-      this.form.id = "";
-      this.form.name = "";
-      this.form.email = "";
-      this.form.description = "";
+const props = defineProps({
+  data: {
+    type: Object as () => ReportError,
+    default() {
+      return {} as ReportError;
     },
   },
 });
+
+const form = ref({
+  id: String(),
+  name: String(),
+  email: String(),
+  description: String(),
+  contactMe: false,
+  type: String(),
+});
+const displayError = ref(false);
+const spinners = ref({
+  buttonSendFeedback: false,
+});
+
+const messageError = {
+  email: "Correo electronico no valido",
+  required: "Campo requerido",
+  password: "Las contraseñas no coinciden",
+};
+const rules = {
+  form: {
+    name: {
+      required: helpers.withMessage(messageError.required, required),
+    },
+    email: {
+      required: helpers.withMessage(messageError.required, required),
+      email: helpers.withMessage("Correo no valido", email),
+    },
+    description: {
+      required: helpers.withMessage(messageError.required, required),
+      minLength: helpers.withMessage("Platicanos un poco mas", minLength(20)),
+    },
+    type: {
+      required: helpers.withMessage(messageError.required, required),
+    },
+  },
+};
+const v$ = useVuelidate(rules, { form });
+
+// mounted
+onMounted(() => {
+  form.value.type = props.data.type;
+  getUser();
+});
+
+// funtions
+function closeModal() {
+  modalController.dismiss();
+}
+
+async function getUser() {
+  try {
+    await useUser().loadUser({
+      graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
+    });
+
+    form.value.id = useUser().user.value.id!;
+    form.value.name = useUser().user.value.name!;
+    form.value.email = useUser().user.value.email!;
+  } catch (e: any) {
+    console.error(e);
+    return;
+  }
+}
+
+async function sendFeedback() {
+  spinners.value.buttonSendFeedback = true;
+
+  const userId = form.value.id;
+  const type = form.value.type;
+  const name = form.value.name;
+  const email = form.value.email;
+  let description = form.value.description;
+  const contactMe = form.value.contactMe;
+
+  if (props.data.error)
+    description += "\nError " + JSON.stringify(props.data.error);
+
+  try {
+    await createFeedback({
+      userId,
+      name,
+      email,
+      description,
+      contactMe,
+      type,
+    });
+    spinners.value.buttonSendFeedback = false;
+    openToast({
+      message: "Gracias por tus comentarios",
+      color: "success",
+    });
+    clearInputs;
+    openToast({ message: "Gracias por tus comentarios" });
+    closeModal();
+  } catch (e) {
+    spinners.value.buttonSendFeedback = false;
+    openToast({
+      message: "Ocurrió un error",
+      color: "danger",
+    });
+    console.error(e);
+  }
+}
+
+function clearInputs() {
+  form.value.id = "";
+  form.value.name = "";
+  form.value.email = "";
+  form.value.description = "";
+}
 </script>

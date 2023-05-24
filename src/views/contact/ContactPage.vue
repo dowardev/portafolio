@@ -51,7 +51,7 @@
           <ion-item>
             <ion-label position="floating"> Nombre </ion-label>
             <ion-input
-              v-model="v$.contactData.name.$model"
+              v-model="contactData.name"
               type="text"
               :autofocus="true"
               autocomplete="name"
@@ -70,7 +70,7 @@
           <ion-item>
             <ion-label position="floating"> Asunto</ion-label>
             <ion-input
-              v-model="v$.contactData.subject.$model"
+              v-model="contactData.subject"
               type="text"
               :spellcheck="true"
             >
@@ -88,7 +88,7 @@
           <ion-item>
             <ion-label position="floating"> Correo electrónico</ion-label>
             <ion-input
-              v-model="v$.contactData.email.$model"
+              v-model="contactData.email"
               type="email"
               autocomplete="email"
             >
@@ -105,8 +105,7 @@
         <ion-col size="12">
           <ion-item>
             <ion-label position="floating"> Descripción</ion-label>
-            <ion-textarea v-model="v$.contactData.description.$model">
-            </ion-textarea>
+            <ion-textarea v-model="contactData.description"> </ion-textarea>
           </ion-item>
           <div
             v-for="(error, index) of v$.contactData.description.$errors"
@@ -120,7 +119,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -132,92 +131,66 @@ import {
   IonTextarea,
 } from "@ionic/vue";
 import { closeOutline, sendOutline } from "ionicons/icons";
-import { defineComponent } from "vue";
+import { ref } from "vue";
 import { openToast } from "../../services/system";
 import { ContactMessage } from "../../services/interfaces";
-import { createContactMessage } from "../../services/contact";
+import { createContactMessage as createContactMessageService } from "../../services/contact";
 import { helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
-export default defineComponent({
-  name: "ContactPage",
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonInput,
-    IonTextarea,
-  },
+const pageTitle = "Formulario de contacto";
 
-  setup() {
-    return {
-      pageTitle: "Formulario de contacto",
-      sendOutline,
-      closeOutline,
-      openToast,
-      createContactMessageService: createContactMessage,
-      v$: useVuelidate(),
-    };
-  },
-
-  data() {
-    return {
-      spinners: {
-        sendMessage: false,
-      },
-      contactData: {
-        name: "",
-        subject: "",
-        email: "",
-        description: "",
-      },
-    };
-  },
-
-  validations() {
-    const messageRequired = "Campo requerido";
-    return {
-      contactData: {
-        name: {
-          required: helpers.withMessage(messageRequired, required),
-        },
-        email: {
-          required: helpers.withMessage(messageRequired, required),
-        },
-        subject: {
-          required: helpers.withMessage(messageRequired, required),
-        },
-        description: {
-          required: helpers.withMessage(messageRequired, required),
-        },
-      },
-    };
-  },
-
-  methods: {
-    closeModal(params: { data?: any }) {
-      const data = params.data;
-      modalController.dismiss({ data });
-    },
-
-    async sendMessage(params: { data: ContactMessage }) {
-      this.spinners.sendMessage = true;
-
-      const form = {
-        name: params.data.name,
-        subject: params.data.subject,
-        email: params.data.email,
-        description: params.data.description,
-      };
-
-      await this.createContactMessageService({ data: form });
-
-      this.openToast({ message: "Mensaje recibido" });
-      this.spinners.sendMessage = false;
-      this.closeModal({});
-    },
-  },
+const spinners = ref({
+  sendMessage: false,
 });
+const contactData = ref({
+  name: "",
+  subject: "",
+  email: "",
+  description: "",
+});
+
+const messageError = {
+  required: "Campo requerido",
+};
+const rules = {
+  contactData: {
+    name: {
+      required: helpers.withMessage(messageError.required, required),
+    },
+    email: {
+      required: helpers.withMessage(messageError.required, required),
+    },
+    subject: {
+      required: helpers.withMessage(messageError.required, required),
+    },
+    description: {
+      required: helpers.withMessage(messageError.required, required),
+    },
+  },
+};
+const v$ = useVuelidate(rules, { contactData });
+
+// functions
+function closeModal(params: { data?: any }) {
+  const data = params.data;
+  modalController.dismiss({ data });
+}
+
+async function sendMessage(params: { data: ContactMessage }) {
+  spinners.value.sendMessage = true;
+
+  const form = {
+    name: params.data.name,
+    subject: params.data.subject,
+    email: params.data.email,
+    description: params.data.description,
+  };
+
+  await createContactMessageService({ data: form });
+
+  openToast({ message: "Mensaje recibido" });
+  spinners.value.sendMessage = false;
+  closeModal({});
+}
 </script>

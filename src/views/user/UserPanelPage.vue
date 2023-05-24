@@ -47,7 +47,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -59,33 +59,11 @@ import {
   isPlatform,
   IonItemDivider,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { ref } from "vue";
 import UserProfileComponent from "./profile/UserProfilePage.vue";
 import UserSecurityComponent from "./security/UserSecurityPage.vue";
 
-export default defineComponent({
-  name: "UserPanelPage",
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonSegment,
-    IonSegmentButton,
-    UserProfileComponent,
-    UserSecurityComponent,
-    IonItemDivider,
-  },
-
-  data() {
-    const modeDesignElements = isPlatform("ios") ? "ios" : "md";
-
-    return {
-      pageTitle: "Panel de Usurio",
-      mainSegment: "profile",
-      modeDesignElements,
-    };
-  },
-});
+const modeDesignElements = isPlatform("ios") ? "ios" : "md";
+const pageTitle = ref("Panel de Usurio");
+const mainSegment = ref("profile");
 </script>

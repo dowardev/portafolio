@@ -1,6 +1,6 @@
 {
-	"appId": "com.dowar.portfolio",
-	"appName": "Dowar",
+	"appId": "io.ionic.starter",
+	"appName": "dowar-blog",
 	"webDir": "dist",
 	"bundledWebRuntime": false
 }

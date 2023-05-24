@@ -39,7 +39,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -51,41 +51,22 @@ import {
   IonLabel,
   IonIcon,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
 import { banOutline } from "ionicons/icons";
 import { useSystem } from "../../composables/useSystem";
+import { useRoute } from "vue-router";
 
-export default defineComponent({
-  name: "NoFoundPage",
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonItem,
-    IonButton,
-    IonLabel,
-    IonIcon,
-  },
+const route = useRoute();
 
-  setup() {
-    return {
-      pageTitle: "404",
-      banOutline,
-      reportError: useSystem().reportError,
-    };
-  },
+const pageTitle = "404";
+const reportError = useSystem().reportError;
 
-  methods: {
-    openReportError() {
-      const error404 = {
-        page: this.$route,
-      };
-      this.reportError({ error: error404, type: "error" });
-    },
-  },
-});
+// functions
+function openReportError() {
+  const error404 = {
+    page: route,
+  };
+  reportError({ error: error404, type: "error" });
+}
 </script>
 
 <style scoped>

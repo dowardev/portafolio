@@ -59,50 +59,28 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { alertCircleOutline } from "ionicons/icons";
 import { defineComponent } from "vue";
 
-export default defineComponent({
-  name: "HomePage",
-
-  props: {
-    indexContent: {
-      type: Array<{ id: string; type: string; name: string }>,
-      default: [],
-    },
-    autoHideContent: { type: Boolean, default: true },
+const props = defineProps({
+  indexContent: {
+    type: Array<{ id: string; type: string; name: string }>,
+    default: [],
   },
-
-  emits: ["elementId"],
-
-  setup() {
-    return {
-      pageTitle: "Home",
-      alertCircleOutline,
-    };
-  },
-
-  methods: {
-    goToSection(params: { id: string }) {
-      const id = params.id;
-      this.$emit("elementId", id);
-    },
-  },
+  autoHideContent: { type: Boolean, default: true },
 });
+
+const emits = defineEmits(["elementId"]);
+
+// functions
+function goToSection(params: { id: string }) {
+  const id = params.id;
+  emits("elementId", id);
+}
 </script>
 
 <style scoped>
-.indexContent > #indexContent {
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  word-wrap: break-word;
-}
-
-.indexContent:hover #indexContent {
-  opacity: 1;
-}
-
 .hidde-scroll::-webkit-scrollbar {
   display: none;
 }

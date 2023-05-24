@@ -7,13 +7,13 @@
     <ion-select
       v-model="currentDate"
       :mode="modeDesingElements"
-      ok-text='Confirmar'
-      cancel-text='Cancelar'
+      ok-text="Confirmar"
+      cancel-text="Cancelar"
       @ion-change="selectDate({ date: $event.detail.value })"
     >
       <ion-select-option
-        v-for="(date, index) in dates"
-        :key="index"
+        v-for="(date, indexDates) in dates"
+        :key="indexDates"
         :value="date"
       >
         {{ date }}</ion-select-option
@@ -27,81 +27,54 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { IonSelect, IonSelectOption, isPlatform } from "@ionic/vue";
 import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
-import { defineComponent } from "vue";
+import { ref } from "vue";
 import { usePost } from "../../composables/usePost";
 
-export default defineComponent({
-  name: "DateSelectorComponent",
-  components: { IonSelect, IonSelectOption },
-  emits: ["currentDateChange"],
+const emits = defineEmits(["currentDateChange"]);
 
-  setup() {
-    const modeDesingElements = isPlatform("ios")
-      ? "ios"
-      : ("md" as "ios" | "md");
-    return {
-      chevronBackOutline,
-      chevronForwardOutline,
-      usePost: usePost(),
-      modeDesingElements,
-    };
-  },
+const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
 
-  data() {
-    const dates = usePost().getDates()!;
-    const currentDate = usePost().getCurrentPage() as string;
-    const index = dates.indexOf(currentDate);
-    const currentDateIndex = index;
-    return {
-      dates,
-      currentDate,
-      currentDateIndex,
-    };
-  },
+const dates = usePost().getDates()!;
+const currentDate = ref(usePost().getCurrentPage() as string);
+const index = dates.indexOf(currentDate.value);
+let currentDateIndex = index;
 
-  methods: {
-    nextDate() {
-      let currentDateIndex = this.currentDateIndex;
-      let newDateIndex = +currentDateIndex + 1;
-      const dates = this.dates;
+// functions
+function nextDate() {
+  let newDateIndex = +currentDateIndex + 1;
 
-      if (newDateIndex >= dates.length) return;
+  if (newDateIndex >= dates.length) return;
 
-      this.currentDate = dates[newDateIndex];
-      this.currentDateIndex = newDateIndex;
+  currentDate.value = dates[newDateIndex];
+  currentDateIndex = newDateIndex;
 
-      this.updateCurrentDate();
-      this.$emit("currentDateChange");
-    },
+  updateCurrentDate();
+  emits("currentDateChange");
+}
 
-    previousDate() {
-      let currentDateIndex = this.currentDateIndex;
-      let newDateIndex = +currentDateIndex - 1;
-      const dates = this.dates;
+function previousDate() {
+  let newDateIndex = +currentDateIndex - 1;
 
-      if (newDateIndex < 0) return;
+  if (newDateIndex < 0) return;
 
-      this.currentDate = dates[newDateIndex];
-      this.currentDateIndex = newDateIndex;
+  currentDate.value = dates[newDateIndex];
+  currentDateIndex = newDateIndex;
 
-      this.updateCurrentDate();
-      this.$emit("currentDateChange");
-    },
+  updateCurrentDate();
+  emits("currentDateChange");
+}
 
-    selectDate(params: { date: string }) {
-      const date = params.date;
-      this.currentDateIndex = this.dates.indexOf(date);
-      this.updateCurrentDate();
-      this.$emit("currentDateChange");
-    },
+function selectDate(params: { date: string }) {
+  const date = params.date;
+  currentDateIndex = dates.indexOf(date);
+  updateCurrentDate();
+  emits("currentDateChange");
+}
 
-    updateCurrentDate() {
-      const currentDate = this.currentDate;
-      this.usePost.updateCurrentPage({ currentPage: currentDate });
-    },
-  },
-});
+function updateCurrentDate() {
+  usePost().updateCurrentPage({ currentPage: currentDate.value });
+}
 </script>

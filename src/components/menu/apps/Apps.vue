@@ -234,7 +234,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -247,7 +247,6 @@ import {
   IonAccordionGroup,
   IonAccordion,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
 import {
   closeOutline,
   browsersOutline,
@@ -258,47 +257,12 @@ import {
   bookOutline,
   micOutline,
   videocamOutline,
-  terminalOutline,
 } from "ionicons/icons";
 
-export default defineComponent({
-  name: "AppsComponent",
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonItem,
-    IonLabel,
-    IonAccordionGroup,
-    IonAccordion,
-  },
-  setup() {
-    return {
-      pageTitle: "Mas informacion",
-      closeOutline,
-      browsersOutline,
-      logoTux,
-      logoAndroid,
-      logoChrome,
-      logoRss,
-      bookOutline,
-      micOutline,
-      videocamOutline,
-      terminalOutline,
-    };
-  },
-  data() {
-    const darkMode = false as boolean | null;
-    return {
-      darkMode,
-    };
-  },
-  methods: {
-    closeModal() {
-      modalController.dismiss();
-    },
-  },
-});
+const pageTitle = "Mas informacion";
+
+// functions
+function closeModal() {
+  modalController.dismiss();
+}
 </script>

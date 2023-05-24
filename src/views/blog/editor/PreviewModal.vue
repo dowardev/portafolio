@@ -30,7 +30,7 @@
   </ion-content>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -40,46 +40,25 @@ import {
   IonButton,
   modalController,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { onMounted } from "vue";
 import { closeOutline } from "ionicons/icons";
 import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
 
-export default defineComponent({
-  name: "PreviewModal",
-  components: {
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonButtons,
-    IonButton,
-    MarkdownItComponent,
-  },
-
-  props: {
-    content: { default: "", type: String },
-    position: { default: "", type: String },
-  },
-
-  setup() {
-    return { closeOutline };
-  },
-
-  mounted() {
-    setTimeout(() => {
-      document.getElementById("preview2")!.scrollTop = parseInt(this.position);
-      console.log(
-        this.position,
-        document.getElementById("preview2")!.scrollTop
-      );
-    }, 100);
-  },
-
-  methods: {
-    closeModal() {
-      this.position;
-      return modalController.dismiss();
-    },
-  },
+const props = defineProps({
+  content: { default: "", type: String },
+  position: { default: "", type: String },
 });
+
+// mounted
+onMounted(() => {
+  setTimeout(() => {
+    document.getElementById("preview2")!.scrollTop = parseInt(props.position);
+    console.log(props.position, document.getElementById("preview2")!.scrollTop);
+  }, 100);
+});
+
+// functions
+function closeModal() {
+  return modalController.dismiss();
+}
 </script>

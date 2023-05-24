@@ -9,7 +9,7 @@
         <ion-title>{{ pageTitle }}</ion-title>
 
         <ion-buttons slot="end" :disabled="spinners.buttonAddNewPost">
-          <ion-button v-if="useUser.user.value.isAdmin" @click="addPost()">
+          <ion-button v-if="useUser().user.value.isAdmin" @click="addPost()">
             <ion-icon
               v-if="spinners.buttonAddNewPost == false"
               :icon="addOutline"
@@ -83,12 +83,12 @@
       <ion-header mode="ios" :translucent="true" class="sticky">
         <ion-toolbar>
           <ion-item-divider
-            v-if="usePost.getDates()!.length>0&&usePost.getCurrentPage()!=undefined"
+            v-if="usePost().getDates()!.length>0&&usePost().getCurrentPage()!=undefined"
             style="--background: transparent"
           >
             <DateSelectorComponent
               @current-date-change="
-                loadPosts({ currentPage: usePost.getCurrentPage() as string })
+                loadPosts({ currentPage: usePost().getCurrentPage() as string })
               "
             ></DateSelectorComponent>
           </ion-item-divider>
@@ -97,10 +97,10 @@
       <!-- end dae selector -->
 
       <!-- posts -->
-      <section v-if="usePost.getPosts()!.length>0">
+      <section v-if="usePost().getPosts()!.length>0">
         <ion-row class="center">
           <ion-col
-            v-for="post in usePost.getPosts()!"
+            v-for="post in usePost().getPosts()!"
             :key="post"
             size-xs="12"
             size-md="12"
@@ -108,7 +108,7 @@
             size-xl="8"
           >
             <ion-card
-              v-if="(post.createdAt!).split('T')[0]==usePost.getCurrentPage() as string"
+              v-if="(post.createdAt!).split('T')[0]==usePost().getCurrentPage() as string"
               style="cursor: pointer"
               @click="openPost(post.id!)"
             >
@@ -126,7 +126,7 @@
                 </ion-col>
               </ion-row>
 
-              <ion-item v-if="useUser.user.value.isAdmin" button lines="none">
+              <ion-item v-if="useUser().user.value.isAdmin" button lines="none">
                 <ion-button
                   slot="end"
                   :disabled="spinners.buttonEditPost == post.id!"
@@ -158,7 +158,7 @@
       </section>
       <!-- end posts -->
 
-      <section v-if="usePost.getPosts()!.length == 0 && loadFinished">
+      <section v-if="usePost().getPosts()!.length == 0 && loadFinished">
         <div class="align-vertical">
           <div class="center">
             <ion-item lines="none">
@@ -173,7 +173,9 @@
         </div>
       </section>
 
-      <section v-if="usePost.getPosts()!.length == 0 && loadFinished == false">
+      <section
+        v-if="usePost().getPosts()!.length == 0 && loadFinished == false"
+      >
         <div class="align-vertical">
           <div class="center">
             <ion-item lines="none">
@@ -187,7 +189,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonPage,
   IonSpinner,
@@ -204,227 +206,182 @@ import {
   isPlatform,
   IonSearchbar,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { onMounted, ref } from "vue";
 import { openToast, presentAlertConfirmation } from "../../../services/system";
 import {
-  checkmarkOutline,
   closeOutline,
   addOutline,
   refreshOutline,
   createOutline,
   trashOutline,
-  chevronBackOutline,
-  chevronForwardOutline,
   banOutline,
-  ellipsisVerticalOutline,
   searchOutline,
 } from "ionicons/icons";
 import { ALL_POSTS_DETAILS, POST_DATES } from "../../../services/graphql";
 import { useUser } from "../../../composables/useUser";
 import { usePost } from "../../../composables/usePost";
 import { useSystem } from "../../../composables/useSystem";
-import { format, isEqual } from "date-fns";
 
+// components
 import DateSelectorComponent from "../../../components/posts/DateSelectorComponent.vue";
+import { useRoute, useRouter } from "vue-router";
 
-export default defineComponent({
-  name: "PostsPage",
-  components: {
-    IonPage,
-    IonSpinner,
-    IonIcon,
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonButton,
-    IonButtons,
-    IonItemDivider,
-    IonModal,
-    IonSearchbar,
-    DateSelectorComponent,
-  },
+const route = useRoute();
+const router = useRouter();
 
-  setup() {
-    const modeDesingElements = isPlatform("ios")
-      ? "ios"
-      : ("md" as "ios" | "md");
-    return {
-      checkmarkOutline,
-      closeOutline,
-      addOutline,
-      refreshOutline,
-      createOutline,
-      trashOutline,
-      chevronBackOutline,
-      chevronForwardOutline,
-      useUser: useUser(),
-      usePost: usePost(),
-      banOutline,
-      openToastError: useSystem().openToastError,
-      ellipsisVerticalOutline,
-      searchOutline,
-      modeDesingElements,
-      format,
-      isEqual,
-    };
-  },
+const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
 
-  data() {
-    return {
-      pageTitle: "Blog",
-      spinners: {
-        buttonAddPost: false,
-        buttonAddNewPost: false,
-        buttonEditPost: "",
-      },
-      loadFinished: false,
-      searchResult: Array<{ id: string; title: string }>(),
-    };
-  },
-
-  mounted() {
-    this.loadContent({ refetch: true });
-  },
-
-  methods: {
-    async loadContent(params: { refetch: boolean }) {
-      const refetch = params.refetch == false ? false : true;
-
-      await this.getPostsDates({ refetch });
-
-      let dates = Array<string>();
-      dates = this.usePost.getDates()!;
-      if (dates.length == 0) {
-        this.loadFinished = true;
-        return;
-      }
-
-      let currentPage = "";
-      currentPage = this.loadData({ dates });
-      this.usePost.updateCurrentPage({ currentPage });
-
-      await this.loadPosts({
-        currentPage,
-        refetch,
-      });
-      this.loadFinished = true;
-    },
-
-    async getPostsDates(params: { refetch: boolean }): Promise<void> {
-      try {
-        await this.usePost.loadDates({
-          graphql: {
-            name: POST_DATES,
-            fragment: "PostDates",
-            refetch: params.refetch,
-          },
-        });
-      } catch (e: any) {
-        console.error(e);
-        this.openToastError(e);
-        throw e;
-      }
-    },
-
-    loadData(params: { dates: Array<string> }): string {
-      let currentPage = "";
-      if (this.$route.params.date != undefined) {
-        currentPage = params.dates.filter((element) => {
-          if (element == this.$route.params.date) return element;
-        })[0];
-      } else {
-        currentPage = params.dates[0];
-      }
-      return currentPage;
-    },
-
-    async loadPosts(params: { currentPage: string; refetch?: boolean }) {
-      const refetch = params.refetch ? params.refetch : false;
-      try {
-        await this.usePost.loadPosts({
-          date: params.currentPage,
-          graphql: {
-            name: ALL_POSTS_DETAILS,
-            fragment: "PostsDetails",
-            refetch,
-          },
-        });
-      } catch (e: any) {
-        console.error(e);
-        this.openToastError(e);
-        throw e;
-      }
-    },
-
-    async addPost() {
-      this.spinners.buttonAddPost = true;
-      await this.$router.push("/blog/editor/create");
-      this.spinners.buttonAddPost = false;
-    },
-
-    openPost(id: string) {
-      this.$router.push({ name: "PostPage", params: { id } });
-    },
-
-    async updatePost(id: string) {
-      this.spinners.buttonEditPost = id;
-      await this.$router.push("/blog/editor/update/" + id);
-      this.spinners.buttonEditPost = "";
-    },
-
-    async deletePost(params: { id: string }) {
-      const id = params.id;
-      const response = await presentAlertConfirmation({
-        message: "¿Desea eliminar el post?",
-      });
-
-      if (response == false) return;
-
-      const loading = await loadingController.create({
-        message: "Eliminando publicacion",
-      });
-
-      loading.present();
-      try {
-        await this.usePost.deletePost({ id });
-        this.loadContent({ refetch: true });
-        openToast({ message: "Post eliminado" });
-      } catch (error) {
-        console.error(error);
-      } finally {
-        loading.dismiss();
-      }
-    },
-
-    async refreshContent() {
-      this.loadContent({ refetch: true });
-    },
-
-    closeModalSearchPosts() {
-      (this.$refs.modalSearchPosts as any).$el.dismiss(null, "cancel");
-    },
-
-    async searchPosts(params: { search: string; refetch: boolean }) {
-      const search = params.search;
-      const refetch = params.refetch;
-
-      const searchResult = await usePost().searchPosts({
-        search,
-        graphql: {
-          refetch,
-        },
-      });
-      this.searchResult = searchResult;
-    },
-
-    async openPostSearch(params: { id: string }) {
-      const id = params.id;
-      await this.$router.push({ name: "PostPage", params: { id } });
-      this.closeModalSearchPosts();
-    },
-  },
+const pageTitle = "Blog";
+const spinners = ref({
+  buttonAddPost: false,
+  buttonAddNewPost: false,
+  buttonEditPost: "",
 });
+const loadFinished = ref(false);
+const searchResult = ref(Array<{ id: string; title: string }>());
+const modalSearchPosts = ref(null);
+
+// mouted
+onMounted(() => {
+  loadContent({ refetch: true });
+});
+
+// functions
+async function loadContent(params: { refetch: boolean }) {
+  const refetch = params.refetch == false ? false : true;
+
+  await getPostsDates({ refetch });
+
+  let dates = Array<string>();
+  dates = usePost().getDates()!;
+  if (dates.length == 0) {
+    loadFinished.value = true;
+    return;
+  }
+
+  let currentPage = "";
+  currentPage = loadData({ dates });
+  usePost().updateCurrentPage({ currentPage });
+
+  await loadPosts({
+    currentPage,
+    refetch,
+  });
+  loadFinished.value = true;
+}
+
+async function getPostsDates(params: { refetch: boolean }): Promise<void> {
+  try {
+    await usePost().loadDates({
+      graphql: {
+        name: POST_DATES,
+        fragment: "PostDates",
+        refetch: params.refetch,
+      },
+    });
+  } catch (e: any) {
+    console.error(e);
+    useSystem().openToastError(e);
+    throw e;
+  }
+}
+
+function loadData(params: { dates: Array<string> }): string {
+  let currentPage = "";
+  if (route.params.date != undefined) {
+    currentPage = params.dates.filter((element) => {
+      if (element == route.params.date) return element;
+    })[0];
+  } else {
+    currentPage = params.dates[0];
+  }
+  return currentPage;
+}
+
+async function loadPosts(params: { currentPage: string; refetch?: boolean }) {
+  const refetch = params.refetch ? params.refetch : false;
+  try {
+    await usePost().loadPosts({
+      date: params.currentPage,
+      graphql: {
+        name: ALL_POSTS_DETAILS,
+        fragment: "PostsDetails",
+        refetch,
+      },
+    });
+  } catch (e: any) {
+    console.error(e);
+    useSystem().openToastError(e);
+    throw e;
+  }
+}
+
+async function addPost() {
+  spinners.value.buttonAddPost = true;
+  await router.push("/blog/editor/create");
+  spinners.value.buttonAddPost = false;
+}
+
+function openPost(id: string) {
+  router.push({ name: "PostPage", params: { id } });
+}
+
+async function updatePost(id: string) {
+  spinners.value.buttonEditPost = id;
+  await router.push("/blog/editor/update/" + id);
+  spinners.value.buttonEditPost = "";
+}
+
+async function deletePost(params: { id: string }) {
+  const id = params.id;
+  const response = await presentAlertConfirmation({
+    message: "¿Desea eliminar el post?",
+  });
+
+  if (response == false) return;
+
+  const loading = await loadingController.create({
+    message: "Eliminando publicacion",
+  });
+
+  loading.present();
+  try {
+    await usePost().deletePost({ id });
+    loadContent({ refetch: true });
+    openToast({ message: "Post eliminado" });
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loading.dismiss();
+  }
+}
+
+async function refreshContent() {
+  loadContent({ refetch: true });
+}
+
+function closeModalSearchPosts() {
+  (modalSearchPosts as any).$el.dismiss(null, "cancel");
+}
+
+async function searchPosts(params: { search: string; refetch: boolean }) {
+  const search = params.search;
+  const refetch = params.refetch;
+
+  const searchResultResponse = await usePost().searchPosts({
+    search,
+    graphql: {
+      refetch,
+    },
+  });
+  searchResult.value = searchResultResponse;
+}
+
+async function openPostSearch(params: { id: string }) {
+  const id = params.id;
+  await router.push({ name: "PostPage", params: { id } });
+  closeModalSearchPosts();
+}
 </script>
 
 <style scoped>
@@ -434,10 +391,6 @@ export default defineComponent({
   top: 50%;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
-}
-
-.loadContent {
-  display: none !important;
 }
 
 .sticky {

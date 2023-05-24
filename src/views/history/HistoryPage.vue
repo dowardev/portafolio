@@ -110,29 +110,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { isPlatform } from "@ionic/vue";
-import { defineComponent } from "vue";
-
-export default defineComponent({
-  name: "HistoryPage",
-  // components: {
-  // },
-
-  setup() {
-    const modeDesingElements = isPlatform("ios") ? "ios" : "md";
-    return {
-      modeDesingElements,
-    };
-  },
-
-  data() {
-    return {
-      pageTitle: "Un poco mas de mi",
-      edad: new Date().getFullYear() - new Date("1998-06-18").getFullYear(),
-    };
-  },
-});
+<script setup lang="ts">
+const edad = new Date().getFullYear() - new Date("1998-06-18").getFullYear();
 </script>
 
 <style>

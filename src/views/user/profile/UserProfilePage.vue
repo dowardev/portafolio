@@ -311,8 +311,7 @@
   </section>
 </template>
 
-<script lang="ts">
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+<script setup lang="ts">
 import {
   IonItem,
   IonLabel,
@@ -327,15 +326,14 @@ import {
   IonCol,
   IonIcon,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { onMounted, ref } from "vue";
 import { openToast, uploadImage } from "../../../services/system";
 import {
   setUserToken,
-  saveUserData,
-  deleteUserAccount,
+  saveUserData as saveUserDataService,
 } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
-import { required, helpers, email, alpha } from "@vuelidate/validators";
+import { required, helpers, email } from "@vuelidate/validators";
 import {
   eyeOutline,
   eyeOffOutline,
@@ -345,311 +343,273 @@ import {
   mailOpenOutline,
   keyOutline,
 } from "ionicons/icons";
-import { logout } from "../../../services/session";
 import { UPLOAD_IMAGE, USER_BASIC_DETAILS } from "../../../services/graphql";
 import userAvatar from "../../../assets/otros/user.png";
 import { useUser } from "../../../composables/useUser";
 import { useSystem } from "../../../composables/useSystem";
 
-export default defineComponent({
-  name: "UserProfileComponent",
-  components: {
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonButton,
-    IonSpinner,
-    IonModal,
-    IonList,
-    IonListHeader,
-    IonRow,
-    IonCol,
-    IonIcon,
-  },
-
-  setup() {
-    return {
-      v$: useVuelidate(),
-      eyeOffOutline,
-      eyeOutline,
-      informationCircleOutline,
-      manOutline,
-      personOutline,
-      mailOpenOutline,
-      keyOutline,
-      useUser: useUser(),
-      openToastError: useSystem().openToastError,
-    };
-  },
-
-  data() {
-    return {
-      pageTitle: "Home",
-      form: {
-        name: "",
-        user: "",
-        email: "",
-        userImageId: "",
-      },
-      spinners: {
-        saveUserData: false,
-        uploadImage: false,
-        deleteUserAccount: false,
-      },
-      oldEmail: "",
-      userImage: userAvatar,
-      inputTypePassword: "password" as "password" | "text",
-      formDeleteAccount: { password: "1" },
-      information: [
-        {
-          basicCardInformation: [
-            {
-              title: "Nombre:",
-              content:
-                "Solamente tú puedes ver tu nombre y lo usaremos única y exclusivamente para contactarte.",
-            },
-            {
-              title: "Usuario:",
-              content:
-                "Es el único dato que los otros usuarios de este blog podrán conocer de ti.",
-            },
-            {
-              title: "Correo electrónico:",
-              content:
-                "Al igual que tu nombre, este solamente será usado para contactar contigo.",
-            },
-          ],
-          cardDeleteAccount: [
-            {
-              content:
-                "Al borrar tu cuenta todos los datos relacionados con ella serán eliminados y ya no se podrán recuperar.",
-            },
-            {
-              content:
-                "Antes de irte, nos podrías regalar un poco de tu tiempo para que nos cuentes por qué decidiste tomar esta decisión.",
-            },
-          ],
-        },
-      ],
-    };
-  },
-
-  validations() {
-    const messageRequired = "Campo requerido";
-    const messageAlpha = "Solamente puede contener texto";
-    return {
-      form: {
-        name: {
-          required: helpers.withMessage(messageRequired, required),
-          alpha: helpers.withMessage(
-            messageAlpha,
-            helpers.regex(/^[a-zA-Z ]*$/)
-          ),
-        },
-        user: {
-          required: helpers.withMessage(messageRequired, required),
-        },
-        email: {
-          required: helpers.withMessage(messageRequired, required),
-          email: helpers.withMessage("Correo no valido", email),
-        },
-      },
-
-      formDeleteAccount: {
-        password: {
-          required: helpers.withMessage(messageRequired, required),
-        },
-      },
-    };
-  },
-
-  async mounted() {
-    await this.getUser();
-    this.oldEmail = this.form.email!;
-  },
-
-  methods: {
-    async getUser() {
-      await useUser().loadUser({
-        graphql: {
-          name: USER_BASIC_DETAILS,
-          fragment: "UserBasicDetails",
-          refetch: true,
-        },
-      });
-
-      this.form.name = this.useUser.user.value.name!;
-      this.form.user = this.useUser.user.value.user!;
-      this.form.email = this.useUser.user.value.email!;
-      this.userImage = this.useUser.imageProfile.value.toString()!;
-    },
-
-    async saveUserData() {
-      this.spinners.saveUserData = true;
-      const name = this.form.name!;
-      const user = this.form.user!;
-      const email = this.form.email!;
-      const imageId = this.form.userImageId;
-
-      if (email != this.oldEmail) {
-        this.presentAlertEmail();
-      }
-
-      try {
-        await saveUserData({ name, user, email, imageId });
-        this.getUser();
-        openToast({
-          message: "Datos actualizados",
-        });
-      } catch (e: any) {
-        if (e.message == "Email already selected") {
-          openToast({
-            message: "Correo ya en uso",
-            color: "warning",
-          });
-          return;
-        }
-        console.error(e);
-        this.openToastError(e);
-      } finally {
-        this.spinners.saveUserData = false;
-      }
-    },
-
-    async presentAlertEmail() {
-      const alert = await alertController.create({
-        cssClass: "my-custom-class",
-        header: "Mensaje",
-        message: "Hemos enviado un mensaje de verificación a tu nuevo correo.",
-        buttons: ["OK"],
-      });
-      await alert.present();
-    },
-
-    async getImageBase64(e: any) {
-      return new Promise((resolve) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = async (e: any) => {
-          const fileData = e.target.result;
-          resolve(fileData);
-        };
-        reader.readAsDataURL(file);
-      });
-    },
-
-    async uploadUserImage(e: any) {
-      if (!e.target.files[0]) return;
-      this.spinners.uploadImage = true;
-      const image = await this.getImageBase64(e);
-
-      try {
-        const response = await uploadImage({
-          image,
-          graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
-        });
-
-        this.spinners.uploadImage = false;
-        if (response.name) {
-          this.userImage = "data:image/png;base64," + response.source;
-          this.form.userImageId = response.id!;
-        }
-        this.useUser.updateUserProps({
-          user: {
-            imageProfile: response.source,
-          },
-        });
-      } catch (e: any) {
-        console.error(e);
-        this.openToastError(e);
-      } finally {
-        this.spinners.uploadImage = false;
-      }
-    },
-
-    async presentAlertDeleteAccount() {
-      const alert = await alertController.create({
-        cssClass: "my-custom-class",
-        header: "Confirmacion",
-        subHeader: "Eliminar cuenta",
-        message: "No hay vuelta atrás, ¿Quieres continuar?",
-        buttons: [
-          {
-            text: "No",
-            id: "cancel-button",
-            handler: () => {
-              alert.dismiss(false);
-              return false;
-            },
-          },
-          {
-            text: "Si",
-            id: "confirm-button",
-            handler: () => {
-              alert.dismiss(true);
-              return true;
-            },
-          },
-        ],
-      });
-      await alert.present();
-      return alert;
-    },
-
-    async deleteUserAccount() {
-      this.spinners.deleteUserAccount = true;
-
-      const alertResponse = await (
-        await this.presentAlertDeleteAccount()
-      ).onDidDismiss();
-
-      if (alertResponse.data == false) {
-        this.spinners.deleteUserAccount = false;
-        openToast({
-          message: "Gracias por quedarte, prometo no fallarte",
-        });
-        return;
-      }
-
-      if (alertResponse.data) {
-        try {
-          await useUser().deleteAccount({
-            password: this.formDeleteAccount.password,
-          });
-
-          openToast({
-            message: "Hasta pronto",
-          });
-          location.reload();
-        } catch (e: any) {
-          if (e.message == "Wrong password") {
-            openToast({
-              message: "Contraseña incorrecta",
-              color: "danger",
-            });
-          }
-          console.error(e);
-          this.openToastError(e);
-        } finally {
-          this.spinners.deleteUserAccount = false;
-        }
-      }
-    },
-
-    async logout() {
-      try {
-        await logout();
-        const token = (document.cookie =
-          "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
-        setUserToken({ token });
-        location.reload();
-      } catch (e: any) {
-        console.error(e);
-        this.openToastError(e);
-      }
-    },
-  },
+const form = ref({
+  name: "",
+  user: "",
+  email: "",
+  userImageId: "",
 });
+const spinners = ref({
+  saveUserData: false,
+  uploadImage: false,
+  deleteUserAccount: false,
+});
+const oldEmail = ref("");
+const userImage = ref(userAvatar);
+const inputTypePassword = "password" as "password" | "text";
+const formDeleteAccount = { password: "1" };
+const information = [
+  {
+    basicCardInformation: [
+      {
+        title: "Nombre:",
+        content:
+          "Solamente tú puedes ver tu nombre y lo usaremos única y exclusivamente para contactarte.",
+      },
+      {
+        title: "Usuario:",
+        content:
+          "Es el único dato que los otros usuarios de este blog podrán conocer de ti.",
+      },
+      {
+        title: "Correo electrónico:",
+        content:
+          "Al igual que tu nombre, este solamente será usado para contactar contigo.",
+      },
+    ],
+    cardDeleteAccount: [
+      {
+        content:
+          "Al borrar tu cuenta todos los datos relacionados con ella serán eliminados y ya no se podrán recuperar.",
+      },
+      {
+        content:
+          "Antes de irte, nos podrías regalar un poco de tu tiempo para que nos cuentes por qué decidiste tomar esta decisión.",
+      },
+    ],
+  },
+];
+
+const messageError = {
+  required: "Campo requerido",
+  alpha: "Solamente puede contener texto",
+};
+const rules = {
+  form: {
+    name: {
+      required: helpers.withMessage(messageError.required, required),
+      alpha: helpers.withMessage(
+        messageError.alpha,
+        helpers.regex(/^[a-zA-Z ]*$/)
+      ),
+    },
+    user: {
+      required: helpers.withMessage(messageError.required, required),
+    },
+    email: {
+      required: helpers.withMessage(messageError.required, required),
+      email: helpers.withMessage("Correo no valido", email),
+    },
+  },
+
+  formDeleteAccount: {
+    password: {
+      required: helpers.withMessage(messageError.required, required),
+    },
+  },
+};
+const v$ = useVuelidate(rules, { form, formDeleteAccount });
+
+// mounted
+onMounted(async () => {
+  await getUser();
+  oldEmail.value = form.value.email!;
+});
+
+async function getUser() {
+  await useUser().loadUser({
+    graphql: {
+      name: USER_BASIC_DETAILS,
+      fragment: "UserBasicDetails",
+      refetch: true,
+    },
+  });
+
+  form.value.name = useUser().user.value.name!;
+  form.value.user = useUser().user.value.user!;
+  form.value.email = useUser().user.value.email!;
+  userImage.value = useUser().imageProfile.value.toString()!;
+}
+
+async function saveUserData() {
+  spinners.value.saveUserData = true;
+  const name = form.value.name!;
+  const user = form.value.user!;
+  const email = form.value.email!;
+  const imageId = form.value.userImageId;
+
+  if (email != oldEmail.value) {
+    presentAlertEmail();
+  }
+
+  try {
+    await saveUserDataService({ name, user, email, imageId });
+    getUser();
+    openToast({
+      message: "Datos actualizados",
+    });
+  } catch (e: any) {
+    if (e.message == "Email already selected") {
+      openToast({
+        message: "Correo ya en uso",
+        color: "warning",
+      });
+      return;
+    }
+    console.error(e);
+    useSystem().openToastError(e);
+  } finally {
+    spinners.value.saveUserData = false;
+  }
+}
+
+async function presentAlertEmail() {
+  const alert = await alertController.create({
+    cssClass: "my-custom-class",
+    header: "Mensaje",
+    message: "Hemos enviado un mensaje de verificación a tu nuevo correo.",
+    buttons: ["OK"],
+  });
+  await alert.present();
+}
+
+async function getImageBase64(e: any) {
+  return new Promise((resolve) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = async (e: any) => {
+      const fileData = e.target.result;
+      resolve(fileData);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadUserImage(e: any) {
+  if (!e.target.files[0]) return;
+  spinners.value.uploadImage = true;
+  const image = await getImageBase64(e);
+
+  try {
+    const response = await uploadImage({
+      image,
+      graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
+    });
+
+    spinners.value.uploadImage = false;
+    if (response.name) {
+      userImage.value = "data:image/png;base64," + response.source;
+      form.value.userImageId = response.id!;
+    }
+    useUser().updateUserProps({
+      user: {
+        imageProfile: response.source,
+      },
+    });
+  } catch (e: any) {
+    console.error(e);
+    useSystem().openToastError(e);
+  } finally {
+    spinners.value.uploadImage = false;
+  }
+}
+
+async function presentAlertDeleteAccount() {
+  const alert = await alertController.create({
+    cssClass: "my-custom-class",
+    header: "Confirmacion",
+    subHeader: "Eliminar cuenta",
+    message: "No hay vuelta atrás, ¿Quieres continuar?",
+    buttons: [
+      {
+        text: "No",
+        id: "cancel-button",
+        handler: () => {
+          alert.dismiss(false);
+          return false;
+        },
+      },
+      {
+        text: "Si",
+        id: "confirm-button",
+        handler: () => {
+          alert.dismiss(true);
+          return true;
+        },
+      },
+    ],
+  });
+  await alert.present();
+  return alert;
+}
+
+async function deleteUserAccount() {
+  spinners.value.deleteUserAccount = true;
+
+  const alertResponse = await (
+    await presentAlertDeleteAccount()
+  ).onDidDismiss();
+
+  if (alertResponse.data == false) {
+    spinners.value.deleteUserAccount = false;
+    openToast({
+      message: "Gracias por quedarte, prometo no fallarte",
+    });
+    return;
+  }
+
+  if (alertResponse.data) {
+    try {
+      await useUser().deleteAccount({
+        password: formDeleteAccount.password,
+      });
+
+      openToast({
+        message: "Hasta pronto",
+      });
+      location.reload();
+    } catch (e: any) {
+      if (e.message == "Wrong password") {
+        openToast({
+          message: "Contraseña incorrecta",
+          color: "danger",
+        });
+      }
+      console.error(e);
+      useSystem().openToastError(e);
+    } finally {
+      spinners.value.deleteUserAccount = false;
+    }
+  }
+}
+
+async function logout() {
+  try {
+    await logout();
+    const token = (document.cookie =
+      "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
+    setUserToken({ token });
+    location.reload();
+  } catch (e: any) {
+    console.error(e);
+    useSystem().openToastError(e);
+  }
+}
 </script>
 
 <style scoped>

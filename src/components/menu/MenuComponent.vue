@@ -5,26 +5,11 @@
   </ion-page>
 </template>
 
-<script lang="ts">
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {  IonPage } from "@ionic/vue";
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { IonPage } from "@ionic/vue";
 import { useSystem } from "../../composables/useSystem";
 import DefaultMenuComponent from "./default_menu/DefaultMenuComponent.vue";
 import MenuCollapsed from "./menu_collapsed/MenuCollapsedComponent.vue";
 
-export default defineComponent({
-  name: "MenuComponent",
-  components: {
-    IonPage,
-    DefaultMenuComponent,
-    MenuCollapsed,
-  },
-
-  setup() {
-    return {
-      detectMenuCollapse: useSystem().detectMenuCollapse,
-    };
-  },
-});
+const detectMenuCollapse = useSystem().detectMenuCollapse;
 </script>

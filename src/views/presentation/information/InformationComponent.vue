@@ -347,7 +347,7 @@
   </ion-row>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonRow,
   IonCol,
@@ -356,120 +356,78 @@ import {
   isPlatform,
   IonModal,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { onMounted } from "vue";
 import {
   mail,
   logoMastodon,
-  logoGitlab,
   logoLinkedin,
   copyOutline,
   openOutline,
-  ellipsisVerticalOutline,
   chatbubble,
 } from "ionicons/icons";
 import { App } from "@capacitor/app";
-import telegramLogo from "../../../assets/otros/icons8-telegram-app.svg";
 import ContactModal from "../../contact/ContactPage.vue";
 import matrixGrayImage from "../../../assets/otros/matrix-logo-gray.svg";
 import matrixBlackImage from "../../../assets/otros/matrix-logo-black.svg";
 
-export default defineComponent({
-  name: "InformationComponent",
-  components: {
-    IonRow,
-    IonCol,
-    IonModal,
-    ContactModal,
-  },
+const defaultColorFill = "#777777";
+const fillEmailContact = "#777777";
+const fillMastodon = "#777777";
+const fillLinkedIn = "#777777";
+const fillContactForm = defaultColorFill;
+const matrixImage = matrixGrayImage;
 
-  setup() {
-    const modeDesingElements = isPlatform("ios")
-      ? "ios"
-      : ("md" as "ios" | "md");
-    return {
-      mail,
-      logoMastodon,
-      logoGitlab,
-      logoLinkedin,
-      modeDesingElements,
-      iconTelegram: telegramLogo,
-      copyOutline,
-      openOutline,
-      ellipsisVerticalOutline,
-      chatbubble,
-      matrixGrayImage,
-      matrixBlackImage,
-    };
-  },
-
-  data() {
-    const defaultColorFill = "#777777";
-    return {
-      fillTelegramGroup: "#777777",
-      fillTelegramChannel: "#777777",
-      fillEmailContact: "#777777",
-      fillEmailHelp: "#777777",
-      fillMastodon: "#777777",
-      fillLinkedIn: "#777777",
-      fillDev: "#777777",
-      fillContactForm: defaultColorFill,
-      defaultColorFill,
-      matrixImage: matrixGrayImage,
-    };
-  },
-
-  mounted() {
-    useBackButton(10, () => {
-      this.alertExitApp();
-    });
-  },
-
-  methods: {
-    async alertExitApp() {
-      const alert = await alertController.create({
-        header: "Alerta",
-        message: "Esta a punto de salir de la aplicación",
-        buttons: [
-          {
-            text: "Cancel",
-            role: "cancel",
-            cssClass: "secondary",
-            id: "cancel-button",
-            handler: () => {
-              // console.log('Confirm Cancel:', blah)
-            },
-          },
-          {
-            text: "Continuar",
-            id: "confirm-button",
-            handler: () => {
-              App.exitApp();
-            },
-          },
-        ],
-      });
-      await alert.present();
-
-      const { role } = await alert.onDidDismiss();
-      console.log("onDidDismiss resolved with role", role);
-    },
-
-    async copyToClipboard(params: { text: any }) {
-      const text = params.text;
-      try {
-        await navigator.clipboard.writeText(text);
-      } catch ($e) {
-        alert("Cannot copy");
-      }
-    },
-
-    openMail(params: { mail: string; subject: string }) {
-      const mail = params.mail;
-      const subject = params.subject;
-      location.href = `mailto:${mail}?Subject=${subject}`;
-    },
-  },
+// mounted()
+onMounted(() => {
+  useBackButton(10, () => {
+    alertExitApp();
+  });
 });
+
+// functions
+async function alertExitApp() {
+  const alert = await alertController.create({
+    header: "Alerta",
+    message: "Esta a punto de salir de la aplicación",
+    buttons: [
+      {
+        text: "Cancel",
+        role: "cancel",
+        cssClass: "secondary",
+        id: "cancel-button",
+        handler: () => {
+          // console.log('Confirm Cancel:', blah)
+        },
+      },
+      {
+        text: "Continuar",
+        id: "confirm-button",
+        handler: () => {
+          App.exitApp();
+        },
+      },
+    ],
+  });
+  await alert.present();
+
+  const { role } = await alert.onDidDismiss();
+  console.log("onDidDismiss resolved with role", role);
+}
+
+async function copyToClipboard(params: { text: any }) {
+  const text = params.text;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch ($e) {
+    alert("Cannot copy");
+  }
+}
+
+function openMail(params: { mail: string; subject: string }) {
+  const mail = params.mail;
+  const subject = params.subject;
+  location.href = `mailto:${mail}?Subject=${subject}`;
+}
 </script>
 
 <style scoped src="./animacion-nombre.css"></style>

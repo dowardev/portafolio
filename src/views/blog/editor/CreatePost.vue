@@ -13,11 +13,15 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { IonPage } from "@ionic/vue";
-import { defineComponent } from "vue";
-import { createPost } from "../../../services/post";
-import { openToast, uploadImage, getBaseURL } from "../../../services/system";
+import { defineComponent, ref } from "vue";
+import { createPost as createPostService } from "../../../services/post";
+import {
+  openToast,
+  uploadImage as uploadImageService,
+  getBaseURL,
+} from "../../../services/system";
 import EditorComponent from "./EditorPage.vue";
 import { CreatePost } from "../../../services/interfaces";
 import {
@@ -27,156 +31,142 @@ import {
 } from "../../../services/graphql";
 import { usePost } from "../../../composables/usePost";
 import { useSystem } from "../../../composables/useSystem";
+import { useRouter } from "vue-router";
 
-export default defineComponent({
-  name: "EditorPage",
-  components: {
-    IonPage,
-    EditorComponent,
-  },
+const router = useRouter();
 
-  setup() {
-    return { usePost: usePost(), openToastError: useSystem().openToastError };
-  },
+const openToastError = useSystem().openToastError;
 
-  data() {
-    return {
-      segment: "editor",
-      content: "",
-      images: Array<string>(),
-      spinners: { savePost: false, saveImage: false },
-    };
-  },
+const content = ref("");
+const images = Array<string>();
+const spinners = { savePost: false, saveImage: false };
 
-  methods: {
-    async save(data: { title: string; content: string; cover: object }) {
-      this.spinners.savePost = true;
+const editorRef = ref(null);
 
-      const title = data.title;
-      const content = data.content;
-      const cover = data.cover;
-      let coverId = "";
-      const images = this.images;
+// functions
+async function save(data: { title: string; content: string; cover: object }) {
+  spinners.savePost = true;
 
-      try {
-        const response = await this.uploadCover(cover);
-        coverId = response;
-      } catch (e: any) {
-        console.error(e);
-        this.spinners.savePost = false;
-        this.openToastError(e);
-        return;
-      }
+  const title = data.title;
+  const content = data.content;
+  const cover = data.cover;
+  let coverId = "";
 
-      try {
-        await this.createPost({
-          title,
-          content,
-          coverId,
-          images,
-        });
-        await this.refreshPostsCotent();
-        this.clearInputs();
-        this.spinners.savePost = false;
-        this.$router.go(-1);
-        openToast({ message: "Post agregado" });
-      } catch (e: any) {
-        console.error(e);
-        this.spinners.savePost = false;
-        this.openToastError(e);
-      }
-    },
+  try {
+    const response = await uploadCover(cover);
+    coverId = response;
+  } catch (e: any) {
+    console.error(e);
+    spinners.savePost = false;
+    openToastError(e);
+    return;
+  }
 
-    async createPost({
+  try {
+    await createPost({
       title,
       content,
       coverId,
       images,
-    }: CreatePost): Promise<void> {
-      try {
-        await createPost({
-          title,
-          content,
-          coverId,
-          images,
-        });
-      } catch (e: any) {
-        throw new Error(e);
-      }
-    },
+    });
+    await refreshPostsCotent();
+    clearInputs();
+    spinners.savePost = false;
+    router.go(-1);
+    openToast({ message: "Post agregado" });
+  } catch (e: any) {
+    console.error(e);
+    spinners.savePost = false;
+    openToastError(e);
+  }
+}
 
-    async uploadImage(e: any) {
-      this.spinners.saveImage = true;
-      const image = e.image.file;
+async function createPost({
+  title,
+  content,
+  coverId,
+  images,
+}: CreatePost): Promise<void> {
+  try {
+    await createPostService({
+      title,
+      content,
+      coverId,
+      images,
+    });
+  } catch (e: any) {
+    throw new Error(e);
+  }
+}
 
-      try {
-        const response = await uploadImage({
-          graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
-          image,
-        });
+async function uploadImage(e: any) {
+  spinners.saveImage = true;
+  const image = e.image.file;
 
-        const imageName = response.name;
-        this.spinners.saveImage = false;
+  try {
+    const response = await uploadImageService({
+      graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
+      image,
+    });
 
-        const api = getBaseURL() + "api/get-image-posts?name=" + imageName;
-        this.content =
-          '<div class="center"><img src="' +
-          api +
-          '" style="width:80%"/></div>';
+    const imageName = response.name;
+    spinners.saveImage = false;
 
-        if (response.id) this.images.push(response.id);
-      } catch (e: any) {
-        console.error(e);
-        this.spinners.saveImage = false;
-        this.openToastError(e);
-      }
-    },
+    const api = getBaseURL() + "api/get-image-posts?name=" + imageName;
+    content.value =
+      '<div class="center"><img src="' + api + '" style="width:80%"/></div>';
 
-    async uploadCover(image: object): Promise<string> {
-      try {
-        const response = await uploadImage({
-          image,
-          graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
-        });
-        return response.id!;
-      } catch (e: any) {
-        throw new Error(e);
-      }
-    },
+    if (response.id) images.push(response.id);
+  } catch (e: any) {
+    console.error(e);
+    spinners.saveImage = false;
+    openToastError(e);
+  }
+}
 
-    clearInputs() {
-      (this.$refs.editorRef as any).clearInputs();
-    },
+async function uploadCover(image: object): Promise<string> {
+  try {
+    const response = await uploadImageService({
+      image,
+      graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
+    });
+    return response.id!;
+  } catch (e: any) {
+    throw new Error(e);
+  }
+}
 
-    async refreshPostsCotent() {
-      let currentPage = this.usePost.getCurrentPage()!;
-      if (currentPage == undefined) currentPage = "";
+function clearInputs() {
+  (editorRef.value as any).clearInputs();
+}
 
-      try {
-        await this.usePost.loadDates({
-          graphql: { name: POST_DATES, fragment: "PostDates", refetch: true },
-        });
-      } catch (e: any) {
-        console.error(e);
-        this.openToastError(e);
-        throw e;
-      }
+async function refreshPostsCotent() {
+  let currentPage = usePost().getCurrentPage()!;
+  if (currentPage == undefined) currentPage = "";
 
-      try {
-        await this.usePost.loadPosts({
-          date: currentPage,
-          graphql: {
-            name: ALL_POSTS_DETAILS,
-            fragment: "PostsDetails",
-            refetch: true,
-          },
-        });
-      } catch (e: any) {
-        console.error(e);
-        this.openToastError(e);
-        throw e;
-      }
-    },
-  },
-});
+  try {
+    await usePost().loadDates({
+      graphql: { name: POST_DATES, fragment: "PostDates", refetch: true },
+    });
+  } catch (e: any) {
+    console.error(e);
+    openToastError(e);
+    throw e;
+  }
+
+  try {
+    await usePost().loadPosts({
+      date: currentPage,
+      graphql: {
+        name: ALL_POSTS_DETAILS,
+        fragment: "PostsDetails",
+        refetch: true,
+      },
+    });
+  } catch (e: any) {
+    console.error(e);
+    openToastError(e);
+    throw e;
+  }
+}
 </script>

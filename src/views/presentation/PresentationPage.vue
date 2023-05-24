@@ -38,7 +38,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonPage,
@@ -52,105 +52,49 @@ import {
   IonSegment,
   IonSegmentButton,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { defineComponent, onMounted } from "vue";
 import { App } from "@capacitor/app";
 import InformationComponent from "./information/InformationComponent.vue";
 import SkillsPage from "../skills/SkillsPage.vue";
-import {
-  chatbubble,
-  copyOutline,
-  logoLinkedin,
-  logoMastodon,
-  mail,
-  openOutline,
-} from "ionicons/icons";
 import HistoryPage from "../history/HistoryPage.vue";
 import PortfolioPage from "../portfolio/PortfolioPage.vue";
 
-export default defineComponent({
-  name: "PresentationPage",
-  components: {
-    IonContent,
-    IonPage,
-    IonButtons,
-    IonMenuButton,
-    IonRow,
-    IonCol,
-    InformationComponent,
-    SkillsPage,
-    IonSegment,
-    IonSegmentButton,
-    HistoryPage,
-    PortfolioPage,
-  },
+const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
 
-  setup() {
-    const modeDesingElements = isPlatform("ios")
-      ? "ios"
-      : ("md" as "ios" | "md");
-    return {
-      modeDesingElements,
-      mail,
-      copyOutline,
-      openOutline,
-      logoLinkedin,
-      chatbubble,
-      logoMastodon,
-    };
-  },
+const mainSegment = "skills";
 
-  data() {
-    const defaultColorFill = "#777777";
-    return {
-      defaultColorFill,
-      fillTelegramGroup: defaultColorFill,
-      fillTelegramChannel: defaultColorFill,
-      fillEmailContact: defaultColorFill,
-      fillEmailHelp: defaultColorFill,
-      fillMastodon: defaultColorFill,
-      fillLinkedIn: defaultColorFill,
-      fillDev: defaultColorFill,
-      mainSegment: "skills",
-    };
-  },
-
-  mounted() {
-    useBackButton(10, () => {
-      this.alertExitApp();
-    });
-  },
-
-  methods: {
-    async alertExitApp() {
-      const alert = await alertController.create({
-        header: "Alerta",
-        message: "Esta a punto de salir de la aplicación",
-        buttons: [
-          {
-            text: "Cancel",
-            role: "cancel",
-            cssClass: "secondary",
-            id: "cancel-button",
-            handler: () => {
-              // console.log('Confirm Cancel:', blah)
-            },
-          },
-          {
-            text: "Continuar",
-            id: "confirm-button",
-            handler: () => {
-              App.exitApp();
-            },
-          },
-        ],
-      });
-      await alert.present();
-
-      const { role } = await alert.onDidDismiss();
-      console.log("onDidDismiss resolved with role", role);
-    },
-  },
+onMounted(() => {
+  useBackButton(10, () => {
+    alertExitApp();
+  });
 });
+
+// functions
+async function alertExitApp() {
+  const alert = await alertController.create({
+    header: "Alerta",
+    message: "Esta a punto de salir de la aplicación",
+    buttons: [
+      {
+        text: "Cancel",
+        role: "cancel",
+        cssClass: "secondary",
+        id: "cancel-button",
+        handler: () => {
+          // console.log('Confirm Cancel:', blah)
+        },
+      },
+      {
+        text: "Continuar",
+        id: "confirm-button",
+        handler: () => {
+          App.exitApp();
+        },
+      },
+    ],
+  });
+  await alert.present();
+}
 </script>
 
 <style scoped src="./information/animacion-nombre.css"></style>

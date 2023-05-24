@@ -1,55 +1,47 @@
 <template>
-      <ion-row>
-        <ion-col
-          v-for="(habilidad, indexHabilidad) in skills[0].tipo"
-          :key="indexHabilidad"
-          size-md="6"
-          size-sm="12"
-          size="12"
-        >
-          <ion-card>
-            <ion-card-header>
-              <ion-card-title>{{ habilidad.name }}</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <ion-row style="text-align: center">
-                <ion-col
-                  v-for="(technology, index) in habilidad.technology"
-                  :key="index"
-                >
-                  <img
-                    :src="technology.image[0].path"
-                    :style="{
-                      maxWidth: technology.image[0].size,
-                    }"
-                  />
-                  <p>{{ technology.name }}</p>
-                </ion-col>
-              </ion-row>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
+  <ion-row>
+    <ion-col
+      v-for="(habilidad, indexHabilidad) in skills[0].tipo"
+      :key="indexHabilidad"
+      size-md="6"
+      size-sm="12"
+      size="12"
+    >
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>{{ habilidad.name }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-row style="text-align: center">
+            <ion-col
+              v-for="(technology, index) in habilidad.technology"
+              :key="index"
+            >
+              <img
+                :src="technology.image[0].path"
+                :style="{
+                  maxWidth: technology.image[0].size,
+                }"
+              />
+              <p>{{ technology.name }}</p>
+            </ion-col>
+          </ion-row>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-  IonButtons,
-  IonMenuButton,
   IonRow,
   IonCol,
   IonCard,
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
-  isPlatform,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { ref } from "vue";
 import htmlLogo from "../../assets/otros/html-1.svg";
 import cssLogo from "../../assets/otros/css-3.svg";
 import javascriptLogo from "../../assets/otros/logo-javascript.svg";
@@ -67,203 +59,177 @@ import tuxLogo from "../../assets/otros/linux-tux-2.svg";
 import viteLogo from "../../assets/otros/vite-color.svg";
 import piniaLogo from "../../assets/otros/pinia.svg";
 
-export default defineComponent({
-  name: "HomePage",
-  components: {
-    IonRow,
-    IonCol,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
-  },
+const skills = ref([
+  {
+    tipo: [
+      {
+        name: "Tecnologías",
+        technology: [
+          {
+            name: "Html",
+            image: [
+              {
+                path: htmlLogo,
+                size: "24px",
+              },
+            ],
+          },
+          {
+            name: "Css",
+            image: [
+              {
+                path: cssLogo,
+                size: "24px",
+              },
+            ],
+          },
+          {
+            name: "JavaScript",
+            image: [
+              {
+                path: javascriptLogo,
+                size: "27px",
+              },
+            ],
+          },
+          {
+            name: "Php",
+            image: [
+              {
+                path: phpLogo,
+                size: "51px",
+              },
+            ],
+          },
+          {
+            name: "GraphQL",
+            image: [
+              {
+                path: graphqlLogo,
+                size: "27px",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "Frameworks",
+        technology: [
+          {
+            name: "Angular",
+            image: [
+              {
+                path: angularLogo,
+                size: "25px",
+              },
+            ],
+          },
+          {
+            name: "Electron",
+            image: [
+              {
+                path: electronLogo,
+                size: "25px",
+              },
+            ],
+          },
+          {
+            name: "Ionic",
+            image: [
+              {
+                path: ionicLogo,
+                size: "27px",
+              },
+            ],
+          },
+          {
+            name: "Vue",
+            image: [
+              {
+                path: vueLogo,
+                size: "31px",
+              },
+            ],
+          },
+          {
+            name: "Laravel",
+            image: [
+              {
+                path: laravelLogo,
+                size: "26px",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "Bases de datos",
+        technology: [
+          {
+            name: "Firebase",
+            image: [
+              {
+                path: firebaseLogo,
+                size: "22px",
+              },
+            ],
+          },
+          {
+            name: "Mysql",
+            image: [
+              {
+                path: mysqlLogo,
+                size: "29px",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "Herramientas",
+        technology: [
+          {
+            name: "Git",
+            image: [
+              {
+                path: gitLogo,
+                size: "30px",
+              },
+            ],
+          },
+          {
+            name: "Linux",
+            image: [
+              {
+                path: tuxLogo,
+                size: "30px",
+              },
+            ],
+          },
+          {
+            name: "Vite",
+            image: [
+              {
+                path: viteLogo,
+                size: "30px",
+              },
+            ],
+          },
 
-  setup() {
-    const modeDesingElements = isPlatform("ios")
-      ? "ios"
-      : ("md" as "ios" | "md");
-    return {
-      modeDesingElements,
-    };
+          {
+            name: "Pinia",
+            image: [
+              {
+                path: piniaLogo,
+                size: "20px",
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
-
-  data() {
-    return {
-      pageTitle: "Conocimientos",
-      skills: [
-        {
-          tipo: [
-            {
-              name: "Tecnologías",
-              technology: [
-                {
-                  name: "Html",
-                  image: [
-                    {
-                      path: htmlLogo,
-                      size: "24px",
-                    },
-                  ],
-                },
-                {
-                  name: "Css",
-                  image: [
-                    {
-                      path: cssLogo,
-                      size: "24px",
-                    },
-                  ],
-                },
-                {
-                  name: "JavaScript",
-                  image: [
-                    {
-                      path: javascriptLogo,
-                      size: "27px",
-                    },
-                  ],
-                },
-                {
-                  name: "Php",
-                  image: [
-                    {
-                      path: phpLogo,
-                      size: "51px",
-                    },
-                  ],
-                },
-                {
-                  name: "GraphQL",
-                  image: [
-                    {
-                      path: graphqlLogo,
-                      size: "27px",
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              name: "Frameworks",
-              technology: [
-                {
-                  name: "Angular",
-                  image: [
-                    {
-                      path: angularLogo,
-                      size: "25px",
-                    },
-                  ],
-                },
-                {
-                  name: "Electron",
-                  image: [
-                    {
-                      path: electronLogo,
-                      size: "25px",
-                    },
-                  ],
-                },
-                {
-                  name: "Ionic",
-                  image: [
-                    {
-                      path: ionicLogo,
-                      size: "27px",
-                    },
-                  ],
-                },
-                {
-                  name: "Vue",
-                  image: [
-                    {
-                      path: vueLogo,
-                      size: "31px",
-                    },
-                  ],
-                },
-                {
-                  name: "Laravel",
-                  image: [
-                    {
-                      path: laravelLogo,
-                      size: "26px",
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              name: "Bases de datos",
-              technology: [
-                {
-                  name: "Firebase",
-                  image: [
-                    {
-                      path: firebaseLogo,
-                      size: "22px",
-                    },
-                  ],
-                },
-                {
-                  name: "Mysql",
-                  image: [
-                    {
-                      path: mysqlLogo,
-                      size: "29px",
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              name: "Herramientas",
-              technology: [
-                {
-                  name: "Git",
-                  image: [
-                    {
-                      path: gitLogo,
-                      size: "30px",
-                    },
-                  ],
-                },
-                {
-                  name: "Linux",
-                  image: [
-                    {
-                      path: tuxLogo,
-                      size: "30px",
-                    },
-                  ],
-                },
-                {
-                  name: "Vite",
-                  image: [
-                    {
-                      path: viteLogo,
-                      size: "30px",
-                    },
-                  ],
-                },
-
-                {
-                  name: "Pinia",
-                  image: [
-                    {
-                      path: piniaLogo,
-                      size: "20px",
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    };
-  },
-});
+]);
 </script>
 
 <style scoped>

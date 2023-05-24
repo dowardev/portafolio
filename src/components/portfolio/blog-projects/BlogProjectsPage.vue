@@ -4,11 +4,7 @@
       <ion-card v-for="(project, index) in proyectos" :key="index">
         <ion-card-content>
           <ion-row>
-            <!-- <ion-col size-xs="12" size-md="4"> -->
-            <!--   <img :src="project.image[0].route" style="width: 20rem" /> -->
-            <!-- </ion-col> -->
-
-            <ion-col >
+            <ion-col>
               <ion-row>
                 <ion-col size="12">
                   <ion-card-title>
@@ -105,78 +101,53 @@
   </ion-row>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {} from "@ionic/vue";
-import { defineComponent } from "vue";
 
 import viteLogo from "../../../assets/otros/vite.svg";
 
 import {
   logoIonic,
   logoAndroid,
-  browsersOutline,
-  serverOutline,
   logoFirefox,
   logoChrome,
-  globeOutline,
   logoVue,
-logoCapacitor,
+  logoCapacitor,
 } from "ionicons/icons";
 
-export default defineComponent({
-  name: "ProfessionalProjectsPage",
-  components: {},
-
-  setup() {
-    return {
-      pageTitle: "Home",
-      proyectos: [
-        {
-          name: "Plants.id",
-          type: [logoAndroid, logoFirefox, logoChrome ],
-          color: "primary",
-          // image: [
-          //   {
-          //     route: lifelineLogo,
-          //     width: "134px",
-          //     height: "112px",
-          //   },
-          // ],
-          description: "Aplicacion que emplea la API de Plants.id para identificar las plantas de una imagen",
-          technologies: [
-            {
-              route: "https://ionicframework.com/",
-              icon: logoIonic,
-              type: "icon",
-            },
-            {
-              route: "https://vuejs.org",
-              icon: logoVue,
-              type: "icon",
-            },
-            {
-              route: "https://vitejs.dev",
-              icon: viteLogo,
-              type: "svg",
-            },
-            {
-              route: "https://laravel.com",
-              icon: logoCapacitor,
-              type: "icon",
-            },
-          ],
-          page: "https://dowar.xyz/blog/post/40",
-          sourceCode: "https://gitlab.com/gonzam4/ionic-plants.id",
-        },
-      ],
-      serverOutline,
-      browsersOutline,
-      logoFirefox,
-      logoChrome,
-      globeOutline,
-    };
+const proyectos = [
+  {
+    name: "Plants.id",
+    type: [logoAndroid, logoFirefox, logoChrome],
+    color: "primary",
+    description:
+      "Aplicacion que emplea la API de Plants.id para identificar las plantas de una imagen",
+    technologies: [
+      {
+        route: "https://ionicframework.com/",
+        icon: logoIonic,
+        type: "icon",
+      },
+      {
+        route: "https://vuejs.org",
+        icon: logoVue,
+        type: "icon",
+      },
+      {
+        route: "https://vitejs.dev",
+        icon: viteLogo,
+        type: "svg",
+      },
+      {
+        route: "https://laravel.com",
+        icon: logoCapacitor,
+        type: "icon",
+      },
+    ],
+    page: "https://dowar.xyz/blog/post/40",
+    sourceCode: "https://gitlab.com/gonzam4/ionic-plants.id",
   },
-});
+];
 </script>
 
 <style scope>

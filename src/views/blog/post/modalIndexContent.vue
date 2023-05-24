@@ -17,7 +17,7 @@
 
   <ion-content class="ion-padding">
     <div
-      v-for="element in indexContent"
+      v-for="element in props.indexContent"
       :key="element.id"
       style="margin-bottom: 10px"
     >
@@ -39,42 +39,26 @@
   </ion-content>
 </template>
 
-<script lang="ts">
-import { alertCircleOutline, closeOutline } from "ionicons/icons";
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { closeOutline } from "ionicons/icons";
 import { modalController } from "@ionic/vue";
 
-export default defineComponent({
-  name: "HomePage",
-
-  props: {
-    indexContent: {
-      type: Array<{ id: string; type: string; name: string }>,
-      default: [],
-    },
-  },
-
-  emits: ["elementId"],
-
-  setup() {
-    return {
-      pageTitle: "Home",
-      alertCircleOutline,
-      closeOutline,
-    };
-  },
-
-  methods: {
-    goToSection(params: { id: string }) {
-      const id = params.id;
-      modalController.dismiss({ elementId: id }, "confirm");
-    },
-
-    closeModal() {
-      modalController.dismiss();
-    },
+const props = defineProps({
+  indexContent: {
+    type: Array<{ id: string; type: string; name: string }>,
+    default: [],
   },
 });
+
+// functions
+function goToSection(params: { id: string }) {
+  const id = params.id;
+  modalController.dismiss({ elementId: id }, "confirm");
+}
+
+function closeModal() {
+  modalController.dismiss();
+}
 </script>
 
 <style scoped>

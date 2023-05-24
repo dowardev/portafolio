@@ -54,41 +54,32 @@
   </ion-row>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {} from "@ionic/vue";
 import { defineComponent } from "vue";
 
 import WorkanaLogo from "../../../assets/otros/Workana_ISOLOGO_W.png";
 import InitLogo from "../../../assets/otros/init.png";
 
-export default defineComponent({
-  name: "ParticipationsPage",
-  components: {},
-
-  setup() {
-    return {
-      content: [
-        {
-          name: "Workana",
-          image: WorkanaLogo,
-          url: "https://workana.com/",
-          description: "Plataforma de trabajo para freelancecers.",
-          extra: [
-            {
-              urlProfile:
-                "https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c",
-            },
-          ],
-        },
-        {
-          name: "Init",
-          image: InitLogo,
-          url: "https://www.youtube.com/@init101",
-          description:
-            "Canal de YouTube cuyo fin es el difundir conocimiento de cualquier índole.",
-        },
-      ],
-    };
+const content = [
+  {
+    name: "Workana",
+    image: WorkanaLogo,
+    url: "https://workana.com/",
+    description: "Plataforma de trabajo para freelancecers.",
+    extra: [
+      {
+        urlProfile:
+          "https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c",
+      },
+    ],
   },
-});
+  {
+    name: "Init",
+    image: InitLogo,
+    url: "https://www.youtube.com/@init101",
+    description:
+      "Canal de YouTube cuyo fin es el difundir conocimiento de cualquier índole.",
+  },
+];
 </script>

@@ -16,7 +16,7 @@
 
     <!-- theme selector -->
     <ion-row v-for="(theme, index) in availableThemes" :key="index">
-      <ion-col size="4">
+      <ion-col size="12">
         <ion-item lines="none"
           ><ion-label>{{ theme }}</ion-label>
           <ion-button

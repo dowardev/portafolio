@@ -2,22 +2,13 @@
   <Markdown :source="source" :html="true" :linkify="true" :breaks="true" />
 </template>
 
-<script lang="ts">
-import {} from "@ionic/vue";
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import Markdown from "vue3-markdown-it";
 
-export default defineComponent({
-  name: "MarkdownItComponent",
-  components: {
-    Markdown,
-  },
-
-  props: {
-    source: {
-      type: String,
-      default: "",
-    },
+const props = defineProps({
+  source: {
+    type: String,
+    default: "",
   },
 });
 </script>

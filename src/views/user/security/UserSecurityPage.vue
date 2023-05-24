@@ -196,7 +196,7 @@
   </section>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonItem,
   IonLabel,
@@ -210,10 +210,10 @@ import {
   IonCol,
   IonIcon,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
-import { updateUserPassword } from "../../../services/session";
+import { updateUserPassword as updateUserPasswordService } from "../../../services/session";
 import { openToast } from "../../../services/system";
 import {
   eyeOutline,
@@ -223,112 +223,80 @@ import {
 } from "ionicons/icons";
 import { useSystem } from "../../../composables/useSystem";
 
-export default defineComponent({
-  name: "UserProfileComponent",
-  components: {
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonButton,
-    IonSpinner,
-    IonModal,
-    IonList,
-    IonListHeader,
-    IonRow,
-    IonCol,
-    IonIcon,
-  },
-
-  setup() {
-    return {
-      v$: useVuelidate(),
-      eyeOutline,
-      eyeOffOutline,
-      informationCircleOutline,
-      keyOutline,
-      openToastError: useSystem().openToastError,
-    };
-  },
-
-  data() {
-    return {
-      form: {
-        oldPassword: "",
-        newPassword: "",
-        newPasswordRepeat: "",
+const form = ref({
+  oldPassword: "",
+  newPassword: "",
+  newPasswordRepeat: "",
+});
+const spinners = ref({
+  saveUserPassword: false,
+});
+const inputTypePassword1 = ref("password" as "text" | "password");
+const inputTypePassword2 = ref("password" as "text" | "password");
+const inputTypePassword3 = ref("password" as "text" | "password");
+const information = ref([
+  {
+    cardPassword: [
+      {
+        content:
+          "El tamaño ideal para una contraseña es de 9 caracteres o más.",
       },
-      spinners: {
-        saveUserPassword: false,
+      {
+        content: "Debe contener mayúsculas y minúsculas.",
       },
-      inputTypePassword1: "password" as "text" | "password",
-      inputTypePassword2: "password" as "text" | "password",
-      inputTypePassword3: "password" as "text" | "password",
-      information: [
-        {
-          cardPassword: [
-            {
-              content:
-                "El tamaño ideal para una contraseña es de 9 caracteres o más.",
-            },
-            {
-              content: "Debe contener mayúsculas y minúsculas.",
-            },
-            {
-              content: "Debe contener al menos un número.",
-            },
-          ],
-        },
-      ],
-    };
-  },
-
-  validations() {
-    const messageRequired = "Campo requerido";
-    return {
-      form: {
-        oldPassword: {
-          required: helpers.withMessage(messageRequired, required),
-        },
-        newPassword: {
-          required: helpers.withMessage(messageRequired, required),
-          minLength: helpers.withMessage(
-            "La contraseña debe tener al menos una mayúscula, un numero y tener un tamaño de 8",
-            helpers.regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
-          ),
-        },
-        newPasswordRepeat: {
-          same: helpers.withMessage(
-            "Las contraseñas no coinciden",
-            sameAs(this.form.newPassword)
-          ),
-        },
+      {
+        content: "Debe contener al menos un número.",
       },
-    };
+    ],
   },
+]);
 
-  methods: {
-    async saveUserPassword() {
-      this.spinners.saveUserPassword = true;
-      try {
-        await updateUserPassword(this.form);
-        this.spinners.saveUserPassword = false;
-        openToast({
-          message: "Contraseña actualizada",
-        });
-      } catch (e: any) {
-        this.spinners.saveUserPassword = false;
-        if (e.message == "Wrong password") {
-          openToast({
-            message: "Contraseña incorrecta",
-          });
-          return;
-        }
-        console.error(e);
-        this.openToastError(e);
-      }
+const messageError = {
+  required: "Campo requerido",
+};
+const rules = {
+  form: {
+    oldPassword: {
+      required: helpers.withMessage(messageError.required, required),
+    },
+    newPassword: {
+      required: helpers.withMessage(messageError.required, required),
+      minLength: helpers.withMessage(
+        "La contraseña debe tener al menos una mayúscula, un numero y tener un tamaño de 8",
+        helpers.regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
+      ),
+    },
+    newPasswordRepeat: {
+      same: helpers.withMessage(
+        "Las contraseñas no coinciden",
+        sameAs(form.value.newPassword)
+      ),
     },
   },
-});
+};
+const v$ = useVuelidate(rules, { form });
+
+// functions
+async function saveUserPassword() {
+  spinners.value.saveUserPassword = true;
+  try {
+    await updateUserPasswordService(form.value);
+    spinners.value.saveUserPassword = false;
+    openToast({
+      message: "Contraseña actualizada",
+    });
+  } catch (e: any) {
+    spinners.value.saveUserPassword = false;
+    if (e.message == "Wrong password") {
+      openToast({
+        message: "Contraseña incorrecta",
+      });
+      return;
+    }
+    console.error(e);
+    useSystem().openToastError(e);
+  }
+}
 </script>
 
 <style scoped>

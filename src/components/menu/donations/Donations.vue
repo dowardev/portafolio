@@ -57,7 +57,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -67,51 +67,12 @@ import {
   IonLabel,
   modalController,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
-import {
-  closeOutline,
-  browsersOutline,
-  logoTux,
-  logoAndroid,
-  logoChrome,
-  logoRss,
-  bookOutline,
-  micOutline,
-  videocamOutline,
-  terminalOutline,
-} from "ionicons/icons";
+import { closeOutline } from "ionicons/icons";
 
-export default defineComponent({
-  name: "DonationsComponent",
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonLabel,
-  },
+const pageTitle = "Contribuir";
 
-  setup() {
-    return {
-      pageTitle: "Contribuir",
-      closeOutline,
-      browsersOutline,
-      logoTux,
-      logoAndroid,
-      logoChrome,
-      logoRss,
-      bookOutline,
-      micOutline,
-      videocamOutline,
-      terminalOutline,
-    };
-  },
-
-  methods: {
-    closeModal() {
-      modalController.dismiss();
-    },
-  },
-});
+// functions
+function closeModal() {
+  modalController.dismiss();
+}
 </script>

@@ -74,7 +74,7 @@
             <ion-card-content>
               <section style="overflow-y: scroll; height: 42vh">
                 <ion-accordion-group>
-                  <div v-for="user in useUsers.users.value" :key="user.id">
+                  <div v-for="user in useUsers().users.value" :key="user.id">
                     <ion-item lines="none" class="transparent">
                       <ion-icon slot="start" :icon="personOutline"></ion-icon>
                       <ion-label>{{ user.email }}</ion-label>
@@ -148,7 +148,9 @@
                           <ion-item
                             button
                             lines="none"
-                            @click="sendMailResetPassword(user.email!)"
+                            @click="
+                              sendMailResetPassword({ email: user.email! })
+                            "
                           >
                             <ion-label>Reiniciar contraseña</ion-label>
                             <ion-icon
@@ -160,7 +162,9 @@
                           <ion-item
                             button
                             lines="none"
-                            @click="resendEmailConfirmation(user.email!)"
+                            @click="
+                              resendEmailConfirmation({ email: user.email! })
+                            "
                           >
                             <ion-label>Verificar usuario</ion-label>
                             <ion-icon
@@ -223,7 +227,7 @@
                   <ion-select
                     v-if="spinners.showUsers == false"
                     slot="end"
-                    v-model="paginatorInfo.pagination"
+                    v-model="pagInfo.pagination"
                     interface="popover"
                     :disabled="status == 'loading'"
                     @ion-change="setUsersDisplay()"
@@ -247,7 +251,7 @@
                   <ion-select
                     v-if="spinners.pageUsers == false"
                     slot="end"
-                    v-model="paginatorInfo.currentPage"
+                    v-model="pagInfo.currentPage"
                     interface="popover"
                     :disabled="status == 'loading'"
                     @ion-change="setUsersPage()"
@@ -276,7 +280,7 @@
   </ion-row>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonAccordion,
   IonAccordionGroup,
@@ -298,20 +302,13 @@ import {
   IonCardContent,
   IonSpinner,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
-import {
-  getUsers,
-  disableUser,
-  deleteUserAccount,
-  searchUsers,
-} from "../../../services/admin";
+import { computed, onMounted, ref } from "vue";
+import { disableUser, deleteUserAccount } from "../../../services/admin";
 import {
   refreshOutline,
   ellipsisVerticalOutline,
   addOutline,
   filterOutline,
-  chevronBackOutline,
-  chevronForwardOutline,
   personOutline,
   banOutline,
   trashOutline,
@@ -319,327 +316,277 @@ import {
   checkmarkOutline,
   thumbsUpOutline,
 } from "ionicons/icons";
-import { User } from "../../../services/interfaces";
 import { openToast, presentAlertConfirmation } from "../../../services/system";
-import { sendMailResetPassword } from "../../../services/session";
-import { resendEmailConfirmation } from "../../../services/user";
+import { sendMailResetPassword as sendMailResetPasswordService } from "../../../services/session";
+import { resendEmailConfirmation as resendEmailConfirmationService } from "../../../services/user";
 import { USERS_ADMINISTRATION_DETAILS } from "../../../services/graphql";
 import { useUsers } from "../../../composables/useUsers";
 import { useSystem } from "../../../composables/useSystem";
 
-export default defineComponent({
-  name: "UserAdminPanel",
+const openToastError = useSystem().openToastError;
 
-  components: {
-    IonAccordion,
-    IonAccordionGroup,
-    IonButton,
-    IonItem,
-    IonLabel,
-    IonSelect,
-    IonSelectOption,
-    IonSearchbar,
-    IonRow,
-    IonCol,
-    IonList,
-    IonListHeader,
-    IonIcon,
-    IonCard,
-    IonPopover,
-    IonContent,
-    IonCheckbox,
-    IonCardContent,
-    IonSpinner,
-  },
-
-  setup() {
-    return {
-      pageTitle: "Administracion de usuarios",
-      refreshOutline,
-      ellipsisVerticalOutline,
-      addOutline,
-      filterOutline,
-      chevronBackOutline,
-      chevronForwardOutline,
-      personOutline,
-      banOutline,
-      trashOutline,
-      keyOutline,
-      checkmarkOutline,
-      thumbsUpOutline,
-      useUsers: useUsers(),
-      openToastError: useSystem().openToastError,
-    };
-  },
-
-  data() {
-    return {
-      users: Array<User>(),
-      paginatorInfo: {
-        currentPage: "1",
-        hasMorePages: Boolean(),
-        totalPaginacionElements: Number(),
-        pagination: "10",
-      },
-      searchTerm: "",
-      searchMode: false,
-      filterOptions: [
-        {
-          label: "Sin filtro",
-          value: "unfiltered",
-          isChecked: true,
-        },
-        {
-          label: "Mostrar usuarios verificados",
-          value: "verified",
-          isChecked: false,
-        },
-        {
-          label: "Mostrar usaurio sin virificar",
-          value: "no verified",
-          isChecked: false,
-        },
-        {
-          label: "Mostrar usuario habilitados",
-          value: "enabled",
-          isChecked: false,
-        },
-        {
-          label: "Mostrar usuarios deshabilitados",
-          value: "disabled",
-          isChecked: false,
-        },
-        {
-          label: "Mostrar usuarios administradores",
-          value: "admin",
-          isChecked: false,
-        },
-        {
-          label: "Mostrar usuarios no administradores",
-          value: "no admin",
-          isChecked: false,
-        },
-      ],
-      spinners: {
-        refreshContent: false,
-        filter: false,
-        showUsers: false,
-        pageUsers: false,
-        optionsUser: "",
-      },
-      status: "loaded" as "loading" | "loaded",
-    };
-  },
-
-  computed: {
-    calculatePages() {
-      const elements = [] as any;
-      let total = Math.round(
-        this.paginatorInfo.totalPaginacionElements /
-          parseInt(this.paginatorInfo.pagination)
-      );
-      if (total < 1) total = 1;
-
-      for (let index = 2; index <= total; index++) {
-        elements.push(index.toString());
-      }
-      return elements;
-    },
-  },
-
-  mounted() {
-    this.loadContent();
-  },
-
-  methods: {
-    async loadContent() {
-      this.status = "loading";
-      await this.getUsers({ refetch: true });
-      this.status = "loaded";
-    },
-
-    async getUsers(params: { refetch: boolean }) {
-      this.searchMode = true;
-      const search = this.searchTerm.replace(/ /g, "");
-
-      try {
-        const { users, paginatorInfo } = await this.useUsers.loadUsers({
-          graphql: {
-            name: USERS_ADMINISTRATION_DETAILS,
-            fragment: "UsersDetails",
-            refetch: params.refetch,
-          },
-          paginatorInfo: {
-            pagination: parseInt(this.paginatorInfo.pagination),
-            page: parseInt(this.paginatorInfo.currentPage),
-          },
-          search,
-          filterOptions: JSON.stringify(this.getFilterOptions()),
-        });
-
-        this.useUsers.updateUsers({ users });
-        this.paginatorInfo.totalPaginacionElements = paginatorInfo.total;
-      } catch (e: any) {
-        console.error(e);
-      }
-    },
-
-    async refreshContent() {
-      this.spinners.refreshContent = true;
-      this.status = "loading";
-      await this.getUsers({ refetch: true });
-      this.spinners.refreshContent = false;
-      this.status = "loaded";
-    },
-
-    onlyOneUserFilter(index: number) {
-      this.filterOptions.map((option) => {
-        option.isChecked = false;
-      });
-
-      this.filterOptions[index].isChecked = true;
-    },
-
-    async disabledUser(params: { id: string; disableUser: boolean }) {
-      this.spinners.optionsUser = params.id;
-      this.status = "loading";
-
-      let alertResponse = true;
-      if (params.disableUser == true)
-        alertResponse = await presentAlertConfirmation({
-          message:
-            "Mientras esté deshabilitada, el usuario no podrá acceder a su cuenta.",
-        });
-
-      if (alertResponse == false) return;
-
-      try {
-        await disableUser({
-          id: params.id,
-          disableUser: params.disableUser,
-        });
-
-        if (params.disableUser) openToast({ message: "Usuario deshabilitado" });
-        if (params.disableUser == false)
-          openToast({ message: "Usuario habilitado" });
-        this.refreshContent();
-      } catch (e: any) {
-        if (e.message == "Can't disable admin") {
-          openToast({
-            message: "No se puede deshabilitar al administrador",
-            color: "warning",
-          });
-          return;
-        }
-        console.error(e);
-        this.openToastError({ error: e });
-      }
-      this.spinners.optionsUser = "";
-      this.status = "loaded";
-    },
-
-    async sendMailResetPassword(email: string) {
-      // this.spinners.optionsUser = true;
-
-      const alertResponse = await presentAlertConfirmation({
-        message:
-          "Se enviarán las instrucciones para restaurar la contraseña al correo electrónico del usuario.",
-      });
-
-      if (alertResponse == false) return;
-
-      try {
-        await sendMailResetPassword({
-          email,
-        });
-
-        openToast({ message: "Instrucciones enviadas" });
-      } catch (e: any) {
-        console.error(e);
-        this.openToastError(e);
-      }
-      // this.spinners.optionsUser = false;
-    },
-
-    async resendEmailConfirmation(email: string) {
-      // this.spinners.optionsUser = true;
-
-      const alertResponse = await presentAlertConfirmation({
-        message:
-          "Se enviarán las instrucciones para la verificación de la cuenta al correo electrónico del usuario.",
-      });
-
-      if (alertResponse == false) return;
-
-      try {
-        await resendEmailConfirmation({ email });
-
-        openToast({ message: "Instrucciones enviadas" });
-      } catch (e: any) {
-        if (e.message == "User already verified") {
-          openToast({ message: "Ya se encuentra activado" });
-          return;
-        }
-        console.error(e);
-        this.openToastError({ error: e });
-      }
-      // this.spinners.optionsUser = false;
-    },
-
-    async deleteUser(email: string) {
-      // this.spinners.optionsUser = true;
-
-      const alertResponse = await presentAlertConfirmation({
-        message: "Esta acción no es reversible.",
-      });
-
-      if (alertResponse == false) return;
-
-      try {
-        await deleteUserAccount({ email });
-
-        openToast({ message: "Usuario eliminado" });
-        this.refreshContent();
-      } catch (e: any) {
-        console.error(e);
-        this.openToastError({ error: e });
-      }
-      // this.spinners.optionsUser = false;
-    },
-
-    getFilterOptions(): Array<string> {
-      const options = Array<string>();
-      this.filterOptions.forEach((element) => {
-        if (element.isChecked) options.push(element.value);
-      });
-      return options;
-    },
-
-    async filterContent() {
-      this.spinners.filter = true;
-      this.status = "loading";
-      await this.getUsers({ refetch: false });
-      this.spinners.filter = false;
-      this.status = "loaded";
-    },
-
-    async setUsersDisplay() {
-      this.spinners.showUsers = true;
-      this.status = "loading";
-      await this.getUsers({ refetch: false });
-      this.spinners.showUsers = false;
-      this.status = "loaded";
-    },
-
-    async setUsersPage() {
-      this.spinners.pageUsers = true;
-      this.status = "loading";
-      await this.getUsers({ refetch: false });
-      this.spinners.pageUsers = false;
-      this.status = "loaded";
-    },
-  },
+const pagInfo = ref({
+  currentPage: "1",
+  hasMorePages: Boolean(),
+  totalPaginacionElements: Number(),
+  pagination: "10",
 });
+const searchTerm = "";
+const searchMode = ref(false);
+const filterOptions = [
+  {
+    label: "Sin filtro",
+    value: "unfiltered",
+    isChecked: true,
+  },
+  {
+    label: "Mostrar usuarios verificados",
+    value: "verified",
+    isChecked: false,
+  },
+  {
+    label: "Mostrar usaurio sin virificar",
+    value: "no verified",
+    isChecked: false,
+  },
+  {
+    label: "Mostrar usuario habilitados",
+    value: "enabled",
+    isChecked: false,
+  },
+  {
+    label: "Mostrar usuarios deshabilitados",
+    value: "disabled",
+    isChecked: false,
+  },
+  {
+    label: "Mostrar usuarios administradores",
+    value: "admin",
+    isChecked: false,
+  },
+  {
+    label: "Mostrar usuarios no administradores",
+    value: "no admin",
+    isChecked: false,
+  },
+];
+const spinners = {
+  refreshContent: false,
+  filter: false,
+  showUsers: false,
+  pageUsers: false,
+  optionsUser: "",
+};
+const status = ref("loaded" as "loading" | "loaded");
+
+// computed
+const calculatePages = computed(() => {
+  const elements = [] as any;
+  let total = Math.round(
+    pagInfo.value.totalPaginacionElements / parseInt(pagInfo.value.pagination)
+  );
+  if (total < 1) total = 1;
+
+  for (let index = 2; index <= total; index++) {
+    elements.push(index.toString());
+  }
+  return elements;
+});
+
+// mounted
+onMounted(() => {
+  loadContent();
+});
+
+// functions
+async function loadContent() {
+  status.value = "loading";
+  await getUsers({ refetch: true });
+  status.value = "loaded";
+}
+
+async function getUsers(params: { refetch: boolean }) {
+  searchMode.value = true;
+  const search = searchTerm.replace(/ /g, "");
+
+  try {
+    const { users, paginatorInfo } = await useUsers().loadUsers({
+      graphql: {
+        name: USERS_ADMINISTRATION_DETAILS,
+        fragment: "UsersDetails",
+        refetch: params.refetch,
+      },
+      paginatorInfo: {
+        pagination: parseInt(pagInfo.value.pagination),
+        page: parseInt(pagInfo.value.currentPage),
+      },
+      search,
+      filterOptions: JSON.stringify(getFilterOptions()),
+    });
+
+    useUsers().updateUsers({ users });
+    pagInfo.value.totalPaginacionElements = paginatorInfo.total;
+  } catch (e: any) {
+    console.error(e);
+  }
+}
+
+async function refreshContent() {
+  spinners.refreshContent = true;
+  status.value = "loading";
+  await getUsers({ refetch: true });
+  spinners.refreshContent = false;
+  status.value = "loaded";
+}
+
+function onlyOneUserFilter(index: number) {
+  filterOptions.map((option) => {
+    option.isChecked = false;
+  });
+
+  filterOptions[index].isChecked = true;
+}
+
+async function disabledUser(params: { id: string; disableUser: boolean }) {
+  spinners.optionsUser = params.id;
+  status.value = "loading";
+
+  let alertResponse = true;
+  if (params.disableUser == true)
+    alertResponse = await presentAlertConfirmation({
+      message:
+        "Mientras esté deshabilitada, el usuario no podrá acceder a su cuenta.",
+    });
+
+  if (alertResponse == false) return;
+
+  try {
+    await disableUser({
+      id: params.id,
+      disableUser: params.disableUser,
+    });
+
+    if (params.disableUser) openToast({ message: "Usuario deshabilitado" });
+    if (params.disableUser == false)
+      openToast({ message: "Usuario habilitado" });
+    refreshContent();
+  } catch (e: any) {
+    if (e.message == "Can't disable admin") {
+      openToast({
+        message: "No se puede deshabilitar al administrador",
+        color: "warning",
+      });
+      return;
+    }
+    console.error(e);
+    openToastError({ error: e });
+  }
+  spinners.optionsUser = "";
+  status.value = "loaded";
+}
+
+async function sendMailResetPassword(params: { email: string }) {
+  const { email } = params;
+  // spinners.optionsUser = true;
+
+  const alertResponse = await presentAlertConfirmation({
+    message:
+      "Se enviarán las instrucciones para restaurar la contraseña al correo electrónico del usuario.",
+  });
+
+  if (alertResponse == false) return;
+
+  try {
+    await sendMailResetPasswordService({
+      email,
+    });
+
+    openToast({ message: "Instrucciones enviadas" });
+  } catch (e: any) {
+    console.error(e);
+    openToastError(e);
+  }
+  // spinners.optionsUser = false;
+}
+
+async function resendEmailConfirmation(params: { email: string }) {
+  const { email } = params;
+  // spinners.optionsUser = true;
+
+  const alertResponse = await presentAlertConfirmation({
+    message:
+      "Se enviarán las instrucciones para la verificación de la cuenta al correo electrónico del usuario.",
+  });
+
+  if (alertResponse == false) return;
+
+  try {
+    await resendEmailConfirmationService({ email });
+
+    openToast({ message: "Instrucciones enviadas" });
+  } catch (e: any) {
+    if (e.message == "User already verified") {
+      openToast({ message: "Ya se encuentra activado" });
+      return;
+    }
+    console.error(e);
+    openToastError({ error: e });
+  }
+  // spinners.optionsUser = false;
+}
+
+async function deleteUser(email: string) {
+  // spinners.optionsUser = true;
+
+  const alertResponse = await presentAlertConfirmation({
+    message: "Esta acción no es reversible.",
+  });
+
+  if (alertResponse == false) return;
+
+  try {
+    await deleteUserAccount({ email });
+
+    openToast({ message: "Usuario eliminado" });
+    refreshContent();
+  } catch (e: any) {
+    console.error(e);
+    openToastError({ error: e });
+  }
+  // spinners.optionsUser = false;
+}
+
+function getFilterOptions(): Array<string> {
+  const options = Array<string>();
+  filterOptions.forEach((element) => {
+    if (element.isChecked) options.push(element.value);
+  });
+  return options;
+}
+
+async function filterContent() {
+  spinners.filter = true;
+  status.value = "loading";
+  await getUsers({ refetch: false });
+  spinners.filter = false;
+  status.value = "loaded";
+}
+
+async function setUsersDisplay() {
+  spinners.showUsers = true;
+  status.value = "loading";
+  await getUsers({ refetch: false });
+  spinners.showUsers = false;
+  status.value = "loaded";
+}
+
+async function setUsersPage() {
+  spinners.pageUsers = true;
+  status.value = "loading";
+  await getUsers({ refetch: false });
+  spinners.pageUsers = false;
+  status.value = "loaded";
+}
 </script>
 
 <style scoped>

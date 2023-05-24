@@ -4,6 +4,7 @@ import {
   GetUsers,
   GetUsersResponse,
   SearchUsers,
+  SearchUsersResponse,
 } from "./interfaces";
 
 import apolloClient from "../Apollo";
@@ -44,7 +45,9 @@ export async function getUsers(params: GetUsers): Promise<GetUsersResponse> {
   });
 }
 
-export async function searchUsers(params: SearchUsers): Promise<any> {
+export async function searchUsers(
+  params: SearchUsers
+): Promise<SearchUsersResponse> {
   const { onResult, onError, result, refetch } = useQuery(
     gql`
         query UsersSearch($first: Int!,$page:Int!,$search:String,$filterOptions:String!) {

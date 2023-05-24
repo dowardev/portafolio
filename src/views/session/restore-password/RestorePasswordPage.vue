@@ -126,7 +126,7 @@
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -148,144 +148,102 @@ import {
   IonSpinner,
   isPlatform,
 } from "@ionic/vue";
-import {
-  eyeOutline,
-  eyeOffOutline,
-  mailOpenOutline,
-  keyOutline,
-  shieldOutline,
-} from "ionicons/icons";
-import { defineComponent } from "vue";
-import { resetPassword } from "../../../services/session";
+import { eyeOutline, eyeOffOutline, keyOutline } from "ionicons/icons";
+import { defineComponent, ref } from "vue";
+import { resetPassword as resetPasswordService } from "../../../services/session";
 import { openToast } from "../../../services/system";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
 import { useSystem } from "../../../composables/useSystem";
+import { useRoute, useRouter } from "vue-router";
 
-export default defineComponent({
-  name: "HomePage",
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonInput,
-    IonButtons,
-    IonMenuButton,
-    IonRow,
-    IonCol,
-    IonCard,
-    IonCardContent,
-    IonLabel,
-    IonButton,
-    IonItem,
-    IonIcon,
-    IonSpinner,
-  },
+const route = useRoute();
+const router = useRouter();
 
-  setup() {
-    const modeDesingElements = isPlatform("ios")
-      ? "ios"
-      : ("md" as "ios" | "md");
-    return {
-      eyeOutline,
-      eyeOffOutline,
-      v$: useVuelidate(),
-      mailOpenOutline,
-      keyOutline,
-      shieldOutline,
-      modeDesingElements,
-      pageTitle: "Restablecer contraseña",
-      openToastError: useSystem().openToastError,
-    };
-  },
+const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
 
-  data() {
-    return {
-      form: {
-        email: this.$route.params.email as string,
-        code: this.$route.params.code as string,
-        password1: "",
-        password2: "",
-      },
-      inputTypePassword1: "password" as "text" | "password",
-      inputTypePassword2: "password" as "text" | "password",
-      spinners: {
-        buttonResetPassword: false,
-      },
-    };
-  },
-
-  validations() {
-    const messageRequired = "Campo requerido";
-    return {
-      form: {
-        password1: {
-          required: helpers.withMessage(messageRequired, required),
-          minLength: helpers.withMessage(
-            "La contraseña debe tener al menos una mayúscula, un numero y tener un tamaño de 8",
-            helpers.regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
-          ),
-        },
-        password2: {
-          same: helpers.withMessage(
-            "Las contraseñas no coinciden",
-            sameAs(this.form.password1)
-          ),
-        },
-      },
-    };
-  },
-
-  methods: {
-    closeComponent() {
-      this.$router.push("/login");
-    },
-
-    async presentLoading(message: string) {
-      const loading = await loadingController.create({
-        cssClass: "loading",
-        message,
-      });
-      return loading;
-    },
-
-    async resetPassword() {
-      this.spinners.buttonResetPassword = true;
-
-      const code = this.form.code;
-      const email = this.form.email;
-      const password = this.form.password1;
-
-      try {
-        await resetPassword({
-          code,
-          email,
-          password,
-        });
-
-        openToast({
-          message: "Contraseña restaurada",
-        });
-
-        this.$router.push("/login");
-        this.spinners.buttonResetPassword = false;
-      } catch (e: any) {
-        this.spinners.buttonResetPassword = false;
-        if (e.message == "Code invalid") {
-          openToast({
-            message: "Codigo invalido",
-            color: "warning",
-          });
-        } else {
-          console.error(e);
-          this.openToastError(e);
-        }
-      }
-    },
-  },
+const form = ref({
+  email: route.params.email as string,
+  code: route.params.code as string,
+  password1: "",
+  password2: "",
 });
+const inputTypePassword1 = "password" as "text" | "password";
+const inputTypePassword2 = "password" as "text" | "password";
+const spinners = ref({
+  buttonResetPassword: false,
+});
+const pageTitle = "Restablecer contraseña";
+
+const messageError = {
+  email: "Correo electronico no valido",
+  required: "Campo requerido",
+  password: "Las contraseñas no coinciden",
+};
+const rules = {
+  form: {
+    password1: {
+      required: helpers.withMessage(messageError.required, required),
+      minLength: helpers.withMessage(
+        "La contraseña debe tener al menos una mayúscula, un numero y tener un tamaño de 8",
+        helpers.regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
+      ),
+    },
+    password2: {
+      same: helpers.withMessage(
+        messageError.password,
+        sameAs(form.value.password1)
+      ),
+    },
+  },
+};
+const v$ = useVuelidate(rules, { form });
+// functions
+function closeComponent() {
+  router.push("/login");
+}
+
+async function presentLoading(message: string) {
+  const loading = await loadingController.create({
+    cssClass: "loading",
+    message,
+  });
+  return loading;
+}
+
+async function resetPassword() {
+  spinners.value.buttonResetPassword = true;
+
+  const code = form.value.code;
+  const email = form.value.email;
+  const password = form.value.password1;
+
+  try {
+    await resetPasswordService({
+      code,
+      email,
+      password,
+    });
+
+    openToast({
+      message: "Contraseña restaurada",
+    });
+
+    router.push("/login");
+    spinners.value.buttonResetPassword = false;
+  } catch (e: any) {
+    spinners.value.buttonResetPassword = false;
+    if (e.message == "Code invalid") {
+      openToast({
+        message: "Codigo invalido",
+        color: "warning",
+      });
+    } else {
+      console.error(e);
+      useSystem().openToastError(e);
+    }
+  }
+}
 </script>
 
 <style scoped>
