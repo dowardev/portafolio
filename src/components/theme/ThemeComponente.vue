@@ -33,7 +33,7 @@
   </ion-content>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -45,64 +45,40 @@ import {
   IonLabel,
   modalController,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { ref } from "vue";
 import {
   checkmarkOutline,
   chevronBackOutline,
   eyeOutline,
 } from "ionicons/icons";
 import { Theme } from "../../services/types";
-import { getTheme, saveTheme, setTheme } from "../../services/system";
+import { saveTheme, setTheme } from "../../services/system";
 
-export default defineComponent({
-  name: "ThemeComponent",
-  components: {
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonButtons,
-    IonButton,
-  },
+const availableThemes = ["light", "nord", "gruvbox"];
 
-  setup() {
-    return {
-      chevronBackOutline,
-      eyeOutline,
-      checkmarkOutline,
-      availableThemes: ["light", "nord", "gruvbox"],
-    };
-  },
+const pageTitle = "Selector de tema";
+const themeSelected = ref("");
 
-  data() {
-    return {
-      pageTitle: "Selector de tema",
-      themeSelected: "",
-    };
-  },
+// functions
+function closeModal() {
+  modalController.dismiss();
+}
 
-  methods: {
-    closeModal() {
-      modalController.dismiss();
-    },
+function previewTheme(params: { name: Theme }) {
+  const theme = params.name;
+  themeSelected.value = theme;
 
-    previewTheme(params: { name: Theme }) {
-      const theme = params.name;
-      const themeSelected = this.themeSelected;
+  document.body.classList.add(theme);
+  themeSelected.value = theme;
+  if (themeSelected.value != "")
+    document
+      .getElementsByTagName("body")[0]
+      .classList.remove(themeSelected.value);
+}
 
-      document.body.classList.add(theme);
-      this.themeSelected = theme;
-      if (themeSelected != "")
-        document
-          .getElementsByTagName("body")[0]
-          .classList.remove(themeSelected);
-    },
-
-    async applyTheme(params: { name: Theme }) {
-      const theme = params.name;
-      await setTheme({ theme });
-      saveTheme({ theme });
-    },
-  },
-});
+async function applyTheme(params: { name: Theme }) {
+  const theme = params.name;
+  await setTheme({ theme });
+  saveTheme({ theme });
+}
 </script>
