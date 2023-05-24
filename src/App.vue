@@ -1,7 +1,12 @@
 <template>
   <ion-app>
     <ion-split-pane when="lg" content-id="main" type="overlay">
-      <ion-menu content-id="main" :style="changeSizeMenu" menu-id="mainMenu">
+      <ion-menu
+        content-id="main"
+        :style="changeSizeMenu"
+        menu-id="mainMenu"
+        style="--side-max-width: 200px; border-right-width: 0px"
+      >
         <MenuComponent></MenuComponent>
       </ion-menu>
 
@@ -21,16 +26,18 @@ import {
   IonMenu,
   IonSplitPane,
   toastController,
+  isPlatform,
 } from "@ionic/vue";
-import { computed, onMounted } from "vue";
+import { computed, nextTick, onMounted } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
 import { getFirstCookie, setTheme, getTheme } from "./services/system";
-import { closeOutline, downloadOutline } from "ionicons/icons";
+import { closeOutline } from "ionicons/icons";
 import { useUser } from "./composables/useUser";
 import { getUserToken } from "./services/user";
 import { useSystem } from "./composables/useSystem";
 import { Storage } from "@ionic/storage";
 import { useRouter } from "vue-router";
+import { createFirstCookie as createFirstCookieService } from "./services/system";
 
 const store = new Storage();
 store.create();
@@ -68,12 +75,22 @@ onMounted(() => {
   });
   loadUserProps();
   loadMenuCollapsedOption();
+
+  if (isPlatform("desktop")) {
+    nextTick(() => {
+      const elementos = document.querySelectorAll(".split-pane-main .ion-page");
+
+      elementos.forEach(function (elemento) {
+        elemento.classList.add("component-container");
+      });
+    });
+  }
 });
 
 function createFirstCookie() {
   if (getFirstCookie()) {
     openToastOptions();
-    createFirstCookie();
+    createFirstCookieService();
   }
 }
 

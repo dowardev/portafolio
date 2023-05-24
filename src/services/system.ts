@@ -26,16 +26,12 @@ export async function getTheme(): Promise<Theme> {
   return await storage.get("theme");
 }
 
-export async function setTheme(params: { theme: Theme }) {
+export function setTheme(params: { theme: Theme; currentTheme: Theme }) {
   const theme = params.theme;
-  const currentTheme = await getTheme();
+  const currentTheme = params.currentTheme;
 
-  if (theme == null) {
-    document.getElementsByTagName("body")[0].classList.add("light");
-  } else {
-    document.getElementsByTagName("body")[0].classList.remove(currentTheme);
-    document.getElementsByTagName("body")[0].classList.add(theme);
-  }
+  document.getElementsByTagName("body")[0].classList.remove(currentTheme);
+  document.getElementsByTagName("body")[0].classList.add(theme);
 }
 
 export async function saveTheme(params: { theme: Theme }): Promise<void> {

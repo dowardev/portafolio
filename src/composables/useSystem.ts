@@ -5,6 +5,12 @@ import FeedbackPage from "../components/feedback/FeedbackPage.vue";
 import { ReportError } from "../services/interfaces";
 import { useSystemStore } from "../store/systemStore";
 import { Storage } from "@ionic/storage";
+import { Theme } from "@/services/types";
+import {
+  getTheme as getThemeService,
+  setTheme as setThemeService,
+  saveTheme as saveThemeService,
+} from "@/services/system";
 
 const store = new Storage();
 store.create();
@@ -62,10 +68,28 @@ export const useSystem = () => {
     return systemRefs.menuCollapse;
   }
 
+  function applyTheme(params: { theme: Theme }) {
+    const theme = params.theme;
+    const currentTheme = getTheme();
+    setThemeService({ theme, currentTheme });
+    systemStore.setThemeSelected({ theme });
+  }
+
+  async function updateThemeSelected(params: { theme: Theme }) {
+    const theme = params.theme;
+    await saveThemeService({ theme });
+  }
+
+  function getTheme() {
+    return systemStore.getThemeSelected();
+  }
+
   return {
     reportError,
     openToastError,
     changeMenuCollapse,
     detectMenuCollapse,
+    updateThemeSelected,
+    applyTheme,
   };
 };

@@ -1,1 +1,1 @@
-export type Theme = "light" | "nord"| "gruvbox";
+export type Theme = "light" | "nord" | "gruvbox";

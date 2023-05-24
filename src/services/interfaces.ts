@@ -1,4 +1,5 @@
 import { DocumentNode } from "graphql";
+import { Theme } from "./types";
 
 export interface Graphql {
   name?: DocumentNode;
@@ -254,4 +255,11 @@ export interface ContactMessage {
   subject: string;
   email: string;
   description: string;
+}
+
+// system
+export interface System {
+  theme: {
+    selected: Theme;
+  };
 }

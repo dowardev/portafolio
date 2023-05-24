@@ -53,8 +53,9 @@ import {
 } from "ionicons/icons";
 import { Theme } from "../../services/types";
 import { saveTheme, setTheme } from "../../services/system";
+import { useSystem } from "@/composables/useSystem";
 
-const availableThemes = ["light", "nord", "gruvbox"];
+const availableThemes: Theme[] = ["light", "nord", "gruvbox"];
 
 const pageTitle = "Selector de tema";
 const themeSelected = ref("");
@@ -76,9 +77,14 @@ function previewTheme(params: { name: Theme }) {
       .classList.remove(themeSelected.value);
 }
 
+// async function applyTheme(params: { name: Theme }) {
+//   const theme = params.name;
+//   await setTheme({ theme });
+//   saveTheme({ theme });
+// }
 async function applyTheme(params: { name: Theme }) {
   const theme = params.name;
-  await setTheme({ theme });
-  saveTheme({ theme });
+  useSystem().applyTheme({ theme });
+  useSystem().updateThemeSelected({ theme });
 }
 </script>
