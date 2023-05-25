@@ -1,14 +1,16 @@
 <template>
   <ion-row class="ion-padding center">
-    <ion-col size="12" size-lg="4" size-xl="2" class="center">
+    <ion-col size="12" class="center">
       <img
         src="@/assets/portafolio/foto_perfil.jpg"
         alt=""
         class="img-perfil"
       />
     </ion-col>
+  </ion-row>
 
-    <ion-col size="12" size-lg="6">
+  <ion-row>
+    <ion-col size="12">
       <div class="center">
         <div class="letters">
           <span class="letter">G</span>

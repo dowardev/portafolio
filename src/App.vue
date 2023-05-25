@@ -1,12 +1,26 @@
 <template>
   <ion-app>
-    <ion-split-pane when="lg" content-id="main" type="overlay">
-      <ion-menu
-        content-id="main"
-        :style="changeSizeMenu"
-        menu-id="mainMenu"
-        style="--side-max-width: 200px; border-right-width: 0px"
-      >
+    <MqResponsive target="lg+">
+      <ion-split-pane when="lg" content-id="main" type="overlay">
+        <ion-menu
+          content-id="main"
+          :style="changeSizeMenu"
+          menu-id="mainMenu"
+          style="--side-max-width: 200px; border-right-width: 0px"
+        >
+          <MenuComponent></MenuComponent>
+        </ion-menu>
+
+        <div id="main" class="ion-page">
+          <ion-content class="ion-padding">
+            <ion-router-outlet />
+          </ion-content>
+        </div>
+      </ion-split-pane>
+    </MqResponsive>
+
+    <MqResponsive target="md-">
+      <ion-menu content-id="main" menu-id="mainMenu">
         <MenuComponent></MenuComponent>
       </ion-menu>
 
@@ -15,7 +29,7 @@
           <ion-router-outlet />
         </ion-content>
       </div>
-    </ion-split-pane>
+    </MqResponsive>
   </ion-app>
 </template>
 
@@ -38,6 +52,7 @@ import { useSystem } from "./composables/useSystem";
 import { Storage } from "@ionic/storage";
 import { useRouter } from "vue-router";
 import { createFirstCookie as createFirstCookieService } from "./services/system";
+import { MqResponsive } from "vue3-mq";
 
 const store = new Storage();
 store.create();

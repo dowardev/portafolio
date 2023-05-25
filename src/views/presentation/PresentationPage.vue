@@ -13,25 +13,40 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-row class="center">
-        <ion-col size-lg="12">
+      <ion-row>
+        <ion-col
+          size="12"
+          :size-lg="useSystem().detectMenuCollapse().value ? '6' : '5'"
+        >
           <InformationComponent />
         </ion-col>
-      </ion-row>
 
-      <ion-item-divider sticky>
-        <ion-segment v-model="mainSegment">
-          <ion-segment-button value="skills">Habilidades</ion-segment-button>
-          <ion-segment-button value="history">Historia</ion-segment-button>
-          <ion-segment-button value="portfolio">Portfolio</ion-segment-button>
-        </ion-segment>
-      </ion-item-divider>
+        <ion-col
+          size="12"
+          :size-lg="useSystem().detectMenuCollapse().value ? '6' : '7'"
+        >
+          <div class="ion-padding">
+            <ion-segment v-model="mainSegment">
+              <ion-segment-button value="skills"
+                >Habilidades</ion-segment-button
+              >
+              <ion-segment-button value="history">Historia</ion-segment-button>
+              <ion-segment-button value="portfolio"
+                >Portfolio</ion-segment-button
+              >
+            </ion-segment>
+          </div>
 
-      <ion-row>
-        <ion-col>
-          <SkillsPage v-if="mainSegment == 'skills'" />
-          <HistoryPage v-if="mainSegment == 'history'" />
-          <PortfolioPage v-if="mainSegment == 'portfolio'" />
+          <ion-row>
+            <ion-col class="scroll-segment-content">
+              <SkillsPage v-if="mainSegment == 'skills'" />
+              <HistoryPage v-if="mainSegment == 'history'" />
+
+              <div v-if="mainSegment == 'portfolio'" class="ion-padding">
+                <PortfolioPage />
+              </div>
+            </ion-col>
+          </ion-row>
         </ion-col>
       </ion-row>
     </ion-content>
@@ -52,16 +67,17 @@ import {
   IonSegment,
   IonSegmentButton,
 } from "@ionic/vue";
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { App } from "@capacitor/app";
 import InformationComponent from "./information/InformationComponent.vue";
 import SkillsPage from "../skills/SkillsPage.vue";
 import HistoryPage from "../history/HistoryPage.vue";
 import PortfolioPage from "../portfolio/PortfolioPage.vue";
+import { useSystem } from "@/composables/useSystem";
 
 const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
 
-const mainSegment = "skills";
+const mainSegment = ref("skills");
 
 onMounted(() => {
   useBackButton(10, () => {
@@ -158,6 +174,11 @@ async function alertExitApp() {
     border-radius: 50%;
     width: 182px;
     height: 182px;
+  }
+
+  .scroll-segment-content {
+    overflow: scroll;
+    height: 90vh;
   }
 }
 .slogan {
