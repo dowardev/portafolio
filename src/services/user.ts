@@ -8,12 +8,15 @@ import {
   ResendEmailConfirmation,
   GetUser,
   User,
+  Graphql,
 } from "./interfaces";
 
 import apolloClient from "../Apollo";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@vue/apollo-composable";
 import { provideApolloClient } from "@vue/apollo-composable";
+import { executeGrapQuery, graphqlQueryBuilder } from "./system";
+import { errorBuilder } from "@/utils/errors";
 provideApolloClient(apolloClient);
 
 export function setUserToken({ token }: UserToken): void {
@@ -31,40 +34,31 @@ export function getUserToken(): string {
   return token;
 }
 
-export async function getUser(params: GetUser): Promise<User> {
-  const { onResult, onError, result, refetch } = useQuery(
-    gql`
-        query GetUser {
-          userAuth {
-           ...${params.graphql.fragment}
-          }
-        }
-        ${params.graphql.name}
-      `,
-    null,
-    {
-      fetchPolicy: "cache-first",
-    }
-  );
+export async function getUser(params: Graphql): Promise<User> {
+  const { name, fragment, refetch = false } = params;
 
-  return new Promise((resolve, reject) => {
-    if (params.graphql.refetch) refetch();
+  try {
+    const query = graphqlQueryBuilder({ name, fragment });
 
-    onResult((response) =>
-      resolve({
-        id: response.data.userAuth.user.id,
-        name: response.data.userAuth.user.name,
-        email: response.data.userAuth.user.email,
-        user: response.data.userAuth.user.user,
-        imageProfile: response.data.userAuth.user.image_profile,
-        isAdmin: response.data.userAuth.user.is_admin,
-      })
-    );
-
-    onError((error) => {
-      reject(error);
+    let response = await executeGrapQuery({
+      query,
+      options: { refetch },
     });
-  });
+    if (!response.data.userAuth) return {} as User;
+    response = {
+      id: response.data.userAuth.user.id,
+      name: response.data.userAuth.user.name,
+      email: response.data.userAuth.user.email,
+      user: response.data.userAuth.user.user,
+      imageProfile: response.data.userAuth.user.image_profile,
+      isAdmin: response.data.userAuth.user.is_admin,
+    };
+    return response;
+  } catch (error: any) {
+    if (error.message != "Unauthorized")
+      throw errorBuilder({ message: error.message, typeError: "authError" });
+    throw errorBuilder({ message: error.message });
+  }
 }
 
 export async function setUserUploaded(option: boolean | null) {

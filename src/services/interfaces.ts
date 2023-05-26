@@ -2,8 +2,8 @@ import { DocumentNode } from "graphql";
 import { Theme } from "./types";
 
 export interface Graphql {
-  name?: DocumentNode;
-  fragment?: string;
+  name: DocumentNode;
+  fragment: string;
   refetch?: boolean;
 }
 

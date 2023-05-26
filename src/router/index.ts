@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from '@ionic/vue-router';
-import { RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory } from "@ionic/vue-router";
+import { RouteRecordRaw } from "vue-router";
 // portfolio
 import PresentationPage from "../views/presentation/PresentationPage.vue";
 import HistoryPage from "../views/history/HistoryPage.vue";
@@ -11,7 +11,7 @@ import UpdatePost from "../views/blog/editor/UpdatePost.vue";
 import BlogPage from "../views/blog/posts/PostsPage.vue";
 import PostPage from "../views/blog/post/PostPage.vue";
 // auth
-import LoginPage from "../views/session/login/Login.vue";
+import LoginPage from "../views/session/login/LoginPage.vue";
 import SignUpPage from "../views/session/signup/SignUpPage.vue";
 import RestorePasswordPage from "../views/session/restore-password/RestorePasswordPage.vue";
 import PruebaPage from "../views/prueba/Prueba.vue";
@@ -25,13 +25,17 @@ import { useUser } from "../composables/useUser";
 import { ROUTER_USER_VALIDATION } from "../services/graphql";
 
 async function loadUser() {
-  await useUser().loadUser({
-    graphql: {
-      name: ROUTER_USER_VALIDATION,
-      fragment: "RouterUserValidation",
-      refetch: true,
-    },
-  });
+  try {
+    await useUser().loadUser({
+      graphql: {
+        name: ROUTER_USER_VALIDATION,
+        fragment: "RouterUserValidation",
+        refetch: true,
+      },
+    });
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 }
 
 async function adminGuard() {
@@ -49,10 +53,13 @@ async function userLoggedGuard() {
 }
 
 async function userSignOutGuard() {
-  await loadUser();
-  const user = useUser().user.value.user;
-  if (user) return "/";
-  return true;
+  try {
+    await loadUser();
+    const user = useUser().user.value.user;
+    if (user) return "/";
+  } catch (error) {
+    return true;
+  }
 }
 
 const routes: Array<RouteRecordRaw> = [
@@ -167,7 +174,7 @@ const routes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

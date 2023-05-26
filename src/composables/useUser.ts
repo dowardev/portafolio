@@ -8,27 +8,21 @@ import { logout as userLogout } from "../services/session";
 
 export const useUser = () => {
   const userStore = useUserStore();
-  const user = storeToRefs(userStore).user;
-  const imageProfile = storeToRefs(userStore).imageProfile;
-  const token = storeToRefs(userStore).token;
-  const isLogged = storeToRefs(userStore).isLogged;
+  const { user, imageProfile, token, isLogged } = storeToRefs(userStore);
+
   const openToastError = useSystem().openToastError;
 
   async function loadUser(params: { graphql: Graphql }) {
     try {
       let user = await getUser({
-        graphql: {
-          name: params.graphql.name,
-          fragment: params.graphql.fragment,
-          refetch: params.graphql.refetch,
-        },
+        name: params.graphql.name,
+        fragment: params.graphql.fragment,
+        refetch: params.graphql.refetch,
       });
 
       updateUserProps({ user });
     } catch (error: any) {
-      if (error.message == "Unauthorized") return;
-      openToastError(error);
-      throw error.message;
+      if (error.message != "Unauthorized") throw error;
     }
   }
 
@@ -39,11 +33,9 @@ export const useUser = () => {
   async function updateUserAdminProp(params: { refetch: boolean }) {
     try {
       let { isAdmin } = await getUser({
-        graphql: {
-          name: USER_PERMISSIONS,
-          fragment: "UserPermissions",
-          refetch: params.refetch,
-        },
+        name: USER_PERMISSIONS,
+        fragment: "UserPermissions",
+        refetch: params.refetch,
       });
       userStore.updateUserProps({ isAdmin });
     } catch (error: any) {

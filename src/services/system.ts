@@ -17,9 +17,12 @@ import {
 
 import apolloClient from "../Apollo";
 import gql from "graphql-tag";
-import { useMutation } from "@vue/apollo-composable";
+import { useMutation, useQuery } from "@vue/apollo-composable";
 import { provideApolloClient } from "@vue/apollo-composable";
 import { Theme } from "./types";
+import { ref, watch } from "vue";
+import { isDocumentNode } from "@apollo/client/utilities";
+import { DocumentNode } from "graphql";
 provideApolloClient(apolloClient);
 
 export async function getTheme(): Promise<Theme> {
@@ -145,4 +148,45 @@ export async function uploadImage(params: UploadImage): Promise<Image> {
     onDone((response) => resolve(response.data.uploadImage.image));
     onError((error) => reject(error));
   });
+}
+
+export function executeGrapQuery(params: {
+  query: any;
+  options: { refetch: boolean };
+}): Promise<any> {
+  const { query, options } = params;
+  const { refetch, onResult, onError } = useQuery(query, null, {
+    fetchPolicy: "cache-first",
+  });
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (options.refetch) await refetch();
+    } catch (error) {
+      reject(error);
+    }
+
+    onResult((response) => resolve(response));
+
+    onError((error) => {
+      reject(error);
+    });
+  });
+}
+
+export function graphqlQueryBuilder(params: {
+  name: DocumentNode;
+  fragment: string;
+}): Object {
+  const { name, fragment } = params;
+
+  const query = gql`
+        query GetUser {
+          userAuth {
+           ...${fragment}
+          }
+        }
+        ${name}
+      `;
+  return query;
 }

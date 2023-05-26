@@ -6,7 +6,7 @@
     </MqResponsive>
 
     <MqResponsive target="md-">
-      <DefaultMenuComponent  />
+      <DefaultMenuComponent />
     </MqResponsive>
   </ion-page>
 </template>

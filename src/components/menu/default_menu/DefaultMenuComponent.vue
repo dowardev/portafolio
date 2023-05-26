@@ -367,9 +367,11 @@ function openRoute(route: string) {
 }
 
 async function getUser() {
-  useUser().loadUser({
-    graphql: { name: USER_MENU, fragment: "UserMenu" },
-  });
+  try {
+    useUser().loadUser({
+      graphql: { name: USER_MENU, fragment: "UserMenu" },
+    });
+  } catch (error) {}
 }
 
 async function openModalFeedback() {
