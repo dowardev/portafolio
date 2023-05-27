@@ -331,7 +331,7 @@ const pagInfo = ref({
   totalPaginacionElements: Number(),
   pagination: "10",
 });
-const searchTerm = "";
+const searchTerm = ref("");
 const searchMode = ref(false);
 const filterOptions = [
   {

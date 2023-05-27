@@ -355,10 +355,9 @@ import {
   IonCol,
   useBackButton,
   alertController,
-  isPlatform,
   IonModal,
 } from "@ionic/vue";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import {
   mail,
   logoMastodon,
@@ -373,9 +372,9 @@ import matrixGrayImage from "../../../assets/otros/matrix-logo-gray.svg";
 import matrixBlackImage from "../../../assets/otros/matrix-logo-black.svg";
 
 const defaultColorFill = "#777777";
-const fillEmailContact = "#777777";
-const fillMastodon = "#777777";
-const fillLinkedIn = "#777777";
+const fillEmailContact = ref("#777777");
+const fillMastodon = ref("#777777");
+const fillLinkedIn = ref("#777777");
 const fillContactForm = defaultColorFill;
 const matrixImage = matrixGrayImage;
 

@@ -173,11 +173,12 @@ import {
   IonSegmentButton,
   isPlatform,
 } from "@ionic/vue";
+import { ref } from "vue";
 
 const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
 
 const pageTitle = "Politicas";
-const policieSegment = "privacy";
+const policieSegment = ref("privacy");
 </script>
 
 <style scoped>

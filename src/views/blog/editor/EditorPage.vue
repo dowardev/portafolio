@@ -299,7 +299,7 @@ const postContent = ref("");
 const coverName = ref("");
 const coverSource = ref("");
 const newCoverStatus = ref(false);
-const isEditorMaximized = false;
+const isEditorMaximized = ref(false);
 const previewMode = ref(false);
 
 const messageError = {
