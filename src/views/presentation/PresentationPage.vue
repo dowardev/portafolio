@@ -69,11 +69,13 @@ import {
 } from "@ionic/vue";
 import { defineComponent, onMounted, ref } from "vue";
 import { App } from "@capacitor/app";
+import { useSystem } from "@/composables/useSystem";
+
+// components
 import InformationComponent from "./information/InformationComponent.vue";
 import SkillsPage from "../skills/SkillsPage.vue";
 import HistoryPage from "../history/HistoryPage.vue";
 import PortfolioPage from "../portfolio/PortfolioPage.vue";
-import { useSystem } from "@/composables/useSystem";
 
 const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
 

@@ -83,6 +83,14 @@
                     >Sitio web</ion-button
                   >
                   <ion-button
+                    v-if="project.appPlayStore"
+                    :href="project.appPlayStore"
+                    target="_blank"
+                    fill="outline"
+                    >Aplicacion movil(Play Store)</ion-button
+                  >
+                  <ion-button
+                    v-if="project.sourceCode"
                     :href="project.sourceCode"
                     target="_blank"
                     fill="outline"
@@ -111,12 +119,12 @@
 
 <script setup lang="ts">
 import {} from "@ionic/vue";
-import { defineComponent } from "vue";
 
 import lifelineLogo from "../../../assets/otros/lifeline_v1.webp";
 import mariaDBLogo from "../../../assets/otros/mariadb-icon.svg";
 import graphqlLogo from "../../../assets/otros/graphql-clear.svg";
 import viteLogo from "../../../assets/otros/vite.svg";
+import metaApp from "../../../assets/otros/meta_app.png";
 
 import {
   logoIonic,
@@ -177,6 +185,35 @@ const proyectos = [
     ],
     page: "https://lifeline.dowar.xyz",
     sourceCode: "https://gitlab.com/gonzam4/lifeline",
+  },
+  {
+    name: "Nueva Visión F.A.",
+    status: "Finalizada",
+    type: [logoAndroid, logoFirefox, logoChrome],
+    color: "primary",
+    image: [
+      {
+        route: metaApp,
+        width: "134px",
+        height: "112px",
+      },
+    ],
+    description:
+      "App exclusiva para socios, permite acceder de forma rápida y sencilla a toda la información relacionada con sus aportes y procesos.",
+    technologies: [
+      {
+        route: "https://ionicframework.com/",
+        icon: logoIonic,
+        type: "icon",
+      },
+      {
+        route: "https://vuejs.org",
+        icon: logoVue,
+        type: "icon",
+      },
+    ],
+    page: "https://login-socios.asociacionmilitaresnuevavision.com/home",
+    appPlayStore: "https://play.google.com/store/apps/details?id=com.meta.com",
   },
 ];
 </script>

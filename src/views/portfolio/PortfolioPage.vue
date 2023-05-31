@@ -40,6 +40,8 @@
 <script setup lang="ts">
 import { IonSelect, IonSelectOption } from "@ionic/vue";
 import { ref } from "vue";
+
+// components
 import ProfessionalProjectsPage from "../../components/portfolio/professional-projects/ProfessionalProjectsPage.vue";
 import BloglProjectsPage from "../../components/portfolio/blog-projects/BlogProjectsPage.vue";
 
