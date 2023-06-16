@@ -9,33 +9,16 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true"> </ion-content>
+    <ion-content :fullscreen="true">
+      <MdEditor v-model="text" :language="'en-US'" :toolbar="[]" />
+    </ion-content>
   </ion-page>
 </template>
 
-<script lang="ts">
-import {
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-} from "@ionic/vue";
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+import { ref } from "vue";
+import { MdEditor } from "md-editor-v3";
+import "md-editor-v3/lib/style.css";
 
-export default defineComponent({
-  name: "HomePage",
-  components: {
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-  },
-
-  data() {
-    const rq = 0;
-    // console.log(rq);
-  },
-});
+const text = ref("# Hola Editor");
 </script>

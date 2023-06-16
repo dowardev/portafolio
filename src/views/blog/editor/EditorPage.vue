@@ -219,15 +219,22 @@
 
         <ion-col size="12" size-md="6">
           <!-- view -->
-          <MarkdownItComponent
+          <!-- <MarkdownItComponent -->
+          <!--   id="viewer" -->
+          <!--   :source="postContent" -->
+          <!--   style=" -->
+          <!--     height: calc(87vh - 50px); -->
+          <!--     overflow: scroll; -->
+          <!--     width: 100%; -->
+          <!--     margin-top: 18px; -->
+          <!--   " -->
+          <!-- /> -->
+
+          <MdEditor
             id="viewer"
-            :source="postContent"
-            style="
-              height: calc(87vh - 50px);
-              overflow: scroll;
-              width: 100%;
-              margin-top: 18px;
-            "
+            v-model="postContent"
+            :language="'en-US'"
+            :toolbar="[]"
           />
         </ion-col>
       </ion-row>
@@ -270,6 +277,8 @@ import MarkdownItComponent from "../../../components/markdownit/MarkdownItCompon
 import PreviewModal from "./PreviewModal.vue";
 import { MqResponsive } from "vue3-mq";
 import { useRouter } from "vue-router";
+import { MdEditor } from "md-editor-v3";
+import "md-editor-v3/lib/style.css";
 
 const router = useRouter();
 

@@ -186,8 +186,8 @@
               <!-- content -->
               <ion-row>
                 <ion-col>
-                  <MarkdownItComponent
-                    :source="usePost.getPost({ id: postId })!.content"
+                  <MdPreview
+                    :model-value="usePost.getPost({ id: postId })!.content"
                   />
                 </ion-col>
               </ion-row>
@@ -242,10 +242,11 @@ import { usePost } from "../../../composables/usePost";
 import { useUser } from "../../../composables/useUser";
 import { format, formatISO } from "date-fns";
 import { useSystem } from "../../../composables/useSystem";
-import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
 import { es } from "date-fns/locale";
 import indexContentComponent from "./indexContentComponent.vue";
 import modalIndexContent from "./modalIndexContent.vue";
+import { MdPreview } from "md-editor-v3";
+import "md-editor-v3/lib/style.css";
 
 export default defineComponent({
   name: "PostPage",
@@ -259,8 +260,8 @@ export default defineComponent({
     IonIcon,
     IonRow,
     IonCol,
-    MarkdownItComponent,
     indexContentComponent,
+    MdPreview,
   },
 
   setup() {

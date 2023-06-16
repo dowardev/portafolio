@@ -47,7 +47,10 @@ import MenuComponent from "./components/menu/MenuComponent.vue";
 import { getFirstCookie, setTheme, getTheme } from "./services/system";
 import { closeOutline } from "ionicons/icons";
 import { useUser } from "./composables/useUser";
+
+// FIX: create function composable
 import { getUserToken } from "./services/user";
+
 import { useSystem } from "./composables/useSystem";
 import { Storage } from "@ionic/storage";
 import { useRouter } from "vue-router";

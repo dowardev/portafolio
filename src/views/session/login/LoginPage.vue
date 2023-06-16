@@ -272,6 +272,7 @@ async function login() {
     });
 
     const token = "Bearer " + response.auth.access_token;
+    //FIX: create function in composable
     setUserToken({ token });
 
     spinners.value.buttonLogin = false;
