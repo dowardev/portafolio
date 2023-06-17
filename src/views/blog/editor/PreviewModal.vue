@@ -17,14 +17,9 @@
   </ion-header>
 
   <ion-content class="ion-padding">
-    {{ position }}
     <ion-row>
       <ion-col>
-        <MarkdownItComponent
-          id="preview2"
-          style="height: calc(90vh - 50px); overflow: scroll"
-          :source="content"
-        />
+        <MdPreview :model-value="props.content" />
       </ion-col>
     </ion-row>
   </ion-content>
@@ -40,21 +35,12 @@ import {
   IonButton,
   modalController,
 } from "@ionic/vue";
-import { onMounted } from "vue";
 import { closeOutline } from "ionicons/icons";
-import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
+import { MdPreview } from "md-editor-v3";
+import "md-editor-v3/lib/style.css";
 
 const props = defineProps({
   content: { default: "", type: String },
-  position: { default: "", type: String },
-});
-
-// mounted
-onMounted(() => {
-  setTimeout(() => {
-    document.getElementById("preview2")!.scrollTop = parseInt(props.position);
-    console.log(props.position, document.getElementById("preview2")!.scrollTop);
-  }, 100);
 });
 
 // functions

@@ -369,7 +369,7 @@ function openRoute(route: string) {
 async function getUser() {
   try {
     useUser().loadUser({
-      graphql: { name: USER_MENU, fragment: "UserMenu" },
+      graphql: { name: USER_MENU, fragment: "UserMenu", refetch: true },
     });
   } catch (error) {}
 }

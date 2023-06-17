@@ -38,20 +38,24 @@ export async function getUser(params: Graphql): Promise<User> {
   const { name, fragment, refetch = false } = params;
 
   try {
-    const query = graphqlQueryBuilder({ name, fragment });
+    const query = graphqlQueryBuilder({
+      name,
+      fragment,
+      mutationName: "userAuth",
+    });
 
     let response = await executeGrapQuery({
       query,
       options: { refetch },
     });
-    if (!response.data.userAuth) return {} as User;
+    if (!response.value.userAuth) return {} as User;
     response = {
-      id: response.data.userAuth.user.id,
-      name: response.data.userAuth.user.name,
-      email: response.data.userAuth.user.email,
-      user: response.data.userAuth.user.user,
-      imageProfile: response.data.userAuth.user.image_profile,
-      isAdmin: response.data.userAuth.user.is_admin,
+      id: response.value.userAuth.user.id,
+      name: response.value.userAuth.user.name,
+      email: response.value.userAuth.user.email,
+      user: response.value.userAuth.user.user,
+      imageProfile: response.value.userAuth.user.image_profile,
+      isAdmin: response.value.userAuth.user.is_admin,
     };
     return response;
   } catch (error: any) {

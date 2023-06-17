@@ -150,39 +150,29 @@ export async function uploadImage(params: UploadImage): Promise<Image> {
   });
 }
 
-export function executeGrapQuery(params: {
+export async function executeGrapQuery(params: {
   query: any;
   options: { refetch: boolean };
 }): Promise<any> {
   const { query, options } = params;
-  const { refetch, onResult, onError } = useQuery(query, null, {
+  const { refetch, result } = useQuery(query, null, {
     fetchPolicy: "cache-first",
   });
+  if (options.refetch) await refetch();
 
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (options.refetch) await refetch();
-    } catch (error) {
-      reject(error);
-    }
-
-    onResult((response) => resolve(response));
-
-    onError((error) => {
-      reject(error);
-    });
-  });
+  return result;
 }
 
 export function graphqlQueryBuilder(params: {
   name: DocumentNode;
   fragment: string;
+  mutationName: string;
 }): Object {
-  const { name, fragment } = params;
+  const { name, fragment, mutationName } = params;
 
   const query = gql`
         query GetUser {
-          userAuth {
+          ${mutationName}{
            ...${fragment}
           }
         }

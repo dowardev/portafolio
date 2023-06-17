@@ -15,7 +15,7 @@
 
         <ion-title>{{ pageTitle }}</ion-title>
 
-        <ion-buttons slot="end" :collapse="true">
+        <ion-buttons slot="end" >
           <!-- save -->
           <ion-button
             :disabled="v$.$invalid || spinnerSavePost"
@@ -44,7 +44,7 @@
           >
             <ion-content>
               <MqResponsive target="xs">
-                <ion-item button @click="activatePreviewMode()">
+                <ion-item lines=none button @click="openModalPreview()">
                   <ion-icon
                     slot="start"
                     :icon="eyeOutline"
@@ -53,15 +53,6 @@
                   <ion-label class="ion-text-wrap">Previsualizacion</ion-label>
                 </ion-item>
               </MqResponsive>
-
-              <ion-item button @click="isEditorMaximized = !isEditorMaximized">
-                <ion-icon
-                  slot="start"
-                  :icon="expandOutline"
-                  color="primary"
-                ></ion-icon>
-                <ion-label class="ion-text-wrap">Maximizar editor</ion-label>
-              </ion-item>
 
               <!-- input image -->
               <ion-item
@@ -90,7 +81,7 @@
                 accept="image/*"
                 type="file"
                 style="display: none"
-                @change="uploadImage($event)"
+                @change="uploadImage($event.target.files[0])"
               />
             </ion-content>
           </ion-popover>
@@ -102,87 +93,38 @@
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
           <ion-title size="large">{{ pageTitle }}</ion-title>
-
-          <ion-buttons slot="end" :collapse="true">
-            <MqResponsive target="xs">
-              <ion-button @click="activatePreviewMode()"
-                ><ion-icon :icon="eyeOutline"></ion-icon
-              ></ion-button>
-            </MqResponsive>
-
-            <ion-button @click="isEditorMaximized = !isEditorMaximized"
-              ><ion-icon :icon="expandOutline"></ion-icon
-            ></ion-button>
-
-            <!-- input image -->
-            <ion-item lines="none">
-              <ion-button
-                slot="end"
-                fill="clear"
-                :disabled="spinnerSaveImage"
-                @click="($refs as any).inputImage.click()"
-              >
-                <ion-icon
-                  v-if="spinnerSaveImage == false"
-                  :icon="imagesOutline"
-                ></ion-icon>
-                <ion-spinner
-                  v-if="spinnerSaveImage"
-                  name="crescent"
-                  color="primary"
-                ></ion-spinner>
-              </ion-button>
-            </ion-item>
-            <input
-              ref="inputImage"
-              accept="image/*"
-              type="file"
-              style="display: none"
-              @change="uploadImage($event)"
-            />
-
-            <ion-button
-              :disabled="v$.$invalid || spinnerSavePost"
-              @click="save()"
-            >
-              <ion-icon
-                v-if="spinnerSavePost == false"
-                :icon="saveOutline"
-              ></ion-icon>
-              <ion-spinner
-                v-if="spinnerSavePost"
-                name="crescent"
-                color="primary"
-              ></ion-spinner>
-            </ion-button>
-          </ion-buttons>
         </ion-toolbar>
       </ion-header>
 
-      <ion-row v-if="isEditorMaximized == false">
-        <ion-col size="12" size-md="6">
-          <!-- title -->
-          <ion-item>
-            <ion-label position="floating">Titulo</ion-label>
-            <ion-input
-              v-model="(v$ as any).postTitle.$model"
-              :spellcheck="true"
-              autocorrect="on"
-              pattern="text"
-            >
-            </ion-input>
-          </ion-item>
+      <!-- title -->
+      <ion-row>
+        <ion-col>
+          <ion-input
+            label="Titulo"
+            label-placement="floating"
+            v-model="(v$ as any).postTitle.$model"
+            fill="solid"
+            :spellcheck="true"
+            autocorrect="on"
+            pattern="text"
+          >
+          </ion-input>
           <div
             v-for="(error, index) of (v$ as any).postTitle.$errors"
             :key="index"
           >
             <div class="error">{{ error.$message }}</div>
           </div>
+        </ion-col>
+      </ion-row>
 
+      <ion-row>
+        <ion-col>
           <!-- input cover -->
           <ion-item
             button
             lines="full"
+            fill="solid"
             @click="($refs as any).inputCover.click()"
           >
             <ion-label slot="start">Portada</ion-label>
@@ -205,36 +147,23 @@
       </ion-row>
 
       <ion-row>
-        <ion-col size="12" size-md="6">
-          <!-- content -->
-          <textarea
-            id="editor"
-            v-model="postContent"
-            :contenteditable="true"
-            class="editor"
-            style="width: 100%; font-size: 18px"
-            @scroll="scrollEditor()"
-          ></textarea>
-        </ion-col>
-
-        <ion-col size="12" size-md="6">
-          <!-- view -->
-          <!-- <MarkdownItComponent -->
-          <!--   id="viewer" -->
-          <!--   :source="postContent" -->
-          <!--   style=" -->
-          <!--     height: calc(87vh - 50px); -->
-          <!--     overflow: scroll; -->
-          <!--     width: 100%; -->
-          <!--     margin-top: 18px; -->
-          <!--   " -->
-          <!-- /> -->
-
+        <!-- content -->
+        <ion-col size="12" size-md="12" size-lg="12">
           <MdEditor
-            id="viewer"
             v-model="postContent"
+            theme="dark"
+            :toolbars="isPlatform('mobile') ? toolbarMobile : toolbarDesktop"
             :language="'en-US'"
-            :toolbar="[]"
+            :preview="false"
+            style="
+              height: calc(87vh - 50px);
+              overflow: scroll;
+              width: 100%;
+              margin-top: 18px;
+              --md-bk-color: var(--ion-background-color-rgb);
+              --md-color: var(--ion-color-primary);
+            "
+            @on-upload-img="uploadImage($event[0])"
           />
         </ion-col>
       </ion-row>
@@ -261,24 +190,21 @@ import {
   modalController,
   IonPopover,
 } from "@ionic/vue";
-import { computed, defineComponent, ref, watch } from "vue";
 import {
   saveOutline,
-  imageOutline,
   chevronBackOutline,
   imagesOutline,
-  expandOutline,
   eyeOutline,
   ellipsisVerticalOutline,
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import MarkdownItComponent from "../../../components/markdownit/MarkdownItComponent.vue";
 import PreviewModal from "./PreviewModal.vue";
 import { MqResponsive } from "vue3-mq";
 import { useRouter } from "vue-router";
-import { MdEditor } from "md-editor-v3";
+import { MdEditor, ToolbarNames } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
+import { ref, watch } from "vue";
 
 const router = useRouter();
 
@@ -302,14 +228,11 @@ v$: useVuelidate();
 modeDesingElements;
 const pageTitle = "Editor";
 
-const segment = "editor";
 const postTitle = ref("");
 const postContent = ref("");
 const coverName = ref("");
 const coverSource = ref("");
 const newCoverStatus = ref(false);
-const isEditorMaximized = ref(false);
-const previewMode = ref(false);
 
 const messageError = {
   required: "Campo requerido",
@@ -326,6 +249,23 @@ const rules = {
   },
 };
 const v$ = useVuelidate(rules, { postTitle, postContent, coverSource });
+const toolbarDesktop = [
+  "revoke",
+  "next",
+  "image",
+  "prettier",
+  "pageFullscreen",
+  "fullscreen",
+  "preview",
+] as ToolbarNames[];
+const toolbarMobile = [
+  "revoke",
+  "next",
+  "image",
+  "prettier",
+  "pageFullscreen",
+  "fullscreen",
+] as ToolbarNames[];
 
 // watch
 watch(
@@ -358,7 +298,7 @@ function save() {
 
 async function getImageBase64(e: any): Promise<{ file: string; name: string }> {
   return new Promise((resolve) => {
-    const file = e.target.files[0];
+    const file = e;
     const reader = new FileReader();
     reader.onload = async (e: any) => {
       const fileData = e.target.result;
@@ -369,6 +309,7 @@ async function getImageBase64(e: any): Promise<{ file: string; name: string }> {
 }
 
 async function uploadImage(e: any) {
+  console.log(e)
   const image = await getImageBase64(e);
   emits("uploadImage", { image });
 }
@@ -380,29 +321,13 @@ async function uploadCover(e: any) {
   newCoverStatus.value = true;
 }
 
-function scrollEditor() {
-  try {
-    const editor = document.getElementById("editor");
-    document.getElementById("viewer")!.scrollTop = editor!.scrollTop;
-  } catch (e) {
-    //
-  }
-}
-
-function activatePreviewMode() {
-  if (window.innerWidth <= 767) openModalPreview();
-  else previewMode.value = !previewMode.value;
-}
-
 async function openModalPreview() {
-  const position = document.getElementById("editor")!.scrollTop;
-  const content = postContent;
+  const content = postContent.value;
 
   const modal = await modalController.create({
     component: PreviewModal,
     componentProps: {
       content,
-      position,
     },
   });
   modal.present();
@@ -425,4 +350,17 @@ async function openModalPreview() {
     margin-top: 20px;
   }
 }
+.cm-line {
+  color: red !important;
+}
 </style>
+
+<!-- <style> -->
+<!-- .cm-content, -->
+<!-- .cm-line, -->
+<!-- .cli, -->
+<!-- .clk { -->
+<!--   color: var(--ion-color-primary) !important; -->
+<!-- } -->
+<!---->
+<!-- </style> -->

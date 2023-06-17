@@ -187,7 +187,12 @@
               <ion-row>
                 <ion-col>
                   <MdPreview
+                    style="
+                      --md-bk-color: var(--ion-background-color-rgb);
+                      --md-color: var(--ion-color-primary);
+                    "
                     :model-value="usePost.getPost({ id: postId })!.content"
+                    theme="dark"
                   />
                 </ion-col>
               </ion-row>
@@ -506,7 +511,7 @@ export default defineComponent({
 
 @media only screen and (min-width: 1200px) {
   .content-container {
-    width: 70%;
+    width: 70vw;
   }
 
   .content-container > div {
