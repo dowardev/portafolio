@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header collapse="fade" :translucent="true" mode="ios">
+    <ion-header :translucent="true" mode="ios" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
@@ -73,14 +73,8 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense" mode="ios">
-        <ion-toolbar>
-          <ion-title size="large">{{ pageTitle }}</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
       <!-- date selector -->
-      <ion-header mode="ios" :translucent="true" class="sticky">
+      <ion-header mode="ios" :translucent="true" class="sticky ion-no-border">
         <ion-toolbar>
           <ion-item-divider
             v-if="usePost().getDates()!.length>0&&usePost().getCurrentPage()!=undefined"
@@ -100,8 +94,8 @@
       <section v-if="usePost().getPosts()!.length>0">
         <ion-row class="center">
           <ion-col
-            v-for="post in usePost().getPosts()!"
-            :key="post"
+            v-for="( post,indexPost ) in usePost().getPosts()!"
+            :key="post.id"
             size-xs="12"
             size-md="12"
             size-lg="10"
@@ -110,7 +104,13 @@
             <ion-card
               v-if="(post.createdAt!).split('T')[0]==usePost().getCurrentPage() as string"
               style="cursor: pointer"
+              :class="{
+                'element-post-selected': elementPostHover == indexPost,
+                'element-post-no-selected': elementPostHover != indexPost,
+              }"
               @click="openPost(post.id!)"
+              @mouseenter="elementPostHover = indexPost"
+              @mouseleave="elementPostHover = -1"
             >
               <ion-row
                 class="ion-padding-top ion-padding-start ion-padding-bottom"
@@ -126,7 +126,12 @@
                 </ion-col>
               </ion-row>
 
-              <ion-item v-if="useUser().user.value.isAdmin" button lines="none">
+              <ion-item
+                v-if="useUser().user.value.isAdmin"
+                button
+                lines="none"
+                class="transparent"
+              >
                 <ion-button
                   slot="end"
                   :disabled="spinners.buttonEditPost == post.id!"
@@ -205,6 +210,9 @@ import {
   IonModal,
   isPlatform,
   IonSearchbar,
+  IonRow,
+  IonCol,
+  IonCard,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import { openToast, presentAlertConfirmation } from "../../../services/system";
@@ -240,6 +248,7 @@ const spinners = ref({
 const loadFinished = ref(false);
 const searchResult = ref(Array<{ id: string; title: string }>());
 const modalSearchPosts = ref(null);
+const elementPostHover = ref(-1);
 
 // mouted
 onMounted(() => {
@@ -397,5 +406,13 @@ async function openPostSearch(params: { id: string }) {
   position: sticky;
   z-index: 3;
   top: 0px;
+}
+
+.element-post-selected {
+  border: 1px solid var(--ion-color-primary);
+}
+
+.element-post-no-selected {
+  border: 1px solid var(--ion-background-color);
 }
 </style>

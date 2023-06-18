@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{
-      indexContent: autoHideContent,
+      indexContent: props.autoHideContent,
     }"
   >
     <ion-item>
@@ -10,7 +10,7 @@
     </ion-item>
 
     <div
-      v-if="autoHideContent == true"
+      v-if="props.autoHideContent == true"
       style="display: flex; opacity: 0.5"
       class="ion-padding-start"
     >
@@ -49,7 +49,7 @@
           }"
         >
           <span
-            style="color: var(--ion-color-primary); cursor: pointer"
+            style=" cursor: pointer"
             @click="goToSection({ id: element.id })"
             >{{ element.name }}</span
           >
@@ -81,6 +81,16 @@ function goToSection(params: { id: string }) {
 </script>
 
 <style scoped>
+.indexContent > #indexContent {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  word-wrap: break-word;
+}
+
+.indexContent:hover #indexContent {
+  opacity: 1;
+}
+
 .hidde-scroll::-webkit-scrollbar {
   display: none;
 }

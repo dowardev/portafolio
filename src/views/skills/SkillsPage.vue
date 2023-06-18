@@ -1,20 +1,20 @@
 <template>
   <ion-row>
     <ion-col
-      v-for="(habilidad, indexHabilidad) in skills[0].tipo"
-      :key="indexHabilidad"
+      v-for="(skill, indexSkill) in skills[0].tipo"
+      :key="indexSkill"
+      size-xs="12"
       size-md="6"
-      size-sm="12"
-      size="12"
+      size-lg="12"
     >
       <ion-card>
         <ion-card-header>
-          <ion-card-title>{{ habilidad.name }}</ion-card-title>
+          <ion-card-title>{{ skill.name }}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <ion-row style="text-align: center">
             <ion-col
-              v-for="(technology, index) in habilidad.technology"
+              v-for="(technology, index) in skill.technology"
               :key="index"
             >
               <img

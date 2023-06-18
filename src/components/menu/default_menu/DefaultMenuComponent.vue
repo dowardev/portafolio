@@ -8,275 +8,325 @@
         />
       </ion-toolbar>
 
-      <ion-toolbar>
-        <!-- no logged -->
-        <ion-item v-if="useUser().isLogged.value == false" lines="none">
-          <ion-label>Bienvenido</ion-label>
-
-          <ion-button
-            :disabled="spinners.buttonLogin"
-            fill="clear"
-            @click="login()"
-          >
-            <ion-icon
-              v-if="spinners.buttonLogin == false"
-              :icon="logInOutline"
-            ></ion-icon>
-            <ion-spinner
-              v-if="spinners.buttonLogin"
-              name="crescent"
-              color="primary"
-            >
-            </ion-spinner>
-          </ion-button>
-
-          <ion-button
-            :disabled="spinners.buttonSignup"
-            fill="clear"
-            @click="signup()"
-          >
-            <ion-icon
-              v-if="spinners.buttonSignup == false"
-              :icon="personAddOutline"
-            ></ion-icon>
-            <ion-spinner
-              v-if="spinners.buttonSignup"
-              name="crescent"
-              color="primary"
-            >
-            </ion-spinner>
-          </ion-button>
-        </ion-item>
-
-        <!-- logged -->
-        <ion-item v-if="useUser().isLogged.value == true" lines="none">
-          <ion-avatar slot="start">
-            <img :src="useUser().imageProfile.value.toString()" />
-          </ion-avatar>
-
-          <ion-label>{{ useUser().user.value.user }}</ion-label>
-
-          <ion-button
-            fill="clear"
-            @click="setOpenPopOverUserOptions(true, $event)"
-          >
-            <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
-          </ion-button>
-          <ion-popover
-            :is-open="isOpenRefPopOverUserOptions"
-            css-class="my-custom-class"
-            :event="eventPopOverUserOptions"
-            @did-dismiss="setOpenPopOverUserOptions(false)"
-          >
-            <ion-content>
-              <!-- admin panel -->
+      <section class="menu">
+        <div class="menu-container">
+          <!-- session -->
+          <section>
+            <div>
+              <!-- logged -->
               <ion-item
-                v-if="useUser().user.value.isAdmin"
-                button
-                :disabled="spinners.buttonAdminPanel"
+                v-if="useUser().isLogged.value == true"
                 lines="none"
-                @click="goToAdminPanel()"
-              >
-                <ion-icon
-                  v-if="spinners.buttonAdminPanel == false"
-                  slot="start"
-                  :icon="cogOutline"
-                ></ion-icon>
-                <ion-spinner
-                  v-if="spinners.buttonAdminPanel"
-                  slot="start"
-                  color="primary"
-                  name="crescent"
-                >
-                </ion-spinner>
-                <ion-label>Panel administrador</ion-label>
-              </ion-item>
-
-              <!-- user panel -->
-              <ion-item
-                :disabled="spinners.buttonUserPanel"
                 button
-                lines="none"
-                @click="goToUserPanel()"
+                @click="setOpenPopOverUserOptions(true, $event)"
               >
-                <ion-icon
-                  v-if="spinners.buttonUserPanel == false"
-                  slot="start"
-                  :icon="personOutline"
-                ></ion-icon>
-                <ion-spinner
-                  v-if="spinners.buttonUserPanel"
-                  slot="start"
-                  color="primary"
-                  name="crescent"
+                <ion-avatar slot="start">
+                  <img :src="useUser().imageProfile.value.toString()" />
+                </ion-avatar>
+
+                <ion-label>{{ useUser().user.value.user }}</ion-label>
+
+                <ion-popover
+                  :is-open="isOpenRefPopOverUserOptions"
+                  css-class="my-custom-class"
+                  :event="eventPopOverUserOptions"
+                  @did-dismiss="setOpenPopOverUserOptions(false)"
                 >
-                </ion-spinner>
-                <ion-label>Panel usuario</ion-label>
-              </ion-item>
+                  <ion-content>
+                    <!-- admin panel -->
+                    <ion-item
+                      v-if="useUser().user.value.isAdmin"
+                      button
+                      :disabled="spinners.buttonAdminPanel"
+                      lines="none"
+                      @click="goToAdminPanel()"
+                    >
+                      <ion-icon
+                        v-if="spinners.buttonAdminPanel == false"
+                        slot="start"
+                        :icon="cogOutline"
+                      ></ion-icon>
+                      <ion-spinner
+                        v-if="spinners.buttonAdminPanel"
+                        slot="start"
+                        color="primary"
+                        name="crescent"
+                      >
+                      </ion-spinner>
+                      <ion-label>Panel administrador</ion-label>
+                    </ion-item>
 
-              <!-- logout -->
-              <ion-item
-                :disabled="spinners.buttonLogout"
-                button
-                lines="none"
-                @click="logout()"
-              >
-                <ion-icon
-                  v-if="spinners.buttonLogout == false"
-                  slot="start"
-                  :icon="logOutOutline"
-                ></ion-icon>
-                <ion-spinner
-                  v-if="spinners.buttonLogout"
-                  slot="start"
-                  color="primary"
-                  name="crescent"
+                    <!-- user panel -->
+                    <ion-item
+                      :disabled="spinners.buttonUserPanel"
+                      button
+                      lines="none"
+                      @click="goToUserPanel()"
+                    >
+                      <ion-icon
+                        v-if="spinners.buttonUserPanel == false"
+                        slot="start"
+                        :icon="personOutline"
+                      ></ion-icon>
+                      <ion-spinner
+                        v-if="spinners.buttonUserPanel"
+                        slot="start"
+                        color="primary"
+                        name="crescent"
+                      >
+                      </ion-spinner>
+                      <ion-label>Panel usuario</ion-label>
+                    </ion-item>
+
+                    <!-- logout -->
+                    <ion-item
+                      :disabled="spinners.buttonLogout"
+                      button
+                      lines="none"
+                      @click="logout()"
+                    >
+                      <ion-icon
+                        v-if="spinners.buttonLogout == false"
+                        slot="start"
+                        :icon="logOutOutline"
+                      ></ion-icon>
+                      <ion-spinner
+                        v-if="spinners.buttonLogout"
+                        slot="start"
+                        color="primary"
+                        name="crescent"
+                      >
+                      </ion-spinner>
+                      <ion-label>Cerrar sesion</ion-label>
+                    </ion-item>
+                  </ion-content>
+                </ion-popover>
+              </ion-item>
+            </div>
+
+            <div>
+              <!-- no logged -->
+              <ion-item v-if="useUser().isLogged.value == false" lines="none">
+                <ion-label>Bienvenido</ion-label>
+
+                <ion-button
+                  :disabled="spinners.buttonLogin"
+                  fill="clear"
+                  @click="login()"
                 >
-                </ion-spinner>
-                <ion-label>Cerrar sesion</ion-label>
+                  <ion-icon
+                    v-if="spinners.buttonLogin == false"
+                    :icon="logInOutline"
+                  ></ion-icon>
+                  <ion-spinner
+                    v-if="spinners.buttonLogin"
+                    name="crescent"
+                    color="primary"
+                  >
+                  </ion-spinner>
+                </ion-button>
+
+                <ion-button
+                  :disabled="spinners.buttonSignup"
+                  fill="clear"
+                  @click="signup()"
+                >
+                  <ion-icon
+                    v-if="spinners.buttonSignup == false"
+                    :icon="personAddOutline"
+                  ></ion-icon>
+                  <ion-spinner
+                    v-if="spinners.buttonSignup"
+                    name="crescent"
+                    color="primary"
+                  >
+                  </ion-spinner>
+                </ion-button>
               </ion-item>
-            </ion-content>
-          </ion-popover>
-        </ion-item>
-      </ion-toolbar>
+            </div>
+          </section>
 
-      <div>
-        <ion-item
-          lines="none"
-          class="transparent"
-          button
-          @click="openRoute('/presentation')"
-        >
-          <div slot="start">
-            <ion-icon
-              :icon="personOutline"
-              :class="{
-                iconOptionSelected: $route.path == '/presentation',
-                iconOptionNoSelected: $route.path != '/presentation',
-              }"
-            ></ion-icon>
-          </div>
+          <ion-card>
+            <!-- navigation -->
+            <section class="ion-padding-top ion-padding-bottom">
+              <div>
+                <ion-item
+                  lines="none"
+                  class="transparent"
+                  button
+                  @click="openRoute('/presentation')"
+                >
+                  <div slot="start">
+                    <ion-icon
+                      :icon="personOutline"
+                      :class="{
+                        iconOptionSelected: $route.path == '/presentation',
+                        iconOptionNoSelected: $route.path != '/presentation',
+                      }"
+                    ></ion-icon>
+                  </div>
 
-          <ion-label class="labelOptionMenu"> Presentación </ion-label>
-        </ion-item>
-      </div>
+                  <ion-label class="labelOptionMenu"> Presentación </ion-label>
+                </ion-item>
+              </div>
 
-      <ion-item
-        lines="none"
-        class="transparent"
-        button
-        @click="openRoute('/blog')"
-      >
-        <div slot="start">
-          <ion-icon
-            :icon="libraryOutline"
-            :class="{
-              iconOptionSelected: $route.path == '/blog' || $route.params.id,
-              iconOptionNoSelected: $route.path != '/blog' || $route.params.id,
-            }"
-          ></ion-icon>
+              <div>
+                <ion-item
+                  lines="none"
+                  class="transparent"
+                  button
+                  @click="openRoute('/blog')"
+                >
+                  <div slot="start">
+                    <ion-icon
+                      :icon="libraryOutline"
+                      :class="{
+                        iconOptionSelected:
+                          $route.path == '/blog' || $route.params.id,
+                        iconOptionNoSelected:
+                          $route.path != '/blog' || $route.params.id,
+                      }"
+                    ></ion-icon>
+                  </div>
+
+                  <ion-label class="labelOptionMenu"> Blog </ion-label>
+                </ion-item>
+              </div>
+
+              <!-- policies -->
+              <div>
+                <ion-item
+                  lines="none"
+                  class="transparent"
+                  button
+                  @click="openRoute('/policies')"
+                >
+                  <div slot="start">
+                    <ion-icon
+                      :icon="documentsOutline"
+                      :class="{
+                        iconOptionSelected: $route.path == '/policies',
+                        iconOptionNoSelected: $route.path != '/policies',
+                      }"
+                    ></ion-icon>
+                  </div>
+                  <ion-label>Politicas</ion-label>
+                </ion-item>
+              </div>
+            </section>
+
+            <!-- more options -->
+            <section>
+              <div>
+                <ion-accordion-group>
+                  <ion-accordion value="first">
+                    <ion-item
+                      slot="header"
+                      class="accordion-more-options-background-color"
+                    >
+                      <ion-label>Mas opciones</ion-label>
+                    </ion-item>
+
+                    <!-- contribute -->
+                    <div slot="content">
+                      <ion-item
+                        lines="none"
+                        button
+                        @click="openModalDonations()"
+                      >
+                        <ion-icon slot="start" :icon="cashOutline"></ion-icon>
+                        <ion-label>Contribuir</ion-label>
+                      </ion-item>
+
+                      <!-- source code options -->
+                      <ion-item
+                        id="trigger-button-source-code"
+                        lines="none"
+                        button
+                      >
+                        <ion-icon slot="start" :icon="logoGitlab"></ion-icon>
+                        <ion-label>Codigo fuente</ion-label>
+                      </ion-item>
+                      <ion-popover trigger="trigger-button-source-code">
+                        <ion-content>
+                          <ion-item
+                            button
+                            lines="none"
+                            href="https://www.gitlab.com/gonzam4/portafolio"
+                            target="_blank"
+                          >
+                            <ion-label>FrontEnd</ion-label>
+                          </ion-item>
+                          <ion-item
+                            button
+                            href="https://gitlab.com/gonzam4/portfolio-backend"
+                            target="_blank"
+                            lines="none"
+                          >
+                            <ion-label>Backend</ion-label>
+                          </ion-item>
+                        </ion-content>
+                      </ion-popover>
+
+                      <!-- button feedback -->
+                      <ion-item lines="none" button @click="openModalFeedback">
+                        <ion-icon
+                          slot="start"
+                          :icon="thumbsUpOutline"
+                        ></ion-icon>
+                        <ion-label>Comentarios</ion-label>
+                      </ion-item>
+
+                      <!-- dark button desktop-->
+                      <ion-item
+                        v-if="isPlatform('desktop')"
+                        lines="none"
+                        button
+                        @click="openModalThemeDesktop"
+                      >
+                        <ion-icon slot="start" :icon="brushOutline"></ion-icon>
+                        <ion-label>Tema</ion-label>
+                      </ion-item>
+
+                      <!-- dark button mobile -->
+                      <ion-item
+                        v-if="!isPlatform('desktop')"
+                        lines="none"
+                        button
+                        @click="openModalThemeDesktop"
+                      >
+                        <ion-icon slot="start" :icon="brushOutline"></ion-icon>
+                        <ion-label>Tema</ion-label>
+                      </ion-item>
+
+                      <!-- more -->
+                      <ion-item lines="none" button @click="openModalApps">
+                        <ion-icon slot="start" :icon="appsOutline"></ion-icon>
+                        <ion-label>Mas</ion-label>
+                      </ion-item>
+                    </div>
+                  </ion-accordion>
+                </ion-accordion-group>
+              </div>
+            </section>
+
+            <section>
+              <div>
+                <ion-item
+                  lines="none"
+                  button
+                  class="transparent"
+                  @click="useSystem().changeMenuCollapse({ option: true })"
+                >
+                  <ion-label>Contraer menu</ion-label>
+                  <ion-icon :icon="chevronForwardOutline"></ion-icon>
+                </ion-item>
+              </div>
+            </section>
+          </ion-card>
         </div>
-
-        <ion-label class="labelOptionMenu"> Blog </ion-label>
-      </ion-item>
+      </section>
     </ion-content>
-
-    <!-- footer -->
-    <ion-footer class="ion-no-border">
-      <ion-accordion-group>
-        <ion-accordion value="first">
-          <ion-item slot="header">
-            <ion-label>Mas opciones</ion-label>
-          </ion-item>
-
-          <!-- contribute -->
-          <div slot="content">
-            <ion-item lines="none" button @click="openModalDonations()">
-              <ion-icon slot="start" :icon="cashOutline"></ion-icon>
-              <ion-label>Contribuir</ion-label>
-            </ion-item>
-
-            <!-- source code options -->
-            <ion-item id="trigger-button-source-code" lines="none" button>
-              <ion-icon slot="start" :icon="logoGitlab"></ion-icon>
-              <ion-label>Codigo fuente</ion-label>
-            </ion-item>
-            <ion-popover trigger="trigger-button-source-code">
-              <ion-content>
-                <ion-item
-                  button
-                  lines="none"
-                  href="https://www.gitlab.com/gonzam4/portafolio"
-                  target="_blank"
-                >
-                  <ion-label>FrontEnd</ion-label>
-                </ion-item>
-                <ion-item
-                  button
-                  href="https://gitlab.com/gonzam4/portfolio-backend"
-                  target="_blank"
-                  lines="none"
-                >
-                  <ion-label>Backend</ion-label>
-                </ion-item>
-              </ion-content>
-            </ion-popover>
-
-            <!-- button feedback -->
-            <ion-item lines="none" button @click="openModalFeedback">
-              <ion-icon slot="start" :icon="thumbsUpOutline"></ion-icon>
-              <ion-label>Comentarios</ion-label>
-            </ion-item>
-
-            <!-- dark button desktop-->
-            <ion-item
-              v-if="isPlatform('desktop')"
-              lines="none"
-              button
-              @click="openModalThemeDesktop"
-            >
-              <ion-icon slot="start" :icon="brushOutline"></ion-icon>
-              <ion-label>Tema</ion-label>
-            </ion-item>
-
-            <!-- dark button mobile -->
-            <ion-item
-              v-if="!isPlatform('desktop')"
-              lines="none"
-              button
-              @click="openModalThemeDesktop"
-            >
-              <ion-icon slot="start" :icon="brushOutline"></ion-icon>
-              <ion-label>Tema</ion-label>
-            </ion-item>
-
-            <!-- more -->
-            <ion-item lines="none" button @click="openModalApps">
-              <ion-icon slot="start" :icon="appsOutline"></ion-icon>
-              <ion-label>Mas</ion-label>
-            </ion-item>
-
-            <!-- policies -->
-            <ion-item lines="none" button @click="goToPoliciesPage">
-              <ion-icon slot="start" :icon="documentsOutline"></ion-icon>
-              <ion-label>Politicas</ion-label>
-            </ion-item>
-          </div>
-        </ion-accordion>
-      </ion-accordion-group>
-
-      <ion-toolbar v-if="windowSize.width >= 767">
-        <!-- collapse menu -->
-        <ion-item
-          lines="none"
-          button
-          @click="useSystem().changeMenuCollapse({ option: true })"
-        >
-          <ion-label>Contraer menu</ion-label>
-          <ion-icon :icon="chevronForwardOutline"></ion-icon>
-        </ion-item>
-      </ion-toolbar>
-    </ion-footer>
   </ion-page>
 </template>
 
@@ -409,11 +459,6 @@ async function openModalApps() {
   return modal.present();
 }
 
-function goToPoliciesPage() {
-  router.push("/policies");
-  if (isPlatform("mobile")) menuController.close();
-}
-
 async function goToUserPanel() {
   spinners.value.buttonUserPanel = true;
   await router.push("/user");
@@ -454,5 +499,21 @@ async function openModalDonations() {
 
 .labelOptionMenu {
   color: var(--ion-color-primary);
+}
+
+@media only screen and (min-width: 992px) {
+  .menu {
+    height: 85%;
+    display: flex;
+    align-items: center;
+    padding-left: 16px;
+    justify-content: center;
+  }
+}
+
+.menu-container {
+  width: 100%;
+  max-height: 100%;
+  overflow: auto;
 }
 </style>

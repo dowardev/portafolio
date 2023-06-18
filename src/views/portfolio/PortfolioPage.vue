@@ -33,8 +33,6 @@
       </div>
     </ion-rol>
   </ion-row>
-
-  <div class="center"></div>
 </template>
 
 <script setup lang="ts">

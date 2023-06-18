@@ -180,7 +180,7 @@ async function alertExitApp() {
 
   .scroll-segment-content {
     overflow: scroll;
-    height: 90vh;
+    height: 80vh;
   }
 }
 .slogan {

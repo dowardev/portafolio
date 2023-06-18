@@ -186,14 +186,16 @@
               <!-- content -->
               <ion-row>
                 <ion-col>
-                  <MdPreview
-                    style="
-                      --md-bk-color: var(--ion-background-color-rgb);
-                      --md-color: var(--ion-color-primary);
-                    "
-                    :model-value="usePost.getPost({ id: postId })!.content"
-                    theme="dark"
-                  />
+                  <ion-card>
+                    <MdPreview
+                      style="
+                        --md-bk-color: var(--ion-background-color-rgb);
+                        --md-color: var(--ion-text-color);
+                      "
+                      :model-value="usePost.getPost({ id: postId })!.content"
+                      theme="dark"
+                    />
+                  </ion-card>
                 </ion-col>
               </ion-row>
             </div>
@@ -468,7 +470,7 @@ export default defineComponent({
 }
 
 .content-container > div > div {
-  width: 90%;
+  width: 100%;
 }
 
 .indexContent {

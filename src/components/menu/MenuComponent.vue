@@ -1,5 +1,5 @@
 <template>
-  <ion-page :class="{ 'component-container': isPlatform('desktop') }">
+  <ion-page >
     <MqResponsive target="lg+">
       <MenuCollapsed v-if="detectMenuCollapse().value == true" />
       <DefaultMenuComponent v-if="detectMenuCollapse().value == false" />
@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, isPlatform } from "@ionic/vue";
+import { IonPage } from "@ionic/vue";
 import { useSystem } from "../../composables/useSystem";
 import DefaultMenuComponent from "./default_menu/DefaultMenuComponent.vue";
 import MenuCollapsed from "./menu_collapsed/MenuCollapsedComponent.vue";

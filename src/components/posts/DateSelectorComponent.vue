@@ -1,8 +1,15 @@
 <template>
   <div style="width: 100%; display: flex; justify-content: center">
-    <ion-button fill="clear" @click="previousDate">
-      <ion-icon :icon="chevronBackOutline"></ion-icon>
-    </ion-button>
+    <div class="center-vertical">
+      <ion-button fill="clear" @click="previousDate">
+        <ion-icon :icon="chevronBackOutline"></ion-icon>
+      </ion-button>
+
+      <!-- next date -->
+      <ion-button fill="clear" @click="nextDate">
+        <ion-icon :icon="chevronForwardOutline"></ion-icon>
+      </ion-button>
+    </div>
 
     <ion-select
       v-model="currentDate"
@@ -19,11 +26,6 @@
         {{ date }}</ion-select-option
       >
     </ion-select>
-
-    <!-- next date -->
-    <ion-button fill="clear" @click="nextDate">
-      <ion-icon :icon="chevronForwardOutline"></ion-icon>
-    </ion-button>
   </div>
 </template>
 

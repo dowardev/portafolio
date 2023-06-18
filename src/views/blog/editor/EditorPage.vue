@@ -15,7 +15,7 @@
 
         <ion-title>{{ pageTitle }}</ion-title>
 
-        <ion-buttons slot="end" >
+        <ion-buttons slot="end">
           <!-- save -->
           <ion-button
             :disabled="v$.$invalid || spinnerSavePost"
@@ -44,7 +44,7 @@
           >
             <ion-content>
               <MqResponsive target="xs">
-                <ion-item lines=none button @click="openModalPreview()">
+                <ion-item lines="none" button @click="openModalPreview()">
                   <ion-icon
                     slot="start"
                     :icon="eyeOutline"
@@ -81,7 +81,7 @@
                 accept="image/*"
                 type="file"
                 style="display: none"
-                @change="uploadImage($event.target.files[0])"
+                @change="uploadImage(($event.target as any).files[0]!)"
               />
             </ion-content>
           </ion-popover>
@@ -309,7 +309,7 @@ async function getImageBase64(e: any): Promise<{ file: string; name: string }> {
 }
 
 async function uploadImage(e: any) {
-  console.log(e)
+  console.log(e);
   const image = await getImageBase64(e);
   emits("uploadImage", { image });
 }

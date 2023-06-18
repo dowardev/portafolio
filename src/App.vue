@@ -12,9 +12,7 @@
         </ion-menu>
 
         <div id="main" class="ion-page">
-          <ion-content class="ion-padding">
             <ion-router-outlet />
-          </ion-content>
         </div>
       </ion-split-pane>
     </MqResponsive>
@@ -93,16 +91,6 @@ onMounted(() => {
   });
   loadUserProps();
   loadMenuCollapsedOption();
-
-  if (isPlatform("desktop")) {
-    nextTick(() => {
-      const elementos = document.querySelectorAll(".split-pane-main .ion-page");
-
-      elementos.forEach(function (elemento) {
-        elemento.classList.add("component-container");
-      });
-    });
-  }
 });
 
 function createFirstCookie() {
