@@ -13,7 +13,7 @@
    <a href="https://dowar.xyz/restore-password/{{$email}}/{{$code}}" target="_blank">Restaurar contraseña</a> 
 
     @else
-   <a href="http://localhost:8100/restore-password/{{$email}}/{{$code}}" target="_blank">Restaurar contraseña</a> 
+   <a href="http://127.0.0.1:5173/restore-password/{{$email}}/{{$code}}" target="_blank">Restaurar contraseña</a> 
 
 @endif
 

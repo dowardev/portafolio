@@ -60,6 +60,8 @@ mv .env.example .env
 
 ```bash
 php artisan key:generate
+php artisan passport:client --personal
+php artisan passport:keys
 ```
 
 - Ejecutar migraciones
