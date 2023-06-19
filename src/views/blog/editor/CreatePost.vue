@@ -70,7 +70,7 @@ async function save(data: { title: string; content: string; cover: object }) {
       images,
     });
     await refreshPostsCotent();
-    clearInputs();
+    // clearInputs();
     spinners.savePost = false;
     router.go(-1);
     openToast({ message: "Post agregado" });
@@ -136,9 +136,9 @@ async function uploadCover(image: object): Promise<string> {
   }
 }
 
-function clearInputs() {
-  (editorRef.value as any).clearInputs();
-}
+// function clearInputs() {
+//   (editorRef.value as any).clearInputs();
+// }
 
 async function refreshPostsCotent() {
   let currentPage = usePost().getCurrentPage()!;

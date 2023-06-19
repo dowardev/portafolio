@@ -17,10 +17,7 @@
 
         <ion-buttons slot="end">
           <!-- save -->
-          <ion-button
-            :disabled="v$.$invalid || spinnerSavePost"
-            @click="save()"
-          >
+          <ion-button @click="save()" :disabled="v$.$invalid">
             <ion-icon
               v-if="spinnerSavePost == false"
               slot="start"
@@ -100,21 +97,25 @@
       <ion-row>
         <ion-col>
           <ion-input
+            ref="inputPostTitle"
             label="Titulo"
             label-placement="floating"
-            v-model="(v$ as any).postTitle.$model"
             fill="solid"
-            :spellcheck="true"
             autocorrect="on"
             pattern="text"
+            :error-text="v$.postTitle.$errors[0]?.$message as string"
+            :class="[
+              v$.postTitle.$errors.length == 0 ? 'ion-valid' : 'ion-invalid',
+            ]"
+            :value="postTitle"
+            :spellcheck="true"
+            @ion-input="postTitle = $event.target.value as string"
+            @ion-focus="
+              ($refs.inputPostTitle as any).$el.classList.add('ion-touched');
+              v$.postTitle.$touch();
+            "
           >
           </ion-input>
-          <div
-            v-for="(error, index) of (v$ as any).postTitle.$errors"
-            :key="index"
-          >
-            <div class="error">{{ error.$message }}</div>
-          </div>
         </ion-col>
       </ion-row>
 
@@ -125,23 +126,27 @@
             button
             lines="full"
             fill="solid"
-            @click="($refs as any).inputCover.click()"
+            @click="($refs as any).inputPostCover.click()"
           >
             <ion-label slot="start">Portada</ion-label>
             <input
-              ref="inputCover"
+              ref="inputPostCover"
               style="display: none"
               accept="image/*"
               type="file"
-              @change="uploadCover($event)"
+              @change="uploadCover(($event.target as any).files[0]!)"
+              @click="v$.coverSource.$touch()"
             />
             <ion-label slot="end">{{ coverName }}</ion-label>
           </ion-item>
           <div
             v-for="(error, index) of (v$ as any).coverSource.$errors"
             :key="index"
+            class="ion-padding-start"
           >
-            <div class="error">{{ error.$message }}</div>
+            <span class="error" style="font-size: 12px">{{
+              error.$message
+            }}</span>
           </div>
         </ion-col>
       </ion-row>
@@ -290,9 +295,9 @@ watch(
 
 // functions
 function save() {
-  const title = postTitle;
-  const content = postContent;
-  const cover = coverSource;
+  const title = postTitle.value;
+  const content = postContent.value;
+  const cover = coverSource.value;
   emits("save", { title, content, cover, newCoverStatus });
 }
 

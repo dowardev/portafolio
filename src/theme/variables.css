@@ -90,6 +90,7 @@ ion-toolbar {
 ion-accordion ion-item {
   --background: var(--ion-background-light-color) !important;
 }
+
 ion-accordion > div[slot="content"] {
   background: var(--ion-background-light-color) !important;
 }
