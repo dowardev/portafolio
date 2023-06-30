@@ -1,7 +1,16 @@
 <template>
   <ion-row>
     <ion-col>
-      <ion-card v-for="(project, index) in proyectos" :key="index">
+      <ion-card
+        v-for="(project, index) in proyectos"
+        :key="index"
+        :class="{
+          'element-post-selected': elementPostHover == index,
+          'element-post-no-selected': elementPostHover != index,
+        }"
+        @mouseenter="elementPostHover = index"
+        @mouseleave="elementPostHover = -1"
+      >
         <ion-card-content>
           <ion-row>
             <ion-col>
@@ -114,6 +123,7 @@ import {
   logoVue,
   logoCapacitor,
 } from "ionicons/icons";
+import { ref } from "vue";
 
 const proyectos = [
   {
@@ -148,6 +158,7 @@ const proyectos = [
     sourceCode: "https://gitlab.com/gonzam4/ionic-plants.id",
   },
 ];
+const elementPostHover = ref(-1);
 </script>
 
 <style scope>
@@ -156,5 +167,13 @@ const proyectos = [
 .ion-item-list-link {
   background: transparent;
   --background: transparent;
+}
+
+.element-post-selected {
+  border: 1px solid var(--ion-color-primary);
+}
+
+.element-post-no-selected {
+  border: 1px solid var(--ion-background-color);
 }
 </style>

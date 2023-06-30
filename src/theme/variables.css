@@ -94,3 +94,7 @@ ion-accordion ion-item {
 ion-accordion > div[slot="content"] {
   background: var(--ion-background-light-color) !important;
 }
+
+.section-options>ion-row {
+  height: 58px;
+}

@@ -1,6 +1,6 @@
 <template>
   <section>
-    <ion-list>
+    <ion-list class="transparent">
       <ion-list-header>
         <ion-label>Informacion basica</ion-label>
       </ion-list-header>
@@ -50,7 +50,14 @@
           size-xl="4"
           offset-xl="1"
         >
-          <ion-card>
+          <ion-card
+            :class="{
+              'element-post-selected': profileCardSelected,
+              'element-post-no-selected': !profileCardSelected,
+            }"
+            @mouseenter="profileCardSelected = true"
+            @mouseleave="profileCardSelected = false"
+          >
             <ion-card-header>
               <div class="card-header">
                 <div class="card-title-container">
@@ -177,7 +184,7 @@
   </section>
 
   <section>
-    <ion-list>
+    <ion-list class="transparent">
       <ion-list-header>
         <ion-label>Cuenta</ion-label>
       </ion-list-header>
@@ -220,7 +227,14 @@
           size-xl="4"
           offset-xl="1"
         >
-          <ion-card>
+          <ion-card
+            :class="{
+              'element-post-selected': deleteUserCardSelected,
+              'element-post-no-selected': !deleteUserCardSelected,
+            }"
+            @mouseenter="deleteUserCardSelected = true"
+            @mouseleave="deleteUserCardSelected = false"
+          >
             <ion-card-header>
               <div class="card-header">
                 <div class="card-title-container">
@@ -424,6 +438,8 @@ const rules = {
   },
 };
 const v$ = useVuelidate(rules, { form, formDeleteAccount });
+const profileCardSelected = ref(false);
+const deleteUserCardSelected = ref(false);
 
 // mounted
 onMounted(async () => {
@@ -624,5 +640,13 @@ async function logout() {
 }
 .card-header > .card-title-container > ion-card-title {
   top: 9px;
+}
+
+.element-post-selected {
+  border: 1px solid var(--ion-color-primary);
+}
+
+.element-post-no-selected {
+  border: 1px solid var(--ion-background-color);
 }
 </style>

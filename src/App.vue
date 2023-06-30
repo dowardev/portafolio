@@ -4,7 +4,6 @@
       <ion-split-pane when="lg" content-id="main" type="overlay">
         <ion-menu
           content-id="main"
-          :style="changeSizeMenu"
           menu-id="mainMenu"
           style="--side-max-width: 200px; border-right-width: 0px"
         >
@@ -60,28 +59,6 @@ store.create();
 
 const router = useRouter();
 
-// computed
-const changeSizeMenu = computed(() => {
-  const option = useSystem().detectMenuCollapse().value;
-
-  let size = {
-    min: "280px",
-    max: "280px",
-  };
-  if (window.innerWidth <= 992) {
-    size = {
-      min: "100%",
-      max: "100%",
-    };
-  }
-  if (option == true && window.innerWidth >= 768)
-    size = {
-      min: "88px",
-      max: "88px",
-    };
-  return { "min-width": size.min, "max-width": size.max };
-});
-
 // mounted
 onMounted(() => {
   createFirstCookie();
@@ -90,7 +67,6 @@ onMounted(() => {
     setTheme({ theme: theme });
   });
   loadUserProps();
-  loadMenuCollapsedOption();
 });
 
 function createFirstCookie() {
@@ -134,12 +110,6 @@ async function openToastOptions() {
     ],
   });
   await toast.present();
-}
-
-async function loadMenuCollapsedOption() {
-  let option = await store.get("menu-collapsed");
-  if (option == null) option = false;
-  useSystem().changeMenuCollapse({ option });
 }
 </script>
 

@@ -1,7 +1,16 @@
 <template>
   <ion-row>
     <ion-col>
-      <ion-card v-for="(project, index) in proyectos" :key="index">
+      <ion-card
+        v-for="(project, index) in proyectos"
+        :key="index"
+        :class="{
+          'element-post-selected': elementPostHover == index,
+          'element-post-no-selected': elementPostHover != index,
+        }"
+        @mouseenter="elementPostHover = index"
+        @mouseleave="elementPostHover = -1"
+      >
         <ion-card-content>
           <ion-row>
             <ion-col size-xs="12" size-md="4">
@@ -136,6 +145,7 @@ import {
   logoVue,
   logoLaravel,
 } from "ionicons/icons";
+import { ref } from "vue";
 
 const proyectos = [
   {
@@ -216,6 +226,7 @@ const proyectos = [
     appPlayStore: "https://play.google.com/store/apps/details?id=com.meta.com",
   },
 ];
+const elementPostHover = ref(-1);
 </script>
 
 <style scope>
@@ -224,5 +235,13 @@ const proyectos = [
 .ion-item-list-link {
   background: transparent;
   --background: transparent;
+}
+
+.element-post-selected {
+  border: 1px solid var(--ion-color-primary);
+}
+
+.element-post-no-selected {
+  border: 1px solid var(--ion-background-color);
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
   <section>
-    <ion-list>
+    <ion-list class="transparent">
       <ion-list-header>
-        <ion-label>Seguridad basica</ion-label>
+        <ion-label>Seguridad básica</ion-label>
       </ion-list-header>
 
       <ion-row>
@@ -27,7 +27,7 @@
           size-xl="5"
           class="ion-padding-start ion-hide-lg-down"
         >
-          <p>Una buena contraña debe incluir</p>
+          <p>Una buena contraseña debe incluir</p>
           <ul v-for="item in information[0].cardPassword" :key="item.content">
             <li>
               {{ item.content }}
@@ -42,7 +42,14 @@
           size-xl="4"
           offset-xl="1"
         >
-          <ion-card>
+          <ion-card 
+            :class="{
+              'element-post-selected': updatePasswordCardSelected,
+              'element-post-no-selected': !updatePasswordCardSelected,
+            }"
+            @mouseenter="updatePasswordCardSelected = true"
+            @mouseleave="updatePasswordCardSelected = false"
+          >
             <ion-card-header>
               <div class="card-header">
                 <div class="card-title-container">
@@ -275,6 +282,8 @@ const rules = {
   },
 };
 const v$ = useVuelidate(rules, { form });
+const updatePasswordCardSelected = ref(false);
+
 
 // functions
 async function saveUserPassword() {

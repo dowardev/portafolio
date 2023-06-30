@@ -1,11 +1,6 @@
 <template>
   <ion-page>
-    <ion-header
-      :translucent="true"
-      collapse="fade"
-      mode="ios"
-      class="ion-no-border"
-    >
+    <ion-header :translucent="true" mode="ios" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button
@@ -18,31 +13,30 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense" mode="ios">
-        <ion-toolbar>
-          <ion-title size="large">{{ pageTitle }}</ion-title>
-        </ion-toolbar>
-      </ion-header>
+      <section class="section-options">
+        <ion-row>
+          <!-- date selector -->
+          <ion-col size="12" class="center">
+            <ion-segment
+              v-model="policieSegment"
+              :mode="modeDesingElements"
+              scrollable
+            >
+              <ion-segment-button value="privacy">
+                <ion-label>Privacidad</ion-label>
+              </ion-segment-button>
 
-      <ion-item-divider sticky>
-        <ion-segment
-          v-model="policieSegment"
-          :mode="modeDesingElements"
-          scrollable
-        >
-          <ion-segment-button value="privacy">
-            <ion-label>Privacidad</ion-label>
-          </ion-segment-button>
-
-          <ion-segment-button value="tc" :disabled="true">
-            <ion-label>Terminos y condiciones</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </ion-item-divider>
+              <ion-segment-button value="tc" :disabled="true">
+                <ion-label>Terminos y condiciones</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+          </ion-col>
+        </ion-row>
+      </section>
 
       <ion-row class="description">
         <ion-col sieze-xs="12" size-lg="8">
-          <ion-card class="ion-padding">
+          <ion-card class="ion-padding card-main-content">
             <p>
               Como desarrollador de software y usuario activo de internet
               entiendo lo importante que es la privacidad, por esta razón todo
@@ -189,9 +183,14 @@ const policieSegment = ref("privacy");
 .important-text {
   font-weight: bold;
 }
+
+.card-main-content {
+  max-height: 82vh;
+  overflow: auto;
+}
+
 @media only screen and (min-width: 768px) {
   .description {
-    padding: 16px;
     display: flex;
     justify-content: center;
   }

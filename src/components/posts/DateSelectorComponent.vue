@@ -16,6 +16,7 @@
       :mode="modeDesingElements"
       ok-text="Confirmar"
       cancel-text="Cancelar"
+      interface="popover"
       @ion-change="selectDate({ date: $event.detail.value })"
     >
       <ion-select-option

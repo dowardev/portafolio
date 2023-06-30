@@ -12,41 +12,56 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content>
+      <section class="section-options">
+        <ion-row>
+          <ion-col size="12">
+            <div class="main-section">
+              <ion-segment
+                :value="mainSegment"
+                @ion-change="mainSegment = $event.detail.value as string"
+              >
+                <ion-segment-button value="skills"
+                  >Habilidades</ion-segment-button
+                >
+                <ion-segment-button value="history"
+                  >Historia</ion-segment-button
+                >
+                <ion-segment-button value="portfolio"
+                  >Portfolio</ion-segment-button
+                >
+              </ion-segment>
+            </div>
+          </ion-col>
+        </ion-row>
+      </section>
+
       <ion-row>
-        <ion-col
-          size="12"
-          :size-lg="useSystem().detectMenuCollapse().value ? '6' : '5'"
-        >
-          <InformationComponent />
-        </ion-col>
+        <ion-col>
+          <ion-card class="card-main-content">
+            <ion-row>
+              <ion-col size="12" size-lg="6">
+                <InformationComponent />
+              </ion-col>
 
-        <ion-col
-          size="12"
-          :size-lg="useSystem().detectMenuCollapse().value ? '6' : '7'"
-        >
-          <div class="ion-padding">
-            <ion-segment v-model="mainSegment">
-              <ion-segment-button value="skills"
-                >Habilidades</ion-segment-button
-              >
-              <ion-segment-button value="history">Historia</ion-segment-button>
-              <ion-segment-button value="portfolio"
-                >Portfolio</ion-segment-button
-              >
-            </ion-segment>
-          </div>
+              <ion-col size="12" size-lg="6">
+                <div v-if="mainSegment == 'skills'" class="components-section">
+                  <SkillsPage />
+                </div>
 
-          <ion-row>
-            <ion-col class="scroll-segment-content">
-              <SkillsPage v-if="mainSegment == 'skills'" />
-              <HistoryPage v-if="mainSegment == 'history'" />
+                <div v-if="mainSegment == 'history'" class="components-section">
+                  <HistoryPage />
+                </div>
 
-              <div v-if="mainSegment == 'portfolio'" class="ion-padding">
-                <PortfolioPage />
-              </div>
-            </ion-col>
-          </ion-row>
+                <div
+                  v-if="mainSegment == 'portfolio'"
+                  class="components-section"
+                >
+                  <PortfolioPage />
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-card>
         </ion-col>
       </ion-row>
     </ion-content>
@@ -117,77 +132,46 @@ async function alertExitApp() {
 
 <style scoped src="./information/animacion-nombre.css"></style>
 <style scoped>
-.img-perfil {
-  border-radius: 50%;
-  width: 166px;
-  height: 166px;
-}
 .center {
   display: flex;
   justify-content: center;
 }
-/* smartphones vertical */
-@media (min-width: 320px) and (max-width: 480px) {
-  .texto-bienvenida {
-    margin-top: 21px;
-  }
-  .img-logo {
-    width: 215px;
-  }
+
+.card-main-content {
+  height: calc(100vh - 142px);
 }
-/* smartphones horizontal */
-@media only screen and (min-width: 600px) {
-  .img-logo {
-    width: 186px;
-  }
-  .texto-bienvenida {
-    margin-top: 16px;
-  }
+
+ion-content {
+  --overflow: hidden;
 }
+
+.components-section {
+  height: calc(100vh - 439px);
+  overflow: auto;
+}
+
 /*tablet */
 @media only screen and (min-width: 768px) {
-  .img-logo {
-    width: 226px;
-  }
   .texto-bienvenida {
     margin-top: 16px;
   }
-  .img-perfil {
-    border-radius: 50%;
-    width: 182px;
-    height: 182px;
+  .components-section {
+    height: calc(100vh - 146px);
+    overflow: auto;
+  }
+  .slogan {
+    text-align: center;
+    font-family: OpenSans-Bold !important;
+    opacity: 0.6;
   }
 }
-/* escritorio */
-@media only screen and (min-width: 992px) {
-  .img-proyecto {
-    width: 241px;
-  }
 
-  #texto-bienvenida {
-    display: flex;
-    justify-content: center;
+@media only screen and (min-width: 768px) {
+  .main-section {
+    float: right;
   }
-  .img-logo {
-    width: 215px;
-    margin-right: 100%;
-  }
-  .img-perfil {
-    border-radius: 50%;
-    width: 182px;
-    height: 182px;
-  }
+}
 
-  .scroll-segment-content {
-    overflow: scroll;
-    height: 80vh;
-  }
-}
-.slogan {
-  text-align: center;
-  font-family: OpenSans-Bold !important;
-  opacity: 0.6;
-}
 @media (prefers-color-scheme: dark) {
   .slogan {
     opacity: 0.3;

@@ -1,9 +1,9 @@
 import { System } from "@/services/interfaces";
+import { Theme } from "@/services/types";
 import { defineStore } from "pinia";
 
 interface SystemState {
   theme: "dark" | "light";
-  menuCollapse: boolean;
 }
 interface SystemState {
   system: System;
@@ -12,7 +12,6 @@ interface SystemState {
 export const useSystemStore = defineStore("system", {
   state: (): SystemState => ({
     theme: "dark",
-    menuCollapse: false,
     system: { theme: { selected: "light" } },
   }),
 
@@ -30,11 +29,6 @@ export const useSystemStore = defineStore("system", {
   },
 
   actions: {
-    changeMenuCollapse(params: { option: boolean }) {
-      const option = params.option;
-      this.menuCollapse = option;
-    },
-
     setThemeSelected(params: { theme: Theme }) {
       const theme = params.theme;
       this.system.theme.selected = theme;

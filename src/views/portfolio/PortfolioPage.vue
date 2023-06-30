@@ -1,10 +1,11 @@
 <template>
   <!-- Projects -->
-  <ion-item-divider
-    sticky
+  <div
     style="
-      top: 0;
-      box-shadow: 0px -24px 4px rgb(var(--ion-background-color-rgb));
+      background-color: var(--ion-background-light-color);
+      position: sticky;
+      top: -6px;
+      z-index: 3;
     "
   >
     <ion-select v-model="typeContent" interface="popover">
@@ -16,10 +17,10 @@
         >Proyectos profesionales</ion-select-option
       >
     </ion-select>
-  </ion-item-divider>
+  </div>
 
   <ion-row>
-    <ion-rol>
+    <ion-col>
       <div v-if="typeContent == 'projectsP'">
         <ProfessionalProjectsPage></ProfessionalProjectsPage>
       </div>
@@ -31,7 +32,7 @@
       <div v-if="typeContent == 'projectsB'">
         <BloglProjectsPage></BloglProjectsPage>
       </div>
-    </ion-rol>
+    </ion-col>
   </ion-row>
 </template>
 

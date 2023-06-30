@@ -58,16 +58,6 @@ export const useSystem = () => {
     await toast.present();
   }
 
-  async function changeMenuCollapse(params: { option: boolean }) {
-    const option = params.option;
-    useSystemStore().changeMenuCollapse({ option });
-    await store.set("menu-collapsed", option);
-  }
-
-  function detectMenuCollapse() {
-    return systemRefs.menuCollapse;
-  }
-
   function applyTheme(params: { theme: Theme }) {
     const theme = params.theme;
     const currentTheme = getTheme();
@@ -87,8 +77,6 @@ export const useSystem = () => {
   return {
     reportError,
     openToastError,
-    changeMenuCollapse,
-    detectMenuCollapse,
     updateThemeSelected,
     applyTheme,
   };

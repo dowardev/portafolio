@@ -1,154 +1,67 @@
 <template>
   <ion-page>
-    <ion-content>
+    <ion-header mode="ios" class="ion-no-border">
       <ion-toolbar>
-        <img
-          src="@/assets/portafolio/dowar.png"
-          style="max-width: 230px; margin-left: 14px"
-        />
+        <!-- <img -->
+        <!--   src="@/assets/portafolio/dowar.png" -->
+        <!--   style="max-width: 230px; margin-left: 14px" -->
+        <!-- /> -->
+        <ion-label class="center">Dowar Blog</ion-label>
       </ion-toolbar>
+    </ion-header>
 
-      <section class="menu">
-        <div class="menu-container">
-          <!-- session -->
-          <section>
-            <div>
-              <!-- logged -->
-              <ion-item
-                v-if="useUser().isLogged.value == true"
-                lines="none"
-                button
-                @click="setOpenPopOverUserOptions(true, $event)"
+    <ion-content :fullscreen="true">
+      <!-- session -->
+      <section class="section-options">
+        <ion-row>
+          <ion-col size="12">
+            <!-- logged -->
+            <ion-item
+              v-if="useUser().isLogged.value == true"
+              lines="none"
+              class="transparent"
+              @click="setOpenPopOverUserOptions(true, $event)"
+            >
+              <!-- <ion-avatar slot="start"> -->
+              <!--   <img :src="useUser().imageProfile.value.toString()" /> -->
+              <!-- </ion-avatar> -->
+
+              <ion-label>{{ useUser().user.value.user }}</ion-label>
+
+              <ion-button
+                slot="end"
+                fill="clear"
+                @click="
+                  eventPopOverUserOptions = $event;
+                  isOpenRefPopOverUserOptions = true;
+                "
               >
-                <ion-avatar slot="start">
-                  <img :src="useUser().imageProfile.value.toString()" />
-                </ion-avatar>
+                <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
+              </ion-button>
+            </ion-item>
 
-                <ion-label>{{ useUser().user.value.user }}</ion-label>
+            <!-- no logged -->
+            <ion-item
+              v-if="useUser().isLogged.value == false"
+              class="transparent"
+              lines="none"
+            >
+              <ion-button fill="clear" @click="openRoute('/login')">
+                Iniciar sesión
+              </ion-button>
+              <ion-button fill="clear" @click="openRoute('/signup')"
+                >Registrar</ion-button
+              >
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </section>
 
-                <ion-popover
-                  :is-open="isOpenRefPopOverUserOptions"
-                  css-class="my-custom-class"
-                  :event="eventPopOverUserOptions"
-                  @did-dismiss="setOpenPopOverUserOptions(false)"
-                >
-                  <ion-content>
-                    <!-- admin panel -->
-                    <ion-item
-                      v-if="useUser().user.value.isAdmin"
-                      button
-                      :disabled="spinners.buttonAdminPanel"
-                      lines="none"
-                      @click="goToAdminPanel()"
-                    >
-                      <ion-icon
-                        v-if="spinners.buttonAdminPanel == false"
-                        slot="start"
-                        :icon="cogOutline"
-                      ></ion-icon>
-                      <ion-spinner
-                        v-if="spinners.buttonAdminPanel"
-                        slot="start"
-                        color="primary"
-                        name="crescent"
-                      >
-                      </ion-spinner>
-                      <ion-label>Panel administrador</ion-label>
-                    </ion-item>
-
-                    <!-- user panel -->
-                    <ion-item
-                      :disabled="spinners.buttonUserPanel"
-                      button
-                      lines="none"
-                      @click="goToUserPanel()"
-                    >
-                      <ion-icon
-                        v-if="spinners.buttonUserPanel == false"
-                        slot="start"
-                        :icon="personOutline"
-                      ></ion-icon>
-                      <ion-spinner
-                        v-if="spinners.buttonUserPanel"
-                        slot="start"
-                        color="primary"
-                        name="crescent"
-                      >
-                      </ion-spinner>
-                      <ion-label>Panel usuario</ion-label>
-                    </ion-item>
-
-                    <!-- logout -->
-                    <ion-item
-                      :disabled="spinners.buttonLogout"
-                      button
-                      lines="none"
-                      @click="logout()"
-                    >
-                      <ion-icon
-                        v-if="spinners.buttonLogout == false"
-                        slot="start"
-                        :icon="logOutOutline"
-                      ></ion-icon>
-                      <ion-spinner
-                        v-if="spinners.buttonLogout"
-                        slot="start"
-                        color="primary"
-                        name="crescent"
-                      >
-                      </ion-spinner>
-                      <ion-label>Cerrar sesion</ion-label>
-                    </ion-item>
-                  </ion-content>
-                </ion-popover>
-              </ion-item>
-            </div>
-
-            <div>
-              <!-- no logged -->
-              <ion-item v-if="useUser().isLogged.value == false" lines="none">
-                <ion-label>Bienvenido</ion-label>
-
-                <ion-button
-                  :disabled="spinners.buttonLogin"
-                  fill="clear"
-                  @click="login()"
-                >
-                  <ion-icon
-                    v-if="spinners.buttonLogin == false"
-                    :icon="logInOutline"
-                  ></ion-icon>
-                  <ion-spinner
-                    v-if="spinners.buttonLogin"
-                    name="crescent"
-                    color="primary"
-                  >
-                  </ion-spinner>
-                </ion-button>
-
-                <ion-button
-                  :disabled="spinners.buttonSignup"
-                  fill="clear"
-                  @click="signup()"
-                >
-                  <ion-icon
-                    v-if="spinners.buttonSignup == false"
-                    :icon="personAddOutline"
-                  ></ion-icon>
-                  <ion-spinner
-                    v-if="spinners.buttonSignup"
-                    name="crescent"
-                    color="primary"
-                  >
-                  </ion-spinner>
-                </ion-button>
-              </ion-item>
-            </div>
-          </section>
-
-          <ion-card>
+      <ion-row>
+        <ion-col>
+          <ion-card class="ion-padding-top ion-padding-bottom">
             <!-- navigation -->
-            <section class="ion-padding-top ion-padding-bottom">
+            <section>
               <div>
                 <ion-item
                   lines="none"
@@ -309,23 +222,87 @@
                 </ion-accordion-group>
               </div>
             </section>
-
-            <section>
-              <div>
-                <ion-item
-                  lines="none"
-                  button
-                  class="transparent"
-                  @click="useSystem().changeMenuCollapse({ option: true })"
-                >
-                  <ion-label>Contraer menu</ion-label>
-                  <ion-icon :icon="chevronForwardOutline"></ion-icon>
-                </ion-item>
-              </div>
-            </section>
           </ion-card>
-        </div>
-      </section>
+        </ion-col>
+      </ion-row>
+
+      <!-- popovers -->
+      <!-- popover user options -->
+      <ion-popover
+        :is-open="isOpenRefPopOverUserOptions"
+        css-class="my-custom-class"
+        :event="eventPopOverUserOptions"
+        @did-dismiss="setOpenPopOverUserOptions(false)"
+      >
+        <ion-content>
+          <!-- admin panel -->
+          <ion-item
+            v-if="useUser().user.value.isAdmin"
+            button
+            :disabled="spinners.buttonAdminPanel"
+            lines="none"
+            @click="goToAdminPanel()"
+          >
+            <ion-icon
+              v-if="spinners.buttonAdminPanel == false"
+              slot="start"
+              :icon="cogOutline"
+            ></ion-icon>
+            <ion-spinner
+              v-if="spinners.buttonAdminPanel"
+              slot="start"
+              color="primary"
+              name="crescent"
+            >
+            </ion-spinner>
+            <ion-label>Panel administrador</ion-label>
+          </ion-item>
+
+          <!-- user panel -->
+          <ion-item
+            :disabled="spinners.buttonUserPanel"
+            button
+            lines="none"
+            @click="goToUserPanel()"
+          >
+            <ion-icon
+              v-if="spinners.buttonUserPanel == false"
+              slot="start"
+              :icon="personOutline"
+            ></ion-icon>
+            <ion-spinner
+              v-if="spinners.buttonUserPanel"
+              slot="start"
+              color="primary"
+              name="crescent"
+            >
+            </ion-spinner>
+            <ion-label>Panel usuario</ion-label>
+          </ion-item>
+
+          <!-- logout -->
+          <ion-item
+            :disabled="spinners.buttonLogout"
+            button
+            lines="none"
+            @click="logout()"
+          >
+            <ion-icon
+              v-if="spinners.buttonLogout == false"
+              slot="start"
+              :icon="logOutOutline"
+            ></ion-icon>
+            <ion-spinner
+              v-if="spinners.buttonLogout"
+              slot="start"
+              color="primary"
+              name="crescent"
+            >
+            </ion-spinner>
+            <ion-label>Cerrar sesion</ion-label>
+          </ion-item>
+        </ion-content>
+      </ion-popover>
     </ion-content>
   </ion-page>
 </template>
@@ -505,7 +482,6 @@ async function openModalDonations() {
   .menu {
     height: 85%;
     display: flex;
-    align-items: center;
     padding-left: 16px;
     justify-content: center;
   }

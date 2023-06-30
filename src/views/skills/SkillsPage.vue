@@ -7,10 +7,18 @@
       size-md="6"
       size-lg="12"
     >
-      <ion-card>
+      <ion-card
+        :class="{
+          'element-post-selected': elementPostHover == indexSkill,
+          'element-post-no-selected': elementPostHover != indexSkill,
+        }"
+        @mouseenter="elementPostHover = indexSkill"
+        @mouseleave="elementPostHover = -1"
+      >
         <ion-card-header>
           <ion-card-title>{{ skill.name }}</ion-card-title>
         </ion-card-header>
+
         <ion-card-content>
           <ion-row style="text-align: center">
             <ion-col
@@ -230,6 +238,7 @@ const skills = ref([
     ],
   },
 ]);
+const elementPostHover = ref(-1);
 </script>
 
 <style scoped>
@@ -259,5 +268,13 @@ const skills = ref([
 
 #container a {
   text-decoration: none;
+}
+
+.element-post-selected {
+  border: 1px solid var(--ion-color-primary);
+}
+
+.element-post-no-selected {
+  border: 1px solid var(--ion-background-color);
 }
 </style>

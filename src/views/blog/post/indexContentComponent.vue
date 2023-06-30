@@ -32,8 +32,8 @@
 
     <div
       id="indexContent"
-      style="overflow: auto; height: 80vh"
-      class="hidde-scroll ion-padding-start"
+      style="overflow: auto; height: 70vh"
+      class=" ion-padding-start"
     >
       <div
         v-for="element in indexContent"

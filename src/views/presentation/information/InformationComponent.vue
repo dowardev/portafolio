@@ -436,8 +436,8 @@ function openMail(params: { mail: string; subject: string }) {
 <style scoped>
 .img-perfil {
   border-radius: 50%;
-  width: 166px;
-  height: 166px;
+  width: 17vh;
+  height: 17vh;
 }
 .center {
   display: flex;

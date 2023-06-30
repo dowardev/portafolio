@@ -7,161 +7,143 @@
         </ion-buttons>
 
         <ion-title>{{ pageTitle }}</ion-title>
-
-        <ion-buttons slot="end" :disabled="spinners.buttonAddNewPost">
-          <ion-button v-if="useUser().user.value.isAdmin" @click="addPost()">
-            <ion-icon
-              v-if="spinners.buttonAddNewPost == false"
-              :icon="addOutline"
-            ></ion-icon>
-            <ion-spinner
-              v-if="spinners.buttonAddNewPost"
-              name="crescent"
-              color="primary"
-            ></ion-spinner>
-          </ion-button>
-
-          <ion-button id="open-modal">
-            <ion-icon :icon="searchOutline"></ion-icon>
-          </ion-button>
-          <ion-modal
-            ref="modalSearchPosts"
-            trigger="open-modal"
-            :mode="modeDesingElements"
-          >
-            <ion-header mode="ios">
-              <ion-toolbar>
-                <ion-buttons slot="start">
-                  <ion-button @click="closeModalSearchPosts()">
-                    <ion-icon :icon="closeOutline"></ion-icon>
-                  </ion-button>
-                </ion-buttons>
-
-                <ion-title>Busqueda</ion-title>
-              </ion-toolbar>
-
-              <ion-toolbar>
-                <ion-searchbar
-                  :debounce="350"
-                  @ion-change="
-                    searchPosts({
-                      search: $event.detail.value as string,
-                      refetch: true,
-                    })
-                  "
-                ></ion-searchbar>
-              </ion-toolbar>
-            </ion-header>
-
-            <ion-content class="ion-padding">
-              <ion-item
-                v-for="result in searchResult"
-                :key="result.id"
-                button
-                @click="openPostSearch({ id: result.id })"
-              >
-                <ion-label>{{ result.title }}</ion-label>
-              </ion-item>
-            </ion-content>
-          </ion-modal>
-
-          <ion-button @click="refreshContent()">
-            <ion-icon :icon="refreshOutline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <!-- date selector -->
-      <ion-header mode="ios" :translucent="true" class="sticky ion-no-border">
-        <ion-toolbar>
-          <ion-item-divider
-            v-if="usePost().getDates()!.length>0&&usePost().getCurrentPage()!=undefined"
-            style="--background: transparent"
-          >
-            <DateSelectorComponent
-              @current-date-change="
-                loadPosts({ currentPage: usePost().getCurrentPage() as string })
-              "
-            ></DateSelectorComponent>
-          </ion-item-divider>
-        </ion-toolbar>
-      </ion-header>
-      <!-- end dae selector -->
-
-      <!-- posts -->
-      <section v-if="usePost().getPosts()!.length>0">
-        <ion-row class="center">
-          <ion-col
-            v-for="( post,indexPost ) in usePost().getPosts()!"
-            :key="post.id"
-            size-xs="12"
-            size-md="12"
-            size-lg="10"
-            size-xl="8"
-          >
-            <ion-card
-              v-if="(post.createdAt!).split('T')[0]==usePost().getCurrentPage() as string"
-              style="cursor: pointer"
-              :class="{
-                'element-post-selected': elementPostHover == indexPost,
-                'element-post-no-selected': elementPostHover != indexPost,
-              }"
-              @click="openPost(post.id!)"
-              @mouseenter="elementPostHover = indexPost"
-              @mouseleave="elementPostHover = -1"
+      <section class="section-options">
+        <ion-row>
+          <!-- date selector -->
+          <ion-col size="6">
+            <div
+              v-if="usePost().getDates()!.length>0 && usePost().getCurrentPage()!=undefined"
+              style="float: left"
             >
-              <ion-row
-                class="ion-padding-top ion-padding-start ion-padding-bottom"
-              >
-                <ion-col size-xs="12" size-md="4">
-                  <img :src="(post.cover.source!)" />
-                </ion-col>
+              <DateSelectorComponent
+                @current-date-change="
+                  loadPosts({
+                    currentPage: usePost().getCurrentPage() as string,
+                  })
+                "
+              ></DateSelectorComponent>
+            </div>
+          </ion-col>
+          <!-- end dae selector -->
 
-                <ion-col size-xs="12" size-md="6">
-                  <h2 style="margin-top: 4px; font-size: 18px">
-                    {{ post.title }}
-                  </h2>
-                </ion-col>
-              </ion-row>
-
-              <ion-item
+          <!-- more options -->
+          <ion-col size="6">
+            <div style="float: right">
+              <!-- button add postt -->
+              <ion-button
                 v-if="useUser().user.value.isAdmin"
-                button
-                lines="none"
-                class="transparent"
+                fill="clear"
+                @click="addPost()"
               >
-                <ion-button
-                  slot="end"
-                  :disabled="spinners.buttonEditPost == post.id!"
-                  fill="clear"
-                  @click="updatePost(post.id!)"
-                >
-                  <ion-icon
-                    v-if="spinners.buttonEditPost == '' || spinners.buttonEditPost != post.id!"
-                    slot="start"
-                    :icon="createOutline"
-                  ></ion-icon>
-                </ion-button>
+                <ion-icon
+                  v-if="spinners.buttonAddNewPost == false"
+                  :icon="addOutline"
+                ></ion-icon>
+                <ion-spinner
+                  v-if="spinners.buttonAddNewPost"
+                  name="crescent"
+                  color="primary"
+                ></ion-spinner>
+              </ion-button>
 
-                <ion-button
-                  slot="end"
-                  fill="clear"
-                  @click="deletePost({ id: post.id! })"
-                >
-                  <ion-icon
-                    slot="start"
-                    :icon="trashOutline"
-                    color="danger"
-                  ></ion-icon>
-                </ion-button>
-              </ion-item>
-            </ion-card>
+              <!-- button search post -->
+              <ion-button id="open-modal-search-post" fill="clear">
+                <ion-icon :icon="searchOutline"></ion-icon>
+              </ion-button>
+
+              <!-- button refresh content -->
+              <ion-button @click="refreshContent()" fill="clear">
+                <ion-icon :icon="refreshOutline"></ion-icon>
+              </ion-button>
+            </div>
           </ion-col>
         </ion-row>
       </section>
-      <!-- end posts -->
+
+      <!-- posts -->
+      <section v-if="usePost().getPosts()!.length>0">
+        <ion-row>
+          <ion-col size="12">
+            <ion-card class="card-main-content">
+              <ion-card-content>
+                <ion-row class="center">
+                  <ion-col
+                    v-for="( post,indexPost ) in usePost().getPosts()!"
+                    :key="post.id"
+                    size-xs="12"
+                    size-md="12"
+                    size-lg="10"
+                    size-xl="8"
+                  >
+                    <ion-card
+                      v-if="(post.createdAt!).split('T')[0]==usePost().getCurrentPage() as string"
+                      style="cursor: pointer"
+                      :class="{
+                        'element-post-selected': elementPostHover == indexPost,
+                        'element-post-no-selected':
+                          elementPostHover != indexPost,
+                      }"
+                      @click="openPost(post.id!)"
+                      @mouseenter="elementPostHover = indexPost"
+                      @mouseleave="elementPostHover = -1"
+                    >
+                      <ion-row
+                        class="ion-padding-top ion-padding-start ion-padding-bottom"
+                      >
+                        <ion-col size-xs="12" size-md="4">
+                          <img :src="(post.cover.source!)" />
+                        </ion-col>
+
+                        <ion-col size-xs="12" size-md="6">
+                          <h2 style="margin-top: 4px; font-size: 18px">
+                            {{ post.title }}
+                          </h2>
+                        </ion-col>
+                      </ion-row>
+
+                      <ion-item
+                        v-if="useUser().user.value.isAdmin"
+                        lines="none"
+                        class="transparent"
+                      >
+                        <ion-button
+                          slot="end"
+                          :disabled="spinners.buttonEditPost == post.id!"
+                          fill="clear"
+                          @click="updatePost(post.id!)"
+                        >
+                          <ion-icon
+                            v-if="spinners.buttonEditPost == '' || spinners.buttonEditPost != post.id!"
+                            slot="start"
+                            :icon="createOutline"
+                          ></ion-icon>
+                        </ion-button>
+
+                        <ion-button
+                          slot="end"
+                          fill="clear"
+                          @click="deletePost({ id: post.id! })"
+                        >
+                          <ion-icon
+                            slot="start"
+                            :icon="trashOutline"
+                            color="danger"
+                          ></ion-icon>
+                        </ion-button>
+                      </ion-item>
+                    </ion-card>
+                  </ion-col>
+                </ion-row>
+              </ion-card-content>
+            </ion-card>
+            <!-- end posts -->
+          </ion-col>
+        </ion-row>
+      </section>
 
       <section v-if="usePost().getPosts()!.length == 0 && loadFinished">
         <div class="align-vertical">
@@ -190,6 +172,49 @@
           </div>
         </div>
       </section>
+
+      <!-- modals -->
+      <!-- modal search posts -->
+      <ion-modal
+        ref="modalSearchPosts"
+        trigger="open-modal-search-post"
+        :mode="modeDesingElements"
+      >
+        <ion-header mode="ios">
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button @click="closeModalSearchPosts()">
+                <ion-icon :icon="closeOutline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+
+            <ion-title>Busqueda</ion-title>
+          </ion-toolbar>
+
+          <ion-toolbar>
+            <ion-searchbar
+              :debounce="350"
+              @ion-change="
+                searchPosts({
+                  search: $event.detail.value as string,
+                  refetch: true,
+                })
+              "
+            ></ion-searchbar>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content class="ion-padding">
+          <ion-item
+            v-for="result in searchResult"
+            :key="result.id"
+            button
+            @click="openPostSearch({ id: result.id })"
+          >
+            <ion-label>{{ result.title }}</ion-label>
+          </ion-item>
+        </ion-content>
+      </ion-modal>
     </ion-content>
   </ion-page>
 </template>
@@ -414,5 +439,10 @@ async function openPostSearch(params: { id: string }) {
 
 .element-post-no-selected {
   border: 1px solid var(--ion-background-color);
+}
+
+.card-main-content {
+  max-height: 82vh;
+  overflow: auto;
 }
 </style>
