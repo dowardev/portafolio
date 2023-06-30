@@ -1,32 +1,16 @@
 <template>
   <ion-app>
-    <MqResponsive target="lg+">
-      <ion-split-pane when="lg" content-id="main" type="overlay">
-        <ion-menu
-          content-id="main"
-          menu-id="mainMenu"
-          style="--side-max-width: 200px; border-right-width: 0px"
-        >
-          <MenuComponent></MenuComponent>
-        </ion-menu>
-
-        <div id="main" class="ion-page">
-            <ion-router-outlet />
-        </div>
-      </ion-split-pane>
-    </MqResponsive>
-
-    <MqResponsive target="md-">
-      <ion-menu content-id="main" menu-id="mainMenu">
+    <ion-split-pane when="lg" content-id="main" type="overlay">
+      <ion-menu
+        content-id="main"
+        menu-id="mainMenu"
+        style="--side-max-width: 200px; border-right-width: 0px"
+      >
         <MenuComponent></MenuComponent>
       </ion-menu>
 
-      <div id="main" class="ion-page">
-        <ion-content class="ion-padding">
-          <ion-router-outlet />
-        </ion-content>
-      </div>
-    </MqResponsive>
+        <ion-router-outlet id="main" />
+    </ion-split-pane>
   </ion-app>
 </template>
 
@@ -60,12 +44,15 @@ store.create();
 const router = useRouter();
 
 // mounted
-onMounted(() => {
+onMounted(async () => {
   createFirstCookie();
-  getTheme().then((response) => {
-    const theme = response;
-    setTheme({ theme: theme });
-  });
+
+  await useSystem().loadThemeSelected();
+  const theme = useSystem().getTheme();
+  console.log(theme)
+  setTheme({ theme: theme, currentTheme: theme });
+  await useSystem().updateThemeSelected({ theme });
+
   loadUserProps();
 });
 

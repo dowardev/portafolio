@@ -58,6 +58,16 @@ export const useSystem = () => {
     await toast.present();
   }
 
+  async function loadThemeSelected() {
+    const theme =
+      (await getThemeService()) != null ? await getThemeService() : "light";
+    systemStore.setThemeSelected({ theme });
+  }
+
+  function getTheme() {
+    return systemStore.getThemeSelected();
+  }
+
   function applyTheme(params: { theme: Theme }) {
     const theme = params.theme;
     const currentTheme = getTheme();
@@ -70,14 +80,12 @@ export const useSystem = () => {
     await saveThemeService({ theme });
   }
 
-  function getTheme() {
-    return systemStore.getThemeSelected();
-  }
-
   return {
     reportError,
     openToastError,
     updateThemeSelected,
     applyTheme,
+    loadThemeSelected,
+    getTheme,
   };
 };
