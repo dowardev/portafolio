@@ -12,6 +12,7 @@
           'element-post-selected': elementPostHover == indexSkill,
           'element-post-no-selected': elementPostHover != indexSkill,
         }"
+class="blur-element"
         @mouseenter="elementPostHover = indexSkill"
         @mouseleave="elementPostHover = -1"
       >

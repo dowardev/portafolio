@@ -95,6 +95,11 @@ ion-accordion > div[slot="content"] {
   background: var(--ion-background-light-color) !important;
 }
 
-.section-options>ion-row {
+.section-options > ion-row {
   height: 58px;
+}
+
+.blur-element {
+  background-color: rgba(var(--ion-background-light-color-rgb), 0.41);
+  backdrop-filter: blur(16px);
 }

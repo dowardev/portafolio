@@ -31,10 +31,13 @@
         </ion-col>
       </ion-row>
 
+      <section class="section-options">
+      </section>
+
       <ion-row class="center center-vertical-card-login">
         <ion-col size="12" size-lg="6" size-xl="4" class="card-form">
           <section class="center">
-            <ion-card>
+            <ion-card class="blur-element">
               <ion-card-content>
                 <div class="center">
                   <img
