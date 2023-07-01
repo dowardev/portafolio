@@ -1,11 +1,6 @@
 <template>
   <ion-page>
-    <ion-header
-      :translucent="true"
-      collapse="fade"
-      mode="ios"
-      class="ion-no-border"
-    >
+    <ion-header collapse="fade" mode="ios" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button fill="clear" @click="router.go(-1)">
@@ -14,164 +9,180 @@
         </ion-buttons>
 
         <ion-title>{{ pageTitle }}</ion-title>
-
-        <ion-buttons slot="end">
-          <!-- save -->
-          <ion-button @click="save()" :disabled="v$.$invalid">
-            <ion-icon
-              v-if="spinnerSavePost == false"
-              slot="start"
-              :icon="saveOutline"
-            ></ion-icon>
-            <ion-spinner
-              v-if="spinnerSavePost"
-              name="crescent"
-              color="primary"
-            ></ion-spinner>
-          </ion-button>
-
-          <ion-button id="click-trigger-more-options">
-            <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
-          </ion-button>
-          <ion-popover
-            trigger="click-trigger-more-options"
-            trigger-action="click"
-            :backdrop-dismiss="true"
-            :mode="modeDesingElements"
-          >
-            <ion-content>
-              <MqResponsive target="xs">
-                <ion-item lines="none" button @click="openModalPreview()">
-                  <ion-icon
-                    slot="start"
-                    :icon="eyeOutline"
-                    color="primary"
-                  ></ion-icon>
-                  <ion-label class="ion-text-wrap">Previsualizacion</ion-label>
-                </ion-item>
-              </MqResponsive>
-
-              <!-- input image -->
-              <ion-item
-                button
-                lines="none"
-                :disabled="spinnerSaveImage"
-                @click="($refs as any).inputImage.click()"
-              >
-                <ion-icon
-                  v-if="spinnerSaveImage == false"
-                  slot="start"
-                  :icon="imagesOutline"
-                  color="primary"
-                ></ion-icon>
-
-                <ion-label class="ion-text-wrap">Subir multimedia</ion-label>
-
-                <ion-spinner
-                  v-if="spinnerSaveImage"
-                  name="crescent"
-                  color="primary"
-                ></ion-spinner>
-              </ion-item>
-              <input
-                ref="inputImage"
-                accept="image/*"
-                type="file"
-                style="display: none"
-                @change="uploadImage(($event.target as any).files[0]!)"
-              />
-            </ion-content>
-          </ion-popover>
-        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense" mode="ios">
-        <ion-toolbar>
-          <ion-title size="large">{{ pageTitle }}</ion-title>
-        </ion-toolbar>
-      </ion-header>
+      <section class="section-options">
+        <ion-row>
+          <ion-col size="12">
+            <div style="float: right">
+              <!-- save -->
+              <ion-button fill="clear" :disabled="v$.$invalid" @click="save()">
+                <ion-icon
+                  v-if="spinnerSavePost == false"
+                  slot="start"
+                  :icon="saveOutline"
+                ></ion-icon>
+                <ion-spinner
+                  v-if="spinnerSavePost"
+                  name="crescent"
+                  color="primary"
+                ></ion-spinner>
+              </ion-button>
 
-      <!-- title -->
+              <ion-button id="click-trigger-more-options" fill="clear">
+                <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-col>
+        </ion-row>
+      </section>
+
       <ion-row>
         <ion-col>
-          <ion-input
-            ref="inputPostTitle"
-            label="Titulo"
-            label-placement="floating"
-            fill="solid"
-            autocorrect="on"
-            pattern="text"
-            :error-text="v$.postTitle.$errors[0]?.$message as string"
-            :class="[
-              v$.postTitle.$errors.length == 0 ? 'ion-valid' : 'ion-invalid',
-            ]"
-            :value="postTitle"
-            :spellcheck="true"
-            @ion-input="postTitle = $event.target.value as string"
-            @ion-focus="
-              ($refs.inputPostTitle as any).$el.classList.add('ion-touched');
-              v$.postTitle.$touch();
-            "
-          >
-          </ion-input>
+          <ion-card class="card-main-content">
+            <ion-card-content>
+              <!-- title -->
+              <ion-row>
+                <ion-col>
+                  <ion-input
+                    ref="inputPostTitle"
+                    label="Titulo"
+                    label-placement="floating"
+                    fill="solid"
+                    autocorrect="on"
+                    pattern="text"
+                    :error-text="v$.postTitle.$errors[0]?.$message as string"
+                    :class="[
+                      v$.postTitle.$errors.length == 0
+                        ? 'ion-valid'
+                        : 'ion-invalid',
+                    ]"
+                    :value="postTitle"
+                    :spellcheck="true"
+                    @ion-input="postTitle = $event.target.value as string"
+                    @ion-focus="
+                      ($refs.inputPostTitle as any).$el.classList.add(
+                        'ion-touched'
+                      );
+                      v$.postTitle.$touch();
+                    "
+                  >
+                  </ion-input>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col>
+                  <!-- input cover -->
+                  <ion-item
+                    button
+                    lines="full"
+                    fill="solid"
+                    @click="($refs as any).inputPostCover.click()"
+                  >
+                    <ion-label slot="start">Portada</ion-label>
+                    <input
+                      ref="inputPostCover"
+                      style="display: none"
+                      accept="image/*"
+                      type="file"
+                      @change="uploadCover(($event.target as any).files[0]!)"
+                      @click="v$.coverSource.$touch()"
+                    />
+                    <ion-label slot="end">{{ coverName }}</ion-label>
+                  </ion-item>
+                  <div
+                    v-for="(error, index) of (v$ as any).coverSource.$errors"
+                    :key="index"
+                    class="ion-padding-start"
+                  >
+                    <span class="error" style="font-size: 12px">{{
+                      error.$message
+                    }}</span>
+                  </div>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <!-- content -->
+                <ion-col size="12" size-md="12" size-lg="12" class="editor">
+                  <MdEditor
+                    v-model="postContent"
+                    theme="dark"
+                    :toolbars="
+                      isPlatform('mobile') ? toolbarMobile : toolbarDesktop
+                    "
+                    :language="'en-US'"
+                    :preview="false"
+                    style="
+                      height: calc(87vh - 50px);
+                      overflow: scroll;
+                      width: 100%;
+                      margin-top: 18px;
+                      --md-bk-color: var(--ion-background-color-rgb);
+                      --md-color: var(--ion-color-primary);
+                    "
+                    @on-upload-img="uploadImage($event[0])"
+                  />
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+          </ion-card>
         </ion-col>
       </ion-row>
 
-      <ion-row>
-        <ion-col>
-          <!-- input cover -->
+      <!-- popovers -->
+      <ion-popover
+        trigger="click-trigger-more-options"
+        trigger-action="click"
+        :backdrop-dismiss="true"
+        :mode="modeDesingElements"
+      >
+        <ion-content>
+          <MqResponsive target="xs">
+            <ion-item lines="none" button @click="openModalPreview()">
+              <ion-icon
+                slot="start"
+                :icon="eyeOutline"
+                color="primary"
+              ></ion-icon>
+              <ion-label class="ion-text-wrap">Previsualizacion</ion-label>
+            </ion-item>
+          </MqResponsive>
+
+          <!-- input image -->
           <ion-item
             button
-            lines="full"
-            fill="solid"
-            @click="($refs as any).inputPostCover.click()"
+            lines="none"
+            :disabled="spinnerSaveImage"
+            @click="($refs as any).inputImage.click()"
           >
-            <ion-label slot="start">Portada</ion-label>
-            <input
-              ref="inputPostCover"
-              style="display: none"
-              accept="image/*"
-              type="file"
-              @change="uploadCover(($event.target as any).files[0]!)"
-              @click="v$.coverSource.$touch()"
-            />
-            <ion-label slot="end">{{ coverName }}</ion-label>
-          </ion-item>
-          <div
-            v-for="(error, index) of (v$ as any).coverSource.$errors"
-            :key="index"
-            class="ion-padding-start"
-          >
-            <span class="error" style="font-size: 12px">{{
-              error.$message
-            }}</span>
-          </div>
-        </ion-col>
-      </ion-row>
+            <ion-icon
+              v-if="spinnerSaveImage == false"
+              slot="start"
+              :icon="imagesOutline"
+              color="primary"
+            ></ion-icon>
 
-      <ion-row>
-        <!-- content -->
-        <ion-col size="12" size-md="12" size-lg="12">
-          <MdEditor
-            v-model="postContent"
-            theme="dark"
-            :toolbars="isPlatform('mobile') ? toolbarMobile : toolbarDesktop"
-            :language="'en-US'"
-            :preview="false"
-            style="
-              height: calc(87vh - 50px);
-              overflow: scroll;
-              width: 100%;
-              margin-top: 18px;
-              --md-bk-color: var(--ion-background-color-rgb);
-              --md-color: var(--ion-color-primary);
-            "
-            @on-upload-img="uploadImage($event[0])"
+            <ion-label class="ion-text-wrap">Subir multimedia</ion-label>
+
+            <ion-spinner
+              v-if="spinnerSaveImage"
+              name="crescent"
+              color="primary"
+            ></ion-spinner>
+          </ion-item>
+          <input
+            ref="inputImage"
+            accept="image/*"
+            type="file"
+            style="display: none"
+            @change="uploadImage(($event.target as any).files[0]!)"
           />
-        </ion-col>
-      </ion-row>
+        </ion-content>
+      </ion-popover>
     </ion-content>
   </ion-page>
 </template>
@@ -346,26 +357,25 @@ async function openModalPreview() {
   font-size: 1.2rem;
   line-height: 2em;
 }
+
+.editor > #md-editor-v3 {
+  height: calc(87vh - 228px) !important;
+}
+
+.card-main-content {
+  height: calc(100vh - 142px);
+}
+
+ion-content,
+.editor {
+  --overflow: hidden;
+}
+
 @media only screen and (min-width: 768px) {
   .editor {
     height: calc(87vh - 50px);
-    overflow: scroll;
     font-size: 1.2rem;
     line-height: 2em;
-    margin-top: 20px;
   }
 }
-.cm-line {
-  color: red !important;
-}
 </style>
-
-<!-- <style> -->
-<!-- .cm-content, -->
-<!-- .cm-line, -->
-<!-- .cli, -->
-<!-- .clk { -->
-<!--   color: var(--ion-color-primary) !important; -->
-<!-- } -->
-<!---->
-<!-- </style> -->
