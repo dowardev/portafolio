@@ -81,7 +81,7 @@ type Mutation {
             resolver: "App\\GraphQL\\Resolvers\\post\\CreatePostResolver@resolve"
         )
 
-    updatePost(input: UpdatePostInput @spread): Boolean
+    updatePost(input: UpdatePostInput @spread): UpdatePostPayload
         @field(
             resolver: "App\\GraphQL\\Resolvers\\post\\UpdatePostResolver@resolve"
         )
@@ -294,7 +294,8 @@ type Image {
     source: String!
 }
 type UploadImagePayload {
-    image: Image!
+    id:String!
+    path: String
 }
 type GetImagePayload {
     image: Image!
@@ -313,4 +314,7 @@ input ContactInput {
 type searchPosts {
     id: ID!
     title: String!
+}
+type UpdatePostPayload {
+    state: Boolean!
 }

@@ -32,12 +32,8 @@ class UploadImageResolver
       'path' => $path,
     ]);
     return [
-      'image' => [
-        'source' => base64_encode(Storage::disk('tmp')->get($filename)),
         'id' => $image->id,
         'path' => $image->path,
-        'name' => $image->name,
-      ],
     ];
   }
 }
