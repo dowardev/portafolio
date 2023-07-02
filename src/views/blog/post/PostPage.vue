@@ -25,15 +25,6 @@
           :collapse="true"
         >
         </ion-buttons>
-
-        <ion-buttons slot="end">
-          <ion-button
-            v-if="hideIndexContentComponentvalue == false"
-            @click="openModalIndexContent()"
-          >
-            <ion-icon :icon="menuOutline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
@@ -45,13 +36,25 @@
         <ion-row>
           <ion-col size="12">
             <div style="float: right">
-              <ion-button fill="clear" @click="updatePost()">
-                <ion-icon :icon="createOutline"></ion-icon>
-              </ion-button>
+              <section v-if="useUser().user.value.isAdmin">
+                <ion-button fill="clear" @click="updatePost()">
+                  <ion-icon :icon="createOutline"></ion-icon>
+                </ion-button>
 
-              <ion-button fill="clear" @click="deletePost()">
-                <ion-icon :icon="trashOutline" color="danger"></ion-icon>
-              </ion-button>
+                <ion-button fill="clear" @click="deletePost()">
+                  <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+                </ion-button>
+              </section>
+
+              <section>
+                <ion-button
+                  v-if="hideIndexContentComponentvalue == false"
+                  fill="clear"
+                  @click="openModalIndexContent()"
+                >
+                  <ion-icon :icon="menuOutline"></ion-icon>
+                </ion-button>
+              </section>
             </div>
           </ion-col>
         </ion-row>
@@ -59,7 +62,7 @@
 
       <!-- content -->
       <ion-row>
-        <ion-col size="9" ref="el">
+        <ion-col ref="el" size-xs="12" size-md="9">
           <ion-card class="main-content">
             <MdPreview
               style="
@@ -285,7 +288,7 @@ async function openModalIndexContent() {
   const modal = await modalController.create({
     component: modalIndexContent,
     componentProps: {
-      indexContent: indexContent,
+      indexContent: indexContent.value,
     },
   });
   modal.present();
