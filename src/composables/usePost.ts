@@ -1,12 +1,14 @@
 import { usePostStore } from "../store/postStore";
 import { storeToRefs } from "pinia";
-import { Graphql, Post } from "../services/interfaces";
+import { Graphql, Post, UpdatePost } from "../services/interfaces";
 import {
   getPosts as getPostsService,
   getPost as getPostService,
   getPostsDates,
   deletePost as deletePostService,
   searchPosts as searchPostsService,
+  updatePost as updatePostService,
+  uploadImage as uploadImageService,
 } from "../services/post";
 import { useSystem } from "./useSystem";
 
@@ -74,7 +76,7 @@ export const usePost = () => {
     return postRefs.dates ? postRefs.dates.value : undefined;
   }
 
-  function getCurrentPage(): string|undefined{
+  function getCurrentPage(): string | undefined {
     return postRefs.currentPage.value ? postRefs.currentPage.value : undefined;
   }
 
@@ -111,6 +113,40 @@ export const usePost = () => {
     }
   }
 
+  async function updatePost(params: { post: UpdatePost }): Promise<void> {
+    const { id, title, content, cover } = params.post;
+    const coverData = {
+      id: cover.id,
+      name: cover.name,
+      source: cover.source,
+    };
+
+    try {
+      await updatePostService({
+        post: params.post,
+      });
+
+      postStore.updatePost({
+        post: {
+          id,
+          title,
+          content,
+          cover: coverData,
+        },
+      });
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
+  async function updateCover(params: {
+    image: string;
+  }): Promise<{ id: string; path: string }> {
+    const { image } = params;
+    const { id, path } = await uploadImageService({ image });
+    return { id, path };
+  }
+
   return {
     // functions
     deletePost,
@@ -123,5 +159,7 @@ export const usePost = () => {
     loadPosts,
     updateCurrentPage,
     searchPosts,
+    updatePost,
+    updateCover,
   };
 };

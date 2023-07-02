@@ -12,7 +12,7 @@ export const usePostStore = defineStore("post", {
   state: (): PostState => ({
     posts: Array<Post>(),
     dates: Array<string>(),
-    currentPage: undefined
+    currentPage: undefined,
   }),
 
   getters: {
@@ -84,6 +84,15 @@ export const usePostStore = defineStore("post", {
 
     updateCurrentPage(params: { currentPage: string }) {
       this.currentPage = params.currentPage;
+    },
+
+    updatePost(params: { post: Post }) {
+      const post = params.post;
+      this.posts = this.posts.map((element) => {
+        if (element.id == post.id || post.id == post.id)
+          element = { ...element, ...post };
+        return element;
+      });
     },
   },
 });

@@ -1,3 +1,5 @@
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { DocumentNode } from "graphql";
 import gql from "graphql-tag";
 
 // Posts
@@ -46,14 +48,17 @@ export const POST_DATES = gql`
   }
 `;
 
+export const UPDATE_POST = gql`
+  fragment UpdatePost on UpdatePostPayload {
+    state
+  }
+`;
+
 // system
 export const UPLOAD_IMAGE = gql`
   fragment UploadImage on UploadImagePayload {
-    image {
-      id
-      name
-      source
-    }
+    id
+    path
   }
 `;
 
@@ -141,3 +146,67 @@ export const USER_PERMISSIONS = gql`
     }
   }
 `;
+
+export function graphqlMutationBuilder(params: {
+  name: DocumentNode;
+  fragment: string;
+  mutationName: string;
+  inputName?: string;
+}): DocumentNode {
+  const { name, fragment, mutationName, inputName } = params;
+  let query = "" as any;
+
+  if (inputName)
+    query = gql`
+        mutation ${mutationName}($input:${inputName}){
+          ${mutationName}(input: $input){
+           ...${fragment}
+          }
+        }
+        ${name}
+      `;
+
+  if (!inputName)
+    query = gql`
+        mutation ${mutationName}{
+          ${mutationName}{
+           ...${fragment}
+          }
+        }
+        ${name}
+      `;
+
+  return query;
+}
+
+export async function executeGrapQuery(params: {
+  query: any;
+  options: { refetch: boolean };
+}): Promise<any> {
+  const { query, options } = params;
+  const { refetch, result } = useQuery(query, null, {
+    fetchPolicy: "cache-first",
+  });
+  if (options.refetch) await refetch();
+
+  return result;
+}
+
+export function executeGrapMutation(params: {
+  query: any;
+  input?: any;
+}): Promise<any> {
+  const { query, input } = params;
+  const { mutate: mutate, onDone, onError } = useMutation(query);
+
+  if (!input) mutate();
+  if (input) mutate({ input });
+
+  return new Promise((resolve, reject) => {
+    onDone((response) => {
+      resolve(response.data);
+    });
+
+    onError((error) => reject(error));
+  });
+}

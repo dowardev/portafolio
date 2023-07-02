@@ -33,6 +33,7 @@ import {
 import { usePost } from "../../../composables/usePost";
 import { useSystem } from "../../../composables/useSystem";
 import { useRoute, useRouter } from "vue-router";
+import { UpdatePost } from "@/services/interfaces";
 
 const router = useRouter();
 const route = useRoute();
@@ -43,8 +44,8 @@ const idPost = route.params.id as string;
 const title = ref("");
 const content = ref("");
 const cover = ref({ id: "", name: "", source: "" });
-const newImages = Array<string>();
-const images = Array<string>();
+const newImages = ref(Array<string>());
+const images = ref(Array<string>());
 const spinners = { savePost: false, saveImage: false };
 const editorRef = ref(null);
 
@@ -73,11 +74,11 @@ async function getPost() {
     const post = usePost().getPost({
       id: idPost,
     })!;
-    const title = post.title ? post.title : "";
-    const content = post.content ? post.content : "";
-    const coverName = post.cover.name ? post.cover.name : "";
-    const coverId = post.cover.id ? post.cover.id : "";
-    const coverSource = post.cover.source ? post.cover.source : "";
+    const title = post.title ?? "";
+    const content = post.content ?? "";
+    const coverName = post.cover.name ?? "";
+    const coverId = post.cover.id ?? "";
+    const coverSource = post.cover.source ?? "";
 
     if (post) {
       setData({ title, content, coverId, coverName, coverSource });
@@ -119,17 +120,21 @@ async function save(data: {
   const id = idPost as string;
   const title = data.title;
   const content = data.content;
-  const cover = data.cover as any;
-  const coverId = cover.id;
-  let newCoverId = "";
+  const coverData = {
+    id: cover.value.id,
+    name: cover.value.name,
+    source: cover.value.source,
+    newCoverId: "",
+  };
   const newCoverStatus = data.newCoverStatus;
-  const images = newImages;
+  const images = newImages.value;
   const imagesRemoved = getRemovedImages(data.content);
 
   if (newCoverStatus) {
+    alert()
     try {
-      const response = await uploadCover(cover);
-      newCoverId = response as string;
+      const response = await uploadCover({ image: cover.value.source });
+      coverData.newCoverId = response!.id;
     } catch (e: any) {
       console.error(e);
       spinners.savePost = false;
@@ -140,18 +145,18 @@ async function save(data: {
 
   try {
     await updatePost({
-      id,
-      title,
-      content,
-      coverId,
-      newCoverId,
-      images,
-      imagesRemoved,
+      post: {
+        id,
+        title,
+        content,
+        cover: coverData,
+        images,
+        imagesRemoved,
+      },
     });
     await refreshPostsCotent();
     spinners.savePost = false;
     router.go(-1);
-    clearInputs();
     openToast({ message: "Post actualizado" });
   } catch (e: any) {
     console.error(e);
@@ -160,25 +165,9 @@ async function save(data: {
   }
 }
 
-async function updatePost(data: {
-  id: string;
-  title: string;
-  content: string;
-  coverId: string;
-  newCoverId: string;
-  images: Array<string>;
-  imagesRemoved: Array<string>;
-}): Promise<void> {
+async function updatePost(params: { post: UpdatePost }): Promise<void> {
   try {
-    await updatePost({
-      id: data.id,
-      title: data.title,
-      content: data.content,
-      coverId: data.coverId,
-      newCoverId: data.newCoverId,
-      images: data.images,
-      imagesRemoved: data.imagesRemoved,
-    });
+    await usePost().updatePost({ post: params.post });
   } catch (e: any) {
     throw new Error(e);
   }
@@ -200,7 +189,7 @@ async function uploadImage(e: any) {
     content.value =
       '<div class="center"><img src="' + api + '" style="width:80%"/></div>';
 
-    if (response.id) images.push(response.id);
+    if (response.id) images.value.push(response.id);
   } catch (e: any) {
     console.error(e);
     spinners.saveImage = false;
@@ -208,37 +197,29 @@ async function uploadImage(e: any) {
   }
 }
 
-async function uploadCover(image: object): Promise<string | undefined> {
+async function uploadCover(params: {
+  image: string;
+}): Promise<{ id: string } | undefined> {
+  const { image } = params;
   try {
-    const response = await uploadImageService({
-      graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
-      image,
-    });
-    return response.id;
+    const { id } = await usePost().updateCover({ image });
+    return { id };
   } catch (e: any) {
-    console.error(e);
     openToastError(e);
+    throw new Error(e);
   }
-}
-
-function clearInputs() {
-  title.value = "";
-  content.value = "";
-  cover.value.id = "";
-  newImages.length = 0;
-  (editorRef as any).clearInputs();
 }
 
 function getPostImages(content: string) {
   const imageId = content.match(/\bhttp?:\/\/\S+/gi);
   imageId?.forEach((element) => {
-    images.push(element);
+    images.value.push(element);
   });
 }
 
 function getRemovedImages(content: string) {
   const imagesRemoved = Array<string>();
-  images.forEach((element: string) => {
+  images.value.forEach((element: string) => {
     if (content.includes(element) == false) {
       imagesRemoved.push(element.split("=")[1]);
     }

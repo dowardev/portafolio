@@ -309,7 +309,8 @@ function save() {
   const title = postTitle.value;
   const content = postContent.value;
   const cover = coverSource.value;
-  emits("save", { title, content, cover, newCoverStatus });
+  const newCover = newCoverStatus.value;
+  emits("save", { title, content, cover, newCoverStatus: newCover });
 }
 
 async function getImageBase64(e: any): Promise<{ file: string; name: string }> {

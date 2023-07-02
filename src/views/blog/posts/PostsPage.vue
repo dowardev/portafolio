@@ -87,12 +87,12 @@
                         'element-post-no-selected':
                           elementPostHover != indexPost,
                       }"
-                      @click="openPost(post.id!)"
                       @mouseenter="elementPostHover = indexPost"
                       @mouseleave="elementPostHover = -1"
                     >
                       <ion-row
                         class="ion-padding-top ion-padding-start ion-padding-bottom"
+                        @click="openPost(post.id!)"
                       >
                         <ion-col size-xs="12" size-md="4">
                           <img :src="(post.cover.source!)" />

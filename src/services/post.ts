@@ -13,6 +13,14 @@ import apolloClient from "../Apollo";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@vue/apollo-composable";
 import { provideApolloClient } from "@vue/apollo-composable";
+import {
+  executeGrapMutation,
+  graphqlMutationBuilder,
+  POSTS_UPDATE_DETAILS,
+  UPDATE_POST,
+  UPLOAD_IMAGE,
+} from "./graphql";
+import { errorBuilder } from "@/utils/errors";
 provideApolloClient(apolloClient);
 
 export async function createPost(params: CreatePost): Promise<void> {
@@ -55,53 +63,35 @@ export async function createPost(params: CreatePost): Promise<void> {
   });
 }
 
-export async function updatePost(params: UpdatePost): Promise<void> {
-  const {
-    mutate: updatePost,
-    onDone,
-    onError,
-  } = useMutation(
-    gql`
-      mutation UpdatePost(
-        $id: ID!
-        $title: String!
-        $content: String!
-        $coverId: ID!
-        $newCoverId: ID!
-        $images: [String]
-        $imagesRemoved: [String]
-      ) {
-        updatePost(
-          input: {
-            id: $id
-            title: $title
-            content: $content
-            coverId: $coverId
-            newCoverId: $newCoverId
-            images: $images
-            imagesRemoved: $imagesRemoved
-          }
-        )
-      }
-    `,
-    {
-      variables: {
-        id: params.id,
-        title: params.title,
-        content: params.content,
-        coverId: params.coverId,
-        newCoverId: params.newCoverId,
-        images: params.images,
-        imagesRemoved: params.imagesRemoved,
-      },
-    }
-  );
-  updatePost();
+export async function updatePost(params: { post: UpdatePost }): Promise<void> {
+  const { id, title, content, cover, images, imagesRemoved } = params.post;
+  const data = {
+    id,
+    title,
+    content,
+    coverId: cover.id,
+    newCoverId: cover.newCoverId,
+    images,
+    imagesRemoved,
+  };
 
-  return new Promise((resolve, reject) => {
-    onDone(() => resolve());
-    onError((error) => reject(error));
-  });
+  try {
+    const query = graphqlMutationBuilder({
+      name: UPDATE_POST,
+      fragment: "UpdatePost",
+      mutationName: "updatePost",
+      inputName: "UpdatePostInput",
+    });
+
+    await executeGrapMutation({
+      query,
+      input: data,
+    });
+  } catch (error: any) {
+    if (error.message != "Unauthorized")
+      throw errorBuilder({ message: error.message, typeError: "authError" });
+    throw errorBuilder({ message: error.message });
+  }
 }
 
 export async function deletePost(params: DeletePost): Promise<void> {
@@ -279,4 +269,32 @@ export async function searchPosts(params: {
       reject(error);
     });
   });
+}
+
+export async function uploadImage(params: {
+  image: string;
+}): Promise<{ id: string; path: string }> {
+  const { image } = params;
+
+  try {
+    const query = graphqlMutationBuilder({
+      name: UPLOAD_IMAGE,
+      fragment: "UploadImage",
+      mutationName: "uploadImage",
+      inputName: "FileInput",
+    });
+
+    const { id, path } = (
+      await executeGrapMutation({
+        query,
+        input: { file: image },
+      })
+    ).uploadImage;
+
+    return { id, path };
+  } catch (error: any) {
+    if (error.message != "Unauthorized")
+      throw errorBuilder({ message: error.message, typeError: "authError" });
+    throw errorBuilder({ message: error.message });
+  }
 }

@@ -59,11 +59,18 @@ export interface CreatePost {
 }
 
 export interface UpdatePost {
-  id: Post["id"];
-  title: Post["title"];
-  content: Post["content"];
-  coverId: Post["cover"]["id"];
-  newCoverId: string;
+  id?: string;
+  title?: string;
+  content?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  cover: {
+    id?: string;
+    name?: string;
+    path?: string;
+    source?: string;
+    newCoverId: string;
+  };
   images: string[];
   imagesRemoved: string[];
 }

@@ -49,7 +49,6 @@ onMounted(async () => {
 
   await useSystem().loadThemeSelected();
   const theme = useSystem().getTheme();
-  console.log(theme)
   setTheme({ theme: theme, currentTheme: theme });
   await useSystem().updateThemeSelected({ theme });
 
