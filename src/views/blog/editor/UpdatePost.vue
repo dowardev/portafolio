@@ -112,7 +112,7 @@ function setData(data: {
 async function save(data: {
   title: string;
   content: string;
-  cover: object;
+  cover: string;
   newCoverStatus: boolean;
 }) {
   spinners.savePost = true;
@@ -131,7 +131,6 @@ async function save(data: {
   const imagesRemoved = getRemovedImages(data.content);
 
   if (newCoverStatus) {
-    alert()
     try {
       const response = await uploadCover({ image: cover.value.source });
       coverData.newCoverId = response!.id;

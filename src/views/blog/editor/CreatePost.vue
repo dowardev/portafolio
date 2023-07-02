@@ -44,7 +44,7 @@ const spinners = { savePost: false, saveImage: false };
 const editorRef = ref(null);
 
 // functions
-async function save(data: { title: string; content: string; cover: object }) {
+async function save(data: { title: string; content: string; cover: string }) {
   spinners.savePost = true;
 
   const title = data.title;
@@ -53,8 +53,8 @@ async function save(data: { title: string; content: string; cover: object }) {
   let coverId = "";
 
   try {
-    const response = await uploadCover(cover);
-    coverId = response;
+    const response = await uploadCover({ image: cover });
+    coverId = response.id;
   } catch (e: any) {
     console.error(e);
     spinners.savePost = false;
@@ -124,14 +124,13 @@ async function uploadImage(e: any) {
   }
 }
 
-async function uploadCover(image: object): Promise<string> {
+async function uploadCover(params: { image: string }): Promise<{ id: string }> {
+  const { image } = params;
   try {
-    const response = await uploadImageService({
-      image,
-      graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
-    });
-    return response.id!;
+    const { id } = await usePost().updateCover({ image });
+    return { id };
   } catch (e: any) {
+    openToastError(e);
     throw new Error(e);
   }
 }
