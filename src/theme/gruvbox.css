@@ -86,4 +86,7 @@
   --ion-color-step-850: #cec09d;
   --ion-color-step-900: #d8c9a4;
   --ion-color-step-950: #e1d2ab;
+
+  --wallpaper-main-content: url("https://raw.githubusercontent.com/FrenzyExists/wallpapers/main/Gruv/gruv-simplistic-ngo.png");
+  --wallpaper-opacity: 0.2;
 }

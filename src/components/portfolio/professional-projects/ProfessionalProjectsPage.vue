@@ -8,6 +8,7 @@
           'element-post-selected': elementPostHover == index,
           'element-post-no-selected': elementPostHover != index,
         }"
+        class="blur-element"
         @mouseenter="elementPostHover = index"
         @mouseleave="elementPostHover = -1"
       >
@@ -81,7 +82,7 @@
 
               <ion-row>
                 <ion-col size="12">
-                  <ion-text>Enlaces de interes</ion-text>
+                  <ion-text>Enlaces de interés</ion-text>
                 </ion-col>
 
                 <ion-col>
@@ -96,14 +97,14 @@
                     :href="project.appPlayStore"
                     target="_blank"
                     fill="outline"
-                    >Aplicacion movil(Play Store)</ion-button
+                    >Aplicación movil(Play Store)</ion-button
                   >
                   <ion-button
                     v-if="project.sourceCode"
                     :href="project.sourceCode"
                     target="_blank"
                     fill="outline"
-                    >Codigo fuente</ion-button
+                    >Código fuente</ion-button
                   >
                 </ion-col>
               </ion-row>
@@ -114,7 +115,7 @@
         <ion-accordion-group>
           <ion-accordion value="third">
             <ion-item slot="header">
-              <ion-label>Descripcion</ion-label>
+              <ion-label>Descripción</ion-label>
             </ion-item>
             <div slot="content" class="ion-padding">
               {{ project.description }}

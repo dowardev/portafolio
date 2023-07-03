@@ -11,73 +11,72 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <section class="section-options">
-        <ion-row>
-          <!-- date selector -->
-          <ion-col size="6">
-            <div
-              v-if="usePost().getDates()!.length>0 && usePost().getCurrentPage()!=undefined"
-              style="float: left"
-            >
-              <DateSelectorComponent
-                @current-date-change="
-                  loadPosts({
-                    currentPage: usePost().getCurrentPage() as string,
-                  })
-                "
-              ></DateSelectorComponent>
-            </div>
-          </ion-col>
-          <!-- end dae selector -->
+      <ion-row class="center">
+        <ion-col size="11">
+          <section class="section-options">
+            <ion-row>
+              <!-- date selector -->
+              <ion-col size="6">
+                <div
+                  v-if="usePost().getDates()!.length>0 && usePost().getCurrentPage()!=undefined"
+                  style="float: left"
+                >
+                  <DateSelectorComponent
+                    @current-date-change="
+                      loadPosts({
+                        currentPage: usePost().getCurrentPage() as string,
+                      })
+                    "
+                  ></DateSelectorComponent>
+                </div>
+              </ion-col>
+              <!-- end dae selector -->
 
-          <!-- more options -->
-          <ion-col size="6">
-            <div style="float: right">
-              <!-- button add postt -->
-              <ion-button
-                v-if="useUser().user.value.isAdmin"
-                fill="clear"
-                @click="addPost()"
-              >
-                <ion-icon
-                  v-if="spinners.buttonAddNewPost == false"
-                  :icon="addOutline"
-                ></ion-icon>
-                <ion-spinner
-                  v-if="spinners.buttonAddNewPost"
-                  name="crescent"
-                  color="primary"
-                ></ion-spinner>
-              </ion-button>
+              <!-- more options -->
+              <ion-col size="6">
+                <div style="float: right">
+                  <!-- button add postt -->
+                  <ion-button
+                    v-if="useUser().user.value.isAdmin"
+                    fill="clear"
+                    @click="addPost()"
+                  >
+                    <ion-icon
+                      v-if="spinners.buttonAddNewPost == false"
+                      :icon="addOutline"
+                    ></ion-icon>
+                    <ion-spinner
+                      v-if="spinners.buttonAddNewPost"
+                      name="crescent"
+                      color="primary"
+                    ></ion-spinner>
+                  </ion-button>
 
-              <!-- button search post -->
-              <ion-button id="open-modal-search-post" fill="clear">
-                <ion-icon :icon="searchOutline"></ion-icon>
-              </ion-button>
+                  <!-- button search post -->
+                  <ion-button id="open-modal-search-post" fill="clear">
+                    <ion-icon :icon="searchOutline"></ion-icon>
+                  </ion-button>
 
-              <!-- button refresh content -->
-              <ion-button @click="refreshContent()" fill="clear">
-                <ion-icon :icon="refreshOutline"></ion-icon>
-              </ion-button>
-            </div>
-          </ion-col>
-        </ion-row>
-      </section>
+                  <!-- button refresh content -->
+                  <ion-button @click="refreshContent()" fill="clear">
+                    <ion-icon :icon="refreshOutline"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-col>
+            </ion-row>
+          </section>
 
-      <!-- posts -->
-      <section v-if="usePost().getPosts()!.length>0">
-        <ion-row>
-          <ion-col size="12">
-            <ion-card class="card-main-content">
-              <ion-card-content>
-                <ion-row class="center">
+          <!-- posts -->
+          <section v-if="usePost().getPosts()!.length>0">
+            <ion-row>
+              <ion-col size="12" class="main-content">
+                <ion-row class="card-main-content">
                   <ion-col
                     v-for="( post,indexPost ) in usePost().getPosts()!"
                     :key="post.id"
                     size-xs="12"
                     size-md="12"
-                    size-lg="10"
-                    size-xl="8"
+                    size-lg="6"
                   >
                     <ion-card
                       v-if="(post.createdAt!).split('T')[0]==usePost().getCurrentPage() as string"
@@ -87,6 +86,7 @@
                         'element-post-no-selected':
                           elementPostHover != indexPost,
                       }"
+                      class="blur-element"
                       @mouseenter="elementPostHover = indexPost"
                       @mouseleave="elementPostHover = -1"
                     >
@@ -138,12 +138,12 @@
                     </ion-card>
                   </ion-col>
                 </ion-row>
-              </ion-card-content>
-            </ion-card>
-            <!-- end posts -->
-          </ion-col>
-        </ion-row>
-      </section>
+                <!-- end posts -->
+              </ion-col>
+            </ion-row>
+          </section>
+        </ion-col>
+      </ion-row>
 
       <section v-if="usePost().getPosts()!.length == 0 && loadFinished">
         <div class="align-vertical">
@@ -442,7 +442,11 @@ async function openPostSearch(params: { id: string }) {
 }
 
 .card-main-content {
-  max-height: 82vh;
+  height: 82vh;
   overflow: auto;
+}
+
+ion-content {
+  --overflow: hidden;
 }
 </style>

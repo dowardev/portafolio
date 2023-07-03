@@ -15,19 +15,19 @@
     <p class="ion-padding-start">Elije el que mas te guste</p>
 
     <!-- theme selector -->
-    <ion-row v-for="(theme, index) in availableThemes" :key="index">
+    <ion-row>
       <ion-col size="12">
-        <ion-item lines="none"
-          ><ion-label>{{ theme }}</ion-label>
-          <ion-button
-            fill="clear"
-            @click="previewTheme({ name: theme as Theme })"
-            ><ion-icon :icon="eyeOutline"></ion-icon
-          ></ion-button>
-
-          <ion-button fill="clear" @click="applyTheme({ name: theme as Theme })"
-            ><ion-icon :icon="checkmarkOutline"></ion-icon></ion-button
-        ></ion-item>
+        <ion-card>
+          <ion-item
+            v-for="(theme, index) in availableThemes"
+            :key="index"
+            class="transparent"
+            button
+            lines="none"
+            @click="applyTheme({ name: theme as Theme })"
+            ><ion-label>{{ theme }}</ion-label>
+          </ion-item>
+        </ion-card>
       </ion-col>
     </ion-row>
   </ion-content>

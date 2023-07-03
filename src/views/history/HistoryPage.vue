@@ -1,45 +1,51 @@
 <template>
   <ion-row class="ion-padding-start ion-padding-end">
     <ion-col size="12">
-      <p>
-        Soy desarrollador especializado en la creación de aplicaciones
-        multiplataforma usando tecnologías web, tengo {{ edad }} años de edad y
-        a continuación te contaré un poco más sobre mi historia.
-        <br />
-        Inicie con en el desarrollado de sitios Web en el año 2016 donde empecé
-        con las tres tecnologías básicas HTML, CSS y JavaScript, por motivos de
-        seguir con mis estudios dejé un poco de lado esto y no fue hasta el 2018
-        donde lo retome, pero esta vez introduciéndome al BackEnd con Laravel,
-        con el paso del tiempo fui aprendiendo otras tecnologías FrontEnd como
-        Materialize y Bootstrap.
-        <br />
-        En el 2020 decidí emprender como freelance en la plataforma de Workana,
-        con el pasar del tiempo fui adquiriendo otras habilidades como Vue y
-        Angular.
-        <br />
-        A mediados del 2020 comencé a trabajar con Ionic lo cual me permitiría
-        desarrollar aplicaciones multiplataforma(PWA, Android, iOS), al mismo
-        tiempo me permitía pulir mis conocimientos con los Frameworks Vue y
-        Angular.
-        <br />
-        Durante el año 2021 seguí trabajando como freelance en la plataforma de
-        Workana, pero decidí hacer una pausa para trabajar en mis proyectos
-        personales, además de seguir puliendo mis habilidades, así fue como en
-        el año 2022 pase de trabajar con Api-Rest a GraphQL conocimiento el cual
-        integre en el blog que empece a desarrollar durante este mismo año.
-        <br />
-        Tengo la firme creencia en que nuestros pensamientos tienen una fuerte
-        influencia sobre nosotros y la siguiente frase lo define perfectamente:
-        <br />
-        Todo está en nuestras mentes, tanto si crees que puedes como que no
-        puedes estás en lo correcto. Henry Ford
-      </p>
+      <ion-card class="blur-element">
+        <ion-card-content>
+          <p>
+            Soy desarrollador especializado en la creación de aplicaciones
+            multiplataforma usando tecnologías web, tengo {{ edad }} años de
+            edad y a continuación te contaré un poco más sobre mi historia.
+            <br />
+            Inicie con en el desarrollado de sitios Web en el año 2016 donde
+            empecé con las tres tecnologías básicas HTML, CSS y JavaScript, por
+            motivos de seguir con mis estudios dejé un poco de lado esto y no
+            fue hasta el 2018 donde lo retome, pero esta vez introduciéndome al
+            BackEnd con Laravel, con el paso del tiempo fui aprendiendo otras
+            tecnologías FrontEnd como Materialize y Bootstrap.
+            <br />
+            En el 2020 decidí emprender como freelance en la plataforma de
+            Workana, con el pasar del tiempo fui adquiriendo otras habilidades
+            como Vue y Angular.
+            <br />
+            A mediados del 2020 comencé a trabajar con Ionic lo cual me
+            permitiría desarrollar aplicaciones multiplataforma(PWA, Android,
+            iOS), al mismo tiempo me permitía pulir mis conocimientos con los
+            Frameworks Vue y Angular.
+            <br />
+            Durante el año 2021 seguí trabajando como freelance en la plataforma
+            de Workana, pero decidí hacer una pausa para trabajar en mis
+            proyectos personales, además de seguir puliendo mis habilidades, así
+            fue como en el año 2022 pase de trabajar con Api-Rest a GraphQL
+            conocimiento el cual integre en el blog que empece a desarrollar
+            durante este mismo año.
+            <br />
+            Tengo la firme creencia en que nuestros pensamientos tienen una
+            fuerte influencia sobre nosotros y la siguiente frase lo define
+            perfectamente:
+            <br />
+            Todo está en nuestras mentes, tanto si crees que puedes como que no
+            puedes estás en lo correcto. Henry Ford
+          </p>
+        </ion-card-content>
+      </ion-card>
     </ion-col>
   </ion-row>
 
   <div class="timeline">
     <div class="container left">
-      <ion-card>
+      <ion-card class="blur-element">
         <ion-card-header>
           <ion-card-title> 2016 </ion-card-title>
           <ion-card-subtitle>
@@ -56,7 +62,7 @@
     </div>
 
     <div class="container right">
-      <ion-card>
+      <ion-card class="blur-element">
         <ion-card-header>
           <ion-card-title> 2018 </ion-card-title>
           <ion-card-subtitle>
@@ -73,7 +79,7 @@
     </div>
 
     <div class="container left">
-      <ion-card>
+      <ion-card class="blur-element">
         <ion-card-header>
           <ion-card-title> 2020 </ion-card-title>
           <ion-card-subtitle>
@@ -92,7 +98,7 @@
     </div>
 
     <div class="container right">
-      <ion-card>
+      <ion-card class="blur-element">
         <ion-card-header>
           <ion-card-title> 2022 </ion-card-title>
           <ion-card-subtitle>

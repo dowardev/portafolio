@@ -61,27 +61,35 @@
       </section>
 
       <!-- content -->
-      <ion-row>
-        <ion-col ref="el" size-xs="12" size-md="9">
-          <ion-card class="main-content">
-            <MdPreview
-              style="
-                --md-bk-color: var(--ion-background-color-rgb);
-                --md-color: var(--ion-text-color);
-              "
-              :model-value="usePost().getPost({ id: postId })!.content"
-              theme="dark"
-            />
-          </ion-card>
-        </ion-col>
+      <ion-row class="center">
+        <ion-col ref="el" size="11" class="main-content">
+          <ion-row class="center">
+            <ion-col size-xs="12" size-md="9">
+              <ion-card class="blur-element section-content">
+                <MdPreview
+                  style="
+                    --md-bk-color: var(--ion-background-color-rgb);
+                    --md-color: var(--ion-text-color);
+                  "
+                  :model-value="usePost().getPost({ id: postId })!.content"
+                  theme="dark"
+                />
+              </ion-card>
+            </ion-col>
 
-        <ion-col size="3" v-if="hideIndexContentComponentvalue">
-          <!-- index content -->
-          <indexContentComponent
-            :index-content="indexContent"
-            :auto-hide-content="hideContentIndexValue"
-            @element-id="goToSection({ id: $event })"
-          />
+            <ion-col
+              size="3"
+              v-if="hideIndexContentComponentvalue"
+              class="ion-padding-top"
+            >
+              <!-- index content -->
+              <indexContentComponent
+                :index-content="indexContent"
+                :auto-hide-content="hideContentIndexValue"
+                @element-id="goToSection({ id: $event })"
+              />
+            </ion-col>
+          </ion-row>
         </ion-col>
       </ion-row>
     </ion-content>
@@ -310,68 +318,25 @@ function clearHeadings() {
   font-size: 12px !important;
 }
 
-.content-container {
-  width: 100%;
+.card-main-content {
+  height: 82vh;
+  overflow: hidden;
 }
 
-.content-container > div {
-  display: flex;
-  justify-content: center;
-}
-
-.content-container > div > div {
-  width: 100%;
-}
-
-.main-content {
-  max-height: 82vh;
+.section-content {
+  height: calc(100vh - 172px);
   overflow: auto;
 }
 
-@media only screen and (min-width: 768px) {
-  .content-container {
-    width: 100%;
-  }
-
-  .content-container > div {
-    display: flex;
-    justify-content: center;
-  }
-
-  .content-container > div > div {
-    width: 70%;
-  }
+ion-content {
+  --overflow: hidden;
 }
 
-@media only screen and (min-width: 992px) {
-  .content-container {
-    width: 70%;
-  }
-
-  .content-container > div {
-    display: flex;
-    justify-content: center;
-  }
-
-  .content-container > div > div {
-    width: 60%;
-  }
+.section-content::-webkit-scrollbar {
+  display: none;
 }
 
 @media only screen and (min-width: 1200px) {
-  .content-container {
-    width: 70vw;
-  }
-
-  .content-container > div {
-    display: flex;
-    justify-content: center;
-  }
-
-  .content-container > div > div {
-    width: 60%;
-  }
-
   .indexContent {
     display: block;
   }

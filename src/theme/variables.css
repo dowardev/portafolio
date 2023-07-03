@@ -35,9 +35,9 @@ ion-title {
 p,
 ol,
 ul {
-  font-family: OpenSans-Regular;
-  font-size: 1.2rem;
-  line-height: 2em;
+  font-family: OpenSans-Regular !important;
+  font-size: 1.2rem !important;
+  line-height: 2em !important;
 }
 
 ion-text,
@@ -100,6 +100,18 @@ ion-accordion > div[slot="content"] {
 }
 
 .blur-element {
-  background-color: rgba(var(--ion-background-light-color-rgb), 0.41);
-  backdrop-filter: blur(16px);
+  background-color: rgba(var(--ion-background-light-color-rgb), 0.4);
+  backdrop-filter: blur(6px);
+}
+
+.main-content {
+  background-image: var(--wallpaper-main-content);
+  background-size: cover;
+  background-position: center;
+ border-radius: 6px; 
+}
+
+.main-content::before {
+  width: 100%;
+  background-color: rgba(0, 0, 0, var(--wallpaper-opacity));
 }

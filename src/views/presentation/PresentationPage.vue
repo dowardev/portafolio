@@ -13,55 +13,67 @@
     </ion-header>
 
     <ion-content>
-      <section class="section-options">
-        <ion-row>
-          <ion-col size="12">
-            <div class="main-section">
-              <ion-segment
-                :value="mainSegment"
-                @ion-change="mainSegment = $event.detail.value as string"
-              >
-                <ion-segment-button value="skills"
-                  >Habilidades</ion-segment-button
-                >
-                <ion-segment-button value="history"
-                  >Historia</ion-segment-button
-                >
-                <ion-segment-button value="portfolio"
-                  >Portfolio</ion-segment-button
-                >
-              </ion-segment>
-            </div>
-          </ion-col>
-        </ion-row>
-      </section>
-
-      <ion-row>
-        <ion-col>
-          <ion-card class="card-main-content">
+      <ion-row class="center">
+        <ion-col size="11">
+          <section class="section-options">
             <ion-row>
-              <ion-col size="12" size-lg="6">
-                <InformationComponent />
-              </ion-col>
-
-              <ion-col size="12" size-lg="6">
-                <div v-if="mainSegment == 'skills'" class="components-section">
-                  <SkillsPage />
-                </div>
-
-                <div v-if="mainSegment == 'history'" class="components-section">
-                  <HistoryPage />
-                </div>
-
-                <div
-                  v-if="mainSegment == 'portfolio'"
-                  class="components-section"
-                >
-                  <PortfolioPage />
+              <ion-col size="12">
+                <div class="main-section center">
+                  <ion-segment
+                    :value="mainSegment"
+                    @ion-change="mainSegment = $event.detail.value as string"
+                  >
+                    <ion-segment-button value="skills"
+                      >Habilidades</ion-segment-button
+                    >
+                    <ion-segment-button value="history"
+                      >Historia</ion-segment-button
+                    >
+                    <ion-segment-button value="portfolio"
+                      >Portfolio</ion-segment-button
+                    >
+                  </ion-segment>
                 </div>
               </ion-col>
             </ion-row>
-          </ion-card>
+          </section>
+
+          <section>
+            <ion-row>
+              <ion-col size="12" class="main-content">
+                <ion-row>
+                  <ion-col size="12" size-lg="6">
+                    <ion-card class="blur-element">
+                      <InformationComponent />
+                    </ion-card>
+                  </ion-col>
+
+                  <ion-col size="12" size-lg="6">
+                    <div
+                      v-if="mainSegment == 'skills'"
+                      class="components-section"
+                    >
+                      <SkillsPage />
+                    </div>
+
+                    <div
+                      v-if="mainSegment == 'history'"
+                      class="components-section"
+                    >
+                      <HistoryPage />
+                    </div>
+
+                    <div
+                      v-if="mainSegment == 'portfolio'"
+                      class="components-section"
+                    >
+                      <PortfolioPage />
+                    </div>
+                  </ion-col>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </section>
         </ion-col>
       </ion-row>
     </ion-content>

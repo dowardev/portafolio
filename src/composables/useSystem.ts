@@ -60,7 +60,7 @@ export const useSystem = () => {
 
   async function loadThemeSelected() {
     const theme =
-      (await getThemeService()) != null ? await getThemeService() : "light";
+      (await getThemeService()) != null ? await getThemeService() : "gruvbox";
     systemStore.setThemeSelected({ theme });
   }
 
