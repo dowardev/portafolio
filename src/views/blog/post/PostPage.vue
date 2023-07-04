@@ -34,7 +34,7 @@
     >
       <section class="section-options">
         <ion-row>
-          <ion-col size="12">
+          <ion-col size-xs="12" size-md="11">
             <div style="float: right">
               <section v-if="useUser().user.value.isAdmin">
                 <ion-button fill="clear" @click="updatePost()">

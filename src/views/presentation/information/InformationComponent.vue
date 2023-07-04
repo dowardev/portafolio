@@ -1,350 +1,363 @@
 <template>
-  <ion-row class="ion-padding center">
-    <ion-col size="12" class="center">
-      <img
-        src="@/assets/portafolio/foto_perfil.jpg"
-        alt=""
-        class="img-perfil"
-      />
-    </ion-col>
-  </ion-row>
-
   <ion-row>
-    <ion-col size="12">
-      <div class="center">
-        <div class="letters">
-          <span class="letter">G</span>
-          <span class="letter">o</span>
-          <span class="letter">n</span>
-          <span class="letter">z</span>
-          <span class="letter">a</span>
-          <span class="letter">l</span>
-          <span class="letter">o</span>
-          <span class="letter"></span>
-          <span class="letter">P</span>
-          <span class="letter">o</span>
-          <span class="letter">n</span>
-          <span class="letter">c</span>
-          <span class="letter">e</span>
-          <span class="letter"></span>
-        </div>
-      </div>
+    <ion-col>
+      <ion-card class="blur-element">
+        <ion-row class="ion-padding center">
+          <ion-col size="12" class="center">
+            <img
+              src="@/assets/portafolio/foto_perfil.jpg"
+              alt=""
+              class="img-perfil"
+            />
+          </ion-col>
+        </ion-row>
 
-      <ion-row>
-        <ion-col class="center">
-          <!-- mail -->
-          <ion-button
-            id="click-trigger-bussiness-email"
-            fill="clear"
-            @mouseover="fillEmailContact = '#d94f4f'"
-            @mouseleave="fillEmailContact = '#777777'"
-          >
-            <ion-icon
-              slot="start"
-              :style="{ color: fillEmailContact }"
-              :icon="mail"
-            ></ion-icon>
-          </ion-button>
+        <ion-row>
+          <ion-col size="12">
+            <div class="center">
+              <div class="letters">
+                <span class="letter">G</span>
+                <span class="letter">o</span>
+                <span class="letter">n</span>
+                <span class="letter">z</span>
+                <span class="letter">a</span>
+                <span class="letter">l</span>
+                <span class="letter">o</span>
+                <span class="letter"></span>
+                <span class="letter">P</span>
+                <span class="letter">o</span>
+                <span class="letter">n</span>
+                <span class="letter">c</span>
+                <span class="letter">e</span>
+                <span class="letter"></span>
+              </div>
+            </div>
 
-          <ion-popover
-            trigger="click-trigger-bussiness-email"
-            trigger-action="click"
-            :dismiss-on-select="true"
-          >
-            <ion-content>
-              <!-- professional mail -->
-              <ion-list>
-                <ion-list-header>
-                  <ion-label> Profesional</ion-label>
-                </ion-list-header>
-                <ion-item
-                  button
-                  lines="none"
-                  @click="copyToClipboard({ text: 'contacto@dowar.xyz' })"
+            <ion-row>
+              <ion-col class="center">
+                <!-- mail -->
+                <ion-button
+                  id="click-trigger-bussiness-email"
+                  fill="clear"
+                  @mouseover="fillEmailContact = '#d94f4f'"
+                  @mouseleave="fillEmailContact = '#777777'"
                 >
                   <ion-icon
                     slot="start"
-                    :icon="copyOutline"
-                    color="primary"
+                    :style="{ color: fillEmailContact }"
+                    :icon="mail"
                   ></ion-icon>
+                </ion-button>
 
-                  <ion-label class="ion-text-wrap"
-                    >Copiar correo electronico</ion-label
-                  >
-                </ion-item>
+                <ion-popover
+                  trigger="click-trigger-bussiness-email"
+                  trigger-action="click"
+                  :dismiss-on-select="true"
+                >
+                  <ion-content>
+                    <!-- professional mail -->
+                    <ion-list>
+                      <ion-list-header>
+                        <ion-label> Profesional</ion-label>
+                      </ion-list-header>
+                      <ion-item
+                        button
+                        lines="none"
+                        @click="copyToClipboard({ text: 'contacto@dowar.xyz' })"
+                      >
+                        <ion-icon
+                          slot="start"
+                          :icon="copyOutline"
+                          color="primary"
+                        ></ion-icon>
 
-                <ion-item
+                        <ion-label class="ion-text-wrap"
+                          >Copiar correo electronico</ion-label
+                        >
+                      </ion-item>
+
+                      <ion-item
+                        lines="none"
+                        button
+                        @click="
+                          openMail({
+                            mail: 'contacto@dowar.xyz',
+                            subject: 'Contacto%20laboral',
+                          })
+                        "
+                      >
+                        <ion-icon
+                          slot="start"
+                          :icon="openOutline"
+                          color="primary"
+                        ></ion-icon>
+                        <ion-label class="ion-text-wrap"
+                          >Abrir cliente de correo</ion-label
+                        >
+                      </ion-item>
+                    </ion-list>
+
+                    <!-- help mail -->
+                    <ion-list>
+                      <ion-list-header>
+                        <ion-label> Ayuda</ion-label>
+                      </ion-list-header>
+                      <ion-item
+                        button
+                        lines="none"
+                        @click="copyToClipboard({ text: 'ayuda@dowar.xyz' })"
+                      >
+                        <ion-icon
+                          slot="start"
+                          :icon="copyOutline"
+                          color="primary"
+                        ></ion-icon>
+
+                        <ion-label class="ion-text-wrap"
+                          >Copiar correo electronico</ion-label
+                        >
+                      </ion-item>
+
+                      <ion-item
+                        lines="none"
+                        button
+                        @click="
+                          openMail({
+                            mail: 'ayuda@dowar.xyz',
+                            subject: 'Ayuda',
+                          })
+                        "
+                      >
+                        <ion-icon
+                          slot="start"
+                          :icon="openOutline"
+                          color="primary"
+                        ></ion-icon>
+                        <ion-label class="ion-text-wrap"
+                          >Abrir cliente de correo</ion-label
+                        >
+                      </ion-item>
+                    </ion-list>
+                  </ion-content>
+                </ion-popover>
+
+                <!-- LinkedIn -->
+                <ion-button
+                  id="click-trigger-bussiness-linkedin"
                   lines="none"
-                  button
-                  @click="
-                    openMail({
-                      mail: 'contacto@dowar.xyz',
-                      subject: 'Contacto%20laboral',
-                    })
-                  "
+                  fill="clear"
+                  @mouseover="fillLinkedIn = '#0074b1'"
+                  @mouseleave="fillLinkedIn = '#777777'"
                 >
                   <ion-icon
                     slot="start"
-                    :icon="openOutline"
-                    color="primary"
+                    :style="{ color: fillLinkedIn }"
+                    :icon="logoLinkedin"
                   ></ion-icon>
-                  <ion-label class="ion-text-wrap"
-                    >Abrir cliente de correo</ion-label
-                  >
-                </ion-item>
-              </ion-list>
+                </ion-button>
 
-              <!-- help mail -->
-              <ion-list>
-                <ion-list-header>
-                  <ion-label> Ayuda</ion-label>
-                </ion-list-header>
-                <ion-item
+                <ion-popover
+                  trigger="click-trigger-bussiness-linkedin"
+                  trigger-action="click"
+                  :dismiss-on-select="true"
+                >
+                  <ion-content>
+                    <ion-item
+                      button
+                      lines="none"
+                      @click="copyToClipboard({ text: 'dowar' })"
+                    >
+                      <ion-icon
+                        slot="start"
+                        :icon="copyOutline"
+                        color="primary"
+                      ></ion-icon>
+                      <ion-label class="ion-text-wrap"
+                        >Copiar usuario</ion-label
+                      >
+                    </ion-item>
+
+                    <ion-item
+                      button
+                      lines="none"
+                      @click="
+                        copyToClipboard({
+                          text: 'https://www.linkedin.com/in/dowar/',
+                        })
+                      "
+                    >
+                      <ion-icon
+                        slot="start"
+                        :icon="copyOutline"
+                        color="primary"
+                      ></ion-icon>
+
+                      <ion-label class="ion-text-wrap">Copiar enlace</ion-label>
+                    </ion-item>
+
+                    <ion-item
+                      button
+                      href="https://www.linkedin.com/in/dowar/"
+                      target="_blank"
+                      lines="none"
+                    >
+                      <ion-icon
+                        slot="start"
+                        :icon="openOutline"
+                        color="primary"
+                      ></ion-icon>
+                      <ion-label class="ion-text-wrap">Abrir perfil</ion-label>
+                    </ion-item>
+                  </ion-content>
+                </ion-popover>
+
+                <!-- contact form -->
+                <ion-button
+                  id="open-modal-cocntacto-form"
                   button
+                  fill="clear"
                   lines="none"
-                  @click="copyToClipboard({ text: 'ayuda@dowar.xyz' })"
+                  @mouseover="fillContactForm = '#4dba87'"
+                  @mouseleave="fillContactForm = defaultColorFill"
                 >
                   <ion-icon
                     slot="start"
-                    :icon="copyOutline"
-                    color="primary"
+                    :icon="chatbubble"
+                    :style="{ color: fillContactForm }"
                   ></ion-icon>
+                </ion-button>
+                <ion-modal ref="modal" trigger="open-modal-cocntacto-form">
+                  <ContactModal />
+                </ion-modal>
 
-                  <ion-label class="ion-text-wrap"
-                    >Copiar correo electronico</ion-label
-                  >
-                </ion-item>
-
-                <ion-item
+                <!-- mastodon -->
+                <ion-button
+                  id="click-trigger-mastodon"
                   lines="none"
-                  button
-                  @click="
-                    openMail({ mail: 'ayuda@dowar.xyz', subject: 'Ayuda' })
-                  "
+                  fill="clear"
+                  @mouseover="fillMastodon = '#2791da'"
+                  @mouseleave="fillMastodon = '#777777'"
                 >
                   <ion-icon
                     slot="start"
-                    :icon="openOutline"
-                    color="primary"
+                    :style="{ color: fillMastodon }"
+                    :icon="logoMastodon"
                   ></ion-icon>
-                  <ion-label class="ion-text-wrap"
-                    >Abrir cliente de correo</ion-label
-                  >
-                </ion-item>
-              </ion-list>
-            </ion-content>
-          </ion-popover>
+                </ion-button>
 
-          <!-- LinkedIn -->
-          <ion-button
-            id="click-trigger-bussiness-linkedin"
-            lines="none"
-            fill="clear"
-            @mouseover="fillLinkedIn = '#0074b1'"
-            @mouseleave="fillLinkedIn = '#777777'"
-          >
-            <ion-icon
-              slot="start"
-              :style="{ color: fillLinkedIn }"
-              :icon="logoLinkedin"
-            ></ion-icon>
-          </ion-button>
+                <ion-popover
+                  trigger="click-trigger-mastodon"
+                  trigger-action="click"
+                  :dismiss-on-select="true"
+                >
+                  <ion-content>
+                    <ion-item
+                      button
+                      lines="none"
+                      @click="
+                        copyToClipboard({
+                          text: '@dowar@mastodon.social',
+                        })
+                      "
+                    >
+                      <ion-icon
+                        slot="start"
+                        :icon="copyOutline"
+                        color="primary"
+                      ></ion-icon>
+                      <ion-label class="ion-text-wrap"
+                        >Copiar usuario</ion-label
+                      >
+                    </ion-item>
 
-          <ion-popover
-            trigger="click-trigger-bussiness-linkedin"
-            trigger-action="click"
-            :dismiss-on-select="true"
-          >
-            <ion-content>
-              <ion-item
-                button
-                lines="none"
-                @click="copyToClipboard({ text: 'dowar' })"
-              >
-                <ion-icon
-                  slot="start"
-                  :icon="copyOutline"
-                  color="primary"
-                ></ion-icon>
-                <ion-label class="ion-text-wrap">Copiar usuario</ion-label>
-              </ion-item>
+                    <ion-item
+                      button
+                      lines="none"
+                      @click="
+                        copyToClipboard({
+                          text: 'https://mastodon.social/web/@dowar',
+                        })
+                      "
+                    >
+                      <ion-icon
+                        slot="start"
+                        :icon="copyOutline"
+                        color="primary"
+                      ></ion-icon>
 
-              <ion-item
-                button
-                lines="none"
-                @click="
-                  copyToClipboard({
-                    text: 'https://www.linkedin.com/in/dowar/',
-                  })
-                "
-              >
-                <ion-icon
-                  slot="start"
-                  :icon="copyOutline"
-                  color="primary"
-                ></ion-icon>
+                      <ion-label class="ion-text-wrap">Copiar enlace</ion-label>
+                    </ion-item>
 
-                <ion-label class="ion-text-wrap">Copiar enlace</ion-label>
-              </ion-item>
+                    <ion-item
+                      button
+                      href="https://mastodon.social/web/@dowar"
+                      target="_blank"
+                      lines="none"
+                    >
+                      <ion-icon
+                        slot="start"
+                        :icon="openOutline"
+                        color="primary"
+                      ></ion-icon>
+                      <ion-label class="ion-text-wrap">Abrir perfil</ion-label>
+                    </ion-item>
+                  </ion-content>
+                </ion-popover>
 
-              <ion-item
-                button
-                href="https://www.linkedin.com/in/dowar/"
-                target="_blank"
-                lines="none"
-              >
-                <ion-icon
-                  slot="start"
-                  :icon="openOutline"
-                  color="primary"
-                ></ion-icon>
-                <ion-label class="ion-text-wrap">Abrir perfil</ion-label>
-              </ion-item>
-            </ion-content>
-          </ion-popover>
+                <!-- matrix -->
+                <ion-button
+                  id="click-trigger-matrix"
+                  lines="none"
+                  fill="clear"
+                  @mouseleave="matrixImage = matrixGrayImage"
+                  @mouseover="matrixImage = matrixBlackImage"
+                >
+                  <img :src="matrixImage" style="width: 26px" />
+                </ion-button>
 
-          <!-- contact form -->
-          <ion-button
-            id="open-modal-cocntacto-form"
-            button
-            fill="clear"
-            lines="none"
-            @mouseover="fillContactForm = '#4dba87'"
-            @mouseleave="fillContactForm = defaultColorFill"
-          >
-            <ion-icon
-              slot="start"
-              :icon="chatbubble"
-              :style="{ color: fillContactForm }"
-            ></ion-icon>
-          </ion-button>
-          <ion-modal ref="modal" trigger="open-modal-cocntacto-form">
-            <ContactModal />
-          </ion-modal>
+                <ion-popover
+                  trigger="click-trigger-matrix"
+                  trigger-action="click"
+                  :dismiss-on-select="true"
+                >
+                  <ion-content>
+                    <ion-item
+                      button
+                      lines="none"
+                      @click="
+                        copyToClipboard({
+                          text: 'https://matrix.to/#/#dowarCommunity:matrix.org',
+                        })
+                      "
+                    >
+                      <ion-icon
+                        slot="start"
+                        :icon="copyOutline"
+                        color="primary"
+                      ></ion-icon>
+                      <ion-label class="ion-text-wrap">Copiar enlace</ion-label>
+                    </ion-item>
 
-          <!-- mastodon -->
-          <ion-button
-            id="click-trigger-mastodon"
-            lines="none"
-            fill="clear"
-            @mouseover="fillMastodon = '#2791da'"
-            @mouseleave="fillMastodon = '#777777'"
-          >
-            <ion-icon
-              slot="start"
-              :style="{ color: fillMastodon }"
-              :icon="logoMastodon"
-            ></ion-icon>
-          </ion-button>
-
-          <ion-popover
-            trigger="click-trigger-mastodon"
-            trigger-action="click"
-            :dismiss-on-select="true"
-          >
-            <ion-content>
-              <ion-item
-                button
-                lines="none"
-                @click="
-                  copyToClipboard({
-                    text: '@dowar@mastodon.social',
-                  })
-                "
-              >
-                <ion-icon
-                  slot="start"
-                  :icon="copyOutline"
-                  color="primary"
-                ></ion-icon>
-                <ion-label class="ion-text-wrap">Copiar usuario</ion-label>
-              </ion-item>
-
-              <ion-item
-                button
-                lines="none"
-                @click="
-                  copyToClipboard({
-                    text: 'https://mastodon.social/web/@dowar',
-                  })
-                "
-              >
-                <ion-icon
-                  slot="start"
-                  :icon="copyOutline"
-                  color="primary"
-                ></ion-icon>
-
-                <ion-label class="ion-text-wrap">Copiar enlace</ion-label>
-              </ion-item>
-
-              <ion-item
-                button
-                href="https://mastodon.social/web/@dowar"
-                target="_blank"
-                lines="none"
-              >
-                <ion-icon
-                  slot="start"
-                  :icon="openOutline"
-                  color="primary"
-                ></ion-icon>
-                <ion-label class="ion-text-wrap">Abrir perfil</ion-label>
-              </ion-item>
-            </ion-content>
-          </ion-popover>
-
-          <!-- matrix -->
-          <ion-button
-            id="click-trigger-matrix"
-            lines="none"
-            fill="clear"
-            @mouseleave="matrixImage = matrixGrayImage"
-            @mouseover="matrixImage = matrixBlackImage"
-          >
-            <img :src="matrixImage" style="width: 26px" />
-          </ion-button>
-
-          <ion-popover
-            trigger="click-trigger-matrix"
-            trigger-action="click"
-            :dismiss-on-select="true"
-          >
-            <ion-content>
-              <ion-item
-                button
-                lines="none"
-                @click="
-                  copyToClipboard({
-                    text: 'https://matrix.to/#/#dowarCommunity:matrix.org',
-                  })
-                "
-              >
-                <ion-icon
-                  slot="start"
-                  :icon="copyOutline"
-                  color="primary"
-                ></ion-icon>
-                <ion-label class="ion-text-wrap">Copiar enlace</ion-label>
-              </ion-item>
-
-              <ion-item
-                button
-                href="https://matrix.to/#/#dowarCommunity:matrix.org"
-                target="_blank"
-                lines="none"
-              >
-                <ion-icon
-                  slot="start"
-                  :icon="openOutline"
-                  color="primary"
-                ></ion-icon>
-                <ion-label class="ion-text-wrap">Abrir</ion-label>
-              </ion-item>
-            </ion-content>
-          </ion-popover>
-        </ion-col>
-      </ion-row>
+                    <ion-item
+                      button
+                      href="https://matrix.to/#/#dowarCommunity:matrix.org"
+                      target="_blank"
+                      lines="none"
+                    >
+                      <ion-icon
+                        slot="start"
+                        :icon="openOutline"
+                        color="primary"
+                      ></ion-icon>
+                      <ion-label class="ion-text-wrap">Abrir</ion-label>
+                    </ion-item>
+                  </ion-content>
+                </ion-popover>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+      </ion-card>
     </ion-col>
   </ion-row>
 </template>

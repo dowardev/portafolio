@@ -12,7 +12,7 @@
 
     <ion-content :fullscreen="true">
       <ion-row class="center">
-        <ion-col size="11">
+        <ion-col size-xs="12" size-md="11">
           <section class="section-options">
             <ion-row>
               <!-- date selector -->

@@ -14,7 +14,7 @@
 
     <ion-content>
       <ion-row class="center">
-        <ion-col size="11">
+        <ion-col size-xs="12" size-md="11">
           <section class="section-options">
             <ion-row>
               <ion-col size="12">
@@ -43,9 +43,7 @@
               <ion-col size="12" class="main-content">
                 <ion-row>
                   <ion-col size="12" size-lg="6">
-                    <ion-card class="blur-element">
-                      <InformationComponent />
-                    </ion-card>
+                    <InformationComponent />
                   </ion-col>
 
                   <ion-col size="12" size-lg="6">

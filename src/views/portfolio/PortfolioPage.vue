@@ -19,21 +19,17 @@
     </ion-select>
   </div>
 
-  <ion-row>
-    <ion-col>
-      <div v-if="typeContent == 'projectsP'">
-        <ProfessionalProjectsPage></ProfessionalProjectsPage>
-      </div>
+  <div v-if="typeContent == 'projectsP'">
+    <ProfessionalProjectsPage></ProfessionalProjectsPage>
+  </div>
 
-      <div v-if="typeContent == 'shares'">
-        <participationsPage></participationsPage>
-      </div>
+  <div v-if="typeContent == 'shares'">
+    <participationsPage></participationsPage>
+  </div>
 
-      <div v-if="typeContent == 'projectsB'">
-        <BloglProjectsPage></BloglProjectsPage>
-      </div>
-    </ion-col>
-  </ion-row>
+  <div v-if="typeContent == 'projectsB'">
+    <BloglProjectsPage></BloglProjectsPage>
+  </div>
 </template>
 
 <script setup lang="ts">

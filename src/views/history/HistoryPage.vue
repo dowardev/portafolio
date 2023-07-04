@@ -1,5 +1,5 @@
 <template>
-  <ion-row class="ion-padding-start ion-padding-end">
+  <ion-row >
     <ion-col size="12">
       <ion-card class="blur-element">
         <ion-card-content>
