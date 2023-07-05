@@ -1,191 +1,142 @@
 <template>
-  <ion-page>
-    <ion-header
-      :translucent="true"
-      collapse="fade"
-      mode="ios"
-      class="ion-no-border"
-    >
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-menu-button
-            menu="mainMenu"
-            :smode="modeDesingElements"
-          ></ion-menu-button>
-        </ion-buttons>
-        <ion-title>Iniciar sesión</ion-title>
-      </ion-toolbar>
-    </ion-header>
+  <section class="center">
+    <ion-card class="blur-element">
+      <ion-card-content>
+        <div class="center">
+          <img
+            src="../../../assets/otros/key.png"
+            alt=""
+            class="imagen-usuario"
+          />
+        </div>
+        <form>
+          <ion-item lines="inset" class="transparent">
+            <ion-icon slot="start" :icon="mailOpenOutline" class="item-icon">
+            </ion-icon>
 
-    <ion-content :fullscreen="true">
-      <img
-        src="https://image.winudf.com/v2/image/Y29tLnNhcmFzLkJlc3RNaW5pbWFsaXN0V2FsbHBhcGVyX3NjcmVlbl81Xzk4dHZtbnNw/screen-5.jpg?h=800&fakeurl=1&type=.jpg"
-        class="img-fondo"
-        style="opacity: 90%"
-      />
-      <ion-row class="ion-padding">
-        <ion-col size="12">
-          <h1 style="color: white !important">
-            Hola, es un gusto tenerte de vuelta
-          </h1>
-        </ion-col>
-      </ion-row>
+            <ion-label position="floating">
+              Usuario o correo electrónico
+            </ion-label>
 
-      <ion-row class="center center-vertical-card-login">
-        <ion-col size="12" size-lg="6" size-xl="4" class="card-form">
-          <section class="center">
-            <ion-card class="blur-element">
-              <ion-card-content>
-                <div class="center">
-                  <img
-                    src="../../../assets/otros/key.png"
-                    alt=""
-                    class="imagen-usuario"
-                  />
-                </div>
-                <form>
-                  <ion-item lines="inset" class="transparent">
-                    <ion-icon
-                      slot="start"
-                      :icon="mailOpenOutline"
-                      class="item-icon"
-                    >
-                    </ion-icon>
-
-                    <ion-label position="floating">
-                      Usuario o correo electrónico
-                    </ion-label>
-
-                    <ion-input
-                      v-model="form.email"
-                      type="email"
-                      @keydown.enter="
-                        ($refs as any).inputPassword.$el.setFocus()
-                      "
-                    >
-                    </ion-input>
-                  </ion-item>
-                  <div
-                    v-for="(error, index) of (v$ as any).form['email'].$errors"
-                    :key="index"
-                  >
-                    <div class="error">{{ error.$message }}</div>
-                  </div>
-
-                  <ion-item lines="inset" class="transparent">
-                    <ion-icon
-                      slot="start"
-                      :icon="fingerPrintOutline"
-                      class="item-icon"
-                    >
-                    </ion-icon>
-                    <ion-label position="floating">Contraseña</ion-label>
-                    <ion-input
-                      ref="inputPassword"
-                      v-model="form.password"
-                      :type="inputTypePassword"
-                      @keydown.enter="login()"
-                    >
-                    </ion-input>
-                    <ion-button
-                      v-if="inputTypePassword == 'text'"
-                      slot="end"
-                      style="margin-top: 20px"
-                      fill="clear"
-                      @click="inputTypePassword = 'password'"
-                    >
-                      <ion-icon :icon="eyeOffOutline"></ion-icon>
-                    </ion-button>
-                    <ion-button
-                      v-if="inputTypePassword == 'password'"
-                      slot="end"
-                      fill="clear"
-                      style="margin-top: 20px"
-                      @click="inputTypePassword = 'text'"
-                    >
-                      <ion-icon :icon="eyeOutline"></ion-icon>
-                    </ion-button>
-                  </ion-item>
-
-                  <div
-                    v-for="(error, index) of (v$ as any).form.password.$errors"
-                    :key="index"
-                  >
-                    <div class="error">{{ error.$message }}</div>
-                  </div>
-                </form>
-
-                <ion-button
-                  fill="clear"
-                  :disabled="(v$ as any).form.$invalid || spinners.buttonLogin"
-                  expand="full"
-                  @click="login()"
-                >
-                  <ion-label v-if="spinners.buttonLogin == false">
-                    Iniciar sesión</ion-label
-                  >
-                  <ion-spinner
-                    v-if="spinners.buttonLogin"
-                    name="crescent"
-                  ></ion-spinner>
-                </ion-button>
-              </ion-card-content>
-            </ion-card>
-          </section>
-
-          <section>
-            <div class="center">
-              <ion-button
-                class="options"
-                fill="clear"
-                :disabled="spinners.buttonForgotPassword"
-                expand="full"
-                size="small"
-                @click="forgotPassword()"
-              >
-                <ion-label v-if="spinners.buttonForgotPassword == false"
-                  >¿Olvidaste la contraseña?</ion-label
-                >
-                <ion-spinner
-                  v-if="spinners.buttonForgotPassword"
-                  name="crescent"
-                ></ion-spinner>
-              </ion-button>
+            <ion-input
+              v-model="form.email"
+              type="email"
+              @keydown.enter="($refs as any).inputPassword.$el.setFocus()"
+            >
+            </ion-input>
+          </ion-item>
+          <div
+            v-for="(error, index) of (v$ as any).form['email'].$errors"
+            :key="index"
+          >
+            <div class="error">
+              {{ error.$message }}
             </div>
+          </div>
 
-            <div class="center">
-              <ion-button
-                class="options"
-                fill="clear"
-                :disabled="spinners.buttonCreateAccount"
-                expand="full"
-                size="small"
-                @click="createAccount()"
-              >
-                <ion-label v-if="spinners.buttonCreateAccount == false"
-                  >Crear cuenta</ion-label
-                >
-                <ion-spinner
-                  v-if="spinners.buttonCreateAccount"
-                  name="crescent"
-                  color="primary"
-                ></ion-spinner>
-              </ion-button>
+          <ion-item lines="inset" class="transparent">
+            <ion-icon slot="start" :icon="fingerPrintOutline" class="item-icon">
+            </ion-icon>
+            <ion-label position="floating">Contraseña</ion-label>
+            <ion-input
+              ref="inputPassword"
+              v-model="form.password"
+              :type="inputTypePassword"
+              @keydown.enter="login()"
+            >
+            </ion-input>
+            <ion-button
+              v-if="inputTypePassword == 'text'"
+              slot="end"
+              style="margin-top: 20px"
+              fill="clear"
+              @click="inputTypePassword = 'password'"
+            >
+              <ion-icon :icon="eyeOffOutline"></ion-icon>
+            </ion-button>
+            <ion-button
+              v-if="inputTypePassword == 'password'"
+              slot="end"
+              fill="clear"
+              style="margin-top: 20px"
+              @click="inputTypePassword = 'text'"
+            >
+              <ion-icon :icon="eyeOutline"></ion-icon>
+            </ion-button>
+          </ion-item>
+
+          <div
+            v-for="(error, index) of (v$ as any).form.password.$errors"
+            :key="index"
+          >
+            <div class="error">
+              {{ error.$message }}
             </div>
-          </section>
-        </ion-col>
-      </ion-row>
-    </ion-content>
-  </ion-page>
+          </div>
+        </form>
+
+        <ion-button
+          fill="clear"
+          :disabled="(v$ as any).form.$invalid || spinners.buttonLogin"
+          expand="full"
+          @click="login()"
+        >
+          <ion-label v-if="spinners.buttonLogin == false">
+            Iniciar sesión</ion-label
+          >
+          <ion-spinner
+            v-if="spinners.buttonLogin"
+            name="crescent"
+          ></ion-spinner>
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </section>
+
+  <section>
+    <div class="center">
+      <ion-button
+        class="options"
+        fill="clear"
+        :disabled="spinners.buttonForgotPassword"
+        expand="full"
+        size="small"
+        @click="forgotPassword()"
+      >
+        <ion-label v-if="spinners.buttonForgotPassword == false"
+          >¿Olvidaste la contraseña?</ion-label
+        >
+        <ion-spinner
+          v-if="spinners.buttonForgotPassword"
+          name="crescent"
+        ></ion-spinner>
+      </ion-button>
+    </div>
+
+    <div class="center">
+      <ion-button
+        class="options"
+        fill="clear"
+        :disabled="spinners.buttonCreateAccount"
+        expand="full"
+        size="small"
+        @click="createAccount()"
+      >
+        <ion-label v-if="spinners.buttonCreateAccount == false"
+          >Crear cuenta</ion-label
+        >
+        <ion-spinner
+          v-if="spinners.buttonCreateAccount"
+          name="crescent"
+          color="primary"
+        ></ion-spinner>
+      </ion-button>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
 import {
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
   toastController,
   alertController,
   IonInput,
@@ -193,8 +144,6 @@ import {
   IonCard,
   IonRow,
   IonCol,
-  IonButtons,
-  IonMenuButton,
   IonItem,
   IonIcon,
   IonLabel,
@@ -423,6 +372,9 @@ async function presentAlertRestorePassword(): Promise<{
 .card-form {
   margin-bottom: 18vh;
 }
+.main-content {
+  background-image: "https://image.winudf.com/v2/image/Y29tLnNhcmFzLkJlc3RNaW5pbWFsaXN0V2FsbHBhcGVyX3NjcmVlbl81Xzk4dHZtbnNw/screen-5.jpg?h=800&fakeurl=1&type=.jpg" !important;
+}
 
 @media only screen and (min-width: 768px) {
   .img-fondo {
@@ -432,6 +384,9 @@ async function presentAlertRestorePassword(): Promise<{
   }
   .card-form {
     margin-top: 0;
+  }
+  .main-section {
+    float: right;
   }
 }
 @media only screen and (min-width: 992px) {

@@ -9,7 +9,7 @@
         <MenuComponent></MenuComponent>
       </ion-menu>
 
-        <ion-router-outlet id="main" />
+      <ion-router-outlet id="main" />
     </ion-split-pane>
   </ion-app>
 </template>

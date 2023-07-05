@@ -17,7 +17,6 @@
         <ion-col size-xs="12" size-md="11">
           <section class="section-options">
             <ion-row>
-              <!-- date selector -->
               <ion-col size="12">
                 <ion-segment
                   v-model="policieSegment"
@@ -39,8 +38,8 @@
 
           <section>
             <ion-row>
-              <ion-col size="12" class="main-content">
-                <ion-row class="description">
+              <ion-col size="12" class="main-content" >
+                <ion-row class="center">
                   <ion-col size-xs="12" size-lg="8">
                     <ion-card
                       class="ion-padding card-main-content blur-element"
@@ -222,11 +221,6 @@ const policieSegment = ref("privacy");
 }
 
 @media only screen and (min-width: 768px) {
-  .description {
-    display: flex;
-    justify-content: center;
-  }
-
   .main-section {
     float: right;
   }

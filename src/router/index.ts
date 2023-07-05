@@ -11,15 +11,15 @@ import UpdatePost from "../views/blog/editor/UpdatePost.vue";
 import BlogPage from "../views/blog/posts/PostsPage.vue";
 import PostPage from "../views/blog/post/PostPage.vue";
 // auth
-import LoginPage from "../views/session/login/LoginPage.vue";
-import SignUpPage from "../views/session/signup/SignUpPage.vue";
 import RestorePasswordPage from "../views/session/restore-password/RestorePasswordPage.vue";
-import PruebaPage from "../views/prueba/Prueba.vue";
+import SessionPage from "../views/session/SessionPage.vue";
 // user
 import UserPanelPage from "../views/user/UserPanelPage.vue";
 // admin
 import AdminPanelPage from "../views/admin/PanelAdminPage.vue";
+
 import NoFoundPage from "../views/404/404Page.vue";
+import PruebaPage from "../views/prueba/Prueba.vue";
 
 import { useUser } from "../composables/useUser";
 import { ROUTER_USER_VALIDATION } from "../services/graphql";
@@ -127,8 +127,9 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/login",
-    name: "LoginPage",
-    component: LoginPage,
+    name: "loginPage",
+    component: SessionPage,
+    props: { type: "login" },
     beforeEnter: async (to, from) => {
       return await userSignOutGuard();
     },
@@ -136,7 +137,8 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/signup",
     name: "SignUpPage",
-    component: SignUpPage,
+    component: SessionPage,
+    props: { type: "signup" },
     beforeEnter: async (to, from) => {
       return await userSignOutGuard();
     },

@@ -1,18 +1,13 @@
-import { System } from "@/services/interfaces";
-import { Theme } from "@/services/types";
+import { System, Theme } from "@/services/interfaces";
 import { defineStore } from "pinia";
 
-interface SystemState {
-  theme: "dark" | "light";
-}
 interface SystemState {
   system: System;
 }
 
 export const useSystemStore = defineStore("system", {
   state: (): SystemState => ({
-    theme: "dark",
-    system: { theme: { selected: "light" } },
+    system: { theme: { selected: "light", options: { blur: false } } },
   }),
 
   getters: {
@@ -21,17 +16,19 @@ export const useSystemStore = defineStore("system", {
     //   if (imageProfile) return "data:image/png;base64," + imageProfile;
     //   return userAvatar;
     // },
+
     getThemeSelected(state) {
-      return () => {
-        return state.system.theme.selected;
+      return (): Theme => {
+        return JSON.parse(JSON.stringify(state.system.theme));
       };
     },
   },
 
   actions: {
     setThemeSelected(params: { theme: Theme }) {
-      const theme = params.theme;
-      this.system.theme.selected = theme;
+      const { theme } = params;
+      this.system.theme = theme;
+      console.log(this.system.theme);
     },
   },
 });

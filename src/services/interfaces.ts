@@ -1,5 +1,5 @@
 import { DocumentNode } from "graphql";
-import { Theme } from "./types";
+import { ThemeType } from "@/utils/types.ts";
 
 export interface Graphql {
   name: DocumentNode;
@@ -266,7 +266,10 @@ export interface ContactMessage {
 
 // system
 export interface System {
-  theme: {
-    selected: Theme;
-  };
+  theme: Theme;
+}
+
+export interface Theme {
+  selected: ThemeType;
+  options?: { blur?: boolean };
 }

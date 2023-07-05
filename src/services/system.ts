@@ -13,33 +13,40 @@ import {
   Loading,
   Toast,
   UploadImage,
+  Theme,
 } from "./interfaces";
 
 import apolloClient from "../Apollo";
 import gql from "graphql-tag";
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { provideApolloClient } from "@vue/apollo-composable";
-import { Theme } from "./types";
-import { ref, watch } from "vue";
-import { isDocumentNode } from "@apollo/client/utilities";
 import { DocumentNode } from "graphql";
 provideApolloClient(apolloClient);
 
 export async function getTheme(): Promise<Theme> {
-  return await storage.get("theme");
+  const theme = await storage.get("theme");
+  return JSON.parse(theme);
 }
 
-export function setTheme(params: { theme: Theme; currentTheme: Theme }) {
+export function setTheme(params: { theme: Theme; currentTheme: Theme }): void {
   const theme = params.theme;
   const currentTheme = params.currentTheme;
 
-  document.getElementsByTagName("body")[0].classList.remove(currentTheme);
-  document.getElementsByTagName("body")[0].classList.add(theme);
+  document
+    .getElementsByTagName("body")[0]
+    .classList.remove(currentTheme.selected);
+  document.getElementsByTagName("body")[0].classList.add(theme.selected);
+
+  if (!theme.options || !theme.options.blur) {
+    document
+      .querySelector(`.${theme.selected}`)
+      .style.setProperty("--blur", "0px");
+  }
 }
 
 export async function saveTheme(params: { theme: Theme }): Promise<void> {
   const theme = params.theme;
-  await storage.set("theme", theme);
+  await storage.set("theme", JSON.stringify(theme));
 }
 
 export async function openToast(params: Toast): Promise<void> {

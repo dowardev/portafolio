@@ -2,10 +2,10 @@ import { modalController, toastController } from "@ionic/vue";
 import { alertCircleOutline, closeOutline } from "ionicons/icons";
 import { storeToRefs } from "pinia";
 import FeedbackPage from "../components/feedback/FeedbackPage.vue";
-import { ReportError } from "../services/interfaces";
+import { ReportError, Theme } from "../services/interfaces";
 import { useSystemStore } from "../store/systemStore";
 import { Storage } from "@ionic/storage";
-import { Theme } from "@/services/types";
+import { Theme as ThemeType } from "@/services/types";
 import {
   getTheme as getThemeService,
   setTheme as setThemeService,
@@ -58,24 +58,26 @@ export const useSystem = () => {
     await toast.present();
   }
 
-  async function loadThemeSelected() {
-    const theme =
-      (await getThemeService()) != null ? await getThemeService() : "gruvbox";
+  async function loadThemeSelected(): Promise<void> {
+    const theme = (await getThemeService()) ?? {
+      selected: "light",
+      options: { blur: false },
+    };
     systemStore.setThemeSelected({ theme });
   }
 
-  function getTheme() {
+  function getTheme(): Theme {
     return systemStore.getThemeSelected();
   }
 
-  function applyTheme(params: { theme: Theme }) {
+  function applyTheme(params: { theme: Theme }): void {
     const theme = params.theme;
     const currentTheme = getTheme();
     setThemeService({ theme, currentTheme });
     systemStore.setThemeSelected({ theme });
   }
 
-  async function updateThemeSelected(params: { theme: Theme }) {
+  async function updateThemeSelected(params: { theme: Theme }): Promise<void> {
     const theme = params.theme;
     await saveThemeService({ theme });
   }

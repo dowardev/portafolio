@@ -2,9 +2,6 @@
 @import url("./nord.css");
 @import url("./light.css");
 
-/* :root { */
-/* } */
-
 @font-face {
   font-family: "OpenSans-Regular";
   src: url("@/assets/fonts/open_sans/static/OpenSans/OpenSans-Regular.ttf");
@@ -44,6 +41,18 @@ ion-text,
 ion-label {
   font-family: OpenSans-Regular;
   line-height: 2em;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ol,
+ul {
+  color: var(--ion-text-color);
 }
 
 .transparent {
@@ -100,18 +109,29 @@ ion-accordion > div[slot="content"] {
 }
 
 .blur-element {
-  background-color: rgba(var(--ion-background-light-color-rgb), 0.4);
-  backdrop-filter: blur(6px);
+  background-color: rgba(
+    var(--ion-background-light-color-rgb),
+    var(--blur-color-opacity)
+  );
+  backdrop-filter: blur(var(--blur));
 }
 
 .main-content {
-  background-image: var(--wallpaper-main-content);
-  background-size: cover;
-  background-position: center;
- border-radius: 6px; 
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .main-content::before {
-  width: 100%;
-  background-color: rgba(0, 0, 0, var(--wallpaper-opacity));
+  border-radius: 6px;
+  content: "";
+  background-image: var(--wallpaper-main-content);
+  background-size: cover;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  opacity: var(--wallpaper-opacity);
 }

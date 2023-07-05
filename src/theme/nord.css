@@ -87,6 +87,8 @@
   --ion-color-step-900: #d9dce2;
   --ion-color-step-950: #e3e6eb;
 
-  --wallpaper-main-content: url("https://raw.githubusercontent.com/FrenzyExists/wallpapers/main/Nord/nord-aquarium.png");
-  --wallpaper-opacity: 0.4;
+  --wallpaper-main-content: url("https://github.com/FrenzyExists/wallpapers/blob/main/Nord/nord-color-blast.png?raw=true");
+  --wallpaper-opacity: 0.2;
+  --blur-color-opacity: 0.2;
+  --blur: 30px;
 }

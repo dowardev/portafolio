@@ -72,14 +72,14 @@
                     --md-color: var(--ion-text-color);
                   "
                   :model-value="usePost().getPost({ id: postId })!.content"
-                  theme="dark"
+                  theme="light"
                 />
               </ion-card>
             </ion-col>
 
             <ion-col
-              size="3"
               v-if="hideIndexContentComponentvalue"
+              size="3"
               class="ion-padding-top"
             >
               <!-- index content -->
@@ -340,5 +340,11 @@ ion-content {
   .indexContent {
     display: block;
   }
+}
+</style>
+<style>
+.default-theme code {
+  --md-theme-code-inline-color: white !important;
+  background-color: var(--ion-color-primary);
 }
 </style>

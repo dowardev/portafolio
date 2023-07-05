@@ -12,20 +12,29 @@
   </ion-header>
 
   <ion-content>
-    <p class="ion-padding-start">Elije el que mas te guste</p>
-
     <!-- theme selector -->
     <ion-row>
       <ion-col size="12">
+        <ion-item button>
+          <ion-toggle
+            label-placement="start"
+            :checked="themeSelected.options?.blur ?? false"
+            @ion-change="setBlurEffect({ value: $event.detail.checked })"
+            >Desenfoque</ion-toggle
+          >
+        </ion-item>
         <ion-card>
           <ion-item
-            v-for="(theme, index) in availableThemes"
+            v-for="(themeName, index) in availableThemes"
             :key="index"
             class="transparent"
             button
             lines="none"
-            @click="applyTheme({ name: theme as Theme })"
-            ><ion-label>{{ theme }}</ion-label>
+            @click="
+              themeSelected.selected = themeName;
+              applyTheme();
+            "
+            ><ion-label>{{ themeName }}</ion-label>
           </ion-item>
         </ion-card>
       </ion-col>
@@ -44,47 +53,45 @@ import {
   IonItem,
   IonLabel,
   modalController,
+  IonToggle,
 } from "@ionic/vue";
-import { ref } from "vue";
+import { onMounted, reactive, } from "vue";
 import {
   checkmarkOutline,
   chevronBackOutline,
   eyeOutline,
 } from "ionicons/icons";
-import { Theme } from "../../services/types";
-import { saveTheme, setTheme } from "../../services/system";
+import { Theme as ThemeType } from "../../services/types";
 import { useSystem } from "@/composables/useSystem";
+import { Theme } from "@/services/interfaces";
 
-const availableThemes: Theme[] = ["light", "nord", "gruvbox"];
+const availableThemes: ThemeType[] = ["light", "nord", "gruvbox"];
 
 const pageTitle = "Selector de tema";
-const themeSelected = ref("");
+let themeSelected = reactive({} as Theme);
+
+onMounted(() => {
+  themeSelected = useSystem().getTheme();
+});
 
 // functions
-function closeModal() {
+function closeModal(): void {
   modalController.dismiss();
 }
 
-function previewTheme(params: { name: Theme }) {
-  const theme = params.name;
-  themeSelected.value = theme;
-
-  document.body.classList.add(theme);
-  themeSelected.value = theme;
-  if (themeSelected.value != "")
-    document
-      .getElementsByTagName("body")[0]
-      .classList.remove(themeSelected.value);
-}
-
-// async function applyTheme(params: { name: Theme }) {
-//   const theme = params.name;
-//   await setTheme({ theme });
-//   saveTheme({ theme });
-// }
-async function applyTheme(params: { name: Theme }) {
-  const theme = params.name;
+async function applyTheme(): Promise<void> {
+  const theme = themeSelected;
   useSystem().applyTheme({ theme });
   useSystem().updateThemeSelected({ theme });
+}
+
+async function setBlurEffect(params: { value: boolean }): Promise<void> {
+  const { value } = params;
+  console.log(value);
+  if (!themeSelected.options) {
+    themeSelected.options = {};
+  }
+  themeSelected.options.blur = value;
+  await applyTheme();
 }
 </script>
