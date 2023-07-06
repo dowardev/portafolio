@@ -55,23 +55,19 @@ import {
   modalController,
   IonToggle,
 } from "@ionic/vue";
-import { onMounted, reactive, } from "vue";
-import {
-  checkmarkOutline,
-  chevronBackOutline,
-  eyeOutline,
-} from "ionicons/icons";
+import { onMounted, reactive } from "vue";
+import { chevronBackOutline } from "ionicons/icons";
 import { Theme as ThemeType } from "../../services/types";
 import { useSystem } from "@/composables/useSystem";
 import { Theme } from "@/services/interfaces";
 
 const availableThemes: ThemeType[] = ["light", "nord", "gruvbox"];
-
 const pageTitle = "Selector de tema";
 let themeSelected = reactive({} as Theme);
+const systemComposable = useSystem();
 
 onMounted(() => {
-  themeSelected = useSystem().getTheme();
+  themeSelected = JSON.parse(JSON.stringify(systemComposable.getTheme()));
 });
 
 // functions
@@ -81,8 +77,7 @@ function closeModal(): void {
 
 async function applyTheme(): Promise<void> {
   const theme = themeSelected;
-  useSystem().applyTheme({ theme });
-  useSystem().updateThemeSelected({ theme });
+  systemComposable.updateStoreTheme({ theme });
 }
 
 async function setBlurEffect(params: { value: boolean }): Promise<void> {

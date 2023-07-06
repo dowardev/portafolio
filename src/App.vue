@@ -50,7 +50,6 @@ onMounted(async () => {
   await useSystem().loadThemeSelected();
   const theme = useSystem().getTheme();
   setTheme({ theme: theme, currentTheme: theme });
-  await useSystem().updateThemeSelected({ theme });
 
   loadUserProps();
 });

@@ -17,7 +17,6 @@ store.create();
 
 export const useSystem = () => {
   const systemStore = useSystemStore();
-  const systemRefs = storeToRefs(systemStore);
 
   async function reportError(params: ReportError) {
     const type = params.type;
@@ -70,24 +69,29 @@ export const useSystem = () => {
     return systemStore.getThemeSelected();
   }
 
-  function applyTheme(params: { theme: Theme }): void {
-    const theme = params.theme;
-    const currentTheme = getTheme();
-    setThemeService({ theme, currentTheme });
-    systemStore.setThemeSelected({ theme });
+  function applyTheme(params: { newTheme: Theme; oldTheme: Theme }): void {
+    const { newTheme, oldTheme } = params;
+    setThemeService({ theme: newTheme, currentTheme: oldTheme });
   }
 
-  async function updateThemeSelected(params: { theme: Theme }): Promise<void> {
+  async function storeThemeSelected(params: { theme: Theme }): Promise<void> {
     const theme = params.theme;
     await saveThemeService({ theme });
+  }
+
+  function updateStoreTheme(params: { theme: Theme }): void {
+    const { theme } = params;
+    systemStore.setThemeSelected({ theme });
   }
 
   return {
     reportError,
     openToastError,
-    updateThemeSelected,
+    updateThemeSelected: storeThemeSelected,
+    storeThemeSelected,
     applyTheme,
     loadThemeSelected,
     getTheme,
+    updateStoreTheme,
   };
 };

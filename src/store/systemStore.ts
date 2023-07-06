@@ -1,34 +1,40 @@
 import { System, Theme } from "@/services/interfaces";
 import { defineStore } from "pinia";
+import { reactive, ref, watch } from "vue";
+import { useSystem } from "@/composables/useSystem";
 
-interface SystemState {
-  system: System;
-}
+export const useSystemStore = defineStore("system", () => {
+  const theme = ref({
+    selected: "light",
+    options: { blur: false },
+  } as Theme);
 
-export const useSystemStore = defineStore("system", {
-  state: (): SystemState => ({
-    system: { theme: { selected: "light", options: { blur: false } } },
-  }),
+  const systemComposable = useSystem();
 
-  getters: {
-    // imageProfile(state) {
-    //   const imageProfile = state.user.imageProfile;
-    //   if (imageProfile) return "data:image/png;base64," + imageProfile;
-    //   return userAvatar;
-    // },
+  watch(theme, async (newValue, oldValue) => {
+    if (
+      oldValue.selected != newValue.selected ||
+      oldValue.options?.blur != newValue.options?.blur
+    ) {
+      console.log("cambio");
+      await systemComposable.storeThemeSelected({ theme: theme.value });
+      systemComposable.applyTheme({ newTheme: newValue, oldTheme: oldValue });
+    }
+  });
 
-    getThemeSelected(state) {
-      return (): Theme => {
-        return JSON.parse(JSON.stringify(state.system.theme));
-      };
-    },
-  },
+  function getThemeSelected(): Theme {
+    return theme.value;
+  }
 
-  actions: {
-    setThemeSelected(params: { theme: Theme }) {
-      const { theme } = params;
-      this.system.theme = theme;
-      console.log(this.system.theme);
-    },
-  },
+  function setThemeSelected(params: { theme: Theme }): void {
+    const { theme: themeData } = params;
+    console.log(themeData);
+    theme.value = themeData;
+  }
+
+  return {
+    theme,
+    getThemeSelected,
+    setThemeSelected,
+  };
 });
