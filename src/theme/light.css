@@ -84,8 +84,7 @@
 	--ion-color-step-900: #393939;
 	--ion-color-step-950: #302f2f;
 
-  /* --wallpaper-main-content: url("https://github.com/FrenzyExists/wallpapers/blob/main/Other/winter-landscape-penguin.jpg?raw=true"); */
-  --wallpaper-main-content: url("https://github.com/FrenzyExists/wallpapers/blob/main/Universal/above-the-mountains.png?raw=true");
+  --wallpaper-main-content: url("../assets/otros/light-wallpaper1.png");
   --wallpaper-opacity: 0.5;
   --blur-color-opacity: 0.2;
   --blur: 15px;
