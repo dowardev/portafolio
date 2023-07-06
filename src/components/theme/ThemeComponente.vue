@@ -15,14 +15,15 @@
     <!-- theme selector -->
     <ion-row>
       <ion-col size="12">
-        <ion-item button>
+        <ion-item button lines=none>
           <ion-toggle
             label-placement="start"
-            :checked="themeSelected.options?.blur ?? false"
-            @ion-change="setBlurEffect({ value: $event.detail.checked })"
+            :checked="systemComposable.getTheme().options?.blur ?? false"
+            @ion-change="setBlurEffect()"
             >Desenfoque</ion-toggle
           >
         </ion-item>
+
         <ion-card>
           <ion-item
             v-for="(themeName, index) in availableThemes"
@@ -30,11 +31,13 @@
             class="transparent"
             button
             lines="none"
-            @click="
-              themeSelected.selected = themeName;
-              applyTheme();
-            "
+            @click="applyTheme({ themeName })"
             ><ion-label>{{ themeName }}</ion-label>
+
+            <ion-icon
+              v-if="systemComposable.getTheme().selected == themeName"
+              :icon="checkmarkOutline"
+            ></ion-icon>
           </ion-item>
         </ion-card>
       </ion-col>
@@ -56,37 +59,37 @@ import {
   IonToggle,
 } from "@ionic/vue";
 import { onMounted, reactive } from "vue";
-import { chevronBackOutline } from "ionicons/icons";
+import { checkmarkOutline, chevronBackOutline } from "ionicons/icons";
 import { Theme as ThemeType } from "../../services/types";
 import { useSystem } from "@/composables/useSystem";
 import { Theme } from "@/services/interfaces";
 
 const availableThemes: ThemeType[] = ["light", "nord", "gruvbox"];
 const pageTitle = "Selector de tema";
-let themeSelected = reactive({} as Theme);
 const systemComposable = useSystem();
-
-onMounted(() => {
-  themeSelected = JSON.parse(JSON.stringify(systemComposable.getTheme()));
-});
 
 // functions
 function closeModal(): void {
   modalController.dismiss();
 }
 
-async function applyTheme(): Promise<void> {
-  const theme = themeSelected;
-  systemComposable.updateStoreTheme({ theme });
+async function applyTheme(params: { themeName: ThemeType }): Promise<void> {
+  const { themeName } = params;
+  const theme = JSON.parse(
+    JSON.stringify(systemComposable.getTheme())
+  ) as Theme;
+  theme.selected = themeName;
+  systemComposable.updateThemeSelected({ theme });
 }
 
-async function setBlurEffect(params: { value: boolean }): Promise<void> {
-  const { value } = params;
-  console.log(value);
-  if (!themeSelected.options) {
-    themeSelected.options = {};
+async function setBlurEffect(): Promise<void> {
+  const theme = JSON.parse(
+    JSON.stringify(systemComposable.getTheme())
+  ) as Theme;
+  if (!theme.options) {
+    theme.options = {};
   }
-  themeSelected.options.blur = value;
-  await applyTheme();
+  theme.options.blur = !theme.options.blur;
+  systemComposable.updateThemeSelected({ theme });
 }
 </script>

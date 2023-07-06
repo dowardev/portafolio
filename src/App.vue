@@ -25,13 +25,11 @@ import {
 } from "@ionic/vue";
 import { computed, nextTick, onMounted } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
-import { getFirstCookie, setTheme, getTheme } from "./services/system";
+import { getFirstCookie } from "./services/system";
 import { closeOutline } from "ionicons/icons";
 import { useUser } from "./composables/useUser";
-
 // FIX: create function composable
 import { getUserToken } from "./services/user";
-
 import { useSystem } from "./composables/useSystem";
 import { Storage } from "@ionic/storage";
 import { useRouter } from "vue-router";
@@ -40,16 +38,16 @@ import { MqResponsive } from "vue3-mq";
 
 const store = new Storage();
 store.create();
-
 const router = useRouter();
+const systemComposable = useSystem();
 
 // mounted
 onMounted(async () => {
   createFirstCookie();
 
-  await useSystem().loadThemeSelected();
+  await systemComposable.loadThemeSelected();
   const theme = useSystem().getTheme();
-  setTheme({ theme: theme, currentTheme: theme });
+  systemComposable.applyTheme({ newTheme: theme, oldTheme: theme });
 
   loadUserProps();
 });

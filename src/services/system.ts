@@ -28,7 +28,10 @@ export async function getTheme(): Promise<Theme> {
   return JSON.parse(theme);
 }
 
-export function setTheme(params: { theme: Theme; currentTheme: Theme }): void {
+export function applyTheme(params: {
+  theme: Theme;
+  currentTheme: Theme;
+}): void {
   const theme = params.theme;
   const currentTheme = params.currentTheme;
 
@@ -37,14 +40,36 @@ export function setTheme(params: { theme: Theme; currentTheme: Theme }): void {
     .classList.remove(currentTheme.selected);
   document.getElementsByTagName("body")[0].classList.add(theme.selected);
 
+  const themeClass = document.querySelector<HTMLElement>(`.${theme.selected}`);
   if (!theme.options || !theme.options.blur) {
-    document
-      .querySelector(`.${theme.selected}`)
-      .style.setProperty("--blur", "0px");
+    themeClass!.style.setProperty("--blur", "0px");
+    themeClass!.style.setProperty("--wallpaper-main-content", "none");
+    themeClass!.style.setProperty("--blur-color-opacity", "0");
+    themeClass!.style.setProperty("--wallpaper-opacity", "1");
+    themeClass!.style.setProperty("--wallpaper-opacity", "1");
+  } else {
+    const blurValue = getComputedStyle(
+      document.documentElement
+    ).getPropertyValue("--blur");
+    const backgroundImage = getComputedStyle(
+      document.documentElement
+    ).getPropertyValue("--wallpaper-main-content");
+    const blurColorOpacity = getComputedStyle(
+      document.documentElement
+    ).getPropertyValue("--blur-color-opacity");
+    const wallpaperOpacity = getComputedStyle(
+      document.documentElement
+    ).getPropertyValue("--wallpaper-opacity");
+    themeClass!.style.setProperty("--blur", blurValue);
+    themeClass!.style.setProperty("--wallpaper-main-content", backgroundImage);
+    themeClass!.style.setProperty("--blur-color-opacity", blurColorOpacity);
+    themeClass!.style.setProperty("--wallpaper-opacity", wallpaperOpacity);
   }
 }
 
-export async function saveTheme(params: { theme: Theme }): Promise<void> {
+export async function storeThemeSelected(params: {
+  theme: Theme;
+}): Promise<void> {
   const theme = params.theme;
   await storage.set("theme", JSON.stringify(theme));
 }

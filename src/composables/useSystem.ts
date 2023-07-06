@@ -8,8 +8,8 @@ import { Storage } from "@ionic/storage";
 import { Theme as ThemeType } from "@/services/types";
 import {
   getTheme as getThemeService,
-  setTheme as setThemeService,
-  saveTheme as saveThemeService,
+  applyTheme as applyThemeService,
+  storeThemeSelected as storeThemeSelectedService,
 } from "@/services/system";
 
 const store = new Storage();
@@ -62,7 +62,7 @@ export const useSystem = () => {
       selected: "light",
       options: { blur: false },
     };
-    systemStore.setThemeSelected({ theme });
+    systemStore.updateThemeSelected({ theme });
   }
 
   function getTheme(): Theme {
@@ -71,27 +71,26 @@ export const useSystem = () => {
 
   function applyTheme(params: { newTheme: Theme; oldTheme: Theme }): void {
     const { newTheme, oldTheme } = params;
-    setThemeService({ theme: newTheme, currentTheme: oldTheme });
+    applyThemeService({ theme: newTheme, currentTheme: oldTheme });
   }
 
   async function storeThemeSelected(params: { theme: Theme }): Promise<void> {
     const theme = params.theme;
-    await saveThemeService({ theme });
+    await storeThemeSelectedService({ theme });
   }
 
-  function updateStoreTheme(params: { theme: Theme }): void {
+  function updateThemeSelected(params: { theme: Theme }): void {
     const { theme } = params;
-    systemStore.setThemeSelected({ theme });
+    systemStore.updateThemeSelected({ theme });
   }
 
   return {
     reportError,
     openToastError,
-    updateThemeSelected: storeThemeSelected,
     storeThemeSelected,
     applyTheme,
     loadThemeSelected,
     getTheme,
-    updateStoreTheme,
+    updateThemeSelected,
   };
 };

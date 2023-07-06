@@ -16,7 +16,6 @@ export const useSystemStore = defineStore("system", () => {
       oldValue.selected != newValue.selected ||
       oldValue.options?.blur != newValue.options?.blur
     ) {
-      console.log("cambio");
       await systemComposable.storeThemeSelected({ theme: theme.value });
       systemComposable.applyTheme({ newTheme: newValue, oldTheme: oldValue });
     }
@@ -26,15 +25,14 @@ export const useSystemStore = defineStore("system", () => {
     return theme.value;
   }
 
-  function setThemeSelected(params: { theme: Theme }): void {
+  function updateThemeSelected(params: { theme: Theme }): void {
     const { theme: themeData } = params;
-    console.log(themeData);
     theme.value = themeData;
   }
 
   return {
     theme,
     getThemeSelected,
-    setThemeSelected,
+    updateThemeSelected,
   };
 });

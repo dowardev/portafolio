@@ -134,4 +134,5 @@ ion-accordion > div[slot="content"] {
   bottom: 0px;
   left: 0px;
   opacity: var(--wallpaper-opacity);
+  background-color:var(--ion-background-light-color)
 }

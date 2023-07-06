@@ -72,7 +72,11 @@
                     --md-color: var(--ion-text-color);
                   "
                   :model-value="usePost().getPost({ id: postId })!.content"
-                  theme="light"
+                  :theme="
+                    useSytemComposable.getTheme().selected == 'light'
+                      ? 'light'
+                      : 'dark'
+                  "
                 />
               </ion-card>
             </ion-col>
@@ -137,10 +141,10 @@ import { MdPreview } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import { useRoute, useRouter } from "vue-router";
 import { onIonViewWillLeave } from "@ionic/vue";
+import { useSytem } from "../../../composables/useSystem";
 
 const route = useRoute();
 const router = useRouter();
-
 const hideContentIndexValue = isPlatform("desktop") == true ? true : false;
 const hideIndexContentComponentvalue =
   isPlatform("desktop") == true ? true : false;
@@ -158,6 +162,7 @@ const indexContent = ref(
 );
 const el = ref(null);
 let headings = null;
+const useSytemComposable = useSystem();
 
 // mounted
 onMounted(() => {
