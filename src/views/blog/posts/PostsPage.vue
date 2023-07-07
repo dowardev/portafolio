@@ -70,16 +70,16 @@
           <section v-if="usePost().getPosts()!.length>0">
             <ion-row>
               <ion-col size="12" class="main-content">
-                <ion-row class="card-main-content">
+                <ion-row class="card-main-content" style="width: 100%">
                   <ion-col
-                    v-for="( post,indexPost ) in usePost().getPosts()!"
+                    v-for="(post, indexPost) in filterPosts"
                     :key="post.id"
+                    style="align-content: flex-start;"
                     size-xs="12"
                     size-md="12"
                     size-lg="6"
                   >
                     <ion-card
-                      v-if="(post.createdAt!).split('T')[0]==usePost().getCurrentPage() as string"
                       style="cursor: pointer"
                       :class="{
                         'element-post-selected': elementPostHover == indexPost,
@@ -90,51 +90,58 @@
                       @mouseenter="elementPostHover = indexPost"
                       @mouseleave="elementPostHover = -1"
                     >
-                      <ion-row
-                        class="ion-padding-top ion-padding-start ion-padding-bottom"
-                        @click="openPost(post.id!)"
-                      >
-                        <ion-col size-xs="12" size-md="4">
-                          <img :src="(post.cover.source!)" />
-                        </ion-col>
-
-                        <ion-col size-xs="12" size-md="6">
-                          <h2 style="margin-top: 4px; font-size: 18px">
-                            {{ post.title }}
-                          </h2>
-                        </ion-col>
-                      </ion-row>
-
-                      <ion-item
-                        v-if="useUser().user.value.isAdmin"
-                        lines="none"
-                        class="transparent"
-                      >
-                        <ion-button
-                          slot="end"
-                          :disabled="spinners.buttonEditPost == post.id!"
-                          fill="clear"
-                          @click="updatePost(post.id!)"
+                      <ion-card-content>
+                        <div
+                          style="display: flex; justify-content: space-between"
                         >
-                          <ion-icon
-                            v-if="spinners.buttonEditPost == '' || spinners.buttonEditPost != post.id!"
-                            slot="start"
-                            :icon="createOutline"
-                          ></ion-icon>
-                        </ion-button>
+                          <div style="width: 50%">
+                            <img
+                              :src="post.cover.source!"
+                              style="
+                                max-width: 150px;
+                                object-fit: scale-down;
+                              "
+                            />
+                          </div>
 
-                        <ion-button
-                          slot="end"
-                          fill="clear"
-                          @click="deletePost({ id: post.id! })"
+                          <div style="width: 50%">
+                            <h2 style="margin-top: 4px; font-size: 18px">
+                              {{ post.title }}
+                            </h2>
+                          </div>
+                        </div>
+
+                        <ion-item
+                          v-if="useUser().user.value.isAdmin"
+                          lines="none"
+                          class="transparent"
                         >
-                          <ion-icon
-                            slot="start"
-                            :icon="trashOutline"
-                            color="danger"
-                          ></ion-icon>
-                        </ion-button>
-                      </ion-item>
+                          <ion-button
+                            slot="end"
+                            :disabled="spinners.buttonEditPost == post.id!"
+                            fill="clear"
+                            @click="updatePost(post.id!)"
+                          >
+                            <ion-icon
+                              v-if="spinners.buttonEditPost == '' || spinners.buttonEditPost != post.id!"
+                              slot="start"
+                              :icon="createOutline"
+                            ></ion-icon>
+                          </ion-button>
+
+                          <ion-button
+                            slot="end"
+                            fill="clear"
+                            @click="deletePost({ id: post.id! })"
+                          >
+                            <ion-icon
+                              slot="start"
+                              :icon="trashOutline"
+                              color="danger"
+                            ></ion-icon>
+                          </ion-button>
+                        </ion-item>
+                      </ion-card-content>
                     </ion-card>
                   </ion-col>
                 </ion-row>
@@ -239,7 +246,7 @@ import {
   IonCol,
   IonCard,
 } from "@ionic/vue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { openToast, presentAlertConfirmation } from "../../../services/system";
 import {
   closeOutline,
@@ -261,9 +268,7 @@ import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
-
 const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
-
 const pageTitle = "Blog";
 const spinners = ref({
   buttonAddPost: false,
@@ -274,6 +279,13 @@ const loadFinished = ref(false);
 const searchResult = ref(Array<{ id: string; title: string }>());
 const modalSearchPosts = ref(null);
 const elementPostHover = ref(-1);
+
+const filterPosts = computed(() => {
+  const posts = usePost().getPosts()!;
+  return posts.filter(
+    (post) => post.createdAt!.split("T")[0] == usePost().getCurrentPage()
+  );
+});
 
 // mouted
 onMounted(() => {
@@ -419,20 +431,6 @@ async function openPostSearch(params: { id: string }) {
 </script>
 
 <style scoped>
-.align-vertical {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-
-.sticky {
-  position: sticky;
-  z-index: 3;
-  top: 0px;
-}
-
 .element-post-selected {
   border: 1px solid var(--ion-color-primary);
 }
