@@ -38,7 +38,7 @@
 
           <section>
             <ion-row>
-              <ion-col size="12" class="main-content" >
+              <ion-col size="12" class="main-content">
                 <ion-row class="center">
                   <ion-col size-xs="12" size-lg="8">
                     <ion-card

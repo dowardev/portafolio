@@ -116,13 +116,6 @@ ion-accordion > div[slot="content"] {
   backdrop-filter: blur(var(--blur));
 }
 
-.main-content {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .main-content::before {
   border-radius: 6px;
   content: "";

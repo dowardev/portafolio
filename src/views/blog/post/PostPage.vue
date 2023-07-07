@@ -32,66 +32,70 @@
       v-if="usePost().getPost({ id: postId }) != undefined"
       :fullscreen="true"
     >
-      <section class="section-options">
-        <ion-row>
-          <ion-col size-xs="12" size-md="11">
-            <div style="float: right">
-              <section v-if="useUser().user.value.isAdmin">
-                <ion-button fill="clear" @click="updatePost()">
-                  <ion-icon :icon="createOutline"></ion-icon>
-                </ion-button>
-
-                <ion-button fill="clear" @click="deletePost()">
-                  <ion-icon :icon="trashOutline" color="danger"></ion-icon>
-                </ion-button>
-              </section>
-
-              <section>
-                <ion-button
-                  v-if="hideIndexContentComponentvalue == false"
-                  fill="clear"
-                  @click="openModalIndexContent()"
-                >
-                  <ion-icon :icon="menuOutline"></ion-icon>
-                </ion-button>
-              </section>
-            </div>
-          </ion-col>
-        </ion-row>
-      </section>
-
-      <!-- content -->
       <ion-row class="center">
-        <ion-col ref="el" size="11" class="main-content">
-          <ion-row class="center">
-            <ion-col size-xs="12" size-md="9">
-              <ion-card class="blur-element section-content">
-                <MdPreview
-                  style="
-                    --md-bk-color: var(--ion-background-color-rgb);
-                    --md-color: var(--ion-text-color);
-                  "
-                  :model-value="usePost().getPost({ id: postId })!.content"
-                  :theme="
-                    useSytemComposable.getTheme().selected == 'light'
-                      ? 'light'
-                      : 'dark'
-                  "
-                />
-              </ion-card>
-            </ion-col>
+        <ion-col size-xs="12" size-md="11">
+          <section class="section-options">
+            <ion-row>
+              <ion-col size="12">
+                <div style="float: right">
+                  <section v-if="useUser().user.value.isAdmin">
+                    <ion-button fill="clear" @click="updatePost()">
+                      <ion-icon :icon="createOutline"></ion-icon>
+                    </ion-button>
 
-            <ion-col
-              v-if="hideIndexContentComponentvalue"
-              size="3"
-              class="ion-padding-top"
-            >
-              <!-- index content -->
-              <indexContentComponent
-                :index-content="indexContent"
-                :auto-hide-content="hideContentIndexValue"
-                @element-id="goToSection({ id: $event })"
-              />
+                    <ion-button fill="clear" @click="deletePost()">
+                      <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+                    </ion-button>
+                  </section>
+
+                  <section>
+                    <ion-button
+                      v-if="hideIndexContentComponentvalue == false"
+                      fill="clear"
+                      @click="openModalIndexContent()"
+                    >
+                      <ion-icon :icon="menuOutline"></ion-icon>
+                    </ion-button>
+                  </section>
+                </div>
+              </ion-col>
+            </ion-row>
+          </section>
+
+          <!-- content -->
+          <ion-row>
+            <ion-col ref="el" size="12" class="main-content">
+              <ion-row class="center">
+                <ion-col size-xs="12" size-md="9">
+                  <ion-card class="blur-element section-content">
+                    <MdPreview
+                      style="
+                        --md-bk-color: var(--ion-background-color-rgb);
+                        --md-color: var(--ion-text-color);
+                      "
+                      :model-value="usePost().getPost({ id: postId })!.content"
+                      :theme="
+                        useSytemComposable.getTheme().selected == 'light'
+                          ? 'light'
+                          : 'dark'
+                      "
+                    />
+                  </ion-card>
+                </ion-col>
+
+                <ion-col
+                  v-if="hideIndexContentComponentvalue"
+                  size="3"
+                  class="ion-padding-top"
+                >
+                  <!-- index content -->
+                  <indexContentComponent
+                    :index-content="indexContent"
+                    :auto-hide-content="hideContentIndexValue"
+                    @element-id="goToSection({ id: $event })"
+                  />
+                </ion-col>
+              </ion-row>
             </ion-col>
           </ion-row>
         </ion-col>
@@ -329,7 +333,7 @@ function clearHeadings() {
 }
 
 .section-content {
-  height: calc(100vh - 172px);
+  max-height: 82vh;
   overflow: auto;
 }
 

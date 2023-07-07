@@ -78,8 +78,8 @@
                     v-for="(post, indexPost) in filterPosts"
                     :key="post.id"
                     size-xs="12"
-                    size-md="12"
-                    size-lg="6"
+                    size-md="6"
+                    size-lg="4"
                   >
                     <ion-card
                       style="cursor: pointer"
@@ -88,28 +88,24 @@
                         'element-post-no-selected':
                           elementPostHover != indexPost,
                       }"
-                      class="blur-element"
+                      class="blur-element card"
+                      @click="openPost(post.id!)"
                       @mouseenter="elementPostHover = indexPost"
                       @mouseleave="elementPostHover = -1"
                     >
-                      <ion-card-content>
-                        <div
-                          style="display: flex; justify-content: space-between"
+                      <ion-card-header>
+                        <img
+                          :src="post.cover.source!"
+                          style="max-width: 300px; object-fit: scale-down"
+                        />
+                        <ion-card-title
+                          ><span style="text-align: center" class="center">{{
+                            post.title
+                          }}</span></ion-card-title
                         >
-                          <div style="width: 50%">
-                            <img
-                              :src="post.cover.source!"
-                              style="max-width: 150px; object-fit: scale-down"
-                            />
-                          </div>
+                      </ion-card-header>
 
-                          <div style="width: 50%">
-                            <h2 style="margin-top: 4px; font-size: 18px">
-                              {{ post.title }}
-                            </h2>
-                          </div>
-                        </div>
-
+                      <ion-card-content>
                         <ion-item
                           v-if="useUser().user.value.isAdmin"
                           lines="none"
@@ -445,5 +441,12 @@ async function openPostSearch(params: { id: string }) {
 
 ion-content {
   --overflow: hidden;
+}
+
+@media only screen and (min-width: 768px) {
+  .card {
+    max-height: 300px;
+    height: 300px;
+  }
 }
 </style>
