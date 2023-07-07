@@ -70,11 +70,13 @@
           <section v-if="usePost().getPosts()!.length>0">
             <ion-row>
               <ion-col size="12" class="main-content">
-                <ion-row class="card-main-content" style="width: 100%">
+                <ion-row
+                  class="card-main-content"
+                  style="width: 100%; align-content: flex-start"
+                >
                   <ion-col
                     v-for="(post, indexPost) in filterPosts"
                     :key="post.id"
-                    style="align-content: flex-start;"
                     size-xs="12"
                     size-md="12"
                     size-lg="6"
@@ -97,10 +99,7 @@
                           <div style="width: 50%">
                             <img
                               :src="post.cover.source!"
-                              style="
-                                max-width: 150px;
-                                object-fit: scale-down;
-                              "
+                              style="max-width: 150px; object-fit: scale-down"
                             />
                           </div>
 
