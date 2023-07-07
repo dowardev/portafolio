@@ -192,24 +192,25 @@
 
                       <!-- dark button desktop-->
                       <ion-item
-                        v-if="isPlatform('desktop')"
+                        id="open-modal-theme-component"
                         lines="none"
                         button
-                        @click="openModalThemeDesktop"
                       >
                         <ion-icon slot="start" :icon="brushOutline"></ion-icon>
                         <ion-label>Tema</ion-label>
                       </ion-item>
 
-                      <!-- dark button mobile -->
+                      <!-- new features -->
                       <ion-item
-                        v-if="!isPlatform('desktop')"
+                        id="open-modal-new-features"
                         lines="none"
                         button
-                        @click="openModalThemeDesktop"
                       >
-                        <ion-icon slot="start" :icon="brushOutline"></ion-icon>
-                        <ion-label>Tema</ion-label>
+                        <ion-icon
+                          slot="start"
+                          :icon="newspaperOutline"
+                        ></ion-icon>
+                        <ion-label>Novedades</ion-label>
                       </ion-item>
 
                       <!-- more -->
@@ -303,6 +304,17 @@
           </ion-item>
         </ion-content>
       </ion-popover>
+
+      <!-- modals -->
+      <!-- modal theme -->
+      <ion-modal trigger="open-modal-theme-component">
+        <ThemeComponente />
+      </ion-modal>
+
+      <!-- modal new features -->
+      <ion-modal trigger="open-modal-new-features">
+        <NewFeaturesComponent />
+      </ion-modal>
     </ion-content>
   </ion-page>
 </template>
@@ -318,15 +330,13 @@ import {
   IonLabel,
   IonItem,
   IonButton,
-  IonFooter,
   IonIcon,
   IonSpinner,
+  IonModal,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import {
   brushOutline,
-  personAddOutline,
-  logInOutline,
   logOutOutline,
   thumbsUpOutline,
   logoGitlab,
@@ -337,25 +347,26 @@ import {
   ellipsisVerticalOutline,
   cashOutline,
   libraryOutline,
-  chevronForwardOutline,
+  newspaperOutline,
 } from "ionicons/icons";
 import AppsComponent from "../apps/Apps.vue";
 import DonationsComponent from "../donations/Donations.vue";
 import { useUser } from "../../../composables/useUser";
 import { USER_MENU } from "../../../services/graphql";
 import { useSystem } from "../../../composables/useSystem";
-import ThemeComponente from "@/components/theme/ThemeComponente.vue";
 import { useRouter } from "vue-router";
+// components
+import ThemeComponente from "@/components/theme/ThemeComponente.vue";
+import NewFeaturesComponent from "@/components/new-features/NewFeaturesComponente.vue";
 
 const router = useRouter();
 
 const isOpenRefPopOverUserOptions = ref(false);
 const eventPopOverUserOptions = ref();
-const setOpenPopOverUserOptions = (state: boolean, ev?: Event) => {
+const setOpenPopOverUserOptions = (state: boolean, ev?: Event): void => {
   eventPopOverUserOptions.value = ev;
   isOpenRefPopOverUserOptions.value = state;
 };
-const isAndroidPlatform = isPlatform("android");
 
 const spinners = ref({
   buttonLogin: false,
@@ -377,17 +388,6 @@ onMounted(() => {
 });
 
 // functions
-async function openModalThemeDesktop() {
-  const modal = await modalController.create({
-    component: ThemeComponente,
-    cssClass: "my-custom-class",
-    componentProps: {
-      title: "New Title",
-    },
-  });
-  return modal.present();
-}
-
 function openRoute(route: string) {
   router.push(route);
   menuController.close();

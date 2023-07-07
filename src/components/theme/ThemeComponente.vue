@@ -58,7 +58,6 @@ import {
   modalController,
   IonToggle,
 } from "@ionic/vue";
-import { onMounted, reactive } from "vue";
 import { checkmarkOutline, chevronBackOutline } from "ionicons/icons";
 import { Theme as ThemeType } from "../../services/types";
 import { useSystem } from "@/composables/useSystem";
