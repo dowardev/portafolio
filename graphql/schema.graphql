@@ -81,7 +81,7 @@ type Mutation {
             resolver: "App\\GraphQL\\Resolvers\\post\\CreatePostResolver@resolve"
         )
 
-    updatePost(input: UpdatePostInput @spread): Boolean
+    updatePost(input: updatePostInput @spread): updatePostPayload
         @field(
             resolver: "App\\GraphQL\\Resolvers\\post\\UpdatePostResolver@resolve"
         )
@@ -171,7 +171,7 @@ input CreatePostInput {
     coverId: ID!
     images: [ID]
 }
-input UpdatePostInput {
+input updatePostInput {
     id: ID!
     title: String!
     content: String!
@@ -232,6 +232,12 @@ input SendConfirmationNewEmail {
 input UserFilter {
     value: String!
 }
+input ContactInput {
+    name: String!
+    email: String!
+    subject: String!
+    description: String!
+}
 
 type Prueba {
     message: String
@@ -289,9 +295,7 @@ type UserAuthPayload {
 }
 type Image {
     id: ID
-    name: String!
     path: String!
-    source: String!
 }
 type UploadImagePayload {
     image: Image!
@@ -299,18 +303,10 @@ type UploadImagePayload {
 type GetImagePayload {
     image: Image!
 }
-type PostImage {
-    id: ID
-    image_id: ID
-    post_id: ID
-}
-input ContactInput {
-    name: String!
-    email: String!
-    subject: String!
-    description: String!
-}
 type searchPosts {
     id: ID!
     title: String!
+}
+type updatePostPayload {
+    state: Boolean!
 }

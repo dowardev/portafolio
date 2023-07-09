@@ -51,13 +51,19 @@ class UpdatePostResolver
         ]);
 
         if ($new_cover_id != "") {
-            $cover_name = Images::where("id", "=", $cover_id)->get()[0]->name;
-            Post::where("id", "=", $id)->update([
-                "cover_id" => $new_cover_id,
-            ]);
-            Storage::delete("images_posts/" . $cover_name);
-            Images::where("id", "=", $cover_id)->delete();
-            $this->moveImage($new_cover_id);
+            try {
+                $cover = Images::find($cover_id);
+                $cover_name = $cover->name;
+                $post = Post::find($id);
+                $post->update([
+                    'cover_id' => $new_cover_id
+                ]);
+                Storage::delete("images_posts/" . $cover_name);
+                Images::destroy($cover_id);
+                $this->moveImage($new_cover_id);
+            } catch (\Throwable $th) {
+                return Error::createLocatedError($e);
+            }
         }
 
         foreach ($images_removed as $key => $value) {
@@ -73,9 +79,13 @@ class UpdatePostResolver
             ]);
         }
     }
-    function moveImage($id)
+
+    public function moveImage($id)
     {
-        $imageName = Images::find($id)->name;
-        Storage::move("tmp/" . $imageName, "images_posts/" . $imageName);
+        $image=Images::find($id);
+        $imageName = $image->name;
+        $image->path='/images_posts/'.$imageName;
+        $image->save();
+        Storage::move('tmp/' . $imageName, 'images_posts/' . $imageName);
     }
 }
