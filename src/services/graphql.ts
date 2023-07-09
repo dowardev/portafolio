@@ -49,7 +49,7 @@ export const POST_DATES = gql`
 `;
 
 export const UPDATE_POST = gql`
-  fragment UpdatePost on UpdatePostPayload {
+  fragment updatePost on updatePostPayload {
     state
   }
 `;
@@ -57,8 +57,10 @@ export const UPDATE_POST = gql`
 // system
 export const UPLOAD_IMAGE = gql`
   fragment UploadImage on UploadImagePayload {
-    id
-    path
+    image {
+      id
+      path
+    }
   }
 `;
 

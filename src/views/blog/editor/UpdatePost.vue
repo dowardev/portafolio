@@ -112,19 +112,18 @@ function setData(data: {
 async function save(data: {
   title: string;
   content: string;
-  cover: string;
+  coverSource: string;
   newCoverStatus: boolean;
-}) {
+}): Promise<void> {
   spinners.savePost = true;
 
   const id = idPost as string;
   const title = data.title;
   const content = data.content;
   const coverData = {
-    id: cover.value.id,
-    name: cover.value.name,
-    source: cover.value.source,
+    source: data.coverSource,
     newCoverId: "",
+    oldCoverId: cover.value.id,
   };
   const newCoverStatus = data.newCoverStatus;
   const images = newImages.value;
@@ -132,7 +131,7 @@ async function save(data: {
 
   if (newCoverStatus) {
     try {
-      const response = await uploadCover({ image: cover.value.source });
+      const response = await uploadCover({ image: coverData.source });
       coverData.newCoverId = response!.id;
     } catch (e: any) {
       console.error(e);

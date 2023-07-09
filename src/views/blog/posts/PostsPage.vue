@@ -89,11 +89,10 @@
                           elementPostHover != indexPost,
                       }"
                       class="blur-element card"
-                      @click="openPost(post.id!)"
                       @mouseenter="elementPostHover = indexPost"
                       @mouseleave="elementPostHover = -1"
                     >
-                      <ion-card-header>
+                      <ion-card-header @click="openPost(post.id!)">
                         <img
                           :src="post.cover.source!"
                           style="max-width: 300px; object-fit: scale-down"

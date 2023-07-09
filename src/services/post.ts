@@ -1,5 +1,4 @@
 import {
-  UpdatePost,
   Post,
   DeletePost,
   CreatePost,
@@ -22,6 +21,16 @@ import {
 } from "./graphql";
 import { errorBuilder } from "@/utils/errors";
 provideApolloClient(apolloClient);
+
+interface UpdatePost {
+  id: string;
+  title: string;
+  content: string;
+  coverId: string;
+  newCoverId: string;
+  images: string[];
+  imagesRemoved: string[];
+}
 
 export async function createPost(params: CreatePost): Promise<void> {
   const {
@@ -64,28 +73,17 @@ export async function createPost(params: CreatePost): Promise<void> {
 }
 
 export async function updatePost(params: { post: UpdatePost }): Promise<void> {
-  const { id, title, content, cover, images, imagesRemoved } = params.post;
-  const data = {
-    id,
-    title,
-    content,
-    coverId: cover.id,
-    newCoverId: cover.newCoverId,
-    images,
-    imagesRemoved,
-  };
-
   try {
     const query = graphqlMutationBuilder({
       name: UPDATE_POST,
-      fragment: "UpdatePost",
+      fragment: "updatePost",
       mutationName: "updatePost",
-      inputName: "UpdatePostInput",
+      inputName: "updatePostInput",
     });
 
     await executeGrapMutation({
       query,
-      input: data,
+      input: params.post,
     });
   } catch (error: any) {
     if (error.message != "Unauthorized")
@@ -289,7 +287,7 @@ export async function uploadImage(params: {
         query,
         input: { file: image },
       })
-    ).uploadImage;
+    ).uploadImage.image;
 
     return { id, path };
   } catch (error: any) {

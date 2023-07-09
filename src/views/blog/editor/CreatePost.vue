@@ -44,7 +44,11 @@ const spinners = { savePost: false, saveImage: false };
 const editorRef = ref(null);
 
 // functions
-async function save(data: { title: string; content: string; cover: string }) {
+async function save(data: {
+  title: string;
+  content: string;
+  cover: string;
+}): Promise<void> {
   spinners.savePost = true;
 
   const title = data.title;

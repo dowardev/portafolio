@@ -59,17 +59,12 @@ export interface CreatePost {
 }
 
 export interface UpdatePost {
-  id?: string;
-  title?: string;
-  content?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  id: string;
+  title: string;
+  content: string;
   cover: {
-    id?: string;
-    name?: string;
-    path?: string;
-    source?: string;
     newCoverId: string;
+    oldCoverId: string;
   };
   images: string[];
   imagesRemoved: string[];

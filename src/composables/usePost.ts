@@ -114,16 +114,20 @@ export const usePost = () => {
   }
 
   async function updatePost(params: { post: UpdatePost }): Promise<void> {
-    const { id, title, content, cover } = params.post;
-    const coverData = {
-      id: cover.id,
-      name: cover.name,
-      source: cover.source,
+    const { id, title, content, cover, images, imagesRemoved } = params.post;
+    const post = {
+      id: id!,
+      title,
+      content,
+      coverId: cover.oldCoverId,
+      newCoverId: cover.newCoverId,
+      images: images,
+      imagesRemoved: imagesRemoved,
     };
 
     try {
       await updatePostService({
-        post: params.post,
+        post,
       });
 
       postStore.updatePost({
@@ -131,7 +135,9 @@ export const usePost = () => {
           id,
           title,
           content,
-          cover: coverData,
+          cover: {
+            id: cover.newCoverId,
+          },
         },
       });
     } catch (error: any) {
