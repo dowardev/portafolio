@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
+import HomePage from "../views/HomePage.vue";
 // portfolio
 import PresentationPage from "../views/presentation/PresentationPage.vue";
 import HistoryPage from "../views/history/HistoryPage.vue";
@@ -65,112 +66,7 @@ async function userSignOutGuard() {
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/blog",
-  },
-  { path: "/:catchAll(.*)", component: NoFoundPage, name: "NoFoundPage" },
-  {
-    path: "/prueba",
-    name: "PruebaPage",
-    component: PruebaPage,
-  },
-  {
-    path: "/presentation",
-    name: "PresentationPage",
-    component: PresentationPage,
-  },
-  {
-    path: "/history",
-    name: "HistoryPage",
-    component: HistoryPage,
-  },
-  {
-    path: "/portfolio",
-    name: "PortfolioPage",
-    component: PortfolioPage,
-  },
-  {
-    path: "/blog/editor/create",
-    name: "CreatePost",
-    component: CreatePost,
-    beforeEnter: async (to, from) => {
-      return await adminGuard();
-    },
-  },
-  {
-    path: "/blog/editor/update/:id",
-    name: "UpdatePost",
-    component: UpdatePost,
-    beforeEnter: async (to, from) => {
-      return await adminGuard();
-    },
-  },
-  {
-    path: "/blog",
-    name: "BlogPage",
-    component: BlogPage,
-  },
-  {
-    path: "/blog",
-    name: "PostsPage",
-    component: BlogPage,
-    children: [
-      {
-        path: ":date",
-        component: BlogPage,
-      },
-    ],
-  },
-  {
-    path: "/blog/post/:id",
-    name: "PostPage",
-    component: PostPage,
-  },
-  {
-    path: "/login",
-    name: "loginPage",
-    component: SessionPage,
-    props: { type: "login" },
-    beforeEnter: async (to, from) => {
-      return await userSignOutGuard();
-    },
-  },
-  {
-    path: "/signup",
-    name: "SignUpPage",
-    component: SessionPage,
-    props: { type: "signup" },
-    beforeEnter: async (to, from) => {
-      return await userSignOutGuard();
-    },
-  },
-  {
-    path: "/restore-password/:email/:code",
-    name: "RestorePasswordPage",
-    component: RestorePasswordPage,
-    beforeEnter: async (to, from) => {
-      return await userSignOutGuard();
-    },
-  },
-  {
-    path: "/policies",
-    name: "PoliciesPage",
-    component: PoliciesPage,
-  },
-  {
-    path: "/user",
-    name: "UserPanelPage",
-    component: UserPanelPage,
-    beforeEnter: async (to, from) => {
-      return await userLoggedGuard();
-    },
-  },
-  {
-    path: "/admin-panel",
-    name: "AdminPanelPage",
-    component: AdminPanelPage,
-    beforeEnter: async (to, from) => {
-      return await adminGuard();
-    },
+    component: HomePage,
   },
 ];
 

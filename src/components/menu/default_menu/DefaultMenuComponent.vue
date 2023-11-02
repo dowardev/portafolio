@@ -1,21 +1,20 @@
 <template>
   <ion-page>
-    <ion-header mode="ios" class="ion-no-border">
+    <ion-header class="ion-no-border">
       <ion-toolbar>
-        <!-- <img -->
-        <!--   src="@/assets/portafolio/dowar.png" -->
-        <!--   style="max-width: 230px; margin-left: 14px" -->
-        <!-- /> -->
-        <ion-label class="center">Dowar Blog</ion-label>
+        <img
+          src="@/assets/portafolio/dowar.png"
+          style="max-width: 230px; margin-left: 14px"
+        />
+        <!-- <ion-title>Dowar Blog</ion-title> -->
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
-      <!-- session -->
-      <section class="section-options">
+    <ion-content>
+      <ion-card>
         <ion-row>
-          <ion-col size="12">
-            <!-- logged -->
+          <ion-col>
+            <!-- session -->
             <ion-item
               v-if="useUser().isLogged.value == true"
               lines="none"
@@ -53,13 +52,7 @@
                 >Registrar</ion-button
               >
             </ion-item>
-          </ion-col>
-        </ion-row>
-      </section>
 
-      <ion-row>
-        <ion-col>
-          <ion-card class="ion-padding-top ion-padding-bottom">
             <!-- navigation -->
             <section>
               <div>
@@ -88,7 +81,7 @@
                   lines="none"
                   class="transparent"
                   button
-                  @click="openRoute('/blog')"
+                  @click="$router.replace('/home')"
                 >
                   <div slot="start">
                     <ion-icon
@@ -223,9 +216,9 @@
                 </ion-accordion-group>
               </div>
             </section>
-          </ion-card>
-        </ion-col>
-      </ion-row>
+          </ion-col>
+        </ion-row>
+      </ion-card>
 
       <!-- popovers -->
       <!-- popover user options -->
