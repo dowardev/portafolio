@@ -11,10 +11,7 @@
 
     <ion-content>
       <ion-card class="card-main-content">
-        <div
-          v-if="$route.path == '/' || $route.path == ''"
-          style="height: 100%"
-        >
+        <div v-if="$route.path == '/' || $route.path == ''">
           <PresentationContent :main-segment="presentationPage.mainSegment" />
         </div>
       </ion-card>
@@ -33,6 +30,6 @@ const presentationPage = reactive({ mainSegment: "skills" });
 
 <style scoped>
 .card-main-content {
-  height: calc(100vh - 142px);
+  height: 97%;
 }
 </style>

@@ -1,48 +1,51 @@
 <template>
-  <ion-row>
-    <ion-col
-      v-for="(skill, indexSkill) in skills[0].tipo"
-      :key="indexSkill"
-      size-xs="12"
-      size-md="6"
-      size-lg="12"
-    >
-      <ion-card
-        :class="{
-          'element-post-selected': elementPostHover == indexSkill,
-          'element-post-no-selected': elementPostHover != indexSkill,
-        }"
-        class="blur-element"
-        @mouseenter="elementPostHover = indexSkill"
-        @mouseleave="elementPostHover = -1"
+  <div>
+    <ion-row style="overflow: auto; height: 100vw">
+      <ion-col
+        v-for="(skill, indexSkill) in skills[0].tipo"
+        :key="indexSkill"
+        size-xs="12"
+        size-md="6"
+        size-lg="12"
       >
-        <ion-card-header>
-          <ion-card-title>{{ skill.name }}</ion-card-title>
-        </ion-card-header>
+        <ion-card
+          :class="{
+            'element-post-selected': elementPostHover == indexSkill,
+            'element-post-no-selected': elementPostHover != indexSkill,
+          }"
+          class="blur-element"
+          @mouseenter="elementPostHover = indexSkill"
+          @mouseleave="elementPostHover = -1"
+        >
+          <ion-card-header>
+            <ion-card-title>{{ skill.name }}</ion-card-title>
+          </ion-card-header>
 
-        <ion-card-content>
-          <ion-row style="text-align: center">
-            <ion-col
-              v-for="(technology, index) in skill.technology"
-              :key="index"
-            >
-              <img
-                :src="technology.image[0].path"
-                :style="{
-                  maxWidth: technology.image[0].size,
-                }"
-              />
-              <p>{{ technology.name }}</p>
-            </ion-col>
-          </ion-row>
-        </ion-card-content>
-      </ion-card>
-    </ion-col>
-  </ion-row>
+          <ion-card-content>
+            <ion-row style="text-align: center">
+              <ion-col
+                v-for="(technology, index) in skill.technology"
+                :key="index"
+              >
+                <img
+                  :src="technology.image[0].path"
+                  :style="{
+                    maxWidth: technology.image[0].size,
+                  }"
+                />
+                <p>{{ technology.name }}</p>
+              </ion-col>
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </div>
 </template>
 
 <script setup lang="ts">
 import {
+  IonPage,
   IonRow,
   IonCol,
   IonCard,

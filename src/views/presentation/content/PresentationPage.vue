@@ -1,40 +1,25 @@
 <template>
-  <ion-page>
-    <ion-row>
-      <ion-col>
-        <ion-card class="card-main-content">
-          <ion-row>
-            <ion-col size="12" size-lg="6">
-              <InformationComponent />
-            </ion-col>
+  <div>
+    <ion-row style="height: 100vw">
+      <ion-col size="12" size-lg="6">
+        <InformationComponent />
+      </ion-col>
 
-            <ion-col size="12" size-lg="6">
-              <div
-                v-if="props.mainSegment == 'skills'"
-                class="components-section"
-              >
-                <SkillsPage />
-              </div>
+      <ion-col size="12" size-lg="6">
+        <div v-if="props.mainSegment == 'skills'" class="components-section">
+          <SkillsPage />
+        </div>
 
-              <div
-                v-if="props.mainSegment == 'history'"
-                class="components-section"
-              >
-                <HistoryPage />
-              </div>
+        <div v-if="props.mainSegment == 'history'" class="components-section">
+          <HistoryPage />
+        </div>
 
-              <div
-                v-if="props.mainSegment == 'portfolio'"
-                class="components-section"
-              >
-                <PortfolioPage />
-              </div>
-            </ion-col>
-          </ion-row>
-        </ion-card>
+        <div v-if="props.mainSegment == 'portfolio'" class="components-section">
+          <PortfolioPage />
+        </div>
       </ion-col>
     </ion-row>
-  </ion-page>
+  </div>
 </template>
 
 <script setup lang="ts">

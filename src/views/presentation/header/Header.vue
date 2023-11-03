@@ -1,29 +1,32 @@
 <template>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button
-        menu="mainMenu"
-        :mode="modeDesingElements"
-      ></ion-menu-button>
-    </ion-buttons>
+  <div>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button
+          menu="mainMenu"
+          :mode="modeDesingElements"
+        ></ion-menu-button>
+      </ion-buttons>
 
-    <ion-title>Bienvenido</ion-title>
+      <ion-title>Bienvenido</ion-title>
 
-    <ion-buttons slot="end">
-      <ion-segment
-        :value="props.mainSegment"
-        @ion-change="emits('mainsegment', $event.detail.value as string)"
-      >
-        <ion-segment-button value="skills">Habilidades</ion-segment-button>
-        <ion-segment-button value="history">Historia</ion-segment-button>
-        <ion-segment-button value="portfolio">Portfolio</ion-segment-button>
-      </ion-segment>
-    </ion-buttons>
-  </ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-segment
+          :value="props.mainSegment"
+          @ion-change="emits('mainsegment', $event.detail.value as string)"
+        >
+          <ion-segment-button value="skills">Habilidades</ion-segment-button>
+          <ion-segment-button value="history">Historia</ion-segment-button>
+          <ion-segment-button value="portfolio">Portfolio</ion-segment-button>
+        </ion-segment>
+      </ion-buttons>
+    </ion-toolbar>
+  </div>
 </template>
 
 <script setup lang="ts">
 import {
+  IonPage,
   IonButtons,
   IonMenuButton,
   IonSegment,
