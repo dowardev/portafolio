@@ -1,5 +1,9 @@
 <template>
-  <div style="overflow: auto; height: 100vw">
+  <div
+    ref="mainDiv"
+    style="overflow: auto; height: 100vw"
+    @scroll="emitScrollPosition()"
+  >
     <ion-row>
       <ion-col
         v-for="(skill, indexSkill) in skills[0].tipo"
@@ -45,7 +49,6 @@
 
 <script setup lang="ts">
 import {
-  IonPage,
   IonRow,
   IonCol,
   IonCard,
@@ -70,6 +73,8 @@ import gitLogo from "../../assets/otros/git-icon.svg";
 import tuxLogo from "../../assets/otros/linux-tux-2.svg";
 import viteLogo from "../../assets/otros/vite-color.svg";
 import piniaLogo from "../../assets/otros/pinia.svg";
+
+const emits = defineEmits(["scrollPosition"]);
 
 const skills = ref([
   {
@@ -243,6 +248,12 @@ const skills = ref([
   },
 ]);
 const elementPostHover = ref(-1);
+const mainDiv = ref();
+
+// functions
+function emitScrollPosition(): void {
+  emits("scrollPosition", mainDiv.value.scrollTop);
+}
 </script>
 
 <style scoped>

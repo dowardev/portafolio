@@ -1,5 +1,18 @@
 <template>
   <div>
+    <ion-row>
+      <ion-col>
+        <ion-header
+          v-if="showTitle && !isPlatform('desktop')"
+          class="fade-in ion-no-border"
+        >
+          <ion-toolbar style="--background: transparent">
+            <ion-title size="large">{{ props.pageTitle }}</ion-title>
+          </ion-toolbar>
+        </ion-header>
+      </ion-col>
+    </ion-row>
+
     <ion-row style="height: 100vw">
       <ion-col size="12" size-lg="6">
         <InformationComponent />
@@ -7,15 +20,36 @@
 
       <ion-col size="12" size-lg="6">
         <div v-if="props.mainSegment == 'skills'" class="components-section">
-          <SkillsPage />
+          <SkillsPage
+            @scroll-position="
+              $event == 0
+                ? emits('showTitle', false)
+                : emits('showTitle', true);
+              $event == 0 ? (showTitle = true) : (showTitle = false);
+            "
+          />
         </div>
 
         <div v-if="props.mainSegment == 'history'" class="components-section">
-          <HistoryPage />
+          <HistoryPage
+            @scroll-position="
+              $event == 0
+                ? emits('showTitle', false)
+                : emits('showTitle', true);
+              $event == 0 ? (showTitle = true) : (showTitle = false);
+            "
+          />
         </div>
 
         <div v-if="props.mainSegment == 'portfolio'" class="components-section">
-          <PortfolioPage />
+          <PortfolioPage
+            @scroll-position="
+              $event == 0
+                ? emits('showTitle', false)
+                : emits('showTitle', true);
+              $event == 0 ? (showTitle = true) : (showTitle = false);
+            "
+          />
         </div>
       </ion-col>
     </ion-row>
@@ -24,13 +58,13 @@
 
 <script setup lang="ts">
 import {
-  IonPage,
   IonRow,
   IonCol,
   useBackButton,
   alertController,
+  isPlatform,
 } from "@ionic/vue";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { App } from "@capacitor/app";
 
 // components
@@ -48,7 +82,10 @@ const props = defineProps({
       return ["skills", "history", "portfolio"].includes(value);
     },
   },
+  pageTitle: { type: String, required: true, default: "Inicio" },
 });
+
+const emits = defineEmits(["showTitle"]);
 
 onMounted(() => {
   useBackButton(10, () => {
@@ -82,6 +119,7 @@ async function alertExitApp(): Promise<void> {
   });
   await alert.present();
 }
+const showTitle = ref(true);
 </script>
 
 <style scoped src="../information/animacion-nombre.css"></style>
@@ -137,6 +175,19 @@ ion-content {
   }
   p {
     opacity: 0.7;
+  }
+}
+
+.fade-in {
+  animation: fade-in-animation 1s ease-in;
+}
+
+@keyframes fade-in-animation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 </style>

@@ -1,5 +1,9 @@
 <template>
-  <div style="overflow: auto; height: 100vw">
+  <div
+    ref="mainDiv"
+    style="overflow: auto; height: 100vw"
+    @scroll="emitScrollPosition()"
+  >
     <ion-row>
       <ion-col size="12">
         <ion-card class="blur-element">
@@ -120,7 +124,16 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+
+const emits = defineEmits(["scrollPosition"]);
 const edad = new Date().getFullYear() - new Date("1998-06-18").getFullYear();
+const mainDiv = ref();
+
+// functions
+function emitScrollPosition(): void {
+  emits("scrollPosition", mainDiv.value.scrollTop);
+}
 </script>
 
 <style>

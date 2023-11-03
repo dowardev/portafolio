@@ -4,6 +4,8 @@
       <div v-if="$route.path == '/' || $route.path == ''">
         <PresentationHeader
           :main-segment="presentationPage.mainSegment"
+          :show-title="presentationPage.showTitle"
+          :page-title="presentationPage.pageTitle"
           @mainsegment="presentationPage.mainSegment = $event"
         />
       </div>
@@ -12,7 +14,11 @@
     <ion-content>
       <ion-card class="card-main-content">
         <div v-if="$route.path == '/' || $route.path == ''">
-          <PresentationContent :main-segment="presentationPage.mainSegment" />
+          <PresentationContent
+            :main-segment="presentationPage.mainSegment"
+            :page-title="presentationPage.pageTitle"
+            @show-title="presentationPage.showTitle = $event"
+          />
         </div>
       </ion-card>
     </ion-content>
@@ -25,7 +31,11 @@ import PresentationHeader from "../views/presentation/header/Header.vue";
 import PresentationContent from "../views/presentation/content/PresentationPage.vue";
 import { reactive } from "vue";
 
-const presentationPage = reactive({ mainSegment: "skills" });
+const presentationPage = reactive({
+  mainSegment: "skills",
+  showTitle: false,
+  pageTitle: "Inicio",
+});
 </script>
 
 <style scoped>

@@ -1,18 +1,20 @@
 <template>
   <div>
-    <ion-toolbar>
+    <ion-toolbar mode="md">
       <ion-buttons slot="start">
-        <ion-menu-button
-          menu="mainMenu"
-          :mode="modeDesingElements"
-        ></ion-menu-button>
+        <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
       </ion-buttons>
 
-      <ion-title>Bienvenido</ion-title>
-
-      <ion-buttons slot="end">
+      <ion-title v-if="showTitle || isPlatform('desktop')" class="fade-in">{{
+        props.pageTitle
+      }}</ion-title>
+      <ion-buttons
+        slot="end"
+        :class="{ adaptiveSegment: showTitle && !isPlatform('desktop') }"
+      >
         <ion-segment
           :value="props.mainSegment"
+          :scrollable="true"
           @ion-change="emits('mainsegment', $event.detail.value as string)"
         >
           <ion-segment-button value="skills">Habilidades</ion-segment-button>
@@ -42,7 +44,27 @@ const props = defineProps({
       return ["skills", "history", "portfolio"].includes(value);
     },
   },
+  showTitle: { type: Boolean, required: true, default: false },
+  pageTitle: { type: String, required: true, default: "Inicio" },
 });
 const emits = defineEmits(["mainsegment"]);
-const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
 </script>
+
+<style scoped>
+.fade-in {
+  animation: fade-in-animation 1s ease-in;
+}
+
+@keyframes fade-in-animation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.adaptiveSegment {
+  width: 50%;
+}
+</style>

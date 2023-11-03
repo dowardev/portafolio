@@ -1,34 +1,40 @@
 <template>
-  <!-- Projects -->
   <div
-    style="
-      background-color: var(--ion-background-light-color);
-      position: sticky;
-      top: -6px;
-      z-index: 3;
-    "
+    ref="mainDiv"
+    style="overflow: auto; height: 100vw"
+    @scroll="emitScrollPosition()"
   >
-    <ion-select v-model="typeContent" interface="popover">
-      <ion-select-option value="shares">Participaciones</ion-select-option>
-      <ion-select-option value="projectsB"
-        >Proyectos del blog</ion-select-option
-      >
-      <ion-select-option value="projectsP"
-        >Proyectos profesionales</ion-select-option
-      >
-    </ion-select>
-  </div>
+    <!-- Projects -->
+    <div
+      style="
+        background-color: var(--ion-background-light-color);
+        position: sticky;
+        top: -6px;
+        z-index: 3;
+      "
+    >
+      <ion-select v-model="typeContent" interface="popover">
+        <ion-select-option value="shares">Participaciones</ion-select-option>
+        <ion-select-option value="projectsB"
+          >Proyectos del blog</ion-select-option
+        >
+        <ion-select-option value="projectsP"
+          >Proyectos profesionales</ion-select-option
+        >
+      </ion-select>
+    </div>
 
-  <div v-if="typeContent == 'projectsP'">
-    <ProfessionalProjectsPage></ProfessionalProjectsPage>
-  </div>
+    <div v-if="typeContent == 'projectsP'">
+      <ProfessionalProjectsPage></ProfessionalProjectsPage>
+    </div>
 
-  <div v-if="typeContent == 'shares'">
-    <participationsPage></participationsPage>
-  </div>
+    <div v-if="typeContent == 'shares'">
+      <participationsPage></participationsPage>
+    </div>
 
-  <div v-if="typeContent == 'projectsB'">
-    <BloglProjectsPage></BloglProjectsPage>
+    <div v-if="typeContent == 'projectsB'">
+      <BloglProjectsPage></BloglProjectsPage>
+    </div>
   </div>
 </template>
 
@@ -40,5 +46,12 @@ import { ref } from "vue";
 import ProfessionalProjectsPage from "../../components/portfolio/professional-projects/ProfessionalProjectsPage.vue";
 import BloglProjectsPage from "../../components/portfolio/blog-projects/BlogProjectsPage.vue";
 
+const emits = defineEmits(["scrollPosition"]);
 const typeContent = ref("projectsP");
+const mainDiv = ref();
+
+// functions
+function emitScrollPosition(): void {
+  emits("scrollPosition", mainDiv.value.scrollTop);
+}
 </script>
