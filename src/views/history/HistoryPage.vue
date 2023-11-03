@@ -1,117 +1,120 @@
 <template>
-  <ion-row >
-    <ion-col size="12">
-      <ion-card class="blur-element">
-        <ion-card-content>
-          <p>
-            Soy desarrollador especializado en la creación de aplicaciones
-            multiplataforma usando tecnologías web, tengo {{ edad }} años de
-            edad y a continuación te contaré un poco más sobre mi historia.
-            <br />
-            Inicie con en el desarrollado de sitios Web en el año 2016 donde
-            empecé con las tres tecnologías básicas HTML, CSS y JavaScript, por
-            motivos de seguir con mis estudios dejé un poco de lado esto y no
-            fue hasta el 2018 donde lo retome, pero esta vez introduciéndome al
-            BackEnd con Laravel, con el paso del tiempo fui aprendiendo otras
-            tecnologías FrontEnd como Materialize y Bootstrap.
-            <br />
-            En el 2020 decidí emprender como freelance en la plataforma de
-            Workana, con el pasar del tiempo fui adquiriendo otras habilidades
-            como Vue y Angular.
-            <br />
-            A mediados del 2020 comencé a trabajar con Ionic lo cual me
-            permitiría desarrollar aplicaciones multiplataforma(PWA, Android,
-            iOS), al mismo tiempo me permitía pulir mis conocimientos con los
-            Frameworks Vue y Angular.
-            <br />
-            Durante el año 2021 seguí trabajando como freelance en la plataforma
-            de Workana, pero decidí hacer una pausa para trabajar en mis
-            proyectos personales, además de seguir puliendo mis habilidades, así
-            fue como en el año 2022 pase de trabajar con Api-Rest a GraphQL
-            conocimiento el cual integre en el blog que empece a desarrollar
-            durante este mismo año.
-            <br />
-            Tengo la firme creencia en que nuestros pensamientos tienen una
-            fuerte influencia sobre nosotros y la siguiente frase lo define
-            perfectamente:
-            <br />
-            Todo está en nuestras mentes, tanto si crees que puedes como que no
-            puedes estás en lo correcto. Henry Ford
-          </p>
-        </ion-card-content>
-      </ion-card>
-    </ion-col>
-  </ion-row>
+  <div style="overflow: auto; height: 100vw">
+    <ion-row>
+      <ion-col size="12">
+        <ion-card class="blur-element">
+          <ion-card-content>
+            <p>
+              Soy desarrollador especializado en la creación de aplicaciones
+              multiplataforma usando tecnologías web, tengo {{ edad }} años de
+              edad y a continuación te contaré un poco más sobre mi historia.
+              <br />
+              Inicie con en el desarrollado de sitios Web en el año 2016 donde
+              empecé con las tres tecnologías básicas HTML, CSS y JavaScript,
+              por motivos de seguir con mis estudios dejé un poco de lado esto y
+              no fue hasta el 2018 donde lo retome, pero esta vez
+              introduciéndome al BackEnd con Laravel, con el paso del tiempo fui
+              aprendiendo otras tecnologías FrontEnd como Materialize y
+              Bootstrap.
+              <br />
+              En el 2020 decidí emprender como freelance en la plataforma de
+              Workana, con el pasar del tiempo fui adquiriendo otras habilidades
+              como Vue y Angular.
+              <br />
+              A mediados del 2020 comencé a trabajar con Ionic lo cual me
+              permitiría desarrollar aplicaciones multiplataforma(PWA, Android,
+              iOS), al mismo tiempo me permitía pulir mis conocimientos con los
+              Frameworks Vue y Angular.
+              <br />
+              Durante el año 2021 seguí trabajando como freelance en la
+              plataforma de Workana, pero decidí hacer una pausa para trabajar
+              en mis proyectos personales, además de seguir puliendo mis
+              habilidades, así fue como en el año 2022 pase de trabajar con
+              Api-Rest a GraphQL conocimiento el cual integre en el blog que
+              empece a desarrollar durante este mismo año.
+              <br />
+              Tengo la firme creencia en que nuestros pensamientos tienen una
+              fuerte influencia sobre nosotros y la siguiente frase lo define
+              perfectamente:
+              <br />
+              Todo está en nuestras mentes, tanto si crees que puedes como que
+              no puedes estás en lo correcto. Henry Ford
+            </p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
 
-  <div class="timeline">
-    <div class="container left">
-      <ion-card class="blur-element">
-        <ion-card-header>
-          <ion-card-title> 2016 </ion-card-title>
-          <ion-card-subtitle>
-            Inicio como desarrollador de sitios web.</ion-card-subtitle
-          >
-        </ion-card-header>
+    <div class="timeline">
+      <div class="container left">
+        <ion-card class="blur-element">
+          <ion-card-header>
+            <ion-card-title> 2016 </ion-card-title>
+            <ion-card-subtitle>
+              Inicio como desarrollador de sitios web.</ion-card-subtitle
+            >
+          </ion-card-header>
 
-        <ion-card-content>
-          <ul>
-            <li>Habilidades adquiridas: Html, Css y Javascript</li>
-          </ul>
-        </ion-card-content>
-      </ion-card>
-    </div>
+          <ion-card-content>
+            <ul>
+              <li>Habilidades adquiridas: Html, Css y Javascript</li>
+            </ul>
+          </ion-card-content>
+        </ion-card>
+      </div>
 
-    <div class="container right">
-      <ion-card class="blur-element">
-        <ion-card-header>
-          <ion-card-title> 2018 </ion-card-title>
-          <ion-card-subtitle>
-            Inicio como desarrollador BackEnd.</ion-card-subtitle
-          >
-        </ion-card-header>
+      <div class="container right">
+        <ion-card class="blur-element">
+          <ion-card-header>
+            <ion-card-title> 2018 </ion-card-title>
+            <ion-card-subtitle>
+              Inicio como desarrollador BackEnd.</ion-card-subtitle
+            >
+          </ion-card-header>
 
-        <ion-card-content>
-          <ul>
-            <li>Habilidades adquiridas: Php y Laravel</li>
-          </ul>
-        </ion-card-content>
-      </ion-card>
-    </div>
+          <ion-card-content>
+            <ul>
+              <li>Habilidades adquiridas: Php y Laravel</li>
+            </ul>
+          </ion-card-content>
+        </ion-card>
+      </div>
 
-    <div class="container left">
-      <ion-card class="blur-element">
-        <ion-card-header>
-          <ion-card-title> 2020 </ion-card-title>
-          <ion-card-subtitle>
-            Mejorando mi habilidades como desarrollador
-            FrontEnd.</ion-card-subtitle
-          >
-        </ion-card-header>
-        <ion-card-content>
-          <ul>
-            <li>Iniciativa como freelance</li>
-            <li>Habilidades adquiridas: Vue, Angular, Ionic y Firebase</li>
-            <li>Participación en Init</li>
-          </ul>
-        </ion-card-content>
-      </ion-card>
-    </div>
+      <div class="container left">
+        <ion-card class="blur-element">
+          <ion-card-header>
+            <ion-card-title> 2020 </ion-card-title>
+            <ion-card-subtitle>
+              Mejorando mi habilidades como desarrollador
+              FrontEnd.</ion-card-subtitle
+            >
+          </ion-card-header>
+          <ion-card-content>
+            <ul>
+              <li>Iniciativa como freelance</li>
+              <li>Habilidades adquiridas: Vue, Angular, Ionic y Firebase</li>
+              <li>Participación en Init</li>
+            </ul>
+          </ion-card-content>
+        </ion-card>
+      </div>
 
-    <div class="container right">
-      <ion-card class="blur-element">
-        <ion-card-header>
-          <ion-card-title> 2022 </ion-card-title>
-          <ion-card-subtitle>
-            Momento de compartir mis conocimientos.</ion-card-subtitle
-          >
-        </ion-card-header>
-        <ion-card-content>
-          <ul>
-            <li>Creador de contenido</li>
-            <li>Nuevas habilidades: GraphQL, Electron</li>
-          </ul>
-        </ion-card-content>
-      </ion-card>
+      <div class="container right">
+        <ion-card class="blur-element">
+          <ion-card-header>
+            <ion-card-title> 2022 </ion-card-title>
+            <ion-card-subtitle>
+              Momento de compartir mis conocimientos.</ion-card-subtitle
+            >
+          </ion-card-header>
+          <ion-card-content>
+            <ul>
+              <li>Creador de contenido</li>
+              <li>Nuevas habilidades: GraphQL, Electron</li>
+            </ul>
+          </ion-card-content>
+        </ion-card>
+      </div>
     </div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <ion-row style="overflow: auto; height: 100vw">
+  <div style="overflow: auto; height: 100vw">
+    <ion-row>
       <ion-col
         v-for="(skill, indexSkill) in skills[0].tipo"
         :key="indexSkill"
