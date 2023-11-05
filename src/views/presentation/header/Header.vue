@@ -1,13 +1,14 @@
 <template>
   <div>
-    <ion-toolbar mode="md">
+    <ion-toolbar>
       <ion-buttons slot="start">
-        <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
+        <ion-menu-button menu="mainMenu"></ion-menu-button>
       </ion-buttons>
 
       <ion-title v-if="showTitle || isPlatform('desktop')" class="fade-in">{{
         props.pageTitle
       }}</ion-title>
+
       <ion-buttons
         slot="end"
         :class="{ adaptiveSegment: showTitle && !isPlatform('desktop') }"
@@ -28,7 +29,6 @@
 
 <script setup lang="ts">
 import {
-  IonPage,
   IonButtons,
   IonMenuButton,
   IonSegment,

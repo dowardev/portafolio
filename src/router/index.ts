@@ -66,7 +66,110 @@ async function userSignOutGuard() {
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
+    redirect: "/blog",
+  },
+  { path: "/:catchAll(.*)", component: NoFoundPage, name: "NoFoundPage" },
+  {
+    path: "/prueba",
+    name: "PruebaPage",
     component: HomePage,
+  },
+  {
+    path: "/presentation",
+    name: "PresentationPage",
+    component: HomePage,
+  },
+  {
+    path: "/history",
+    name: "HistoryPage",
+    component: HomePage,
+  },
+  {
+    path: "/portfolio",
+    name: "PortfolioPage",
+    component: HomePage,
+  },
+  {
+    path: "/blog/editor/create",
+    name: "CreatePost",
+    component: HomePage,
+    beforeEnter: async (to, from) => {
+      return await adminGuard();
+    },
+  },
+  {
+    path: "/blog/editor/update/:id",
+    name: "UpdatePost",
+    component: HomePage,
+    beforeEnter: async (to, from) => {
+      return await adminGuard();
+    },
+  },
+  {
+    path: "/blog",
+    name: "BlogPage",
+    component: HomePage,
+  },
+  {
+    path: "/blog",
+    name: "PostsPage",
+    component: HomePage,
+    children: [
+      {
+        path: ":date",
+        component: HomePage,
+      },
+    ],
+  },
+  {
+    path: "/blog/post/:id",
+    name: "PostPage",
+    component: HomePage,
+  },
+  {
+    path: "/login",
+    name: "LoginPage",
+    component: HomePage,
+    beforeEnter: async (to, from) => {
+      return await userSignOutGuard();
+    },
+  },
+  {
+    path: "/signup",
+    name: "SignUpPage",
+    component: HomePage,
+    beforeEnter: async (to, from) => {
+      return await userSignOutGuard();
+    },
+  },
+  {
+    path: "/restore-password/:email/:code",
+    name: "RestorePasswordPage",
+    component: HomePage,
+    beforeEnter: async (to, from) => {
+      return await userSignOutGuard();
+    },
+  },
+  {
+    path: "/policies",
+    name: "PoliciesPage",
+    component: HomePage,
+  },
+  {
+    path: "/user",
+    name: "UserPanelPage",
+    component: HomePage,
+    beforeEnter: async (to, from) => {
+      return await userLoggedGuard();
+    },
+  },
+  {
+    path: "/admin-panel",
+    name: "AdminPanelPage",
+    component: HomePage,
+    beforeEnter: async (to, from) => {
+      return await adminGuard();
+    },
   },
 ];
 

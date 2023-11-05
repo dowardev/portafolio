@@ -33,51 +33,72 @@
 <script setup lang="ts">
 import { IonSelect, IonSelectOption, isPlatform } from "@ionic/vue";
 import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
-import { ref } from "vue";
+import { reactive, ref, watch } from "vue";
 import { usePost } from "../../composables/usePost";
 
 const emits = defineEmits(["currentDateChange"]);
 
 const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
 
-const dates = usePost().getDates()!;
-const currentDate = ref(usePost().getCurrentPage() as string);
-const index = dates.indexOf(currentDate.value);
-let currentDateIndex = index;
+let dates = reactive([] as Array<string>);
+const currentDate = ref("");
+const index = ref();
+const currentDateIndex = ref(0);
+
+// hooks
+watch(
+  () => usePost().getDates(),
+  (newValue) => {
+    dates = newValue as any;
+  }
+);
+watch(
+  () => usePost().getCurrentPage(),
+  (newValue) => {
+    currentDate.value = newValue as string;
+  }
+);
+watch(
+  () => dates,
+  (newValue) => {
+    index.value = newValue.indexOf(currentDate.value);
+    currentDateIndex.value = index.value;
+  }
+);
 
 // functions
-function nextDate() {
-  let newDateIndex = +currentDateIndex + 1;
+function nextDate(): void {
+  const newDateIndex = +currentDateIndex.value + 1;
 
   if (newDateIndex >= dates.length) return;
 
   currentDate.value = dates[newDateIndex];
-  currentDateIndex = newDateIndex;
+  currentDateIndex.value = newDateIndex;
 
   updateCurrentDate();
   emits("currentDateChange");
 }
 
-function previousDate() {
-  let newDateIndex = +currentDateIndex - 1;
+function previousDate(): void {
+  const newDateIndex = +currentDateIndex.value - 1;
 
   if (newDateIndex < 0) return;
 
   currentDate.value = dates[newDateIndex];
-  currentDateIndex = newDateIndex;
+  currentDateIndex.value = newDateIndex;
 
   updateCurrentDate();
   emits("currentDateChange");
 }
 
-function selectDate(params: { date: string }) {
+function selectDate(params: { date: string }): void {
   const date = params.date;
-  currentDateIndex = dates.indexOf(date);
+  currentDateIndex.value = dates.indexOf(date);
   updateCurrentDate();
   emits("currentDateChange");
 }
 
-function updateCurrentDate() {
+function updateCurrentDate(): void {
   usePost().updateCurrentPage({ currentPage: currentDate.value });
 }
 </script>

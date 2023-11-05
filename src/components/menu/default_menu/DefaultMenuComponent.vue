@@ -81,7 +81,7 @@
                   lines="none"
                   class="transparent"
                   button
-                  @click="$router.replace('/home')"
+                  @click="$router.replace('/blog')"
                 >
                   <div slot="start">
                     <ion-icon
