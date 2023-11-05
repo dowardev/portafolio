@@ -8,7 +8,7 @@
       <ion-col>
         <ion-header
           v-if="scrollPosition == 0 && !isPlatform('desktop')"
-          class="fade-in ion-no-border"
+          class="fade-in-title ion-no-border"
         >
           <ion-toolbar style="--background: transparent">
             <ion-title size="large">{{ props.pageTitle }}</ion-title>

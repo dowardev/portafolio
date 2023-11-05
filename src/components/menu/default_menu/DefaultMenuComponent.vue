@@ -60,14 +60,14 @@
                   lines="none"
                   class="transparent"
                   button
-                  @click="openRoute('/')"
+                  @click="openRoute('/presentation')"
                 >
                   <div slot="start">
                     <ion-icon
                       :icon="personOutline"
                       :class="{
-                        iconOptionSelected: $route.path == '/',
-                        iconOptionNoSelected: $route.path != '/',
+                        iconOptionSelected: $route.path == '/presentation',
+                        iconOptionNoSelected: $route.path != '/presentation',
                       }"
                     ></ion-icon>
                   </div>

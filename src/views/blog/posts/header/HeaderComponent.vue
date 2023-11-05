@@ -5,9 +5,11 @@
         <ion-menu-button menu="mainMenu"></ion-menu-button>
       </ion-buttons>
 
-      <ion-title v-if="showTitle || isPlatform('desktop')" class="fade-in">{{
-        props.pageTitle
-      }}</ion-title>
+      <ion-title
+        v-if="showTitle || isPlatform('desktop')"
+        class="fade-in-title"
+        >{{ props.pageTitle }}</ion-title
+      >
 
       <ion-buttons
         slot="end"

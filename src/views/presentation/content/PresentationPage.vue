@@ -4,7 +4,7 @@
       <ion-col>
         <ion-header
           v-if="showTitle && !isPlatform('desktop')"
-          class="fade-in ion-no-border"
+          class="fade-in-title ion-no-border"
         >
           <ion-toolbar style="--background: transparent">
             <ion-title size="large">{{ props.pageTitle }}</ion-title>
@@ -175,19 +175,6 @@ ion-content {
   }
   p {
     opacity: 0.7;
-  }
-}
-
-.fade-in {
-  animation: fade-in-animation 1s ease-in;
-}
-
-@keyframes fade-in-animation {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
   }
 }
 </style>

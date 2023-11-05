@@ -66,7 +66,7 @@ async function userSignOutGuard() {
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/blog",
+    redirect: "/presentation",
   },
   { path: "/:catchAll(.*)", component: NoFoundPage, name: "NoFoundPage" },
   {

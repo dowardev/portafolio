@@ -5,9 +5,11 @@
         <ion-menu-button menu="mainMenu"></ion-menu-button>
       </ion-buttons>
 
-      <ion-title v-if="showTitle || isPlatform('desktop')" class="fade-in">{{
-        props.pageTitle
-      }}</ion-title>
+      <ion-title
+        v-if="showTitle || isPlatform('desktop')"
+        class="fade-in-title"
+        >{{ props.pageTitle }}</ion-title
+      >
 
       <ion-buttons
         slot="end"
@@ -51,19 +53,6 @@ const emits = defineEmits(["mainsegment"]);
 </script>
 
 <style scoped>
-.fade-in {
-  animation: fade-in-animation 1s ease-in;
-}
-
-@keyframes fade-in-animation {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 .adaptiveSegment {
   width: 50%;
 }

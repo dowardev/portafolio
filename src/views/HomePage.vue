@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header :translucent="true" class="ion-no-border" mode="md">
-      <div v-if="$route.path == '/'">
+      <div v-if="$route.path == '/presentation'">
         <PresentationHeaderComponent
           :main-segment="presentationPage.mainSegment"
           :show-title="presentationPage.showTitle"
@@ -26,7 +26,7 @@
     <ion-content>
       <ion-card class="card-main-content">
         <!-- presentation -->
-        <div v-if="$route.path == '/'">
+        <div v-if="$route.path == '/presentation'">
           <PresentationComponent
             :main-segment="presentationPage.mainSegment"
             :page-title="presentationPage.pageTitle"
