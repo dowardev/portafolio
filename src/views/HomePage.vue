@@ -1,24 +1,40 @@
 <template>
   <ion-page>
     <ion-header :translucent="true" class="ion-no-border" mode="md">
+      <!-- presentation -->
       <div v-if="$route.path == '/presentation'">
         <PresentationHeaderComponent
-          :main-segment="presentationPage.mainSegment"
-          :show-title="presentationPage.showTitle"
-          :page-title="presentationPage.pageTitle"
-          @mainsegment="presentationPage.mainSegment = $event"
+          :main-segment="presentationComponent.mainSegment"
+          :show-title="presentationComponent.showTitle"
+          :page-title="presentationComponent.pageTitle"
+          @mainsegment="presentationComponent.mainSegment = $event"
         />
       </div>
 
+      <!-- posts -->
       <div v-if="$route.path == '/blog'">
         <PostsHeaderComponent
-          :show-title="blogPage.showTitle"
-          :page-title="blogPage.pageTitle"
+          :show-title="postsComponent.showTitle"
+          :page-title="postsComponent.pageTitle"
           @current-date-change="
             postsContentComponent.loadPosts({
               currentPage: usePost().getCurrentPage(),
             })
           "
+        />
+      </div>
+
+      <!-- post -->
+      <div v-if="$route.name == 'PostPage'">
+        <PostHeaderComponent
+          :show-title="postComponent.showTitle"
+          :page-title="postComponent.pageTitle"
+          @current-date-change="
+            postsContentComponent.loadPosts({
+              currentPage: usePost().getCurrentPage(),
+            })
+          "
+          @open-modal-index="postContentComponent.openModalIndexContent()"
         />
       </div>
     </ion-header>
@@ -28,18 +44,27 @@
         <!-- presentation -->
         <div v-if="$route.path == '/presentation'">
           <PresentationComponent
-            :main-segment="presentationPage.mainSegment"
-            :page-title="presentationPage.pageTitle"
-            @show-title="presentationPage.showTitle = $event"
+            :main-segment="presentationComponent.mainSegment"
+            :page-title="presentationComponent.pageTitle"
+            @show-title="presentationComponent.showTitle = $event"
           />
         </div>
 
-        <!-- blog -->
+        <!-- posts -->
         <div v-if="$route.path == '/blog'">
           <PostsContentComponent
             ref="postsContentComponent"
-            :page-title="blogPage.pageTitle"
-            @show-title="blogPage.showTitle = $event"
+            :page-title="postsComponent.pageTitle"
+            @show-title="postsComponent.showTitle = $event"
+          />
+        </div>
+
+        <!-- post -->
+        <div v-if="$route.name == 'PostPage'">
+          <PostContentComponent
+            ref="postContentComponent"
+            :page-title="postComponent.pageTitle"
+            @show-title="postComponent.showTitle = $event"
           />
         </div>
       </ion-card>
@@ -55,22 +80,32 @@ import PresentationComponent from "../views/presentation/content/PresentationPag
 // posts components
 import PostsHeaderComponent from "../views/blog/posts/header/HeaderComponent.vue";
 import PostsContentComponent from "../views/blog/posts/content/ContentComponent.vue";
+// post components
+import PostHeaderComponent from "../views/blog/post/header/PostHeader.vue";
+import PostContentComponent from "../views/blog/post/content/PostContent.vue";
+
 import { reactive, ref } from "vue";
 import { usePost } from "@/composables/usePost";
 
-const presentationPage = reactive({
+const presentationComponent = reactive({
   mainSegment: "skills",
   showTitle: false,
   pageTitle: "Inicio",
 });
 
-const blogPage = reactive({
+const postsComponent = reactive({
   showTitle: false,
   pageTitle: "Blog",
 });
 
+const postComponent = reactive({
+  showTitle: false,
+  pageTitle: "",
+});
+
 // refs
 const postsContentComponent = ref();
+const postContentComponent = ref();
 </script>
 
 <style scoped>
