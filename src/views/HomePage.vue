@@ -37,6 +37,20 @@
           @open-modal-index="postContentComponent.openModalIndexContent()"
         />
       </div>
+
+      <!-- policies -->
+      <div v-if="$route.path == '/policies'">
+        <PoliciesHeaderComponent
+          :show-title="policiesComponent.showTitle"
+          :page-title="policiesComponent.pageTitle"
+          @current-date-change="
+            postsContentComponent.loadPosts({
+              currentPage: usePost().getCurrentPage(),
+            })
+          "
+          @open-modal-index="postContentComponent.openModalIndexContent()"
+        />
+      </div>
     </ion-header>
 
     <ion-content>
@@ -67,6 +81,15 @@
             @show-title="postComponent.showTitle = $event"
           />
         </div>
+
+        <!-- policies -->
+        <div v-if="$route.path == '/policies'">
+          <PoliciesContentComponent
+            ref="postsContentComponent"
+            :page-title="policiesComponent.pageTitle"
+            @show-title="policiesComponent.showTitle = $event"
+          />
+        </div>
       </ion-card>
     </ion-content>
   </ion-page>
@@ -83,6 +106,9 @@ import PostsContentComponent from "../views/blog/posts/content/ContentComponent.
 // post components
 import PostHeaderComponent from "../views/blog/post/header/PostHeader.vue";
 import PostContentComponent from "../views/blog/post/content/PostContent.vue";
+// policies components
+import PoliciesHeaderComponent from "../views/policies/header/PolicieHeader.vue";
+import PoliciesContentComponent from "../views/policies/content/PoliciesContenteComponent.vue";
 
 import { reactive, ref } from "vue";
 import { usePost } from "@/composables/usePost";
@@ -101,6 +127,11 @@ const postsComponent = reactive({
 const postComponent = reactive({
   showTitle: false,
   pageTitle: "",
+});
+
+const policiesComponent = reactive({
+  showTitle: false,
+  pageTitle: "Politicas",
 });
 
 // refs
