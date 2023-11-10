@@ -17,7 +17,7 @@
       </ion-col>
     </ion-row>
 
-    <ion-row>
+    <ion-row class="center">
       <ion-col class="ion-padding" size-xs="12" size-lg="8">
         <p>
           Como desarrollador de software y usuario activo de Internet entiendo

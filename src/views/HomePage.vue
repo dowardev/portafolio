@@ -51,6 +51,28 @@
           @open-modal-index="postContentComponent.openModalIndexContent()"
         />
       </div>
+
+      <!-- session -->
+      <div
+        v-if="
+          $route.path == '/session' ||
+          $route.path == '/signup' ||
+          $route.path == '/login'
+        "
+      >
+        <SessionHeaderComponent
+          :show-title="sessionComponent.showTitle"
+          :page-title="sessionComponent.pageTitle"
+          :main-segment="sessionComponent.mainSegment"
+          @current-date-change="
+            postsContentComponent.loadPosts({
+              currentPage: usePost().getCurrentPage(),
+            })
+          "
+          @open-modal-index="postContentComponent.openModalIndexContent()"
+          @main-segment="sessionComponent.mainSegment = $event"
+        />
+      </div>
     </ion-header>
 
     <ion-content>
@@ -90,6 +112,22 @@
             @show-title="policiesComponent.showTitle = $event"
           />
         </div>
+
+        <!-- session -->
+        <div
+          v-if="
+            $route.path == '/session' ||
+            $route.path == '/signup' ||
+            $route.path == '/login'
+          "
+        >
+          <SessionContentComponent
+            ref="postsContentComponent"
+            :main-segment="sessionComponent.mainSegment"
+            :page-title="sessionComponent.pageTitle"
+            @show-title="sessionComponent.showTitle = $event"
+          />
+        </div>
       </ion-card>
     </ion-content>
   </ion-page>
@@ -109,9 +147,15 @@ import PostContentComponent from "../views/blog/post/content/PostContent.vue";
 // policies components
 import PoliciesHeaderComponent from "../views/policies/header/PolicieHeader.vue";
 import PoliciesContentComponent from "../views/policies/content/PoliciesContenteComponent.vue";
+// session components
+import SessionHeaderComponent from "../views/session/header/SessionHeaderComponent.vue";
+import SessionContentComponent from "../views/session/content/SessionContentComponent.vue";
 
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { usePost } from "@/composables/usePost";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const presentationComponent = reactive({
   mainSegment: "skills",
@@ -132,6 +176,27 @@ const postComponent = reactive({
 const policiesComponent = reactive({
   showTitle: false,
   pageTitle: "Politicas",
+});
+
+const sessionComponent = reactive({
+  mainSegment:
+    route.path == "/session" || route.path == "/login" ? "login" : "signup",
+  ohowTitle: false,
+  pageTitle: "Iniciar sesión",
+});
+
+// hooks
+watch(
+  () => route.path,
+  (nuevaRuta) => {
+    sessionComponent.mainSegment == nuevaRuta;
+  }
+);
+onMounted(() => {
+  console.log({
+    1: route.path,
+    2: route.path == "/session" || route.path == "/login" ? "login" : "signup",
+  });
 });
 
 // refs

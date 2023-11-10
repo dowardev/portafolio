@@ -1,6 +1,6 @@
 <template>
   <section class="center">
-    <ion-card class="blur-element">
+    <ion-card class="element-post-selected">
       <ion-card-content>
         <div class="center">
           <img
@@ -374,6 +374,9 @@ async function presentAlertRestorePassword(): Promise<{
 }
 .main-content {
   background-image: "https://image.winudf.com/v2/image/Y29tLnNhcmFzLkJlc3RNaW5pbWFsaXN0V2FsbHBhcGVyX3NjcmVlbl81Xzk4dHZtbnNw/screen-5.jpg?h=800&fakeurl=1&type=.jpg" !important;
+}
+.element-post-selected {
+  border: 1px solid var(--ion-color-primary);
 }
 
 @media only screen and (min-width: 768px) {

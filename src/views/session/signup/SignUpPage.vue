@@ -1,6 +1,6 @@
 <template>
   <section class="center">
-    <ion-card class="blur-element">
+    <ion-card class="element-post-selected">
       <ion-card-content>
         <div class="center">
           <img
@@ -374,6 +374,9 @@ async function login() {
 }
 .card-form {
   margin-bottom: 18vh;
+}
+.element-post-selected {
+  border: 1px solid var(--ion-color-primary);
 }
 
 @media only screen and (min-width: 768px) {
