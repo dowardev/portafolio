@@ -8,7 +8,9 @@
         ></ion-menu-button>
       </ion-buttons>
 
-      <ion-title>Iniciar sesión</ion-title>
+      <ion-title v-if="isPlatform('desktop') || isPlatform('tablet')">
+        {{ props.pageTitle }}
+      </ion-title>
 
       <ion-buttons slot="end">
         <ion-segment
@@ -33,13 +35,8 @@
 
 <script setup lang="ts">
 import {
-  IonContent,
-  IonHeader,
-  IonPage,
   IonTitle,
   IonToolbar,
-  IonRow,
-  IonCol,
   IonButtons,
   IonMenuButton,
   IonLabel,
@@ -47,35 +44,14 @@ import {
   IonSegment,
   IonSegmentButton,
 } from "@ionic/vue";
-import { ref } from "vue";
-import { required, helpers } from "@vuelidate/validators";
-
-// components
-import LoginComponent from "./login/LoginPage.vue";
-import SignupComponent from "./signup/SignUpPage.vue";
 
 // vars
 const props = defineProps({
   mainSegment: { type: String, default: "login", required: true },
-  showTitle: { type: Boolean, required: true, default: false },
   pageTitle: { type: String, required: true, default: "Iniciar sesión" },
 });
 const emits = defineEmits(["mainSegment"]);
 const modeDesingElements = isPlatform("ios") ? "ios" : "md";
-const messageError = {
-  email: "Correo electronico no valido",
-  required: "Campo requerido",
-};
-const rules = {
-  form: {
-    email: {
-      required: helpers.withMessage(messageError.required, required),
-    },
-    password: {
-      required: helpers.withMessage(messageError.required, required),
-    },
-  },
-};
 </script>
 
 <style scoped>

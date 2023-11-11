@@ -61,7 +61,6 @@
         "
       >
         <SessionHeaderComponent
-          :show-title="sessionComponent.showTitle"
           :page-title="sessionComponent.pageTitle"
           :main-segment="sessionComponent.mainSegment"
           @current-date-change="
@@ -125,7 +124,6 @@
             ref="postsContentComponent"
             :main-segment="sessionComponent.mainSegment"
             :page-title="sessionComponent.pageTitle"
-            @show-title="sessionComponent.showTitle = $event"
           />
         </div>
       </ion-card>
@@ -151,11 +149,12 @@ import PoliciesContentComponent from "../views/policies/content/PoliciesContente
 import SessionHeaderComponent from "../views/session/header/SessionHeaderComponent.vue";
 import SessionContentComponent from "../views/session/content/SessionContentComponent.vue";
 
-import { onMounted, reactive, ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import { usePost } from "@/composables/usePost";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
+const router = useRouter();
 
 const presentationComponent = reactive({
   mainSegment: "skills",
@@ -179,25 +178,29 @@ const policiesComponent = reactive({
 });
 
 const sessionComponent = reactive({
-  mainSegment:
-    route.path == "/session" || route.path == "/login" ? "login" : "signup",
-  ohowTitle: false,
-  pageTitle: "Iniciar sesión",
+  mainSegment: route.path == "/login" ? "login" : "signup",
+  pageTitle: route.path == "/login" ? "Iniciar sesión" : "Registrarse",
 });
 
 // hooks
 watch(
   () => route.path,
-  (nuevaRuta) => {
-    sessionComponent.mainSegment == nuevaRuta;
+  (newValue) => {
+    sessionComponent.mainSegment == newValue;
   }
 );
-onMounted(() => {
-  console.log({
-    1: route.path,
-    2: route.path == "/session" || route.path == "/login" ? "login" : "signup",
-  });
-});
+watch(
+  () => sessionComponent.mainSegment,
+  (newValue) => {
+    if (newValue == "login") {
+      sessionComponent.pageTitle = "Iniciar sesión";
+      router.replace({ path: "/login" });
+    } else {
+      sessionComponent.pageTitle = "Registrarse";
+      router.replace({ path: "/signup" });
+    }
+  }
+);
 
 // refs
 const postsContentComponent = ref();

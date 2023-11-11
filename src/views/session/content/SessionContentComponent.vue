@@ -1,5 +1,18 @@
 <template>
   <div>
+    <ion-row>
+      <ion-col>
+        <ion-header
+          v-if="!isPlatform('desktop') && !isPlatform('tablet')"
+          class="fade-in-title ion-no-border"
+        >
+          <ion-toolbar style="--background: transparent">
+            <ion-title size="large">{{ props.pageTitle }}</ion-title>
+          </ion-toolbar>
+        </ion-header>
+      </ion-col>
+    </ion-row>
+
     <ion-row class="center">
       <ion-col size-xs="12" size-md="12" size-lg="4">
         <div v-if="props.mainSegment == 'login'"><LoginComponent /></div>
@@ -12,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonRow, IonCol } from "@ionic/vue";
+import { IonRow, IonCol, isPlatform } from "@ionic/vue";
 
 // components
 import LoginComponent from "../login/LoginPage.vue";
@@ -21,6 +34,7 @@ import SignupComponent from "../signup/SignUpPage.vue";
 // vars
 const props = defineProps({
   mainSegment: { default: "login", type: String },
+  pageTitle: { type: String, required: true, default: "Iniciar sesión" },
 });
 </script>
 

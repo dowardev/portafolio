@@ -143,14 +143,6 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/session",
-    name: "SessionPage",
-    component: HomePage,
-    beforeEnter: async (to, from) => {
-      return await userSignOutGuard();
-    },
-  },
-  {
     path: "/restore-password/:email/:code",
     name: "RestorePasswordPage",
     component: HomePage,
