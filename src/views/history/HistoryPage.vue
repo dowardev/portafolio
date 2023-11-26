@@ -1,9 +1,5 @@
 <template>
-  <div
-    ref="mainDiv"
-    style="overflow: auto; height: 100vw"
-    @scroll="emitScrollPosition()"
-  >
+  <div ref="mainDiv" @scroll="emitScrollPosition()">
     <ion-row>
       <ion-col size="12">
         <ion-card class="blur-element">

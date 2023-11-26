@@ -1,10 +1,10 @@
 .light {
-  --ion-color-primary: #3880ff;
-  --ion-color-primary-rgb: 56, 128, 255;
+  --ion-color-primary: #4c566a;
+  --ion-color-primary-rgb: 94, 129, 172;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #3171e0;
-  --ion-color-primary-tint: #4c8dff;
+  --ion-color-primary-shade: #537297;
+  --ion-color-primary-tint: #6e8eb4;
 
   --ion-color-secondary: #81a1c1;
   --ion-color-secondary-rgb: 129, 161, 193;
@@ -64,25 +64,25 @@
   --ion-text-color: #262525;
   --ion-text-color-rgb: 38, 37, 37;
 
-	--ion-color-step-50: #dbdfe6;
-	--ion-color-step-100: #d2d5dc;
-	--ion-color-step-150: #c8ccd2;
-	--ion-color-step-200: #bfc2c7;
-	--ion-color-step-250: #b5b8bd;
-	--ion-color-step-300: #acaeb3;
-	--ion-color-step-350: #a2a4a9;
-	--ion-color-step-400: #999b9f;
-	--ion-color-step-450: #8f9195;
-	--ion-color-step-500: #86878b;
-	--ion-color-step-550: #7c7d80;
-	--ion-color-step-600: #727376;
-	--ion-color-step-650: #696a6c;
-	--ion-color-step-700: #5f6062;
-	--ion-color-step-750: #565658;
-	--ion-color-step-800: #4c4c4e;
-	--ion-color-step-850: #434243;
-	--ion-color-step-900: #393939;
-	--ion-color-step-950: #302f2f;
+  --ion-color-step-50: #dbdfe6;
+  --ion-color-step-100: #d2d5dc;
+  --ion-color-step-150: #c8ccd2;
+  --ion-color-step-200: #bfc2c7;
+  --ion-color-step-250: #b5b8bd;
+  --ion-color-step-300: #acaeb3;
+  --ion-color-step-350: #a2a4a9;
+  --ion-color-step-400: #999b9f;
+  --ion-color-step-450: #8f9195;
+  --ion-color-step-500: #86878b;
+  --ion-color-step-550: #7c7d80;
+  --ion-color-step-600: #727376;
+  --ion-color-step-650: #696a6c;
+  --ion-color-step-700: #5f6062;
+  --ion-color-step-750: #565658;
+  --ion-color-step-800: #4c4c4e;
+  --ion-color-step-850: #434243;
+  --ion-color-step-900: #393939;
+  --ion-color-step-950: #302f2f;
 
   --wallpaper-main-content: url("../assets/otros/light-wallpaper1.png");
   --wallpaper-opacity: 0.5;

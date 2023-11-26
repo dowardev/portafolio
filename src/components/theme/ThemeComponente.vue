@@ -15,15 +15,6 @@
     <!-- theme selector -->
     <ion-row>
       <ion-col size="12">
-        <ion-item button lines=none>
-          <ion-toggle
-            label-placement="start"
-            :checked="systemComposable.getTheme().options?.blur ?? false"
-            @ion-change="setBlurEffect()"
-            >Desenfoque</ion-toggle
-          >
-        </ion-item>
-
         <ion-card>
           <ion-item
             v-for="(themeName, index) in availableThemes"

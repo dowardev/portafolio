@@ -56,16 +56,15 @@
                     :dismiss-on-select="true"
                   >
                     <ion-content>
-                      <!-- professional mail -->
                       <ion-list>
-                        <ion-list-header>
-                          <ion-label> Profesional</ion-label>
-                        </ion-list-header>
+                        <!-- <ion-list-header> -->
+                        <!--   <ion-label> Profesional</ion-label> -->
+                        <!-- </ion-list-header> -->
                         <ion-item
                           button
                           lines="none"
                           @click="
-                            copyToClipboard({ text: 'contacto@dowar.xyz' })
+                            copyToClipboard({ text: 'gonzalo@dowar.xyz' })
                           "
                         >
                           <ion-icon
@@ -84,50 +83,8 @@
                           button
                           @click="
                             openMail({
-                              mail: 'contacto@dowar.xyz',
+                              mail: 'gonzalo@dowar.xyz',
                               subject: 'Contacto%20laboral',
-                            })
-                          "
-                        >
-                          <ion-icon
-                            slot="start"
-                            :icon="openOutline"
-                            color="primary"
-                          ></ion-icon>
-                          <ion-label class="ion-text-wrap"
-                            >Abrir cliente de correo</ion-label
-                          >
-                        </ion-item>
-                      </ion-list>
-
-                      <!-- help mail -->
-                      <ion-list>
-                        <ion-list-header>
-                          <ion-label> Ayuda</ion-label>
-                        </ion-list-header>
-                        <ion-item
-                          button
-                          lines="none"
-                          @click="copyToClipboard({ text: 'ayuda@dowar.xyz' })"
-                        >
-                          <ion-icon
-                            slot="start"
-                            :icon="copyOutline"
-                            color="primary"
-                          ></ion-icon>
-
-                          <ion-label class="ion-text-wrap"
-                            >Copiar correo electronico</ion-label
-                          >
-                        </ion-item>
-
-                        <ion-item
-                          lines="none"
-                          button
-                          @click="
-                            openMail({
-                              mail: 'ayuda@dowar.xyz',
-                              subject: 'Ayuda',
                             })
                           "
                         >

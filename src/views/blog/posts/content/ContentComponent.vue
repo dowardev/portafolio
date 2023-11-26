@@ -18,72 +18,71 @@
     </ion-row>
 
     <!-- posts -->
-    <section v-if="usePost().getPosts()!.length>0">
-      <ion-row>
-        <ion-col
-          v-for="(post, indexPost) in filterPosts"
-          :key="post.id"
-          size-xs="12"
-          size-md="6"
-          size-lg="3"
+    <ion-row v-if="usePost().getPosts()!.length>0">
+      <ion-col
+        v-for="(post, indexPost) in filterPosts"
+        :key="post.id"
+        size-xs="12"
+        size-md="6"
+        size-lg="3"
+      >
+        <ion-card
+          style="cursor: pointer"
+          :class="{
+            'element-post-selected': elementPostHover == indexPost,
+            'element-post-no-selected': elementPostHover != indexPost,
+          }"
+          class="blur-element card"
+          @mouseenter="elementPostHover = indexPost"
+          @mouseleave="elementPostHover = -1"
         >
-          <ion-card
-            style="cursor: pointer"
-            :class="{
-              'element-post-selected': elementPostHover == indexPost,
-              'element-post-no-selected': elementPostHover != indexPost,
-            }"
-            class="blur-element card"
-            @mouseenter="elementPostHover = indexPost"
-            @mouseleave="elementPostHover = -1"
-          >
-            <ion-card-header @click="openPost(post.id!)">
-              <img
-                :src="post.cover.source!"
-                style="max-width: 300px; object-fit: scale-down"
-              />
-              <ion-card-title
-                ><span>{{ post.title }}</span></ion-card-title
-              >
-            </ion-card-header>
+          <img
+            :src="post.cover.source!"
+            style="max-width: 300px; object-fit: scale-down"
+            @click="openPost(post.id!)"
+          />
+          <ion-card-header @click="openPost(post.id!)">
+            <ion-card-title
+              ><span>{{ post.title }}</span></ion-card-title
+            >
+          </ion-card-header>
 
-            <ion-card-content>
-              <ion-item
-                v-if="useUser().user.value.isAdmin"
-                lines="none"
-                class="transparent"
+          <ion-card-content>
+            <ion-item
+              v-if="useUser().user.value.isAdmin"
+              lines="none"
+              class="transparent"
+            >
+              <ion-button
+                slot="end"
+                :disabled="spinners.buttonEditPost == post.id!"
+                fill="clear"
+                @click="updatePost(post.id!)"
               >
-                <ion-button
-                  slot="end"
-                  :disabled="spinners.buttonEditPost == post.id!"
-                  fill="clear"
-                  @click="updatePost(post.id!)"
-                >
-                  <ion-icon
-                    v-if="spinners.buttonEditPost == '' || spinners.buttonEditPost != post.id!"
-                    slot="start"
-                    :icon="createOutline"
-                  ></ion-icon>
-                </ion-button>
+                <ion-icon
+                  v-if="spinners.buttonEditPost == '' || spinners.buttonEditPost != post.id!"
+                  slot="start"
+                  :icon="createOutline"
+                ></ion-icon>
+              </ion-button>
 
-                <ion-button
-                  slot="end"
-                  fill="clear"
-                  @click="deletePost({ id: post.id! })"
-                >
-                  <ion-icon
-                    slot="start"
-                    :icon="trashOutline"
-                    color="danger"
-                  ></ion-icon>
-                </ion-button>
-              </ion-item>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-      <!-- end posts -->
-    </section>
+              <ion-button
+                slot="end"
+                fill="clear"
+                @click="deletePost({ id: post.id! })"
+              >
+                <ion-icon
+                  slot="start"
+                  :icon="trashOutline"
+                  color="danger"
+                ></ion-icon>
+              </ion-button>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <!-- end posts -->
 
     <section v-if="usePost().getPosts()!.length == 0 && loadFinished">
       <div class="align-vertical">

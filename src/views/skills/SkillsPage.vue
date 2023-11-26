@@ -1,7 +1,7 @@
 <template>
   <div
     ref="mainDiv"
-    style="overflow: auto; height: 100vw"
+    style="overflow: auto; height: 100vh"
     @scroll="emitScrollPosition()"
   >
     <ion-row>

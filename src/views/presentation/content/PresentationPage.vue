@@ -13,7 +13,7 @@
       </ion-col>
     </ion-row>
 
-    <ion-row style="height: 100vw">
+    <ion-row>
       <ion-col size="12" size-lg="6">
         <InformationComponent />
       </ion-col>
