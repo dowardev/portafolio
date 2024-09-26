@@ -1,98 +1,66 @@
-# Porfolio BackEnd
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-BackEnd para la aplicación del <a href="https://gitlab.com/gonzam4/portafolio" target="_blank">porfolio</a>
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-## Tecnologías usadas
+## About Laravel
 
-- Laravel 9
-- laravel/passport 10
-- nuwave/lighthouse 5
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-## Ejecución
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-### Requisitos
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-- PHP 8 o superior.
-- Composer.
-- MySQL.
+## Learning Laravel
 
-### Instalación de dependencias
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-- Ejecutar
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-```bash
-composer i
-```
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-### Despliegue
+## Laravel Sponsors
 
-#### Local
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-- Archivo de configuración
+### Premium Partners
 
-```bash
-mv .env.example .env
-```
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[WebReinvent](https://webreinvent.com/)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Jump24](https://jump24.co.uk)**
+- **[Redberry](https://redberry.international/laravel/)**
+- **[Active Logic](https://activelogic.com)**
+- **[byte5](https://byte5.de)**
+- **[OP.GG](https://op.gg)**
 
-- Configurar las siguientes líneas en el archivo de configuración `.env`
+## Contributing
 
-  - Configuración de la base de datos
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-  ```php
-  DB_PORT
-  DB_DATABASE
-  DB_USERNAME
-  DB_PASSWORD
-  ```
+## Code of Conduct
 
-  - Configuración del cliente de correo electrónico
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-  ```php
-  MAIL_MAILER
-  MAIL_HOST
-  MAIL_PORT
-  MAIL_USERNAME
-  MAIL_PASSWORD
-  MAIL_ENCRYPTION
-  ```
+## Security Vulnerabilities
 
-- Generar llave de encriptación
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-```bash
-php artisan passport:client --personal
-php artisan passport:keys
-```
+## License
 
-- Ejecutar migraciones
-
-```bash
-php artisan migrate
-```
-
-- Ejecutar servidor
-
-```bash
-php artisan serve
-```
-
-## Resolución de problemas
-
-Para cualquier problema relacionado, siéntete libre de contactarme por alguno de los medio listados en <a href="https://dowar.xyz/presentation" target="_blank">dowar.xyz</a>
-
-## Información adicional
-
-- Tablero de novedades <a href="https://board.disroot.org/project/portafolio/kanban" target="_blank">Kanban</a>.
-
-- Si te gusta el proyecto puedes contribuir de las siguientes formas
-
-  - Contribuyendo a la corrección de errores.
-  - Reporte de errores
-    - Crear un issue en este mismo repositorio.
-    - Contactarme a través de los medios listados en <a href="https://dowar.xyz/presentation" target="_blank">dowar.xyz</a>.
-  - Realizando una donación <a href="https://liberapay.com/dowar/donate" target="_blank"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"/></a>
-
-Este es un proyecto de software libre, por lo que podrás utilizar de manera total o parcial el código contenido en él, siempre y cuando se mantenga dentro de las normas establecidas en la licencia con la cual está siendo desarrollado.
-
-## Licencia
-
-Este proyecto está desarrollado bajo la licencia GPL 3.
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
