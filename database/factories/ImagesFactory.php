@@ -11,24 +11,31 @@ use Illuminate\Support\Facades\Storage;
  */
 class ImagesFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition()
-    {
-        $url =
-            "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%3Fid%3DOIP.PWjQEPtis0ENv4JISih0eQHaF7%26pid%3DApi&f=1";
-        $name = $this->faker->colorName();
-        $contents = file_get_contents($url);
-        $file = storage_path("app/images_posts/") . $name;
-        file_put_contents($file, $contents);
-        new UploadedFile($file, $name);
+  /**
+   * Define the model's default state.
+   *
+   * @return array<string, mixed>
+   */
+  public function definition()
+  {
+    $file = $this->faker->image(
+      storage_path("app/images_posts"),
+      640,
+      480,
+      null,
+      false
+    );
+    new UploadedFile(
+      storage_path("app/images_posts/") . $file,
+      $file,
+      "image/jpeg",
+      null,
+      true
+    );
 
-        return [
-            "name" => $name,
-            "path" => "/images_posts",
-        ];
-    }
+    return [
+      "name" => $file,
+      "path" => "/images_posts/" . $file,
+    ];
+  }
 }

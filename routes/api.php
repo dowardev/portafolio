@@ -1,8 +1,28 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostsController;
+use App\Http\Controllers\SystemController;
+use App\Http\Middleware\Cors;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api');
+Route::middleware(Cors::class)->group(function () {
+  // auth
+  Route::post("login", [AuthController::class, "login"]);
+
+  // posts
+  Route::get("posts/{date}", [PostsController::class, "getPosts"]);
+  Route::get("post-dates", [PostsController::class, "getPostsDates"]);
+  Route::get("post/{id}", [PostsController::class, "getPost"]);
+  Route::post("new-post", [PostsController::class, "createPost"]);
+  Route::get("search-post/{search}", [PostsController::class, "searchPost"]);
+
+  // others
+  Route::post("upload-image", [SystemController::class, "uploadImage"]);
+});
+
+Route::group(["middleware" => "auth:api"], function () {
+  // user
+  Route::get("user-auth", [AuthController::class, "user"]);
+});
