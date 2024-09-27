@@ -1,6 +1,6 @@
 import { useUsersStore } from "../store/usersStore";
 import { storeToRefs } from "pinia";
-import { Graphql, SearchUsersResponse, User } from "../services/interfaces";
+import { SearchUsersResponse, User } from "../services/interfaces";
 import { deleteUserAccount } from "../services/user";
 import { useSystem } from "./useSystem";
 import { searchUsers } from "../services/admin";
@@ -11,14 +11,10 @@ export const useUsers = () => {
   const openToastError = useSystem().openToastError;
 
   async function loadUsers(params: {
-    graphql: Graphql;
     paginatorInfo: { pagination: number; page: number };
     search: string;
     filterOptions: string;
   }): Promise<SearchUsersResponse> {
-    const graphqlName = params.graphql.name;
-    const graphqlFragment = params.graphql.fragment;
-    const refetch = params.graphql.refetch;
     const first = params.paginatorInfo.pagination;
     const page = params.paginatorInfo.page;
     const search = params.search;
@@ -26,11 +22,6 @@ export const useUsers = () => {
 
     try {
       const response = await searchUsers({
-        graphql: {
-          name: graphqlName,
-          fragment: graphqlFragment,
-          refetch,
-        },
         first,
         page,
         search,

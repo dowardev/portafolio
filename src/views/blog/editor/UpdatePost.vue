@@ -55,7 +55,7 @@ onMounted(() => {
 });
 
 // functions
-async function getPost() {
+async function getPost(): Promise<void> {
   const loading = await presentLoading({
     message: "Obteniendo publicación",
   });
@@ -64,11 +64,6 @@ async function getPost() {
   try {
     await usePost().loadPost({
       id: idPost,
-      graphql: {
-        name: POSTS_UPDATE_DETAILS,
-        fragment: "PostUpdateDetails",
-        refetch: true,
-      },
     });
 
     const post = usePost().getPost({
@@ -98,7 +93,7 @@ function setData(data: {
   coverId: string;
   coverName: string;
   coverSource: string;
-}) {
+}): void {
   title.value = data.title;
   content.value = data.content;
   cover.value = {
@@ -177,7 +172,6 @@ async function uploadImage(e: any) {
 
   try {
     const response = await uploadImageService({
-      graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
       image,
     });
     const imageName = response.name;
@@ -229,11 +223,6 @@ async function refreshPostsCotent() {
   try {
     await usePost().loadPost({
       id: idPost,
-      graphql: {
-        name: POST_DETAILS,
-        fragment: "PostDetails",
-        refetch: true,
-      },
     });
   } catch (e: any) {
     console.error(e);

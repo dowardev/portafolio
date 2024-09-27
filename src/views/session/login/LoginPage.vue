@@ -171,8 +171,8 @@ const modeDesingElements = isPlatform("ios") ? "ios" : "md";
 
 const inputTypePassword = ref("password" as "text" | "password");
 const form = ref({
-  email: "",
-  password: "",
+  email: "admin@admin.com",
+  password: "d2f%PF",
 });
 const spinners = ref({
   buttonLogin: false,
@@ -217,10 +217,9 @@ async function login() {
     const response = await userLogin({
       user,
       password,
-      graphql: { name: USER_LOGIN, fragment: "UserLogin" },
     });
 
-    const token = "Bearer " + response.auth.access_token;
+    const token = response.token;
     //FIX: create function in composable
     setUserToken({ token });
 

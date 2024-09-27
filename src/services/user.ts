@@ -6,18 +6,10 @@ import {
   UserToken,
   DeleteUserAccount,
   ResendEmailConfirmation,
-  GetUser,
   User,
-  Graphql,
 } from "./interfaces";
 
-import apolloClient from "../Apollo";
-import gql from "graphql-tag";
-import { useQuery, useMutation } from "@vue/apollo-composable";
-import { provideApolloClient } from "@vue/apollo-composable";
-import { executeGrapQuery, graphqlQueryBuilder } from "./system";
-import { errorBuilder } from "@/utils/errors";
-provideApolloClient(apolloClient);
+import axios from "axios";
 
 export function setUserToken({ token }: UserToken): void {
   document.cookie = "token=" + token;
@@ -34,34 +26,28 @@ export function getUserToken(): string {
   return token;
 }
 
-export async function getUser(params: Graphql): Promise<User> {
-  const { name, fragment, refetch = false } = params;
-
+export async function getUser(): Promise<User> {
   try {
-    const query = graphqlQueryBuilder({
-      name,
-      fragment,
-      mutationName: "userAuth",
+    const response = await axios.request({
+      url: "http://127.0.0.1:8000/api/user-auth",
+      method: "GET",
+      headers: {
+        Authorization: getUserToken(),
+      },
     });
 
-    let response = await executeGrapQuery({
-      query,
-      options: { refetch },
-    });
-    if (!response.value.userAuth) return {} as User;
-    response = {
-      id: response.value.userAuth.user.id,
-      name: response.value.userAuth.user.name,
-      email: response.value.userAuth.user.email,
-      user: response.value.userAuth.user.user,
-      imageProfile: response.value.userAuth.user.image_profile,
-      isAdmin: response.value.userAuth.user.is_admin,
+    return {
+      id: response.data.id,
+      name: response.data.name,
+      email: response.data.email,
+      user: response.data.user,
+      imageProfile: response.data.image_profile,
+      isAdmin: response.data.is_admin,
     };
-    return response;
   } catch (error: any) {
-    if (error.message != "Unauthorized")
-      throw errorBuilder({ message: error.message, typeError: "authError" });
-    throw errorBuilder({ message: error.message });
+    if (error.response.data.message == "Unauthenticated.")
+      throw new Error("Unauthorized");
+    throw error;
   }
 }
 
@@ -70,95 +56,57 @@ export async function setUserUploaded(option: boolean | null) {
 }
 
 export async function saveUserData(params: SaveUserData): Promise<void> {
-  const {
-    mutate: updateUserProfile,
-    onDone,
-    onError,
-  } = useMutation(
-    gql`
-      mutation SaveUserData(
-        $name: String!
-        $user: String!
-        $email: String!
-        $image_id: String
-      ) {
-        updateUserProfile(
-          input: {
-            name: $name
-            user: $user
-            email: $email
-            image_id: $image_id
-          }
-        )
-      }
-    `,
-    {
-      variables: {
-        name: params.name,
-        user: params.user,
-        email: params.email,
-        image_id: params.imageId,
-      },
-    }
-  );
-  updateUserProfile();
+  const { name, user, email, imageId } = params;
 
-  return new Promise((resolve, reject) => {
-    onDone(() => resolve());
-    onError((error) => reject(error));
+  await axios.request({
+    url: `http://127.0.0.1:8000/api/update-user`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getUserToken(),
+    },
+    params: {
+      name,
+      user,
+      email,
+      imageId,
+    },
   });
 }
 
-export async function deleteUserAccount(
-  params: DeleteUserAccount
-): Promise<void> {
-  const {
-    mutate: deleteUserAccount,
-    onDone,
-    onError,
-  } = useMutation(
-    gql`
-      mutation DeleteUserAccount($password: String!) {
-        deleteUserAccount(input: { password: $password })
-      }
-    `,
-    {
-      variables: {
-        password: params.password,
-      },
-    }
-  );
-  deleteUserAccount();
+export async function deleteUserAccount(params: {
+  password: string;
+}): Promise<void> {
+  const { password } = params;
 
-  return new Promise((resolve, reject) => {
-    onDone(() => resolve());
-    onError((error) => reject(error));
+  await axios.request({
+    url: `http://127.0.0.1:8000/api/delete-user`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getUserToken(),
+    },
+    params: {
+      password,
+    },
   });
 }
 
-export async function resendEmailConfirmation(
-  params: ResendEmailConfirmation
-): Promise<void> {
-  const {
-    mutate: resendEmailConfirmation,
-    onDone,
-    onError,
-  } = useMutation(
-    gql`
-      mutation ResendEmailConfirmation($email: String!) {
-        resendEmailConfirmation(input: { email: $email })
-      }
-    `,
-    {
-      variables: {
-        email: params.email,
-      },
-    }
-  );
-  resendEmailConfirmation();
+export async function resendEmailConfirmation(params: {
+  password: string;
+}): Promise<void> {
+  const { password } = params;
 
-  return new Promise((resolve, reject) => {
-    onDone(() => resolve());
-    onError((error) => reject(error));
-  });
+  // // TODO: Pending
+  // const response = await axios.request({
+  //   url: `http://127.0.0.1:8000/api/upload-image`,
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Authorization: getUserToken(),
+  //   },
+  //   params: {
+  //     image,
+  //   },
+  // });
 }

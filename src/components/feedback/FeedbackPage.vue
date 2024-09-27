@@ -136,7 +136,6 @@ import { required, helpers, email, minLength } from "@vuelidate/validators";
 import { openToast } from "../../services/system";
 import { createFeedback } from "../../services/feedback";
 import { ReportError } from "../../services/interfaces";
-import { USER_BASIC_DETAILS } from "../../services/graphql";
 import { useUser } from "../../composables/useUser";
 
 const props = defineProps({

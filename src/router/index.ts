@@ -25,15 +25,9 @@ import PruebaPage from "../views/prueba/Prueba.vue";
 import { useUser } from "../composables/useUser";
 import { ROUTER_USER_VALIDATION } from "../services/graphql";
 
-async function loadUser() {
+async function loadUser(): Promise<void> {
   try {
-    await useUser().loadUser({
-      graphql: {
-        name: ROUTER_USER_VALIDATION,
-        fragment: "RouterUserValidation",
-        refetch: true,
-      },
-    });
+    await useUser().loadUser();
   } catch (error: any) {
     throw new Error(error.message);
   }
@@ -53,11 +47,13 @@ async function userLoggedGuard() {
   return "/login";
 }
 
-async function userSignOutGuard() {
+async function userSignOutGuard(): Promise<true | "/" | undefined> {
   try {
     await loadUser();
-    const user = useUser().user.value.user;
-    if (user) return "/";
+    const user = useUser().user.value;
+    if (user) {
+      return "/";
+    }
   } catch (error) {
     return true;
   }

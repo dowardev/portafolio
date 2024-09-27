@@ -1,6 +1,6 @@
 import { usePostStore } from "../store/postStore";
 import { storeToRefs } from "pinia";
-import { Graphql, Post, UpdatePost } from "../services/interfaces";
+import { Post, UpdatePost } from "../services/interfaces";
 import {
   getPosts as getPostsService,
   getPost as getPostService,
@@ -17,12 +17,10 @@ export const usePost = () => {
   const postRefs = storeToRefs(postStore);
   const openToastError = useSystem().openToastError;
 
-  async function loadPosts(params: { date: string; graphql: Graphql }) {
+  async function loadPosts(params: { date: string }) {
+    const { date } = params;
     try {
-      const posts = await getPostsService({
-        date: params.date,
-        graphql: params.graphql,
-      });
+      const posts = await getPostsService({ date });
 
       posts.forEach((element) => {
         // console.log(JSON.parse(JSON.stringify(element)))
@@ -34,11 +32,9 @@ export const usePost = () => {
     }
   }
 
-  async function loadDates(params: { graphql: Graphql }) {
+  async function loadDates() {
     try {
-      const dates = await getPostsDates({
-        graphql: params.graphql,
-      });
+      const dates = await getPostsDates();
 
       postStore.updateDates(dates);
     } catch (e: any) {
@@ -47,12 +43,12 @@ export const usePost = () => {
     }
   }
 
-  async function loadPost(params: { id: string; graphql: Graphql }) {
+  async function loadPost(params: { id: string }) {
     const id = params.id;
+
     try {
       const post = await getPostService({
         id,
-        graphql: params.graphql,
       });
       postStore.addPost({ post });
     } catch (e: any) {
@@ -96,14 +92,12 @@ export const usePost = () => {
 
   async function searchPosts(params: {
     search: string;
-    graphql: Graphql;
   }): Promise<Array<{ id: string; title: string }>> {
     const search = params.search;
 
     try {
       const result = await searchPostsService({
         search,
-        graphql: params.graphql,
       });
 
       return result;

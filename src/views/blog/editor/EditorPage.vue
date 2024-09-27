@@ -305,7 +305,7 @@ watch(
 );
 
 // functions
-function save() {
+function save(): void {
   const title = postTitle.value;
   const content = postContent.value;
   const cover = coverSource.value;

@@ -1,53 +1,24 @@
+import axios from "axios";
 import { FeedbackParams } from "./interfaces";
-
-import apolloClient from "../Apollo";
-import gql from "graphql-tag";
-import { useMutation } from "@vue/apollo-composable";
-import { provideApolloClient } from "@vue/apollo-composable";
-provideApolloClient(apolloClient);
+import { getUserToken } from "./user";
 
 export async function createFeedback(params: FeedbackParams): Promise<void> {
-  const {
-    mutate: createFeedback,
-    onDone,
-    onError,
-  } = useMutation(
-    gql`
-      mutation CreateFeedback(
-        $user_id: String
-        $name: String
-        $email: String
-        $description: String!
-        $contact_me: Boolean!
-        $type: String!
-      ) {
-        createFeedback(
-          input: {
-            user_id: $user_id
-            name: $name
-            email: $email
-            description: $description
-            contact_me: $contact_me
-            type: $type
-          }
-        )
-      }
-    `,
-    {
-      variables: {
-        user_id: params.userId,
-        name: params.name,
-        email: params.email,
-        description: params.description,
-        contact_me: params.contactMe,
-        type: params.type,
-      },
-    }
-  );
-  createFeedback();
+  const { userId, name, email, description, contactMe, type } = params;
 
-  return new Promise((resolve, reject) => {
-    onDone(() => resolve());
-    onError((error) => reject(error));
+  await axios.request({
+    url: `http://127.0.0.1:8000/api/new-feedback/`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getUserToken(),
+    },
+    params: {
+      userId,
+      name,
+      email,
+      description,
+      contactMe,
+      type,
+    },
   });
 }

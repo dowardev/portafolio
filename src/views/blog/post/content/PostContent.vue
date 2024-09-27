@@ -133,11 +133,6 @@ async function getPost(): Promise<void> {
   try {
     await usePost().loadPost({
       id: postId,
-      graphql: {
-        name: POST_DETAILS,
-        fragment: "PostDetails",
-        refetch: false,
-      },
     });
   } catch (e: any) {
     console.error(e);
