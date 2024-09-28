@@ -1,5 +1,4 @@
 import {
-  DeleteUserAccountAdmin,
   DisableUser,
   GetUsers,
   GetUsersResponse,
@@ -7,12 +6,8 @@ import {
   SearchUsersResponse,
 } from "./interfaces";
 
-import apolloClient from "../Apollo";
-import { useQuery, useMutation } from "@vue/apollo-composable";
-import { provideApolloClient } from "@vue/apollo-composable";
 import { getUserToken } from "./user";
 import axios from "axios";
-provideApolloClient(apolloClient);
 
 export async function getUsers(params: GetUsers): Promise<GetUsersResponse> {
   const { page, first } = params;
@@ -35,7 +30,7 @@ export async function getUsers(params: GetUsers): Promise<GetUsersResponse> {
 export async function searchUsers(
   params: SearchUsers
 ): Promise<SearchUsersResponse> {
-  const { first, page, search, filterOptions } = params;
+  const { page, search, filterOptions } = params;
 
   const response = await axios.request({
     url: `http://127.0.0.1:8000/api/search-user/`,
@@ -44,13 +39,9 @@ export async function searchUsers(
       acept: "application/json",
       Authorization: getUserToken(),
     },
-    params: {
-      first,
-      page,
-      search: "%" + search + "%",
-      filterOptions,
-    },
   });
+
+  // const users = response.data.data;
 
   const users = response.data.users.map((element: any) => {
     element.isAdmin = element.is_admin;
@@ -67,6 +58,45 @@ export async function searchUsers(
   return {
     users,
     paginatorInfo: response.data.paginatorInfo,
+  };
+}
+
+export async function getUsersPaginated(params: {
+  page: number;
+  perPage: number;
+}): Promise<SearchUsersResponse> {
+  const { page, perPage: perpage } = params;
+  const path =
+    page == 1
+      ? `http://127.0.0.1:8000/api/search-user/${perpage}`
+      : `http://127.0.0.1:8000/api/search-user?page=${page}`;
+
+  const response = await axios.request({
+    url: path,
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: getUserToken(),
+    },
+  });
+
+  const users = response.data.data.map((element: any) => {
+    element.isAdmin = element.is_admin;
+    delete element.is_admin;
+
+    element.isEmailVerified = element.is_email_verified;
+    delete element.is_email_verified;
+
+    element.isUserDisabled = element.is_user_disabled;
+    delete element.is_user_disabled;
+    return element;
+  });
+
+  const totalPages = response.data.last_page;
+
+  return {
+    users,
+    paginatorInfo: { totalPages },
   };
 }
 

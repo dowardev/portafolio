@@ -192,10 +192,7 @@ export interface SearchUsers {
 export interface SearchUsersResponse {
   users: Array<User>;
   paginatorInfo: {
-    currentPage: number;
-    lastPage: number;
-    hasMorePages: boolean;
-    total: number;
+    totalPages: number;
   };
 }
 export interface DisableUser {

@@ -3,7 +3,10 @@ import { storeToRefs } from "pinia";
 import { SearchUsersResponse, User } from "../services/interfaces";
 import { deleteUserAccount } from "../services/user";
 import { useSystem } from "./useSystem";
-import { searchUsers } from "../services/admin";
+import {
+  searchUsers,
+  getUsersPaginated as getUsersPaginated2,
+} from "../services/admin";
 
 export const useUsers = () => {
   const usersStore = useUsersStore();
@@ -26,6 +29,26 @@ export const useUsers = () => {
         page,
         search,
         filterOptions,
+      });
+
+      return response;
+    } catch (error: any) {
+      if (error.message == "Unauthorized") console.log("Unauthorized user");
+      openToastError(error);
+      throw error;
+    }
+  }
+
+  async function getUsersPaginated(params: {
+    page: number;
+    perPage: number;
+  }): Promise<SearchUsersResponse> {
+    const { page, perPage } = params;
+
+    try {
+      const response = await getUsersPaginated2({
+        page,
+        perPage,
       });
 
       return response;
@@ -62,5 +85,6 @@ export const useUsers = () => {
 
     // computed
     // imageProfile,
+    getUsersPaginated,
   };
 };

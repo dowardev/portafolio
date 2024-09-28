@@ -227,7 +227,7 @@
                   <ion-select
                     v-if="spinners.showUsers == false"
                     slot="end"
-                    v-model="pagInfo.pagination"
+                    :value="pagInfo.pagination"
                     interface="popover"
                     :disabled="status == 'loading'"
                     @ion-change="setUsersDisplay()"
@@ -254,11 +254,13 @@
                     v-model="pagInfo.currentPage"
                     interface="popover"
                     :disabled="status == 'loading'"
-                    @ion-change="setUsersPage()"
+                    @ion-change="
+                      pagInfo.currentPage = $event.target.value;
+                      setUsersPage();
+                    "
                   >
-                    <ion-select-option value="1">1</ion-select-option>
                     <ion-select-option
-                      v-for="item in calculatePages"
+                      v-for="item in pagInfo.totalPaginacionElements"
                       :key="item"
                       :value="item"
                       >{{ item }}
@@ -319,17 +321,15 @@ import {
 import { openToast, presentAlertConfirmation } from "../../../services/system";
 import { sendMailResetPassword as sendMailResetPasswordService } from "../../../services/session";
 import { resendEmailConfirmation as resendEmailConfirmationService } from "../../../services/user";
-import { USERS_ADMINISTRATION_DETAILS } from "../../../services/graphql";
 import { useUsers } from "../../../composables/useUsers";
 import { useSystem } from "../../../composables/useSystem";
 
 const openToastError = useSystem().openToastError;
 
 const pagInfo = ref({
-  currentPage: "1",
-  hasMorePages: Boolean(),
+  currentPage: 1,
   totalPaginacionElements: Number(),
-  pagination: "10",
+  pagination: 10,
 });
 const searchTerm = ref("");
 const searchMode = ref(false);
@@ -379,43 +379,49 @@ const spinners = {
 };
 const status = ref("loaded" as "loading" | "loaded");
 
-// computed
-const calculatePages = computed(() => {
-  const elements = [] as any;
-  let total = Math.round(
-    pagInfo.value.totalPaginacionElements / parseInt(pagInfo.value.pagination)
-  );
-  if (total < 1) total = 1;
-
-  for (let index = 2; index <= total; index++) {
-    elements.push(index.toString());
-  }
-  return elements;
-});
+// // computed
+// const calculatePages = computed(() => {
+//   const elements = [] as any;
+//   let total = Math.round(
+//     pagInfo.value.totalPaginacionElements / parseInt(pagInfo.value.pagination)
+//   );
+//   if (total < 1) total = 1;
+//
+//   for (let index = 2; index <= total; index++) {
+//     elements.push(index.toString());
+//   }
+//   return elements;
+// });
 
 // mounted
-onMounted(() => {
-  loadContent();
+onMounted(async () => {
+  await loadContent();
 });
 
 // functions
 async function loadContent() {
   status.value = "loading";
-  await getUsers({ refetch: true });
+  // await getUsers();
+  await getUsersPaginated();
   status.value = "loaded";
 }
 
-async function getUsers(params: { refetch: boolean }) {
+async function getUsersPaginated(): Promise<void> {
+  const response = await useUsers().getUsersPaginated({
+    page: pagInfo.value.currentPage,
+    perPage: pagInfo.value.pagination,
+  });
+  const { users, paginatorInfo } = response;
+  useUsers().updateUsers({ users });
+  pagInfo.value.totalPaginacionElements = paginatorInfo.totalPages;
+}
+
+async function getUsers(): Promise<void> {
   searchMode.value = true;
-  const search = searchTerm.replace(/ /g, "");
+  const search = searchTerm.value.replace(/ /g, "");
 
   try {
     const { users, paginatorInfo } = await useUsers().loadUsers({
-      graphql: {
-        name: USERS_ADMINISTRATION_DETAILS,
-        fragment: "UsersDetails",
-        refetch: params.refetch,
-      },
       paginatorInfo: {
         pagination: parseInt(pagInfo.value.pagination),
         page: parseInt(pagInfo.value.currentPage),
@@ -575,7 +581,7 @@ async function filterContent() {
 async function setUsersDisplay() {
   spinners.showUsers = true;
   status.value = "loading";
-  await getUsers({ refetch: false });
+  await getUsersPaginated();
   spinners.showUsers = false;
   status.value = "loaded";
 }
@@ -583,9 +589,10 @@ async function setUsersDisplay() {
 async function setUsersPage() {
   spinners.pageUsers = true;
   status.value = "loading";
-  await getUsers({ refetch: false });
+  await getUsersPaginated();
   spinners.pageUsers = false;
   status.value = "loaded";
+  alert();
 }
 </script>
 

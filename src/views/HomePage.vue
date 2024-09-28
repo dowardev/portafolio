@@ -126,6 +126,14 @@
             :page-title="sessionComponent.pageTitle"
           />
         </div>
+
+        <!-- admin panel -->
+        <div v-if="$route.path == '/admin-panel'">
+          <PanelAdminPage
+            ref="panelAdminContentComponent"
+            :page-title="panelAdminComponent.pageTitle"
+          />
+        </div>
       </ion-card>
     </ion-content>
   </ion-page>
@@ -148,6 +156,8 @@ import PoliciesContentComponent from "../views/policies/content/PoliciesContente
 // session components
 import SessionHeaderComponent from "../views/session/header/SessionHeaderComponent.vue";
 import SessionContentComponent from "../views/session/content/SessionContentComponent.vue";
+// Admin panel components
+import PanelAdminPage from "../views/admin/PanelAdminPage.vue";
 
 import { reactive, ref, watch } from "vue";
 import { usePost } from "@/composables/usePost";
@@ -182,6 +192,10 @@ const sessionComponent = reactive({
   pageTitle: route.path == "/login" ? "Iniciar sesión" : "Registrarse",
 });
 
+const panelAdminComponent = reactive({
+  pageTitle: route.path == "Panel de administrador",
+});
+
 // hooks
 watch(
   () => route.path,
@@ -205,6 +219,7 @@ watch(
 // refs
 const postsContentComponent = ref();
 const postContentComponent = ref();
+const panelAdminContentComponent = ref();
 </script>
 
 <style scoped>
