@@ -103,13 +103,12 @@ async function createPost({
   }
 }
 
-async function uploadImage(e: any) {
+async function uploadImage(e: any): Promise<void> {
   spinners.saveImage = true;
   const image = e.image.file;
 
   try {
     const response = await uploadImageService({
-      graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
       image,
     });
 

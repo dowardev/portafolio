@@ -1,12 +1,6 @@
 import { DocumentNode } from "graphql";
 import { ThemeType } from "@/utils/types.ts";
 
-export interface Graphql {
-  name: DocumentNode;
-  fragment: string;
-  refetch?: boolean;
-}
-
 // feedback
 export interface Feedback {
   userId?: string;
@@ -43,12 +37,6 @@ export interface Post {
 }
 export interface GetPost {
   date: string;
-  graphql: Graphql;
-}
-
-export interface GetPosts {
-  id: Post["id"];
-  graphql: Graphql;
 }
 
 export interface CreatePost {
@@ -75,10 +63,6 @@ export interface GetPostsDates {
   refetch?: boolean;
 }
 
-export interface DeletePost {
-  id: Post["id"];
-}
-
 // image
 export interface GetImage {
   id?: Image["id"];
@@ -94,7 +78,6 @@ export interface Image {
 
 export interface UploadImage {
   image: any;
-  graphql: Graphql;
 }
 
 // system
@@ -168,24 +151,6 @@ export interface GetUserPermissionsResponse {
   rol: User["rol"];
 }
 
-export interface UserLogin {
-  user: User["user"];
-  password: User["password"];
-  graphql: Graphql;
-}
-
-export interface UserLoginResponse {
-  user?: User;
-  auth: {
-    access_token?: string;
-    token_type?: string;
-  };
-}
-
-export interface EmailResetPassword {
-  email: string;
-}
-
 export interface ResetPassword {
   code: string;
   email: string;
@@ -204,18 +169,10 @@ export interface UpdateUserPassword {
   newPassword: string;
   newPasswordRepeat: string;
 }
-export interface DeleteUserAccount {
-  password: string;
-}
-export interface ResendEmailConfirmation {
-  email: string;
-}
-
 // admin
 export interface GetUsers {
   first: number;
   page: number;
-  graphql: Graphql;
 }
 export interface GetUsersResponse {
   users: Array<User>;
@@ -230,25 +187,17 @@ export interface SearchUsers {
   first: number;
   page: number;
   search?: string;
-  filterOptions: String;
-  graphql: Graphql;
-  refetch?: boolean;
+  filterOptions: string;
 }
 export interface SearchUsersResponse {
   users: Array<User>;
   paginatorInfo: {
-    currentPage: number;
-    lastPage: number;
-    hasMorePages: boolean;
-    total: number;
+    totalPages: number;
   };
 }
 export interface DisableUser {
   id: string;
   disableUser: boolean;
-}
-export interface DeleteUserAccountAdmin {
-  email: string;
 }
 
 // contact

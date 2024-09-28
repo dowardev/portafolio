@@ -277,13 +277,7 @@ async function loadContent(params: { refetch: boolean }) {
 
 async function getPostsDates(params: { refetch: boolean }): Promise<void> {
   try {
-    await usePost().loadDates({
-      graphql: {
-        name: POST_DATES,
-        fragment: "PostDates",
-        refetch: params.refetch,
-      },
-    });
+    await usePost().loadDates();
   } catch (e: any) {
     console.error(e);
     useSystem().openToastError(e);
@@ -307,15 +301,9 @@ async function loadPosts(params: {
   currentPage: string;
   refetch?: boolean;
 }): Promise<void> {
-  const refetch = params.refetch ? params.refetch : false;
   try {
     await usePost().loadPosts({
       date: params.currentPage,
-      graphql: {
-        name: ALL_POSTS_DETAILS,
-        fragment: "PostsDetails",
-        refetch,
-      },
     });
   } catch (e: any) {
     console.error(e);

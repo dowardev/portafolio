@@ -16,12 +16,8 @@ import {
   Theme,
 } from "./interfaces";
 
-import apolloClient from "../Apollo";
-import gql from "graphql-tag";
-import { useMutation, useQuery } from "@vue/apollo-composable";
-import { provideApolloClient } from "@vue/apollo-composable";
-import { DocumentNode } from "graphql";
-provideApolloClient(apolloClient);
+import axios from "axios";
+import { getUserToken } from "./user";
 
 export async function getTheme(): Promise<Theme> {
   const theme = await storage.get("theme");
@@ -155,60 +151,19 @@ export function getFirstCookie(): boolean {
 }
 
 export async function uploadImage(params: UploadImage): Promise<Image> {
-  const {
-    mutate: uploadImage,
-    onDone,
-    onError,
-  } = useMutation(
-    gql`
-        mutation UploadImage($file: String!) {
-          uploadImage(input: { file: $file }) {
-            ...${params.graphql.fragment}
-          }
-        }
-        ${params.graphql.name}
-      `,
-    {
-      variables: {
-        file: params.image,
-      },
-    }
-  );
-  uploadImage();
+  const { image } = params;
 
-  return new Promise((resolve, reject) => {
-    onDone((response) => resolve(response.data.uploadImage.image));
-    onError((error) => reject(error));
+  const response = await axios.request({
+    url: `http://127.0.0.1:8000/api/upload-image`,
+    method: "POST",
+    headers: {
+      contentType: "application/json",
+      Authorization: getUserToken(),
+    },
+    data: {
+      file: image,
+    },
   });
-}
 
-export async function executeGrapQuery(params: {
-  query: any;
-  options: { refetch: boolean };
-}): Promise<any> {
-  const { query, options } = params;
-  const { refetch, result } = useQuery(query, null, {
-    fetchPolicy: "cache-first",
-  });
-  if (options.refetch) await refetch();
-
-  return result;
-}
-
-export function graphqlQueryBuilder(params: {
-  name: DocumentNode;
-  fragment: string;
-  mutationName: string;
-}): Object {
-  const { name, fragment, mutationName } = params;
-
-  const query = gql`
-        query GetUser {
-          ${mutationName}{
-           ...${fragment}
-          }
-        }
-        ${name}
-      `;
-  return query;
+  return response.data.uploadImage.image;
 }

@@ -1,8 +1,7 @@
 import { useUserStore } from "../store/userStore";
 import { storeToRefs } from "pinia";
-import { Graphql, User } from "../services/interfaces";
+import { User } from "../services/interfaces";
 import { deleteUserAccount, getUser } from "../services/user";
-import { USER_PERMISSIONS } from "../services/graphql";
 import { useSystem } from "./useSystem";
 import { logout as userLogout } from "../services/session";
 
@@ -12,13 +11,9 @@ export const useUser = () => {
 
   const openToastError = useSystem().openToastError;
 
-  async function loadUser(params: { graphql: Graphql }) {
+  async function loadUser() {
     try {
-      let user = await getUser({
-        name: params.graphql.name,
-        fragment: params.graphql.fragment,
-        refetch: params.graphql.refetch,
-      });
+      const user = await getUser();
 
       updateUserProps({ user });
     } catch (error: any) {
@@ -32,11 +27,7 @@ export const useUser = () => {
 
   async function updateUserAdminProp(params: { refetch: boolean }) {
     try {
-      let { isAdmin } = await getUser({
-        name: USER_PERMISSIONS,
-        fragment: "UserPermissions",
-        refetch: params.refetch,
-      });
+      const { isAdmin } = await getUser();
       userStore.updateUserProps({ isAdmin });
     } catch (error: any) {
       if (error.message == "Unauthorized") return;
@@ -62,8 +53,7 @@ export const useUser = () => {
       document.cookie =
         "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     } catch (e: any) {
-      console.error(e);
-      openToastError(e);
+      throw e;
     }
   }
 

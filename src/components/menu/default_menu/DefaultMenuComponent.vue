@@ -293,7 +293,7 @@
               name="crescent"
             >
             </ion-spinner>
-            <ion-label>Cerrar sesion</ion-label>
+            <ion-label>Cerrar sesión</ion-label>
           </ion-item>
         </ion-content>
       </ion-popover>
@@ -345,7 +345,6 @@ import {
 import AppsComponent from "../apps/Apps.vue";
 import DonationsComponent from "../donations/Donations.vue";
 import { useUser } from "../../../composables/useUser";
-import { USER_MENU } from "../../../services/graphql";
 import { useSystem } from "../../../composables/useSystem";
 import { useRouter } from "vue-router";
 // components
@@ -414,10 +413,15 @@ async function signup() {
 }
 
 async function logout() {
-  spinners.value.buttonLogout = true;
-  await useUser().logout();
-  spinners.value.buttonLogout = false;
-  location.reload();
+  try {
+    spinners.value.buttonLogout = true;
+    await useUser().logout();
+    location.reload();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    spinners.value.buttonLogout = false;
+  }
 }
 
 async function openModalApps() {
