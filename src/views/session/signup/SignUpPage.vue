@@ -12,71 +12,97 @@
 
         <section>
           <form>
+            <!-- name -->
             <ion-item lines="inset" class="transparent">
               <ion-icon
                 slot="start"
                 :icon="manOutline"
                 class="item-icon"
               ></ion-icon>
-              <ion-label position="floating">Nombre</ion-label>
+
               <ion-input
-                v-model="(v$ as any).form.name.$model"
                 autocomplete="name"
+                label-placement="floating"
+                label="Nombre"
+                :value="form.name"
+                @ion-input="form.name = $event.detail.value as any"
+                @click="v$.name.$touch()"
               ></ion-input>
             </ion-item>
+
             <div
-              v-for="(error, index) of (v$ as any).form.name.$errors"
+              v-for="(error, index) of (v$ as any).name.$errors"
               :key="index"
             >
               <div class="error">{{ error.$message }}</div>
             </div>
 
+            <!-- user -->
             <ion-item lines="inset" class="transparent">
               <ion-icon
                 slot="start"
                 :icon="personOutline"
                 class="item-icon"
               ></ion-icon>
-              <ion-label position="floating">Usuario</ion-label>
-              <ion-input v-model="(v$ as any).form.user.$model"></ion-input>
+
+              <ion-input
+                label-placement="floating"
+                label="Usuario"
+                :value="form.user"
+                @ion-input="form.user = $event.detail.value as any"
+                @click="v$.user.$touch()"
+              ></ion-input>
             </ion-item>
+
             <div
-              v-for="(error, index) of (v$ as any).form.user.$errors"
+              v-for="(error, index) of (v$ as any).user.$errors"
               :key="index"
             >
               <div class="error">{{ error.$message }}</div>
             </div>
 
+            <!-- email -->
             <ion-item lines="inset" class="transparent">
               <ion-icon
                 slot="start"
                 :icon="mailOpenOutline"
                 class="item-icon"
               ></ion-icon>
-              <ion-label position="floating">Correo electrónico</ion-label>
+
               <ion-input
-                v-model="(v$ as any).form.email.$model"
                 autocomplete="email"
+                label-placement="floating"
+                label="Correo electrónico"
+                :value="form.email"
+                @ion-input="form.email = $event.detail.value as any"
+                @click="v$.email.$touch()"
               ></ion-input>
             </ion-item>
+
             <div
-              v-for="(error, index) of (v$ as any).form.email.$errors"
+              v-for="(error, index) of (v$ as any).email.$errors"
               :key="index"
             >
               <div class="error">{{ error.$message }}</div>
             </div>
 
+            <!-- password -->
             <ion-item lines="inset" class="transparent">
               <ion-icon
                 slot="start"
                 :icon="keyOutline"
                 class="item-icon"
               ></ion-icon>
-              <ion-label position="floating">Contraseña</ion-label>
+
               <ion-input
-                v-model="(v$ as any).form.password.$model"
+                label-placement="floating"
+                label="Contraseña"
+                :value="form.password"
                 :type="inputTypePassword1"
+                @ion-input="form.password = $event.detail.value as any"
+                @click="v$.password.$touch()"
               ></ion-input>
+
               <ion-button
                 v-if="inputTypePassword1 == 'text'"
                 slot="end"
@@ -86,6 +112,7 @@
               >
                 <ion-icon :icon="eyeOffOutline"></ion-icon>
               </ion-button>
+
               <ion-button
                 v-if="inputTypePassword1 == 'password'"
                 slot="end"
@@ -96,24 +123,31 @@
                 <ion-icon :icon="eyeOutline"></ion-icon>
               </ion-button>
             </ion-item>
+
             <div
-              v-for="(error, index) of (v$ as any).form.password.$errors"
+              v-for="(error, index) of (v$ as any).password.$errors"
               :key="index"
             >
               <div class="error">{{ error.$message }}</div>
             </div>
 
+            <!-- password2 -->
             <ion-item lines="inset" class="transparent">
               <ion-icon
                 slot="start"
                 :icon="keyOutline"
                 class="item-icon"
               ></ion-icon>
-              <ion-label position="floating">Repite contraseña</ion-label>
+
               <ion-input
-                v-model="(v$ as any).form.password2.$model"
+                label-placement="floating"
+                label="Repite contraseña"
+                :value="form.password2"
                 :type="inputTypePassword2"
+                @ion-input="form.password2 = $event.detail.value as any"
+                @click="v$.password2.$touch()"
               ></ion-input>
+
               <ion-button
                 v-if="inputTypePassword2 == 'text'"
                 slot="end"
@@ -123,6 +157,7 @@
               >
                 <ion-icon :icon="eyeOffOutline"></ion-icon>
               </ion-button>
+
               <ion-button
                 v-if="inputTypePassword2 == 'password'"
                 slot="end"
@@ -133,8 +168,9 @@
                 <ion-icon :icon="eyeOutline"></ion-icon>
               </ion-button>
             </ion-item>
+
             <div
-              v-for="(error, index) of (v$ as any).form.password2.$errors"
+              v-for="(error, index) of (v$ as any).password2.$errors"
               :key="index"
             >
               <div class="error">{{ error.$message }}</div>
@@ -145,7 +181,7 @@
         <section>
           <ion-button
             fill="clear"
-            :disabled="(v$ as any).form.$invalid||spinners.buttonSignup"
+            :disabled="(v$ as any).$invalid || spinners.buttonSignup"
             expand="full"
             @click="register()"
           >
@@ -188,25 +224,15 @@
 <script setup lang="ts">
 import {
   alertController,
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
   IonInput,
-  IonButtons,
-  IonMenuButton,
-  IonRow,
-  IonCol,
   IonCard,
-  IonCardHeader,
   IonItem,
   IonLabel,
   IonButton,
   IonIcon,
   isPlatform,
 } from "@ionic/vue";
-import { defineComponent, ref } from "vue";
+import { ref } from "vue";
 import { userRegister } from "../../../services/session";
 import {
   eyeOutline,
@@ -224,15 +250,14 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
 const inputTypePassword1 = ref("password" as "text" | "password");
 const inputTypePassword2 = ref("password" as "text" | "password");
 const form = ref({
-  user: "",
-  name: "",
-  email: "",
-  password: "",
-  password2: "",
+  user: "ssj",
+  name: "ww",
+  email: "d@d.com",
+  password: "smartwordlM4",
+  password2: "smartwordlM4",
 });
 const spinners = ref({
   buttonSignup: false,
@@ -244,38 +269,37 @@ const messageError = {
   alpha: "Solamente puede contener texto",
 };
 const rules = {
-  form: {
-    name: {
-      required: helpers.withMessage(messageError.required, required),
-      alpha: helpers.withMessage(
-        messageError.alpha,
-        helpers.regex(/^[a-zA-Z ]*$/)
-      ),
-    },
-    user: {
-      required: helpers.withMessage(messageError.required, required),
-      space: helpers.withMessage(messageError.alpha, helpers.regex(/^\S*$/)),
-    },
-    email: {
-      required: helpers.withMessage(messageError.required, required),
-      email: helpers.withMessage("Correo no valido", email),
-    },
-    password: {
-      required: helpers.withMessage(messageError.required, required),
-      minLength: helpers.withMessage(
-        "La contraseña debe tener al menos una mayúscula, un numero y tener un tamaño de 8",
-        helpers.regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
-      ),
-    },
-    password2: {
-      same: helpers.withMessage(
-        "Las contraseñas no coinciden",
-        sameAs(form.value.password)
-      ),
-    },
+  name: {
+    required: helpers.withMessage(messageError.required, required),
+    alpha: helpers.withMessage(
+      messageError.alpha,
+      helpers.regex(/^[a-zA-Z ]*$/),
+    ),
+  },
+  user: {
+    required: helpers.withMessage(messageError.required, required),
+    space: helpers.withMessage(messageError.alpha, helpers.regex(/^\S*$/)),
+  },
+  email: {
+    required: helpers.withMessage(messageError.required, required),
+    email: helpers.withMessage("Correo no valido", email),
+  },
+  password: {
+    required: helpers.withMessage(messageError.required, required),
+    minLength: helpers.withMessage(
+      "La contraseña debe tener al menos una mayúscula, un numero y tener un tamaño de 8",
+      helpers.regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/),
+    ),
+  },
+  password2: {
+    required: helpers.withMessage(messageError.required, required),
+    same: helpers.withMessage(
+      "Las contraseñas no coinciden",
+      sameAs(form.value.password),
+    ),
   },
 };
-const v$ = useVuelidate(rules, { form });
+const v$ = useVuelidate(rules, form);
 
 // functions
 async function register() {

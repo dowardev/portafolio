@@ -10,41 +10,45 @@
           />
         </div>
         <form>
+          <!-- user -->
           <ion-item lines="inset" class="transparent">
             <ion-icon slot="start" :icon="mailOpenOutline" class="item-icon">
             </ion-icon>
 
-            <ion-label position="floating">
-              Usuario o correo electrónico
-            </ion-label>
-
             <ion-input
-              v-model="form.email"
               type="email"
+              label="Usuario o correo electrónico"
+              label-placement="floating"
+              :value="form.email"
+              @ion-input="form.email as any"
               @keydown.enter="($refs as any).inputPassword.$el.setFocus()"
             >
             </ion-input>
           </ion-item>
-          <div
-            v-for="(error, index) of (v$ as any).form['email'].$errors"
-            :key="index"
-          >
+
+          <div v-for="(error, index) of (v$ as any).email.$errors" :key="index">
             <div class="error">
               {{ error.$message }}
             </div>
           </div>
 
+          <!-- password -->
           <ion-item lines="inset" class="transparent">
             <ion-icon slot="start" :icon="fingerPrintOutline" class="item-icon">
             </ion-icon>
-            <ion-label position="floating">Contraseña</ion-label>
+
             <ion-input
               ref="inputPassword"
-              v-model="form.password"
+              label="Contraseña"
+              label-placement="floating"
+              :value="form.password"
               :type="inputTypePassword"
+              @ion-input="form.password = $event.detail.value as any"
               @keydown.enter="login()"
+              @click="v$.password.$touch()"
             >
             </ion-input>
+
             <ion-button
               v-if="inputTypePassword == 'text'"
               slot="end"
@@ -54,6 +58,7 @@
             >
               <ion-icon :icon="eyeOffOutline"></ion-icon>
             </ion-button>
+
             <ion-button
               v-if="inputTypePassword == 'password'"
               slot="end"
@@ -66,7 +71,7 @@
           </ion-item>
 
           <div
-            v-for="(error, index) of (v$ as any).form.password.$errors"
+            v-for="(error, index) of (v$ as any).password.$errors"
             :key="index"
           >
             <div class="error">
@@ -77,7 +82,7 @@
 
         <ion-button
           fill="clear"
-          :disabled="(v$ as any).form.$invalid || spinners.buttonLogin"
+          :disabled="(v$ as any).$invalid || spinners.buttonLogin"
           expand="full"
           @click="login()"
         >
@@ -142,8 +147,6 @@ import {
   IonInput,
   loadingController,
   IonCard,
-  IonRow,
-  IonCol,
   IonItem,
   IonIcon,
   IonLabel,
@@ -161,13 +164,10 @@ import { userLogin, sendMailResetPassword } from "../../../services/session";
 import { setUserToken, resendEmailConfirmation } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import { USER_LOGIN, USER_NAME } from "../../../services/graphql";
 import { useSystem } from "../../../composables/useSystem";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-
-const modeDesingElements = isPlatform("ios") ? "ios" : "md";
 
 const inputTypePassword = ref("password" as "text" | "password");
 const form = ref({
@@ -185,16 +185,14 @@ const messageError = {
   required: "Campo requerido",
 };
 const rules = {
-  form: {
-    email: {
-      required: helpers.withMessage(messageError.required, required),
-    },
-    password: {
-      required: helpers.withMessage(messageError.required, required),
-    },
+  email: {
+    required: helpers.withMessage(messageError.required, required),
+  },
+  password: {
+    required: helpers.withMessage(messageError.required, required),
   },
 };
-const v$ = useVuelidate(rules, { form });
+const v$ = useVuelidate(rules, form);
 
 // functions
 async function presentToast(message: string, color: string) {
@@ -239,7 +237,7 @@ async function login() {
     if (e.message == "Disabled user") {
       presentToast(
         "Cuenta de usuario deshabilitada, para mas informacion contacte a soporte.",
-        "danger"
+        "danger",
       );
       return;
     }
