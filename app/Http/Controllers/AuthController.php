@@ -148,4 +148,11 @@ class AuthController extends Controller
 
     return $message;
   }
+
+  public function searchUser(Request $request)
+  {
+    $perPage = $request->input("per_page", $request->perpage);
+    $users = User::paginate($perPage);
+    return response()->json($users);
+  }
 }

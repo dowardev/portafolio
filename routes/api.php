@@ -20,6 +20,9 @@ Route::middleware(Cors::class)->group(function () {
 
   // others
   Route::post("upload-image", [SystemController::class, "uploadImage"]);
+
+  // admin users
+  Route::get("search-user/{perpage}", [AuthController::class, "searchUser"]);
 });
 
 Route::group(["middleware" => "auth:api"], function () {
