@@ -224,7 +224,6 @@
       <!-- popover user options -->
       <ion-popover
         :is-open="isOpenRefPopOverUserOptions"
-        css-class="my-custom-class"
         :event="eventPopOverUserOptions"
         @did-dismiss="setOpenPopOverUserOptions(false)"
       >
@@ -236,12 +235,14 @@
             :disabled="spinners.buttonAdminPanel"
             lines="none"
             @click="goToAdminPanel()"
+            class="transparent"
           >
             <ion-icon
               v-if="spinners.buttonAdminPanel == false"
               slot="start"
               :icon="cogOutline"
             ></ion-icon>
+
             <ion-spinner
               v-if="spinners.buttonAdminPanel"
               slot="start"
@@ -249,6 +250,7 @@
               name="crescent"
             >
             </ion-spinner>
+
             <ion-label>Panel administrador</ion-label>
           </ion-item>
 
@@ -258,12 +260,14 @@
             button
             lines="none"
             @click="goToUserPanel()"
+            class="transparent"
           >
             <ion-icon
               v-if="spinners.buttonUserPanel == false"
               slot="start"
               :icon="personOutline"
             ></ion-icon>
+
             <ion-spinner
               v-if="spinners.buttonUserPanel"
               slot="start"
@@ -280,12 +284,14 @@
             button
             lines="none"
             @click="logout()"
+            class="transparent"
           >
             <ion-icon
               v-if="spinners.buttonLogout == false"
               slot="start"
               :icon="logOutOutline"
             ></ion-icon>
+
             <ion-spinner
               v-if="spinners.buttonLogout"
               slot="start"

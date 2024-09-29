@@ -23,7 +23,7 @@
           <!-- end dae selector -->
         </div>
 
-        <ion-item lines="none">
+        <ion-item lines="none" class="transparent">
           <ion-button
             v-if="useUser().user.value.isAdmin"
             fill="clear"
@@ -145,6 +145,7 @@ import {
   IonCol,
   IonPopover,
   getPlatforms,
+  IonItem,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import {
