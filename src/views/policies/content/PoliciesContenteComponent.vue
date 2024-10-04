@@ -156,7 +156,7 @@ watch(
   (newValue) => {
     if (newValue == 0) emits("showTitle", false);
     else emits("showTitle", true);
-  }
+  },
 );
 
 function setScrollPosition(): void {
@@ -169,7 +169,7 @@ function setScrollPosition(): void {
   font-weight: bold;
 }
 
-.card-main-content {
+.div-main-content {
   max-height: 82vh;
   overflow: auto;
 }

@@ -18,7 +18,7 @@
     </ion-row>
 
     <!-- posts -->
-    <ion-row v-if="usePost().getPosts()!.length>0">
+    <ion-row v-if="usePost().getPosts()!.length > 0">
       <ion-col
         v-for="(post, indexPost) in filterPosts"
         :key="post.id"
@@ -60,7 +60,10 @@
                 @click="updatePost(post.id!)"
               >
                 <ion-icon
-                  v-if="spinners.buttonEditPost == '' || spinners.buttonEditPost != post.id!"
+                  v-if="
+                    spinners.buttonEditPost == '' ||
+                    spinners.buttonEditPost != post.id!
+                  "
                   slot="start"
                   :icon="createOutline"
                 ></ion-icon>
@@ -235,7 +238,7 @@ const scrollPosition = ref(0);
 const filterPosts = computed(() => {
   const posts = usePost().getPosts()!;
   return posts.filter(
-    (post) => post.createdAt!.split("T")[0] == usePost().getCurrentPage()
+    (post) => post.createdAt!.split("T")[0] == usePost().getCurrentPage(),
   );
 });
 
@@ -248,7 +251,7 @@ watch(
   (newValue) => {
     if (newValue == 0) emits("showTitle", false);
     else emits("showTitle", true);
-  }
+  },
 );
 
 // functions
@@ -396,7 +399,7 @@ defineExpose({ loadPosts });
   border: 1px solid var(--ion-background-color);
 }
 
-.card-main-content {
+.div-main-content {
   height: 82vh;
   overflow: auto;
 }

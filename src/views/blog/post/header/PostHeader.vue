@@ -88,7 +88,7 @@ async function updatePost(): Promise<void> {
   spinners.value.buttonUpdate = false;
 }
 const indexContent = ref(
-  [] as Array<{ name: string; id: string; type: string }>
+  [] as Array<{ name: string; id: string; type: string }>,
 );
 
 async function deletePost(): Promise<void> {
@@ -120,7 +120,7 @@ async function deletePost(): Promise<void> {
   font-size: 12px !important;
 }
 
-.card-main-content {
+.div-main-content {
   height: 82vh;
   overflow: hidden;
 }

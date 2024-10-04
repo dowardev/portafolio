@@ -48,7 +48,7 @@ const props = defineProps({
   font-weight: bold;
 }
 
-.card-main-content {
+.div-main-content {
   max-height: 82vh;
   overflow: auto;
 }

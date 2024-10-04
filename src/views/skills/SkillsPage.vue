@@ -1,50 +1,36 @@
 <template>
-  <div
-    ref="mainDiv"
-    style="overflow: auto; height: 100vh"
-    @scroll="emitScrollPosition()"
-  >
-    <ion-row>
-      <ion-col
-        v-for="(skill, indexSkill) in skills[0].tipo"
-        :key="indexSkill"
-        size-xs="12"
-        size-md="6"
-        size-lg="12"
-      >
-        <ion-card
-          :class="{
-            'element-post-selected': elementPostHover == indexSkill,
-            'element-post-no-selected': elementPostHover != indexSkill,
-          }"
-          class="blur-element"
-          @mouseenter="elementPostHover = indexSkill"
-          @mouseleave="elementPostHover = -1"
-        >
-          <ion-card-header>
-            <ion-card-title>{{ skill.name }}</ion-card-title>
-          </ion-card-header>
+  <ion-row>
+    <ion-col
+      v-for="(skill, indexSkill) in skills[0].tipo"
+      :key="indexSkill"
+      size-xs="12"
+      size-md="6"
+      size-lg="6"
+    >
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>{{ skill.name }}</ion-card-title>
+        </ion-card-header>
 
-          <ion-card-content>
-            <ion-row style="text-align: center">
-              <ion-col
-                v-for="(technology, index) in skill.technology"
-                :key="index"
-              >
-                <img
-                  :src="technology.image[0].path"
-                  :style="{
-                    maxWidth: technology.image[0].size,
-                  }"
-                />
-                <p>{{ technology.name }}</p>
-              </ion-col>
-            </ion-row>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </div>
+        <ion-card-content>
+          <ion-row style="text-align: center">
+            <ion-col
+              v-for="(technology, index) in skill.technology"
+              :key="index"
+            >
+              <img
+                :src="technology.image[0].path"
+                :style="{
+                  maxWidth: technology.image[0].size,
+                }"
+              />
+              <p>{{ technology.name }}</p>
+            </ion-col>
+          </ion-row>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
 </template>
 
 <script setup lang="ts">
@@ -247,49 +233,4 @@ const skills = ref([
     ],
   },
 ]);
-const elementPostHover = ref(-1);
-const mainDiv = ref();
-
-// functions
-function emitScrollPosition(): void {
-  emits("scrollPosition", mainDiv.value.scrollTop);
-}
 </script>
-
-<style scoped>
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
-
-.element-post-selected {
-  border: 1px solid var(--ion-color-primary);
-}
-
-.element-post-no-selected {
-  border: 1px solid var(--ion-background-color);
-}
-</style>

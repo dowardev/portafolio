@@ -285,7 +285,7 @@ async function openPostSearch(params: { id: string }): Promise<void> {
   border: 1px solid var(--ion-background-color);
 }
 
-.card-main-content {
+.div-main-content {
   height: 82vh;
   overflow: auto;
 }

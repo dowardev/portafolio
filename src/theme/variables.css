@@ -77,26 +77,13 @@ ul {
   margin-top: 28px;
 }
 
-.blur-effect {
-  backdrop-filter: blur(20px);
-}
-.blur-effect-color {
-  background-color: rgba(var(--background-color), 0.8);
-}
-
 ion-card {
-  /* box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px; */
-  /* box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px; */
   box-shadow: none;
-  background-color: var(--ion-background-light-color);
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
 ion-icon {
   color: var(--ion-color-primary);
-}
-
-ion-toolbar {
-  --background: var(--ion-background-color);
 }
 
 ion-accordion ion-item {
@@ -111,28 +98,6 @@ ion-accordion > div[slot="content"] {
   height: 58px;
 }
 
-.blur-element {
-  background-color: rgba(
-    var(--ion-background-light-color-rgb),
-    var(--blur-color-opacity)
-  );
-  backdrop-filter: blur(var(--blur));
-}
-
-.main-content::before {
-  border-radius: 6px;
-  content: "";
-  background-image: var(--wallpaper-main-content);
-  background-size: cover;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
-  opacity: var(--wallpaper-opacity);
-  background-color: var(--ion-background-light-color);
-}
-
 .fade-in-title {
   animation: fade-in-animation 1s ease-in;
 }
@@ -144,4 +109,8 @@ ion-accordion > div[slot="content"] {
   100% {
     opacity: 1;
   }
+}
+
+.container-page {
+  --background: transparent !important;
 }

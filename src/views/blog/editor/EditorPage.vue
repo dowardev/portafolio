@@ -64,7 +64,7 @@
                     @ion-input="postTitle = $event.target.value as string"
                     @ion-focus="
                       ($refs.inputPostTitle as any).$el.classList.add(
-                        'ion-touched'
+                        'ion-touched',
                       );
                       v$.postTitle.$touch();
                     "
@@ -288,20 +288,20 @@ watch(
   () => props.title,
   (newVal) => {
     postTitle.value = newVal;
-  }
+  },
 );
 watch(
   () => props.content,
   (newVal) => {
     postContent.value += newVal;
-  }
+  },
 );
 watch(
   () => props.cover,
   (newVal) => {
     coverName.value = newVal.name;
     coverSource.value = "data:image/png;base64," + newVal.source;
-  }
+  },
 );
 
 // functions
@@ -368,7 +368,7 @@ async function openModalPreview() {
   height: calc(87vh - 228px) !important;
 }
 
-.card-main-content {
+.div-main-content {
   height: calc(100vh - 142px);
 }
 

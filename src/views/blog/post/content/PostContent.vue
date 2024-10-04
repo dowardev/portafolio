@@ -93,7 +93,7 @@ const hideIndexContentComponentvalue =
   isPlatform("desktop") == true ? true : false;
 const postId = route.params.id as string;
 const indexContent = ref(
-  [] as Array<{ name: string; id: string; type: string }>
+  [] as Array<{ name: string; id: string; type: string }>,
 );
 const indexRef = ref();
 let headings = null;
@@ -114,7 +114,7 @@ watch(
   (newValue) => {
     if (newValue == 0) emits("showTitle", false);
     else emits("showTitle", true);
-  }
+  },
 );
 
 // functions
@@ -178,7 +178,7 @@ function generarIndexContent(): void {
       });
 
       count++;
-    }
+    },
   );
 }
 
@@ -226,7 +226,7 @@ defineExpose({ openModalIndexContent });
   font-size: 12px !important;
 }
 
-.card-main-content {
+.div-main-content {
   height: 82vh;
   overflow: hidden;
 }

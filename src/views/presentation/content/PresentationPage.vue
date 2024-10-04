@@ -129,7 +129,7 @@ const showTitle = ref(true);
   justify-content: center;
 }
 
-.card-main-content {
+.div-main-content {
   height: calc(100vh - 142px);
 }
 

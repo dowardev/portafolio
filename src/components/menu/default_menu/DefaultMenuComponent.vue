@@ -1,17 +1,7 @@
 <template>
   <ion-page>
-    <ion-header class="ion-no-border">
-      <ion-toolbar>
-        <img
-          src="@/assets/portafolio/dowar.png"
-          style="max-width: 230px; margin-left: 14px"
-        />
-        <!-- <ion-title>Dowar Blog</ion-title> -->
-      </ion-toolbar>
-    </ion-header>
-
     <ion-content>
-      <ion-card>
+      <div class="div-main-content">
         <ion-row>
           <ion-col>
             <!-- session -->
@@ -21,10 +11,6 @@
               class="transparent"
               @click="setOpenPopOverUserOptions(true, $event)"
             >
-              <!-- <ion-avatar slot="start"> -->
-              <!--   <img :src="useUser().imageProfile.value.toString()" /> -->
-              <!-- </ion-avatar> -->
-
               <ion-label>{{ useUser().user.value.user }}</ion-label>
 
               <ion-button
@@ -45,10 +31,15 @@
               class="transparent"
               lines="none"
             >
-              <ion-button fill="clear" @click="openRoute('/login')">
+              <ion-button
+                fill="clear"
+                @click="openRoute({ name: 'LoginPage' })"
+              >
                 Iniciar sesión
               </ion-button>
-              <ion-button fill="clear" @click="openRoute('/signup')"
+              <ion-button
+                fill="clear"
+                @click="openRoute({ name: 'SignUpPage' })"
                 >Registrar</ion-button
               >
             </ion-item>
@@ -60,14 +51,23 @@
                   lines="none"
                   class="transparent"
                   button
-                  @click="openRoute('/presentation')"
+                  @click="openRoute({ name: 'PresentationPage' })"
                 >
                   <div slot="start">
                     <ion-icon
                       :icon="personOutline"
                       :class="{
-                        iconOptionSelected: $route.path == '/presentation',
-                        iconOptionNoSelected: $route.path != '/presentation',
+                        iconOptionSelected:
+                          $route.name == 'PresentationPage' ||
+                          $route.name == 'SkillsPage' ||
+                          $route.name == 'HistoryPage' ||
+                          $route.name == 'PortfolioPage',
+
+                        iconOptionNoSelected:
+                          $route.name != 'PresentationPage' &&
+                          $route.name != 'SkillsPage' &&
+                          $route.name != 'HistoryPage' &&
+                          $route.name != 'PortfolioPage',
                       }"
                     ></ion-icon>
                   </div>
@@ -218,7 +218,7 @@
             </section>
           </ion-col>
         </ion-row>
-      </ion-card>
+      </div>
 
       <!-- popovers -->
       <!-- popover user options -->
@@ -386,8 +386,10 @@ onMounted(() => {
 });
 
 // functions
-function openRoute(route: string) {
-  router.push(route);
+function openRoute(params: { route?: string; name?: string }) {
+  const { route, name } = params;
+  if (route) router.push(route);
+  if (name) router.push({ name });
   menuController.close();
 }
 
@@ -494,5 +496,11 @@ async function openModalDonations() {
   width: 100%;
   max-height: 100%;
   overflow: auto;
+}
+
+.div-main-content {
+  background-color: var(--ion-background-light-color);
+  margin: 10px;
+  border-radius: 4px;
 }
 </style>

@@ -68,7 +68,7 @@ const mainSegment = ref("profile");
 </script>
 
 <style scoped>
-.card-main-content {
+.div-main-content {
   max-height: 82vh;
   overflow: auto;
 }

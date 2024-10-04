@@ -48,7 +48,7 @@
 
       <ion-row>
         <ion-col size="12">
-          <ion-item>
+          <ion-item class="transparent">
             <ion-label position="floating"> Nombre </ion-label>
             <ion-input
               v-model="contactData.name"
@@ -58,6 +58,7 @@
             >
             </ion-input>
           </ion-item>
+
           <div
             v-for="(error, index) of v$.contactData.name.$errors"
             :key="index"
@@ -67,7 +68,7 @@
         </ion-col>
 
         <ion-col size="12">
-          <ion-item>
+          <ion-item class="transparent">
             <ion-label position="floating"> Asunto</ion-label>
             <ion-input
               v-model="contactData.subject"
@@ -76,6 +77,7 @@
             >
             </ion-input>
           </ion-item>
+
           <div
             v-for="(error, index) of v$.contactData.subject.$errors"
             :key="index"
@@ -85,7 +87,7 @@
         </ion-col>
 
         <ion-col size="12">
-          <ion-item>
+          <ion-item class="transparent">
             <ion-label position="floating"> Correo electrónico</ion-label>
             <ion-input
               v-model="contactData.email"
@@ -94,6 +96,7 @@
             >
             </ion-input>
           </ion-item>
+
           <div
             v-for="(error, index) of v$.contactData.email.$errors"
             :key="index"
@@ -103,10 +106,11 @@
         </ion-col>
 
         <ion-col size="12">
-          <ion-item>
+          <ion-item class="transparent">
             <ion-label position="floating"> Descripción</ion-label>
             <ion-textarea v-model="contactData.description"> </ion-textarea>
           </ion-item>
+
           <div
             v-for="(error, index) of v$.contactData.description.$errors"
             :key="index"
