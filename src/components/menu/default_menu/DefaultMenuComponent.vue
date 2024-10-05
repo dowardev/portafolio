@@ -81,16 +81,16 @@
                   lines="none"
                   class="transparent"
                   button
-                  @click="$router.replace('/blog')"
+                  @click="openRoute({ name: 'PostsPage' })"
                 >
                   <div slot="start">
                     <ion-icon
                       :icon="libraryOutline"
                       :class="{
                         iconOptionSelected:
-                          $route.path == '/blog' || $route.params.id,
+                          $route.name == '$router.replace' || $route.params.id,
                         iconOptionNoSelected:
-                          $route.path != '/blog' || $route.params.id,
+                          $route.name != '$router.replace' || $route.params.id,
                       }"
                     ></ion-icon>
                   </div>

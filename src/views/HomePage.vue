@@ -1,7 +1,16 @@
 <template>
   <ion-page>
     <div id="main-content" class="div-main-content">
-      <HomePresentationPage />
+      <HomePresentationPage
+        v-if="
+          $route.name == 'PresentationPage' ||
+          $route.name == 'SkillsPage' ||
+          $route.name == 'HistoryPage' ||
+          $route.name == 'PortfolioPage'
+        "
+      />
+
+      <PostsPage v-if="$route.name == 'PostsPage'" />
     </div>
   </ion-page>
 </template>
@@ -11,6 +20,7 @@ import { IonPage } from "@ionic/vue";
 
 // components
 import HomePresentationPage from "../../src/views/presentation/HomePresentationPage.vue";
+import PostsPage from "../../src/views/blog/posts/PostsPage.vue";
 </script>
 
 <style scoped>

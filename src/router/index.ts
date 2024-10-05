@@ -66,11 +66,6 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/blog",
-    name: "BlogPage",
-    component: HomePage,
-  },
-  {
-    path: "/blog",
     name: "PostsPage",
     component: HomePage,
     children: [
