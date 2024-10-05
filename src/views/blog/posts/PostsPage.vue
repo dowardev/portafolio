@@ -39,11 +39,11 @@
             <ion-icon :icon="searchOutline"></ion-icon>
           </ion-button>
 
-          <ion-button>
+          <ion-button @click="previousDate()">
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
 
-          <ion-button>
+          <ion-button @click="nextDate()">
             <ion-icon :icon="chevronForwardOutline"></ion-icon>
           </ion-button>
 
@@ -182,11 +182,10 @@
 
       <ion-toolbar>
         <ion-searchbar
-          :debounce="350"
-          @ion-change="
+          :debounce="550"
+          @ion-input="
             searchPosts({
               search: $event.detail.value as string,
-              refetch: true,
             })
           "
         ></ion-searchbar>
@@ -224,13 +223,14 @@
 
 <script setup lang="ts">
 import { IonItem, loadingController } from "@ionic/vue";
-import { computed, ref } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUser } from "@/composables/useUser";
 import { usePost } from "@/composables/usePost";
 import { useSystem } from "@/composables/useSystem";
 import {
   addOutline,
+  banOutline,
   chevronBackOutline,
   chevronForwardOutline,
   closeOutline,
@@ -260,6 +260,10 @@ const isOpenSearchModal = ref(false);
 const loadFinished = ref(false);
 const mq = useMq();
 const searchResult = ref(Array<{ id: string; title: string }>());
+const currentDate = ref("");
+let dates = reactive([] as Array<string>);
+const index = ref();
+const currentDateIndex = ref(0);
 
 const filterPosts = computed(() => {
   const posts = usePost().getPosts()!;
@@ -271,6 +275,26 @@ const filterPosts = computed(() => {
 onMounted(() => {
   loadContent({ refetch: true });
 });
+
+watch(
+  () => usePost().getDates(),
+  (newValue) => {
+    dates = newValue as any;
+  },
+);
+watch(
+  () => usePost().getCurrentPage(),
+  (newValue) => {
+    currentDate.value = newValue as string;
+  },
+);
+watch(
+  () => dates,
+  (newValue) => {
+    index.value = newValue.indexOf(currentDate.value);
+    currentDateIndex.value = index.value;
+  },
+);
 
 // functions
 async function addPost(): Promise<void> {
@@ -308,7 +332,7 @@ async function loadContent(params: { refetch: boolean }): Promise<void> {
 
 async function getPostsDates(params: { refetch: boolean }): Promise<void> {
   try {
-    await usePost().loadDates({});
+    await usePost().loadDates();
   } catch (e: any) {
     console.error(e);
     useSystem().openToastError(e);
@@ -344,12 +368,8 @@ function loadData(params: { dates: Array<string> }): string {
   return currentPage;
 }
 
-async function searchPosts(params: {
-  search: string;
-  refetch: boolean;
-}): Promise<void> {
+async function searchPosts(params: { search: string }): Promise<void> {
   const search = params.search;
-  const refetch = params.refetch;
 
   const searchResultResponse = await usePost().searchPosts({
     search,
@@ -399,5 +419,42 @@ async function deletePost(params: { id: string }) {
 
 function closeModalSearchPosts() {
   (modalSearchPosts as any).$el.dismiss(null, "cancel");
+}
+
+async function nextDate(): Promise<void> {
+  const newDateIndex = +currentDateIndex.value + 1;
+
+  if (newDateIndex >= dates.length) return;
+
+  currentDate.value = dates[newDateIndex];
+  currentDateIndex.value = newDateIndex;
+
+  updateCurrentDate();
+  // emits("currentDateChange");
+  await loadPosts({ currentPage: currentDate.value });
+}
+
+async function previousDate(): Promise<void> {
+  const newDateIndex = +currentDateIndex.value - 1;
+
+  if (newDateIndex < 0) return;
+
+  currentDate.value = dates[newDateIndex];
+  currentDateIndex.value = newDateIndex;
+
+  updateCurrentDate();
+  // emits("currentDateChange");
+  await loadPosts({ currentPage: currentDate.value });
+}
+
+async function selectDate(params: { date: string }): Promise<void> {
+  const date = params.date;
+  currentDateIndex.value = dates.indexOf(date);
+  updateCurrentDate();
+  await loadPosts({ currentPage: currentDate.value });
+}
+
+function updateCurrentDate(): void {
+  usePost().updateCurrentPage({ currentPage: currentDate.value });
 }
 </script>
