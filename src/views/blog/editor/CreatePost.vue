@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-content :fullscreen="true">
+    <ion-content class="container-page">
       <EditorComponent
         ref="editorRef"
         :spinner-save-post="spinners.savePost"
@@ -24,11 +24,6 @@ import {
 } from "../../../services/system";
 import EditorComponent from "./EditorPage.vue";
 import { CreatePost } from "../../../services/interfaces";
-import {
-  ALL_POSTS_DETAILS,
-  POST_DATES,
-  UPLOAD_IMAGE,
-} from "../../../services/graphql";
 import { usePost } from "../../../composables/usePost";
 import { useSystem } from "../../../composables/useSystem";
 import { useRouter } from "vue-router";

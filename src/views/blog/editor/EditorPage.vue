@@ -1,7 +1,7 @@
 <template>
   <ion-page>
-    <ion-header collapse="fade" mode="ios" class="ion-no-border">
-      <ion-toolbar>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="container-page">
         <ion-buttons slot="start">
           <ion-button fill="clear" @click="router.go(-1)">
             <ion-icon :icon="chevronBackOutline"></ion-icon>
@@ -12,7 +12,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content class="container-page">
       <section class="section-options">
         <ion-row>
           <ion-col size="12">
@@ -41,95 +41,91 @@
 
       <ion-row>
         <ion-col>
-          <ion-card class="card-main-content">
-            <ion-card-content>
-              <!-- title -->
-              <ion-row>
-                <ion-col>
-                  <ion-input
-                    ref="inputPostTitle"
-                    label="Titulo"
-                    label-placement="floating"
-                    fill="solid"
-                    autocorrect="on"
-                    pattern="text"
-                    :error-text="v$.postTitle.$errors[0]?.$message as string"
-                    :class="[
-                      v$.postTitle.$errors.length == 0
-                        ? 'ion-valid'
-                        : 'ion-invalid',
-                    ]"
-                    :value="postTitle"
-                    :spellcheck="true"
-                    @ion-input="postTitle = $event.target.value as string"
-                    @ion-focus="
-                      ($refs.inputPostTitle as any).$el.classList.add(
-                        'ion-touched',
-                      );
-                      v$.postTitle.$touch();
-                    "
-                  >
-                  </ion-input>
-                </ion-col>
-              </ion-row>
+          <!-- title -->
+          <ion-row>
+            <ion-col>
+              <ion-input
+                ref="inputPostTitle"
+                label="Titulo"
+                label-placement="floating"
+                fill="solid"
+                autocorrect="on"
+                pattern="text"
+                :error-text="v$.postTitle.$errors[0]?.$message as string"
+                :class="[
+                  v$.postTitle.$errors.length == 0
+                    ? 'ion-valid'
+                    : 'ion-invalid',
+                ]"
+                :value="postTitle"
+                :spellcheck="true"
+                @ion-input="postTitle = $event.target.value as string"
+                @ion-focus="
+                  ($refs.inputPostTitle as any).$el.classList.add(
+                    'ion-touched',
+                  );
+                  v$.postTitle.$touch();
+                "
+              >
+              </ion-input>
+            </ion-col>
+          </ion-row>
 
-              <ion-row>
-                <ion-col>
-                  <!-- input cover -->
-                  <ion-item
-                    button
-                    lines="full"
-                    fill="solid"
-                    @click="($refs as any).inputPostCover.click()"
-                  >
-                    <ion-label slot="start">Portada</ion-label>
-                    <input
-                      ref="inputPostCover"
-                      style="display: none"
-                      accept="image/*"
-                      type="file"
-                      @change="uploadCover(($event.target as any).files[0]!)"
-                      @click="v$.coverSource.$touch()"
-                    />
-                    <ion-label slot="end">{{ coverName }}</ion-label>
-                  </ion-item>
-                  <div
-                    v-for="(error, index) of (v$ as any).coverSource.$errors"
-                    :key="index"
-                    class="ion-padding-start"
-                  >
-                    <span class="error" style="font-size: 12px">{{
-                      error.$message
-                    }}</span>
-                  </div>
-                </ion-col>
-              </ion-row>
+          <ion-row>
+            <ion-col>
+              <!-- input cover -->
+              <ion-item
+                button
+                lines="full"
+                fill="solid"
+                @click="($refs as any).inputPostCover.click()"
+              >
+                <ion-label slot="start">Portada</ion-label>
+                <input
+                  ref="inputPostCover"
+                  style="display: none"
+                  accept="image/*"
+                  type="file"
+                  @change="uploadCover(($event.target as any).files[0]!)"
+                  @click="v$.coverSource.$touch()"
+                />
+                <ion-label slot="end">{{ coverName }}</ion-label>
+              </ion-item>
+              <div
+                v-for="(error, index) of (v$ as any).coverSource.$errors"
+                :key="index"
+                class="ion-padding-start"
+              >
+                <span class="error" style="font-size: 12px">{{
+                  error.$message
+                }}</span>
+              </div>
+            </ion-col>
+          </ion-row>
 
-              <ion-row>
-                <!-- content -->
-                <ion-col size="12" size-md="12" size-lg="12" class="editor">
-                  <MdEditor
-                    v-model="postContent"
-                    theme="dark"
-                    :toolbars="
-                      isPlatform('mobile') ? toolbarMobile : toolbarDesktop
-                    "
-                    :language="'en-US'"
-                    :preview="false"
-                    style="
-                      height: calc(87vh - 50px);
-                      overflow: scroll;
-                      width: 100%;
-                      margin-top: 18px;
-                      --md-bk-color: var(--ion-background-color-rgb);
-                      --md-color: var(--ion-color-primary);
-                    "
-                    @on-upload-img="uploadImage($event[0])"
-                  />
-                </ion-col>
-              </ion-row>
-            </ion-card-content>
-          </ion-card>
+          <ion-row>
+            <!-- content -->
+            <ion-col size="12" size-md="12" size-lg="12" class="editor">
+              <MdEditor
+                v-model="postContent"
+                theme="dark"
+                :toolbars="
+                  isPlatform('mobile') ? toolbarMobile : toolbarDesktop
+                "
+                :language="'en-US'"
+                :preview="false"
+                style="
+                  height: calc(87vh - 50px);
+                  overflow: scroll;
+                  width: 100%;
+                  margin-top: 18px;
+                  --md-bk-color: var(--ion-background-color-rgb);
+                  --md-color: var(--ion-color-primary);
+                "
+                @on-upload-img="uploadImage($event[0])"
+              />
+            </ion-col>
+          </ion-row>
         </ion-col>
       </ion-row>
 
