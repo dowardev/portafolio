@@ -94,7 +94,7 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
   return posts;
 }
 
-export async function getPost(params: { id: number }): Promise<Post> {
+export async function getPost(params: { id: number | string }): Promise<Post> {
   const { id } = params;
 
   const response = await axios.request({

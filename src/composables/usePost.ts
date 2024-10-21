@@ -43,7 +43,7 @@ export const usePost = () => {
     }
   }
 
-  async function loadPost(params: { id: string }) {
+  async function loadPost(params: { id: number | string }) {
     const id = params.id;
 
     try {

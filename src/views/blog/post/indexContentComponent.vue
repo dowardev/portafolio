@@ -33,7 +33,7 @@
     <div
       id="indexContent"
       style="overflow: auto; height: 70vh"
-      class=" ion-padding-start"
+      class="ion-padding-start"
     >
       <div
         v-for="element in indexContent"
@@ -49,7 +49,7 @@
           }"
         >
           <span
-            style=" cursor: pointer"
+            style="cursor: pointer"
             @click="goToSection({ id: element.id })"
             >{{ element.name }}</span
           >
