@@ -1,7 +1,7 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" mode="ios" class="ion-no-border">
-      <ion-toolbar>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="container-page">
         <ion-buttons slot="start">
           <ion-menu-button
             menu="mainMenu"
@@ -12,7 +12,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content class="container-page">
       <section class="section-options">
         <ion-row>
           <ion-col size="12" class="center">

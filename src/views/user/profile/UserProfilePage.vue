@@ -293,7 +293,8 @@
                   </ion-button>
                 </ion-item>
                 <div
-                  v-for="(error, index) of (v$ as any).formDeleteAccount.password.$errors"
+                  v-for="(error, index) of (v$ as any).formDeleteAccount
+                    .password.$errors"
                   :key="index"
                 >
                   <div class="error">{{ error.$message }}</div>
@@ -357,7 +358,6 @@ import {
   mailOpenOutline,
   keyOutline,
 } from "ionicons/icons";
-import { UPLOAD_IMAGE, USER_BASIC_DETAILS } from "../../../services/graphql";
 import userAvatar from "../../../assets/otros/user.png";
 import { useUser } from "../../../composables/useUser";
 import { useSystem } from "../../../composables/useSystem";
@@ -419,7 +419,7 @@ const rules = {
       required: helpers.withMessage(messageError.required, required),
       alpha: helpers.withMessage(
         messageError.alpha,
-        helpers.regex(/^[a-zA-Z ]*$/)
+        helpers.regex(/^[a-zA-Z ]*$/),
       ),
     },
     user: {

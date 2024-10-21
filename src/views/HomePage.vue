@@ -17,6 +17,7 @@
       <SignUpPage v-if="$route.name == 'SignUpPage'" />
       <CreatePost v-if="$route.name == 'CreatePost'" />
       <AdminPanelPage v-if="$route.name == 'AdminPanelPage'" />
+      <UserPanelPage v-if="$route.name == 'UserPanelPage'" />
     </div>
   </ion-page>
 </template>
@@ -33,6 +34,7 @@ import LoginPage from "./session/login/LoginPage.vue";
 import SignUpPage from "./session/signup/SignUpPage.vue";
 import CreatePost from "./blog/editor/CreatePost.vue";
 import AdminPanelPage from "./admin/PanelAdminPage.vue";
+import UserPanelPage from "./user/UserPanelPage.vue";
 </script>
 
 <style scoped>
