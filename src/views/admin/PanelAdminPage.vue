@@ -1,12 +1,7 @@
 <template>
   <ion-page>
-    <ion-header
-      :translucent="true"
-      collapse="fade"
-      mode="ios"
-      class="ion-no-border"
-    >
-      <ion-toolbar>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="container-page">
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu" mode="md"></ion-menu-button>
         </ion-buttons>
@@ -14,7 +9,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content class="container-page">
       <ion-header collapse="condense" mode="ios">
         <ion-toolbar>
           <ion-title size="large">{{ pageTitle }}</ion-title>
