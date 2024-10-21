@@ -111,6 +111,15 @@
 </template>
 
 <script setup lang="ts">
+import {
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent,
+} from "@ionic/vue";
 import { ref } from "vue";
 
 const emits = defineEmits(["scrollPosition"]);

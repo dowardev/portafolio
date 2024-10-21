@@ -246,6 +246,9 @@ import {
   IonModal,
   IonItem,
   IonLabel,
+  IonPopover,
+  IonContent,
+  IonIcon,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import {

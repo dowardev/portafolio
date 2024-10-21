@@ -114,3 +114,14 @@ ion-accordion > div[slot="content"] {
 .container-page {
   --background: transparent !important;
 }
+
+.page-container {
+  height: 97%;
+  background-color: var(--ion-background-light-color);
+  --background: var(--ion-background-light-color);
+  margin: 10px;
+  border-radius: 4px;
+}
+.page-container > ion-content {
+  --background: transparent;
+}

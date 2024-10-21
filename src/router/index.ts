@@ -1,12 +1,22 @@
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
-import HomePage from "../views/HomePage.vue";
 import NoFoundPage from "../views/404/404Page.vue";
 import { useUser } from "../composables/useUser";
 import HomePresentationPage from "../views/presentation/HomePresentationPage.vue";
 import SkillsPage from "@/views/skills/SkillsPage.vue";
 import HistoryPage from "@/views/history/HistoryPage.vue";
 import PortfolioPage from "@/views/portfolio/PortfolioPage.vue";
+import CreatePost from "@/views/blog/editor/CreatePost.vue";
+import UpdatePost from "@/views/blog/editor/UpdatePost.vue";
+import PostsPage from "@/views/blog/posts/PostsPage.vue";
+import PostPage from "@/views/blog/post/PostPage.vue";
+import LoginPage from "@/views/session/login/LoginPage.vue";
+import SignUpPage from "@/views/session/signup/SignUpPage.vue";
+import RestorePasswordPage from "@/views/session/restore-password/RestorePasswordPage.vue";
+import PoliciesPage from "@/views/policies/PoliciesPage.vue";
+import UserPanelPage from "@/views/user/UserPanelPage.vue";
+import AdminPanelPage from "@/views/admin/users/UsersPage.vue";
+import InformationComponent from "@/views/presentation/information/InformationComponent.vue";
 
 async function loadUser(): Promise<void> {
   try {
@@ -23,92 +33,80 @@ const routes: Array<RouteRecordRaw> = [
   },
   { path: "/:catchAll(.*)", component: NoFoundPage, name: "NoFoundPage" },
   {
-    path: "/prueba",
-    name: "PruebaPage",
-    component: HomePage,
+    path: "/home/presentation",
+    name: "PresentationPage",
+    component: HomePresentationPage,
   },
   {
-    path: "/home",
-    name: "HomePage",
-    component: HomePage,
-    children: [
-      {
-        path: "presentation",
-        name: "PresentationPage",
-        component: HomePage,
-      },
-      {
-        path: "skills",
-        name: "SkillsPage",
-        component: SkillsPage,
-      },
-      {
-        path: "/history",
-        name: "HistoryPage",
-        component: HistoryPage,
-      },
-      {
-        path: "/portfolio",
-        name: "PortfolioPage",
-        component: PortfolioPage,
-      },
-    ],
+    path: "/home/skills",
+    name: "SkillsPage",
+    component: HomePresentationPage,
+  },
+  {
+    path: "/home/history",
+    name: "HistoryPage",
+    component: HomePresentationPage,
+  },
+  {
+    path: "/home/portfolio",
+    name: "PortfolioPage",
+    component: HomePresentationPage,
   },
   {
     path: "/blog/editor/create",
     name: "CreatePost",
-    component: HomePage,
+    component: CreatePost,
   },
   {
     path: "/blog/editor/update/:id",
     name: "UpdatePost",
-    component: HomePage,
+    component: UpdatePost,
   },
   {
     path: "/blog",
     name: "PostsPage",
-    component: HomePage,
+    component: PostsPage,
     children: [
       {
         path: ":date",
-        component: HomePage,
+        component: PostsPage,
       },
     ],
   },
   {
     path: "/blog/post/:id",
     name: "PostPage",
-    component: HomePage,
+    component: PostPage,
   },
   {
     path: "/login",
     name: "LoginPage",
-    component: HomePage,
+    component: LoginPage,
   },
   {
     path: "/signup",
     name: "SignUpPage",
-    component: HomePage,
+    component: SignUpPage,
   },
   {
     path: "/restore-password/:email/:code",
     name: "RestorePasswordPage",
-    component: HomePage,
+    component: RestorePasswordPage,
   },
   {
     path: "/policies",
     name: "PoliciesPage",
-    component: HomePage,
+    component: PoliciesPage,
   },
   {
     path: "/user",
     name: "UserPanelPage",
-    component: HomePage,
+    component: UserPanelPage,
   },
   {
     path: "/admin-panel",
     name: "AdminPanelPage",
-    component: HomePage,
+    component: AdminPanelPage,
   },
 ];
 

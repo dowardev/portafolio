@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonSelect, IonSelectOption } from "@ionic/vue";
+import { IonSelect, IonSelectOption, IonRow, IonCol } from "@ionic/vue";
 import { ref } from "vue";
 
 // components
