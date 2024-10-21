@@ -105,7 +105,7 @@
                   lines="none"
                   class="transparent"
                   button
-                  @click="openRoute('/policies')"
+                  @click="openRoute({ name: 'PoliciesPage' })"
                 >
                   <div slot="start">
                     <ion-icon

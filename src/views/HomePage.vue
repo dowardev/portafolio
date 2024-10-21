@@ -12,6 +12,7 @@
 
       <PostsPage v-if="$route.name == 'PostsPage'" />
       <PostPage v-if="$route.name == 'PostPage'" />
+      <PoliciesPage v-if="$route.name == 'PoliciesPage'" />
     </div>
   </ion-page>
 </template>
@@ -23,6 +24,7 @@ import { IonPage } from "@ionic/vue";
 import HomePresentationPage from "../../src/views/presentation/HomePresentationPage.vue";
 import PostsPage from "../../src/views/blog/posts/PostsPage.vue";
 import PostPage from "../../src/views/blog/post/PostPage.vue";
+import PoliciesPage from "./policies/PoliciesPage.vue";
 </script>
 
 <style scoped>
