@@ -26,7 +26,7 @@
         </ion-buttons>
 
         <!-- main options md and lg screen -->
-        <ion-buttons slot="end">
+        <ion-buttons slot="end" v-if="isPlatform('desktop')">
           <ion-button @click="backgroundActive = !backgroundActive">
             <ion-icon :icon="imageOutline"></ion-icon>
           </ion-button>
@@ -69,6 +69,17 @@
       @did-dismiss="buttonMenuOptions.open = false"
     >
       <ion-content>
+        <ion-item
+          lines="full"
+          button
+          @click="backgroundActive = !backgroundActive"
+        >
+          <ion-icon slot="start" :icon="imageOutline"></ion-icon>
+
+          <ion-label v-if="backgroundActive == false">Activar fondo</ion-label>
+          <ion-label v-else>Desactivar fondo</ion-label>
+        </ion-item>
+
         <ion-item
           v-for="(option, key) in menuOptions"
           :key="key"
