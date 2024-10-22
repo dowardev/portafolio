@@ -1,5 +1,8 @@
 <template>
-  <ion-page class="page-container page-background">
+  <ion-page
+    class="page-container"
+    :class="{ 'page-background': backgroundActive }"
+  >
     <ion-header class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
@@ -8,29 +11,36 @@
 
         <ion-title>{{ pageTitle }}</ion-title>
 
-        <ion-buttons slot="end">
-          <!-- main options sm screen -->
-          <div v-if="isPlatform('android') || isPlatform('ios')">
+        <!-- main options sm screen -->
+        <ion-buttons
+          slot="end"
+          v-if="isPlatform('android') || isPlatform('ios')"
+        >
+          <div>
             <ion-button
               @click="buttonMenuOptions = { open: true, event: $event }"
             >
               <ion-icon :icon="albumsOutline"></ion-icon>
             </ion-button>
           </div>
+        </ion-buttons>
 
-          <!-- main options md and lg screen -->
-          <div v-if="isPlatform('desktop')">
-            <ion-segment :scrollable="true" :value="$route.name as string">
-              <ion-segment-button
-                v-for="(option, key) in menuOptions"
-                :key="key"
-                :value="option.route"
-                @click="$router.push({ name: option.route })"
-              >
-                <span>{{ option.title }}</span>
-              </ion-segment-button>
-            </ion-segment>
-          </div>
+        <!-- main options md and lg screen -->
+        <ion-buttons slot="end">
+          <ion-button @click="backgroundActive = !backgroundActive">
+            <ion-icon :icon="imageOutline"></ion-icon>
+          </ion-button>
+
+          <ion-segment :scrollable="true" :value="$route.name as string">
+            <ion-segment-button
+              v-for="(option, key) in menuOptions"
+              :key="key"
+              :value="option.route"
+              @click="$router.push({ name: option.route })"
+            >
+              <span>{{ option.title }}</span>
+            </ion-segment-button>
+          </ion-segment>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -103,7 +113,7 @@ import InformationComponent from "./information/InformationComponent.vue";
 import SkillsPage from "../skills/SkillsPage.vue";
 import HistoryPage from "../history/HistoryPage.vue";
 import PortfolioPage from "../portfolio/PortfolioPage.vue";
-import { albumsOutline } from "ionicons/icons";
+import { albumsOutline, imageOutline } from "ionicons/icons";
 
 // vars
 const showTitle = ref(true);
@@ -116,6 +126,7 @@ const menuOptions = ref({
   portfolio: { title: "Porfolio", route: "PortfolioPage" },
 });
 const buttonMenuOptions = ref({ open: false, event: null });
+const backgroundActive = ref(false);
 
 onMounted(() => {
   useBackButton(10, () => {
