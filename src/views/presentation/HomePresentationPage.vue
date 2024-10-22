@@ -1,7 +1,7 @@
 <template>
   <ion-page class="page-container">
     <ion-header class="ion-no-border">
-      <ion-toolbar class="container-page">
+      <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
@@ -33,7 +33,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content style="height: calc(100% - 57px); overflow: auto">
+    <ion-content>
       <div style="height: 100%" v-if="$route.name == 'PresentationPage'">
         <div size="12" style="height: 100%" class="center center-vertical">
           <InformationComponent />

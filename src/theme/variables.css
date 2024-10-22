@@ -111,17 +111,38 @@ ion-accordion > div[slot="content"] {
   }
 }
 
-.container-page {
-  --background: transparent !important;
-}
-
 .page-container {
   height: 97%;
-  background-color: var(--ion-background-light-color);
-  --background: var(--ion-background-light-color);
+  background-color: var(--ion-color-dark-contrast);
+  --background: var(--ion-color-dark-contrast);
   margin: 10px;
   border-radius: 4px;
 }
+.page-container > ion-header > ion-toolbar {
+  --background: transparent;
+}
+
 .page-container > ion-content {
   --background: transparent;
+  height: calc(100% - 57px);
+  overflow: auto;
+}
+
+.menu-container {
+  --background: var(--ion-color-dark-contrast);
+  background-color: var(--ion-color-dark-contrast);
+  margin-top: 10px;
+  margin-bottom: 12px;
+  margin-left: 10px;
+  border-radius: 4px;
+}
+
+.menu-container > ion-content {
+  --background: transparent;
+  height: calc(100% - 57px);
+  overflow: auto;
+}
+
+ion-item {
+  border-radius: 4px;
 }

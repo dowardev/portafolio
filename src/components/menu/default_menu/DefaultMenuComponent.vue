@@ -1,7 +1,7 @@
 <template>
-  <ion-page>
+  <ion-page class="menu-container">
     <ion-content>
-      <div class="div-main-content">
+      <div>
         <ion-row>
           <ion-col>
             <!-- session -->
