@@ -43,34 +43,28 @@
                 <ion-text>Tecnologías</ion-text>
               </ion-col>
 
-              <ion-col
-                v-for="tech in project.technologies"
-                :key="tech.icon"
-                size-xs="2"
-                size-md="3"
-                size-lg="3"
-                size-xl="2"
-              >
-                <ion-button
-                  :href="tech.route"
-                  target="_blank"
-                  fill="clear"
-                  size="small"
-                >
-                  <ion-icon
-                    v-if="tech.type == 'icon'"
-                    slot="start"
-                    :icon="tech.icon"
-                    color="primary"
-                  ></ion-icon>
-                  <img
-                    v-if="tech.type == 'svg'"
-                    :src="tech.icon"
-                    alt=""
-                    style="max-width: 1.4rem"
-                  />
-                </ion-button>
-              </ion-col>
+              <div style="display: flex; justify-content: space-between">
+                <div v-for="tech in project.technologies" :key="tech.icon">
+                  <ion-button
+                    :href="tech.route"
+                    target="_blank"
+                    fill="clear"
+                    size="small"
+                  >
+                    <ion-icon
+                      v-if="tech.type == 'icon'"
+                      :icon="tech.icon"
+                      color="primary"
+                    ></ion-icon>
+                    <img
+                      v-if="tech.type == 'svg'"
+                      :src="tech.icon"
+                      alt=""
+                      style="max-width: 18px"
+                    />
+                  </ion-button>
+                </div>
+              </div>
             </ion-row>
 
             <ion-row>
@@ -225,5 +219,11 @@ const proyectos = [
 
 .project-image {
   width: 70%;
+}
+
+@media (min-width: 1024px) {
+  .project-image {
+    width: 100%;
+  }
 }
 </style>
