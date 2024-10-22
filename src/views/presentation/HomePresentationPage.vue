@@ -1,5 +1,5 @@
 <template>
-  <ion-page class="page-container">
+  <ion-page class="page-container page-background">
     <ion-header class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
@@ -11,7 +11,9 @@
         <ion-buttons slot="end">
           <!-- main options sm screen -->
           <div v-if="isPlatform('android') || isPlatform('ios')">
-            <ion-button id="click-trigger">
+            <ion-button
+              @click="buttonMenuOptions = { open: true, event: $event }"
+            >
               <ion-icon :icon="albumsOutline"></ion-icon>
             </ion-button>
           </div>
@@ -25,7 +27,7 @@
                 :value="option.route"
                 @click="$router.push({ name: option.route })"
               >
-                {{ option.title }}
+                <span>{{ option.title }}</span>
               </ion-segment-button>
             </ion-segment>
           </div>
@@ -44,20 +46,17 @@
         <SkillsPage />
       </div>
 
-      <div v-if="$route.name == 'HistoryPage'" class="ion-padding">
-        <HistoryPage />
-      </div>
-
-      <div v-if="$route.name == 'PortfolioPage'" class="ion-padding">
+      <div v-if="$route.name == 'PortfolioPage'">
         <PortfolioPage />
       </div>
     </ion-content>
 
     <!-- popovers -->
     <ion-popover
-      trigger="click-trigger"
-      trigger-action="click"
+      :is-open="buttonMenuOptions.open"
+      :event="buttonMenuOptions.event"
       :mode="isPlatform('ios') ? 'ios' : 'md'"
+      @did-dismiss="buttonMenuOptions.open = false"
     >
       <ion-content>
         <ion-item
@@ -89,6 +88,8 @@ import {
   IonTitle,
   IonButton,
   IonIcon,
+  IonContent,
+  IonPopover,
 } from "@ionic/vue";
 import { isPlatform } from "@ionic/vue";
 import { onMounted, ref, watch } from "vue";
@@ -111,22 +112,16 @@ const pageTitle = "Presentación";
 const menuOptions = ref({
   contact: { title: "Contacto", route: "PresentationPage" },
   skills: { title: "Habilidades", route: "SkillsPage" },
-  history: { title: "Historia", route: "HistoryPage" },
+  // history: { title: "Historia", route: "HistoryPage" },
   portfolio: { title: "Porfolio", route: "PortfolioPage" },
 });
+const buttonMenuOptions = ref({ open: false, event: null });
 
 onMounted(() => {
   useBackButton(10, () => {
     alertExitApp();
   });
 });
-
-// watch(
-//   () => route.fullPath,
-//   (newPath, oldPath) => {
-//     console.log(newpath, oldPath);
-//   }
-// );
 
 // functions
 async function alertExitApp(): Promise<void> {
@@ -171,3 +166,12 @@ function mainSelectHandler(params: { option: MainOptions }) {
   }
 }
 </script>
+
+<style scoped>
+.page-background {
+  background-image: url("../../assets/backgrounds/b5.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+</style>

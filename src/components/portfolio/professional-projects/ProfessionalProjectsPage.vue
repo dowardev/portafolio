@@ -1,10 +1,14 @@
 <template>
   <div>
-    <ion-card v-for="(project, index) in proyectos" :key="index">
+    <ion-card
+      v-for="(project, index) in proyectos"
+      :key="index"
+      class="blur-effect"
+    >
       <ion-card-content>
         <ion-row>
-          <ion-col size-xs="12" size-md="4">
-            <img :src="project.image[0].route" style="width: 20rem" />
+          <ion-col size-xs="12" size-md="4" class="center">
+            <img class="project-image" :src="project.image[0].route" />
           </ion-col>
 
           <ion-col size-xs="12" size-md="8">
@@ -213,3 +217,13 @@ const proyectos = [
   },
 ];
 </script>
+
+<style scoped>
+.blur-effect {
+  backdrop-filter: blur(10px);
+}
+
+.project-image {
+  width: 70%;
+}
+</style>

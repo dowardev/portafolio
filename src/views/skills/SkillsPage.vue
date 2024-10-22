@@ -7,7 +7,7 @@
       size-md="6"
       size-lg="6"
     >
-      <ion-card>
+      <ion-card class="blur-effect">
         <ion-card-header>
           <ion-card-title>{{ skill.name }}</ion-card-title>
         </ion-card-header>
@@ -234,3 +234,9 @@ const skills = ref([
   },
 ]);
 </script>
+
+<style scoped>
+.blur-effect {
+  backdrop-filter: blur(10px);
+}
+</style>

@@ -3,10 +3,6 @@
     <ion-card
       v-for="(project, index) in proyectos"
       :key="index"
-      :class="{
-        'element-post-selected': elementPostHover == index,
-        'element-post-no-selected': elementPostHover != index,
-      }"
       class="blur-element"
       @mouseenter="elementPostHover = index"
       @mouseleave="elementPostHover = -1"
@@ -165,11 +161,7 @@ const elementPostHover = ref(-1);
   --background: transparent;
 }
 
-.element-post-selected {
-  border: 1px solid var(--ion-color-primary);
-}
-
-.element-post-no-selected {
-  border: 1px solid var(--ion-background-color);
+.blur-effect {
+  backdrop-filter: blur(10px);
 }
 </style>

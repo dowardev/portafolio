@@ -1,120 +1,102 @@
 <template>
-  <ion-row>
+  <ion-card class="ion-padding blur-effect">
     <!-- perfil -->
-    <ion-col size-xs="12" size-lg="6">
-      <ion-row>
-        <ion-col class="center" size="12">
-          <img
-            src="@/assets/portafolio/foto_perfil.jpg"
-            alt=""
-            class="img-perfil"
-          />
-        </ion-col>
-      </ion-row>
+    <ion-row>
+      <ion-col class="center" size="12">
+        <img
+          src="@/assets/portafolio/foto_perfil.jpg"
+          alt=""
+          class="img-perfil"
+        />
+      </ion-col>
+    </ion-row>
 
-      <ion-row>
-        <ion-col class="center" size-lg="12">
-          <h1>Gonzalo Ponce</h1>
-        </ion-col>
-      </ion-row>
+    <ion-row>
+      <ion-col class="center" size-lg="12">
+        <h1>Gonzalo Ponce</h1>
+      </ion-col>
+    </ion-row>
 
-      <ion-row>
-        <ion-col class="center" size="12">
-          <img
-            src="@/assets/portafolio/dowar.png"
-            style="max-width: 230px; margin-left: 14px"
-          />
-        </ion-col>
-      </ion-row>
+    <ion-row>
+      <ion-col class="center" size="12">
+        <img
+          src="@/assets/portafolio/dowar.png"
+          style="max-width: 330px; margin-left: 14px"
+        />
+      </ion-col>
+    </ion-row>
 
-      <ion-row>
-        <ion-col class="center" size="12">
-          <p style="text-align: center">
-            Desarrollador de aplicaciones hibridas
-          </p>
-        </ion-col>
-      </ion-row>
-    </ion-col>
+    <ion-row>
+      <ion-col class="center" size="12">
+        <p style="text-align: center">
+          Desarrollador de experiencias multiplataforma
+        </p>
+      </ion-col>
+    </ion-row>
 
     <!-- redes -->
-    <ion-col size-xs="12" size-lg="6">
-      <ion-row class="center-vertical" style="height: 100%">
-        <ion-col size="12">
+    <ion-row>
+      <ion-col>
+        <div style="display: flex; justify-content: space-around">
           <!-- email -->
-          <ion-item
+          <ion-button
             id="click-trigger-bussiness-email"
-            lines="full"
             button
-            class="transparent"
+            class="social-button"
             @mouseover="fillEmailContact = '#C87C5B'"
             @mouseleave="fillEmailContact = defaultColorFill"
           >
             <ion-icon
-              slot="start"
               :style="{ color: fillEmailContact }"
               :icon="mail"
             ></ion-icon>
-
-            <ion-label>Correo electrónico</ion-label>
-          </ion-item>
+          </ion-button>
 
           <!-- LinkedIn -->
-          <ion-item
+          <ion-button
             id="click-trigger-bussiness-linkedin"
-            lines="full"
             button
-            class="transparent"
+            class="social-button"
             @mouseover="fillLinkedIn = '#7373FF'"
             @mouseleave="fillLinkedIn = defaultColorFill"
           >
             <ion-icon
-              slot="start"
               :style="{ color: fillLinkedIn }"
               :icon="logoLinkedin"
             ></ion-icon>
-
-            <ion-label> LinkedIn</ion-label>
-          </ion-item>
+          </ion-button>
 
           <!-- contact form -->
-          <ion-item
+          <ion-button
             id="open-modal-cocntacto-form"
-            lines="full"
             button
-            class="transparent"
+            class="social-button"
             @mouseover="fillContactForm = '#5FFEF7'"
             @mouseleave="fillContactForm = defaultColorFill"
           >
             <ion-icon
-              slot="start"
               :icon="chatbubble"
               :style="{ color: fillContactForm }"
             ></ion-icon>
-
-            <ion-label> Formulario de contacto</ion-label>
-          </ion-item>
+          </ion-button>
 
           <!-- cv -->
-          <ion-item
+          <ion-button
             id="click-trigger-cv"
-            lines="full"
             button
-            class="transparent"
+            class="social-button"
             @mouseover="fillCVForm = '#FFC65B'"
             @mouseleave="fillCVForm = defaultColorFill"
           >
             <ion-icon
-              slot="start"
               :icon="documentText"
               :style="{ color: fillCVForm }"
             ></ion-icon>
-
-            <ion-label>Currículum</ion-label>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-col>
-  </ion-row>
+          </ion-button>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-card>
 
   <!-- popovers -->
   <!-- popover email -->
@@ -249,6 +231,7 @@ import {
   IonPopover,
   IonContent,
   IonIcon,
+  IonButton,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import {
@@ -322,28 +305,19 @@ function openMail(params: { mail: string; subject: string }) {
 }
 </script>
 
-<style scoped src="./animacion-nombre.css"></style>
-
 <style scoped>
 .img-perfil {
   border-radius: 50%;
-  width: 17vh;
-  height: 17vh;
+  width: 27vh;
+  height: 27vh;
 }
-/*tablet */
-@media only screen and (min-width: 768px) {
-  .img-perfil {
-    border-radius: 50%;
-    width: 182px;
-    height: 182px;
-  }
+
+.social-button {
+  --box-shadow: none;
+  --background: transparent;
 }
-/* escritorio */
-@media only screen and (min-width: 992px) {
-  .img-perfil {
-    border-radius: 50%;
-    width: 182px;
-    height: 182px;
-  }
+
+.blur-effect {
+  backdrop-filter: blur(10px);
 }
 </style>
