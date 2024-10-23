@@ -4,6 +4,7 @@ http://ionicframework.com/docs/theming/ */
 @import url("./gruvbox.css");
 @import url("./nord.css");
 @import url("./light.css");
+@import url("./scrollbar.css");
 
 @font-face {
   font-family: "OpenSans-Regular";

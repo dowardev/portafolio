@@ -54,7 +54,6 @@
           <div
             ref="indexRef"
             style="overflow: auto; height: calc(100dvh - 88px)"
-            id="pr"
           >
             <MdPreview
               style="
