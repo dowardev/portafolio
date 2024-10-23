@@ -1,44 +1,61 @@
 <template>
-  <ion-header class="ion-no-border">
-    <ion-toolbar class="container-page">
-      <ion-buttons slot="start">
-        <ion-button @click="$router.go(-1)">
-          <ion-icon :icon="chevronBackOutline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-
-      <ion-title v-if="usePost().getPost({ id: postId })">{{
-        usePost().getPost({ id: postId })!.title
-      }}</ion-title>
-
-      <ion-buttons slot="end">
-        <section v-if="useUser().user.value.isAdmin">
-          <ion-button fill="clear" @click="updatePost()">
-            <ion-icon :icon="createOutline"></ion-icon>
+  <ion-page class="page-container">
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="container-page">
+        <ion-buttons slot="start">
+          <ion-button @click="$router.go(-1)">
+            <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
+        </ion-buttons>
 
-          <ion-button fill="clear" @click="deletePost()">
-            <ion-icon :icon="trashOutline" color="danger"></ion-icon>
-          </ion-button>
-        </section>
+        <ion-title v-if="usePost().getPost({ id: postId })">{{
+          usePost().getPost({ id: postId })!.title
+        }}</ion-title>
 
-        <ion-button
+        <!-- mobile options -->
+        <ion-buttons
+          slot="end"
           v-if="isPlatform('android') || isPlatform('ios')"
-          fill="clear"
-          @click="openModalIndexContent()"
         >
-          <ion-icon :icon="menuOutline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
+          <ion-button
+            @click="popoverMainOptions = { open: true, event: $event }"
+          >
+            <ion-icon :icon="ellipsisVerticalOutline" slot="start"></ion-icon>
+          </ion-button>
+        </ion-buttons>
 
-  <ion-content class="container-page">
-    <div v-if="usePost().getPost({ id: postId }) != undefined">
+        <!-- desktop options -->
+        <ion-buttons slot="end" v-if="isPlatform('desktop')">
+          <section v-if="useUser().user.value.isAdmin">
+            <ion-button fill="clear" @click="updatePost()">
+              <ion-icon :icon="createOutline"></ion-icon>
+            </ion-button>
+
+            <ion-button fill="clear" @click="deletePost()">
+              <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+            </ion-button>
+          </section>
+
+          <ion-button
+            v-if="isPlatform('android') || isPlatform('ios')"
+            fill="clear"
+            @click="openModalIndexContent()"
+          >
+            <ion-icon :icon="menuOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
       <!-- content -->
-      <ion-row>
-        <ion-col size-xs="11" size-md="9">
-          <div ref="indexRef" style="overflow: auto; height: 85vh">
+      <ion-row v-if="usePost().getPost({ id: postId }) != undefined">
+        <ion-col size-xs="12" size-md="9">
+          <div
+            ref="indexRef"
+            style="overflow: auto; height: calc(100dvh - 88px)"
+            id="pr"
+          >
             <MdPreview
               style="
                 --md-bk-color: var(--ion-background-color-rgb);
@@ -54,7 +71,11 @@
           </div>
         </ion-col>
 
-        <ion-col v-if="isPlatform('desktop')" size="3" class="ion-padding-top">
+        <ion-col
+          v-if="isPlatform('desktop')"
+          size-md="3"
+          class="ion-padding-top"
+        >
           <!-- index content -->
           <indexContentComponent
             :index-content="indexContent"
@@ -63,14 +84,58 @@
           />
         </ion-col>
       </ion-row>
-    </div>
-  </ion-content>
+
+      <!-- popoovers -->
+      <ion-popover
+        :is-open="popoverMainOptions.open"
+        :event="popoverMainOptions.event"
+        @did-dismiss="popoverMainOptions.open = false"
+        @click="popoverMainOptions.open = false"
+      >
+        <ion-content>
+          <!-- index -->
+          <ion-item lines="full" button @click="openModalIndexContent()">
+            <ion-icon :icon="menuOutline" slot="start"></ion-icon>
+            <ion-label>Indice</ion-label>
+          </ion-item>
+
+          <!-- update -->
+          <ion-item
+            lines="full"
+            v-if="useUser().user.value.isAdmin"
+            button
+            @click="updatePost()"
+          >
+            <ion-icon :icon="createOutline" slot="start"></ion-icon>
+            <ion-label>Actualizar post</ion-label>
+          </ion-item>
+
+          <!-- delete -->
+          <ion-item
+            lines="full"
+            v-if="useUser().user.value.isAdmin"
+            button
+            @click="deletePost()"
+          >
+            <ion-icon
+              :icon="trashOutline"
+              color="danger"
+              slot="start"
+            ></ion-icon>
+            <ion-label>Indice</ion-label>
+          </ion-item>
+        </ion-content>
+      </ion-popover>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
+import { IonPage, IonPopover } from "@ionic/vue";
 import {
   chevronBackOutline,
   createOutline,
+  ellipsisVerticalOutline,
   menuOutline,
   trashOutline,
 } from "ionicons/icons";
@@ -97,11 +162,12 @@ const postId = route.params.id as string;
 const mq = useMq();
 const spinners = ref({ buttonUpdate: false, buttonDelete: false });
 const indexContent = ref(
-  [] as Array<{ name: string; id: string; type: string }>,
+  [] as Array<{ name: string; id: string; type: string }>
 );
 let headings = null;
 const indexRef = ref(null);
 const useSytemComposable = useSystem();
+const popoverMainOptions = ref({ open: false, event: Event });
 
 // mounted
 onMounted(() => {
@@ -169,7 +235,7 @@ function generarIndexContent(): void {
       });
 
       count++;
-    },
+    }
   );
 }
 

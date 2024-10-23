@@ -70,7 +70,13 @@
             <ion-row>
               <ion-col
                 size="4"
-                style="padding-bottom: 0px; padding-left: 0px; padding-top: 0px"
+                style="
+                  padding-bottom: 0px;
+                  padding-left: 0px;
+                  padding-top: 0px;
+                  cursor: pointer;
+                "
+                @click="openPost(post.id!)"
               >
                 <img
                   :src="post.cover.source!"
@@ -92,7 +98,7 @@
                   justify-content: space-between;
                 "
               >
-                <ion-row>
+                <ion-row @click="openPost(post.id!)" style="cursor: pointer">
                   <ion-card-title>
                     <span>{{ post.title }}</span>
                   </ion-card-title>
@@ -431,7 +437,7 @@ async function deletePost(params: { id: string }) {
   if (response == false) return;
 
   const loading = await loadingController.create({
-    message: "Eliminando publicacion",
+    message: "Eliminando publicación",
   });
 
   loading.present();
