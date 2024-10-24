@@ -7,7 +7,7 @@
       size-md="6"
       size-lg="6"
     >
-      <ion-card class="blur-effect">
+      <ion-card class="blur-effect selectable-card">
         <ion-card-header>
           <ion-card-title>{{ skill.name }}</ion-card-title>
         </ion-card-header>

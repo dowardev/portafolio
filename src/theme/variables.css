@@ -80,16 +80,17 @@ ul {
 
 ion-card {
   box-shadow: none;
-  /* box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; */
-  box-shadow:
-    rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
-    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-  border: 1px solid var(--ion-color-primary);
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
   background: transparent;
+  border: 1px solid transparent;
 }
 
-.ion-card-selected {
-  background: #3dade94a;
+.selectable-card:hover {
+  border: 1px solid var(--ion-color-primary);
+}
+
+.element-selected {
+  background: var(--ion-color-selected);
 }
 
 /* ion-button { */

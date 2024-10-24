@@ -3,7 +3,7 @@
     <ion-card
       v-for="(project, index) in proyectos"
       :key="index"
-      class="blur-element"
+      class="blur-effect selectable-card"
       @mouseenter="elementPostHover = index"
       @mouseleave="elementPostHover = -1"
     >

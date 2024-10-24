@@ -107,4 +107,12 @@
   --ion-background-color-step-850: #404041;
   --ion-background-color-step-900: #363637;
   --ion-background-color-step-950: #2d2c2c;
+
+  /* custom */
+  --ion-color-selected: #3dade94a;
+  --ion-color-selected-rgb: 173, 233, 74;
+  --ion-color-selected-contrast: #000000;
+  --ion-color-selected-contrast-rgb: 0, 0, 0;
+  --ion-color-selected-shade: #98cd41;
+  --ion-color-selected-tint: #b5eb5c;
 }

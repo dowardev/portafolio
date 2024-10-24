@@ -19,10 +19,7 @@
 
     <ion-row>
       <ion-col class="center" size="12">
-        <img
-          src="@/assets/portafolio/dowar.png"
-          style="max-width: 330px; margin-left: 14px"
-        />
+        <img src="@/assets/portafolio/dowar.png" class="img-logo" />
       </ion-col>
     </ion-row>
 
@@ -312,6 +309,13 @@ function openMail(params: { mail: string; subject: string }) {
   height: 27vh;
 }
 
+.img-logo {
+  max-width: 100%;
+  max-height: 100%;
+  width: calc(100% - 70px);
+  height: 10dvh;
+}
+
 .social-button {
   --box-shadow: none;
   --background: transparent;
@@ -319,5 +323,9 @@ function openMail(params: { mail: string; subject: string }) {
 
 .blur-effect {
   backdrop-filter: blur(10px);
+}
+
+ion-card {
+  border: 1px solid var(--ion-color-primary);
 }
 </style>
