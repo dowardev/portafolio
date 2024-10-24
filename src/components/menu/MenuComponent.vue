@@ -72,7 +72,17 @@
                     ></ion-icon>
                   </div>
 
-                  <ion-label class="labelOptionMenu"> Presentación </ion-label>
+                  <ion-label
+                    :class="{
+                      labelOptionMenu:
+                        $route.name == 'PresentationPage' ||
+                        $route.name == 'SkillsPage' ||
+                        $route.name == 'HistoryPage' ||
+                        $route.name == 'PortfolioPage',
+                    }"
+                  >
+                    Presentación
+                  </ion-label>
                 </ion-item>
               </div>
 
@@ -87,15 +97,17 @@
                     <ion-icon
                       :icon="libraryOutline"
                       :class="{
-                        iconOptionSelected:
-                          $route.name == '$router.replace' || $route.params.id,
-                        iconOptionNoSelected:
-                          $route.name != '$router.replace' || $route.params.id,
+                        iconOptionSelected: $route.name == 'PostsPage',
+                        iconOptionNoSelected: $route.name != 'PostsPage',
                       }"
                     ></ion-icon>
                   </div>
 
-                  <ion-label class="labelOptionMenu"> Blog </ion-label>
+                  <ion-label
+                    :class="{ labelOptionMenu: $route.name == 'PostsPage' }"
+                  >
+                    Blog
+                  </ion-label>
                 </ion-item>
               </div>
 
@@ -116,7 +128,10 @@
                       }"
                     ></ion-icon>
                   </div>
-                  <ion-label>Politicas</ion-label>
+                  <ion-label
+                    :class="{ labelOptionMenu: $route.name == 'PoliciesPage' }"
+                    >Políticas</ion-label
+                  >
                 </ion-item>
               </div>
             </section>
