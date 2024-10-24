@@ -1,11 +1,6 @@
 <template>
   <ion-page>
-    <ion-header
-      :translucent="true"
-      collapse="fade"
-      mode="ios"
-      class="ion-no-border"
-    >
+    <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-buttons slot="start">
@@ -14,6 +9,7 @@
             </ion-button>
           </ion-buttons>
         </ion-buttons>
+
         <ion-title>{{ pageTitle }}</ion-title>
 
         <ion-buttons slot="end">
@@ -40,83 +36,96 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense" mode="ios">
-        <ion-toolbar>
-          <ion-title size="large">{{ pageTitle }}</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
       <ion-row>
-        <ion-col size="12">
-          <ion-item class="transparent">
-            <ion-label position="floating"> Nombre </ion-label>
-            <ion-input
-              v-model="contactData.name"
-              type="text"
-              :autofocus="true"
-              autocomplete="name"
-            >
-            </ion-input>
-          </ion-item>
+        <ion-col>
+          <ion-card>
+            <ion-card-content>
+              <ion-row>
+                <ion-col size="12">
+                  <ion-input
+                    type="text"
+                    autocomplete="name"
+                    label="Nombre"
+                    label-placement="stacked"
+                    fill="outline"
+                    :autofocus="true"
+                    :value="contactData.name"
+                    @ion-change="contactData.name = $event.detail.value as any"
+                  >
+                  </ion-input>
 
-          <div
-            v-for="(error, index) of v$.contactData.name.$errors"
-            :key="index"
-          >
-            <div class="error">{{ error.$message }}</div>
-          </div>
-        </ion-col>
+                  <div
+                    v-for="(error, index) of v$.contactData.name.$errors"
+                    :key="index"
+                  >
+                    <div class="error">{{ error.$message }}</div>
+                  </div>
+                </ion-col>
 
-        <ion-col size="12">
-          <ion-item class="transparent">
-            <ion-label position="floating"> Asunto</ion-label>
-            <ion-input
-              v-model="contactData.subject"
-              type="text"
-              :spellcheck="true"
-            >
-            </ion-input>
-          </ion-item>
+                <ion-col size="12">
+                  <ion-input
+                    type="text"
+                    label="Asunto"
+                    label-placement="stacked"
+                    fill="outline"
+                    :value="contactData.subject"
+                    :spellcheck="true"
+                    @ion-change="
+                      contactData.subject = $event.detail.value as any
+                    "
+                  >
+                  </ion-input>
 
-          <div
-            v-for="(error, index) of v$.contactData.subject.$errors"
-            :key="index"
-          >
-            <div class="error">{{ error.$message }}</div>
-          </div>
-        </ion-col>
+                  <div
+                    v-for="(error, index) of v$.contactData.subject.$errors"
+                    :key="index"
+                  >
+                    <div class="error">{{ error.$message }}</div>
+                  </div>
+                </ion-col>
 
-        <ion-col size="12">
-          <ion-item class="transparent">
-            <ion-label position="floating"> Correo electrónico</ion-label>
-            <ion-input
-              v-model="contactData.email"
-              type="email"
-              autocomplete="email"
-            >
-            </ion-input>
-          </ion-item>
+                <ion-col size="12">
+                  <ion-input
+                    label="Correo electrónico"
+                    label-placement="stacked"
+                    fill="outline"
+                    autocomplete="email"
+                    :value="contactData.email"
+                    type="email"
+                    @ion-change="contactData.email = $event.detail.value as any"
+                  >
+                  </ion-input>
 
-          <div
-            v-for="(error, index) of v$.contactData.email.$errors"
-            :key="index"
-          >
-            <div class="error">{{ error.$message }}</div>
-          </div>
-        </ion-col>
+                  <div
+                    v-for="(error, index) of v$.contactData.email.$errors"
+                    :key="index"
+                  >
+                    <div class="error">{{ error.$message }}</div>
+                  </div>
+                </ion-col>
 
-        <ion-col size="12">
-          <ion-item class="transparent">
-            <ion-label position="floating"> Descripción</ion-label>
-            <ion-textarea v-model="contactData.description"> </ion-textarea>
-          </ion-item>
+                <ion-col size="12">
+                  <ion-textarea
+                    label="Descripción"
+                    label-placement="stacked"
+                    fill="outline"
+                    :value="contactData.description"
+                    @ion-change="
+                      contactData.description = $event.detail.value as any
+                    "
+                  >
+                  </ion-textarea>
 
-          <div
-            v-for="(error, index) of v$.contactData.description.$errors"
-            :key="index"
-          >
-            <div class="error">{{ error.$message }}</div>
-          </div>
+                  <div
+                    v-for="(error, index) of v$.contactData.description.$errors"
+                    :key="index"
+                  >
+                    <div class="error">{{ error.$message }}</div>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+          </ion-card>
         </ion-col>
       </ion-row>
     </ion-content>

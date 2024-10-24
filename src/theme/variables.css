@@ -163,3 +163,8 @@ ion-accordion > div[slot="content"] {
 ion-item {
   border-radius: 4px;
 }
+
+ion-modal > .ion-delegate-host > .ion-page > ion-content,
+ion-modal > .ion-delegate-host > .ion-page > ion-header > ion-toolbar {
+  --background: var(--ion-color-dark-contrast);
+}
