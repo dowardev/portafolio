@@ -230,6 +230,11 @@ class PostsController extends Controller
       ->where("title", "like", "%" . $search . "%")
       ->get();
 
-    return $query;
+    return response()->json(
+      [
+        "posts" => $query,
+      ],
+      200
+    );
   }
 }

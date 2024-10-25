@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContactMessage;
 use App\Models\Images;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use Illuminate\Support\Facades\Mail;
 
 class SystemController extends Controller
 {
@@ -46,5 +48,27 @@ class SystemController extends Controller
         "path" => $image->path,
       ],
     ];
+  }
+
+  public function createContactMessage(Request $request)
+  {
+    $name = $request->name;
+    $subject = $request->subject;
+    $email = $request->email;
+    $description = $request->description;
+
+    ContactMessage::create([
+      "name" => $name,
+      "subject" => $subject,
+      "email" => $email,
+      "description" => $description,
+    ]);
+
+    Mail::send("emails.emailContact", ["name" => $request["name"]], function (
+      $message
+    ) use ($email) {
+      $message->to("contacto@dowar.xyz");
+      $message->subject("Confirmación de contacto");
+    });
   }
 }

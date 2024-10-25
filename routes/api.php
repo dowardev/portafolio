@@ -16,10 +16,11 @@ Route::middleware(Cors::class)->group(function () {
   Route::get("post-dates", [PostsController::class, "getPostsDates"]);
   Route::get("post/{id}", [PostsController::class, "getPost"]);
   Route::post("new-post", [PostsController::class, "createPost"]);
-  Route::get("search-post/{search}", [PostsController::class, "searchPost"]);
+  Route::get("search-posts/{search}", [PostsController::class, "searchPost"]);
 
   // others
   Route::post("upload-image", [SystemController::class, "uploadImage"]);
+  Route::post("contact", [SystemController::class, "createContactMessage"]);
 
   // admin users
   Route::get("search-user/{perpage}", [AuthController::class, "searchUser"]);
