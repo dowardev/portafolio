@@ -156,7 +156,7 @@
                       <ion-item
                         lines="none"
                         button
-                        @click="openModalDonations()"
+                        @click="modalContribute.open = true"
                       >
                         <ion-icon slot="start" :icon="cashOutline"></ion-icon>
                         <ion-label>Contribuir</ion-label>
@@ -332,6 +332,10 @@
       <ion-modal trigger="open-modal-new-features">
         <NewFeaturesComponent />
       </ion-modal>
+
+      <ion-modal :is-open="modalContribute.open">
+        <DonationsComponent />
+      </ion-modal>
     </ion-content>
   </ion-page>
 </template>
@@ -376,14 +380,12 @@ import ThemeComponente from "@/components/theme/ThemeComponente.vue";
 import NewFeaturesComponent from "@/components/new-features/NewFeaturesComponente.vue";
 
 const router = useRouter();
-
 const isOpenRefPopOverUserOptions = ref(false);
 const eventPopOverUserOptions = ref();
 const setOpenPopOverUserOptions = (state: boolean, ev?: Event): void => {
   eventPopOverUserOptions.value = ev;
   isOpenRefPopOverUserOptions.value = state;
 };
-
 const spinners = ref({
   buttonLogin: false,
   buttonSignup: false,
@@ -394,6 +396,7 @@ const spinners = ref({
 const windowSize = ref({
   width: window.innerWidth,
 });
+const modalContribute = ref({ open: false });
 
 // mounted
 onMounted(() => {
@@ -473,15 +476,6 @@ async function goToAdminPanel() {
   spinners.value.buttonAdminPanel = false;
   isOpenRefPopOverUserOptions.value = false;
   if (isPlatform("mobile")) menuController.close();
-}
-
-async function openModalDonations() {
-  const modal = await modalController.create({
-    cssClass: "my-custom-class",
-    component: DonationsComponent,
-  });
-  menuController.close();
-  return modal.present();
 }
 </script>
 
