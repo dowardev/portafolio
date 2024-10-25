@@ -241,7 +241,7 @@ import {
   documentText,
 } from "ionicons/icons";
 import { App } from "@capacitor/app";
-import ContactModal from "../../contact/ContactPage.vue";
+import ContactModal from "./ContactModal.vue";
 
 const defaultColorFill = "#777777";
 const fillEmailContact = ref(defaultColorFill);

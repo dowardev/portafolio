@@ -168,3 +168,8 @@ ion-modal > .ion-delegate-host > .ion-page > ion-content,
 ion-modal > .ion-delegate-host > .ion-page > ion-header > ion-toolbar {
   --background: var(--ion-color-dark-contrast);
 }
+
+.input-error {
+  --border-color: var(--ion-color-danger) !important
+;
+}

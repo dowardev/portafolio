@@ -9,7 +9,7 @@ export async function createContactMessage(params: {
   const { name, subject, email, description } = params.data;
 
   await axios.request({
-    url: `http://127.0.0.1:8000/api/contact-message/`,
+    url: `http://127.0.0.1:8000/api/contact/`,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
