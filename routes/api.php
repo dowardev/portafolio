@@ -21,6 +21,7 @@ Route::middleware(Cors::class)->group(function () {
   // others
   Route::post("upload-image", [SystemController::class, "uploadImage"]);
   Route::post("contact", [SystemController::class, "createContactMessage"]);
+  Route::post("feedback", [SystemController::class, "createFeedback"]);
 
   // admin users
   Route::get("search-user/{perpage}", [AuthController::class, "searchUser"]);

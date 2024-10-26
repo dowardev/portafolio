@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
+use App\Models\Feedbacks;
 use App\Models\Images;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -70,5 +71,32 @@ class SystemController extends Controller
       $message->to("contacto@dowar.xyz");
       $message->subject("Confirmación de contacto");
     });
+  }
+
+  public function createFeedback(Request $request)
+  {
+    $user = Auth::guard("api")->user();
+    $user_id = null;
+
+    $name = $request->name;
+    $email = $request->email;
+    $description = $request->description;
+    $contact_me = $request->contactMe;
+    $type = $request->type;
+
+    if ($user != null) {
+      $user_id = $user->id;
+      $name = "";
+      $email = "";
+    }
+
+    Feedbacks::create([
+      "user_id" => $user_id,
+      "name" => $name,
+      "email" => $email,
+      "description" => $description,
+      "contact_me" => $contact_me,
+      "type" => $type,
+    ]);
   }
 }
