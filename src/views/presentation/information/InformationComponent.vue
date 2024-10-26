@@ -90,6 +90,31 @@
               :style="{ color: fillCVForm }"
             ></ion-icon>
           </ion-button>
+
+          <!-- upwork -->
+          <ion-button
+            id="click-trigger-upwork"
+            button
+            class="social-button"
+            @mouseover="fillUpwork = '#6bd341'"
+            @mouseleave="fillUpwork = defaultColorFill"
+          >
+            <img
+              v-if="fillUpwork == defaultColorFill"
+              src="../../../assets/otros/icons8-upwork-50.png"
+              alt="upwork-logo"
+              srcset=""
+              style="width: 22px"
+            />
+
+            <img
+              v-if="fillUpwork == '#6bd341'"
+              src="../../../assets/otros/icons8-upwork2-50.png"
+              alt="upwork-logo"
+              srcset=""
+              style="width: 22px"
+            />
+          </ion-button>
         </div>
       </ion-col>
     </ion-row>
@@ -210,6 +235,41 @@
     </ion-content>
   </ion-popover>
 
+  <!-- popover upwork -->
+  <ion-popover
+    trigger="click-trigger-upwork"
+    trigger-action="click"
+    :dismiss-on-select="true"
+  >
+    <ion-content>
+      <ion-item
+        button
+        lines="none"
+        class="transparent"
+        @click="
+          copyToClipboard({
+            text: 'https://www.upwork.com/freelancers/~0162303a78d7d448db',
+          })
+        "
+      >
+        <ion-icon slot="start" :icon="copyOutline" color="primary"></ion-icon>
+
+        <ion-label class="ion-text-wrap">Copiar enlace</ion-label>
+      </ion-item>
+
+      <ion-item
+        button
+        class="transparent"
+        href="https://www.upwork.com/freelancers/~0162303a78d7d448db"
+        target="_blank"
+        lines="none"
+      >
+        <ion-icon slot="start" :icon="openOutline" color="primary"></ion-icon>
+        <ion-label class="ion-text-wrap">Abrir perfil</ion-label>
+      </ion-item>
+    </ion-content>
+  </ion-popover>
+
   <!-- modals -->
   <ion-modal ref="modal" trigger="open-modal-cocntacto-form">
     <ContactModal />
@@ -248,6 +308,7 @@ const fillEmailContact = ref(defaultColorFill);
 const fillLinkedIn = ref(defaultColorFill);
 const fillContactForm = ref(defaultColorFill);
 const fillCVForm = ref(defaultColorFill);
+const fillUpwork = ref(defaultColorFill);
 
 // mounted()
 onMounted(() => {
