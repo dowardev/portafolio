@@ -139,7 +139,7 @@
             <!-- more options -->
             <section>
               <div>
-                <ion-accordion-group>
+                <ion-accordion-group value="first">
                   <ion-accordion
                     value="first"
                     style="background: var(--ion-color-dark-contrast)"
@@ -193,7 +193,11 @@
                       </ion-popover>
 
                       <!-- button feedback -->
-                      <ion-item lines="none" button @click="openModalFeedback">
+                      <ion-item
+                        lines="none"
+                        button
+                        @click="modalComments.open = true"
+                      >
                         <ion-icon
                           slot="start"
                           :icon="thumbsUpOutline"
@@ -333,8 +337,14 @@
         <NewFeaturesComponent />
       </ion-modal>
 
+      <!-- modal contribute -->
       <ion-modal :is-open="modalContribute.open">
         <DonationsComponent />
+      </ion-modal>
+
+      <!-- modal comments -->
+      <ion-modal :is-open="modalComments.open">
+        <FeedbackPage :data="{ type: 'feedback' }" />
       </ion-modal>
     </ion-content>
   </ion-page>
@@ -375,9 +385,11 @@ import DonationsComponent from "./donations/Donations.vue";
 import { useUser } from "./../../composables/useUser";
 import { useSystem } from "./../../composables/useSystem";
 import { useRouter } from "vue-router";
+
 // components
 import ThemeComponente from "@/components/theme/ThemeComponente.vue";
 import NewFeaturesComponent from "@/components/new-features/NewFeaturesComponente.vue";
+import FeedbackPage from "../feedback/FeedbackPage.vue";
 
 const router = useRouter();
 const isOpenRefPopOverUserOptions = ref(false);
@@ -397,6 +409,7 @@ const windowSize = ref({
   width: window.innerWidth,
 });
 const modalContribute = ref({ open: false });
+const modalComments = ref({ open: false });
 
 // mounted
 onMounted(() => {
@@ -420,11 +433,6 @@ async function getUser() {
       graphql: { name: USER_MENU, fragment: "UserMenu", refetch: true },
     });
   } catch (error) {}
-}
-
-async function openModalFeedback() {
-  useSystem().reportError({ type: "feedback" });
-  menuController.close();
 }
 
 async function login() {

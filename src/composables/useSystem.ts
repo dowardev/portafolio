@@ -16,6 +16,7 @@ const store = new Storage();
 store.create();
 
 export const useSystem = () => {
+  // TODO:remove
   const systemStore = useSystemStore();
 
   async function reportError(params: ReportError) {

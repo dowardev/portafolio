@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true" mode="ios" class="ion-no-border">
+    <ion-header class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button @click="closeModal">
@@ -9,88 +9,156 @@
         </ion-buttons>
         <ion-title>Comentarios</ion-title>
 
-        <ion-buttons v-if="props.data.type == 'error'" slot="end">
-          <ion-button @click="displayError = true">
+        <ion-buttons slot="end">
+          <ion-button
+            @click="displayError = true"
+            v-if="props.data.type == 'error'"
+          >
             <ion-icon :icon="bugOutline"></ion-icon>
+          </ion-button>
+
+          <!-- send -->
+          <ion-button
+            :disabled="v$.$invalid || spinners.buttonSendFeedback"
+            @click="sendFeedback()"
+          >
+            <ion-icon :icon="sendOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content>
       <section v-if="displayError == false">
         <ion-row>
-          <ion-col size="12">
-            <form>
-              <ion-item>
-                <ion-label position="floating">Nombre</ion-label>
-                <ion-input
-                  v-model="(v$ as any).form.name.$model"
-                  :disabled="form.id != ''"
-                ></ion-input>
-              </ion-item>
-              <div
-                v-for="(error, index) of (v$ as any).form.name.$errors"
-                :key="index"
-              >
-                <div class="error">{{ error.$message }}</div>
-              </div>
+          <ion-col>
+            <ion-card>
+              <ion-card-content>
+                <ion-row>
+                  <ion-col size="12">
+                    <!-- name -->
+                    <ion-input
+                      label="Nombre"
+                      label-placement="stacked"
+                      fill="outline"
+                      :value="form.name"
+                      :disabled="form.id != ''"
+                      :class="{
+                        'input-error':
+                          v$.form.name.$dirty && v$.form.name.$invalid,
+                      }"
+                      @ion-input="form.name = $event.target.value as any"
+                      @click="v$.form.name.$touch()"
+                    ></ion-input>
 
-              <ion-item>
-                <ion-label position="floating">Correo electrónico</ion-label>
-                <ion-input
-                  v-model="(v$ as any).form.email.$model"
-                  type="email"
-                  autocomplete="email"
-                  :disabled="form.id != ''"
-                ></ion-input>
-              </ion-item>
-              <div
-                v-for="(error, index) of (v$ as any).form.email.$errors"
-                :key="index"
-              >
-                <div class="error">{{ error.$message }}</div>
-              </div>
+                    <!-- errors -->
+                    <span
+                      class="error"
+                      v-if="
+                        v$.form.name.$dirty && v$.form.name.required.$invalid
+                      "
+                      >{{ v$.form.name.required.$message }}</span
+                    >
+                    <span
+                      class="error"
+                      v-if="v$.form.name.$dirty && v$.form.name.alpha.$invalid"
+                      >{{ v$.form.name.alpha.$message }}</span
+                    >
+                  </ion-col>
+                </ion-row>
 
-              <ion-item>
-                <ion-label position="floating">Descripción</ion-label>
-                <ion-textarea
-                  v-model="(v$ as any).form.description.$model"
-                  :auto-grow="true"
-                ></ion-textarea>
-              </ion-item>
-              <div
-                v-for="(error, index) of (v$ as any).form.description.$errors"
-                :key="index"
-              >
-                <div class="error">{{ error.$message }}</div>
-              </div>
+                <!-- email -->
+                <ion-row>
+                  <ion-col>
+                    <ion-input
+                      label="Correo electrónico"
+                      label-placement="stacked"
+                      fill="outline"
+                      autocomplete="email"
+                      type="email"
+                      :value="form.email"
+                      :disabled="form.id != ''"
+                      :class="{
+                        'input-error':
+                          v$.form.email.$dirty && v$.form.email.$invalid,
+                      }"
+                      @ion-input="form.email = $event.detail.value as any"
+                      @click="v$.form.email.$touch()"
+                    ></ion-input>
 
-              <ion-item lines="full">
-                <ion-checkbox slot="start" v-model="form.contactMe">
-                </ion-checkbox>
-                <ion-label class="ion-text-wrap">
-                  Acepto que se pongan en contacto conmigo por medio del correo
-                  que proporciono en el formulario para darle un mejor
-                  seguimiento a mi caso.
-                </ion-label>
-              </ion-item>
+                    <!-- errors -->
+                    <span
+                      class="error"
+                      v-if="
+                        v$.form.email.$dirty && v$.form.email.required.$invalid
+                      "
+                      >{{ v$.form.email.required.$message }}</span
+                    >
+                    <span
+                      class="error"
+                      v-if="
+                        v$.form.email.$dirty && v$.form.email.email.$invalid
+                      "
+                      >{{ v$.form.email.email.$message }}</span
+                    >
+                  </ion-col>
+                </ion-row>
 
-              <ion-button
-                fill="clear"
-                expand="full"
-                :disabled="v$.$invalid || spinners.buttonSendFeedback"
-                @click="sendFeedback()"
-              >
-                <ion-label v-if="spinners.buttonSendFeedback == false">
-                  Enviar</ion-label
-                >
-                <ion-spinner
-                  v-if="spinners.buttonSendFeedback"
-                  name="crescent"
-                ></ion-spinner>
-              </ion-button>
-            </form>
+                <!-- description -->
+                <ion-row>
+                  <ion-col>
+                    <ion-textarea
+                      label="Descripción"
+                      label-placement="stacked"
+                      fill="outline"
+                      :value="form.description"
+                      :auto-grow="true"
+                      :class="{
+                        'input-error':
+                          v$.form.description.$dirty &&
+                          v$.form.description.$invalid,
+                      }"
+                      @ion-input="form.description = $event.target.value as any"
+                      @click="v$.form.description.$touch()"
+                    ></ion-textarea>
+
+                    <!-- errors -->
+                    <span
+                      class="error"
+                      v-if="
+                        v$.form.description.$dirty &&
+                        v$.form.description.required.$invalid
+                      "
+                      >{{ v$.form.description.required.$message }}</span
+                    >
+                    <span
+                      class="error"
+                      v-if="
+                        v$.form.description.$dirty &&
+                        v$.form.description.minLength.$invalid
+                      "
+                      >{{ v$.form.description.minLength.$message }}</span
+                    >
+                  </ion-col>
+                </ion-row>
+
+                <!-- check -->
+                <ion-row>
+                  <ion-col>
+                    <ion-item lines="none" label class="transparent">
+                      <ion-checkbox
+                        :value="form.contactMe"
+                        justify="space-between"
+                        label-placement="end"
+                        @ion-change="form.contactMe = $event.detail.checked"
+                      >
+                        Acepto que se pongan en contacto conmigo.
+                      </ion-checkbox>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+              </ion-card-content>
+            </ion-card>
           </ion-col>
         </ion-row>
       </section>
@@ -130,7 +198,12 @@ import {
   IonItem,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
-import { closeOutline, chevronBackOutline, bugOutline } from "ionicons/icons";
+import {
+  closeOutline,
+  chevronBackOutline,
+  bugOutline,
+  sendOutline,
+} from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email, minLength } from "@vuelidate/validators";
 import { openToast } from "../../services/system";
@@ -138,22 +211,17 @@ import { createFeedback } from "../../services/feedback";
 import { ReportError } from "../../services/interfaces";
 import { useUser } from "../../composables/useUser";
 
-const props = defineProps({
-  data: {
-    type: Object as () => ReportError,
-    default() {
-      return {} as ReportError;
-    },
-  },
-});
+const props = defineProps<{
+  data: ReportError;
+}>();
 
 const form = ref({
-  id: String(),
-  name: String(),
-  email: String(),
-  description: String(),
+  id: "",
+  name: "",
+  email: "",
+  description: "",
   contactMe: false,
-  type: String(),
+  type: "",
 });
 const displayError = ref(false);
 const spinners = ref({
@@ -161,7 +229,7 @@ const spinners = ref({
 });
 
 const messageError = {
-  email: "Correo electronico no valido",
+  email: "Correo electrónico no valido",
   required: "Campo requerido",
   password: "Las contraseñas no coinciden",
 };
@@ -169,6 +237,10 @@ const rules = {
   form: {
     name: {
       required: helpers.withMessage(messageError.required, required),
+      alpha: helpers.withMessage(
+        "Solo texto",
+        helpers.regex(/^[a-zA-ZñÑ\s]+$/)
+      ),
     },
     email: {
       required: helpers.withMessage(messageError.required, required),
@@ -176,7 +248,7 @@ const rules = {
     },
     description: {
       required: helpers.withMessage(messageError.required, required),
-      minLength: helpers.withMessage("Platicanos un poco mas", minLength(20)),
+      minLength: helpers.withMessage("Platícanos un poco mas", minLength(20)),
     },
     type: {
       required: helpers.withMessage(messageError.required, required),
@@ -187,7 +259,9 @@ const v$ = useVuelidate(rules, { form });
 
 // mounted
 onMounted(() => {
-  form.value.type = props.data.type;
+  if (props.data.type) {
+    form.value.type = props.data.type;
+  }
   getUser();
 });
 
@@ -198,9 +272,7 @@ function closeModal() {
 
 async function getUser() {
   try {
-    await useUser().loadUser({
-      graphql: { name: USER_BASIC_DETAILS, fragment: "UserBasicDetails" },
-    });
+    await useUser().loadUser();
 
     form.value.id = useUser().user.value.id!;
     form.value.name = useUser().user.value.name!;

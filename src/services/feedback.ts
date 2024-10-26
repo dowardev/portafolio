@@ -6,13 +6,13 @@ export async function createFeedback(params: FeedbackParams): Promise<void> {
   const { userId, name, email, description, contactMe, type } = params;
 
   await axios.request({
-    url: `http://127.0.0.1:8000/api/new-feedback/`,
+    url: `http://127.0.0.1:8000/api/feedback/`,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: getUserToken(),
     },
-    params: {
+    data: {
       userId,
       name,
       email,
