@@ -206,14 +206,14 @@
                       </ion-item>
 
                       <!-- dark button desktop-->
-                      <ion-item
+                      <!-- <ion-item
                         id="open-modal-theme-component"
                         lines="none"
                         button
                       >
                         <ion-icon slot="start" :icon="brushOutline"></ion-icon>
                         <ion-label>Tema</ion-label>
-                      </ion-item>
+                      </ion-item> -->
 
                       <!-- new features -->
                       <ion-item
