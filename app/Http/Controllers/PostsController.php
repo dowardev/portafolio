@@ -101,9 +101,9 @@ class PostsController extends Controller
         return date("Y-m-d", strtotime($date));
       }, $dates);
 
-      $dates = array_unique($dates);
+      $datesObject = (object) $dates;
 
-      return response()->json($dates, 200);
+      return response()->json($datesObject, 200);
     } catch (Exception $e) {
       return response()->json(
         [
