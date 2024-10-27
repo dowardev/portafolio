@@ -295,16 +295,17 @@ const isOpenSearchModal = ref(false);
 const loadFinished = ref(false);
 const mq = useMq();
 const searchResult = ref(Array<{ id: string; title: string }>());
-const currentDate = ref("");
+const currentPage = ref("");
 let dates = reactive([] as Array<string>);
 const index = ref();
-const currentDateIndex = ref(0);
+const currentPageIndex = ref(0);
 
 const filterPosts = computed(() => {
   const posts = usePost().getPosts()!;
-  return posts.filter(
+  const result = posts.filter(
     (post) => post.createdAt!.split("T")[0] == usePost().getCurrentPage()
   );
+  return result;
 });
 
 onMounted(() => {
@@ -320,14 +321,14 @@ watch(
 watch(
   () => usePost().getCurrentPage(),
   (newValue) => {
-    currentDate.value = newValue as string;
+    currentPage.value = newValue as string;
   }
 );
 watch(
   () => dates,
   (newValue) => {
-    index.value = newValue.indexOf(currentDate.value);
-    currentDateIndex.value = index.value;
+    index.value = newValue.indexOf(currentPage.value);
+    currentPageIndex.value = index.value;
   }
 );
 
@@ -379,7 +380,6 @@ async function loadPosts(params: {
   currentPage: string;
   refetch?: boolean;
 }): Promise<void> {
-  const refetch = params.refetch ? params.refetch : false;
   try {
     await usePost().loadPosts({
       date: params.currentPage,
@@ -392,15 +392,14 @@ async function loadPosts(params: {
 }
 
 function loadData(params: { dates: Array<string> }): string {
-  let currentPage = "";
   if (route.params.date != undefined) {
-    currentPage = params.dates.filter((element) => {
+    currentPage.value = params.dates.filter((element) => {
       if (element == route.params.date) return element;
     })[0];
   } else {
-    currentPage = params.dates[0];
+    currentPage.value = params.dates[0];
   }
-  return currentPage;
+  return currentPage.value;
 }
 
 async function searchPosts(params: { search: string }): Promise<void> {
@@ -457,39 +456,39 @@ function closeModalSearchPosts() {
 }
 
 async function nextDate(): Promise<void> {
-  const newDateIndex = +currentDateIndex.value + 1;
+  const newDateIndex = +currentPageIndex.value + 1;
 
   if (newDateIndex >= dates.length) return;
 
-  currentDate.value = dates[newDateIndex];
-  currentDateIndex.value = newDateIndex;
+  // console.log({ old: currentPage.value, new: dates[newDateIndex], dates });
+  currentPage.value = dates[newDateIndex];
+  currentPageIndex.value = newDateIndex;
 
-  updateCurrentDate();
-  // emits("currentDateChange");
-  await loadPosts({ currentPage: currentDate.value });
+  updatecurrentPage();
+  // emits("currentPageChange");
+  await loadPosts({ currentPage: currentPage.value });
 }
 
 async function previousDate(): Promise<void> {
-  const newDateIndex = +currentDateIndex.value - 1;
+  const newDateIndex = +currentPageIndex.value - 1;
 
   if (newDateIndex < 0) return;
 
-  currentDate.value = dates[newDateIndex];
-  currentDateIndex.value = newDateIndex;
+  currentPage.value = dates[newDateIndex];
+  currentPageIndex.value = newDateIndex;
 
-  updateCurrentDate();
-  // emits("currentDateChange");
-  await loadPosts({ currentPage: currentDate.value });
+  updatecurrentPage();
+  await loadPosts({ currentPage: currentPage.value });
 }
 
 async function selectDate(params: { date: string }): Promise<void> {
   const date = params.date;
-  currentDateIndex.value = dates.indexOf(date);
-  updateCurrentDate();
-  await loadPosts({ currentPage: currentDate.value });
+  currentPageIndex.value = dates.indexOf(date);
+  updatecurrentPage();
+  await loadPosts({ currentPage: currentPage.value });
 }
 
-function updateCurrentDate(): void {
-  usePost().updateCurrentPage({ currentPage: currentDate.value });
+function updatecurrentPage(): void {
+  usePost().updateCurrentPage({ currentPage: currentPage.value });
 }
 </script>

@@ -36,7 +36,7 @@ export async function searchUsers(
     url: `http://127.0.0.1:8000/api/search-user/`,
     method: "GET",
     headers: {
-      acept: "application/json",
+      accept: "application/json",
       Authorization: getUserToken(),
     },
   });

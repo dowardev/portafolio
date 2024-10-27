@@ -95,7 +95,7 @@ export function getBaseURL(): string {
   if (mode == "development") {
     return "http://127.0.0.1:8000/";
   } else {
-    return "https://dowar-blog.dowar.xyz/";
+    return "http://127.0.0.1:8000/";
     // return "https://prueba-blogb.dowar.xyz/";
   }
 }

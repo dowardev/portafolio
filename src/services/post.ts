@@ -18,10 +18,10 @@ export async function createPost(params: CreatePost): Promise<void> {
   const { title, content, coverId, images } = params;
 
   await axios.request({
-    url: `http://127.0.0.1:8000/api/new-posts`,
+    url: `http://127.0.0.1:8000/api/feedback/`,
     method: "POST",
     headers: {
-      acept: "application/json",
+      accept: "application/json",
       Authorization: getUserToken(),
     },
     data: {
@@ -79,7 +79,7 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
     url: `http://127.0.0.1:8000/api/posts/${date}`,
     method: "GET",
     headers: {
-      acept: "application/json",
+      accept: "application/json",
       Authorization: getUserToken(),
     },
   });
@@ -101,7 +101,7 @@ export async function getPost(params: { id: number | string }): Promise<Post> {
     url: `http://127.0.0.1:8000/api/post/${id}`,
     method: "GET",
     headers: {
-      acept: "application/json",
+      accept: "application/json",
       Authorization: getUserToken(),
     },
   });
@@ -143,7 +143,7 @@ export async function searchPosts(params: {
     url: `http://127.0.0.1:8000/api/search-posts/${search}`,
     method: "GET",
     headers: {
-      acept: "application/json",
+      accept: "application/json",
       Authorization: getUserToken(),
     },
   });
