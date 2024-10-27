@@ -100,7 +100,12 @@
           <div slot="content" class="ion-padding">
             <!-- links -->
             <ion-row
-              v-if="project.page || project.appPlayStore || project.sourceCode"
+              v-if="
+                project.page ||
+                project.appPlayStore ||
+                project.sourceCode ||
+                project.platform
+              "
             >
               <ion-col size="12">
                 <ion-list class="transparent">
@@ -359,12 +364,12 @@ const proyectos = [
     ],
     platform: {
       name: "UpWork",
-      route: "https://www.upwork.com/",
       image: {
         route: logoUpwork,
         width: "20px",
         height: "20px",
       },
+      route: "https://www.upwork.com/freelancers/~0162303a78d7d448db",
     },
   },
 ];
