@@ -101,6 +101,10 @@ class PostsController extends Controller
         return date("Y-m-d", strtotime($date));
       }, $dates);
 
+      $dates = array_unique($dates);
+      $dates = array_values($dates);
+
+      // Convertir el array a un objeto con índices numéricos
       $datesObject = (object) $dates;
 
       return response()->json($datesObject, 200);
