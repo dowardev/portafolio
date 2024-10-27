@@ -9,9 +9,9 @@
         <ion-row>
           <ion-col size-xs="12" size-md="4" class="center">
             <img
-              v-if="project.image && project.image.length"
+              v-if="project.image"
               class="project-image"
-              :src="project.image[0].route"
+              :src="project.image.route"
             />
           </ion-col>
 
@@ -86,33 +86,18 @@
                 </ion-list>
               </ion-col>
             </ion-row>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
 
-            <!-- platform -->
-            <ion-row v-if="project.platform">
-              <ion-col>
-                <ion-list class="transparent">
-                  <ion-list-header>
-                    <ion-label>Plataforma</ion-label>
-                  </ion-list-header>
+      <!-- more info -->
+      <ion-accordion-group>
+        <ion-accordion value="third">
+          <ion-item slot="header">
+            <ion-label>Mas información</ion-label>
+          </ion-item>
 
-                  <ion-row class="ion-padding-start">
-                    <ion-col>
-                      <img
-                        style="cursor: pointer"
-                        :src="project.platform.image.route"
-                        :style="{
-                          width: project.platform.image.width,
-                          height: project.platform.image.height,
-                        }"
-                        alt="upwork-logo"
-                        @click="openLink({ route: project.platform.route! })"
-                      />
-                    </ion-col>
-                  </ion-row>
-                </ion-list>
-              </ion-col>
-            </ion-row>
-
+          <div slot="content" class="ion-padding">
             <!-- links -->
             <ion-row
               v-if="project.page || project.appPlayStore || project.sourceCode"
@@ -125,44 +110,93 @@
 
                   <ion-row>
                     <ion-col>
-                      <ion-button
+                      <!-- web site -->
+                      <ion-item
+                        lines="full"
                         v-if="project.page"
-                        href="project.page"
+                        :href="project.page"
                         target="_blank"
-                        fill="clear"
-                        >Sitio web</ion-button
                       >
+                        <ion-icon slot="start" :icon="globeOutline"></ion-icon>
 
-                      <ion-button
+                        <ion-label> Sitio web </ion-label>
+
+                        <ion-icon slot="end" :icon="openOutline"></ion-icon>
+                      </ion-item>
+
+                      <!-- play store -->
+                      <ion-item
+                        lines="full"
                         v-if="project.appPlayStore"
                         :href="project.appPlayStore"
                         target="_blank"
-                        fill="clear"
-                        >Aplicación móvil(Play Store)</ion-button
                       >
-                      <ion-button
+                        <ion-icon
+                          slot="start"
+                          :icon="logoGooglePlaystore"
+                        ></ion-icon>
+
+                        <ion-label> Aplicación móvil </ion-label>
+
+                        <ion-icon slot="end" :icon="openOutline"></ion-icon>
+                      </ion-item>
+
+                      <!-- source code -->
+                      <ion-item
+                        lines="full"
                         v-if="project.sourceCode"
                         :href="project.sourceCode"
                         target="_blank"
-                        fill="clear"
-                        >Código fuente</ion-button
+                        ><ion-icon
+                          slot="start"
+                          :icon="codeDownloadOutline"
+                        ></ion-icon>
+
+                        <ion-label>Código fuente</ion-label>
+
+                        <ion-icon slot="end" :icon="openOutline"></ion-icon>
+                      </ion-item>
+
+                      <!-- platform -->
+                      <ion-item
+                        lines="full"
+                        v-if="project.platform"
+                        :href="project.platform.route"
+                        target="_blank"
                       >
+                        <ion-icon
+                          slot="start"
+                          :icon="briefcaseOutline"
+                        ></ion-icon>
+
+                        <ion-label>
+                          Plataforma ({{ project.platform.name }})
+                        </ion-label>
+
+                        <ion-icon slot="end" :icon="openOutline"></ion-icon>
+                      </ion-item>
                     </ion-col>
                   </ion-row>
                 </ion-list>
               </ion-col>
             </ion-row>
-          </ion-col>
-        </ion-row>
-      </ion-card-content>
 
-      <ion-accordion-group>
-        <ion-accordion value="third">
-          <ion-item slot="header">
-            <ion-label>Descripción</ion-label>
-          </ion-item>
-          <div slot="content" class="ion-padding">
-            {{ project.description }}
+            <!-- description -->
+            <ion-row>
+              <ion-col>
+                <ion-list>
+                  <ion-list-header>
+                    <ion-label>Descripción</ion-label>
+                  </ion-list-header>
+
+                  <ion-row class="ion-padding-start">
+                    <ion-col>
+                      <ion-note>{{ project.description }}</ion-note>
+                    </ion-col>
+                  </ion-row>
+                </ion-list>
+              </ion-col>
+            </ion-row>
           </div>
         </ion-accordion>
       </ion-accordion-group>
@@ -171,7 +205,7 @@
 </template>
 
 <script setup lang="ts">
-import {} from "@ionic/vue";
+import { IonItem } from "@ionic/vue";
 
 // images
 import lifelineLogo from "../../../assets/otros/lifeline_v1.webp";
@@ -193,6 +227,11 @@ import {
   logoLaravel,
   logoElectron,
   logoCapacitor,
+  openOutline,
+  globeOutline,
+  logoGooglePlaystore,
+  briefcaseOutline,
+  codeDownloadOutline,
 } from "ionicons/icons";
 import { ref } from "vue";
 
@@ -202,13 +241,12 @@ const proyectos = [
     status: "En desarrollo",
     type: [logoAndroid, logoFirefox, logoChrome, logoWindows, logoTux],
     color: "primary",
-    image: [
-      {
-        route: lifelineLogo,
-        width: "134px",
-        height: "112px",
-      },
-    ],
+    image: {
+      route: lifelineLogo,
+      width: "134px",
+      height: "112px",
+    },
+
     description: "Proyecto para la administración de tiempo",
     technologies: [
       {
@@ -250,13 +288,11 @@ const proyectos = [
     status: "Finalizada",
     type: [logoAndroid, logoFirefox, logoChrome],
     color: "primary",
-    image: [
-      {
-        route: metaApp,
-        width: "134px",
-        height: "112px",
-      },
-    ],
+    image: {
+      route: metaApp,
+      width: "134px",
+      height: "112px",
+    },
     description:
       "App exclusiva para socios, permite acceder de forma rápida y sencilla a toda la información relacionada con sus aportes y procesos.",
     technologies: [
@@ -280,6 +316,7 @@ const proyectos = [
         width: "20px",
         height: "20px",
       },
+      route: "https://www.upwork.com/freelancers/~0162303a78d7d448db",
     },
   },
   {
@@ -287,13 +324,11 @@ const proyectos = [
     status: "En desarrollo",
     type: [logoAndroid, logoFirefox, logoChrome, logoWindows],
     color: "primary",
-    image: [
-      {
-        route: noLogo,
-        width: "134px",
-        height: "112px",
-      },
-    ],
+    image: {
+      route: noLogo,
+      width: "134px",
+      height: "112px",
+    },
     description: "Aplicación para la gestión de productos y ventas",
     technologies: [
       {
