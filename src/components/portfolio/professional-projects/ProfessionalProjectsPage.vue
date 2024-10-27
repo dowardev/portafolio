@@ -196,7 +196,9 @@
 
                   <ion-row class="ion-padding-start">
                     <ion-col>
-                      <ion-note>{{ project.description }}</ion-note>
+                      <ion-note style="color: var(--ion-text-color)">{{
+                        project.description
+                      }}</ion-note>
                     </ion-col>
                   </ion-row>
                 </ion-list>
