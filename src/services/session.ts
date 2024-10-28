@@ -33,19 +33,24 @@ export async function userLogin(params: {
 }): Promise<{ token: string }> {
   const { user, password } = params;
 
-  const response = await axios.request({
-    url: "	http://127.0.0.1:8000/api/login",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    data: {
-      email: user,
-      password,
-    },
-  });
+  try {
+    const response = await axios.request({
+      url: "	http://127.0.0.1:8000/api/login",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        email: user,
+        password,
+      },
+    });
 
-  return { token: `Bearer ${response.data.access_token}` };
+    return { token: `Bearer ${response.data.access_token}` };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 export async function logout(): Promise<void> {

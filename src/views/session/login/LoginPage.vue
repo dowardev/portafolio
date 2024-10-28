@@ -1,143 +1,170 @@
 <template>
-  <section class="center">
-    <ion-card class="element-post-selected">
-      <ion-card-content>
-        <div class="center">
-          <img
-            src="../../../assets/otros/key.png"
-            alt=""
-            class="imagen-usuario"
-          />
+  <ion-page class="page-container">
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>Iniciar sesion</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div style="height: 100%" class="center">
+        <div>
+          <section>
+            <ion-card class="element-post-selected">
+              <ion-card-content>
+                <div class="center">
+                  <img
+                    src="../../../assets/otros/key.png"
+                    alt=""
+                    class="imagen-usuario"
+                  />
+                </div>
+                <form>
+                  <!-- user -->
+                  <ion-item lines="inset" class="transparent">
+                    <ion-icon
+                      slot="start"
+                      :icon="mailOpenOutline"
+                      class="item-icon"
+                    >
+                    </ion-icon>
+
+                    <ion-input
+                      type="email"
+                      label="Usuario o correo electrónico"
+                      label-placement="floating"
+                      :value="form.email"
+                      @ion-input="form.email as any"
+                      @keydown.enter="
+                        ($refs as any).inputPassword.$el.setFocus()
+                      "
+                    >
+                    </ion-input>
+                  </ion-item>
+
+                  <div
+                    v-for="(error, index) of (v$ as any).email.$errors"
+                    :key="index"
+                  >
+                    <div class="error">
+                      {{ error.$message }}
+                    </div>
+                  </div>
+
+                  <!-- password -->
+                  <ion-item lines="inset" class="transparent">
+                    <ion-icon
+                      slot="start"
+                      :icon="fingerPrintOutline"
+                      class="item-icon"
+                    >
+                    </ion-icon>
+
+                    <ion-input
+                      ref="inputPassword"
+                      label="Contraseña"
+                      label-placement="floating"
+                      :value="form.password"
+                      :type="inputTypePassword"
+                      @ion-input="form.password = $event.detail.value as any"
+                      @keydown.enter="login()"
+                      @click="v$.password.$touch()"
+                    >
+                    </ion-input>
+
+                    <ion-button
+                      v-if="inputTypePassword == 'text'"
+                      slot="end"
+                      style="margin-top: 20px"
+                      fill="clear"
+                      @click="inputTypePassword = 'password'"
+                    >
+                      <ion-icon :icon="eyeOffOutline"></ion-icon>
+                    </ion-button>
+
+                    <ion-button
+                      v-if="inputTypePassword == 'password'"
+                      slot="end"
+                      fill="clear"
+                      style="margin-top: 20px"
+                      @click="inputTypePassword = 'text'"
+                    >
+                      <ion-icon :icon="eyeOutline"></ion-icon>
+                    </ion-button>
+                  </ion-item>
+
+                  <div
+                    v-for="(error, index) of (v$ as any).password.$errors"
+                    :key="index"
+                  >
+                    <div class="error">
+                      {{ error.$message }}
+                    </div>
+                  </div>
+                </form>
+
+                <ion-button
+                  fill="clear"
+                  :disabled="(v$ as any).$invalid || spinners.buttonLogin"
+                  expand="full"
+                  @click="login()"
+                >
+                  <ion-label v-if="spinners.buttonLogin == false">
+                    Iniciar sesión</ion-label
+                  >
+                  <ion-spinner
+                    v-if="spinners.buttonLogin"
+                    name="crescent"
+                  ></ion-spinner>
+                </ion-button>
+              </ion-card-content>
+            </ion-card>
+          </section>
+
+          <section>
+            <div class="center">
+              <ion-button
+                class="options"
+                fill="clear"
+                :disabled="spinners.buttonForgotPassword"
+                expand="full"
+                size="small"
+                @click="forgotPassword()"
+              >
+                <ion-label v-if="spinners.buttonForgotPassword == false"
+                  >¿Olvidaste la contraseña?</ion-label
+                >
+                <ion-spinner
+                  v-if="spinners.buttonForgotPassword"
+                  name="crescent"
+                ></ion-spinner>
+              </ion-button>
+            </div>
+
+            <div class="center">
+              <ion-button
+                class="options"
+                fill="clear"
+                :disabled="spinners.buttonCreateAccount"
+                expand="full"
+                size="small"
+                @click="createAccount()"
+              >
+                <ion-label v-if="spinners.buttonCreateAccount == false"
+                  >Crear cuenta</ion-label
+                >
+                <ion-spinner
+                  v-if="spinners.buttonCreateAccount"
+                  name="crescent"
+                  color="primary"
+                ></ion-spinner>
+              </ion-button>
+            </div>
+          </section>
         </div>
-        <form>
-          <!-- user -->
-          <ion-item lines="inset" class="transparent">
-            <ion-icon slot="start" :icon="mailOpenOutline" class="item-icon">
-            </ion-icon>
-
-            <ion-input
-              type="email"
-              label="Usuario o correo electrónico"
-              label-placement="floating"
-              :value="form.email"
-              @ion-input="form.email as any"
-              @keydown.enter="($refs as any).inputPassword.$el.setFocus()"
-            >
-            </ion-input>
-          </ion-item>
-
-          <div v-for="(error, index) of (v$ as any).email.$errors" :key="index">
-            <div class="error">
-              {{ error.$message }}
-            </div>
-          </div>
-
-          <!-- password -->
-          <ion-item lines="inset" class="transparent">
-            <ion-icon slot="start" :icon="fingerPrintOutline" class="item-icon">
-            </ion-icon>
-
-            <ion-input
-              ref="inputPassword"
-              label="Contraseña"
-              label-placement="floating"
-              :value="form.password"
-              :type="inputTypePassword"
-              @ion-input="form.password = $event.detail.value as any"
-              @keydown.enter="login()"
-              @click="v$.password.$touch()"
-            >
-            </ion-input>
-
-            <ion-button
-              v-if="inputTypePassword == 'text'"
-              slot="end"
-              style="margin-top: 20px"
-              fill="clear"
-              @click="inputTypePassword = 'password'"
-            >
-              <ion-icon :icon="eyeOffOutline"></ion-icon>
-            </ion-button>
-
-            <ion-button
-              v-if="inputTypePassword == 'password'"
-              slot="end"
-              fill="clear"
-              style="margin-top: 20px"
-              @click="inputTypePassword = 'text'"
-            >
-              <ion-icon :icon="eyeOutline"></ion-icon>
-            </ion-button>
-          </ion-item>
-
-          <div
-            v-for="(error, index) of (v$ as any).password.$errors"
-            :key="index"
-          >
-            <div class="error">
-              {{ error.$message }}
-            </div>
-          </div>
-        </form>
-
-        <ion-button
-          fill="clear"
-          :disabled="(v$ as any).$invalid || spinners.buttonLogin"
-          expand="full"
-          @click="login()"
-        >
-          <ion-label v-if="spinners.buttonLogin == false">
-            Iniciar sesión</ion-label
-          >
-          <ion-spinner
-            v-if="spinners.buttonLogin"
-            name="crescent"
-          ></ion-spinner>
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
-  </section>
-
-  <section>
-    <div class="center">
-      <ion-button
-        class="options"
-        fill="clear"
-        :disabled="spinners.buttonForgotPassword"
-        expand="full"
-        size="small"
-        @click="forgotPassword()"
-      >
-        <ion-label v-if="spinners.buttonForgotPassword == false"
-          >¿Olvidaste la contraseña?</ion-label
-        >
-        <ion-spinner
-          v-if="spinners.buttonForgotPassword"
-          name="crescent"
-        ></ion-spinner>
-      </ion-button>
-    </div>
-
-    <div class="center">
-      <ion-button
-        class="options"
-        fill="clear"
-        :disabled="spinners.buttonCreateAccount"
-        expand="full"
-        size="small"
-        @click="createAccount()"
-      >
-        <ion-label v-if="spinners.buttonCreateAccount == false"
-          >Crear cuenta</ion-label
-        >
-        <ion-spinner
-          v-if="spinners.buttonCreateAccount"
-          name="crescent"
-          color="primary"
-        ></ion-spinner>
-      </ion-button>
-    </div>
-  </section>
+      </div>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
@@ -152,6 +179,8 @@ import {
   IonLabel,
   IonButton,
   isPlatform,
+  IonPage,
+  IonContent,
 } from "@ionic/vue";
 import { ref } from "vue";
 import {
@@ -171,8 +200,10 @@ const router = useRouter();
 
 const inputTypePassword = ref("password" as "text" | "password");
 const form = ref({
-  email: "admin@admin.com",
-  password: "d2f%PF",
+  // email: "admin@admin.com",
+  // password: "d2f%PF",
+  email: "",
+  password: "",
 });
 const spinners = ref({
   buttonLogin: false,
@@ -181,7 +212,7 @@ const spinners = ref({
 });
 
 const messageError = {
-  email: "Correo electronico no valido",
+  email: "Correo electrónico no valido",
   required: "Campo requerido",
 };
 const rules = {
@@ -236,8 +267,8 @@ async function login() {
     }
     if (e.message == "Disabled user") {
       presentToast(
-        "Cuenta de usuario deshabilitada, para mas informacion contacte a soporte.",
-        "danger",
+        "Cuenta de usuario deshabilitada, para mas información contacte a soporte.",
+        "danger"
       );
       return;
     }
@@ -316,14 +347,14 @@ async function presentAlertRestorePassword(): Promise<{
 }> {
   const alert = await alertController.create({
     cssClass: "my-custom-class",
-    header: "Restauracion de contraseña",
+    header: "Restauración de contraseña",
     message:
-      "Te enviaremos un correo electronico con las intrucciones para restablecer tu contraseña.",
+      "Te enviaremos un correo electrónico con las instrucciones para restablecer tu contraseña.",
     inputs: [
       {
         name: "email",
         id: "email",
-        placeholder: "Correo electronico",
+        placeholder: "Correo electrónico",
         type: "email",
       },
     ],

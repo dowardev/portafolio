@@ -4,14 +4,14 @@
       <div>
         <ion-row>
           <ion-col>
-            <!-- session -->
+            <!-- user logged -->
             <ion-item
               v-if="useUser().isLogged.value == true"
               lines="none"
               class="transparent"
               @click="setOpenPopOverUserOptions(true, $event)"
             >
-              <ion-label>{{ useUser().user.value.user }}</ion-label>
+              <ion-label>{{ useUser().user.value.name }}</ion-label>
 
               <ion-button
                 slot="end"
@@ -429,9 +429,7 @@ function openRoute(params: { route?: string; name?: string }) {
 
 async function getUser() {
   try {
-    useUser().loadUser({
-      graphql: { name: USER_MENU, fragment: "UserMenu", refetch: true },
-    });
+    useUser().loadUser();
   } catch (error) {}
 }
 
