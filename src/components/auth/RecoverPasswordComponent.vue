@@ -144,35 +144,30 @@
           </div>
 
           <!-- errors -->
-          <span
-            class="error"
-            v-if="v2$.password.$dirty && v2$.password.required.$invalid"
-            >{{ v2$.password.required.$message }}</span
-          >
-          <span
-            class="error"
-            v-if="v2$.password.$dirty && v2$.password.minLength.$invalid"
-            >{{ v2$.password.minLength.$message }}</span
-          >
-          <br />
-          <span
-            class="error"
-            v-if="v2$.password.$dirty && v2$.password.regexLower.$invalid"
-            >{{ v2$.password.regexLower.$message }}</span
-          >
-          <br />
-          <span
-            class="error"
-            v-if="v2$.password.$dirty && v2$.password.regexUpper.$invalid"
-            >{{ v2$.password.regexUpper.$message }}</span
-          >
-          <br />
-          <span
-            class="error"
-            v-if="v2$.password.$dirty && v2$.password.regexNumber.$invalid"
-            >{{ v2$.password.regexNumber.$message }}</span
-          >
-          <br />
+          <div v-if="v2$.password.$dirty && v2$.password.required.$invalid">
+            <span class="error">{{ v2$.password.required.$message }}</span>
+            <br />
+          </div>
+
+          <div v-if="v2$.password.$dirty && v2$.password.minLength.$invalid">
+            <span class="error">{{ v2$.password.minLength.$message }}</span>
+            <br />
+          </div>
+
+          <div v-if="v2$.password.$dirty && v2$.password.regexLower.$invalid">
+            <span class="error">{{ v2$.password.regexLower.$message }}</span>
+            <br />
+          </div>
+
+          <div v-if="v2$.password.$dirty && v2$.password.regexUpper.$invalid">
+            <span class="error">{{ v2$.password.regexUpper.$message }}</span>
+            <br />
+          </div>
+          <div v-if="v2$.password.$dirty && v2$.password.regexNumber.$invalid">
+            <span class="error">{{ v2$.password.regexNumber.$message }}</span>
+            <br />
+          </div>
+
           <span
             class="error"
             v-if="v2$.password.$dirty && v2$.password.regexSpecial.$invalid"
