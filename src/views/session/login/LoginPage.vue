@@ -2,125 +2,40 @@
   <ion-page class="page-container">
     <ion-header class="ion-no-border">
       <ion-toolbar>
-        <ion-title>Iniciar sesion</ion-title>
+        <ion-title>Iniciar sesión</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
       <div style="height: 100%" class="center">
         <div>
-          <section>
-            <ion-card class="element-post-selected">
-              <ion-card-content>
-                <div class="center">
-                  <img
-                    src="../../../assets/otros/key.png"
-                    alt=""
-                    class="imagen-usuario"
-                  />
-                </div>
-                <form>
-                  <!-- user -->
-                  <ion-item lines="inset" class="transparent">
-                    <ion-icon
-                      slot="start"
-                      :icon="mailOpenOutline"
-                      class="item-icon"
-                    >
-                    </ion-icon>
+          <ion-card class="element-post-selected">
+            <ion-card-content>
+              <!-- component -->
+              <LoginFormComponent
+                ref="loginFormComponentRef"
+                @form-status="formStatus = $event"
+                @enter-pressed="login((loginFormComponentRef as any).getData())"
+              />
 
-                    <ion-input
-                      type="email"
-                      label="Usuario o correo electrónico"
-                      label-placement="floating"
-                      :value="form.email"
-                      @ion-input="form.email as any"
-                      @keydown.enter="
-                        ($refs as any).inputPassword.$el.setFocus()
-                      "
-                    >
-                    </ion-input>
-                  </ion-item>
-
-                  <div
-                    v-for="(error, index) of (v$ as any).email.$errors"
-                    :key="index"
-                  >
-                    <div class="error">
-                      {{ error.$message }}
-                    </div>
-                  </div>
-
-                  <!-- password -->
-                  <ion-item lines="inset" class="transparent">
-                    <ion-icon
-                      slot="start"
-                      :icon="fingerPrintOutline"
-                      class="item-icon"
-                    >
-                    </ion-icon>
-
-                    <ion-input
-                      ref="inputPassword"
-                      label="Contraseña"
-                      label-placement="floating"
-                      :value="form.password"
-                      :type="inputTypePassword"
-                      @ion-input="form.password = $event.detail.value as any"
-                      @keydown.enter="login()"
-                      @click="v$.password.$touch()"
-                    >
-                    </ion-input>
-
-                    <ion-button
-                      v-if="inputTypePassword == 'text'"
-                      slot="end"
-                      style="margin-top: 20px"
-                      fill="clear"
-                      @click="inputTypePassword = 'password'"
-                    >
-                      <ion-icon :icon="eyeOffOutline"></ion-icon>
-                    </ion-button>
-
-                    <ion-button
-                      v-if="inputTypePassword == 'password'"
-                      slot="end"
-                      fill="clear"
-                      style="margin-top: 20px"
-                      @click="inputTypePassword = 'text'"
-                    >
-                      <ion-icon :icon="eyeOutline"></ion-icon>
-                    </ion-button>
-                  </ion-item>
-
-                  <div
-                    v-for="(error, index) of (v$ as any).password.$errors"
-                    :key="index"
-                  >
-                    <div class="error">
-                      {{ error.$message }}
-                    </div>
-                  </div>
-                </form>
-
-                <ion-button
-                  fill="clear"
-                  :disabled="(v$ as any).$invalid || spinners.buttonLogin"
-                  expand="full"
-                  @click="login()"
+              <ion-button
+                fill="clear"
+                :disabled="formStatus == false || spinners.buttonLogin"
+                expand="full"
+                @click="login((loginFormComponentRef as any).getData())"
+              >
+                <ion-label v-if="spinners.buttonLogin == false">
+                  Iniciar sesión</ion-label
                 >
-                  <ion-label v-if="spinners.buttonLogin == false">
-                    Iniciar sesión</ion-label
-                  >
-                  <ion-spinner
-                    v-if="spinners.buttonLogin"
-                    name="crescent"
-                  ></ion-spinner>
-                </ion-button>
-              </ion-card-content>
-            </ion-card>
-          </section>
+                <ion-spinner
+                  v-if="spinners.buttonLogin"
+                  name="crescent"
+                ></ion-spinner>
+              </ion-button>
+            </ion-card-content>
+          </ion-card>
 
+          <!-- other options -->
           <section>
             <div class="center">
               <ion-button
@@ -171,24 +86,13 @@
 import {
   toastController,
   alertController,
-  IonInput,
-  loadingController,
   IonCard,
-  IonItem,
-  IonIcon,
   IonLabel,
   IonButton,
-  isPlatform,
   IonPage,
   IonContent,
 } from "@ionic/vue";
 import { ref } from "vue";
-import {
-  eyeOffOutline,
-  eyeOutline,
-  fingerPrintOutline,
-  mailOpenOutline,
-} from "ionicons/icons";
 import { userLogin, sendMailResetPassword } from "../../../services/session";
 import { setUserToken, resendEmailConfirmation } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
@@ -196,9 +100,11 @@ import { required, helpers } from "@vuelidate/validators";
 import { useSystem } from "../../../composables/useSystem";
 import { useRouter } from "vue-router";
 
-const router = useRouter();
+// components
+import LoginFormComponent from "@/forms/LoginFormComponent.vue";
 
-const inputTypePassword = ref("password" as "text" | "password");
+// vars
+const router = useRouter();
 const form = ref({
   // email: "admin@admin.com",
   // password: "d2f%PF",
@@ -224,6 +130,8 @@ const rules = {
   },
 };
 const v$ = useVuelidate(rules, form);
+const loginFormComponentRef = ref(null);
+const formStatus = ref(false);
 
 // functions
 async function presentToast(message: string, color: string) {
@@ -236,11 +144,11 @@ async function presentToast(message: string, color: string) {
   toast.present();
 }
 
-async function login() {
+async function login(params: { email: string; password: string }) {
+  const { email, password } = params;
   spinners.value.buttonLogin = true;
 
-  const user = form.value.email.replace(/\s+/g, "");
-  const password = form.value.password;
+  const user = email.trim();
 
   try {
     const response = await userLogin({
@@ -304,13 +212,6 @@ async function alertConfirmationEmail() {
   });
 
   await alert.present();
-}
-
-async function presentLoading(message: string) {
-  const loading = await loadingController.create({
-    message,
-  });
-  return loading;
 }
 
 async function forgotPassword() {
