@@ -12,7 +12,6 @@ import PostsPage from "@/views/blog/posts/PostsPage.vue";
 import PostPage from "@/views/blog/post/PostPage.vue";
 import LoginPage from "@/views/session/login/LoginPage.vue";
 import SignUpPage from "@/views/session/signup/SignUpPage.vue";
-import RestorePasswordPage from "@/views/session/restore-password/RestorePasswordPage.vue";
 import PoliciesPage from "@/views/policies/PoliciesPage.vue";
 import UserPanelPage from "@/views/user/UserPanelPage.vue";
 import AdminPanelPage from "@/views/admin/users/UsersPage.vue";
@@ -87,11 +86,6 @@ const routes: Array<RouteRecordRaw> = [
     path: "/signup",
     name: "SignUpPage",
     component: SignUpPage,
-  },
-  {
-    path: "/restore-password/:email/:code",
-    name: "RestorePasswordPage",
-    component: RestorePasswordPage,
   },
   {
     path: "/policies",

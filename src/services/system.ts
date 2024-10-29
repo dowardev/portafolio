@@ -167,3 +167,18 @@ export async function uploadImage(params: UploadImage): Promise<Image> {
 
   return response.data.uploadImage.image;
 }
+
+export async function presentToast(params: {
+  message: string;
+  color?: "dark" | "danger";
+}) {
+  const { message, color = "dark" } = params;
+  const toast = await toastController.create({
+    message,
+    duration: 1500,
+    position: "bottom",
+    color,
+  });
+
+  await toast.present();
+}

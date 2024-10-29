@@ -55,7 +55,7 @@ export async function userLogin(params: {
 
 export async function logout(): Promise<void> {
   await axios.request({
-    url: "	http://127.0.0.1:8000/api/logout",
+    url: "http://127.0.0.1:8000/api/logout",
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -64,38 +64,56 @@ export async function logout(): Promise<void> {
   });
 }
 
-export async function sendMailResetPassword(params: {
-  email: string;
-}): Promise<void> {
+export async function recoverPassword(params: { email: string }) {
   const { email } = params;
 
-  // TODO: pending
-  // const response = await axios.request({
-  //   url: `http://127.0.0.1:8000/api/upload-image`,
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //     Authorization: getUserToken(),
-  //   },
-  //   params: {
-  //     image,
-  //   },
-  // });
+  try {
+    await axios.request({
+      method: "POST",
+      url: "http://127.0.0.1:8000/api/recover-password",
+      data: {
+        email,
+      },
+      headers: {
+        "Content-Type": "application/json",
+        authorization: getUserToken(),
+      },
+    });
+  } catch (error: any) {
+    console.error(error);
+    if (error.response.data == "Email not found")
+      throw new Error("Email not found");
+    else throw error;
+  }
 }
 
-export async function resetPassword(params: ResetPassword): Promise<void> {
-  // TODO: pending
-  // const response = await axios.request({
-  //   url: `http://127.0.0.1:8000/api/upload-image`,
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //     Authorization: getUserToken(),
-  //   },
-  //   params: {
-  //     image,
-  //   },
-  // });
+export async function sendNewPassword(params: {
+  email: string;
+  code: string;
+  password: string;
+}) {
+  const { code, password, email } = params;
+
+  try {
+    await axios.request({
+      method: "POST",
+      url: "http://127.0.0.1:8000/api/reset-password",
+      data: {
+        email,
+        code,
+        password,
+      },
+      headers: {
+        "Content-Type": "application/json",
+        authorization: getUserToken(),
+      },
+    });
+  } catch (error: any) {
+    if (error.response.data == "Code invalid") throw new Error("Code invalid");
+    if (error.response.data.password)
+      throw new Error("The password does not meet the minimum requirements");
+    else throw error;
+  }
 }
 
 export async function updateUserPassword(

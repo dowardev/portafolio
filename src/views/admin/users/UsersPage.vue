@@ -319,7 +319,7 @@ import {
   thumbsUpOutline,
 } from "ionicons/icons";
 import { openToast, presentAlertConfirmation } from "../../../services/system";
-import { sendMailResetPassword as sendMailResetPasswordService } from "../../../services/session";
+// import { sendMailResetPassword as sendMailResetPasswordService } from "../../../services/session";
 import { resendEmailConfirmation as resendEmailConfirmationService } from "../../../services/user";
 import { useUsers } from "../../../composables/useUsers";
 import { useSystem } from "../../../composables/useSystem";

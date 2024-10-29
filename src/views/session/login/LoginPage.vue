@@ -44,7 +44,7 @@
                 :disabled="spinners.buttonForgotPassword"
                 expand="full"
                 size="small"
-                @click="forgotPassword()"
+                @click="isOpenModalPasswordRecover = true"
               >
                 <ion-label v-if="spinners.buttonForgotPassword == false"
                   >¿Olvidaste la contraseña?</ion-label
@@ -78,6 +78,28 @@
           </section>
         </div>
       </div>
+
+      <!-- modals -->
+      <ion-modal
+        :is-open="isOpenModalPasswordRecover"
+        @did-dismiss="isOpenModalPasswordRecover = false"
+      >
+        <ion-header mode="ios" class="ion-bo-border">
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button @click="isOpenModalPasswordRecover = false">
+                <ion-icon :icon="closeOutline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+
+            <ion-title>Recuperar contraseña</ion-title>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content class="ion-padding">
+          <RecoverPasswordComponent />
+        </ion-content>
+      </ion-modal>
     </ion-content>
   </ion-page>
 </template>
@@ -91,17 +113,20 @@ import {
   IonButton,
   IonPage,
   IonContent,
+  IonModal,
 } from "@ionic/vue";
 import { ref } from "vue";
-import { userLogin, sendMailResetPassword } from "../../../services/session";
+import { userLogin } from "../../../services/session";
 import { setUserToken, resendEmailConfirmation } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useSystem } from "../../../composables/useSystem";
 import { useRouter } from "vue-router";
+import { closeOutline } from "ionicons/icons";
 
 // components
 import LoginFormComponent from "@/forms/LoginFormComponent.vue";
+import RecoverPasswordComponent from "@/components/auth/RecoverPasswordComponent.vue";
 
 // vars
 const router = useRouter();
@@ -132,6 +157,7 @@ const rules = {
 const v$ = useVuelidate(rules, form);
 const loginFormComponentRef = ref(null);
 const formStatus = ref(false);
+const isOpenModalPasswordRecover = ref(false);
 
 // functions
 async function presentToast(message: string, color: string) {
@@ -212,28 +238,6 @@ async function alertConfirmationEmail() {
   });
 
   await alert.present();
-}
-
-async function forgotPassword() {
-  spinners.value.buttonForgotPassword = true;
-
-  const alertResponse = await presentAlertRestorePassword();
-  console.log(alertResponse);
-  if (alertResponse.role == "cancel") {
-    spinners.value.buttonForgotPassword = false;
-    return;
-  }
-
-  try {
-    await sendMailResetPassword({
-      email: alertResponse.email,
-    });
-  } catch (e: any) {
-    console.error(e);
-    useSystem().openToastError(e);
-  }
-
-  spinners.value.buttonForgotPassword = false;
 }
 
 async function createAccount() {
