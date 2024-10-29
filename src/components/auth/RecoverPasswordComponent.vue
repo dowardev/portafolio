@@ -12,24 +12,42 @@
         </ion-col>
       </ion-row>
 
+      <!-- email -->
       <ion-row>
         <ion-col size="12">
           <ion-input
-            :value="email"
             label="Correo electrónico"
-            label-placement="floating"
-            fill="solid"
+            label-placement="stacked"
+            fill="outline"
             type="email"
-            @ion-change="email = $event.target.value as string"
+            :value="email"
+            :class="{
+              'input-error': v1$.email.$invalid && v1$.email.$dirty,
+            }"
+            @ion-input="email = $event.target.value as string"
+            @click="v1$.email.$touch()"
           >
           </ion-input>
+
+          <!-- errors -->
+          <span
+            class="error"
+            v-if="v1$.email.$dirty && v1$.email.required.$invalid"
+            >{{ v1$.email.required.$message }}</span
+          >
+          <span
+            class="error"
+            v-if="v1$.email.$dirty && v1$.email.email.$invalid"
+            >{{ v1$.email.email.$message }}</span
+          >
         </ion-col>
       </ion-row>
 
+      <!-- button send email -->
       <ion-row>
         <ion-col size="12">
           <ion-button
-            :disabled="loaderStep1"
+            :disabled="loaderStep1 || v1$.email.$invalid"
             expand="block"
             @click="sendEmail()"
           >
@@ -51,7 +69,7 @@
   </ion-row>
 
   <!-- second step -->
-  <ion-row v-show="step == 2">
+  <ion-row v-if="step == 2">
     <ion-col>
       <ion-row>
         <ion-col size="12">
@@ -59,17 +77,34 @@
         </ion-col>
       </ion-row>
 
+      <!-- code -->
       <ion-row>
         <ion-col size="12">
           <ion-input
             type="number"
             label="Código"
-            label-placement="floating"
-            fill="solid"
+            label-placement="stacked"
+            fill="outline"
             :value="code"
-            @ion-change="code = $event.target.value as string"
+            :class="{
+              'input-error': v2$.code.$invalid && v2$.code.$dirty,
+            }"
+            @ion-input="code = parseInt($event.target.value as string)"
+            @click="v2$.code.$touch()"
           >
           </ion-input>
+
+          <!-- errors -->
+          <span
+            class="error"
+            v-if="v2$.code.$dirty && v2$.code.required.$invalid"
+            >{{ v2$.code.required.$message }}</span
+          >
+          <span
+            class="error"
+            v-if="v2$.code.$dirty && v2$.code.numeric.$invalid"
+            >{{ v2$.code.numeric.$message }}</span
+          >
         </ion-col>
       </ion-row>
 
@@ -78,38 +113,81 @@
       </ion-row>
 
       <ion-row>
+        <!-- password -->
         <ion-col size="12">
           <div style="display: flex; justify-content: space-between">
             <div style="width: 100%">
               <ion-input
                 label="Nueva contraseña"
-                label-placement="floating"
-                fill="solid"
+                label-placement="stacked"
+                fill="outline"
                 :value="newPassword"
+                :clear-on-edit="false"
                 :type="password1Visible == true ? 'text' : 'password'"
-                @ion-change="newPassword = $event.target.value as string"
+                :class="{
+                  'input-error': v2$.password.$invalid && v2$.password.$dirty,
+                }"
+                @ion-input="newPassword = $event.target.value as string"
+                @click="v2$.password.$touch()"
               >
+                <ion-button
+                  slot="end"
+                  fill="clear"
+                  @click="password1Visible = !password1Visible"
+                >
+                  <ion-icon
+                    :icon="password1Visible == true ? eye : eyeOutline"
+                  ></ion-icon>
+                </ion-button>
               </ion-input>
             </div>
-
-            <div class="vertical-center">
-              <ion-button
-                fill="clear"
-                @click="password1Visible = !password1Visible"
-              >
-                <ion-icon
-                  :icon="password1Visible == true ? eye : eyeOutline"
-                ></ion-icon>
-              </ion-button>
-            </div>
           </div>
+
+          <!-- errors -->
+          <span
+            class="error"
+            v-if="v2$.password.$dirty && v2$.password.required.$invalid"
+            >{{ v2$.password.required.$message }}</span
+          >
+          <span
+            class="error"
+            v-if="v2$.password.$dirty && v2$.password.minLength.$invalid"
+            >{{ v2$.password.minLength.$message }}</span
+          >
+          <br />
+          <span
+            class="error"
+            v-if="v2$.password.$dirty && v2$.password.regexLower.$invalid"
+            >{{ v2$.password.regexLower.$message }}</span
+          >
+          <br />
+          <span
+            class="error"
+            v-if="v2$.password.$dirty && v2$.password.regexUpper.$invalid"
+            >{{ v2$.password.regexUpper.$message }}</span
+          >
+          <br />
+          <span
+            class="error"
+            v-if="v2$.password.$dirty && v2$.password.regexNumber.$invalid"
+            >{{ v2$.password.regexNumber.$message }}</span
+          >
+          <br />
+          <span
+            class="error"
+            v-if="v2$.password.$dirty && v2$.password.regexSpecial.$invalid"
+            >{{ v2$.password.regexSpecial.$message }}</span
+          >
         </ion-col>
       </ion-row>
 
+      <!-- button send new password -->
       <ion-row>
         <ion-col size="12">
           <ion-button
-            :disabled="loaderStep2"
+            :disabled="
+              loaderStep2 || v2$.code.$invalid || v2$.password.$invalid
+            "
             expand="block"
             @click="sendNewPassword()"
           >
@@ -142,6 +220,14 @@ import {
 } from "@ionic/vue";
 import { ref } from "vue";
 import { eye, eyeOutline } from "ionicons/icons";
+import {
+  email as emailHelper,
+  helpers,
+  required,
+  minLength,
+  numeric,
+} from "@vuelidate/validators";
+import useVuelidate from "@vuelidate/core";
 
 // services
 import {
@@ -152,15 +238,55 @@ import { presentToast } from "@/services/system";
 
 // vars
 const email = ref("admin@admin.com");
-const code = ref("");
+const code = ref<number | undefined>(undefined);
 const newPassword = ref("");
 const loaderStep1 = ref(false);
 const loaderTextStep1 = ref(true);
 const loaderStep2 = ref(false);
 const loaderTextStep2 = ref(true);
 const password1Visible = ref<boolean>(false);
-
 const step = ref(1);
+const messageError = {
+  required: "Campo requerido",
+  email: "Correo no valido",
+};
+const rules1 = {
+  email: {
+    required: helpers.withMessage(messageError.required, required),
+    email: helpers.withMessage(messageError.email, emailHelper),
+  },
+};
+const v1$ = useVuelidate(rules1, { email });
+const rules2 = {
+  code: {
+    required: helpers.withMessage(messageError.required, required),
+    numeric: helpers.withMessage("El código debe ser numérico", numeric),
+  },
+  password: {
+    required: helpers.withMessage(messageError.required, required),
+    minLength: helpers.withMessage(
+      "La contraseña debe tener al menos 8 caracteres",
+      minLength(8)
+    ),
+    regexLower: helpers.withMessage(
+      "La contraseña debe contener al menos una letra minúscula",
+      helpers.regex(/[a-z]/)
+    ),
+    regexUpper: helpers.withMessage(
+      "La contraseña debe contener al menos una letra mayúscula",
+      helpers.regex(/[A-Z]/)
+    ),
+    regexNumber: helpers.withMessage(
+      "La contraseña debe contener al menos un número",
+      helpers.regex(/[0-9]/)
+    ),
+    regexSpecial: helpers.withMessage(
+      "La contraseña debe contener al menos un carácter especial",
+      helpers.regex(/[@$!%*?&]/)
+    ),
+  },
+};
+const v2$ = useVuelidate(rules2, { code, password: newPassword });
 
 async function sendEmail() {
   await startAnimationStep1();

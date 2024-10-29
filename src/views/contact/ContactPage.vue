@@ -162,10 +162,10 @@ const spinners = ref({
   sendMessage: false,
 });
 const contactData = ref({
-  name: "s",
-  subject: "aa",
-  email: "w@w.com",
-  description: "dd",
+  name: "",
+  subject: "",
+  email: "",
+  description: "",
 });
 
 const messageError = {
