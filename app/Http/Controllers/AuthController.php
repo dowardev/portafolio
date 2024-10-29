@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Models\ResetCodePassword;
 use Exception;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -154,5 +155,77 @@ class AuthController extends Controller
     $perPage = $request->input("per_page", $request->perpage);
     $users = User::paginate($perPage);
     return response()->json($users);
+  }
+
+  public function recoverPassword(Request $request)
+  {
+    $email = $request->email;
+
+    if ($email == "" || $email == "null") {
+      return response()->json(["error" => "Email is required"], 400);
+    }
+    $user = User::where("email", "=", $email)->get();
+
+    if (count($user)) {
+      $email = $user[0]->email;
+      $code = mt_rand(100000, 999999);
+
+      ResetCodePassword::where("email", $email)->delete();
+
+      $codeData = ResetCodePassword::create([
+        "code" => $code,
+        "email" => $email,
+      ]);
+
+      Mail::send(
+        "emails.emailCodeResetPassword",
+        ["code" => $codeData->code, "email" => $request->email],
+        function ($message) use ($email) {
+          $message->to($email);
+          $message->subject("Email Verification Mail");
+        }
+      );
+    } else {
+      return response()->json("Email not found", 400);
+    }
+  }
+
+  public function resetPassword(Request $request)
+  {
+    $email = $request->email;
+    $code = $request->code;
+
+    $validator = Validator::make($request->all(), [
+      "email" => "required|email",
+      "code" => "required",
+      "password" => [
+        "required",
+        "string",
+        "min:8",
+        "regex:/[a-z]/",
+        "regex:/[A-Z]/",
+        "regex:/[0-9]/",
+        "regex:/[@$!%*?&]/",
+      ],
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors(), 400);
+    }
+
+    $result = ResetCodePassword::where("email", "=", $email)
+      ->where("code", "=", $code)
+      ->get();
+
+    if (sizeof($result) == 0) {
+      return response()->json("Code invalid", 400);
+    }
+
+    ResetCodePassword::where("email", "=", $email)
+      ->where("code", "=", $code)
+      ->delete();
+    User::where("email", "=", $email)->update([
+      "password" => bcrypt($request["password"]),
+    ]);
   }
 }

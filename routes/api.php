@@ -25,6 +25,9 @@ Route::middleware(Cors::class)->group(function () {
 
   // admin users
   Route::get("search-user/{perpage}", [AuthController::class, "searchUser"]);
+
+  Route::post("recover-password", [AuthController::class, "recoverPassword"]);
+  Route::post("reset-password", [AuthController::class, "resetPassword"]);
 });
 
 Route::group(["middleware" => "auth:api"], function () {
