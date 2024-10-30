@@ -121,8 +121,8 @@ async function register(params: {
   const { name, user, password } = params;
   let { email } = params;
   spinners.value.buttonSignup = true;
-
   email = email.trim();
+
   try {
     await userRegister({
       name,
@@ -131,8 +131,8 @@ async function register(params: {
       password,
     });
     spinners.value.buttonSignup = false;
-    alertConfirmaciónEmail();
-    router.push("/login");
+    await alertConfirmaciónEmail({ email });
+    await router.push("/login");
     clearInputs();
   } catch (e: any) {
     spinners.value.buttonSignup = false;
@@ -163,14 +163,15 @@ function clearInputs() {
   form.value.email = "";
 }
 
-async function alertConfirmaciónEmail() {
+async function alertConfirmaciónEmail(params: { email: string }) {
+  const { email } = params;
+
   const alert = await alertController.create({
     header: "Alerta",
     subHeader: "Confirmación",
-    message:
-      "Hemos enviado un correo electrónico a <b>" +
-      form.value.email +
-      "</b> con un enlace para verificar tu identidad.",
+    message: `Hemos enviado un correo electrónico a 
+      ${email} 
+       con un enlace para verificar tu identidad.`,
     buttons: [
       {
         text: "Continuar",

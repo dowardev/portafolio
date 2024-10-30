@@ -177,15 +177,7 @@ import {
   keyOutline,
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
-import {
-  required,
-  email,
-  helpers,
-  sameAs,
-  minLength,
-} from "@vuelidate/validators";
-import { openToast } from "@./services/system";
-import { useSystem } from "@/composables/useSystem";
+import { required, email, helpers, minLength } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
 
 const router = useRouter();

@@ -13,12 +13,12 @@ export async function userRegister(params: UserRegister): Promise<void> {
   const { name, user, password, email } = params;
 
   await axios.request({
-    url: `http://127.0.0.1:8000/api/upload-image`,
+    url: `http://127.0.0.1:8000/api/signup`,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    params: {
+    data: {
       name,
       user,
       password,
