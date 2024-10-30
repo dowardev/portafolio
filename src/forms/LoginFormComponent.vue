@@ -1,8 +1,4 @@
 <template>
-  <div class="center">
-    <img src="../../../assets/otros/key.png" alt="" class="imagen-usuario" />
-  </div>
-
   <!-- user -->
   <ion-row>
     <ion-col>

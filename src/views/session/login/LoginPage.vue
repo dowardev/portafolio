@@ -7,77 +7,79 @@
     </ion-header>
 
     <ion-content>
-      <div style="height: 100%" class="center">
-        <div>
-          <ion-card class="element-post-selected">
-            <ion-card-content>
-              <!-- component -->
-              <LoginFormComponent
-                ref="loginFormComponentRef"
-                @form-status="formStatus = $event"
-                @enter-pressed="login((loginFormComponentRef as any).getData())"
-              />
-
-              <ion-button
-                fill="clear"
-                :disabled="formStatus == false || spinners.buttonLogin"
-                expand="full"
-                @click="login((loginFormComponentRef as any).getData())"
-              >
-                <ion-label v-if="spinners.buttonLogin == false">
-                  Iniciar sesión</ion-label
-                >
-                <ion-spinner
-                  v-if="spinners.buttonLogin"
-                  name="crescent"
-                ></ion-spinner>
-              </ion-button>
-            </ion-card-content>
-          </ion-card>
-
-          <!-- other options -->
-          <section>
+      <section class="center">
+        <ion-card class="element-post-selected">
+          <ion-card-content>
             <div class="center">
-              <ion-button
-                class="options"
-                fill="clear"
-                :disabled="spinners.buttonForgotPassword"
-                expand="full"
-                size="small"
-                @click="isOpenModalPasswordRecover = true"
-              >
-                <ion-label v-if="spinners.buttonForgotPassword == false"
-                  >¿Olvidaste la contraseña?</ion-label
-                >
-                <ion-spinner
-                  v-if="spinners.buttonForgotPassword"
-                  name="crescent"
-                ></ion-spinner>
-              </ion-button>
+              <img src="@/assets/otros/key.png" alt="" class="imagen-usuario" />
             </div>
 
-            <div class="center">
-              <ion-button
-                class="options"
-                fill="clear"
-                :disabled="spinners.buttonCreateAccount"
-                expand="full"
-                size="small"
-                @click="createAccount()"
+            <!-- component -->
+            <LoginFormComponent
+              ref="loginFormComponentRef"
+              @form-status="formStatus = $event"
+              @enter-pressed="login((loginFormComponentRef as any).getData())"
+            />
+
+            <ion-button
+              fill="clear"
+              :disabled="formStatus == false || spinners.buttonLogin"
+              expand="full"
+              @click="login((loginFormComponentRef as any).getData())"
+            >
+              <ion-label v-if="spinners.buttonLogin == false">
+                Iniciar sesión</ion-label
               >
-                <ion-label v-if="spinners.buttonCreateAccount == false"
-                  >Crear cuenta</ion-label
-                >
-                <ion-spinner
-                  v-if="spinners.buttonCreateAccount"
-                  name="crescent"
-                  color="primary"
-                ></ion-spinner>
-              </ion-button>
-            </div>
-          </section>
+              <ion-spinner
+                v-if="spinners.buttonLogin"
+                name="crescent"
+              ></ion-spinner>
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </section>
+
+      <!-- other options -->
+      <section>
+        <div class="center">
+          <ion-button
+            class="options"
+            fill="clear"
+            :disabled="spinners.buttonForgotPassword"
+            expand="full"
+            size="small"
+            @click="isOpenModalPasswordRecover = true"
+          >
+            <ion-label v-if="spinners.buttonForgotPassword == false"
+              >¿Olvidaste la contraseña?</ion-label
+            >
+            <ion-spinner
+              v-if="spinners.buttonForgotPassword"
+              name="crescent"
+            ></ion-spinner>
+          </ion-button>
         </div>
-      </div>
+
+        <div class="center">
+          <ion-button
+            class="options"
+            fill="clear"
+            :disabled="spinners.buttonCreateAccount"
+            expand="full"
+            size="small"
+            @click="createAccount()"
+          >
+            <ion-label v-if="spinners.buttonCreateAccount == false"
+              >Crear cuenta</ion-label
+            >
+            <ion-spinner
+              v-if="spinners.buttonCreateAccount"
+              name="crescent"
+              color="primary"
+            ></ion-spinner>
+          </ion-button>
+        </div>
+      </section>
 
       <!-- modals -->
       <ion-modal
