@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(Cors::class)->group(function () {
   // auth
   Route::post("login", [AuthController::class, "login"]);
+  Route::post("signup", [AuthController::class, "signup"]);
 
   // posts
   Route::get("posts/{date}", [PostsController::class, "getPosts"]);

@@ -55,6 +55,13 @@ return [
       "throw" => false,
     ],
 
+    "tmp" => [
+      "driver" => "local",
+      "root" => storage_path("app/tmp"),
+      "url" => env("APP_URL") . "/storage",
+      "visibility" => "public",
+    ],
+
     "images_posts" => [
       "driver" => "local",
       "root" => storage_path("app/images_posts"),

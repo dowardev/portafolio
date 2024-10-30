@@ -23,6 +23,7 @@ class AuthController extends Controller
       "email" => "required|string|email|unique:users",
       "password" => "required|string",
     ]);
+
     $user = new User([
       "name" => $request->name,
       "user" => $request->user,
@@ -32,6 +33,7 @@ class AuthController extends Controller
     $user->save();
 
     $token = Str::random(64);
+
     UserVerify::create([
       "user_id" => $user->id,
       "token" => $token,
@@ -44,12 +46,7 @@ class AuthController extends Controller
       $message->subject("Email Verification Mail");
     });
 
-    return response()->json(
-      [
-        "message" => "Successfully created user!",
-      ],
-      201
-    );
+    return response()->json("success", 201);
   }
 
   public function login(Request $request)
