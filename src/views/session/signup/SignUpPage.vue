@@ -37,7 +37,7 @@
                 @click="register((signUpFormComponentRef as any).getData())"
               >
                 <ion-label
-                  v-if="spinners.buttonSignup == false || v$.form.$invalid"
+                  v-if="spinners.buttonSignup == false || formStatus == false"
                 >
                   Registrar</ion-label
                 >
@@ -81,32 +81,12 @@ import {
   IonPage,
   IonContent,
   alertController,
-  IonInput,
   IonCard,
-  IonItem,
   IonLabel,
   IonButton,
-  IonIcon,
-  isPlatform,
 } from "@ionic/vue";
 import { ref } from "vue";
 import { userRegister } from "../../../services/session";
-import {
-  eyeOutline,
-  eyeOffOutline,
-  manOutline,
-  personOutline,
-  mailOpenOutline,
-  keyOutline,
-} from "ionicons/icons";
-import useVuelidate from "@vuelidate/core";
-import {
-  required,
-  email,
-  helpers,
-  sameAs,
-  minLength,
-} from "@vuelidate/validators";
 import { openToast } from "../../../services/system";
 import { useSystem } from "../../../composables/useSystem";
 import { useRouter } from "vue-router";
@@ -116,8 +96,6 @@ import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
 
 const router = useRouter();
 
-const inputTypePassword1 = ref("password" as "text" | "password");
-const inputTypePassword2 = ref("password" as "text" | "password");
 const form = ref({
   user: "",
   name: "",
@@ -130,60 +108,6 @@ const spinners = ref({
   buttonLogin: false,
 });
 
-// validation
-const samePassword = () => form.value.password == form.value.password2;
-
-const messageError = {
-  required: "Campo requerido",
-  alpha: "Solamente puede contener texto",
-};
-const rules = {
-  form: {
-    name: {
-      required: helpers.withMessage(messageError.required, required),
-      alpha: helpers.withMessage(
-        messageError.alpha,
-        helpers.regex(/^[a-zA-Z ]*$/)
-      ),
-    },
-    user: {
-      required: helpers.withMessage(messageError.required, required),
-      space: helpers.withMessage(messageError.alpha, helpers.regex(/^\S*$/)),
-    },
-    email: {
-      required: helpers.withMessage(messageError.required, required),
-      email: helpers.withMessage("Correo no valido", email),
-    },
-    password: {
-      required: helpers.withMessage(messageError.required, required),
-      minLength: helpers.withMessage(
-        "La contraseña debe tener al menos 8 caracteres",
-        minLength(8)
-      ),
-      regexLower: helpers.withMessage(
-        "La contraseña debe contener al menos una letra minúscula",
-        helpers.regex(/[a-z]/)
-      ),
-      regexUpper: helpers.withMessage(
-        "La contraseña debe contener al menos una letra mayúscula",
-        helpers.regex(/[A-Z]/)
-      ),
-      regexNumber: helpers.withMessage(
-        "La contraseña debe contener al menos un número",
-        helpers.regex(/[0-9]/)
-      ),
-      regexSpecial: helpers.withMessage(
-        "La contraseña debe contener al menos un carácter especial",
-        helpers.regex(/[@$!%*?&]/)
-      ),
-    },
-    password2: {
-      required: helpers.withMessage(messageError.required, required),
-      same: helpers.withMessage("Las contraseñas no coinciden", samePassword),
-    },
-  },
-};
-const v$ = useVuelidate(rules, { form });
 const signUpFormComponentRef = ref(null);
 const formStatus = ref(false);
 
