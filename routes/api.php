@@ -12,20 +12,10 @@ Route::middleware(Cors::class)->group(function () {
   Route::post("login", [AuthController::class, "login"]);
   Route::post("signup", [AuthController::class, "signup"]);
 
-  // posts
-  Route::get("posts/{date}", [PostsController::class, "getPosts"]);
-  Route::get("post-dates", [PostsController::class, "getPostsDates"]);
-  Route::get("post/{id}", [PostsController::class, "getPost"]);
-  Route::post("new-post", [PostsController::class, "createPost"]);
-  Route::get("search-posts/{search}", [PostsController::class, "searchPost"]);
-
   // others
   Route::post("upload-image", [SystemController::class, "uploadImage"]);
   Route::post("contact", [SystemController::class, "createContactMessage"]);
   Route::post("feedback", [SystemController::class, "createFeedback"]);
-
-  // admin users
-  Route::get("search-user/{perpage}", [AuthController::class, "searchUser"]);
 
   Route::post("recover-password", [AuthController::class, "recoverPassword"]);
   Route::post("reset-password", [AuthController::class, "resetPassword"]);
@@ -34,4 +24,14 @@ Route::middleware(Cors::class)->group(function () {
 Route::group(["middleware" => "auth:api"], function () {
   // user
   Route::get("user-auth", [AuthController::class, "user"]);
+
+  // posts
+  Route::get("posts/{date}", [PostsController::class, "getPosts"]);
+  Route::get("post-dates", [PostsController::class, "getPostsDates"]);
+  Route::get("post/{id}", [PostsController::class, "getPost"]);
+  Route::post("new-post", [PostsController::class, "createPost"]);
+  Route::get("search-posts/{search}", [PostsController::class, "searchPost"]);
+
+  // admin users
+  Route::get("search-user/{perpage}", [AuthController::class, "searchUser"]);
 });
