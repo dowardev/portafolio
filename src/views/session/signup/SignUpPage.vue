@@ -12,206 +12,29 @@
           <ion-card-content>
             <div class="center">
               <img
-                src="../../../assets/otros/user.png"
+                src="@/assets/otros/user.png"
                 alt=""
                 class="imagen-usuario"
               />
             </div>
 
             <section>
-              <!-- name -->
-              <ion-row>
-                <ion-col>
-                  <ion-input
-                    autocomplete="name"
-                    label-placement="stacked"
-                    fill="outline"
-                    :value="form.name"
-                    :class="{
-                      'input-error':
-                        v$.form.name.$invalid && v$.form.name.$dirty,
-                    }"
-                    @ion-input="form.name = $event.detail.value!.toString()"
-                    @click="v$.form.name.$touch()"
-                  >
-                    <ion-icon slot="start" :icon="manOutline"></ion-icon>
-                  </ion-input>
-
-                  <!-- errors -->
-                  <div
-                    v-for="(error, index) of v$.form.name.$errors"
-                    :key="index"
-                  >
-                    <div class="error">{{ error.$message }}</div>
-                  </div>
-                </ion-col>
-              </ion-row>
-
-              <!-- user -->
-              <ion-row>
-                <ion-col>
-                  <ion-input
-                    label-placement="stacked"
-                    fill="outline"
-                    label="Usuario"
-                    :value="form.user"
-                    :class="{
-                      'input-error':
-                        v$.form.user.$invalid && v$.form.user.$dirty,
-                    }"
-                    @ion-input="form.user = $event.detail.value!.toString()"
-                    @click="v$.form.user.$touch()"
-                  >
-                    <ion-icon slot="start" :icon="personOutline"></ion-icon>
-                  </ion-input>
-
-                  <!-- errors -->
-                  <div
-                    v-for="(error, index) of v$.form.user.$errors"
-                    :key="index"
-                  >
-                    <div class="error">{{ error.$message }}</div>
-                  </div>
-                </ion-col>
-              </ion-row>
-
-              <!-- email -->
-              <ion-row>
-                <ion-col>
-                  <ion-input
-                    autocomplete="email"
-                    label-placement="stacked"
-                    fill="outline"
-                    label="Correo electrónico"
-                    :value="form.email"
-                    :class="{
-                      'input-error':
-                        v$.form.email.$invalid && v$.form.email.$dirty,
-                    }"
-                    @ion-input="form.email = $event.detail.value!.toString()"
-                    @click="v$.form.email.$touch()"
-                  >
-                    <ion-icon slot="start" :icon="mailOpenOutline"></ion-icon>
-                  </ion-input>
-
-                  <!-- errors -->
-                  <div
-                    v-for="(error, index) of v$.form.email.$errors"
-                    :key="index"
-                  >
-                    <div class="error">{{ error.$message }}</div>
-                  </div>
-                </ion-col>
-              </ion-row>
-
-              <!-- password -->
-              <ion-row>
-                <ion-col>
-                  <ion-input
-                    label-placement="stacked"
-                    fill="outline"
-                    label="Contraseña"
-                    :value="form.password"
-                    :type="inputTypePassword1"
-                    :class="{
-                      'input-error':
-                        v$.form.password.$invalid && v$.form.password.$dirty,
-                    }"
-                    :clear-on-edit="false"
-                    @ion-input="form.password = $event.detail.value!.toString()"
-                    @click="v$.form.password.$touch()"
-                  >
-                    <ion-icon slot="start" :icon="keyOutline"> </ion-icon>
-
-                    <ion-button
-                      slot="end"
-                      fill="clear"
-                      @click="
-                        inputTypePassword1 == 'password'
-                          ? (inputTypePassword1 = 'text')
-                          : (inputTypePassword1 = 'password')
-                      "
-                    >
-                      <ion-icon
-                        v-if="inputTypePassword1 == 'text'"
-                        :icon="eyeOffOutline"
-                      ></ion-icon>
-                      <ion-icon
-                        v-if="inputTypePassword1 == 'password'"
-                        :icon="eyeOutline"
-                      ></ion-icon>
-                    </ion-button>
-                  </ion-input>
-
-                  <!-- errors -->
-                  <div
-                    v-for="(error, index) of v$.form.password.$errors"
-                    :key="index"
-                  >
-                    <div class="error">{{ error.$message }}</div>
-                  </div>
-                </ion-col>
-              </ion-row>
-
-              <!-- password2 -->
-              <ion-row>
-                <ion-col>
-                  <ion-input
-                    label-placement="stacked"
-                    fill="outline"
-                    label="Repite contraseña"
-                    :value="form.password2"
-                    :type="inputTypePassword2"
-                    :class="{
-                      'input-error':
-                        v$.form.password2.$invalid && v$.form.password2.$dirty,
-                    }"
-                    :clear-on-edit="false"
-                    @ion-input="
-                      form.password2 = $event.detail.value!.toString()
-                    "
-                    @click="v$.form.password2.$touch()"
-                  >
-                    <ion-icon slot="start" :icon="keyOutline"></ion-icon>
-
-                    <ion-button
-                      slot="end"
-                      fill="clear"
-                      @click="
-                        inputTypePassword2 == 'password'
-                          ? (inputTypePassword2 = 'text')
-                          : (inputTypePassword2 = 'password')
-                      "
-                    >
-                      <ion-icon
-                        v-if="inputTypePassword2 == 'text'"
-                        :icon="eyeOffOutline"
-                      ></ion-icon>
-                      <ion-icon
-                        v-if="inputTypePassword2 == 'password'"
-                        :icon="eyeOutline"
-                      ></ion-icon>
-                    </ion-button>
-                  </ion-input>
-
-                  <!-- errors -->
-                  <div
-                    v-for="(error, index) of v$.form.password2.$errors"
-                    :key="index"
-                  >
-                    <div class="error">{{ error.$message }}</div>
-                  </div>
-                </ion-col>
-              </ion-row>
+              <SignUpFormComponent
+                ref="signUpFormComponentRef"
+                @form-status="formStatus = $event"
+                @enter-pressed="
+                  register((signUpFormComponentRef as any).getData())
+                "
+              />
             </section>
 
             <!-- button send -->
             <section>
               <ion-button
                 fill="clear"
-                :disabled="(v$ as any).$invalid || spinners.buttonSignup"
+                :disabled="formStatus == false || spinners.buttonSignup"
                 expand="full"
-                @click="register()"
+                @click="register((signUpFormComponentRef as any).getData())"
               >
                 <ion-label
                   v-if="spinners.buttonSignup == false || v$.form.$invalid"
@@ -288,6 +111,9 @@ import { openToast } from "../../../services/system";
 import { useSystem } from "../../../composables/useSystem";
 import { useRouter } from "vue-router";
 
+// components
+import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
+
 const router = useRouter();
 
 const inputTypePassword1 = ref("password" as "text" | "password");
@@ -358,15 +184,21 @@ const rules = {
   },
 };
 const v$ = useVuelidate(rules, { form });
+const signUpFormComponentRef = ref(null);
+const formStatus = ref(false);
 
 // functions
-async function register() {
+async function register(params: {
+  name: string;
+  user: string;
+  email: string;
+  password: string;
+}) {
+  const { name, user, password } = params;
+  let { email } = params;
   spinners.value.buttonSignup = true;
 
-  const name = form.value.name;
-  const user = form.value.user;
-  const email = form.value.email.replace(/\s+/g, "");
-  const password = form.value.password;
+  email = email.trim();
   try {
     await userRegister({
       name,

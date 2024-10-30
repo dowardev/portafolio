@@ -1,0 +1,343 @@
+<template>
+  <!-- name -->
+  <ion-row>
+    <ion-col>
+      <ion-input
+        autocomplete="name"
+        label-placement="stacked"
+        label="nombre"
+        fill="outline"
+        :value="form.name"
+        :class="{
+          'input-error': v$.form.name.$invalid && v$.form.name.$dirty,
+        }"
+        @ion-input="form.name = $event.detail.value!.toString()"
+        @click="v$.form.name.$touch()"
+      >
+        <ion-icon slot="start" :icon="manOutline"></ion-icon>
+      </ion-input>
+
+      <!-- errors -->
+      <div v-for="(error, index) of v$.form.name.$errors" :key="index">
+        <div class="error">{{ error.$message }}</div>
+      </div>
+    </ion-col>
+  </ion-row>
+
+  <!-- user -->
+  <ion-row>
+    <ion-col>
+      <ion-input
+        label-placement="stacked"
+        fill="outline"
+        label="Usuario"
+        :value="form.user"
+        :class="{
+          'input-error': v$.form.user.$invalid && v$.form.user.$dirty,
+        }"
+        @ion-input="form.user = $event.detail.value!.toString()"
+        @click="v$.form.user.$touch()"
+      >
+        <ion-icon slot="start" :icon="personOutline"></ion-icon>
+      </ion-input>
+
+      <!-- errors -->
+      <div v-for="(error, index) of v$.form.user.$errors" :key="index">
+        <div class="error">{{ error.$message }}</div>
+      </div>
+    </ion-col>
+  </ion-row>
+
+  <!-- email -->
+  <ion-row>
+    <ion-col>
+      <ion-input
+        autocomplete="email"
+        label-placement="stacked"
+        fill="outline"
+        label="Correo electrónico"
+        :value="form.email"
+        :class="{
+          'input-error': v$.form.email.$invalid && v$.form.email.$dirty,
+        }"
+        @ion-input="form.email = $event.detail.value!.toString()"
+        @click="v$.form.email.$touch()"
+      >
+        <ion-icon slot="start" :icon="mailOpenOutline"></ion-icon>
+      </ion-input>
+
+      <!-- errors -->
+      <div v-for="(error, index) of v$.form.email.$errors" :key="index">
+        <div class="error">{{ error.$message }}</div>
+      </div>
+    </ion-col>
+  </ion-row>
+
+  <!-- password -->
+  <ion-row>
+    <ion-col>
+      <ion-input
+        label-placement="stacked"
+        fill="outline"
+        label="Contraseña"
+        :value="form.password"
+        :type="inputTypePassword1"
+        :class="{
+          'input-error': v$.form.password.$invalid && v$.form.password.$dirty,
+        }"
+        :clear-on-edit="false"
+        @ion-input="form.password = $event.detail.value!.toString()"
+        @click="v$.form.password.$touch()"
+      >
+        <ion-icon slot="start" :icon="keyOutline"> </ion-icon>
+
+        <ion-button
+          slot="end"
+          fill="clear"
+          @click="
+            inputTypePassword1 == 'password'
+              ? (inputTypePassword1 = 'text')
+              : (inputTypePassword1 = 'password')
+          "
+        >
+          <ion-icon
+            v-if="inputTypePassword1 == 'text'"
+            :icon="eyeOffOutline"
+          ></ion-icon>
+          <ion-icon
+            v-if="inputTypePassword1 == 'password'"
+            :icon="eyeOutline"
+          ></ion-icon>
+        </ion-button>
+      </ion-input>
+
+      <!-- errors -->
+      <div v-for="(error, index) of v$.form.password.$errors" :key="index">
+        <div class="error">{{ error.$message }}</div>
+      </div>
+    </ion-col>
+  </ion-row>
+
+  <!-- password2 -->
+  <ion-row>
+    <ion-col>
+      <ion-input
+        label-placement="stacked"
+        fill="outline"
+        label="Repite contraseña"
+        :value="form.password2"
+        :type="inputTypePassword2"
+        :class="{
+          'input-error': v$.form.password2.$invalid && v$.form.password2.$dirty,
+        }"
+        :clear-on-edit="false"
+        @ion-input="form.password2 = $event.detail.value!.toString()"
+        @click="v$.form.password2.$touch()"
+        @keydown.enter="emits('enterPressed')"
+      >
+        <ion-icon slot="start" :icon="keyOutline"></ion-icon>
+
+        <ion-button
+          slot="end"
+          fill="clear"
+          @click="
+            inputTypePassword2 == 'password'
+              ? (inputTypePassword2 = 'text')
+              : (inputTypePassword2 = 'password')
+          "
+        >
+          <ion-icon
+            v-if="inputTypePassword2 == 'text'"
+            :icon="eyeOffOutline"
+          ></ion-icon>
+          <ion-icon
+            v-if="inputTypePassword2 == 'password'"
+            :icon="eyeOutline"
+          ></ion-icon>
+        </ion-button>
+      </ion-input>
+
+      <!-- errors -->
+      <div v-for="(error, index) of v$.form.password2.$errors" :key="index">
+        <div class="error">{{ error.$message }}</div>
+      </div>
+    </ion-col>
+  </ion-row>
+</template>
+
+<script setup lang="ts">
+import { IonInput, IonButton, IonIcon } from "@ionic/vue";
+import { ref, watch } from "vue";
+import {
+  eyeOutline,
+  eyeOffOutline,
+  manOutline,
+  personOutline,
+  mailOpenOutline,
+  keyOutline,
+} from "ionicons/icons";
+import useVuelidate from "@vuelidate/core";
+import {
+  required,
+  email,
+  helpers,
+  sameAs,
+  minLength,
+} from "@vuelidate/validators";
+import { openToast } from "@./services/system";
+import { useSystem } from "@/composables/useSystem";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+defineExpose({ getData });
+const emits = defineEmits(["formStatus", "enterPressed"]);
+const inputTypePassword1 = ref("password" as "text" | "password");
+const inputTypePassword2 = ref("password" as "text" | "password");
+const form = ref({
+  user: "",
+  name: "",
+  email: "",
+  password: "",
+  password2: "",
+});
+const spinners = ref({
+  buttonSignup: false,
+  buttonLogin: false,
+});
+
+// validation
+const samePassword = () => form.value.password == form.value.password2;
+const messageError = {
+  required: "Campo requerido",
+  alpha: "Solamente puede contener texto",
+};
+const rules = {
+  form: {
+    name: {
+      required: helpers.withMessage(messageError.required, required),
+      alpha: helpers.withMessage(
+        messageError.alpha,
+        helpers.regex(/^[a-zA-Z ]*$/)
+      ),
+    },
+    user: {
+      required: helpers.withMessage(messageError.required, required),
+      space: helpers.withMessage(messageError.alpha, helpers.regex(/^\S*$/)),
+    },
+    email: {
+      required: helpers.withMessage(messageError.required, required),
+      email: helpers.withMessage("Correo no valido", email),
+    },
+    password: {
+      required: helpers.withMessage(messageError.required, required),
+      minLength: helpers.withMessage(
+        "La contraseña debe tener al menos 8 caracteres",
+        minLength(8)
+      ),
+      regexLower: helpers.withMessage(
+        "La contraseña debe contener al menos una letra minúscula",
+        helpers.regex(/[a-z]/)
+      ),
+      regexUpper: helpers.withMessage(
+        "La contraseña debe contener al menos una letra mayúscula",
+        helpers.regex(/[A-Z]/)
+      ),
+      regexNumber: helpers.withMessage(
+        "La contraseña debe contener al menos un número",
+        helpers.regex(/[0-9]/)
+      ),
+      regexSpecial: helpers.withMessage(
+        "La contraseña debe contener al menos un carácter especial",
+        helpers.regex(/[@$!%*?&]/)
+      ),
+    },
+    password2: {
+      required: helpers.withMessage(messageError.required, required),
+      same: helpers.withMessage("Las contraseñas no coinciden", samePassword),
+    },
+  },
+};
+const v$ = useVuelidate(rules, { form });
+
+// watch
+watch(form.value, (newValue, oldValue) => {
+  console.log(!v$.value.$invalid);
+  emits("formStatus", !v$.value.$invalid);
+});
+
+// functions
+function getData() {
+  v$.value.$validate();
+  if (!v$.value.$invalid) {
+    return {
+      name: form.value.name,
+      user: form.value.user,
+      email: form.value.email,
+      password: form.value.password,
+    };
+  } else return undefined;
+}
+</script>
+
+<style scoped>
+.center {
+  display: flex;
+  justify-content: center;
+}
+.imagen-usuario {
+  border-radius: 50%;
+  width: 90px;
+}
+.center-vertical-card-login {
+  align-items: center;
+  height: 83vh;
+}
+.img-fondo {
+  width: 100%;
+  height: 50%;
+
+  position: absolute;
+}
+.card-form {
+  margin-bottom: 18vh;
+}
+.element-post-selected {
+  border: 1px solid var(--ion-color-primary);
+}
+
+@media only screen and (min-width: 768px) {
+  .img-fondo {
+    width: 100%;
+    height: 40%;
+
+    position: absolute;
+  }
+  .card-form {
+    margin-top: 0;
+  }
+}
+@media only screen and (min-width: 992px) {
+  .img-fondo {
+    width: 100%;
+    height: auto;
+    position: absolute;
+  }
+  .card-form {
+    margin-top: 2vh;
+  }
+}
+@media only screen and (min-width: 1200px) {
+  .img-fondo {
+    width: 100%;
+    height: 50%;
+
+    position: absolute;
+  }
+  .card-form {
+    margin-top: 0;
+  }
+}
+.options {
+  color: var(--accent-color);
+}
+</style>
