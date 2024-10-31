@@ -4,13 +4,20 @@
       <ion-menu
         content-id="main"
         menu-id="mainMenu"
-        style="--side-max-width: 200px; border-right-width: 0px"
+        style="--side-max-width: 300px; border-right-width: 0px"
       >
         <MenuComponent></MenuComponent>
       </ion-menu>
 
       <ion-router-outlet id="main" />
     </ion-split-pane>
+
+    <!-- toasts -->
+    <ion-toast
+      :is-open="openToastUpdateApp"
+      message="Nueva actualización disponible, más detalles en la sección de novedades"
+      :duration="7000"
+    ></ion-toast>
   </ion-app>
 </template>
 
@@ -22,6 +29,7 @@ import {
   IonSplitPane,
   toastController,
   isPlatform,
+  IonToast,
 } from "@ionic/vue";
 import { computed, nextTick, onMounted } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
@@ -30,16 +38,25 @@ import { closeOutline } from "ionicons/icons";
 import { useUser } from "./composables/useUser";
 // FIX: create function composable
 import { getUserToken } from "./services/user";
-import { useSystem } from "./composables/useSystem";
+
 import { Storage } from "@ionic/storage";
 import { useRouter } from "vue-router";
 import { createFirstCookie as createFirstCookieService } from "./services/system";
 import { MqResponsive } from "vue3-mq";
+import { wb } from "./main";
 
+// composables
+import { useSystem } from "./composables/useSystem";
+import { ref } from "vue";
+const systemComposable = useSystem();
+
+// store
 const store = new Storage();
 store.create();
 const router = useRouter();
-const systemComposable = useSystem();
+
+// vars
+const openToastUpdateApp = ref(true);
 
 // mounted
 onMounted(async () => {
@@ -50,6 +67,13 @@ onMounted(async () => {
   systemComposable.applyTheme({ newTheme: theme, oldTheme: theme });
 
   loadUserProps();
+
+  if ("serviceWorker" in navigator && wb) {
+    wb.addEventListener("waiting", () => {
+      useSystem().toggleUpdateOption();
+      openToastUpdateApp.value = true;
+    });
+  }
 });
 
 function createFirstCookie() {

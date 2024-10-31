@@ -85,6 +85,14 @@ export const useSystem = () => {
     systemStore.updateThemeSelected({ theme });
   }
 
+  function toggleUpdateOption() {
+    systemStore.toggleUpdateOption();
+  }
+
+  function getUpdateStatus() {
+    return systemStore.update;
+  }
+
   return {
     reportError,
     openToastError,
@@ -93,5 +101,7 @@ export const useSystem = () => {
     loadThemeSelected,
     getTheme,
     updateThemeSelected,
+    toggleUpdateOption,
+    getUpdateStatus,
   };
 };

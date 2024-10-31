@@ -226,6 +226,13 @@
                           :icon="newspaperOutline"
                         ></ion-icon>
                         <ion-label>Novedades</ion-label>
+
+                        <ion-chip
+                          slot="end"
+                          color="primary"
+                          v-if="systemComposable.getUpdateStatus() == true"
+                          >Novedad</ion-chip
+                        >
                       </ion-item>
 
                       <!-- more -->
@@ -383,13 +390,16 @@ import {
 import AppsComponent from "./apps/Apps.vue";
 import DonationsComponent from "./donations/Donations.vue";
 import { useUser } from "./../../composables/useUser";
-import { useSystem } from "./../../composables/useSystem";
 import { useRouter } from "vue-router";
 
 // components
 import ThemeComponente from "@/components/theme/ThemeComponente.vue";
 import NewFeaturesComponent from "@/components/new-features/NewFeaturesComponente.vue";
 import FeedbackPage from "../feedback/FeedbackPage.vue";
+
+// composables
+import { useSystem } from "../../composables/useSystem";
+const systemComposable = useSystem();
 
 const router = useRouter();
 const isOpenRefPopOverUserOptions = ref(false);

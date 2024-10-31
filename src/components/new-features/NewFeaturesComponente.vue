@@ -8,6 +8,15 @@
       </ion-buttons>
 
       <ion-title>{{ pageTitle }}</ion-title>
+
+      <ion-buttons slot="end">
+        <ion-button
+          :disabled="systemComposable.getUpdateStatus() == false"
+          @click="updateApp()"
+        >
+          <ion-icon :icon="downloadOutline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
@@ -92,8 +101,13 @@ import {
   IonSelect,
   IonSelectOption,
 } from "@ionic/vue";
-import { closeOutline } from "ionicons/icons";
+import { closeOutline, downloadOutline } from "ionicons/icons";
 import { reactive, ref } from "vue";
+import { wb } from "@/main";
+
+// composables
+import { useSystem } from "../../composables/useSystem";
+const systemComposable = useSystem();
 
 const pageTitle = ref("Novedades");
 const versions = reactive([
@@ -109,14 +123,27 @@ const versionSelected = ref(versions[versions.length - 1].code);
 function closeModal(): void {
   modalController.dismiss();
 }
+
 function filterImprovements(params: { versionCode: string }): string[] {
   const { versionCode } = params;
   const result = versions.filter((version) => version.code == versionCode);
   return result[0].improvements;
 }
+
 function filterCorrections(params: { versionCode: string }): string[] {
   const { versionCode } = params;
   const result = versions.filter((version) => version.code == versionCode);
   return result[0].corrections;
+}
+
+function updateApp() {
+  if (wb) {
+    wb.addEventListener("controlling", () => {
+      window.location.reload();
+    });
+    wb.messageSkipWaiting();
+  } else {
+    console.error("Workbox no está inicializado.");
+  }
 }
 </script>

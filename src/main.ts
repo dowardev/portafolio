@@ -41,6 +41,16 @@ const pinia = createPinia();
 // vue3-mq
 import { Vue3Mq } from "vue3-mq";
 
+// service worker
+import { Workbox } from "workbox-window";
+let wb: Workbox | null = null;
+if ("serviceWorker" in navigator) {
+  wb = new Workbox("/sw.js");
+  wb.register();
+}
+
+export { wb };
+
 const app = createApp(App)
   .use(IonicVue)
   .use(pinia)

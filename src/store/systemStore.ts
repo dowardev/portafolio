@@ -6,8 +6,8 @@ import { useSystem } from "@/composables/useSystem";
 export const useSystemStore = defineStore("system", () => {
   const theme = ref({
     selected: "light",
-    options: { blur: false },
   } as Theme);
+  const update = ref(false);
 
   const systemComposable = useSystem();
 
@@ -30,9 +30,15 @@ export const useSystemStore = defineStore("system", () => {
     theme.value = themeData;
   }
 
+  function toggleUpdateOption() {
+    update.value = !update.value;
+  }
+
   return {
     theme,
     getThemeSelected,
     updateThemeSelected,
+    toggleUpdateOption,
+    update,
   };
 });
