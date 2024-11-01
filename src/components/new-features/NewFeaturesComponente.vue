@@ -29,11 +29,12 @@
             label="Versiones"
             ok-text="Confirmar"
             cancel-text="Cancelar"
+            interface="popover"
             :value="versionSelected"
             @ion-change="versionSelected = $event.detail.value"
           >
             <ion-select-option
-              v-for="(version, versionIndex) in versions.reverse()"
+              v-for="(version, versionIndex) in versions"
               :key="versionIndex"
               :value="version.code"
               >{{ version.code }}</ion-select-option
@@ -41,7 +42,14 @@
           </ion-select>
         </ion-item>
 
-        <ion-list>
+        <!-- improvements -->
+        <ion-list
+          v-if="
+            filterImprovements({
+              versionCode: versionSelected,
+            })
+          "
+        >
           <ion-list-header>
             <ion-label>Nuevas funciones</ion-label>
           </ion-list-header>
@@ -62,7 +70,14 @@
           </ion-card>
         </ion-list>
 
-        <ion-list>
+        <!-- fixes -->
+        <ion-list
+          v-if="
+            filterCorrections({
+              versionCode: versionSelected,
+            })
+          "
+        >
           <ion-list-header>
             <ion-label>Correcciones</ion-label>
           </ion-list-header>
@@ -104,20 +119,18 @@ import {
 import { closeOutline, downloadOutline } from "ionicons/icons";
 import { reactive, ref } from "vue";
 import { wb } from "@/main";
+import versionsData from "@/utils/versions.json";
 
 // composables
 import { useSystem } from "../../composables/useSystem";
 const systemComposable = useSystem();
 
 const pageTitle = ref("Novedades");
-const versions = reactive([
-  {
-    code: "7.5.6",
-    improvements: ["Efecto desenfoque"],
-    corrections: ["Correcciones menores"],
-  },
-]);
-const versionSelected = ref(versions[versions.length - 1].code);
+const versions = Object.entries(versionsData).map(([code, data]) => ({
+  code,
+  ...data,
+}));
+const versionSelected = ref(versions[0].code);
 
 // functions
 function closeModal(): void {

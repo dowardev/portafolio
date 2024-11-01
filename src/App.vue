@@ -56,7 +56,7 @@ store.create();
 const router = useRouter();
 
 // vars
-const openToastUpdateApp = ref(true);
+const openToastUpdateApp = ref(false);
 
 // mounted
 onMounted(async () => {

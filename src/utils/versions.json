@@ -1,0 +1,9 @@
+{
+  "8.0.0": {
+    "improvements": ["Nuevo diseño", "Mejoras de rendimiento"]
+  },
+  "7.5.6": {
+    "improvements": ["Efecto desenfoque"],
+    "corrections": ["Correcciones menores"]
+  }
+}
