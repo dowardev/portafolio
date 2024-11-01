@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Post;
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,5 +17,15 @@ class DatabaseSeeder extends Seeder
   public function run()
   {
     User::factory(10)->create();
+    User::create([
+      "name" => "Admin",
+      "user" => "admin",
+      "email" => "admin@admin.com",
+      "image_id" => null,
+      "is_email_verified" => true,
+      "password" => bcrypt("123"),
+      "is_admin" => true,
+    ]);
+    Post::factory(20)->create();
   }
 }
