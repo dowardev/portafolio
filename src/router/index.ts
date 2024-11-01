@@ -109,46 +109,46 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach(async (to, from, next) => {
-//   await loadUser();
-//   const user = useUser().user.value.user;
-//   const isAdmin = useUser().user.value.isAdmin;
-//
-//   const routeName = to.name as string;
-//   const authorizedRoutes = ["UserPanelPage"];
-//   const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
-//   const adminRoutes = ["CreatePost", "UpdatePost", "AdminPanelPage"];
-//   const noGuardRequired = [
-//     "RestorePasswordPage",
-//     "PresentationPage",
-//     "HomePage",
-//     "HistoryPage",
-//     "PortfolioPage",
-//     "BlogPage",
-//     "PostsPage",
-//     "PostPage",
-//     "PoliciesPage",
-//   ];
-//
-//   if (user != undefined) {
-//     if (authorizedRoutes.includes(routeName)) {
-//       return next();
-//     }
-//     if (adminRoutes.includes(routeName) && isAdmin) {
-//       return next();
-//     }
-//     if (noGuardRequired.includes(routeName)) {
-//       return next();
-//     }
-//     return next({ name: "HomePage" });
-//   }
-//
-//   if (user == undefined) {
-//     if (unauthorizedRoutes.includes(routeName)) return next();
-//     if (noGuardRequired.includes(routeName)) {
-//       return next();
-//     } else next({ name: "LoginPage" });
-//   }
-// });
+router.beforeEach(async (to, from, next) => {
+  await loadUser();
+  const user = useUser().user.value.user;
+  const isAdmin = useUser().user.value.isAdmin;
+
+  const routeName = to.name as string;
+  const authorizedRoutes = ["UserPanelPage"];
+  const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
+  const adminRoutes = ["CreatePost", "UpdatePost", "AdminPanelPage"];
+  const noGuardRequired = [
+    "RestorePasswordPage",
+    "PresentationPage",
+    "HomePage",
+    "HistoryPage",
+    "PortfolioPage",
+    "BlogPage",
+    "PostsPage",
+    "PostPage",
+    "PoliciesPage",
+  ];
+
+  if (user != undefined) {
+    if (authorizedRoutes.includes(routeName)) {
+      return next();
+    }
+    if (adminRoutes.includes(routeName) && isAdmin) {
+      return next();
+    }
+    if (noGuardRequired.includes(routeName)) {
+      return next();
+    }
+    return next({ name: "PresentationPage" });
+  }
+
+  if (user == undefined) {
+    if (unauthorizedRoutes.includes(routeName)) return next();
+    if (noGuardRequired.includes(routeName)) {
+      return next();
+    } else next({ name: "LoginPage" });
+  }
+});
 
 export default router;
