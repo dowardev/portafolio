@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
    */
   public function run()
   {
-    User::factory(10)->create();
     User::create([
       "name" => "Admin",
       "user" => "admin",
@@ -26,6 +25,7 @@ class DatabaseSeeder extends Seeder
       "password" => bcrypt("123"),
       "is_admin" => true,
     ]);
+    User::factory(10)->create();
     Post::factory(20)->create();
   }
 }

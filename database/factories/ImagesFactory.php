@@ -2,15 +2,18 @@
 
 namespace Database\Factories;
 
+use App\Models\Images;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Imges>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Images>
  */
 class ImagesFactory extends Factory
 {
+  protected $model = Images::class;
+
   /**
    * Define the model's default state.
    *
@@ -18,24 +21,12 @@ class ImagesFactory extends Factory
    */
   public function definition()
   {
-    $file = $this->faker->image(
-      storage_path("app/images_posts"),
-      640,
-      480,
-      null,
-      false
-    );
-    new UploadedFile(
-      storage_path("app/images_posts/") . $file,
-      $file,
-      "image/jpeg",
-      null,
-      true
-    );
+    $image = UploadedFile::fake()->image("image.jpg", 640, 480);
+    $path = Storage::disk("images_posts")->putFile($image);
 
     return [
-      "name" => $file,
-      "path" => "/images_posts/" . $file,
+      "name" => $this->faker->word,
+      "path" => $path,
     ];
   }
 }
