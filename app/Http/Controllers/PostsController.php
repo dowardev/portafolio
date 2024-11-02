@@ -75,7 +75,7 @@ class PostsController extends Controller
           "name" => $value->image_name,
           "path" => $value->image_path,
           "source" => base64_encode(
-            Storage::disk("images_posts")->get($value->image_name)
+            Storage::disk("posts_images")->get($value->image_name)
           ),
         ],
       ];
