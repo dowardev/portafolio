@@ -16,16 +16,16 @@ class DatabaseSeeder extends Seeder
    */
   public function run()
   {
-    // User::create([
-    //   "name" => "Admin",
-    //   "user" => "admin",
-    //   "email" => "admin@admin.com",
-    //   "image_id" => null,
-    //   "is_email_verified" => true,
-    //   "password" => bcrypt("123"),
-    //   "is_admin" => true,
-    // ]);
-    // User::factory(10)->create();
-    Post::factory(1)->create();
+    User::create([
+      "name" => "Admin",
+      "user" => "admin",
+      "email" => "admin@admin.com",
+      "image_id" => null,
+      "is_email_verified" => true,
+      "password" => bcrypt("123"),
+      "is_admin" => true,
+    ]);
+    User::factory(10)->create();
+    Post::factory(20)->create();
   }
 }
