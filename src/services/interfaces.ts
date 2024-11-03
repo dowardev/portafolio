@@ -32,7 +32,6 @@ export interface Post {
     id?: string;
     name?: string;
     path?: string;
-    source?: string;
   };
 }
 export interface GetPost {

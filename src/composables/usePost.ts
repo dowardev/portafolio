@@ -23,7 +23,6 @@ export const usePost = () => {
       const posts = await getPostsService({ date });
 
       posts.forEach((element) => {
-        // console.log(JSON.parse(JSON.stringify(element)))
         postStore.addPost({ post: element });
       });
     } catch (e: any) {

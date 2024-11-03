@@ -79,7 +79,7 @@
                 @click="openPost(post.id!)"
               >
                 <img
-                  :src="post.cover.source!"
+                  :src="post.cover.url!"
                   @click="openPost(post.id!)"
                   style="
                     border-top-left-radius: 4px;
