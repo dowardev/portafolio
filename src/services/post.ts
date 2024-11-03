@@ -90,7 +90,7 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
       delete post.created_at;
       post.updatedAt = post.updated_at;
       delete post.updated_at;
-      post.cover = await getImage({ name: post.cover.name });
+      post.cover = post.cover;
       return post;
     })
   );
@@ -172,23 +172,4 @@ export async function uploadImage(params: {
   });
 
   return { id: response.data.id, path: response.data.path };
-}
-
-async function getImage(params: { name: string }) {
-  const { name } = params;
-
-  const response = await axios.request({
-    url: `http://127.0.0.1:8000/api/image`,
-    method: "GET",
-    headers: {
-      accept: "application/json",
-    },
-    params: { name },
-  });
-
-  return {
-    url: response.data.url,
-    name: response.data.name,
-    id: response.data.id,
-  };
 }
