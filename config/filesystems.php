@@ -64,8 +64,8 @@ return [
 
     "posts_images" => [
       "driver" => "local",
-      "root" => storage_path("app/images/posts"),
-      "url" => env("APP_URL") . "/storage",
+      "root" => storage_path("app/public/images/posts"),
+      "url" => env("APP_URL") . "/storage/images/posts",
       "visibility" => "public",
     ],
 

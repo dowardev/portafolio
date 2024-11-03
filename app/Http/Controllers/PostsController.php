@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\SystemController;
 
 class PostsController extends Controller
 {
@@ -61,7 +62,12 @@ class PostsController extends Controller
     }
 
     $posts = [];
+    $systemController = new SystemController();
     foreach ($result as $key => $value) {
+      $imageRequest = new Request(["name" => $value->image_name]);
+      $imageResponse = $systemController->getImage($imageRequest);
+      $imageData = json_decode($imageResponse->getContent(), true);
+
       $post = [
         "id" => $value->post_id,
         "title" => $value->post_title,
@@ -73,10 +79,7 @@ class PostsController extends Controller
         "cover" => [
           "id" => $value->image_id,
           "name" => $value->image_name,
-          "path" => $value->image_path,
-          "source" => base64_encode(
-            Storage::disk("posts_images")->get($value->image_name)
-          ),
+          "url" => $imageData["url"],
         ],
       ];
       array_push($posts, $post);
@@ -152,10 +155,7 @@ class PostsController extends Controller
         "cover" => [
           "id" => $value->image_id,
           "name" => $value->image_name,
-          "path" => $value->image_path,
-          "source" => base64_encode(
-            Storage::disk("images_posts")->get($value->image_name)
-          ),
+          "url" => "",
         ],
       ];
       array_push($posts, $post);

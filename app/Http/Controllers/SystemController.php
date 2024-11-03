@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class SystemController extends Controller
 {
@@ -99,5 +100,27 @@ class SystemController extends Controller
       "contact_me" => $contact_me,
       "type" => $type,
     ]);
+  }
+
+  public function getImage(Request $request)
+  {
+    $imageName = $request->input("name");
+    $image = DB::table("images")->where("name", $imageName)->first();
+    $diskName = $image->path;
+    $url = Storage::disk($diskName)->url($imageName);
+    return response()->json(
+      [
+        "id" => $image->id,
+        "name" => $image->name,
+        "url" => $url,
+      ],
+      200
+    );
+
+    // $imageName = $request->input("name");
+    // $disk = "posts_images";
+    // Storage::disk($disk)->put("m.txt", "funciona? x2");
+    // $url = Storage::disk($disk)->url($imageName);
+    // return response()->json(["url" => $url]);
   }
 }
