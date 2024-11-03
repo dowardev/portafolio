@@ -108,6 +108,7 @@ class SystemController extends Controller
     $image = DB::table("images")->where("name", $imageName)->first();
     $diskName = $image->path;
     $url = Storage::disk($diskName)->url($imageName);
+
     return response()->json(
       [
         "id" => $image->id,
@@ -116,11 +117,5 @@ class SystemController extends Controller
       ],
       200
     );
-
-    // $imageName = $request->input("name");
-    // $disk = "posts_images";
-    // Storage::disk($disk)->put("m.txt", "funciona? x2");
-    // $url = Storage::disk($disk)->url($imageName);
-    // return response()->json(["url" => $url]);
   }
 }
