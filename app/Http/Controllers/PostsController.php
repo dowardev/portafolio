@@ -248,4 +248,64 @@ class PostsController extends Controller
       200
     );
   }
+
+  public function updatePost(Request $request)
+  {
+    $validator = Validator::make($request->all(), [
+      "id" => "required|integer",
+      "title" => "required|string",
+      "content" => "required|string",
+      "coverId" => "required|integer",
+      "newCoverId" => "integer|nullable",
+      "images" => "array|nullable",
+      "imagesRemoved" => "array|nullable",
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json(["errors" => $validator->errors()], 400);
+    }
+
+    $id = intval($request->id);
+    $title = $request->title;
+    $content = $request->content;
+    $cover_id = intval($request->coverId);
+
+    $new_cover_id = $request->has("newCoverId") ? $request->newCoverId : "";
+
+    $new_images = $request->has("images") ? $request->images : [];
+
+    $images_removed = $request->has("imagesRemoved")
+      ? $request->imagesRemoved
+      : [];
+
+    Post::where("id", "=", $id)->update([
+      "title" => $title,
+      "content" => $content,
+    ]);
+
+    if (!empty($new_cover_id)) {
+      $cover_name = Images::where("id", "=", $cover_id)->first()->name;
+      Post::where("id", "=", $id)->update([
+        "cover_id" => $new_cover_id,
+      ]);
+      Storage::delete("images_posts/" . $cover_name);
+      Images::where("id", "=", $cover_id)->delete();
+      $this->moveImage($new_cover_id);
+    }
+
+    foreach ($images_removed as $value) {
+      Storage::delete("images_posts/" . $value);
+      Images::where("name", "=", $value)->delete();
+    }
+
+    foreach ($new_images as $value) {
+      $this->moveImage($value);
+      PostImage::create([
+        "image_id" => $value,
+        "post_id" => $id,
+      ]);
+    }
+
+    return response()->json(["message" => "Post updated successfully"], 200);
+  }
 }
