@@ -1,39 +1,41 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostsController;
+use App\Http\Controllers\SystemController;
+use App\Http\Middleware\Cors;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-// use App\Http\Controllers\SystemController;
-use App\Http\Controllers\PostsController;
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
 
-route::middleware('auth:sanctum')->get('/user', function (request $request) {
-  return $request->user();
+Route::middleware(Cors::class)->group(function () {
+  // auth
+  Route::post("login", [AuthController::class, "login"]);
+  Route::post("signup", [AuthController::class, "signup"]);
+  Route::post("recover-password", [AuthController::class, "recoverPassword"]);
+  Route::post("reset-password", [AuthController::class, "resetPassword"]);
+
+  // others
+  Route::post("upload-image", [SystemController::class, "uploadImage"]);
+  Route::post("contact", [SystemController::class, "createContactMessage"]);
+  Route::post("feedback", [SystemController::class, "createFeedback"]);
+
+  // posts
+  Route::get("posts/{date}", [PostsController::class, "getPosts"]);
+  Route::get("post-dates", [PostsController::class, "getPostsDates"]);
+  Route::get("post/{id}", [PostsController::class, "getPost"]);
+  Route::get("search-posts/{search}", [PostsController::class, "searchPost"]);
+  Route::post("create-post", [PostsController::class, "createPost"]);
+  Route::post("update-post", [PostsController::class, "updatePost"]);
+  Route::post("delete-post", [PostsController::class, "deletePost"]);
 });
 
-// Route::get('get-image-tmp/', [SystemController::class, 'getTmpImage']);
-Route::get('get-image-posts/', [PostsController::class, 'getImagePost']);
+Route::group(["middleware" => "auth:api"], function () {
+  // user
+  Route::get("user-auth", [AuthController::class, "user"]);
 
-Route::group(['prefix' => 'auth'], function () {
-  //
-  //     Route::group(['middleware' => 'auth:api'], function () {
-  //         Route::get('logout', [AuthController::class, 'logout']);
-  //         Route::get('user', [AuthController::class, 'user']);
-  //
-  //         // posts
-  //         Route::post('create-post', [PostController::class, 'createPost']);
-  //         Route::post('upload-image-post', [
-  //             PostController::class,
-  //             'uploadImagePost',
-  //         ]);
-  //     });
+  // posts
+  Route::post("new-post", [PostsController::class, "createPost"]);
+
+  // admin users
+  Route::get("search-user/{perpage}", [AuthController::class, "searchUser"]);
 });

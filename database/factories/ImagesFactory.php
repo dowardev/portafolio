@@ -2,33 +2,50 @@
 
 namespace Database\Factories;
 
+use App\Models\Images;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Imges>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Images>
  */
 class ImagesFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition()
-    {
-        $url =
-            "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%3Fid%3DOIP.PWjQEPtis0ENv4JISih0eQHaF7%26pid%3DApi&f=1";
-        $name = $this->faker->colorName();
-        $contents = file_get_contents($url);
-        $file = storage_path("app/images_posts/") . $name;
-        file_put_contents($file, $contents);
-        new UploadedFile($file, $name);
+  protected $model = Images::class;
 
-        return [
-            "name" => $name,
-            "path" => "/images_posts",
-        ];
-    }
+  /**
+   * The storage disk to use.
+   *
+   * @var string
+   */
+  protected $disk = "default_disk";
+
+  /**
+   * Define the model's default state.
+   *
+   * @return array<string, mixed>
+   */
+  public function definition()
+  {
+    $image = UploadedFile::fake()->image("image.jpg", 640, 480);
+    $path = Storage::disk($this->disk)->putFile("", $image);
+
+    return [
+      "name" => $path,
+      "path" => $this->disk,
+    ];
+  }
+
+  /**
+   * Set the storage disk.
+   *
+   * @param string $disk
+   * @return \Illuminate\Database\Eloquent\Factories\Factory
+   */
+  public function disk(string $disk)
+  {
+    $this->disk = $disk;
+    return $this;
+  }
 }

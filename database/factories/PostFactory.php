@@ -11,20 +11,20 @@ use Illuminate\Support\Str;
  */
 class PostFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition()
-    {
-        $timestamp = mt_rand(1, time());
-        $randomDate = date("d M Y", $timestamp);
-        return [
-            "title" => $this->faker->title(),
-            "content" => Str::random(5000),
-            "cover_id" => Images::factory()->create()->id,
-            "created_at" => $randomDate,
-        ];
-    }
+  /**
+   * Define the model's default state.
+   *
+   * @return array<string, mixed>
+   */
+  public function definition()
+  {
+    $timestamp = mt_rand(1, time());
+    $randomDate = date("Y-m-d H:i:s", $timestamp);
+    return [
+      "title" => $this->faker->title(),
+      "content" => Str::random(5000),
+      "cover_id" => Images::factory()->disk("posts_images")->create()->id,
+      "created_at" => $randomDate,
+    ];
+  }
 }
