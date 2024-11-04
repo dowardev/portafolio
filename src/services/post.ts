@@ -18,7 +18,7 @@ export async function createPost(params: CreatePost): Promise<void> {
   const { title, content, coverId, images } = params;
 
   await axios.request({
-    url: `http://127.0.0.1:8000/api/feedback/`,
+    url: `http://127.0.0.1:8000/api/create-post/`,
     method: "POST",
     headers: {
       accept: "application/json",
@@ -155,21 +155,22 @@ export async function searchPosts(params: {
 }
 
 export async function uploadImage(params: {
-  image: string;
+  image: File;
 }): Promise<{ id: string; path: string }> {
   const { image } = params;
+
+  const formData = new FormData();
+  formData.append("file", image);
 
   const response = await axios.request({
     url: `http://127.0.0.1:8000/api/upload-image`,
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      contentType: "multipart/form-data",
       Authorization: getUserToken(),
     },
-    params: {
-      image,
-    },
+    data: formData,
   });
 
-  return { id: response.data.id, path: response.data.path };
+  return { id: response.data.image.id, path: response.data.image.path };
 }

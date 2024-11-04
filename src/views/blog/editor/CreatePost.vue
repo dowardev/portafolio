@@ -42,13 +42,13 @@ const editorRef = ref(null);
 async function save(data: {
   title: string;
   content: string;
-  cover: string;
+  cover: File;
 }): Promise<void> {
   spinners.savePost = true;
 
   const title = data.title;
   const content = data.content;
-  const cover = data.cover;
+  const cover = data.coverSource;
   let coverId = "";
 
   try {
@@ -68,7 +68,7 @@ async function save(data: {
       coverId,
       images,
     });
-    await refreshPostsCotent();
+    // await refreshPostsCotent();
     // clearInputs();
     spinners.savePost = false;
     router.go(-1);
@@ -122,7 +122,7 @@ async function uploadImage(e: any): Promise<void> {
   }
 }
 
-async function uploadCover(params: { image: string }): Promise<{ id: string }> {
+async function uploadCover(params: { image: File }): Promise<{ id: string }> {
   const { image } = params;
   try {
     const { id } = await usePost().updateCover({ image });

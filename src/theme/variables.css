@@ -93,6 +93,18 @@ ion-card {
   background: var(--ion-color-selected);
 }
 
+.element-outline-focus {
+  border: 1px solid var(--ion-background-color-step-300);
+}
+
+.element-outline-focus:hover {
+  border: 1px solid var(--ion-background-color-step-750);
+}
+
+.ion-item-focus:hover {
+  border: 1px solid var(--ion-background-color-step-750);
+}
+
 /* ion-button { */
 /*   --box-shadow: none; */
 /*   --box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, */

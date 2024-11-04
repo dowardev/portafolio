@@ -1,5 +1,5 @@
 <template>
-  <ion-page>
+  <ion-page class="page-container">
     <ion-header class="ion-no-border">
       <ion-toolbar class="container-page">
         <ion-buttons slot="start">
@@ -9,36 +9,30 @@
         </ion-buttons>
 
         <ion-title>{{ pageTitle }}</ion-title>
+
+        <ion-buttons slot="end">
+          <!-- save -->
+          <ion-button fill="clear" :disabled="v$.$invalid" @click="save()">
+            <ion-icon
+              v-if="spinnerSavePost == false"
+              slot="start"
+              :icon="saveOutline"
+            ></ion-icon>
+            <ion-spinner
+              v-if="spinnerSavePost"
+              name="crescent"
+              color="primary"
+            ></ion-spinner>
+          </ion-button>
+
+          <ion-button id="click-trigger-more-options" fill="clear">
+            <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content class="container-page">
-      <section class="section-options">
-        <ion-row>
-          <ion-col size="12">
-            <div style="float: right">
-              <!-- save -->
-              <ion-button fill="clear" :disabled="v$.$invalid" @click="save()">
-                <ion-icon
-                  v-if="spinnerSavePost == false"
-                  slot="start"
-                  :icon="saveOutline"
-                ></ion-icon>
-                <ion-spinner
-                  v-if="spinnerSavePost"
-                  name="crescent"
-                  color="primary"
-                ></ion-spinner>
-              </ion-button>
-
-              <ion-button id="click-trigger-more-options" fill="clear">
-                <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
-              </ion-button>
-            </div>
-          </ion-col>
-        </ion-row>
-      </section>
-
       <ion-row>
         <ion-col>
           <!-- title -->
@@ -47,11 +41,11 @@
               <ion-input
                 ref="inputPostTitle"
                 label="Titulo"
-                label-placement="floating"
-                fill="solid"
+                label-placement="stacked"
+                fill="outline"
                 autocorrect="on"
                 pattern="text"
-                :error-text="v$.postTitle.$errors[0]?.$message as string"
+                :error-text="v$.postTitle.$errors[0]?.$message.toString()"
                 :class="[
                   v$.postTitle.$errors.length == 0
                     ? 'ion-valid'
@@ -62,7 +56,7 @@
                 @ion-input="postTitle = $event.target.value as string"
                 @ion-focus="
                   ($refs.inputPostTitle as any).$el.classList.add(
-                    'ion-touched',
+                    'ion-touched'
                   );
                   v$.postTitle.$touch();
                 "
@@ -76,20 +70,23 @@
               <!-- input cover -->
               <ion-item
                 button
-                lines="full"
+                lines="none"
                 fill="solid"
                 @click="($refs as any).inputPostCover.click()"
+                class="transparent element-outline-focus"
               >
-                <ion-label slot="start">Portada</ion-label>
+                <ion-label slot="start">
+                  <ion-text>Portada</ion-text>
+                  <p>{{ coverName }}</p>
+                </ion-label>
                 <input
                   ref="inputPostCover"
                   style="display: none"
                   accept="image/*"
                   type="file"
-                  @change="uploadCover(($event.target as any).files[0]!)"
+                  @change="uploadCover({ file: $event })"
                   @click="v$.coverSource.$touch()"
                 />
-                <ion-label slot="end">{{ coverName }}</ion-label>
               </ion-item>
               <div
                 v-for="(error, index) of (v$ as any).coverSource.$errors"
@@ -105,23 +102,24 @@
 
           <ion-row>
             <!-- content -->
-            <ion-col size="12" size-md="12" size-lg="12" class="editor">
+            <ion-col size="12" size-md="12" size-lg="12">
               <MdEditor
                 v-model="postContent"
                 theme="dark"
-                :toolbars="
-                  isPlatform('mobile') ? toolbarMobile : toolbarDesktop
-                "
-                :language="'en-US'"
-                :preview="false"
                 style="
-                  height: calc(87vh - 50px);
                   overflow: scroll;
                   width: 100%;
                   margin-top: 18px;
                   --md-bk-color: var(--ion-background-color-rgb);
                   --md-color: var(--ion-color-primary);
+                  --md-border-color: var(--ion-text-color-step-700);
                 "
+                class="element-outline-focus"
+                :toolbars="
+                  isPlatform('mobile') ? toolbarMobile : toolbarDesktop
+                "
+                :language="'en-US'"
+                :preview="false"
                 @on-upload-img="uploadImage($event[0])"
               />
             </ion-col>
@@ -284,20 +282,20 @@ watch(
   () => props.title,
   (newVal) => {
     postTitle.value = newVal;
-  },
+  }
 );
 watch(
   () => props.content,
   (newVal) => {
     postContent.value += newVal;
-  },
+  }
 );
 watch(
   () => props.cover,
   (newVal) => {
     coverName.value = newVal.name;
     coverSource.value = "data:image/png;base64," + newVal.source;
-  },
+  }
 );
 
 // functions
@@ -327,16 +325,19 @@ async function getImageBase64(e: any): Promise<{ file: string; name: string }> {
 }
 
 async function uploadImage(e: any) {
-  console.log(e);
   const image = await getImageBase64(e);
   emits("uploadImage", { image });
 }
 
-async function uploadCover(e: any) {
-  const image = await getImageBase64(e);
-  coverSource.value = image.file;
-  coverName.value = image.name;
-  newCoverStatus.value = true;
+async function uploadCover(params: { file: Event }) {
+  const { file: element } = params;
+  const input = element.target as HTMLInputElement;
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    coverName.value = file.name;
+    newCoverStatus.value = true;
+    coverSource.value = input.files[0] as any;
+  }
 }
 
 async function openModalPreview() {

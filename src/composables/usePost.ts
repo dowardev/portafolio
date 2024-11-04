@@ -139,7 +139,7 @@ export const usePost = () => {
   }
 
   async function updateCover(params: {
-    image: string;
+    image: File;
   }): Promise<{ id: string; path: string }> {
     const { image } = params;
     const { id, path } = await uploadImageService({ image });
