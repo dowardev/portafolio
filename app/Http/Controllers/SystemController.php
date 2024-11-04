@@ -22,29 +22,33 @@ class SystemController extends Controller
 
   function uploadImage(Request $request)
   {
-    $file = $request->file;
-    $filename = uniqid() . time() . ".webp";
-    $path = "/tmp/" . $filename;
-    @list($type, $file_data) = explode(";", $file);
-    @list(, $file_data) = explode(",", $file_data);
-    Storage::disk("tmp")->put($filename, base64_decode($file_data));
-
     $messages = [
       "file.required" => "File is required.",
+      "file.image" => "The file must be an image.",
     ];
 
     $validator = Validator::make(
       $request->all(),
       [
-        "file" => "required",
+        "file" => "required|image",
       ],
       $messages
     );
 
+    if ($validator->fails()) {
+      return response()->json(["errors" => $validator->errors()], 422);
+    }
+
+    $file = $request->file("file");
+    $filename = uniqid() . time() . "." . $file->getClientOriginalExtension();
+
+    Storage::disk("tmp")->put($filename, file_get_contents($file));
+
     $image = Images::create([
       "name" => $filename,
-      "path" => $path,
+      "path" => "tmp",
     ]);
+
     return [
       "image" => [
         "id" => $image->id,

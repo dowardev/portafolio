@@ -75,6 +75,13 @@ return [
       "url" => env("APP_URL") . "/storage",
       "visibility" => "public",
     ],
+
+    "tmp" => [
+      "driver" => "local",
+      "root" => storage_path("app/public/tmp"),
+      "url" => env("APP_URL") . "/storage/tmp",
+      "visibility" => "public",
+    ],
   ],
 
   /*

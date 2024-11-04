@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\SystemController;
+use Illuminate\Support\Facades\Validator;
 
 class PostsController extends Controller
 {
@@ -221,10 +222,16 @@ class PostsController extends Controller
   private function moveImage($id)
   {
     $image = Images::find($id);
+    $old_disk = "tmp";
+    $new_disk = "posts_images";
     $imageName = $image->name;
-    $image->path = "/images_posts/" . $imageName;
+    Storage::disk($new_disk)->put(
+      $imageName,
+      Storage::disk($old_disk)->get($imageName)
+    );
+    Storage::disk($old_disk)->delete($imageName);
+    $image->path = $new_disk;
     $image->save();
-    Storage::move("tmp/" . $imageName, "images_posts/" . $imageName);
   }
 
   public function searchPost(Request $request)
