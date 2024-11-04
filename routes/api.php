@@ -26,6 +26,7 @@ Route::middleware(Cors::class)->group(function () {
   Route::get("search-posts/{search}", [PostsController::class, "searchPost"]);
   Route::post("create-post", [PostsController::class, "createPost"]);
   Route::post("update-post", [PostsController::class, "updatePost"]);
+  Route::post("delete-post", [PostsController::class, "deletePost"]);
 });
 
 Route::group(["middleware" => "auth:api"], function () {

@@ -308,4 +308,33 @@ class PostsController extends Controller
 
     return response()->json(["message" => "Post updated successfully"], 200);
   }
+
+  public function deletePost(Request $request)
+  {
+    $validator = Validator::make($request->all(), [
+      "id" => "required|integer",
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json(["errors" => $validator->errors()], 400);
+    }
+
+    $id = $request->id;
+
+    $post_images = Post::find($id)->images;
+    foreach ($post_images as $key => $value) {
+      $image_name = Images::find($value->image_id)->name;
+      Images::where("id", $value->image_id)->delete();
+      Storage::delete("images_posts/" . $image_name);
+    }
+
+    $cover_id = Post::find($id)->cover_id;
+    $image_name = Images::find($cover_id)->name;
+    Storage::delete("images_posts/" . $image_name);
+    Images::where("id", $cover_id)->delete();
+
+    Post::where("id", $id)->delete();
+
+    return response()->json(["message" => "Post deleted successfully"], 200);
+  }
 }
