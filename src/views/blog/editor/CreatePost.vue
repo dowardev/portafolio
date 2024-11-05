@@ -98,9 +98,9 @@ async function createPost({
   }
 }
 
-async function uploadImage(e: any): Promise<void> {
+async function uploadImage(e: File): Promise<void> {
   spinners.saveImage = true;
-  const image = e.image.file;
+  const image = e;
 
   try {
     const response = await uploadImageService({
@@ -110,7 +110,7 @@ async function uploadImage(e: any): Promise<void> {
     const imageName = response.name;
     spinners.saveImage = false;
 
-    const api = getBaseURL() + "api/get-image-posts?name=" + imageName;
+    const api = (await getImageURL({ name: imageName! })).url;
     content.value =
       '<div class="center"><img src="' + api + '" style="width:80%"/></div>';
 
@@ -165,5 +165,13 @@ async function refreshPostsCotent() {
     openToastError(e);
     throw e;
   }
+}
+
+async function getImageURL(params: {
+  name: string;
+}): Promise<{ id: string; name: string; url: string }> {
+  const { name } = params;
+
+  return await useSystem().getImageURL({ name });
 }
 </script>

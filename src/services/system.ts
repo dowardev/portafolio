@@ -18,6 +18,7 @@ import {
 
 import axios from "axios";
 import { getUserToken } from "./user";
+import { url } from "@vuelidate/validators";
 
 export async function getTheme(): Promise<Theme> {
   const theme = await storage.get("theme");
@@ -113,7 +114,7 @@ export async function presentAlertConfirmation(
 ): Promise<boolean> {
   const alert = await alertController.create({
     cssClass: "my-custom-class",
-    header: "Confirmacion",
+    header: "Confirmación",
     message: params.message,
     buttons: [
       {
@@ -152,20 +153,19 @@ export function getFirstCookie(): boolean {
 
 export async function uploadImage(params: UploadImage): Promise<Image> {
   const { image } = params;
+  const formData = new FormData();
+  formData.append("file", image);
 
   const response = await axios.request({
     url: `http://127.0.0.1:8000/api/upload-image`,
     method: "POST",
     headers: {
-      contentType: "application/json",
       Authorization: getUserToken(),
     },
-    data: {
-      file: image,
-    },
+    data: formData,
   });
 
-  return response.data.uploadImage.image;
+  return response.data.image;
 }
 
 export async function presentToast(params: {
@@ -181,4 +181,26 @@ export async function presentToast(params: {
   });
 
   await toast.present();
+}
+
+export async function getImageURL(params: {
+  name: string;
+}): Promise<{ id: string; name: string; url: string }> {
+  const { name } = params;
+
+  const response = await axios.request({
+    url: `http://127.0.0.1:8000/api/get-image`,
+    method: "GET",
+    headers: {
+      contentType: "application/json",
+      Authorization: getUserToken(),
+    },
+    params: { name },
+  });
+
+  return {
+    id: response.data.id,
+    name: response.data.name,
+    url: response.data.url,
+  };
 }

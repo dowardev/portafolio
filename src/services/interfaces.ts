@@ -76,7 +76,7 @@ export interface Image {
 }
 
 export interface UploadImage {
-  image: any;
+  image: File;
 }
 
 // system

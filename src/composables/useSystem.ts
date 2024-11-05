@@ -10,6 +10,7 @@ import {
   getTheme as getThemeService,
   applyTheme as applyThemeService,
   storeThemeSelected as storeThemeSelectedService,
+  getImageURL as getImageURLService,
 } from "@/services/system";
 
 const store = new Storage();
@@ -93,6 +94,13 @@ export const useSystem = () => {
     return systemStore.update;
   }
 
+  async function getImageURL(params: {
+    name: string;
+  }): Promise<{ id: string; name: string; url: string }> {
+    const { name } = params;
+    return await getImageURLService({ name });
+  }
+
   return {
     reportError,
     openToastError,
@@ -103,5 +111,6 @@ export const useSystem = () => {
     updateThemeSelected,
     toggleUpdateOption,
     getUpdateStatus,
+    getImageURL,
   };
 };

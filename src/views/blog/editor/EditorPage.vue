@@ -120,7 +120,7 @@
                 "
                 :language="'en-US'"
                 :preview="false"
-                @on-upload-img="uploadImage($event[0])"
+                @on-upload-img="uploadImage({ file: $event[0] })"
               />
             </ion-col>
           </ion-row>
@@ -324,9 +324,14 @@ async function getImageBase64(e: any): Promise<{ file: string; name: string }> {
   });
 }
 
-async function uploadImage(e: any) {
-  const image = await getImageBase64(e);
-  emits("uploadImage", { image });
+async function uploadImage(params: { file: Event }) {
+  const { file: element } = params;
+  emits("uploadImage", element);
+  // const input = element.target as HTMLInputElement;
+  // if (input.files && input.files[0]) {
+  //   const file = input.files[0];
+  //   emits("uploadImage", { image: file });
+  // }
 }
 
 async function uploadCover(params: { file: Event }) {
