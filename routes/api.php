@@ -18,6 +18,7 @@ Route::middleware(Cors::class)->group(function () {
   Route::post("upload-image", [SystemController::class, "uploadImage"]);
   Route::post("contact", [SystemController::class, "createContactMessage"]);
   Route::post("feedback", [SystemController::class, "createFeedback"]);
+  Route::get("get-image", [SystemController::class, "getImage"]);
 
   // posts
   Route::get("posts/{date}", [PostsController::class, "getPosts"]);

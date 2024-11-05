@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class SystemController extends Controller
 {
+  // TODO: remove
   function getTmpImage(Request $request)
   {
     return Storage::disk("tmp")->get($request->name);
@@ -52,6 +53,7 @@ class SystemController extends Controller
     return [
       "image" => [
         "id" => $image->id,
+        "name" => $image->name,
         "path" => $image->path,
       ],
     ];
