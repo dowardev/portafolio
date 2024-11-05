@@ -168,16 +168,17 @@ async function updatePost(params: { post: UpdatePost }): Promise<void> {
 
 async function uploadImage(e: any) {
   spinners.saveImage = true;
-  const image = e.image.file;
+  const image = e;
 
   try {
     const response = await uploadImageService({
       image,
+      type: "post",
     });
     const imageName = response.name;
     spinners.saveImage = false;
 
-    const api = getBaseURL() + "api/get-image-posts?name=" + imageName;
+    const api = (await getImageURL({ name: imageName! })).url;
     content.value =
       '<div class="center"><img src="' + api + '" style="width:80%"/></div>';
 
@@ -227,5 +228,13 @@ async function refreshPostsCotent() {
   } catch (e: any) {
     console.error(e);
   }
+}
+
+async function getImageURL(params: {
+  name: string;
+}): Promise<{ id: string; name: string; url: string }> {
+  const { name } = params;
+
+  return await useSystem().getImageURL({ name });
 }
 </script>

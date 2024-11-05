@@ -142,7 +142,7 @@ export const usePost = () => {
     image: File;
   }): Promise<{ id: string; path: string }> {
     const { image } = params;
-    const { id, path } = await uploadImageService({ image });
+    const { id, path } = await uploadImageService({ image, type: "post" });
     return { id, path };
   }
 

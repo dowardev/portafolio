@@ -105,6 +105,7 @@ async function uploadImage(e: File): Promise<void> {
   try {
     const response = await uploadImageService({
       image,
+      type: "post",
     });
 
     const imageName = response.name;

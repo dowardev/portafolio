@@ -156,11 +156,13 @@ export async function searchPosts(params: {
 
 export async function uploadImage(params: {
   image: File;
+  type: string;
 }): Promise<{ id: string; path: string }> {
-  const { image } = params;
+  const { image, type } = params;
 
   const formData = new FormData();
   formData.append("file", image);
+  formData.append("type", type);
 
   const response = await axios.request({
     url: `http://127.0.0.1:8000/api/upload-image`,
