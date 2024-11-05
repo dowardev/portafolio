@@ -26,12 +26,14 @@ class SystemController extends Controller
     $messages = [
       "file.required" => "File is required.",
       "file.image" => "The file must be an image.",
+      "type.required" => "Type is required.",
     ];
 
     $validator = Validator::make(
       $request->all(),
       [
         "file" => "required|image",
+        "type" => "required",
       ],
       $messages
     );
@@ -42,12 +44,19 @@ class SystemController extends Controller
 
     $file = $request->file("file");
     $filename = uniqid() . time() . "." . $file->getClientOriginalExtension();
+    $type = $request->type;
+    $path = "";
 
-    Storage::disk("tmp")->put($filename, file_get_contents($file));
+    if ($type == "post") {
+      $path = "posts_images";
+    }
+
+    Storage::disk($path)->put($filename, file_get_contents($file));
 
     $image = Images::create([
       "name" => $filename,
-      "path" => "tmp",
+      "path" => $path,
+      "status" => false,
     ]);
 
     return [

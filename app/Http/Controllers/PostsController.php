@@ -202,7 +202,8 @@ class PostsController extends Controller
       $messages
     );
 
-    $this->moveImage($cover_id);
+    Images::where("id", $cover_id)->update(["status" => true]);
+
     $post = Post::create([
       "title" => $title,
       "content" => $content,
@@ -211,11 +212,11 @@ class PostsController extends Controller
     $post_id = $post->id;
 
     foreach ($images as $key => $value) {
-      $this->moveImage($value);
       PostImage::create([
         "post_id" => $post_id,
         "image_id" => $value,
       ]);
+      Images::where("id", $value)->update(["status" => true]);
     }
   }
 
