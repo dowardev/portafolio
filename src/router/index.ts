@@ -124,6 +124,7 @@ router.beforeEach(async (to, from, next) => {
     "HomePage",
     "HistoryPage",
     "PortfolioPage",
+    "SkillsPage",
     "BlogPage",
     "PostsPage",
     "PostPage",
