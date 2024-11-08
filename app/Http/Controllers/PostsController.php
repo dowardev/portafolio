@@ -28,9 +28,10 @@ class PostsController extends Controller
   public function getPosts(Request $request)
   {
     $date = (new DateTime($request->date))->format("Y-m-d");
+    $status = $request->input("status", "all"); // Valor por defecto 'all'
 
     try {
-      $result = DB::table("posts")
+      $query = DB::table("posts")
         ->join("images", "cover_id", "=", "images.id")
         ->select(
           "posts.id as post_id",
@@ -38,14 +39,20 @@ class PostsController extends Controller
           "posts.content as post_content",
           "posts.created_at as post_created_at",
           "posts.updated_at as post_updated_at",
+          "posts.status as post_status",
           "images.id as image_id",
           "images.name as image_name",
           "images.path as image_path"
         )
-        ->whereDate("posts.created_at", $date)
-        ->get();
+        ->whereDate("posts.created_at", $date);
 
-      if ($result == null) {
+      if ($status !== "all") {
+        $query->where("posts.status", $status);
+      }
+
+      $result = $query->get();
+
+      if ($result->isEmpty()) {
         return response()->json(
           [
             "message" => "No posts",
@@ -64,7 +71,7 @@ class PostsController extends Controller
 
     $posts = [];
     $systemController = new SystemController();
-    foreach ($result as $key => $value) {
+    foreach ($result as $value) {
       $imageRequest = new Request(["name" => $value->image_name]);
       $imageResponse = $systemController->getImage($imageRequest);
       $imageData = json_decode($imageResponse->getContent(), true);
@@ -77,6 +84,7 @@ class PostsController extends Controller
           DateTime::ATOM
         ),
         "updated_at" => $value->post_updated_at,
+        "status" => $value->post_status,
         "cover" => [
           "id" => $value->image_id,
           "name" => $value->image_name,
