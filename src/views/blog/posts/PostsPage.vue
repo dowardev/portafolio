@@ -104,8 +104,22 @@
                   </ion-card-title>
                 </ion-row>
 
+                <!-- options post -->
                 <ion-row>
-                  <ion-col>
+                  <ion-col size="6">
+                    <ion-chip
+                      :color="
+                        post.status == 'active'
+                          ? 'success'
+                          : post.status == 'inactive'
+                            ? 'danger'
+                            : 'warning'
+                      "
+                      >{{ post.status }}</ion-chip
+                    >
+                  </ion-col>
+
+                  <ion-col size="6">
                     <ion-item
                       v-if="useUser().user.value.isAdmin"
                       lines="none"

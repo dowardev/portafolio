@@ -1,5 +1,6 @@
 import { DocumentNode } from "graphql";
 import { ThemeType } from "@/utils/types.ts";
+import { StatusPost } from "./types";
 
 // feedback
 export interface Feedback {
@@ -33,6 +34,7 @@ export interface Post {
     name?: string;
     path?: string;
   };
+  status: StatusPost;
 }
 export interface GetPost {
   date: string;
