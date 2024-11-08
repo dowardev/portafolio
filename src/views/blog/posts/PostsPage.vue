@@ -274,17 +274,7 @@
         >
 
         <!-- filter -->
-        <!-- <ion-item
-          lines="full"
-          button
-          @click="
-            refreshContent();
-            popOverMainOPtions.isOpen = false;
-          "
-          ><ion-icon slot="start" :icon="filterOutline"></ion-icon
-          ><ion-label>Filtrar</ion-label>
-        </ion-item> -->
-        <ion-list>
+        <ion-list v-if="useUser().user.value.isAdmin">
           <ion-list-header>
             <ion-label>Filtro</ion-label>
           </ion-list-header>
