@@ -10,49 +10,40 @@
 
         <ion-buttons slot="end">
           <!-- <DateSelectorComponent></DateSelectorComponent> -->
-          <!-- screen xs -->
-          <div v-if="mq.xs || mq.md">
-            <ion-button id="button-more-options">
-              <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
-            </ion-button>
-          </div>
+          <ion-button
+            v-if="useUser().user.value.isAdmin"
+            fill="clear"
+            @click="addPost()"
+          >
+            <ion-icon
+              v-if="spinners.buttonAddNewPost == false"
+              :icon="addOutline"
+            ></ion-icon>
+            <ion-spinner
+              v-if="spinners.buttonAddNewPost"
+              name="crescent"
+              color="primary"
+            ></ion-spinner>
+          </ion-button>
 
-          <!-- screen lg -->
-          <div v-if="mq.lgPlus">
-            <ion-button
-              v-if="useUser().user.value.isAdmin"
-              fill="clear"
-              @click="addPost()"
-            >
-              <ion-icon
-                v-if="spinners.buttonAddNewPost == false"
-                :icon="addOutline"
-              ></ion-icon>
-              <ion-spinner
-                v-if="spinners.buttonAddNewPost"
-                name="crescent"
-                color="primary"
-              ></ion-spinner>
-            </ion-button>
+          <ion-button @click="previousDate()">
+            <ion-icon :icon="chevronBackOutline"></ion-icon>
+          </ion-button>
 
-            <!-- button search post -->
-            <ion-button fill="clear" @click="isOpenSearchModal = true">
-              <ion-icon :icon="searchOutline"></ion-icon>
-            </ion-button>
+          <ion-button @click="nextDate()">
+            <ion-icon :icon="chevronForwardOutline"></ion-icon>
+          </ion-button>
 
-            <ion-button @click="previousDate()">
-              <ion-icon :icon="chevronBackOutline"></ion-icon>
-            </ion-button>
-
-            <ion-button @click="nextDate()">
-              <ion-icon :icon="chevronForwardOutline"></ion-icon>
-            </ion-button>
-
-            <!-- button refresh content -->
-            <ion-button fill="clear" @click="refreshContent()">
-              <ion-icon :icon="refreshOutline"></ion-icon>
-            </ion-button>
-          </div>
+          <!-- button more options -->
+          <ion-button
+            fill="clear"
+            @click="
+              popOverMainOPtions.event = $event;
+              popOverMainOPtions.isOpen = true;
+            "
+          >
+            <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -253,20 +244,72 @@
     </ion-modal>
 
     <!-- popovers -->
-    <ion-popover trigger="button-more-options" trigger-action="click"
+    <ion-popover
+      :is-open="popOverMainOPtions.isOpen"
+      @didDismiss="popOverMainOPtions.isOpen = false"
+      :event="popOverMainOPtions.event"
       ><ion-content>
         <!-- search -->
-        <ion-item lines="full" button @click="isOpenSearchModal = true"
+        <ion-item
+          lines="full"
+          button
+          @click="
+            isOpenSearchModal = true;
+            popOverMainOPtions.isOpen = false;
+          "
           ><ion-icon slot="start" :icon="searchOutline"></ion-icon
           ><ion-label>Buscar</ion-label></ion-item
         >
+
         <!-- refresh -->
-        <ion-item lines="full" button @click="refreshContent()"
+        <ion-item
+          lines="full"
+          button
+          @click="
+            refreshContent();
+            popOverMainOPtions.isOpen = false;
+          "
           ><ion-icon slot="start" :icon="refreshOutline"></ion-icon
           ><ion-label>Refrescar</ion-label></ion-item
         >
-      </ion-content></ion-popover
-    >
+
+        <!-- filter -->
+        <!-- <ion-item
+          lines="full"
+          button
+          @click="
+            refreshContent();
+            popOverMainOPtions.isOpen = false;
+          "
+          ><ion-icon slot="start" :icon="filterOutline"></ion-icon
+          ><ion-label>Filtrar</ion-label>
+        </ion-item> -->
+        <ion-list>
+          <ion-list-header>
+            <ion-label>Filtro</ion-label>
+          </ion-list-header>
+
+          <ion-radio-group :value="filter.selected">
+            <ion-item
+              lines="full"
+              v-for="(option, key) in filter.options"
+              :key="key"
+            >
+              <ion-radio
+                label-placement="end"
+                slot="start"
+                :value="key"
+                @click="
+                  filter.selected = key;
+                  loadPosts({ currentPage, filter: key });
+                "
+                >{{ option }}</ion-radio
+              >
+            </ion-item>
+          </ion-radio-group>
+        </ion-list>
+      </ion-content>
+    </ion-popover>
   </ion-page>
 </template>
 
@@ -285,6 +328,7 @@ import {
   closeOutline,
   createOutline,
   ellipsisVerticalOutline,
+  filterOutline,
   refreshOutline,
   searchOutline,
   trashOutline,
@@ -295,6 +339,8 @@ import { openToast, presentAlertConfirmation } from "@/services/system";
 // components
 import DateSelectorComponent from "@/components/posts/DateSelectorComponent.vue";
 import { onMounted } from "vue";
+import { is } from "date-fns/locale";
+import { filterPostOptions } from "@/services/types";
 
 // vars
 const pageTitle = ref("Blog");
@@ -313,7 +359,18 @@ const currentPage = ref("");
 let dates = reactive([] as Array<string>);
 const index = ref();
 const currentPageIndex = ref(0);
+const popOverMainOPtions = ref({ isOpen: false, event: Event });
+const filter = reactive({
+  selected: "all",
+  options: {
+    all: "Todos",
+    active: "Activos",
+    inactive: "Inactivos",
+    draft: "Borrador",
+  },
+});
 
+// computed
 const filterPosts = computed(() => {
   const posts = usePost().getPosts()!;
   const result = posts.filter(
@@ -375,7 +432,6 @@ async function loadContent(params: { refetch: boolean }): Promise<void> {
 
   await loadPosts({
     currentPage,
-    refetch,
   });
   loadFinished.value = true;
 }
@@ -392,11 +448,14 @@ async function getPostsDates(params: { refetch: boolean }): Promise<void> {
 
 async function loadPosts(params: {
   currentPage: string;
-  refetch?: boolean;
+  filter?: filterPostOptions;
 }): Promise<void> {
+  const { currentPage, filter } = params;
+
   try {
     await usePost().loadPosts({
-      date: params.currentPage,
+      date: currentPage,
+      filter,
     });
   } catch (e: any) {
     console.error(e);

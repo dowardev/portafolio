@@ -78,6 +78,10 @@ export const usePostStore = defineStore("post", {
       }
     },
 
+    setPosts(params: { posts: Array<Post> }) {
+      this.posts = params.posts;
+    },
+
     updateDates(dates: Array<string>) {
       this.dates = dates;
     },

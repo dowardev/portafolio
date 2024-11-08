@@ -1,6 +1,6 @@
 import { DocumentNode } from "graphql";
 import { ThemeType } from "@/utils/types.ts";
-import { StatusPost } from "./types";
+import { filterPostOptions, StatusPost } from "./types";
 
 // feedback
 export interface Feedback {
@@ -38,6 +38,7 @@ export interface Post {
 }
 export interface GetPost {
   date: string;
+  filter?: filterPostOptions;
 }
 
 export interface CreatePost {

@@ -11,20 +11,22 @@ import {
   uploadImage as uploadImageService,
 } from "../services/post";
 import { useSystem } from "./useSystem";
+import { filterPostOptions } from "@/services/types";
 
 export const usePost = () => {
   const postStore = usePostStore();
   const postRefs = storeToRefs(postStore);
   const openToastError = useSystem().openToastError;
 
-  async function loadPosts(params: { date: string }) {
-    const { date } = params;
+  async function loadPosts(params: {
+    date: string;
+    filter?: filterPostOptions;
+  }) {
+    const { date, filter } = params;
     try {
-      const posts = await getPostsService({ date });
+      const posts = await getPostsService({ date, filter });
 
-      posts.forEach((element) => {
-        postStore.addPost({ post: element });
-      });
+      postStore.setPosts({ posts });
     } catch (e: any) {
       openToastError(e);
       throw e;
