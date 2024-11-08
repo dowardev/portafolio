@@ -28,7 +28,7 @@ class PostsController extends Controller
   public function getPosts(Request $request)
   {
     $date = (new DateTime($request->date))->format("Y-m-d");
-    $status = $request->input("status", "all"); // Valor por defecto 'all'
+    $filter = $request->filter;
 
     try {
       $query = DB::table("posts")
@@ -46,8 +46,8 @@ class PostsController extends Controller
         )
         ->whereDate("posts.created_at", $date);
 
-      if ($status !== "all") {
-        $query->where("posts.status", $status);
+      if ($filter !== "all") {
+        $query->where("posts.status", $filter);
       }
 
       $result = $query->get();

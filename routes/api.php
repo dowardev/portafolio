@@ -21,7 +21,7 @@ Route::middleware(Cors::class)->group(function () {
   Route::get("get-image", [SystemController::class, "getImage"]);
 
   // posts
-  Route::get("posts/{date}", [PostsController::class, "getPosts"]);
+  Route::get("posts/{date}/{filter}", [PostsController::class, "getPosts"]);
   Route::get("post-dates", [PostsController::class, "getPostsDates"]);
   Route::get("post/{id}", [PostsController::class, "getPost"]);
   Route::get("search-posts/{search}", [PostsController::class, "searchPost"]);
