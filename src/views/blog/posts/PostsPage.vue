@@ -99,6 +99,7 @@
                 <ion-row>
                   <ion-col size="6">
                     <ion-chip
+                      v-if="useUser().user.value.isAdmin"
                       :color="
                         post.status == 'active'
                           ? 'success'
@@ -351,7 +352,7 @@ const index = ref();
 const currentPageIndex = ref(0);
 const popOverMainOPtions = ref({ isOpen: false, event: Event });
 const filter = reactive({
-  selected: "all",
+  selected: "active",
   options: {
     all: "Todos",
     active: "Activos",

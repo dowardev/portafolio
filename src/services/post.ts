@@ -73,7 +73,7 @@ export async function deletePost(params: { id: string }): Promise<void> {
 }
 
 export async function getPosts(params: GetPost): Promise<Array<Post>> {
-  const { date, filter = "all" } = params;
+  const { date, filter = "active" } = params;
 
   const response = await axios.request({
     url: `http://127.0.0.1:8000/api/posts/${date}/${filter}`,
