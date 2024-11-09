@@ -1,4 +1,16 @@
 {
+  "8.1.1": {
+    "corrections": ["Correcciones para el filtro de estatus"]
+  },
+  "8.1.0": {
+    "improvements": [
+      "Capacidad para filtrar los posts por estatus (solo administrador)"
+    ]
+  },
+  "8.0.1": {
+    "improvements": ["Optimizaciones de rendimiento"],
+    "corrections": ["Correcciones menores"]
+  },
   "8.0.0": {
     "improvements": ["Nuevo diseño", "Mejoras de rendimiento"]
   },
