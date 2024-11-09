@@ -96,12 +96,21 @@ class PostsController extends Controller
     return ["posts" => $posts];
   }
 
-  public function getPostsDates()
+  public function getPostsDates(Request $request)
   {
+    $status = $request->has("status") ? $request->status : "active";
+
     try {
-      $postDates = Post::select("created_at")
-        ->orderBy("created_at", "desc")
-        ->get();
+      $postDatesQuery = Post::select("created_at")->orderBy(
+        "created_at",
+        "desc"
+      );
+
+      if ($status !== "all") {
+        $postDatesQuery->where("status", $status);
+      }
+
+      $postDates = $postDatesQuery->get();
 
       $dates = [];
       foreach ($postDates as $key => $value) {
@@ -116,7 +125,6 @@ class PostsController extends Controller
       $dates = array_unique($dates);
       $dates = array_values($dates);
 
-      // Convertir el array a un objeto con índices numéricos
       $datesObject = (object) $dates;
 
       return response()->json($datesObject, 200);
