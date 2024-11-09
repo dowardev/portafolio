@@ -292,7 +292,7 @@
                 :value="key"
                 @click="
                   filter.selected = key;
-                  loadPosts({ currentPage, filter: key });
+                  loadContent({ status: key });
                 "
                 >{{ option }}</ion-radio
               >
@@ -352,7 +352,7 @@ const index = ref();
 const currentPageIndex = ref(0);
 const popOverMainOPtions = ref({ isOpen: false, event: Event });
 const filter = reactive({
-  selected: "active",
+  selected: "active" as filterPostOptions,
   options: {
     all: "Todos",
     active: "Activos",
@@ -371,7 +371,7 @@ const filterPosts = computed(() => {
 });
 
 onMounted(() => {
-  loadContent({ refetch: true });
+  loadContent({ status: filter.selected });
 });
 
 watch(
@@ -402,13 +402,15 @@ async function addPost(): Promise<void> {
 }
 
 async function refreshContent(): Promise<void> {
-  loadContent({ refetch: true });
+  loadContent({ status: filter.selected });
 }
 
-async function loadContent(params: { refetch: boolean }): Promise<void> {
-  const refetch = params.refetch == false ? false : true;
+async function loadContent(params: {
+  status: filterPostOptions;
+}): Promise<void> {
+  const { status } = params;
 
-  await getPostsDates({ refetch });
+  await getPostsDates({ status });
 
   let dates = Array<string>();
   dates = usePost().getDates()!;
@@ -423,13 +425,18 @@ async function loadContent(params: { refetch: boolean }): Promise<void> {
 
   await loadPosts({
     currentPage,
+    filter: status,
   });
   loadFinished.value = true;
 }
 
-async function getPostsDates(params: { refetch: boolean }): Promise<void> {
+async function getPostsDates(params: {
+  status: filterPostOptions;
+}): Promise<void> {
+  const { status } = params;
+
   try {
-    await usePost().loadDates();
+    await usePost().loadDates({ status });
   } catch (e: any) {
     console.error(e);
     useSystem().openToastError(e);

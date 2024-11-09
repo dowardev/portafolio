@@ -3,6 +3,7 @@ import { Post, DeletePost, CreatePost, GetPost } from "./interfaces";
 import { errorBuilder } from "@/utils/errors";
 import axios from "axios";
 import { getUserToken } from "./user";
+import { filterPostOptions } from "./types";
 
 interface UpdatePost {
   id: string;
@@ -120,14 +121,21 @@ export async function getPost(params: { id: number | string }): Promise<Post> {
   return post;
 }
 
-export async function getPostsDates(): Promise<Array<string>> {
+export async function getPostsDates(params: {
+  status?: filterPostOptions;
+}): Promise<Array<string>> {
+  const { status } = params;
+
   try {
     const response = await axios.request({
-      url: "http://127.0.0.1:8000/api/post-dates",
+      url: "http://127.0.0.1:8000/api/post-dates/",
       method: "GET",
       headers: {
         Accept: "application/json",
         Authorization: getUserToken(),
+      },
+      params: {
+        status,
       },
     });
 

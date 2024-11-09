@@ -33,9 +33,11 @@ export const usePost = () => {
     }
   }
 
-  async function loadDates() {
+  async function loadDates(params: { status?: filterPostOptions }) {
+    const { status } = params;
+
     try {
-      const dates = await getPostsDates();
+      const dates = await getPostsDates({ status });
 
       postStore.updateDates(dates);
     } catch (e: any) {
