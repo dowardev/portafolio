@@ -21,7 +21,6 @@
   </ion-header>
 
   <ion-content>
-    <!-- theme selector -->
     <ion-row>
       <ion-col size="12">
         <ion-item lines="none">
@@ -34,67 +33,40 @@
             @ion-change="versionSelected = $event.detail.value"
           >
             <ion-select-option
-              v-for="(version, versionIndex) in versions"
-              :key="versionIndex"
-              :value="version.code"
-              >{{ version.code }}</ion-select-option
+              v-for="(version, index) in mainVersions"
+              :key="index"
+              :value="version"
+              >{{ version }}</ion-select-option
             >
           </ion-select>
         </ion-item>
+      </ion-col>
+    </ion-row>
 
-        <!-- improvements -->
-        <ion-list
-          v-if="
-            filterImprovements({
-              versionCode: versionSelected,
-            })
-          "
-        >
+    <ion-row style="height: calc(100% - 58px); overflow: auto">
+      <ion-col>
+        <ion-list v-for="(subversion, index) in subVersions" :key="index">
           <ion-list-header>
-            <ion-label>Nuevas funciones</ion-label>
+            <ion-label>{{ subversion.code }}</ion-label>
           </ion-list-header>
 
-          <ion-card>
-            <ion-card-content>
-              <ion-item
-                v-for="(improvement, indexImprovement) in filterImprovements({
-                  versionCode: versionSelected,
-                })"
-                :key="indexImprovement"
-                lines="full"
-                class="transparent"
-              >
-                <ion-label>{{ improvement }}</ion-label>
-              </ion-item>
-            </ion-card-content>
+          <ion-card
+            v-for="(improvement, i) in subversion.improvements"
+            :key="i"
+          >
+            <ion-card-header>Mejoras</ion-card-header>
+
+            <ion-item>
+              <ion-label>{{ improvement }}</ion-label>
+            </ion-item>
           </ion-card>
-        </ion-list>
 
-        <!-- fixes -->
-        <ion-list
-          v-if="
-            filterCorrections({
-              versionCode: versionSelected,
-            })
-          "
-        >
-          <ion-list-header>
-            <ion-label>Correcciones</ion-label>
-          </ion-list-header>
+          <ion-card v-for="(correction, i) in subversion.corrections" :key="i">
+            <ion-card-header>Mejoras</ion-card-header>
 
-          <ion-card>
-            <ion-card-content>
-              <ion-item
-                v-for="(correction, indexCorrection) in filterCorrections({
-                  versionCode: versionSelected,
-                })"
-                :key="indexCorrection"
-                lines="full"
-                class="transparent"
-              >
-                <ion-label>{{ correction }}</ion-label>
-              </ion-item>
-            </ion-card-content>
+            <ion-item>
+              <ion-label>{{ correction }}</ion-label>
+            </ion-item>
           </ion-card>
         </ion-list>
       </ion-col>
@@ -117,37 +89,46 @@ import {
   IonSelectOption,
 } from "@ionic/vue";
 import { closeOutline, downloadOutline } from "ionicons/icons";
-import { reactive, ref } from "vue";
+import { reactive, ref, Ref } from "vue";
 import { wb } from "@/main";
-import versionsData from "@/utils/versions.json";
+import versionsDataJson from "@/utils/versions.json";
 
 // composables
 import { useSystem } from "../../composables/useSystem";
 const systemComposable = useSystem();
 
-const pageTitle = ref("Novedades");
-const versions = Object.entries(versionsData).map(([code, data]) => ({
-  code,
-  ...data,
-}));
-const versionSelected = ref(versions[0].code);
+interface VersionsData {
+  [version: string]: {
+    [subVersion: string]: {
+      improvements?: string[];
+      corrections?: string[];
+    };
+  };
+}
 
-// functions
+const versionsData = versionsDataJson as VersionsData;
+
+const pageTitle = ref("Novedades");
+const mainVersions = Object.keys(versionsData);
+const versionSelected: Ref<string> = ref(mainVersions[0]);
+const subVersions = ref([]);
+
 function closeModal(): void {
   modalController.dismiss();
 }
 
-function filterImprovements(params: { versionCode: string }): string[] {
-  const { versionCode } = params;
-  const result = versions.filter((version) => version.code == versionCode);
-  return result[0].improvements;
+function onVersionChange() {
+  const selectedVersionData = versionsData[versionSelected.value];
+  subVersions.value = Object.entries(selectedVersionData).map(
+    ([code, data]) => ({
+      code,
+      improvements: data.improvements || [],
+      corrections: data.corrections || [],
+    })
+  );
 }
 
-function filterCorrections(params: { versionCode: string }): string[] {
-  const { versionCode } = params;
-  const result = versions.filter((version) => version.code == versionCode);
-  return result[0].corrections;
-}
+onVersionChange(); // Initialize with the first version's subversions
 
 function updateApp() {
   if (wb) {
