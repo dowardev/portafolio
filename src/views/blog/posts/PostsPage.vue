@@ -59,6 +59,7 @@
         >
           <ion-card>
             <ion-row>
+              <!-- img post -->
               <ion-col
                 size="4"
                 style="
@@ -81,22 +82,34 @@
                 />
               </ion-col>
 
-              <ion-col
-                size="8"
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                "
-              >
-                <ion-row @click="openPost(post.id!)" style="cursor: pointer">
-                  <ion-card-title>
-                    <span>{{ post.title }}</span>
-                  </ion-card-title>
+              <ion-col size="8">
+                <ion-row>
+                  <ion-col
+                    :size="useUser().user.value.isAdmin ? 10 : 12"
+                    @click="openPost(post.id!)"
+                    style="cursor: pointer"
+                  >
+                    <ion-card-title class="truncate-text">
+                      {{ post.title }}
+                    </ion-card-title>
+                  </ion-col>
+
+                  <ion-col size="2" v-if="useUser().user.value.isAdmin">
+                    <ion-button
+                      fill="clear"
+                      @click="
+                        idPostSelected = post.id;
+                        popoverPostOptions.event = $event;
+                        popoverPostOptions.isOpen = true;
+                      "
+                    >
+                      <ion-icon :icon="ellipsisVerticalOutline"> </ion-icon>
+                    </ion-button>
+                  </ion-col>
                 </ion-row>
 
                 <!-- options post -->
-                <ion-row>
+                <ion-row @click="openPost(post.id!)" style="cursor: pointer">
                   <ion-col size="6">
                     <ion-chip
                       v-if="useUser().user.value.isAdmin"
@@ -109,40 +122,6 @@
                       "
                       >{{ post.status }}</ion-chip
                     >
-                  </ion-col>
-
-                  <ion-col size="6">
-                    <ion-item
-                      v-if="useUser().user.value.isAdmin"
-                      lines="none"
-                      class="transparent"
-                    >
-                      <ion-button
-                        slot="end"
-                        :disabled="spinners.buttonEditPost == post.id!"
-                        fill="clear"
-                        @click="updatePost(post.id!)"
-                      >
-                        <ion-icon
-                          v-if="
-                            spinners.buttonEditPost == '' ||
-                            spinners.buttonEditPost != post.id!
-                          "
-                          :icon="createOutline"
-                        ></ion-icon>
-                      </ion-button>
-
-                      <ion-button
-                        slot="end"
-                        fill="clear"
-                        @click="deletePost({ id: post.id! })"
-                      >
-                        <ion-icon
-                          :icon="trashOutline"
-                          color="danger"
-                        ></ion-icon>
-                      </ion-button>
-                    </ion-item>
                   </ion-col>
                 </ion-row>
               </ion-col>
@@ -301,6 +280,39 @@
         </ion-list>
       </ion-content>
     </ion-popover>
+
+    <!-- popover post options -->
+    <ion-popover
+      :is-open="popoverPostOptions.isOpen"
+      :event="popoverPostOptions.event"
+      :dismiss-on-select="true"
+      @didDismiss="popoverPostOptions.isOpen = false"
+    >
+      <ion-content>
+        <ion-item
+          button
+          lines="full"
+          class="transparent"
+          @click="updatePost(idPostSelected)"
+        >
+          <ion-icon slot="start" :icon="createOutline"> </ion-icon>
+
+          <ion-label>Editar</ion-label>
+        </ion-item>
+
+        <ion-item
+          button
+          v-if="useUser().user.value.isAdmin"
+          lines="none"
+          class="transparent"
+          @click="deletePost({ id: idPostSelected })"
+        >
+          <ion-icon slot="start" :icon="trashOutline" color="danger"></ion-icon>
+
+          <ion-label>Eliminar</ion-label>
+        </ion-item>
+      </ion-content>
+    </ion-popover>
   </ion-page>
 </template>
 
@@ -360,6 +372,8 @@ const filter = reactive({
     draft: "Borrador",
   },
 });
+const popoverPostOptions = ref({ isOpen: false, event: Event });
+const idPostSelected = ref<undefined | number>(undefined);
 
 // computed
 const filterPosts = computed(() => {
@@ -563,3 +577,11 @@ function updatecurrentPage(): void {
   usePost().updateCurrentPage({ currentPage: currentPage.value });
 }
 </script>
+
+<style scoped>
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
