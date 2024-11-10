@@ -128,7 +128,7 @@ export async function getPostsDates(params: {
 
   try {
     const response = await axios.request({
-      url: "http://127.0.0.1:8000/api/post-dates/",
+      url: "http://127.0.0.1:8000/api/post-dates",
       method: "GET",
       headers: {
         Accept: "application/json",
