@@ -1,7 +1,7 @@
 {
   "name": "dowar-blog",
   "private": true,
-  "version": "8.2.3",
+  "version": "8.2.4",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -33,7 +33,6 @@
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",
     "vue3-markdown-it": "^1.0.10",
-    "vue3-mq": "^4.0.0",
     "workbox-window": "^7.3.0"
   },
   "devDependencies": {

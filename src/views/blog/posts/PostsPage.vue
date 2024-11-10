@@ -336,7 +336,6 @@ import {
   searchOutline,
   trashOutline,
 } from "ionicons/icons";
-import { useMq } from "vue3-mq";
 import { openToast, presentAlertConfirmation } from "@/services/system";
 
 // components
@@ -356,7 +355,6 @@ const route = useRoute();
 const router = useRouter();
 const isOpenSearchModal = ref(false);
 const loadFinished = ref(false);
-const mq = useMq();
 const searchResult = ref(Array<{ id: string; title: string }>());
 const currentPage = ref("");
 let dates = reactive([] as Array<string>);

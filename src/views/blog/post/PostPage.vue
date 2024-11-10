@@ -141,7 +141,6 @@ import {
 import { useUser } from "@/composables/useUser";
 import { usePost } from "@/composables/usePost";
 import { useRoute, useRouter } from "vue-router";
-import { useMq } from "vue3-mq";
 import { onMounted, ref } from "vue";
 import {
   getTheme,
@@ -158,7 +157,6 @@ import modalIndexContent from "./modalIndexContent.vue";
 const route = useRoute();
 const router = useRouter();
 const postId = route.params.id as string;
-const mq = useMq();
 const spinners = ref({ buttonUpdate: false, buttonDelete: false });
 const indexContent = ref(
   [] as Array<{ name: string; id: string; type: string }>
