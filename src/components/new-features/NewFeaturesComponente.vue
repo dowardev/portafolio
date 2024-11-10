@@ -89,13 +89,9 @@ import {
   IonSelectOption,
 } from "@ionic/vue";
 import { closeOutline, downloadOutline } from "ionicons/icons";
-import { reactive, ref, Ref } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { wb } from "@/main";
 import versionsDataJson from "@/utils/versions.json";
-
-// composables
-import { useSystem } from "../../composables/useSystem";
-const systemComposable = useSystem();
 
 interface VersionsData {
   [version: string]: {
@@ -106,12 +102,37 @@ interface VersionsData {
   };
 }
 
+// composables
+import { useSystem } from "../../composables/useSystem";
+
+const systemComposable = useSystem();
+
 const versionsData = versionsDataJson as VersionsData;
 
 const pageTitle = ref("Novedades");
 const mainVersions = Object.keys(versionsData);
 const versionSelected: Ref<string> = ref(mainVersions[0]);
 const subVersions = ref([]);
+
+onMounted(() => {
+  onVersionChange();
+});
+
+watch(versionSelected, (nuevaVersion: string) => {
+  const selectedVersionData: {
+    [subVersion: string]: { improvements?: string[]; corrections?: string[] };
+  } = versionsData[nuevaVersion];
+  subVersions.value = Object.entries(selectedVersionData).map(
+    ([code, data]: [
+      string,
+      { improvements?: string[]; corrections?: string[] },
+    ]) => ({
+      code,
+      improvements: data.improvements || [],
+      corrections: data.corrections || [],
+    })
+  );
+});
 
 function closeModal(): void {
   modalController.dismiss();
@@ -127,8 +148,6 @@ function onVersionChange() {
     })
   );
 }
-
-onVersionChange(); // Initialize with the first version's subversions
 
 function updateApp() {
   if (wb) {
