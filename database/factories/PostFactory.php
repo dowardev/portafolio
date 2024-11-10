@@ -25,6 +25,7 @@ class PostFactory extends Factory
       "content" => Str::random(5000),
       "cover_id" => Images::factory()->disk("posts_images")->create()->id,
       "created_at" => $randomDate,
+      "status" => "active",
     ];
   }
 }
