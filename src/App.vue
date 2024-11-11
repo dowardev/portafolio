@@ -42,7 +42,6 @@ import { getUserToken } from "./services/user";
 import { Storage } from "@ionic/storage";
 import { useRouter } from "vue-router";
 import { createFirstCookie as createFirstCookieService } from "./services/system";
-import { MqResponsive } from "vue3-mq";
 import { wb } from "./main";
 
 // composables

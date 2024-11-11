@@ -38,9 +38,6 @@ import "./theme/variables.css";
 import { createPinia } from "pinia";
 const pinia = createPinia();
 
-// vue3-mq
-import { Vue3Mq } from "vue3-mq";
-
 // service worker
 import { Workbox } from "workbox-window";
 let wb: Workbox | null = null;
@@ -51,13 +48,7 @@ if ("serviceWorker" in navigator) {
 
 export { wb };
 
-const app = createApp(App)
-  .use(IonicVue)
-  .use(pinia)
-  .use(Vue3Mq, {
-    preset: "bootstrap5",
-  })
-  .use(router);
+const app = createApp(App).use(IonicVue).use(pinia).use(router);
 
 router.isReady().then(() => {
   app.mount("#app");

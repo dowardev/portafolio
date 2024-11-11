@@ -210,13 +210,13 @@ import {
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import PreviewModal from "./PreviewModal.vue";
-import { MqResponsive } from "vue3-mq";
 import { useRouter } from "vue-router";
 import { MdEditor, ToolbarNames } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import { ref, watch } from "vue";
 
 const router = useRouter();
+1;
 
 const props = defineProps({
   title: { default: "", type: String },
