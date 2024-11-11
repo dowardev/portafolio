@@ -147,7 +147,8 @@ ion-accordion > div[slot="content"] {
   margin: 10px;
   border-radius: 4px;
 }
-.page-container > ion-header > ion-toolbar {
+.page-container > ion-header > ion-toolbar,
+.condensed-toolbar {
   --background: transparent;
 }
 

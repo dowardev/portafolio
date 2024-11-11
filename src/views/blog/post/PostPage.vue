@@ -1,6 +1,6 @@
 <template>
   <ion-page class="page-container">
-    <ion-header class="ion-no-border">
+    <ion-header :translucent="true" mode="ios" class="ion-no-border">
       <ion-toolbar class="container-page">
         <ion-buttons slot="start">
           <ion-button @click="$router.go(-1)">
@@ -8,9 +8,10 @@
           </ion-button>
         </ion-buttons>
 
-        <ion-title v-if="usePost().getPost({ id: postId })">{{
-          usePost().getPost({ id: postId })!.title
-        }}</ion-title>
+        <!-- title -->
+        <ion-title class="fade-in-title" v-if="scrollPosition > 0"
+          >sss</ion-title
+        >
 
         <!-- mobile options -->
         <ion-buttons
@@ -47,12 +48,25 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content>
+    <ion-content
+      v-if="usePost().getPost({ id: postId }) != undefined"
+      :fullscreen="true"
+    >
       <!-- content -->
-      <ion-row v-if="usePost().getPost({ id: postId }) != undefined">
+      <ion-row>
         <ion-col size-xs="12" size-md="9">
+          <ion-header
+            mode="ios"
+            v-if="scrollPosition == 0"
+            class="fade-in-title ion-no-border"
+          >
+            <ion-toolbar class="condensed-toolbar">
+              <ion-title size="large">ss</ion-title>
+            </ion-toolbar>
+          </ion-header>
           <div
             ref="indexRef"
+            @scroll="setScrollPosition()"
             style="overflow: auto; height: calc(100dvh - 88px)"
           >
             <MdPreview
@@ -130,7 +144,13 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonPopover } from "@ionic/vue";
+import {
+  IonPage,
+  IonPopover,
+  IonTitle,
+  IonToolbar,
+  IonContent,
+} from "@ionic/vue";
 import {
   chevronBackOutline,
   createOutline,
@@ -141,7 +161,7 @@ import {
 import { useUser } from "@/composables/useUser";
 import { usePost } from "@/composables/usePost";
 import { useRoute, useRouter } from "vue-router";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import {
   getTheme,
   presentAlertConfirmation,
@@ -165,11 +185,21 @@ let headings = null;
 const indexRef = ref(null);
 const useSytemComposable = useSystem();
 const popoverMainOptions = ref({ open: false, event: Event });
+const scrollPosition = ref(0);
+const showTitle = ref(false);
 
 // mounted
 onMounted(() => {
   start();
 });
+
+watch(
+  () => scrollPosition.value,
+  (newValue) => {
+    if (newValue == 0) showTitle.value = false;
+    else showTitle.value = true;
+  }
+);
 
 // functions
 async function start(): Promise<void> {
@@ -290,5 +320,9 @@ async function openModalIndexContent(): Promise<void> {
     const elementId = data.elementId;
     goToSection({ id: elementId });
   }
+}
+
+function setScrollPosition(): void {
+  scrollPosition.value = (indexRef.value! as HTMLElement).scrollTop;
 }
 </script>
