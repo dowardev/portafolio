@@ -1,18 +1,15 @@
 <template>
-  <ion-page>
-    <ion-header class="ion-no-border">
-      <ion-toolbar class="container-page">
+  <ion-page class="page-container">
+    <ion-header :translucent="true" class="ion-no-border">
+      <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button
-            menu="mainMenu"
-            :mode="modeDesignElements"
-          ></ion-menu-button>
+          <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
         <ion-title>{{ pageTitle }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="container-page">
+    <ion-content :fullscreen="true">
       <section class="section-options">
         <ion-row>
           <ion-col size="12" class="center">
