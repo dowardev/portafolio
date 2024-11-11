@@ -1,3 +1,4 @@
+import { apiConnector } from "./../main";
 import { Storage } from "@ionic/storage";
 const storage = new Storage();
 storage.create();
@@ -17,7 +18,6 @@ import {
 } from "./interfaces";
 
 import axios from "axios";
-import { getUserToken } from "./user";
 import { url } from "@vuelidate/validators";
 
 export async function getTheme(): Promise<Theme> {
@@ -157,16 +157,12 @@ export async function uploadImage(params: UploadImage): Promise<Image> {
   formData.append("file", image);
   formData.append("type", type);
 
-  const response = await axios.request({
-    url: `http://127.0.0.1:8000/api/upload-image`,
-    method: "POST",
-    headers: {
-      Authorization: getUserToken(),
-    },
+  const response = await apiConnector.post({
+    url: `upload-image`,
     data: formData,
   });
 
-  return response.data.image;
+  return response.image;
 }
 
 export async function presentToast(params: {

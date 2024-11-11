@@ -8,41 +8,22 @@ import {
   ResendEmailConfirmation,
   User,
 } from "./interfaces";
+import ServerConfig from "@/composables/serverConfig";
 
 import axios from "axios";
-
-export function setUserToken({ token }: UserToken): void {
-  document.cookie = "token=" + token;
-}
-
-export function getUserToken(): string {
-  const name = "token=";
-  const cDecoded = decodeURIComponent(document.cookie);
-  const cArr = cDecoded.split("; ");
-  let token = "";
-  cArr.forEach((val) => {
-    if (val.indexOf(name) === 0) token = val.substring(name.length);
-  });
-  return token;
-}
+import { apiConnector } from "@/main";
 
 export async function getUser(): Promise<User> {
   try {
-    const response = await axios.request({
-      url: "http://127.0.0.1:8000/api/user-auth",
-      method: "GET",
-      headers: {
-        Authorization: getUserToken(),
-      },
-    });
+    const response = await apiConnector.get({ url: `user-auth` });
 
     return {
-      id: response.data.id,
-      name: response.data.name,
-      email: response.data.email,
-      user: response.data.user,
-      imageProfile: response.data.image_profile,
-      isAdmin: response.data.is_admin,
+      id: response.id,
+      name: response.name,
+      email: response.email,
+      user: response.user,
+      imageProfile: response.image_profile,
+      isAdmin: response.is_admin,
     };
   } catch (error: any) {
     if (error.response.data.message == "Unauthenticated.")

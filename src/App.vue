@@ -37,7 +37,6 @@ import { getFirstCookie } from "./services/system";
 import { closeOutline } from "ionicons/icons";
 import { useUser } from "./composables/useUser";
 // FIX: create function composable
-import { getUserToken } from "./services/user";
 
 import { Storage } from "@ionic/storage";
 import { useRouter } from "vue-router";
@@ -82,14 +81,14 @@ function createFirstCookie() {
   }
 }
 
-function loadUserProps() {
-  const userToken = getUserToken();
-  if (userToken != "") {
-    useUser().updateUserLoggedProp(true);
-    useUser().updateUserToken(userToken);
-    useUser().updateUserAdminProp({ refetch: true });
-  }
-}
+// function loadUserProps() {
+//   const userToken = getUserToken();
+//   if (userToken != "") {
+//     useUser().updateUserLoggedProp(true);
+//     useUser().updateUserToken(userToken);
+//     useUser().updateUserAdminProp({ refetch: true });
+//   }
+// }
 
 async function openToastOptions() {
   const toast = await toastController.create({

@@ -124,7 +124,11 @@ import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useSystem } from "../../../composables/useSystem";
 import { useRouter } from "vue-router";
-import { closeOutline } from "ionicons/icons";
+import { closeOutline, server } from "ionicons/icons";
+
+//composables
+import ServerConfig from "@/composables/serverConfig";
+const serverConfig = new ServerConfig();
 
 // components
 import LoginFormComponent from "@/forms/LoginFormComponent.vue";
@@ -186,7 +190,8 @@ async function login(params: { email: string; password: string }) {
 
     const token = response.token;
     //FIX: create function in composable
-    setUserToken({ token });
+    await serverConfig.store({ userToken: token });
+    // setUserToken({ token });
 
     spinners.value.buttonLogin = false;
     clearInputs();

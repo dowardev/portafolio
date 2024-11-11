@@ -38,6 +38,25 @@ import "./theme/variables.css";
 import { createPinia } from "pinia";
 const pinia = createPinia();
 
+// storage
+import { Storage } from "@ionic/storage";
+const storage = new Storage();
+export const storageInstance = await initStorage();
+
+// server config
+import ServerConfig from "@/composables/serverConfig";
+const serverConfigService = await ServerConfig.createInstance();
+await serverConfigService.store({ serverUrl: "http://127.0.0.1:8000/api/" });
+const serverConfig = await serverConfigService.getConfig();
+
+// api connector
+import APIService from "@/services/APIService";
+const api = new APIService({
+  serverUrl: serverConfig.serverUrl,
+  userToken: serverConfig.UserToken,
+});
+export const apiConnector = api;
+
 // service worker
 import { Workbox } from "workbox-window";
 let wb: Workbox | null = null;
@@ -45,7 +64,6 @@ if ("serviceWorker" in navigator) {
   wb = new Workbox("/sw.js");
   wb.register();
 }
-
 export { wb };
 
 const app = createApp(App).use(IonicVue).use(pinia).use(router);
@@ -53,3 +71,8 @@ const app = createApp(App).use(IonicVue).use(pinia).use(router);
 router.isReady().then(() => {
   app.mount("#app");
 });
+
+async function initStorage() {
+  await storage.create();
+  return storage;
+}

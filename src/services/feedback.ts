@@ -1,24 +1,10 @@
 import axios from "axios";
 import { FeedbackParams } from "./interfaces";
 import { getUserToken } from "./user";
+import { apiConnector } from "@/main";
 
 export async function createFeedback(params: FeedbackParams): Promise<void> {
   const { userId, name, email, description, contactMe, type } = params;
 
-  await axios.request({
-    url: `http://127.0.0.1:8000/api/feedback/`,
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: getUserToken(),
-    },
-    data: {
-      userId,
-      name,
-      email,
-      description,
-      contactMe,
-      type,
-    },
-  });
+  await apiConnector.post({ url: `feedback/` });
 }

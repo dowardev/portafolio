@@ -5,25 +5,16 @@ import {
   SearchUsers,
   SearchUsersResponse,
 } from "./interfaces";
-
-import { getUserToken } from "./user";
-import axios from "axios";
+import { apiConnector } from "@/main";
 
 export async function getUsers(params: GetUsers): Promise<GetUsersResponse> {
   const { page, first } = params;
 
-  const response = await axios.request({
-    url: `http://127.0.0.1:8000/api/users`,
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization: getUserToken(),
-    },
-  });
+  const response = await apiConnector.get({ url: `users` });
 
   return {
-    users: response.data.users,
-    paginatorInfo: response.data.paginatorInfo,
+    users: response.users,
+    paginatorInfo: response.paginatorInfo,
   };
 }
 
@@ -32,18 +23,11 @@ export async function searchUsers(
 ): Promise<SearchUsersResponse> {
   const { page, search, filterOptions } = params;
 
-  const response = await axios.request({
-    url: `http://127.0.0.1:8000/api/search-user/`,
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization: getUserToken(),
-    },
-  });
+  const response = await apiConnector.get({ url: `search-user` });
 
   // const users = response.data.data;
 
-  const users = response.data.users.map((element: any) => {
+  const users = response.users.map((element: any) => {
     element.isAdmin = element.is_admin;
     delete element.is_admin;
 
@@ -71,16 +55,9 @@ export async function getUsersPaginated(params: {
       ? `http://127.0.0.1:8000/api/search-user/${perpage}`
       : `http://127.0.0.1:8000/api/search-user?page=${page}`;
 
-  const response = await axios.request({
-    url: path,
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: getUserToken(),
-    },
-  });
+  const response = await apiConnector.get({ url: path });
 
-  const users = response.data.data.map((element: any) => {
+  const users = response.data.map((element: any) => {
     element.isAdmin = element.is_admin;
     delete element.is_admin;
 
@@ -103,33 +80,11 @@ export async function getUsersPaginated(params: {
 export async function disableUser(params: DisableUser): Promise<void> {
   const { id, disableUser } = params;
 
-  await axios.request({
-    url: `http://127.0.0.1:8000/api/disable-user/`,
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: getUserToken(),
-    },
-    params: {
-      id,
-      disableUser,
-    },
-  });
-  axios;
+  await apiConnector.get({ url: `disable-user/`, data: { id, disableUser } });
 }
 
 export async function deleteUserAccount(params: { id: number }): Promise<void> {
   const { id } = params;
 
-  await axios.request({
-    url: `http://127.0.0.1:8000/api/delete-user/`,
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: getUserToken(),
-    },
-    params: {
-      id,
-    },
-  });
+  await apiConnector.post({ url: `delete-user/`, data: { id } });
 }

@@ -1,8 +1,6 @@
 import { Post, DeletePost, CreatePost, GetPost } from "./interfaces";
+import { apiConnector } from "@/main";
 
-import { errorBuilder } from "@/utils/errors";
-import axios from "axios";
-import { getUserToken } from "./user";
 import { filterPostOptions } from "./types";
 
 interface UpdatePost {
@@ -18,34 +16,16 @@ interface UpdatePost {
 export async function createPost(params: CreatePost): Promise<void> {
   const { title, content, coverId, images } = params;
 
-  await axios.request({
-    url: `http://127.0.0.1:8000/api/create-post/`,
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      Authorization: getUserToken(),
-    },
-    data: {
-      title,
-      content,
-      coverId,
-      images,
-    },
-  });
+  await apiConnector.post({ url: `create-post/` });
 }
 
 export async function updatePost(params: { post: UpdatePost }): Promise<void> {
   const { images, coverId, content, title, id, newCoverId, imagesRemoved } =
     params.post;
 
-  await axios.request({
-    url: `http://127.0.0.1:8000/api/update-post`,
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: getUserToken(),
-    },
-    params: {
+  await apiConnector.post({
+    url: `update-post`,
+    data: {
       images,
       coverId,
       content,
@@ -60,33 +40,16 @@ export async function updatePost(params: { post: UpdatePost }): Promise<void> {
 export async function deletePost(params: { id: string }): Promise<void> {
   const { id } = params;
 
-  await axios.request({
-    url: `http://127.0.0.1:8000/api/delete-post`,
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: getUserToken(),
-    },
-    params: {
-      id,
-    },
-  });
+  await apiConnector.post({ url: `delete-post`, data: { id } });
 }
 
 export async function getPosts(params: GetPost): Promise<Array<Post>> {
   const { date, filter = "active" } = params;
 
-  const response = await axios.request({
-    url: `http://127.0.0.1:8000/api/posts/${date}/${filter}`,
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization: getUserToken(),
-    },
-  });
+  const response = await apiConnector.get({ url: `posts/${date}/${filter}` });
 
   const posts = await Promise.all(
-    response.data.posts.map(async (post) => {
+    response.posts.map(async (post) => {
       post.createdAt = post.created_at;
       delete post.created_at;
       post.updatedAt = post.updated_at;
@@ -101,16 +64,9 @@ export async function getPosts(params: GetPost): Promise<Array<Post>> {
 export async function getPost(params: { id: number | string }): Promise<Post> {
   const { id } = params;
 
-  const response = await axios.request({
-    url: `http://127.0.0.1:8000/api/post/${id}`,
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization: getUserToken(),
-    },
-  });
+  const response = await apiConnector.get({ url: `post/${id}` });
 
-  const post = response.data.post;
+  const post = response.post;
 
   post.createdAt = post.created_at;
   delete post.created_at;
@@ -127,19 +83,12 @@ export async function getPostsDates(params: {
   const { status } = params;
 
   try {
-    const response = await axios.request({
-      url: "http://127.0.0.1:8000/api/post-dates",
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        Authorization: getUserToken(),
-      },
-      params: {
-        status,
-      },
+    const response = await apiConnector.get({
+      url: `post-dates`,
+      data: { status },
     });
 
-    return response.data;
+    return response;
   } catch (error: any) {
     throw error;
   }
@@ -150,16 +99,9 @@ export async function searchPosts(params: {
 }): Promise<Array<{ id: string; title: string }>> {
   const { search } = params;
 
-  const response = await axios.request({
-    url: `http://127.0.0.1:8000/api/search-posts/${search}`,
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization: getUserToken(),
-    },
-  });
+  const response = await apiConnector.get({ url: `search-posts/${search}` });
 
-  return response.data.posts;
+  return response.posts;
 }
 
 export async function uploadImage(params: {
@@ -172,13 +114,8 @@ export async function uploadImage(params: {
   formData.append("file", image);
   formData.append("type", type);
 
-  const response = await axios.request({
-    url: `http://127.0.0.1:8000/api/upload-image`,
-    method: "POST",
-    headers: {
-      contentType: "multipart/form-data",
-      Authorization: getUserToken(),
-    },
+  const response = await apiConnector.post({
+    url: `upload-image`,
     data: formData,
   });
 

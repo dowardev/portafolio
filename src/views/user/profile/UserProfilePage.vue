@@ -343,10 +343,7 @@ import {
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import { openToast, uploadImage } from "../../../services/system";
-import {
-  setUserToken,
-  saveUserData as saveUserDataService,
-} from "../../../services/user";
+import { saveUserData as saveUserDataService } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email } from "@vuelidate/validators";
 import {
@@ -419,7 +416,7 @@ const rules = {
       required: helpers.withMessage(messageError.required, required),
       alpha: helpers.withMessage(
         messageError.alpha,
-        helpers.regex(/^[a-zA-Z ]*$/),
+        helpers.regex(/^[a-zA-Z ]*$/)
       ),
     },
     user: {
@@ -619,7 +616,7 @@ async function logout() {
     await logout();
     const token = (document.cookie =
       "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
-    setUserToken({ token });
+    // setUserToken({ token });
     location.reload();
   } catch (e: any) {
     console.error(e);

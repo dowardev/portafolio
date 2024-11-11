@@ -4,6 +4,7 @@ import {
   ResetPassword,
   UpdateUserPassword,
 } from "./interfaces";
+import { apiConnector } from "@/main";
 
 import apolloClient from "../Apollo";
 import axios from "axios";
@@ -12,18 +13,9 @@ import { getUserToken } from "./user";
 export async function userRegister(params: UserRegister): Promise<void> {
   const { name, user, password, email } = params;
 
-  await axios.request({
-    url: `http://127.0.0.1:8000/api/signup`,
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    data: {
-      name,
-      user,
-      password,
-      email,
-    },
+  await apiConnector.post({
+    url: `signup`,
+    data: { name, user, password, email },
   });
 }
 
@@ -34,16 +26,9 @@ export async function userLogin(params: {
   const { user, password } = params;
 
   try {
-    const response = await axios.request({
-      url: "	http://127.0.0.1:8000/api/login",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: {
-        email: user,
-        password,
-      },
+    const response = await apiConnector.post({
+      url: `login`,
+      data: { email: user, password },
     });
 
     return { token: `Bearer ${response.data.access_token}` };
@@ -54,31 +39,14 @@ export async function userLogin(params: {
 }
 
 export async function logout(): Promise<void> {
-  await axios.request({
-    url: "http://127.0.0.1:8000/api/logout",
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: getUserToken(),
-    },
-  });
+  await apiConnector.post({ url: `logout` });
 }
 
 export async function recoverPassword(params: { email: string }) {
   const { email } = params;
 
   try {
-    await axios.request({
-      method: "POST",
-      url: "http://127.0.0.1:8000/api/recover-password",
-      data: {
-        email,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        authorization: getUserToken(),
-      },
-    });
+    await apiConnector.post({ url: `recover-password`, data: { email } });
   } catch (error: any) {
     console.error(error);
     if (error.response.data == "Email not found")
@@ -95,18 +63,9 @@ export async function sendNewPassword(params: {
   const { code, password, email } = params;
 
   try {
-    await axios.request({
-      method: "POST",
-      url: "http://127.0.0.1:8000/api/reset-password",
-      data: {
-        email,
-        code,
-        password,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        authorization: getUserToken(),
-      },
+    await apiConnector.post({
+      url: `reset-password`,
+      data: { email, code, password },
     });
   } catch (error: any) {
     if (error.response.data == "Code invalid") throw new Error("Code invalid");
