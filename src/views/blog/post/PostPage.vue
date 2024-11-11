@@ -1,6 +1,6 @@
 <template>
   <ion-page class="page-container">
-    <ion-header :translucent="true" mode="ios" class="ion-no-border">
+    <ion-header :translucent="true" class="ion-no-border">
       <ion-toolbar class="container-page">
         <ion-buttons slot="start">
           <ion-button @click="$router.go(-1)">
