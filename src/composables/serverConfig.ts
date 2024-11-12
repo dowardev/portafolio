@@ -36,4 +36,8 @@ export default class ServerConfig {
   public async getConfig(): Promise<{ serverUrl: string; UserToken: string }> {
     return { serverUrl: this.serverUrl, UserToken: this.userToken };
   }
+
+  public clearData() {
+    Cookies.remove("userToken");
+  }
 }

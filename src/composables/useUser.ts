@@ -3,7 +3,6 @@ import { storeToRefs } from "pinia";
 import { User } from "../services/interfaces";
 import { deleteUserAccount, getUser } from "../services/user";
 import { useSystem } from "./useSystem";
-import { logout as userLogout } from "../services/session";
 
 export const useUser = () => {
   const userStore = useUserStore();
@@ -44,26 +43,13 @@ export const useUser = () => {
     userStore.updateTokenProp(token);
   }
 
-  async function logout() {
-    try {
-      await userLogout();
-      userStore.logout();
-      updateUserLoggedProp(false);
-      updateUserTokenProp("");
-      document.cookie =
-        "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    } catch (e: any) {
-      throw e;
-    }
-  }
-
   async function deleteAccount(params: { password: string }) {
     try {
       await deleteUserAccount({
         password: params.password,
       });
 
-      await logout();
+      // await logout();
     } catch (e: any) {
       throw e;
     }
@@ -76,7 +62,6 @@ export const useUser = () => {
     updateUserLoggedProp,
     updateUserToken: updateUserTokenProp,
     updateUserProps,
-    logout,
     deleteAccount,
 
     // props

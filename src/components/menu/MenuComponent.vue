@@ -6,7 +6,7 @@
           <ion-col>
             <!-- user logged -->
             <ion-item
-              v-if="useUser().user"
+              v-if="Object.keys(useUser().user.value).length > 0"
               lines="none"
               class="transparent"
               @click="setOpenPopOverUserOptions(true, $event)"
@@ -26,7 +26,11 @@
             </ion-item>
 
             <!-- no logged -->
-            <ion-item v-if="!useUser().user" class="transparent" lines="none">
+            <ion-item
+              v-if="Object.keys(useUser().user.value).length == 0"
+              class="transparent"
+              lines="none"
+            >
               <ion-button
                 fill="clear"
                 @click="openRoute({ name: 'LoginPage' })"
@@ -395,7 +399,9 @@ import FeedbackPage from "../feedback/FeedbackPage.vue";
 
 // composables
 import { useSystem } from "../../composables/useSystem";
+import ServerConfig from "@/composables/serverConfig";
 const systemComposable = useSystem();
+const serverConfig = new ServerConfig();
 
 const router = useRouter();
 const isOpenRefPopOverUserOptions = ref(false);
@@ -456,7 +462,7 @@ async function signup() {
 async function logout() {
   try {
     spinners.value.buttonLogout = true;
-    await useUser().logout();
+    await serverConfig.clearData();
     location.reload();
   } catch (error) {
     console.error(error);
