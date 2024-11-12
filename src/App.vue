@@ -35,8 +35,6 @@ import { computed, nextTick, onMounted } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
 import { getFirstCookie } from "./services/system";
 import { closeOutline } from "ionicons/icons";
-import { useUser } from "./composables/useUser";
-// FIX: create function composable
 
 import { Storage } from "@ionic/storage";
 import { useRouter } from "vue-router";
@@ -64,8 +62,6 @@ onMounted(async () => {
   const theme = useSystem().getTheme();
   systemComposable.applyTheme({ newTheme: theme, oldTheme: theme });
 
-  loadUserProps();
-
   if ("serviceWorker" in navigator && wb) {
     wb.addEventListener("waiting", () => {
       useSystem().toggleUpdateOption();
@@ -80,15 +76,6 @@ function createFirstCookie() {
     createFirstCookieService();
   }
 }
-
-// function loadUserProps() {
-//   const userToken = getUserToken();
-//   if (userToken != "") {
-//     useUser().updateUserLoggedProp(true);
-//     useUser().updateUserToken(userToken);
-//     useUser().updateUserAdminProp({ refetch: true });
-//   }
-// }
 
 async function openToastOptions() {
   const toast = await toastController.create({

@@ -6,7 +6,7 @@
           <ion-col>
             <!-- user logged -->
             <ion-item
-              v-if="useUser().isLogged.value == true"
+              v-if="useUser().user"
               lines="none"
               class="transparent"
               @click="setOpenPopOverUserOptions(true, $event)"
@@ -26,11 +26,7 @@
             </ion-item>
 
             <!-- no logged -->
-            <ion-item
-              v-if="useUser().isLogged.value == false"
-              class="transparent"
-              lines="none"
-            >
+            <ion-item v-if="!useUser().user" class="transparent" lines="none">
               <ion-button
                 fill="clear"
                 @click="openRoute({ name: 'LoginPage' })"

@@ -29,7 +29,6 @@ export default class ServerConfig {
   }
 
   private async load(): Promise<void> {
-    console.log(Cookies.get("userToken"));
     this.serverUrl = await storageInstance.get("serverUrl");
     this.userToken = Cookies.get("userToken");
   }
