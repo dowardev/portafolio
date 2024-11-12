@@ -1,5 +1,14 @@
 {
   "8": {
+    "8.5.2": {
+      "improvements": [
+        "Mejorado el listado de versiones",
+        "Mejoras en la API",
+        "Mejoras en el diseño de la pagina de posts",
+        "Mejoras de rendimiento"
+      ],
+      "corrections": ["Reparado problema que impedía cerrar sesión"]
+    },
     "8.1.1": {
       "corrections": ["Correcciones para el filtro de estatus"]
     },
