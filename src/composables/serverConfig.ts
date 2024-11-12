@@ -1,4 +1,6 @@
+import { path } from "path";
 import { storageInstance } from "@/main";
+import Cookies from "js-cookie";
 
 export default class ServerConfig {
   private serverUrl: string = "";
@@ -16,12 +18,20 @@ export default class ServerConfig {
   }): Promise<void> {
     const { serverUrl, userToken } = params;
     if (serverUrl) await storageInstance.set("serverUrl", serverUrl);
-    if (userToken) await storageInstance.set("userToken", userToken);
+    if (userToken) {
+      Cookies.set("userToken", userToken, {
+        secure: true,
+        sameSite: "Strict",
+        domain: window.location.origin,
+        path: "/",
+      });
+    }
   }
 
   private async load(): Promise<void> {
+    console.log(Cookies.get("userToken"));
     this.serverUrl = await storageInstance.get("serverUrl");
-    this.userToken = await storageInstance.get("userToken");
+    this.userToken = Cookies.get("userToken");
   }
 
   public async getConfig(): Promise<{ serverUrl: string; UserToken: string }> {

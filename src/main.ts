@@ -46,7 +46,9 @@ export const storageInstance = await initStorage();
 // server config
 import ServerConfig from "@/composables/serverConfig";
 const serverConfigService = await ServerConfig.createInstance();
-await serverConfigService.store({ serverUrl: "http://127.0.0.1:8000/api/" });
+await serverConfigService.store({
+  serverUrl: "http://127.0.0.1:8000/api/",
+});
 const serverConfig = await serverConfigService.getConfig();
 
 // api connector

@@ -53,6 +53,9 @@ importers:
       ionicons:
         specifier: ^7.4.0
         version: 7.4.0
+      js-cookie:
+        specifier: ^3.0.5
+        version: 3.0.5
       md-editor-v3:
         specifier: ^4.21.3
         version: 4.21.3(@codemirror/view@6.34.2)(@lezer/common@1.2.3)(vue@3.5.12(typescript@5.6.3))
