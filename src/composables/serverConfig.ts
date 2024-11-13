@@ -22,8 +22,6 @@ export default class ServerConfig {
       Cookies.set("userToken", userToken, {
         secure: true,
         sameSite: "Strict",
-        domain: window.location.origin,
-        path: "/",
       });
     }
   }

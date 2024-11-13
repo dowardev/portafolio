@@ -26,7 +26,7 @@ export async function getUser(): Promise<User> {
       isAdmin: response.is_admin,
     };
   } catch (error: any) {
-    if (error.response.data.message == "Unauthenticated.")
+    if (error.response && error.response.data.message == "Unauthenticated.")
       throw new Error("Unauthorized");
     throw error;
   }

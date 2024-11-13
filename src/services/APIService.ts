@@ -19,7 +19,7 @@ export default class APIService {
       url: this.serverUrl + url,
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
+        Accept: "application/json",
         Authorization: `${this.userToken}`,
       },
       data,

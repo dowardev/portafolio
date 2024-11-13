@@ -48,4 +48,13 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
   },
+  esbuild: {
+    target: "esnext",
+    supported: {
+      "top-level-await": true,
+    },
+  },
+  build: {
+    target: "esnext",
+  },
 });

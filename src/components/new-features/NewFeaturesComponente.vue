@@ -56,7 +56,7 @@
             </ion-list-header>
 
             <!-- improvements -->
-            <ion-card>
+            <ion-card v-if="subversion.improvements.length > 0">
               <ion-card-header>Mejoras</ion-card-header>
 
               <ion-card-content>
@@ -72,7 +72,7 @@
             </ion-card>
 
             <!-- corrections -->
-            <ion-card>
+            <ion-card v-if="subversion.corrections.length > 0">
               <ion-card-header>Correcciones</ion-card-header>
 
               <ion-card-content>
@@ -109,7 +109,7 @@ import {
   IonSelectOption,
 } from "@ionic/vue";
 import { closeOutline, downloadOutline } from "ionicons/icons";
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, Ref } from "vue";
 import { wb } from "@/main";
 import versionsDataJson from "@/utils/versions.json";
 
@@ -121,6 +121,11 @@ interface VersionsData {
     };
   };
 }
+interface SubVersion {
+  code: string;
+  improvements: string[];
+  corrections: string[];
+}
 
 // composables
 import { useSystem } from "../../composables/useSystem";
@@ -130,9 +135,12 @@ const systemComposable = useSystem();
 const versionsData = versionsDataJson as VersionsData;
 
 const pageTitle = ref("Novedades");
-const mainVersions = Object.keys(versionsData);
+const mainVersions = Object.keys(versionsData).sort(
+  (a, b) => parseFloat(b) - parseFloat(a)
+);
 const versionSelected: Ref<string> = ref(mainVersions[0]);
-const subVersions = ref([]);
+
+const subVersions = ref<SubVersion[]>([]);
 
 onMounted(() => {
   onVersionChange();

@@ -48,6 +48,7 @@ import ServerConfig from "@/composables/serverConfig";
 const serverConfigService = await ServerConfig.createInstance();
 await serverConfigService.store({
   serverUrl: "http://127.0.0.1:8000/api/",
+  // serverUrl: "https://blog-backend.dowar.xyz/api/",
 });
 const serverConfig = await serverConfigService.getConfig();
 
