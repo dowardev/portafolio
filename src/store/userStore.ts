@@ -8,41 +8,46 @@ interface UserState {
   isLogged: boolean;
 }
 
-export const useUserStore = defineStore("user", {
-  state: (): UserState => ({
-    user: {} as User,
-    token: "",
-    isLogged: false,
-  }),
+export const useUserStore = defineStore("user", () => {
+  const user = {} as User;
+  const token = "";
+  const isLogged = false;
 
-  getters: {
-    imageProfile(state) {
-      const imageProfile = state.user.imageProfile;
-      if (imageProfile) return "data:image/png;base64," + imageProfile;
-      return userAvatar;
-    },
-  },
+  function imageProfile(state) {
+    const imageProfile = state.user.imageProfile;
+    if (imageProfile) return "data:image/png;base64," + imageProfile;
+    return userAvatar;
+  }
 
-  actions: {
-    updateUserProps(props: User) {
-      const userProps = this.user;
-      const merge = {
-        ...userProps,
-        ...props,
-      };
-      this.user = merge;
-    },
+  function updateUserProps(props: User) {
+    const userProps = user;
+    const merge = {
+      ...userProps,
+      ...props,
+    };
+    user = merge;
+  }
 
-    updateUserLoggedProp(isLogged: boolean) {
-      this.isLogged = isLogged;
-    },
+  function updateUserLoggedProp(isLogged: boolean) {
+    isLogged = isLogged;
+  }
 
-    updateTokenProp(token: string) {
-      this.token = token;
-    },
+  function updateTokenProp(token: string) {
+    token = token;
+  }
 
-    logout() {
-      this.user = {};
-    },
-  },
+  function logout() {
+    user = {};
+  }
+
+  return {
+    user,
+    token,
+    isLogged,
+    imageProfile,
+    updateUserProps,
+    updateUserLoggedProp,
+    updateTokenProp,
+    logout,
+  };
 });

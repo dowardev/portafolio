@@ -6,10 +6,8 @@ interface UsersState {
   users: User[];
 }
 
-export const useUsersStore = defineStore("users", {
-  state: (): UsersState => ({
-    users: Array<User>(),
-  }),
+export const useUsersStore = defineStore("users", () => {
+  const users = Array<User>();
 
   // getters: {
   //   imageProfile(state) {
@@ -19,10 +17,13 @@ export const useUsersStore = defineStore("users", {
   //   },
   // },
 
-  actions: {
-    updateUsersProps(params: { users: Array<User> }) {
-      const users = params.users;
-      this.users = users;
-    },
-  },
+  function updateUsersProps(params: { users: Array<User> }) {
+    const users = params.users;
+    users = users;
+  }
+
+  return {
+    users,
+    updateUsersProps,
+  };
 });
