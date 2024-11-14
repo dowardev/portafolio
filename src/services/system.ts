@@ -1,7 +1,6 @@
 import { apiConnector } from "./../main";
-import { Storage } from "@ionic/storage";
-const storage = new Storage();
-storage.create();
+import { storageInstance } from "@/main";
+import Cookies from "js-cookie";
 
 import {
   toastController,
@@ -21,7 +20,7 @@ import axios from "axios";
 import { url } from "@vuelidate/validators";
 
 export async function getTheme(): Promise<Theme> {
-  const theme = await storage.get("theme");
+  const theme = await getDataFromLocalStorage({ key: "theme" });
   return JSON.parse(theme);
 }
 
@@ -68,7 +67,7 @@ export async function storeThemeSelected(params: {
   theme: Theme;
 }): Promise<void> {
   const theme = params.theme;
-  await storage.set("theme", JSON.stringify(theme));
+  await storeDataOnLocalStorage({ key: "theme", value: JSON.stringify(theme) });
 }
 
 export async function openToast(params: Toast): Promise<void> {
@@ -200,4 +199,38 @@ export async function getImageURL(params: {
     name: response.data.name,
     url: response.data.url,
   };
+}
+
+export async function storeDataOnLocalStorage(params: {
+  key: string;
+  value: any;
+}) {
+  const { key, value } = params;
+  await storageInstance.set(key, value);
+}
+
+export async function getDataFromLocalStorage(params: {
+  key: string;
+}): Promise<any> {
+  const { key } = params;
+  return await storageInstance.get(key);
+}
+
+export function storeCookie(params: { key: string; value: any }) {
+  const { key, value } = params;
+
+  Cookies.set(key, value, {
+    secure: true,
+    sameSite: "Strict",
+  });
+}
+
+export function getCookie(params: { key: string }): string {
+  const { key } = params;
+  return Cookies.get(key);
+}
+
+export function removeCookie(params: { key: string }) {
+  const { key } = params;
+  Cookies.remove(key);
 }

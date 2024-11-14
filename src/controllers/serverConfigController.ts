@@ -1,6 +1,11 @@
-import { path } from "path";
-import { storageInstance } from "@/main";
-import Cookies from "js-cookie";
+// services
+import {
+  storeDataOnLocalStorage,
+  getDataFromLocalStorage,
+  storeCookie,
+  getCookie,
+  removeCookie,
+} from "../services/system";
 
 export default class ServerConfig {
   private serverUrl: string = "";
@@ -17,18 +22,16 @@ export default class ServerConfig {
     userToken?: string;
   }): Promise<void> {
     const { serverUrl, userToken } = params;
-    if (serverUrl) await storageInstance.set("serverUrl", serverUrl);
+    if (serverUrl)
+      await storeDataOnLocalStorage({ key: "serverUrl", value: serverUrl });
     if (userToken) {
-      Cookies.set("userToken", userToken, {
-        secure: true,
-        sameSite: "Strict",
-      });
+      storeCookie({ key: "userToken", value: userToken });
     }
   }
 
   private async load(): Promise<void> {
-    this.serverUrl = await storageInstance.get("serverUrl");
-    this.userToken = Cookies.get("userToken");
+    this.serverUrl = await getDataFromLocalStorage({ key: "serverUrl" });
+    this.userToken = getCookie({ key: "userToken" });
   }
 
   public async getConfig(): Promise<{ serverUrl: string; UserToken: string }> {
@@ -36,6 +39,6 @@ export default class ServerConfig {
   }
 
   public clearData() {
-    Cookies.remove("userToken");
+    removeCookie({ key: "userToken" });
   }
 }

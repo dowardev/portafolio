@@ -9,13 +9,13 @@ import {
 } from "../services/admin";
 
 // controllers
-import SystemController from "./systemController";
-const systemController = new SystemController();
+// import SystemController from "./systemController";
+// const systemController = new SystemController();
 
 export default class UserController {
   usersStore = useUsersStore();
   users = storeToRefs(this.usersStore).users;
-  openToastError = systemController.openToastError;
+  // openToastError = systemController.openToastError;
 
   async loadUsers(params: {
     paginatorInfo: { pagination: number; page: number };
@@ -38,7 +38,7 @@ export default class UserController {
       return response;
     } catch (error: any) {
       if (error.message == "Unauthorized") console.log("Unauthorized user");
-      this.openToastError(error);
+      // this.openToastError(error);
       throw error;
     }
   }
@@ -58,7 +58,7 @@ export default class UserController {
       return response;
     } catch (error: any) {
       if (error.message == "Unauthorized") console.log("Unauthorized user");
-      this.openToastError(error);
+      // this.openToastError(error);
       throw error;
     }
   }

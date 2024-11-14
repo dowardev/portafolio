@@ -18,18 +18,18 @@ export default class SystemController {
   // TODO:remove
   systemStore = useSystemStore();
 
-  async reportError(params: ReportError) {
-    const type = params.type;
-    const error = params.error;
+  // async reportError(params: ReportError) {
+  //   const type = params.type;
+  //   const error = params.error;
 
-    const modal = await modalController.create({
-      component: FeedbackPage,
-      componentProps: {
-        dataProp: { type, error },
-      },
-    });
-    await modal.present();
-  }
+  //   const modal = await modalController.create({
+  //     component: FeedbackPage,
+  //     componentProps: {
+  //       dataProp: { type, error },
+  //     },
+  //   });
+  //   await modal.present();
+  // }
 
   async openToastError(error: object) {
     const toast = await toastController.create({

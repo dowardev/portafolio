@@ -13,13 +13,10 @@ import {
 import { filterPostOptions } from "@/services/types";
 
 // controllers
-import SystemController from "./systemController";
 
 export default class PostController {
   postStore = usePostStore();
   postRefs = storeToRefs(this.postStore);
-  systemController = new SystemController();
-  openToastError = this.systemController.openToastError;
 
   async loadPosts(params: { date: string; filter?: filterPostOptions }) {
     const { date, filter } = params;
@@ -28,7 +25,7 @@ export default class PostController {
 
       this.postStore.setPosts({ posts });
     } catch (e: any) {
-      this.openToastError(e);
+      // this.openToastError(e);
       throw e;
     }
   }
@@ -41,7 +38,7 @@ export default class PostController {
 
       this.postStore.updateDates(dates);
     } catch (e: any) {
-      this.openToastError(e);
+      // this.openToastError(e);
       throw e;
     }
   }
@@ -55,7 +52,7 @@ export default class PostController {
       });
       this.postStore.addPost({ post });
     } catch (e: any) {
-      this.openToastError(e);
+      // this.openToastError(e);
       throw e;
     }
   }
@@ -107,7 +104,7 @@ export default class PostController {
 
       return result;
     } catch (e: any) {
-      this.openToastError(e);
+      // this.openToastError(e);
       throw e;
     }
   }

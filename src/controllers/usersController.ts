@@ -4,7 +4,7 @@ import { User } from "../services/interfaces";
 import { deleteUserAccount, getUser } from "../services/user";
 
 // controllers
-import SystemController from "./systemController";
+// import SystemController from "./systemController";
 
 export default class UsersController {
   userStore = useUserStore();
@@ -12,9 +12,9 @@ export default class UsersController {
   imageProfile = storeToRefs(this.userStore);
   token = storeToRefs(this.userStore);
   isLogged = storeToRefs(this.userStore);
-  systemController = new SystemController();
+  // systemController = new SystemController();
 
-  openToastError = this.systemController.openToastError;
+  // openToastError = this.systemController.openToastError;
 
   async loadUser() {
     try {
@@ -36,7 +36,7 @@ export default class UsersController {
       this.userStore.updateUserProps({ isAdmin });
     } catch (error: any) {
       if (error.message == "Unauthorized") return;
-      this.openToastError(error);
+      // this.openToastError(error);
       throw error.message;
     }
   }
