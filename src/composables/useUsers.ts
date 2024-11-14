@@ -2,18 +2,22 @@ import { useUsersStore } from "../store/usersStore";
 import { storeToRefs } from "pinia";
 import { SearchUsersResponse, User } from "../services/interfaces";
 import { deleteUserAccount } from "../services/user";
-import { useSystem } from "./useSystem";
+
 import {
   searchUsers,
   getUsersPaginated as getUsersPaginated2,
 } from "../services/admin";
 
-export const useUsers = () => {
-  const usersStore = useUsersStore();
-  const users = storeToRefs(usersStore).users;
-  const openToastError = useSystem().openToastError;
+// controllers
+import SystemController from "./useSystem";
+const systemController = new SystemController();
 
-  async function loadUsers(params: {
+export default class UserController {
+  usersStore = useUsersStore();
+  users = storeToRefs(this.usersStore).users;
+  openToastError = systemController.openToastError;
+
+  async loadUsers(params: {
     paginatorInfo: { pagination: number; page: number };
     search: string;
     filterOptions: string;
@@ -34,12 +38,12 @@ export const useUsers = () => {
       return response;
     } catch (error: any) {
       if (error.message == "Unauthorized") console.log("Unauthorized user");
-      openToastError(error);
+      this.openToastError(error);
       throw error;
     }
   }
 
-  async function getUsersPaginated(params: {
+  async getUsersPaginated(params: {
     page: number;
     perPage: number;
   }): Promise<SearchUsersResponse> {
@@ -54,17 +58,17 @@ export const useUsers = () => {
       return response;
     } catch (error: any) {
       if (error.message == "Unauthorized") console.log("Unauthorized user");
-      openToastError(error);
+      this.openToastError(error);
       throw error;
     }
   }
 
-  function updateUsers(params: { users: Array<User> }) {
+  updateUsers(params: { users: Array<User> }) {
     const users = params.users;
-    usersStore.updateUsersProps({ users });
+    this.usersStore.updateUsersProps({ users });
   }
 
-  async function deleteAccount(params: { password: string }) {
+  async deleteAccount(params: { password: string }) {
     try {
       await deleteUserAccount({
         password: params.password,
@@ -73,18 +77,4 @@ export const useUsers = () => {
       throw e;
     }
   }
-
-  return {
-    // functions
-    loadUsers,
-    deleteAccount,
-    updateUsers,
-
-    // props
-    users,
-
-    // computed
-    // imageProfile,
-    getUsersPaginated,
-  };
-};
+}

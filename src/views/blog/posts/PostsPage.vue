@@ -11,7 +11,7 @@
         <ion-buttons slot="end">
           <!-- <DateSelectorComponent></DateSelectorComponent> -->
           <ion-button
-            v-if="useUser().user.value.isAdmin"
+            v-if="userController.user.value.isAdmin"
             fill="clear"
             @click="addPost()"
           >
@@ -50,7 +50,7 @@
 
     <ion-content>
       <!-- posts -->
-      <ion-row v-if="usePost().getPosts()!.length > 0">
+      <ion-row v-if="postController.getPosts()!.length > 0">
         <ion-col
           v-for="(post, indexPost) in filterPosts"
           :key="post.id"
@@ -85,7 +85,7 @@
               <ion-col size="8">
                 <ion-row>
                   <ion-col
-                    :size="useUser().user.value.isAdmin ? 10 : 12"
+                    :size="userController.user.value.isAdmin ? 10 : 12"
                     @click="openPost(post.id!)"
                     style="cursor: pointer"
                   >
@@ -94,7 +94,7 @@
                     </ion-card-title>
                   </ion-col>
 
-                  <ion-col size="2" v-if="useUser().user.value.isAdmin">
+                  <ion-col size="2" v-if="userController.user.value.isAdmin">
                     <ion-button
                       fill="clear"
                       @click="
@@ -112,7 +112,7 @@
                 <ion-row @click="openPost(post.id!)" style="cursor: pointer">
                   <ion-col size="6">
                     <ion-chip
-                      v-if="useUser().user.value.isAdmin"
+                      v-if="userController.user.value.isAdmin"
                       :color="
                         post.status == 'active'
                           ? 'success'
@@ -131,7 +131,7 @@
       </ion-row>
       <!-- end posts -->
 
-      <section v-if="usePost().getPosts()!.length == 0 && loadFinished">
+      <section v-if="postController.getPosts()!.length == 0 && loadFinished">
         <div class="align-vertical">
           <div class="center">
             <ion-item lines="none">
@@ -147,7 +147,7 @@
       </section>
 
       <section
-        v-if="usePost().getPosts()!.length == 0 && loadFinished == false"
+        v-if="postController.getPosts()!.length == 0 && loadFinished == false"
       >
         <ion-row>
           <ion-col
@@ -254,7 +254,7 @@
         >
 
         <!-- filter -->
-        <ion-list v-if="useUser().user.value.isAdmin">
+        <ion-list v-if="userController.user.value.isAdmin">
           <ion-list-header>
             <ion-label>Filtro</ion-label>
           </ion-list-header>
@@ -302,7 +302,7 @@
 
         <ion-item
           button
-          v-if="useUser().user.value.isAdmin"
+          v-if="userController.user.value.isAdmin"
           lines="none"
           class="transparent"
           @click="deletePost({ id: idPostSelected })"
@@ -320,9 +320,7 @@
 import { IonItem, loadingController, IonPage } from "@ionic/vue";
 import { computed, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useUser } from "@/composables/useUser";
-import { usePost } from "@/composables/usePost";
-import { useSystem } from "@/composables/useSystem";
+
 import {
   addOutline,
   banOutline,
@@ -337,6 +335,14 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { openToast, presentAlertConfirmation } from "@/services/system";
+
+// controllers
+import UserController from "@/composables/useUser";
+import PostController from "@/composables/usePost";
+import SystemController from "@/composables/useSystem";
+const userController = new UserController();
+const postController = new PostController();
+const systemController = new SystemController();
 
 // components
 import DateSelectorComponent from "@/components/posts/DateSelectorComponent.vue";
@@ -375,9 +381,9 @@ const idPostSelected = ref<undefined | number>(undefined);
 
 // computed
 const filterPosts = computed(() => {
-  const posts = usePost().getPosts()!;
+  const posts = postController.getPosts()!;
   const result = posts.filter(
-    (post) => post.createdAt!.split("T")[0] == usePost().getCurrentPage()
+    (post) => post.createdAt!.split("T")[0] == postController.getCurrentPage()
   );
   return result;
 });
@@ -387,13 +393,13 @@ onMounted(() => {
 });
 
 watch(
-  () => usePost().getDates(),
+  () => postController.getDates(),
   (newValue) => {
     dates = newValue as any;
   }
 );
 watch(
-  () => usePost().getCurrentPage(),
+  () => postController.getCurrentPage(),
   (newValue) => {
     currentPage.value = newValue as string;
   }
@@ -425,7 +431,7 @@ async function loadContent(params: {
   await getPostsDates({ status });
 
   let dates = Array<string>();
-  dates = usePost().getDates()!;
+  dates = postController.getDates()!;
   if (dates.length == 0) {
     loadFinished.value = true;
     return;
@@ -433,7 +439,7 @@ async function loadContent(params: {
 
   let currentPage = "";
   currentPage = loadData({ dates });
-  usePost().updateCurrentPage({ currentPage });
+  postController.updateCurrentPage({ currentPage });
 
   await loadPosts({
     currentPage,
@@ -448,10 +454,10 @@ async function getPostsDates(params: {
   const { status } = params;
 
   try {
-    await usePost().loadDates({ status });
+    await postController.loadDates({ status });
   } catch (e: any) {
     console.error(e);
-    useSystem().openToastError(e);
+    systemController.openToastError(e);
     throw e;
   }
 }
@@ -463,13 +469,13 @@ async function loadPosts(params: {
   const { currentPage, filter } = params;
 
   try {
-    await usePost().loadPosts({
+    await postController.loadPosts({
       date: currentPage,
       filter,
     });
   } catch (e: any) {
     console.error(e);
-    useSystem().openToastError(e);
+    systemController.openToastError(e);
     throw e;
   }
 }
@@ -488,7 +494,7 @@ function loadData(params: { dates: Array<string> }): string {
 async function searchPosts(params: { search: string }): Promise<void> {
   const search = params.search;
 
-  const searchResultResponse = await usePost().searchPosts({
+  const searchResultResponse = await postController.searchPosts({
     search,
   });
   searchResult.value = searchResultResponse;
@@ -524,7 +530,7 @@ async function deletePost(params: { id: string }) {
 
   loading.present();
   try {
-    await usePost().deletePost({ id });
+    await postController.deletePost({ id });
     loadContent({ refetch: true });
     openToast({ message: "Post eliminado" });
   } catch (error) {
@@ -572,7 +578,7 @@ async function selectDate(params: { date: string }): Promise<void> {
 }
 
 function updatecurrentPage(): void {
-  usePost().updateCurrentPage({ currentPage: currentPage.value });
+  postController.updateCurrentPage({ currentPage: currentPage.value });
 }
 </script>
 

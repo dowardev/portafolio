@@ -27,7 +27,7 @@
 
         <!-- desktop options -->
         <ion-buttons slot="end" v-if="isPlatform('desktop')">
-          <section v-if="useUser().user.value.isAdmin">
+          <section v-if="userController.user.value.isAdmin">
             <ion-button fill="clear" @click="updatePost()">
               <ion-icon :icon="createOutline"></ion-icon>
             </ion-button>
@@ -42,14 +42,14 @@
             fill="clear"
             @click="openModalIndexContent()"
           >
-            <ion-icon :icon="menuOutline"></ion-icon>
-          </ion-button>
+            <ion-icon :icon="menuOutline"></ion-icon> </ion-button
+          >r
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content
-      v-if="usePost().getPost({ id: postId }) != undefined"
+      v-if="postController.getPost({ id: postId }) != undefined"
       :fullscreen="true"
     >
       <!-- content -->
@@ -74,7 +74,7 @@
                 --md-bk-color: var(--ion-background-color-rgb);
                 --md-color: var(--ion-text-color);
               "
-              :model-value="usePost().getPost({ id: postId })!.content"
+              :model-value="postController.getPost({ id: postId })!.content"
               :theme="
                 useSytemComposable.getTheme().selected == 'light'
                   ? 'light'
@@ -115,7 +115,7 @@
           <!-- update -->
           <ion-item
             lines="full"
-            v-if="useUser().user.value.isAdmin"
+            v-if="userController.user.value.isAdmin"
             button
             @click="updatePost()"
           >
@@ -126,7 +126,7 @@
           <!-- delete -->
           <ion-item
             lines="full"
-            v-if="useUser().user.value.isAdmin"
+            v-if="userController.user.value.isAdmin"
             button
             @click="deletePost()"
           >
@@ -167,11 +167,16 @@ import {
   presentAlertConfirmation,
   presentLoading,
 } from "@/services/system";
-import { useSystem } from "@/composables/useSystem";
 import indexContentComponent from "./indexContentComponent.vue";
 import { MdPreview } from "md-editor-v3";
 import { isPlatform, modalController } from "@ionic/vue";
 import modalIndexContent from "./modalIndexContent.vue";
+
+// controllers
+import SystemController from "@/composables/useSystem";
+import UserController from "@/composables/useUser";
+const systemController = new SystemController();
+const userController = new UserController();
 
 // vars
 const route = useRoute();
@@ -183,7 +188,7 @@ const indexContent = ref(
 );
 let headings = null;
 const indexRef = ref(null);
-const useSytemComposable = useSystem();
+const useSytemComposable = systemController;
 const popoverMainOptions = ref({ open: false, event: Event });
 const scrollPosition = ref(0);
 const showTitle = ref(false);
@@ -215,7 +220,7 @@ async function getPost(): Promise<void> {
   loading.present();
 
   try {
-    await usePost().loadPost({
+    await postController.loadPost({
       id: postId,
     });
   } catch (e: any) {
@@ -291,7 +296,7 @@ async function deletePost(): Promise<void> {
     // eventBus().emitter.emit("new-post");
   } catch (e: any) {
     spinners.value.buttonDelete = false;
-    useSystem().openToastError(e);
+    systemController.openToastError(e);
   }
 }
 

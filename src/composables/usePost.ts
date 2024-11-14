@@ -10,80 +10,82 @@ import {
   updatePost as updatePostService,
   uploadImage as uploadImageService,
 } from "../services/post";
-import { useSystem } from "./useSystem";
 import { filterPostOptions } from "@/services/types";
 
-export const usePost = () => {
-  const postStore = usePostStore();
-  const postRefs = storeToRefs(postStore);
-  const openToastError = useSystem().openToastError;
+// controllers
+import SystemController from "./useSystem";
 
-  async function loadPosts(params: {
-    date: string;
-    filter?: filterPostOptions;
-  }) {
+export default class PostController {
+  postStore = usePostStore();
+  postRefs = storeToRefs(this.postStore);
+  systemController = new SystemController();
+  openToastError = this.systemController.openToastError;
+
+  async loadPosts(params: { date: string; filter?: filterPostOptions }) {
     const { date, filter } = params;
     try {
       const posts = await getPostsService({ date, filter });
 
-      postStore.setPosts({ posts });
+      this.postStore.setPosts({ posts });
     } catch (e: any) {
-      openToastError(e);
+      this.openToastError(e);
       throw e;
     }
   }
 
-  async function loadDates(params: { status?: filterPostOptions }) {
+  async loadDates(params: { status?: filterPostOptions }) {
     const { status } = params;
 
     try {
       const dates = await getPostsDates({ status });
 
-      postStore.updateDates(dates);
+      this.postStore.updateDates(dates);
     } catch (e: any) {
-      openToastError(e);
+      this.openToastError(e);
       throw e;
     }
   }
 
-  async function loadPost(params: { id: number | string }) {
+  async loadPost(params: { id: number | string }) {
     const id = params.id;
 
     try {
       const post = await getPostService({
         id,
       });
-      postStore.addPost({ post });
+      this.postStore.addPost({ post });
     } catch (e: any) {
-      openToastError(e);
+      this.openToastError(e);
       throw e;
     }
   }
 
-  function getPost(params: { id: string }): Post | undefined {
+  getPost(params: { id: string }): Post | undefined {
     const id = params.id;
-    const post = postStore.getPost({ id });
+    const post = this.postStore.getPost({ id });
     return post ? post : undefined;
   }
 
-  function getPosts(): Post[] | undefined {
-    const posts = postStore.getPosts();
+  getPosts(): Post[] | undefined {
+    const posts = this.postStore.getPosts();
     return posts ? posts : undefined;
   }
 
-  function getDates(): Array<string> | undefined {
-    return postRefs.dates ? postRefs.dates.value : undefined;
+  getDates(): Array<string> | undefined {
+    return this.postRefs.dates ? this.postRefs.dates.value : undefined;
   }
 
-  function getCurrentPage(): string | undefined {
-    return postRefs.currentPage.value ? postRefs.currentPage.value : undefined;
+  getCurrentPage(): string | undefined {
+    return this.postRefs.currentPage.value
+      ? this.postRefs.currentPage.value
+      : undefined;
   }
 
-  function updateCurrentPage(params: { currentPage: string }) {
-    postStore.updateCurrentPage({ currentPage: params.currentPage });
+  updateCurrentPage(params: { currentPage: string }) {
+    this.postStore.updateCurrentPage({ currentPage: params.currentPage });
   }
 
-  async function deletePost(params: { id: string }): Promise<void> {
+  async deletePost(params: { id: string }): Promise<void> {
     const id = params.id;
 
     try {
@@ -93,7 +95,7 @@ export const usePost = () => {
     }
   }
 
-  async function searchPosts(params: {
+  async searchPosts(params: {
     search: string;
   }): Promise<Array<{ id: string; title: string }>> {
     const search = params.search;
@@ -105,12 +107,12 @@ export const usePost = () => {
 
       return result;
     } catch (e: any) {
-      openToastError(e);
+      this.openToastError(e);
       throw e;
     }
   }
 
-  async function updatePost(params: { post: UpdatePost }): Promise<void> {
+  async updatePost(params: { post: UpdatePost }): Promise<void> {
     const { id, title, content, cover, images, imagesRemoved } = params.post;
     const post = {
       id: id!,
@@ -127,7 +129,7 @@ export const usePost = () => {
         post,
       });
 
-      postStore.updatePost({
+      this.postStore.updatePost({
         post: {
           id,
           title,
@@ -142,27 +144,11 @@ export const usePost = () => {
     }
   }
 
-  async function updateCover(params: {
+  async updateCover(params: {
     image: File;
   }): Promise<{ id: string; path: string }> {
     const { image } = params;
     const { id, path } = await uploadImageService({ image, type: "post" });
     return { id, path };
   }
-
-  return {
-    // functions
-    deletePost,
-    getCurrentPage,
-    getDates,
-    getPost,
-    getPosts,
-    loadDates,
-    loadPost,
-    loadPosts,
-    updateCurrentPage,
-    searchPosts,
-    updatePost,
-    updateCover,
-  };
-};
+}

@@ -52,13 +52,15 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { banOutline } from "ionicons/icons";
-import { useSystem } from "../../composables/useSystem";
 import { useRoute } from "vue-router";
 
-const route = useRoute();
+// controllers
+import SystemController from "@/composables/useSystem";
+const systemController = new SystemController();
 
+const route = useRoute();
 const pageTitle = "404";
-const reportError = useSystem().reportError;
+const reportError = systemController.reportError;
 
 // functions
 function openReportError() {

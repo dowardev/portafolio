@@ -26,7 +26,7 @@
             ><ion-label>{{ themeName }}</ion-label>
 
             <ion-icon
-              v-if="systemComposable.getTheme().selected == themeName"
+              v-if="systemController.getTheme().selected == themeName"
               :icon="checkmarkOutline"
             ></ion-icon>
           </ion-item>
@@ -51,12 +51,14 @@ import {
 } from "@ionic/vue";
 import { checkmarkOutline, chevronBackOutline } from "ionicons/icons";
 import { Theme as ThemeType } from "../../services/types";
-import { useSystem } from "@/composables/useSystem";
 import { Theme } from "@/services/interfaces";
 
 const availableThemes: ThemeType[] = ["light", "nord", "gruvbox"];
 const pageTitle = "Selector de tema";
-const systemComposable = useSystem();
+
+// controllers
+import SystemController from "@/composables/useSystem";
+const systemController = new SystemController();
 
 // functions
 function closeModal(): void {
@@ -66,20 +68,20 @@ function closeModal(): void {
 async function applyTheme(params: { themeName: ThemeType }): Promise<void> {
   const { themeName } = params;
   const theme = JSON.parse(
-    JSON.stringify(systemComposable.getTheme())
+    JSON.stringify(systemController.getTheme())
   ) as Theme;
   theme.selected = themeName;
-  systemComposable.updateThemeSelected({ theme });
+  systemController.updateThemeSelected({ theme });
 }
 
 async function setBlurEffect(): Promise<void> {
   const theme = JSON.parse(
-    JSON.stringify(systemComposable.getTheme())
+    JSON.stringify(systemController.getTheme())
   ) as Theme;
   if (!theme.options) {
     theme.options = {};
   }
   theme.options.blur = !theme.options.blur;
-  systemComposable.updateThemeSelected({ theme });
+  systemController.updateThemeSelected({ theme });
 }
 </script>

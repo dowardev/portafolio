@@ -31,7 +31,7 @@ import {
   isPlatform,
   IonToast,
 } from "@ionic/vue";
-import { computed, nextTick, onMounted } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
 import { getFirstCookie } from "./services/system";
 import { closeOutline } from "ionicons/icons";
@@ -41,10 +41,9 @@ import { useRouter } from "vue-router";
 import { createFirstCookie as createFirstCookieService } from "./services/system";
 import { wb } from "./main";
 
-// composables
-import { useSystem } from "./composables/useSystem";
-import { ref } from "vue";
-const systemComposable = useSystem();
+// controllers
+import SystemController from "./composables/useSystem";
+const systemController = new SystemController();
 
 // store
 const store = new Storage();
@@ -58,13 +57,13 @@ const openToastUpdateApp = ref(false);
 onMounted(async () => {
   createFirstCookie();
 
-  await systemComposable.loadThemeSelected();
-  const theme = useSystem().getTheme();
-  systemComposable.applyTheme({ newTheme: theme, oldTheme: theme });
+  await systemController.loadThemeSelected();
+  const theme = systemController.getTheme();
+  systemController.applyTheme({ newTheme: theme, oldTheme: theme });
 
   if ("serviceWorker" in navigator && wb) {
     wb.addEventListener("waiting", () => {
-      useSystem().toggleUpdateOption();
+      systemController.toggleUpdateOption();
       openToastUpdateApp.value = true;
     });
   }

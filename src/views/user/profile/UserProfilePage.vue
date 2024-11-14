@@ -356,8 +356,10 @@ import {
   keyOutline,
 } from "ionicons/icons";
 import userAvatar from "../../../assets/otros/user.png";
-import { useUser } from "../../../composables/useUser";
-import { useSystem } from "../../../composables/useSystem";
+
+// controllers
+import SystemController from "@/composables/useSystem";
+const systemController = new SystemController();
 
 const form = ref({
   name: "",
@@ -485,7 +487,7 @@ async function saveUserData() {
       return;
     }
     console.error(e);
-    useSystem().openToastError(e);
+    systemController.openToastError(e);
   } finally {
     spinners.value.saveUserData = false;
   }
@@ -536,7 +538,7 @@ async function uploadUserImage(e: any) {
     });
   } catch (e: any) {
     console.error(e);
-    useSystem().openToastError(e);
+    systemController.openToastError(e);
   } finally {
     spinners.value.uploadImage = false;
   }
@@ -604,7 +606,7 @@ async function deleteUserAccount() {
         });
       }
       console.error(e);
-      useSystem().openToastError(e);
+      systemController.openToastError(e);
     } finally {
       spinners.value.deleteUserAccount = false;
     }
@@ -620,7 +622,7 @@ async function logout() {
     location.reload();
   } catch (e: any) {
     console.error(e);
-    useSystem().openToastError(e);
+    systemController.openToastError(e);
   }
 }
 </script>

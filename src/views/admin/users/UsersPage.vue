@@ -321,10 +321,14 @@ import {
 import { openToast, presentAlertConfirmation } from "../../../services/system";
 // import { sendMailResetPassword as sendMailResetPasswordService } from "../../../services/session";
 import { resendEmailConfirmation as resendEmailConfirmationService } from "../../../services/user";
-import { useUsers } from "../../../composables/useUsers";
-import { useSystem } from "../../../composables/useSystem";
 
-const openToastError = useSystem().openToastError;
+// constrollers
+import UserController from "@/composables/useUser";
+import SystemController from "@/composables/useSystem";
+const userController = new userController();
+const systemController = new SystemController();
+
+const openToastError = systemController.openToastError;
 
 const pagInfo = ref({
   currentPage: 1,

@@ -30,15 +30,19 @@ import {
   POST_DETAILS,
   UPLOAD_IMAGE,
 } from "../../../services/graphql";
-import { usePost } from "../../../composables/usePost";
-import { useSystem } from "../../../composables/useSystem";
 import { useRoute, useRouter } from "vue-router";
 import { UpdatePost } from "@/services/interfaces";
+
+// controllers
+import PostController from "../../../composables/usePost";
+import SystemController from "../../../composables/useSystem";
+const postController = new PostController();
+const systemController = new SystemController();
 
 const router = useRouter();
 const route = useRoute();
 
-const openToastError = useSystem().openToastError;
+const openToastError = systemController.openToastError;
 
 const idPost = route.params.id as string;
 const title = ref("");
@@ -62,11 +66,11 @@ async function getPost(): Promise<void> {
   loading.present();
 
   try {
-    await usePost().loadPost({
+    await postController.loadPost({
       id: idPost,
     });
 
-    const post = usePost().getPost({
+    const post = postController.getPost({
       id: idPost,
     })!;
     const title = post.title ?? "";
@@ -160,7 +164,7 @@ async function save(data: {
 
 async function updatePost(params: { post: UpdatePost }): Promise<void> {
   try {
-    await usePost().updatePost({ post: params.post });
+    await postController.updatePost({ post: params.post });
   } catch (e: any) {
     throw new Error(e);
   }
@@ -195,7 +199,7 @@ async function uploadCover(params: {
 }): Promise<{ id: string } | undefined> {
   const { image } = params;
   try {
-    const { id } = await usePost().updateCover({ image });
+    const { id } = await postController.updateCover({ image });
     return { id };
   } catch (e: any) {
     openToastError(e);
@@ -222,7 +226,7 @@ function getRemovedImages(content: string) {
 
 async function refreshPostsCotent() {
   try {
-    await usePost().loadPost({
+    await postController.loadPost({
       id: idPost,
     });
   } catch (e: any) {
@@ -235,6 +239,6 @@ async function getImageURL(params: {
 }): Promise<{ id: string; name: string; url: string }> {
   const { name } = params;
 
-  return await useSystem().getImageURL({ name });
+  return await systemController.getImageURL({ name });
 }
 </script>

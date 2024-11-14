@@ -122,13 +122,14 @@ import { userLogin } from "../../../services/session";
 import { setUserToken, resendEmailConfirmation } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import { useSystem } from "../../../composables/useSystem";
 import { useRouter } from "vue-router";
 import { closeOutline, server } from "ionicons/icons";
 
-//composables
+//controllers
 import ServerConfig from "@/composables/serverConfig";
+import SystemController from "../../../composables/useSystem";
 const serverConfig = new ServerConfig();
+const systemController = new SystemController();
 
 // components
 import LoginFormComponent from "@/forms/LoginFormComponent.vue";
@@ -214,7 +215,7 @@ async function login(params: { email: string; password: string }) {
       return;
     }
 
-    useSystem().openToastError(e);
+    systemController.openToastError(e);
     console.error(e.message);
   }
 }

@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
 import NoFoundPage from "../views/404/404Page.vue";
-import { useUser } from "../composables/useUser";
 import HomePresentationPage from "../views/presentation/HomePresentationPage.vue";
 import SkillsPage from "@/views/skills/SkillsPage.vue";
 import HistoryPage from "@/views/history/HistoryPage.vue";
@@ -17,9 +16,12 @@ import UserPanelPage from "@/views/user/UserPanelPage.vue";
 import AdminPanelPage from "@/views/admin/users/UsersPage.vue";
 import InformationComponent from "@/views/presentation/information/InformationComponent.vue";
 
-async function loadUser(): Promise<void> {
+// controllers
+import UserController from "@/composables/useUser";
+
+async function loadUser(controller: UserController): Promise<void> {
   try {
-    await useUser().loadUser();
+    await controller.loadUser();
   } catch (error: any) {
     throw new Error(error.message);
   }
@@ -110,9 +112,10 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  await loadUser();
-  const user = useUser().user.value.user;
-  const isAdmin = useUser().user.value.isAdmin;
+  const userController = new UserController();
+  await loadUser(userController);
+  const user = userController.user.user;
+  const isAdmin = userController.user.isAdmin;
 
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];

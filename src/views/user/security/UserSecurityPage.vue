@@ -42,7 +42,7 @@
           size-xl="4"
           offset-xl="1"
         >
-          <ion-card 
+          <ion-card
             :class="{
               'element-post-selected': updatePasswordCardSelected,
               'element-post-no-selected': !updatePasswordCardSelected,
@@ -177,7 +177,8 @@
                 </ion-button>
               </ion-item>
               <div
-                v-for="(error, index) of (v$ as any).form.newPasswordRepeat.$errors"
+                v-for="(error, index) of (v$ as any).form.newPasswordRepeat
+                  .$errors"
                 :key="index"
               >
                 <div class="error">{{ error.$message }}</div>
@@ -228,7 +229,10 @@ import {
   informationCircleOutline,
   keyOutline,
 } from "ionicons/icons";
-import { useSystem } from "../../../composables/useSystem";
+
+// controllers
+import SystemController from "@/composables/useSystem";
+const systemController = SystemController();
 
 const form = ref({
   oldPassword: "",
@@ -284,7 +288,6 @@ const rules = {
 const v$ = useVuelidate(rules, { form });
 const updatePasswordCardSelected = ref(false);
 
-
 // functions
 async function saveUserPassword() {
   spinners.value.saveUserPassword = true;
@@ -303,7 +306,7 @@ async function saveUserPassword() {
       return;
     }
     console.error(e);
-    useSystem().openToastError(e);
+    systemController.openToastError(e);
   }
 }
 </script>

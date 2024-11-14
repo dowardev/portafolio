@@ -209,7 +209,10 @@ import { required, helpers, email, minLength } from "@vuelidate/validators";
 import { openToast } from "../../services/system";
 import { createFeedback } from "../../services/feedback";
 import { ReportError } from "../../services/interfaces";
-import { useUser } from "../../composables/useUser";
+
+// composables
+import UserController from "@/composables/useUser";
+const userController = new UserController();
 
 const props = defineProps<{
   data: ReportError;
@@ -272,11 +275,11 @@ function closeModal() {
 
 async function getUser() {
   try {
-    await useUser().loadUser();
+    await userController.loadUser();
 
-    form.value.id = useUser().user.value.id!;
-    form.value.name = useUser().user.value.name!;
-    form.value.email = useUser().user.value.email!;
+    form.value.id = userController.user.value.id!;
+    form.value.name = userController.user.value.name!;
+    form.value.email = userController.user.value.email!;
   } catch (e: any) {
     console.error(e);
     return;

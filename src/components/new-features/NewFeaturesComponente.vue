@@ -127,11 +127,6 @@ interface SubVersion {
   corrections: string[];
 }
 
-// composables
-import { useSystem } from "../../composables/useSystem";
-
-const systemComposable = useSystem();
-
 const versionsData = versionsDataJson as VersionsData;
 
 const pageTitle = ref("Novedades");

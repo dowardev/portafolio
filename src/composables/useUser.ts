@@ -2,48 +2,54 @@ import { useUserStore } from "../store/userStore";
 import { storeToRefs } from "pinia";
 import { User } from "../services/interfaces";
 import { deleteUserAccount, getUser } from "../services/user";
-import { useSystem } from "./useSystem";
 
-export const useUser = () => {
-  const userStore = useUserStore();
-  const { user, imageProfile, token, isLogged } = storeToRefs(userStore);
+// controllers
+import SystemController from "./useSystem";
 
-  const openToastError = useSystem().openToastError;
+export default class UserController {
+  userStore = useUserStore();
+  user = storeToRefs(this.userStore);
+  imageProfile = storeToRefs(this.userStore);
+  token = storeToRefs(this.userStore);
+  isLogged = storeToRefs(this.userStore);
+  systemController = new SystemController();
 
-  async function loadUser() {
+  openToastError = this.systemController.openToastError;
+
+  async loadUser() {
     try {
       const user = await getUser();
 
-      updateUserProps({ user });
+      this.updateUserProps({ user });
     } catch (error: any) {
       if (error.message != "Unauthorized") throw error;
     }
   }
 
-  function updateUserProps(params: { user: User }) {
-    userStore.updateUserProps(params.user);
+  updateUserProps(params: { user: User }) {
+    this.userStore.updateUserProps(params.user);
   }
 
-  async function updateUserAdminProp(params: { refetch: boolean }) {
+  async updateUserAdminProp(params: { refetch: boolean }) {
     try {
       const { isAdmin } = await getUser();
-      userStore.updateUserProps({ isAdmin });
+      this.userStore.updateUserProps({ isAdmin });
     } catch (error: any) {
       if (error.message == "Unauthorized") return;
-      openToastError(error);
-      throw error.messge;
+      this.openToastError(error);
+      throw error.message;
     }
   }
 
-  function updateUserLoggedProp(isLogged: boolean) {
-    userStore.updateUserLoggedProp(isLogged);
+  updateUserLoggedProp(isLogged: boolean) {
+    this.userStore.updateUserLoggedProp(isLogged);
   }
 
-  function updateUserTokenProp(token: string) {
-    userStore.updateTokenProp(token);
+  updateUserTokenProp(token: string) {
+    this.userStore.updateTokenProp(token);
   }
 
-  async function deleteAccount(params: { password: string }) {
+  async deleteAccount(params: { password: string }) {
     try {
       await deleteUserAccount({
         password: params.password,
@@ -54,22 +60,4 @@ export const useUser = () => {
       throw e;
     }
   }
-
-  return {
-    // functions
-    loadUser,
-    updateUserAdminProp,
-    updateUserLoggedProp,
-    updateUserToken: updateUserTokenProp,
-    updateUserProps,
-    deleteAccount,
-
-    // props
-    user,
-    token,
-    isLogged,
-
-    // computed
-    imageProfile,
-  };
-};
+}

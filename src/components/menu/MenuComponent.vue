@@ -6,13 +6,12 @@
           <ion-col>
             <!-- user logged -->
             <ion-item
-              v-if="Object.keys(useUser().user.value).length > 0"
+              v-if="Object.keys(userController.user).length > 0"
               lines="none"
               class="transparent"
               @click="setOpenPopOverUserOptions(true, $event)"
             >
-              <ion-label>{{ useUser().user.value.name }}</ion-label>
-
+              <ion-label>{{ userController.user.name }}</ion-label>
               <ion-button
                 slot="end"
                 fill="clear"
@@ -27,7 +26,7 @@
 
             <!-- no logged -->
             <ion-item
-              v-if="Object.keys(useUser().user.value).length == 0"
+              v-if="Object.keys(userController.user).length == 0"
               class="transparent"
               lines="none"
             >
@@ -230,7 +229,7 @@
                         <ion-chip
                           slot="end"
                           color="primary"
-                          v-if="systemComposable.getUpdateStatus() == true"
+                          v-if="systemController.getUpdateStatus() == true"
                           >Novedad</ion-chip
                         >
                       </ion-item>
@@ -259,7 +258,7 @@
         <ion-content>
           <!-- admin panel -->
           <ion-item
-            v-if="useUser().user.value.isAdmin"
+            v-if="userController.user.isAdmin"
             button
             :disabled="spinners.buttonAdminPanel"
             lines="none"
@@ -389,7 +388,6 @@ import {
 } from "ionicons/icons";
 import AppsComponent from "./apps/Apps.vue";
 import DonationsComponent from "./donations/Donations.vue";
-import { useUser } from "./../../composables/useUser";
 import { useRouter } from "vue-router";
 
 // components
@@ -397,11 +395,13 @@ import ThemeComponente from "@/components/theme/ThemeComponente.vue";
 import NewFeaturesComponent from "@/components/new-features/NewFeaturesComponente.vue";
 import FeedbackPage from "../feedback/FeedbackPage.vue";
 
-// composables
-import { useSystem } from "../../composables/useSystem";
+// controllers
 import ServerConfig from "@/composables/serverConfig";
-const systemComposable = useSystem();
+import UserController from "@/composables/useUser";
+import SystemController from "@/composables/useSystem";
 const serverConfig = new ServerConfig();
+const userController = new UserController();
+const systemController = new SystemController();
 
 const router = useRouter();
 const isOpenRefPopOverUserOptions = ref(false);
@@ -441,7 +441,7 @@ function openRoute(params: { route?: string; name?: string }) {
 
 async function getUser() {
   try {
-    useUser().loadUser();
+    userController.loadUser();
   } catch (error) {}
 }
 

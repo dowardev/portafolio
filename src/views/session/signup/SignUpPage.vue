@@ -88,8 +88,11 @@ import {
 import { ref } from "vue";
 import { userRegister } from "../../../services/session";
 import { openToast } from "../../../services/system";
-import { useSystem } from "../../../composables/useSystem";
 import { useRouter } from "vue-router";
+
+// controllers
+import SystemController from "@/composables/useSystem";
+const systemController = new SystemController();
 
 // components
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
@@ -151,7 +154,7 @@ async function register(params: {
       return;
     }
     console.error(e);
-    useSystem().openToastError(e);
+    systemController.openToastError(e);
   }
 }
 

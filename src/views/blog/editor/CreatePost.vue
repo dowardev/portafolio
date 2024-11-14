@@ -24,13 +24,17 @@ import {
 } from "../../../services/system";
 import EditorComponent from "./EditorPage.vue";
 import { CreatePost } from "../../../services/interfaces";
-import { usePost } from "../../../composables/usePost";
-import { useSystem } from "../../../composables/useSystem";
 import { useRouter } from "vue-router";
+
+// controllers
+import PostController from "../../../composables/usePost";
+import SystemController from "../../../composables/useSystem";
+const postController = new PostController();
+const systemController = new SystemController();
 
 const router = useRouter();
 
-const openToastError = useSystem().openToastError;
+const openToastError = systemController.openToastError;
 
 const content = ref("");
 const images = Array<string>();
@@ -126,7 +130,7 @@ async function uploadImage(e: File): Promise<void> {
 async function uploadCover(params: { image: File }): Promise<{ id: string }> {
   const { image } = params;
   try {
-    const { id } = await usePost().updateCover({ image });
+    const { id } = await postController.updateCover({ image });
     return { id };
   } catch (e: any) {
     openToastError(e);
@@ -139,11 +143,11 @@ async function uploadCover(params: { image: File }): Promise<{ id: string }> {
 // }
 
 async function refreshPostsCotent() {
-  let currentPage = usePost().getCurrentPage()!;
+  let currentPage = postController.getCurrentPage()!;
   if (currentPage == undefined) currentPage = "";
 
   try {
-    await usePost().loadDates({
+    await postController.loadDates({
       graphql: { name: POST_DATES, fragment: "PostDates", refetch: true },
     });
   } catch (e: any) {
@@ -153,7 +157,7 @@ async function refreshPostsCotent() {
   }
 
   try {
-    await usePost().loadPosts({
+    await postController.loadPosts({
       date: currentPage,
       graphql: {
         name: ALL_POSTS_DETAILS,
@@ -173,6 +177,6 @@ async function getImageURL(params: {
 }): Promise<{ id: string; name: string; url: string }> {
   const { name } = params;
 
-  return await useSystem().getImageURL({ name });
+  return await systemController.getImageURL({ name });
 }
 </script>

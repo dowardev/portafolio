@@ -1,23 +1,24 @@
 import { System, Theme } from "@/services/interfaces";
 import { defineStore } from "pinia";
 import { reactive, ref, watch } from "vue";
-import { useSystem } from "@/composables/useSystem";
+
+// controllers
+// import SystemController from "@/composables/useSystem";
 
 export const useSystemStore = defineStore("system", () => {
+  // const systemController = new SystemController();
   const theme = ref({
     selected: "light",
   } as Theme);
   const update = ref(false);
-
-  const systemComposable = useSystem();
 
   watch(theme, async (newValue, oldValue) => {
     if (
       oldValue.selected != newValue.selected ||
       oldValue.options?.blur != newValue.options?.blur
     ) {
-      await systemComposable.storeThemeSelected({ theme: theme.value });
-      systemComposable.applyTheme({ newTheme: newValue, oldTheme: oldValue });
+      // await systemController.storeThemeSelected({ theme: theme.value });
+      // systemController.applyTheme({ newTheme: newValue, oldTheme: oldValue });
     }
   });
 
