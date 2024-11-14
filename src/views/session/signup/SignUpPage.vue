@@ -91,7 +91,7 @@ import { openToast } from "../../../services/system";
 import { useRouter } from "vue-router";
 
 // controllers
-import SystemController from "@/composables/useSystem";
+import SystemController from "@/controllers/systemController";
 const systemController = new SystemController();
 
 // components

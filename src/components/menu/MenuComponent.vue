@@ -396,11 +396,11 @@ import NewFeaturesComponent from "@/components/new-features/NewFeaturesComponent
 import FeedbackPage from "../feedback/FeedbackPage.vue";
 
 // controllers
-import ServerConfig from "@/composables/serverConfig";
-import UserController from "@/composables/useUser";
-import SystemController from "@/composables/useSystem";
+import ServerConfig from "@/controllers/serverConfigController";
+import UsersController from "@/controllers/usersController";
+import SystemController from "@/controllers/systemController";
 const serverConfig = new ServerConfig();
-const userController = new UserController();
+const userController = new UsersController();
 const systemController = new SystemController();
 
 const router = useRouter();

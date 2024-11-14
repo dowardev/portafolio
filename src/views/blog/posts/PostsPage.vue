@@ -337,10 +337,10 @@ import {
 import { openToast, presentAlertConfirmation } from "@/services/system";
 
 // controllers
-import UserController from "@/composables/useUser";
-import PostController from "@/composables/usePost";
-import SystemController from "@/composables/useSystem";
-const userController = new UserController();
+import UsersController from "@/controllers/usersController";
+import PostController from "@/controllers/postController";
+import SystemController from "@/controllers/systemController";
+const userController = new UsersController();
 const postController = new PostController();
 const systemController = new SystemController();
 

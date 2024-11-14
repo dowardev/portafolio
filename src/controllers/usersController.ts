@@ -4,9 +4,9 @@ import { User } from "../services/interfaces";
 import { deleteUserAccount, getUser } from "../services/user";
 
 // controllers
-import SystemController from "./useSystem";
+import SystemController from "./systemController";
 
-export default class UserController {
+export default class UsersController {
   userStore = useUserStore();
   user = storeToRefs(this.userStore);
   imageProfile = storeToRefs(this.userStore);

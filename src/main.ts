@@ -44,7 +44,7 @@ const storage = new Storage();
 export const storageInstance = await initStorage();
 
 // server config
-import ServerConfig from "@/composables/serverConfig";
+import ServerConfig from "@/controllers/serverConfigController";
 const serverConfigService = await ServerConfig.createInstance();
 await serverConfigService.store({
   serverUrl: "http://127.0.0.1:8000/api/",

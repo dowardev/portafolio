@@ -57,7 +57,7 @@ const availableThemes: ThemeType[] = ["light", "nord", "gruvbox"];
 const pageTitle = "Selector de tema";
 
 // controllers
-import SystemController from "@/composables/useSystem";
+import SystemController from "@/controllers/systemController";
 const systemController = new SystemController();
 
 // functions

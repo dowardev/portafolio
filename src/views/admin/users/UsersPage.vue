@@ -323,8 +323,8 @@ import { openToast, presentAlertConfirmation } from "../../../services/system";
 import { resendEmailConfirmation as resendEmailConfirmationService } from "../../../services/user";
 
 // constrollers
-import UserController from "@/composables/useUser";
-import SystemController from "@/composables/useSystem";
+import UsersController from "@/controllers/usersController";
+import SystemController from "@/controllers/systemController";
 const userController = new userController();
 const systemController = new SystemController();
 

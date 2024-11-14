@@ -211,8 +211,8 @@ import { createFeedback } from "../../services/feedback";
 import { ReportError } from "../../services/interfaces";
 
 // composables
-import UserController from "@/composables/useUser";
-const userController = new UserController();
+import UsersController from "@/controllers/usersController";
+const userController = new UsersController();
 
 const props = defineProps<{
   data: ReportError;

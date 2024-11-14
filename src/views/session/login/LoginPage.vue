@@ -126,8 +126,8 @@ import { useRouter } from "vue-router";
 import { closeOutline, server } from "ionicons/icons";
 
 //controllers
-import ServerConfig from "@/composables/serverConfig";
-import SystemController from "../../../composables/useSystem";
+import ServerConfig from "@/controllers/serverConfigController";
+import SystemController from "../../../controllers/systemController";
 const serverConfig = new ServerConfig();
 const systemController = new SystemController();
 

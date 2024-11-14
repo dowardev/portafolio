@@ -13,7 +13,7 @@ import {
 import { filterPostOptions } from "@/services/types";
 
 // controllers
-import SystemController from "./useSystem";
+import SystemController from "./systemController";
 
 export default class PostController {
   postStore = usePostStore();

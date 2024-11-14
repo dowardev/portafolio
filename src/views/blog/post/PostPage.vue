@@ -158,8 +158,8 @@ import {
   menuOutline,
   trashOutline,
 } from "ionicons/icons";
-import { useUser } from "@/composables/useUser";
-import { usePost } from "@/composables/usePost";
+import { useUser } from "@/controllers/usersController";
+import { usePost } from "@/controllers/postController";
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref, watch } from "vue";
 import {
@@ -173,10 +173,10 @@ import { isPlatform, modalController } from "@ionic/vue";
 import modalIndexContent from "./modalIndexContent.vue";
 
 // controllers
-import SystemController from "@/composables/useSystem";
-import UserController from "@/composables/useUser";
+import SystemController from "@/controllers/systemController";
+import UsersController from "@/controllers/usersController";
 const systemController = new SystemController();
-const userController = new UserController();
+const userController = new UsersController();
 
 // vars
 const route = useRoute();

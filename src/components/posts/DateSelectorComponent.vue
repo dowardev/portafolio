@@ -34,7 +34,7 @@
 import { IonSelect, IonSelectOption, isPlatform } from "@ionic/vue";
 import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
 import { reactive, ref, watch } from "vue";
-import { usePost } from "../../composables/usePost";
+import { usePost } from "../../controllers/postController";
 
 const emits = defineEmits(["currentDateChange"]);
 

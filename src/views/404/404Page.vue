@@ -55,7 +55,7 @@ import { banOutline } from "ionicons/icons";
 import { useRoute } from "vue-router";
 
 // controllers
-import SystemController from "@/composables/useSystem";
+import SystemController from "@/controllers/systemController";
 const systemController = new SystemController();
 
 const route = useRoute();

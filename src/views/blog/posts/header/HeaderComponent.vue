@@ -155,9 +155,9 @@ import {
   refreshOutline,
   searchOutline,
 } from "ionicons/icons";
-import { useUser } from "@/composables/useUser";
-import { usePost } from "@/composables/usePost";
-import { useSystem } from "@/composables/useSystem";
+import { useUser } from "@/controllers/usersController";
+import { usePost } from "@/controllers/postController";
+import { useSystem } from "@/controllers/systemController";
 
 // components
 import DateSelectorComponent from "@/components/posts/DateSelectorComponent.vue";

@@ -350,8 +350,8 @@ import {
 } from "ionicons/icons";
 import AppsComponent from "../apps/Apps.vue";
 import DonationsComponent from "../donations/Donations.vue";
-import { useUser } from "../../../composables/useUser";
-import { useSystem } from "../../../composables/useSystem";
+import { useUser } from "../../../controllers/usersController";
+import { useSystem } from "../../../controllers/systemController";
 import { useRouter } from "vue-router";
 // components
 import ThemeComponente from "@/components/theme/ThemeComponente.vue";

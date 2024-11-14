@@ -9,7 +9,7 @@ import {
 } from "../services/admin";
 
 // controllers
-import SystemController from "./useSystem";
+import SystemController from "./systemController";
 const systemController = new SystemController();
 
 export default class UserController {

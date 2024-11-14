@@ -231,7 +231,7 @@ import {
 } from "ionicons/icons";
 
 // controllers
-import SystemController from "@/composables/useSystem";
+import SystemController from "@/controllers/systemController";
 const systemController = SystemController();
 
 const form = ref({

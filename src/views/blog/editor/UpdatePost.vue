@@ -34,8 +34,8 @@ import { useRoute, useRouter } from "vue-router";
 import { UpdatePost } from "@/services/interfaces";
 
 // controllers
-import PostController from "../../../composables/usePost";
-import SystemController from "../../../composables/useSystem";
+import PostController from "../../../controllers/postController";
+import SystemController from "../../../controllers/systemController";
 const postController = new PostController();
 const systemController = new SystemController();
 

@@ -8,7 +8,7 @@ import {
   ResendEmailConfirmation,
   User,
 } from "./interfaces";
-import ServerConfig from "@/composables/serverConfig";
+import ServerConfig from "@/controllers/serverConfigController";
 
 import axios from "axios";
 import { apiConnector } from "@/main";

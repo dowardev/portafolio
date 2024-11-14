@@ -42,7 +42,7 @@ import { createFirstCookie as createFirstCookieService } from "./services/system
 import { wb } from "./main";
 
 // controllers
-import SystemController from "./composables/useSystem";
+import SystemController from "./controllers/systemController";
 const systemController = new SystemController();
 
 // store

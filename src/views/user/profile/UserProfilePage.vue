@@ -358,7 +358,7 @@ import {
 import userAvatar from "../../../assets/otros/user.png";
 
 // controllers
-import SystemController from "@/composables/useSystem";
+import SystemController from "@/controllers/systemController";
 const systemController = new SystemController();
 
 const form = ref({
