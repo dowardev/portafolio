@@ -1,3 +1,4 @@
+import { SystemService } from "@/services/system";
 import { useUsersStore } from "../store/usersStore";
 import { storeToRefs } from "pinia";
 import {
@@ -22,6 +23,7 @@ export default class UserController {
   userService = new UserService();
   adminService = new AdminService();
   sessionService = new SessionService();
+  systemService = new SystemService();
 
   async loadUsers(params: {
     paginatorInfo: { pagination: number; page: number };
@@ -88,5 +90,32 @@ export default class UserController {
     const { name, user, password, email } = params;
 
     await this.sessionService.userRegister({ name, user, password, email });
+  }
+
+  async uploadImage(params: {
+    image: File;
+    type: string;
+  }): Promise<{ id: string; path: string; name: string }> {
+    const { image, type } = params;
+    try {
+      const { id, path, name } = await this.systemService.uploadImage({
+        image,
+        type,
+      });
+      return { id, path, name };
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
+  async saveUserData(params: {
+    name: string;
+    user: string;
+    email: string;
+    imageId: string;
+  }): Promise<void> {
+    const { name, user, email, imageId } = params;
+
+    await this.userService.saveUserData({ name, user, email, imageId });
   }
 }

@@ -163,7 +163,7 @@ export default class PostController {
   async uploadImage(params: {
     image: File;
     type: string;
-  }): Promise<{ id: string; path: string; name }> {
+  }): Promise<{ id: string; path: string; name: string }> {
     const { image, type } = params;
     try {
       const { id, path, name } = await this.postService.uploadImage({

@@ -342,9 +342,6 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
-// TODO: create controller
-// import { openToast, uploadImage } from "../../../services/system";
-// import { saveUserData as saveUserDataService } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email } from "@vuelidate/validators";
 import {
@@ -360,7 +357,9 @@ import userAvatar from "../../../assets/otros/user.png";
 
 // controllers
 import SystemController from "@/controllers/systemController";
+import UserController from "@/controllers/userController";
 const systemController = new SystemController();
+const userController = new UserController();
 
 const form = ref({
   name: "",
@@ -474,14 +473,14 @@ async function saveUserData() {
   }
 
   try {
-    await saveUserDataService({ name, user, email, imageId });
+    await userController.saveUserData({ name, user, email, imageId });
     getUser();
-    openToast({
+    await systemController.presentToast({
       message: "Datos actualizados",
     });
   } catch (e: any) {
     if (e.message == "Email already selected") {
-      openToast({
+      await systemController.presentToast({
         message: "Correo ya en uso",
         color: "warning",
       });
@@ -522,7 +521,7 @@ async function uploadUserImage(e: any) {
   const image = await getImageBase64(e);
 
   try {
-    const response = await uploadImage({
+    const response = await userController.uploadImage({
       image,
       graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
     });
@@ -548,7 +547,7 @@ async function uploadUserImage(e: any) {
 async function presentAlertDeleteAccount() {
   const alert = await alertController.create({
     cssClass: "my-custom-class",
-    header: "Confirmacion",
+    header: "Confirmación",
     subHeader: "Eliminar cuenta",
     message: "No hay vuelta atrás, ¿Quieres continuar?",
     buttons: [
@@ -583,7 +582,7 @@ async function deleteUserAccount() {
 
   if (alertResponse.data == false) {
     spinners.value.deleteUserAccount = false;
-    openToast({
+    await systemController.presentToast({
       message: "Gracias por quedarte, prometo no fallarte",
     });
     return;
@@ -595,13 +594,13 @@ async function deleteUserAccount() {
         password: formDeleteAccount.password,
       });
 
-      openToast({
+      await systemController.presentToast({
         message: "Hasta pronto",
       });
       location.reload();
     } catch (e: any) {
       if (e.message == "Wrong password") {
-        openToast({
+        await systemController.presentToast({
           message: "Contraseña incorrecta",
           color: "danger",
         });
