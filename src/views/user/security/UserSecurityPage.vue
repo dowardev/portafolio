@@ -221,9 +221,8 @@ import {
 import { ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
-// TODO: create controller
+// TODO: pending
 // import { updateUserPassword as updateUserPasswordService } from "../../../services/session";
-// import { openToast } from "../../../services/system";
 import {
   eyeOutline,
   eyeOffOutline,
@@ -233,7 +232,7 @@ import {
 
 // controllers
 import SystemController from "@/controllers/systemController";
-const systemController = SystemController();
+const systemController = new SystemController();
 
 const form = ref({
   oldPassword: "",
@@ -295,13 +294,13 @@ async function saveUserPassword() {
   try {
     await updateUserPasswordService(form.value);
     spinners.value.saveUserPassword = false;
-    openToast({
+    await systemController.presentToast({
       message: "Contraseña actualizada",
     });
   } catch (e: any) {
     spinners.value.saveUserPassword = false;
     if (e.message == "Wrong password") {
-      openToast({
+      await systemController.presentToast({
         message: "Contraseña incorrecta",
       });
       return;
