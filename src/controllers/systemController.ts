@@ -100,4 +100,19 @@ export default class SystemController {
     const { name } = params;
     return await this.systemService.getImageURL({ name });
   }
+
+  async presentAlertConfirmation(params: {
+    message: string;
+  }): Promise<boolean> {
+    const { message } = params;
+
+    return await this.systemService.presentAlertConfirmation({ message });
+  }
+
+  async presentLoading(params: {
+    message: string;
+  }): Promise<HTMLIonLoadingElement> {
+    const { message } = params;
+    return await this.systemService.presentLoading({ message });
+  }
 }

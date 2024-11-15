@@ -162,12 +162,6 @@ import { useUser } from "@/controllers/usersController";
 import { usePost } from "@/controllers/postController";
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref, watch } from "vue";
-// TODO: create controller
-// import {
-//   getTheme,
-//   presentAlertConfirmation,
-//   presentLoading,
-// } from "@/services/system";
 import indexContentComponent from "./indexContentComponent.vue";
 import { MdPreview } from "md-editor-v3";
 import { isPlatform, modalController } from "@ionic/vue";
@@ -215,7 +209,7 @@ async function start(): Promise<void> {
 }
 
 async function getPost(): Promise<void> {
-  const loading = await presentLoading({
+  const loading = await systemController.presentLoading({
     message: "Obteniendo publicación",
   });
   loading.present();
@@ -232,7 +226,7 @@ async function getPost(): Promise<void> {
 }
 
 async function setThemeCodePreview(): Promise<void> {
-  const theme = (await getTheme()) ?? "light";
+  const theme = (await systemController.getTheme()) ?? "light";
   let file = "" as any;
 
   if (theme == "nord")
@@ -281,7 +275,7 @@ async function updatePost(): Promise<void> {
 async function deletePost(): Promise<void> {
   spinners.value.buttonDelete = true;
 
-  const alertResponse = await presentAlertConfirmation({
+  const alertResponse = await systemController.presentAlertConfirmation({
     message: "¿Desea eliminar el post?",
   });
 

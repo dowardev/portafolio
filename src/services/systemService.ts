@@ -104,10 +104,11 @@ export default class SystemService {
     }
   }
 
-  async presentLoading(params: Loading) {
+  async presentLoading(params: Loading): Promise<HTMLIonLoadingElement> {
+    const { message } = params;
     const loading = await loadingController.create({
       cssClass: "my-custom-class",
-      message: params.message,
+      message,
     });
     return loading;
   }

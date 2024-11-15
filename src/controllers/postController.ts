@@ -5,7 +5,7 @@ import { Post, UpdatePost } from "../services/interfaces";
 import { filterPostOptions } from "@/services/types";
 
 // services
-import PostService from "../services/post";
+import PostService from "../services/postService";
 
 export default class PostController {
   postStore = usePostStore();
