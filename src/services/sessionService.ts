@@ -8,7 +8,7 @@ import { apiConnector } from "@/main";
 
 import apolloClient from "../Apollo";
 import axios from "axios";
-import { getUserToken } from "./user";
+import { getUserToken } from "./userService";
 
 export default class SessionService {
   async userRegister(params: UserRegister): Promise<void> {

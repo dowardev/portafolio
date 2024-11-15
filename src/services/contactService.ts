@@ -2,7 +2,7 @@ import { ContactMessage } from "./interfaces";
 import { apiConnector } from "@/main";
 
 import axios from "axios";
-import { getUserToken } from "./user";
+import { getUserToken } from "./userService";
 
 export default class ContactService {
   async createContactMessage(params: { data: ContactMessage }): Promise<void> {

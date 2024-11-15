@@ -7,8 +7,8 @@ import { SearchUsersResponse, User } from "../services/interfaces";
 // const systemController = new SystemController();
 
 // services
-import UserService from "../services/user";
-import AdminService from "../services/admin";
+import UserService from "../services/userService";
+import AdminService from "../services/adminService";
 
 export default class UserController {
   usersStore = useUsersStore();

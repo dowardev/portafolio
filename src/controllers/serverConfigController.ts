@@ -1,5 +1,5 @@
 // services
-import SystemService from "../services/system";
+import SystemService from "../services/systemService";
 
 export default class ServerConfig {
   private serverUrl: string = "";

@@ -9,7 +9,7 @@ import { Storage } from "@ionic/storage";
 import { Theme as ThemeType } from "@/services/types";
 
 // services
-import SystemService from "@/services/system";
+import SystemService from "@/services/systemService";
 
 export default class SystemController {
   systemService = new SystemService();

@@ -6,7 +6,7 @@ import { User } from "../services/interfaces";
 // import SystemController from "./systemController";
 
 // services
-import UserService from "../services/user";
+import UserService from "../services/userService";
 
 export default class UsersController {
   userStore = useUserStore();

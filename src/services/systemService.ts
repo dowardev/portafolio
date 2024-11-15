@@ -1,4 +1,4 @@
-import { apiConnector } from "./../main";
+import { apiConnector } from "../main";
 import { storageInstance } from "@/main";
 import Cookies from "js-cookie";
 
