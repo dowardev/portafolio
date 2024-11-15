@@ -334,8 +334,6 @@ import {
   searchOutline,
   trashOutline,
 } from "ionicons/icons";
-// TODO: create controller
-// import { openToast, presentAlertConfirmation } from "@/services/system";
 
 // controllers
 import UsersController from "@/controllers/usersController";
@@ -533,7 +531,7 @@ async function deletePost(params: { id: string }) {
   try {
     await postController.deletePost({ id });
     loadContent({ refetch: true });
-    openToast({ message: "Post eliminado" });
+    await systemController.presentToast({ message: "Post eliminado" });
   } catch (error) {
     console.error(error);
   } finally {
