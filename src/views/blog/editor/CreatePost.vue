@@ -16,13 +16,6 @@
 <script setup lang="ts">
 import { IonPage } from "@ionic/vue";
 import { defineComponent, ref } from "vue";
-// TODO: create controllers
-// import { createPost as createPostService } from "../../../services/post";
-// import {
-//   openToast,
-//   uploadImage as uploadImageService,
-//   getBaseURL,
-// } from "../../../services/system";
 import EditorComponent from "./EditorPage.vue";
 import { CreatePost } from "../../../services/interfaces";
 import { useRouter } from "vue-router";
@@ -92,7 +85,7 @@ async function createPost({
   images,
 }: CreatePost): Promise<void> {
   try {
-    await createPostService({
+    await postController.createPost({
       title,
       content,
       coverId,
@@ -108,7 +101,7 @@ async function uploadImage(e: File): Promise<void> {
   const image = e;
 
   try {
-    const response = await uploadImageService({
+    const response = await postController.uploadImage({
       image,
       type: "post",
     });

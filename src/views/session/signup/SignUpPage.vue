@@ -86,7 +86,6 @@ import {
   IonButton,
 } from "@ionic/vue";
 import { ref } from "vue";
-// TODO: create controller
 import { useRouter } from "vue-router";
 
 // controllers

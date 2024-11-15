@@ -1,4 +1,4 @@
-import { GetPost } from "./../services/interfaces";
+import { CreatePost, GetPost } from "./../services/interfaces";
 import { usePostStore } from "../store/postStore";
 import { storeToRefs } from "pinia";
 import { Post, UpdatePost } from "../services/interfaces";
@@ -144,5 +144,35 @@ export default class PostController {
       type: "post",
     });
     return { id, path };
+  }
+
+  async createPost(params: CreatePost) {
+    try {
+      const { title, content, coverId, images } = params;
+      const post = {
+        title,
+        content,
+        coverId,
+        images,
+      };
+      await this.postService.createPost(post);
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+  async uploadImage(params: {
+    image: File;
+    type: string;
+  }): Promise<{ id: string; path: string; name }> {
+    const { image, type } = params;
+    try {
+      const { id, path, name } = await this.postService.uploadImage({
+        image,
+        type,
+      });
+      return { id, path, name };
+    } catch (error: any) {
+      throw new Error(error);
+    }
   }
 }

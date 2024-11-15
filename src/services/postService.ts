@@ -108,7 +108,7 @@ export default class PostService {
   async uploadImage(params: {
     image: File;
     type: string;
-  }): Promise<{ id: string; path: string }> {
+  }): Promise<{ id: string; path: string; name }> {
     const { image, type } = params;
 
     const formData = new FormData();
@@ -120,6 +120,10 @@ export default class PostService {
       data: formData,
     });
 
-    return { id: response.data.image.id, path: response.data.image.path };
+    return {
+      id: response.data.image.id,
+      path: response.data.image.path,
+      name: response.data.image.name,
+    };
   }
 }
