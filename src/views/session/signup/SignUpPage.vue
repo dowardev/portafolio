@@ -87,13 +87,13 @@ import {
 } from "@ionic/vue";
 import { ref } from "vue";
 // TODO: create controller
-// import { userRegister } from "../../../services/session";
-// import { openToast } from "../../../services/system";
 import { useRouter } from "vue-router";
 
 // controllers
 import SystemController from "@/controllers/systemController";
+import UserController from "@/controllers/userController";
 const systemController = new SystemController();
+const userController = new UserController();
 
 // components
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
@@ -128,7 +128,7 @@ async function register(params: {
   email = email.trim();
 
   try {
-    await userRegister({
+    await userController.createUserAccount({
       name,
       user,
       email,
@@ -141,14 +141,14 @@ async function register(params: {
   } catch (e: any) {
     spinners.value.buttonSignup = false;
     if (e.message == "The email has already been selected") {
-      openToast({
+      await systemController.presentToast({
         message: "Correo ya en uso",
         color: "warning",
       });
       return;
     }
     if (e.message == "The user has already been selected") {
-      openToast({
+      await systemController.presentToast({
         message: "Usuario ya en uso",
         color: "warning",
       });

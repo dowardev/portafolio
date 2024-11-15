@@ -1,6 +1,10 @@
 import { useUsersStore } from "../store/usersStore";
 import { storeToRefs } from "pinia";
-import { SearchUsersResponse, User } from "../services/interfaces";
+import {
+  SearchUsersResponse,
+  User,
+  UserRegister,
+} from "../services/interfaces";
 
 // controllers
 // import SystemController from "./systemController";
@@ -9,6 +13,7 @@ import { SearchUsersResponse, User } from "../services/interfaces";
 // services
 import UserService from "../services/userService";
 import AdminService from "../services/adminService";
+import SessionService from "@/services/sessionService";
 
 export default class UserController {
   usersStore = useUsersStore();
@@ -16,6 +21,7 @@ export default class UserController {
   // openToastError = systemController.openToastError;
   userService = new UserService();
   adminService = new AdminService();
+  sessionService = new SessionService();
 
   async loadUsers(params: {
     paginatorInfo: { pagination: number; page: number };
@@ -76,5 +82,11 @@ export default class UserController {
     } catch (e: any) {
       throw e;
     }
+  }
+
+  async createUserAccount(params: UserRegister) {
+    const { name, user, password, email } = params;
+
+    await this.sessionService.userRegister({ name, user, password, email });
   }
 }
