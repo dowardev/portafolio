@@ -129,10 +129,10 @@ import { closeOutline, server } from "ionicons/icons";
 //controllers
 import ServerConfig from "@/controllers/serverConfigController";
 import SystemController from "../../../controllers/systemController";
-import SessionController from "../../../controllers/sessionController";
+import UserController from "@/controllers/userController";
 const serverConfig = new ServerConfig();
 const systemController = new SystemController();
-const sessionController = new SessionController();
+const userController = new UserController();
 
 // components
 import LoginFormComponent from "@/forms/LoginFormComponent.vue";
@@ -187,7 +187,7 @@ async function login(params: { email: string; password: string }) {
   const user = email.trim();
 
   try {
-    const response = await sessionController.userLogin({
+    const response = await userController.login({
       user,
       password,
     });

@@ -1,4 +1,4 @@
-import { SystemService } from "@/services/system";
+import SystemService from "@/services/systemService";
 import { useUsersStore } from "../store/usersStore";
 import { storeToRefs } from "pinia";
 import {
@@ -128,5 +128,13 @@ export default class UserController {
   async deleteUserAccount(params: { id: number }): Promise<void> {
     const { id } = params;
     await this.adminService.deleteUserAccount({ id });
+  }
+
+  async login(params: {
+    user: string;
+    password: string;
+  }): Promise<{ token: string }> {
+    const { user, password } = params;
+    return await this.sessionService.userLogin({ user, password });
   }
 }
