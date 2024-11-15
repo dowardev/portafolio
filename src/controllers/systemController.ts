@@ -1,4 +1,4 @@
-import { System } from "@/services/interfaces";
+import { ContactMessage, System } from "@/services/interfaces";
 import { modalController, toastController } from "@ionic/vue";
 import { alertCircleOutline, closeOutline } from "ionicons/icons";
 import { storeToRefs } from "pinia";
@@ -10,9 +10,11 @@ import { Theme as ThemeType } from "@/services/types";
 
 // services
 import SystemService from "@/services/systemService";
+import ContactService from "@/services/contactService";
 
 export default class SystemController {
   systemService = new SystemService();
+  contactService = new ContactService();
 
   // TODO:remove
   systemStore = useSystemStore();
@@ -119,5 +121,23 @@ export default class SystemController {
   async presentToast(params: Toast) {
     const { message, duration, color } = params;
     return await this.systemService.presentToast({ message, duration, color });
+  }
+
+  async createContactMessage(params: ContactMessage) {
+    const { name, subject, email, description } = params;
+    await this.contactService.createContactMessage({
+      name,
+      subject,
+      email,
+      description,
+    });
+  }
+
+  getFirstCookie() {
+    return this.systemService.getFirstCookie();
+  }
+
+  createFirstCookie() {
+    this.systemService.createFirstCookie();
   }
 }

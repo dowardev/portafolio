@@ -1,13 +1,13 @@
 import { ContactMessage } from "./interfaces";
 import { apiConnector } from "@/main";
 
-import axios from "axios";
-import { getUserToken } from "./userService";
-
 export default class ContactService {
-  async createContactMessage(params: { data: ContactMessage }): Promise<void> {
-    const { name, subject, email, description } = params.data;
+  async createContactMessage(params: ContactMessage): Promise<void> {
+    const { name, subject, email, description } = params;
 
-    await apiConnector.post({ url: `contact/` });
+    await apiConnector.post({
+      url: `contact/`,
+      data: { name, subject, email, description },
+    });
   }
 }

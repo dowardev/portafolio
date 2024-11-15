@@ -123,7 +123,7 @@ import { required, helpers } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
 import { closeOutline, server } from "ionicons/icons";
 
-// TODO: create controller1
+// TODO: pending
 // import {  resendEmailConfirmation } from "../../../services/user";
 
 //controllers

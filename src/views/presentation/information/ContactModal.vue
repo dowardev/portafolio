@@ -50,13 +50,15 @@ import { ref } from "vue";
 import { helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
-// TODO: create controller
-// import { openToast } from "@/services/system";
-// import { ContactMessage } from "@admin/services/interfaces";
-// import { createContactMessage as createContactMessageService } from "@/services/contact";
+// interface
+import { ContactMessage } from "@/services/interfaces";
+
+// components
+import ContactForm from "../../contact/ContactPage.vue";
 
 // controllers
-import ContactForm from "../../contact/ContactPage.vue";
+import SystemController from "@/controllers/systemController";
+const systemController = new SystemController();
 
 // vars
 const pageTitle = "Formulario de contacto";
@@ -109,11 +111,11 @@ async function sendMessage(params: { data: ContactMessage }) {
   };
 
   try {
-    await createContactMessageService({ data: form });
-    openToast({ message: "Mensaje recibido" });
+    await systemController.createContactMessage(form);
+    await systemController.presentToast({ message: "Mensaje recibido" });
     closeModal({});
   } catch (error) {
-    openToast({ message: "Error al enviar mensaje" });
+    await systemController.presentToast({ message: "Error al enviar mensaje" });
     spinners.value.sendMessage = false;
     return;
   } finally {
