@@ -224,12 +224,12 @@ import {
 } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
-// services
-import {
-  recoverPassword,
-  sendNewPassword as sendNewPasswordService,
-} from "@/services/session";
-import { presentToast } from "@/services/system";
+// TODO: create controller
+// import {
+//   recoverPassword,
+//   sendNewPassword as sendNewPasswordService,
+// } from "@/services/session";
+// import { presentToast } from "@/services/system";
 
 // vars
 const email = ref("admin@admin.com");

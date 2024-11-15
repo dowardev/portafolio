@@ -342,8 +342,9 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
-import { openToast, uploadImage } from "../../../services/system";
-import { saveUserData as saveUserDataService } from "../../../services/user";
+// TODO: create controller
+// import { openToast, uploadImage } from "../../../services/system";
+// import { saveUserData as saveUserDataService } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email } from "@vuelidate/validators";
 import {

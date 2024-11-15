@@ -118,12 +118,14 @@ import {
   IonModal,
 } from "@ionic/vue";
 import { ref } from "vue";
-import { userLogin } from "../../../services/session";
-import { setUserToken, resendEmailConfirmation } from "../../../services/user";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
 import { closeOutline, server } from "ionicons/icons";
+
+// TODO: create controller1
+// import { setUserToken, resendEmailConfirmation } from "../../../services/user";
+// import { userLogin } from "../../../services/session";
 
 //controllers
 import ServerConfig from "@/controllers/serverConfigController";

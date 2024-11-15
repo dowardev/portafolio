@@ -305,7 +305,6 @@ import {
   IonSpinner,
 } from "@ionic/vue";
 import { computed, onMounted, ref } from "vue";
-import { disableUser, deleteUserAccount } from "../../../services/admin";
 import {
   refreshOutline,
   ellipsisVerticalOutline,
@@ -318,9 +317,11 @@ import {
   checkmarkOutline,
   thumbsUpOutline,
 } from "ionicons/icons";
-import { openToast, presentAlertConfirmation } from "../../../services/system";
+// TODO:create controller
+// import { openToast, presentAlertConfirmation } from "../../../services/system";
 // import { sendMailResetPassword as sendMailResetPasswordService } from "../../../services/session";
-import { resendEmailConfirmation as resendEmailConfirmationService } from "../../../services/user";
+// import { resendEmailConfirmation as resendEmailConfirmationService } from "../../../services/user";
+// import { disableUser, deleteUserAccount } from "../../../services/admin";
 
 // constrollers
 import UsersController from "@/controllers/usersController";

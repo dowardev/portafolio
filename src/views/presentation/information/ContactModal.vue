@@ -47,11 +47,13 @@ import {
 } from "@ionic/vue";
 import { closeOutline, sendOutline } from "ionicons/icons";
 import { ref } from "vue";
-import { openToast } from "@/services/system";
-import { ContactMessage } from "@admin/services/interfaces";
-import { createContactMessage as createContactMessageService } from "@/services/contact";
 import { helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
+
+// TODO: create controller
+// import { openToast } from "@/services/system";
+// import { ContactMessage } from "@admin/services/interfaces";
+// import { createContactMessage as createContactMessageService } from "@/services/contact";
 
 // controllers
 import ContactForm from "../../contact/ContactPage.vue";

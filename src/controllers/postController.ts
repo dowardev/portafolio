@@ -1,27 +1,21 @@
+import { GetPost } from "./../services/interfaces";
 import { usePostStore } from "../store/postStore";
 import { storeToRefs } from "pinia";
 import { Post, UpdatePost } from "../services/interfaces";
-import {
-  getPosts as getPostsService,
-  getPost as getPostService,
-  getPostsDates,
-  deletePost as deletePostService,
-  searchPosts as searchPostsService,
-  updatePost as updatePostService,
-  uploadImage as uploadImageService,
-} from "../services/post";
 import { filterPostOptions } from "@/services/types";
 
-// controllers
+// services
+import PostService from "../services/post";
 
 export default class PostController {
   postStore = usePostStore();
   postRefs = storeToRefs(this.postStore);
+  postService = new PostService();
 
   async loadPosts(params: { date: string; filter?: filterPostOptions }) {
     const { date, filter } = params;
     try {
-      const posts = await getPostsService({ date, filter });
+      const posts = await this.postService.getPosts({ date, filter });
 
       this.postStore.setPosts({ posts });
     } catch (e: any) {
@@ -34,7 +28,7 @@ export default class PostController {
     const { status } = params;
 
     try {
-      const dates = await getPostsDates({ status });
+      const dates = await this.postService.getPostsDates({ status });
 
       this.postStore.updateDates(dates);
     } catch (e: any) {
@@ -47,7 +41,7 @@ export default class PostController {
     const id = params.id;
 
     try {
-      const post = await getPostService({
+      const post = await this.postService.getPost({
         id,
       });
       this.postStore.addPost({ post });
@@ -86,7 +80,7 @@ export default class PostController {
     const id = params.id;
 
     try {
-      await deletePostService({ id });
+      await this.postService.deletePost({ id });
     } catch (error) {
       throw error;
     }
@@ -98,7 +92,7 @@ export default class PostController {
     const search = params.search;
 
     try {
-      const result = await searchPostsService({
+      const result = await this.postService.searchPosts({
         search,
       });
 
@@ -122,7 +116,7 @@ export default class PostController {
     };
 
     try {
-      await updatePostService({
+      await this.postService.updatePost({
         post,
       });
 
@@ -145,7 +139,10 @@ export default class PostController {
     image: File;
   }): Promise<{ id: string; path: string }> {
     const { image } = params;
-    const { id, path } = await uploadImageService({ image, type: "post" });
+    const { id, path } = await this.postService.uploadImage({
+      image,
+      type: "post",
+    });
     return { id, path };
   }
 }

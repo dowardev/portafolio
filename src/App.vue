@@ -33,12 +33,15 @@ import {
 } from "@ionic/vue";
 import { computed, nextTick, onMounted, ref } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
-import { getFirstCookie } from "./services/system";
+
+// TODO: cretae controller
+// import { getFirstCookie } from "./services/system";
+// import { createFirstCookie as createFirstCookieService } from "./services/system";
+
 import { closeOutline } from "ionicons/icons";
 
 import { Storage } from "@ionic/storage";
 import { useRouter } from "vue-router";
-import { createFirstCookie as createFirstCookieService } from "./services/system";
 import { wb } from "./main";
 
 // controllers
@@ -70,10 +73,10 @@ onMounted(async () => {
 });
 
 function createFirstCookie() {
-  if (getFirstCookie()) {
-    openToastOptions();
-    createFirstCookieService();
-  }
+  // if (getFirstCookie()) {
+  //   openToastOptions();
+  //   createFirstCookieService();
+  // }
 }
 
 async function openToastOptions() {

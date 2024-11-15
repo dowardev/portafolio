@@ -16,12 +16,13 @@
 <script setup lang="ts">
 import { IonPage } from "@ionic/vue";
 import { defineComponent, ref } from "vue";
-import { createPost as createPostService } from "../../../services/post";
-import {
-  openToast,
-  uploadImage as uploadImageService,
-  getBaseURL,
-} from "../../../services/system";
+// TODO: create controllers
+// import { createPost as createPostService } from "../../../services/post";
+// import {
+//   openToast,
+//   uploadImage as uploadImageService,
+//   getBaseURL,
+// } from "../../../services/system";
 import EditorComponent from "./EditorPage.vue";
 import { CreatePost } from "../../../services/interfaces";
 import { useRouter } from "vue-router";

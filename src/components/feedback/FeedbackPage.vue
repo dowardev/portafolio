@@ -206,8 +206,9 @@ import {
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email, minLength } from "@vuelidate/validators";
-import { openToast } from "../../services/system";
-import { createFeedback } from "../../services/feedback";
+// TODO: create controller
+// import { openToast } from "../../services/system";
+// import { createFeedback } from "../../services/feedback";
 import { ReportError } from "../../services/interfaces";
 
 // composables

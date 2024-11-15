@@ -18,18 +18,19 @@
 <script setup lang="ts">
 import { IonPage } from "@ionic/vue";
 import { onMounted, ref } from "vue";
-import {
-  openToast,
-  uploadImage as uploadImageService,
-  getBaseURL,
-  presentLoading,
-} from "../../../services/system";
-import EditorComponent from "./EditorPage.vue";
-import {
-  POSTS_UPDATE_DETAILS,
-  POST_DETAILS,
-  UPLOAD_IMAGE,
-} from "../../../services/graphql";
+// TODO: create controller
+// import {
+//   openToast,
+//   uploadImage as uploadImageService,
+//   getBaseURL,
+//   presentLoading,
+// } from "../../../services/system";
+// import EditorComponent from "./EditorPage.vue";
+// import {
+//   POSTS_UPDATE_DETAILS,
+//   POST_DETAILS,
+//   UPLOAD_IMAGE,
+// } from "../../../services/graphql";
 import { useRoute, useRouter } from "vue-router";
 import { UpdatePost } from "@/services/interfaces";
 

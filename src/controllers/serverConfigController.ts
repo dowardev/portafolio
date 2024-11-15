@@ -1,15 +1,10 @@
 // services
-import {
-  storeDataOnLocalStorage,
-  getDataFromLocalStorage,
-  storeCookie,
-  getCookie,
-  removeCookie,
-} from "../services/system";
+import SystemService from "../services/system";
 
 export default class ServerConfig {
   private serverUrl: string = "";
   private userToken: string = "";
+  private systemService = new SystemService();
 
   public static async createInstance(): Promise<ServerConfig> {
     const instance = new ServerConfig();
@@ -23,15 +18,20 @@ export default class ServerConfig {
   }): Promise<void> {
     const { serverUrl, userToken } = params;
     if (serverUrl)
-      await storeDataOnLocalStorage({ key: "serverUrl", value: serverUrl });
+      await this.systemService.storeDataOnLocalStorage({
+        key: "serverUrl",
+        value: serverUrl,
+      });
     if (userToken) {
-      storeCookie({ key: "userToken", value: userToken });
+      this.systemService.storeCookie({ key: "userToken", value: userToken });
     }
   }
 
   private async load(): Promise<void> {
-    this.serverUrl = await getDataFromLocalStorage({ key: "serverUrl" });
-    this.userToken = getCookie({ key: "userToken" });
+    this.serverUrl = await this.systemService.getDataFromLocalStorage({
+      key: "serverUrl",
+    });
+    this.userToken = this.systemService.getCookie({ key: "userToken" });
   }
 
   public async getConfig(): Promise<{ serverUrl: string; UserToken: string }> {
@@ -39,6 +39,6 @@ export default class ServerConfig {
   }
 
   public clearData() {
-    removeCookie({ key: "userToken" });
+    this.systemService.removeCookie({ key: "userToken" });
   }
 }

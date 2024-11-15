@@ -7,14 +7,13 @@ import { ReportError, Theme } from "../services/interfaces";
 import { useSystemStore } from "../store/systemStore";
 import { Storage } from "@ionic/storage";
 import { Theme as ThemeType } from "@/services/types";
-import {
-  getTheme as getThemeService,
-  applyTheme as applyThemeService,
-  storeThemeSelected as storeThemeSelectedService,
-  getImageURL as getImageURLService,
-} from "@/services/system";
+
+// services
+import SystemService from "@/services/system";
 
 export default class SystemController {
+  systemService = new SystemService();
+
   // TODO:remove
   systemStore = useSystemStore();
 
@@ -58,7 +57,7 @@ export default class SystemController {
   }
 
   async loadThemeSelected(): Promise<void> {
-    const theme = (await getThemeService()) ?? {
+    const theme = (await this.systemService.getTheme()) ?? {
       selected: "light",
       options: { blur: false },
     };
@@ -71,12 +70,15 @@ export default class SystemController {
 
   applyTheme(params: { newTheme: Theme; oldTheme: Theme }): void {
     const { newTheme, oldTheme } = params;
-    applyThemeService({ theme: newTheme, currentTheme: oldTheme });
+    this.systemService.applyTheme({
+      theme: newTheme,
+      currentTheme: oldTheme,
+    });
   }
 
   async storeThemeSelected(params: { theme: Theme }): Promise<void> {
     const theme = params.theme;
-    await storeThemeSelectedService({ theme });
+    await this.systemService.storeThemeSelected({ theme });
   }
 
   updateThemeSelected(params: { theme: Theme }): void {
@@ -96,6 +98,6 @@ export default class SystemController {
     name: string;
   }): Promise<{ id: string; name: string; url: string }> {
     const { name } = params;
-    return await getImageURLService({ name });
+    return await this.systemService.getImageURL({ name });
   }
 }

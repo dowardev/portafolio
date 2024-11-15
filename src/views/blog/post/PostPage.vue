@@ -162,11 +162,12 @@ import { useUser } from "@/controllers/usersController";
 import { usePost } from "@/controllers/postController";
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref, watch } from "vue";
-import {
-  getTheme,
-  presentAlertConfirmation,
-  presentLoading,
-} from "@/services/system";
+// TODO: create controller
+// import {
+//   getTheme,
+//   presentAlertConfirmation,
+//   presentLoading,
+// } from "@/services/system";
 import indexContentComponent from "./indexContentComponent.vue";
 import { MdPreview } from "md-editor-v3";
 import { isPlatform, modalController } from "@ionic/vue";

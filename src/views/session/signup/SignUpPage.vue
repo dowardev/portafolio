@@ -86,8 +86,9 @@ import {
   IonButton,
 } from "@ionic/vue";
 import { ref } from "vue";
-import { userRegister } from "../../../services/session";
-import { openToast } from "../../../services/system";
+// TODO: create controller
+// import { userRegister } from "../../../services/session";
+// import { openToast } from "../../../services/system";
 import { useRouter } from "vue-router";
 
 // controllers
@@ -172,8 +173,8 @@ async function alertConfirmaciónEmail(params: { email: string }) {
   const alert = await alertController.create({
     header: "Alerta",
     subHeader: "Confirmación",
-    message: `Hemos enviado un correo electrónico a 
-      ${email} 
+    message: `Hemos enviado un correo electrónico a
+      ${email}
        con un enlace para verificar tu identidad.`,
     buttons: [
       {

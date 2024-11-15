@@ -221,8 +221,9 @@ import {
 import { ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, sameAs } from "@vuelidate/validators";
-import { updateUserPassword as updateUserPasswordService } from "../../../services/session";
-import { openToast } from "../../../services/system";
+// TODO: create controller
+// import { updateUserPassword as updateUserPasswordService } from "../../../services/session";
+// import { openToast } from "../../../services/system";
 import {
   eyeOutline,
   eyeOffOutline,

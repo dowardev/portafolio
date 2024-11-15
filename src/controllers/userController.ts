@@ -1,21 +1,21 @@
 import { useUsersStore } from "../store/usersStore";
 import { storeToRefs } from "pinia";
 import { SearchUsersResponse, User } from "../services/interfaces";
-import { deleteUserAccount } from "../services/user";
-
-import {
-  searchUsers,
-  getUsersPaginated as getUsersPaginated2,
-} from "../services/admin";
 
 // controllers
 // import SystemController from "./systemController";
 // const systemController = new SystemController();
 
+// services
+import UserService from "../services/user";
+import AdminService from "../services/admin";
+
 export default class UserController {
   usersStore = useUsersStore();
   users = storeToRefs(this.usersStore).users;
   // openToastError = systemController.openToastError;
+  userService = new UserService();
+  adminService = new AdminService();
 
   async loadUsers(params: {
     paginatorInfo: { pagination: number; page: number };
@@ -28,7 +28,7 @@ export default class UserController {
     const filterOptions = params.filterOptions;
 
     try {
-      const response = await searchUsers({
+      const response = await this.adminService.searchUsers({
         first,
         page,
         search,
@@ -50,7 +50,7 @@ export default class UserController {
     const { page, perPage } = params;
 
     try {
-      const response = await getUsersPaginated2({
+      const response = await this.adminService.getUsersPaginated({
         page,
         perPage,
       });
@@ -70,7 +70,7 @@ export default class UserController {
 
   async deleteAccount(params: { password: string }) {
     try {
-      await deleteUserAccount({
+      await this.userService.deleteUserAccount({
         password: params.password,
       });
     } catch (e: any) {

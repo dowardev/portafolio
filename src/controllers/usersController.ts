@@ -1,10 +1,12 @@
 import { useUserStore } from "../store/userStore";
 import { storeToRefs } from "pinia";
 import { User } from "../services/interfaces";
-import { deleteUserAccount, getUser } from "../services/user";
 
 // controllers
 // import SystemController from "./systemController";
+
+// services
+import UserService from "../services/user";
 
 export default class UsersController {
   userStore = useUserStore();
@@ -13,12 +15,13 @@ export default class UsersController {
   token = storeToRefs(this.userStore);
   isLogged = storeToRefs(this.userStore);
   // systemController = new SystemController();
+  userService = new UserService();
 
   // openToastError = this.systemController.openToastError;
 
   async loadUser() {
     try {
-      const user = await getUser();
+      const user = await this.userService.getUser();
 
       this.updateUserProps({ user });
     } catch (error: any) {
@@ -32,7 +35,7 @@ export default class UsersController {
 
   async updateUserAdminProp(params: { refetch: boolean }) {
     try {
-      const { isAdmin } = await getUser();
+      const { isAdmin } = await this.userService.getUser();
       this.userStore.updateUserProps({ isAdmin });
     } catch (error: any) {
       if (error.message == "Unauthorized") return;
@@ -51,7 +54,7 @@ export default class UsersController {
 
   async deleteAccount(params: { password: string }) {
     try {
-      await deleteUserAccount({
+      await this.userService.deleteUserAccount({
         password: params.password,
       });
 

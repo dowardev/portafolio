@@ -13,111 +13,113 @@ interface UpdatePost {
   imagesRemoved: string[];
 }
 
-export async function createPost(params: CreatePost): Promise<void> {
-  const { title, content, coverId, images } = params;
+export default class PostService {
+  async createPost(params: CreatePost): Promise<void> {
+    const { title, content, coverId, images } = params;
 
-  await apiConnector.post({ url: `create-post/` });
-}
+    await apiConnector.post({ url: `create-post/` });
+  }
 
-export async function updatePost(params: { post: UpdatePost }): Promise<void> {
-  const { images, coverId, content, title, id, newCoverId, imagesRemoved } =
-    params.post;
+  async updatePost(params: { post: UpdatePost }): Promise<void> {
+    const { images, coverId, content, title, id, newCoverId, imagesRemoved } =
+      params.post;
 
-  await apiConnector.post({
-    url: `update-post`,
-    data: {
-      images,
-      coverId,
-      content,
-      title,
-      id,
-      newCoverId,
-      imagesRemoved,
-    },
-  });
-}
+    await apiConnector.post({
+      url: `update-post`,
+      data: {
+        images,
+        coverId,
+        content,
+        title,
+        id,
+        newCoverId,
+        imagesRemoved,
+      },
+    });
+  }
 
-export async function deletePost(params: { id: string }): Promise<void> {
-  const { id } = params;
+  async deletePost(params: { id: string }): Promise<void> {
+    const { id } = params;
 
-  await apiConnector.post({ url: `delete-post`, data: { id } });
-}
+    await apiConnector.post({ url: `delete-post`, data: { id } });
+  }
 
-export async function getPosts(params: GetPost): Promise<Array<Post>> {
-  const { date, filter = "active" } = params;
+  async getPosts(params: GetPost): Promise<Array<Post>> {
+    const { date, filter = "active" } = params;
 
-  const response = await apiConnector.get({ url: `posts/${date}/${filter}` });
+    const response = await apiConnector.get({ url: `posts/${date}/${filter}` });
 
-  const posts = await Promise.all(
-    response.posts.map(async (post) => {
-      post.createdAt = post.created_at;
-      delete post.created_at;
-      post.updatedAt = post.updated_at;
-      delete post.updated_at;
-      post.cover = post.cover;
-      return post;
-    })
-  );
-  return posts;
-}
+    const posts = await Promise.all(
+      response.posts.map(async (post) => {
+        post.createdAt = post.created_at;
+        delete post.created_at;
+        post.updatedAt = post.updated_at;
+        delete post.updated_at;
+        post.cover = post.cover;
+        return post;
+      })
+    );
+    return posts;
+  }
 
-export async function getPost(params: { id: number | string }): Promise<Post> {
-  const { id } = params;
+  async getPost(params: { id: number | string }): Promise<Post> {
+    const { id } = params;
 
-  const response = await apiConnector.get({ url: `post/${id}` });
+    const response = await apiConnector.get({ url: `post/${id}` });
 
-  const post = response.post;
+    const post = response.post;
 
-  post.createdAt = post.created_at;
-  delete post.created_at;
+    post.createdAt = post.created_at;
+    delete post.created_at;
 
-  post.updatedAt = post.updated_at;
-  delete post.updated_at;
+    post.updatedAt = post.updated_at;
+    delete post.updated_at;
 
-  return post;
-}
+    return post;
+  }
 
-export async function getPostsDates(params: {
-  status?: filterPostOptions;
-}): Promise<Array<string>> {
-  const { status } = params;
+  async getPostsDates(params: {
+    status?: filterPostOptions;
+  }): Promise<Array<string>> {
+    const { status } = params;
 
-  try {
-    const response = await apiConnector.get({
-      url: `post-dates`,
-      data: { status },
+    try {
+      const response = await apiConnector.get({
+        url: `post-dates`,
+        data: { status },
+      });
+
+      return response;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async searchPosts(params: {
+    search: string;
+  }): Promise<Array<{ id: string; title: string }>> {
+    const { search } = params;
+
+    const response = await apiConnector.get({ url: `search-posts/${search}` });
+
+    return response.posts;
+  }
+
+  async uploadImage(params: {
+    image: File;
+    type: string;
+  }): Promise<{ id: string; path: string }> {
+    const { image, type } = params;
+
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("type", type);
+
+    const response = await apiConnector.post({
+      url: `upload-image`,
+      data: formData,
     });
 
-    return response;
-  } catch (error: any) {
-    throw error;
+    return { id: response.data.image.id, path: response.data.image.path };
   }
-}
-
-export async function searchPosts(params: {
-  search: string;
-}): Promise<Array<{ id: string; title: string }>> {
-  const { search } = params;
-
-  const response = await apiConnector.get({ url: `search-posts/${search}` });
-
-  return response.posts;
-}
-
-export async function uploadImage(params: {
-  image: File;
-  type: string;
-}): Promise<{ id: string; path: string }> {
-  const { image, type } = params;
-
-  const formData = new FormData();
-  formData.append("file", image);
-  formData.append("type", type);
-
-  const response = await apiConnector.post({
-    url: `upload-image`,
-    data: formData,
-  });
-
-  return { id: response.data.image.id, path: response.data.image.path };
 }
