@@ -317,14 +317,12 @@ import {
   checkmarkOutline,
   thumbsUpOutline,
 } from "ionicons/icons";
-// TODO:create controller
-// import { openToast, presentAlertConfirmation } from "../../../services/system";
+// TODO: pending
 // import { sendMailResetPassword as sendMailResetPasswordService } from "../../../services/session";
 // import { resendEmailConfirmation as resendEmailConfirmationService } from "../../../services/user";
-// import { disableUser, deleteUserAccount } from "../../../services/admin";
 
-// constrollers
-import UsersController from "@/controllers/usersController";
+// controllers
+import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
 const userController = new userController();
 const systemController = new SystemController();
@@ -350,7 +348,7 @@ const filterOptions = [
     isChecked: false,
   },
   {
-    label: "Mostrar usaurio sin virificar",
+    label: "Mostrar usuario sin verificar",
     value: "no verified",
     isChecked: false,
   },
@@ -464,7 +462,7 @@ async function disabledUser(params: { id: string; disableUser: boolean }) {
 
   let alertResponse = true;
   if (params.disableUser == true)
-    alertResponse = await presentAlertConfirmation({
+    alertResponse = await systemController.presentAlertConfirmation({
       message:
         "Mientras esté deshabilitada, el usuario no podrá acceder a su cuenta.",
     });
@@ -472,18 +470,19 @@ async function disabledUser(params: { id: string; disableUser: boolean }) {
   if (alertResponse == false) return;
 
   try {
-    await disableUser({
+    await userController.disableUser({
       id: params.id,
       disableUser: params.disableUser,
     });
 
-    if (params.disableUser) openToast({ message: "Usuario deshabilitado" });
+    if (params.disableUser)
+      await systemController.presentToast({ message: "Usuario deshabilitado" });
     if (params.disableUser == false)
-      openToast({ message: "Usuario habilitado" });
+      await systemController.presentToast({ message: "Usuario habilitado" });
     refreshContent();
   } catch (e: any) {
     if (e.message == "Can't disable admin") {
-      openToast({
+      await systemController.presentToast({
         message: "No se puede deshabilitar al administrador",
         color: "warning",
       });
@@ -500,7 +499,7 @@ async function sendMailResetPassword(params: { email: string }) {
   const { email } = params;
   // spinners.optionsUser = true;
 
-  const alertResponse = await presentAlertConfirmation({
+  const alertResponse = await systemController.presentAlertConfirmation({
     message:
       "Se enviarán las instrucciones para restaurar la contraseña al correo electrónico del usuario.",
   });
@@ -512,7 +511,7 @@ async function sendMailResetPassword(params: { email: string }) {
       email,
     });
 
-    openToast({ message: "Instrucciones enviadas" });
+    await systemController.presentToast({ message: "Instrucciones enviadas" });
   } catch (e: any) {
     console.error(e);
     openToastError(e);
@@ -524,7 +523,7 @@ async function resendEmailConfirmation(params: { email: string }) {
   const { email } = params;
   // spinners.optionsUser = true;
 
-  const alertResponse = await presentAlertConfirmation({
+  const alertResponse = await systemController.presentAlertConfirmation({
     message:
       "Se enviarán las instrucciones para la verificación de la cuenta al correo electrónico del usuario.",
   });
@@ -534,10 +533,12 @@ async function resendEmailConfirmation(params: { email: string }) {
   try {
     await resendEmailConfirmationService({ email });
 
-    openToast({ message: "Instrucciones enviadas" });
+    await systemController.presentToast({ message: "Instrucciones enviadas" });
   } catch (e: any) {
     if (e.message == "User already verified") {
-      openToast({ message: "Ya se encuentra activado" });
+      await systemController.presentToast({
+        message: "Ya se encuentra activado",
+      });
       return;
     }
     console.error(e);
@@ -549,16 +550,16 @@ async function resendEmailConfirmation(params: { email: string }) {
 async function deleteUser(email: string) {
   // spinners.optionsUser = true;
 
-  const alertResponse = await presentAlertConfirmation({
+  const alertResponse = await systemController.presentAlertConfirmation({
     message: "Esta acción no es reversible.",
   });
 
   if (alertResponse == false) return;
 
   try {
-    await deleteUserAccount({ email });
+    await userController.deleteUserAccount({ email });
 
-    openToast({ message: "Usuario eliminado" });
+    await systemController.presentToast({ message: "Usuario eliminado" });
     refreshContent();
   } catch (e: any) {
     console.error(e);
