@@ -124,14 +124,15 @@ import { useRouter } from "vue-router";
 import { closeOutline, server } from "ionicons/icons";
 
 // TODO: create controller1
-// import { setUserToken, resendEmailConfirmation } from "../../../services/user";
-// import { userLogin } from "../../../services/session";
+// import {  resendEmailConfirmation } from "../../../services/user";
 
 //controllers
 import ServerConfig from "@/controllers/serverConfigController";
 import SystemController from "../../../controllers/systemController";
+import SessionController from "../../../controllers/sessionController";
 const serverConfig = new ServerConfig();
 const systemController = new SystemController();
+const sessionController = new SessionController();
 
 // components
 import LoginFormComponent from "@/forms/LoginFormComponent.vue";
@@ -186,15 +187,13 @@ async function login(params: { email: string; password: string }) {
   const user = email.trim();
 
   try {
-    const response = await userLogin({
+    const response = await sessionController.userLogin({
       user,
       password,
     });
 
     const token = response.token;
-    //FIX: create function in composable
     await serverConfig.store({ userToken: token });
-    // setUserToken({ token });
 
     spinners.value.buttonLogin = false;
     clearInputs();
