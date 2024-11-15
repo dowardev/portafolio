@@ -34,9 +34,6 @@ import {
 import { computed, nextTick, onMounted, ref } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
 
-// TODO: cretae controller
-// import { createFirstCookie as createFirstCookieService } from "./services/system";
-
 import { closeOutline } from "ionicons/icons";
 
 import { Storage } from "@ionic/storage";

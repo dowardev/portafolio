@@ -224,7 +224,7 @@ import {
 } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
-// TODO: create controller
+// TODO: pending
 // import {
 //   recoverPassword,
 //   sendNewPassword as sendNewPasswordService,

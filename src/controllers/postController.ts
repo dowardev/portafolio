@@ -160,6 +160,7 @@ export default class PostController {
       throw new Error(error);
     }
   }
+
   async uploadImage(params: {
     image: File;
     type: string;

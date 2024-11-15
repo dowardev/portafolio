@@ -18,19 +18,6 @@
 <script setup lang="ts">
 import { IonPage } from "@ionic/vue";
 import { onMounted, ref } from "vue";
-// TODO: create controller
-// import {
-//   openToast,
-//   uploadImage as uploadImageService,
-//   getBaseURL,
-//   presentLoading,
-// } from "../../../services/system";
-// import EditorComponent from "./EditorPage.vue";
-// import {
-//   POSTS_UPDATE_DETAILS,
-//   POST_DETAILS,
-//   UPLOAD_IMAGE,
-// } from "../../../services/graphql";
 import { useRoute, useRouter } from "vue-router";
 import { UpdatePost } from "@/services/interfaces";
 
@@ -61,7 +48,7 @@ onMounted(() => {
 
 // functions
 async function getPost(): Promise<void> {
-  const loading = await presentLoading({
+  const loading = await systemController.presentLoading({
     message: "Obteniendo publicación",
   });
   loading.present();
@@ -155,7 +142,7 @@ async function save(data: {
     await refreshPostsCotent();
     spinners.savePost = false;
     router.go(-1);
-    openToast({ message: "Post actualizado" });
+    await systemController.presentToast({ message: "Post actualizado" });
   } catch (e: any) {
     console.error(e);
     spinners.savePost = false;
@@ -176,7 +163,7 @@ async function uploadImage(e: any) {
   const image = e;
 
   try {
-    const response = await uploadImageService({
+    const response = await postController.uploadImage({
       image,
       type: "post",
     });
