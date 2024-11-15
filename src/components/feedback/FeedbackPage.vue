@@ -206,14 +206,15 @@ import {
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email, minLength } from "@vuelidate/validators";
-// TODO: create controller
-// import { openToast } from "../../services/system";
+// TODO: pending
 // import { createFeedback } from "../../services/feedback";
 import { ReportError } from "../../services/interfaces";
 
-// composables
+// controllers
 import UsersController from "@/controllers/usersController";
+import SystemController from "@/controllers/systemController";
 const userController = new UsersController();
+const systemController = new SystemController();
 
 const props = defineProps<{
   data: ReportError;
@@ -310,16 +311,16 @@ async function sendFeedback() {
       type,
     });
     spinners.value.buttonSendFeedback = false;
-    openToast({
+    systemController.presentToast({
       message: "Gracias por tus comentarios",
       color: "success",
     });
     clearInputs;
-    openToast({ message: "Gracias por tus comentarios" });
+    systemController.presentToast({ message: "Gracias por tus comentarios" });
     closeModal();
   } catch (e) {
     spinners.value.buttonSendFeedback = false;
-    openToast({
+    systemController.presentToast({
       message: "Ocurrió un error",
       color: "danger",
     });

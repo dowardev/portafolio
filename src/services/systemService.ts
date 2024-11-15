@@ -105,7 +105,7 @@ export default class SystemService {
   }
 
   async presentLoading(params: Loading): Promise<HTMLIonLoadingElement> {
-    const { message } = params;
+    const { message, color } = params;
     const loading = await loadingController.create({
       cssClass: "my-custom-class",
       message,
@@ -167,7 +167,7 @@ export default class SystemService {
     return response.image;
   }
 
-  async presentToast(params: { message: string; color?: "dark" | "danger" }) {
+  async presentToast(params: Toast) {
     const { message, color = "dark" } = params;
     const toast = await toastController.create({
       message,

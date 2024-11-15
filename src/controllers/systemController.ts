@@ -115,4 +115,9 @@ export default class SystemController {
     const { message } = params;
     return await this.systemService.presentLoading({ message });
   }
+
+  async presentToast(params: Toast) {
+    const { message, duration, color } = params;
+    return await this.systemService.presentToast({ message, duration, color });
+  }
 }
