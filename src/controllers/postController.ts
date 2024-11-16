@@ -8,9 +8,9 @@ import { filterPostOptions } from "@/services/types";
 import PostService from "../services/postService";
 
 export default class PostController {
-  postStore = usePostStore();
-  postRefs = storeToRefs(this.postStore);
-  postService = new PostService();
+  private postStore = usePostStore();
+  private postRefs = storeToRefs(this.postStore);
+  private postService = new PostService();
 
   async loadPosts(params: { date: string; filter?: filterPostOptions }) {
     const { date, filter } = params;

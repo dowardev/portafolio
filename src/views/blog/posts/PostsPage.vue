@@ -11,7 +11,7 @@
         <ion-buttons slot="end">
           <!-- <DateSelectorComponent></DateSelectorComponent> -->
           <ion-button
-            v-if="userController.user.isAdmin"
+            v-if="userController.getUser()?.isAdmin"
             fill="clear"
             @click="addPost()"
           >
@@ -85,7 +85,7 @@
               <ion-col size="8">
                 <ion-row>
                   <ion-col
-                    :size="userController.user.isAdmin ? 10 : 12"
+                    :size="userController.getUser()?.isAdmin ? 10 : 12"
                     @click="openPost(post.id!)"
                     style="cursor: pointer"
                   >
@@ -94,7 +94,7 @@
                     </ion-card-title>
                   </ion-col>
 
-                  <ion-col size="2" v-if="userController.user.isAdmin">
+                  <ion-col size="2" v-if="userController.getUser()?.isAdmin">
                     <ion-button
                       fill="clear"
                       @click="
@@ -112,7 +112,7 @@
                 <ion-row @click="openPost(post.id!)" style="cursor: pointer">
                   <ion-col size="6">
                     <ion-chip
-                      v-if="userController.user.isAdmin"
+                      v-if="userController.getUser()?.isAdmin"
                       :color="
                         post.status == 'active'
                           ? 'success'
@@ -254,7 +254,7 @@
         >
 
         <!-- filter -->
-        <ion-list v-if="userController.user.isAdmin">
+        <ion-list v-if="userController.getUser()?.isAdmin">
           <ion-list-header>
             <ion-label>Filtro</ion-label>
           </ion-list-header>
@@ -302,7 +302,7 @@
 
         <ion-item
           button
-          v-if="userController.user.isAdmin"
+          v-if="userController.getUser()?.isAdmin"
           lines="none"
           class="transparent"
           @click="deletePost({ id: idPostSelected })"

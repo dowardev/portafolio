@@ -15,15 +15,13 @@ import SessionService from "@/services/sessionService";
 import { useUserStore } from "@/store/userStore";
 
 export default class UserController {
-  usersStore = useUsersStore();
-  users = storeToRefs(this.usersStore).users;
-  // openToastError = systemController.openToastError;
-  userService = new UserService();
-  adminService = new AdminService();
-  sessionService = new SessionService();
-  systemService = new SystemService();
-  userStore = useUserStore();
-  user = storeToRefs(this.userStore);
+  private usersStore = useUsersStore();
+  private userService = new UserService();
+  private adminService = new AdminService();
+  private sessionService = new SessionService();
+  private systemService = new SystemService();
+  private userStore = useUserStore();
+  private userRefs = storeToRefs(this.userStore);
 
   async loadUsers(params: {
     paginatorInfo: { pagination: number; page: number };
@@ -148,6 +146,11 @@ export default class UserController {
   }
 
   updateUserProps(params: { user: User }) {
-    this.userStore.updateUserProps(params.user);
+    const { user } = params;
+    this.userStore.updateUserProps(user);
+  }
+
+  getUser(): User | undefined {
+    return this.userRefs.user.value ?? undefined;
   }
 }

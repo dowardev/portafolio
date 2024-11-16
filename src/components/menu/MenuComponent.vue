@@ -6,12 +6,14 @@
           <ion-col>
             <!-- user logged -->
             <ion-item
-              v-if="Object.keys(userController.user).length > 0"
+              v-if="
+                Object.keys(userController.getUser()?.user ?? {}).length > 0
+              "
               lines="none"
               class="transparent"
               @click="setOpenPopOverUserOptions(true, $event)"
             >
-              <ion-label>{{ userController.user.name }}</ion-label>
+              <ion-label>{{ userController.getUser()?.name }}</ion-label>
               <ion-button
                 slot="end"
                 fill="clear"
@@ -26,7 +28,9 @@
 
             <!-- no logged -->
             <ion-item
-              v-if="Object.keys(userController.user).length == 0"
+              v-if="
+                Object.keys(userController.getUser()?.user ?? {}).length == 0
+              "
               class="transparent"
               lines="none"
             >
@@ -258,7 +262,7 @@
         <ion-content>
           <!-- admin panel -->
           <ion-item
-            v-if="userController.user.isAdmin"
+            v-if="userController.getUser()?.isAdmin"
             button
             :disabled="spinners.buttonAdminPanel"
             lines="none"

@@ -30,34 +30,32 @@ export const usePostStore = defineStore("post", () => {
     return posts.value;
   }
 
-  function getPost() {
-    return (params: { id: string }) => {
-      const id = params.id;
-      let post = posts.value.filter((element) => {
-        return (element as any).id == id;
-      });
-      post = JSON.parse(JSON.stringify(post));
-      if (post.length > 0) {
-        post[0].cover.source = "data:image/png;base64," + post[0].cover.source;
-      }
-      return post[0];
-    };
+  function getPost(params: { id: string }) {
+    const id = params.id;
+    let post = posts.value.filter((element) => {
+      return (element as any).id == id;
+    });
+    post = JSON.parse(JSON.stringify(post));
+    if (post.length > 0) {
+      post[0].cover.source = "data:image/png;base64," + post[0].cover.source;
+    }
+    return post[0];
   }
 
   function addPost(params: { post: Post }) {
-    const post = params.post;
+    const { post } = params;
 
-    if (posts.value.length == 0) posts = [post];
+    if (posts.value.length == 0) posts.value = [post];
     else {
       let exists = false as boolean;
-      posts.forEach((element) => {
+      posts.value.forEach((element) => {
         if (element.id == post.id) exists = true;
       });
 
-      if (exists == false) posts.push(post);
+      if (exists == false) posts.value.push(post);
 
       if (exists == true) {
-        posts = posts.value.map((element) => {
+        posts.value = posts.value.map((element) => {
           if (element.id == post.id) element = { ...element, ...post };
           return element;
         });

@@ -1,3 +1,4 @@
+import { GetUser } from "./../services/interfaces";
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
 import NoFoundPage from "../views/404/404Page.vue";
@@ -114,8 +115,8 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const userController = new UserController();
   await loadUser(userController);
-  const user = userController.user.user;
-  const isAdmin = userController.user.isAdmin;
+  const user = userController.getUser()?.user;
+  const isAdmin = userController.getUser()?.isAdmin;
 
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];

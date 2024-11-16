@@ -27,7 +27,7 @@
 
         <!-- desktop options -->
         <ion-buttons slot="end" v-if="isPlatform('desktop')">
-          <section v-if="userController.user.value.isAdmin">
+          <section v-if="userController.getUser()?.isAdmin">
             <ion-button fill="clear" @click="updatePost()">
               <ion-icon :icon="createOutline"></ion-icon>
             </ion-button>
@@ -115,7 +115,7 @@
           <!-- update -->
           <ion-item
             lines="full"
-            v-if="userController.user.value.isAdmin"
+            v-if="userController.getUser()?.isAdmin"
             button
             @click="updatePost()"
           >
@@ -126,7 +126,7 @@
           <!-- delete -->
           <ion-item
             lines="full"
-            v-if="userController.user.value.isAdmin"
+            v-if="userController.getUser()?.isAdmin"
             button
             @click="deletePost()"
           >
@@ -170,8 +170,10 @@ import modalIndexContent from "./modalIndexContent.vue";
 // controllers
 import SystemController from "@/controllers/systemController";
 import UserController from "@/controllers/userController";
+import PostController from "@/controllers/postController";
 const systemController = new SystemController();
 const userController = new UserController();
+const postController = new PostController();
 
 // vars
 const route = useRoute();
