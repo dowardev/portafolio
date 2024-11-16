@@ -30,7 +30,7 @@ export default class PostController {
     try {
       const dates = await this.postService.getPostsDates({ status });
 
-      this.postStore.updateDates(dates);
+      this.postStore.updateDates({ dates });
     } catch (e: any) {
       // this.openToastError(e);
       throw e;
@@ -67,7 +67,7 @@ export default class PostController {
   }
 
   getCurrentPage(): string | undefined {
-    return this.postRefs.currentPage.value
+    return this.postRefs.currentPage
       ? this.postRefs.currentPage.value
       : undefined;
   }

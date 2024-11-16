@@ -158,7 +158,7 @@ import {
   menuOutline,
   trashOutline,
 } from "ionicons/icons";
-import { useUser } from "@/controllers/usersController";
+import { useUser } from "@/controllers/userController";
 import { usePost } from "@/controllers/postController";
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref, watch } from "vue";
@@ -169,9 +169,9 @@ import modalIndexContent from "./modalIndexContent.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
-import UsersController from "@/controllers/usersController";
+import UserController from "@/controllers/userController";
 const systemController = new SystemController();
-const userController = new UsersController();
+const userController = new UserController();
 
 // vars
 const route = useRoute();

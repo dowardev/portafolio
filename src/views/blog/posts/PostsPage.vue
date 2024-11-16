@@ -11,7 +11,7 @@
         <ion-buttons slot="end">
           <!-- <DateSelectorComponent></DateSelectorComponent> -->
           <ion-button
-            v-if="userController.user.value.isAdmin"
+            v-if="userController.user.isAdmin"
             fill="clear"
             @click="addPost()"
           >
@@ -85,7 +85,7 @@
               <ion-col size="8">
                 <ion-row>
                   <ion-col
-                    :size="userController.user.value.isAdmin ? 10 : 12"
+                    :size="userController.user.isAdmin ? 10 : 12"
                     @click="openPost(post.id!)"
                     style="cursor: pointer"
                   >
@@ -94,7 +94,7 @@
                     </ion-card-title>
                   </ion-col>
 
-                  <ion-col size="2" v-if="userController.user.value.isAdmin">
+                  <ion-col size="2" v-if="userController.user.isAdmin">
                     <ion-button
                       fill="clear"
                       @click="
@@ -112,7 +112,7 @@
                 <ion-row @click="openPost(post.id!)" style="cursor: pointer">
                   <ion-col size="6">
                     <ion-chip
-                      v-if="userController.user.value.isAdmin"
+                      v-if="userController.user.isAdmin"
                       :color="
                         post.status == 'active'
                           ? 'success'
@@ -254,7 +254,7 @@
         >
 
         <!-- filter -->
-        <ion-list v-if="userController.user.value.isAdmin">
+        <ion-list v-if="userController.user.isAdmin">
           <ion-list-header>
             <ion-label>Filtro</ion-label>
           </ion-list-header>
@@ -302,7 +302,7 @@
 
         <ion-item
           button
-          v-if="userController.user.value.isAdmin"
+          v-if="userController.user.isAdmin"
           lines="none"
           class="transparent"
           @click="deletePost({ id: idPostSelected })"
@@ -336,10 +336,10 @@ import {
 } from "ionicons/icons";
 
 // controllers
-import UsersController from "@/controllers/usersController";
+import UserController from "@/controllers/userController";
 import PostController from "@/controllers/postController";
 import SystemController from "@/controllers/systemController";
-const userController = new UsersController();
+const userController = new UserController();
 const postController = new PostController();
 const systemController = new SystemController();
 
@@ -427,24 +427,26 @@ async function loadContent(params: {
 }): Promise<void> {
   const { status } = params;
 
-  await getPostsDates({ status });
+  try {
+    await getPostsDates({ status });
 
-  let dates = Array<string>();
-  dates = postController.getDates()!;
-  if (dates.length == 0) {
+    let dates: undefined | string[] = undefined;
+    dates = postController.getDates()!;
+    if (dates == undefined) return;
+
+    let currentPage = "";
+    currentPage = loadData({ dates });
+    postController.updateCurrentPage({ currentPage });
+
+    await postController.loadPosts({
+      date: currentPage,
+      filter: status,
+    });
+  } catch (error: any) {
+    console.error(error.message);
+  } finally {
     loadFinished.value = true;
-    return;
   }
-
-  let currentPage = "";
-  currentPage = loadData({ dates });
-  postController.updateCurrentPage({ currentPage });
-
-  await loadPosts({
-    currentPage,
-    filter: status,
-  });
-  loadFinished.value = true;
 }
 
 async function getPostsDates(params: {
@@ -454,24 +456,6 @@ async function getPostsDates(params: {
 
   try {
     await postController.loadDates({ status });
-  } catch (e: any) {
-    console.error(e);
-    systemController.openToastError(e);
-    throw e;
-  }
-}
-
-async function loadPosts(params: {
-  currentPage: string;
-  filter?: filterPostOptions;
-}): Promise<void> {
-  const { currentPage, filter } = params;
-
-  try {
-    await postController.loadPosts({
-      date: currentPage,
-      filter,
-    });
   } catch (e: any) {
     console.error(e);
     systemController.openToastError(e);
@@ -554,7 +538,16 @@ async function nextDate(): Promise<void> {
 
   updatecurrentPage();
   // emits("currentPageChange");
-  await loadPosts({ currentPage: currentPage.value });
+
+  try {
+    await postController.loadPosts({
+      date: currentPage.value,
+    });
+  } catch (e: any) {
+    console.error(e);
+    systemController.openToastError(e);
+    throw e;
+  }
 }
 
 async function previousDate(): Promise<void> {
@@ -566,14 +559,32 @@ async function previousDate(): Promise<void> {
   currentPageIndex.value = newDateIndex;
 
   updatecurrentPage();
-  await loadPosts({ currentPage: currentPage.value });
+
+  try {
+    await postController.loadPosts({
+      date: currentPage.value,
+    });
+  } catch (e: any) {
+    console.error(e);
+    systemController.openToastError(e);
+    throw e;
+  }
 }
 
 async function selectDate(params: { date: string }): Promise<void> {
   const date = params.date;
   currentPageIndex.value = dates.indexOf(date);
   updatecurrentPage();
-  await loadPosts({ currentPage: currentPage.value });
+
+  try {
+    await postController.loadPosts({
+      date: currentPage.value,
+    });
+  } catch (e: any) {
+    console.error(e);
+    systemController.openToastError(e);
+    throw e;
+  }
 }
 
 function updatecurrentPage(): void {

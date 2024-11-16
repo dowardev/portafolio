@@ -211,9 +211,9 @@ import { required, helpers, email, minLength } from "@vuelidate/validators";
 import { ReportError } from "../../services/interfaces";
 
 // controllers
-import UsersController from "@/controllers/usersController";
+import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
-const userController = new UsersController();
+const userController = new UserController();
 const systemController = new SystemController();
 
 const props = defineProps<{

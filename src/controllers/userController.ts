@@ -8,14 +8,11 @@ import {
   UserRegister,
 } from "../services/interfaces";
 
-// controllers
-// import SystemController from "./systemController";
-// const systemController = new SystemController();
-
 // services
 import UserService from "../services/userService";
 import AdminService from "../services/adminService";
 import SessionService from "@/services/sessionService";
+import { useUserStore } from "@/store/userStore";
 
 export default class UserController {
   usersStore = useUsersStore();
@@ -25,6 +22,8 @@ export default class UserController {
   adminService = new AdminService();
   sessionService = new SessionService();
   systemService = new SystemService();
+  userStore = useUserStore();
+  user = storeToRefs(this.userStore);
 
   async loadUsers(params: {
     paginatorInfo: { pagination: number; page: number };
@@ -136,5 +135,19 @@ export default class UserController {
   }): Promise<{ token: string }> {
     const { user, password } = params;
     return await this.sessionService.userLogin({ user, password });
+  }
+
+  async loadUser() {
+    try {
+      const user = await this.userService.getUser();
+
+      this.updateUserProps({ user });
+    } catch (error: any) {
+      if (error.message != "Unauthorized") throw error;
+    }
+  }
+
+  updateUserProps(params: { user: User }) {
+    this.userStore.updateUserProps(params.user);
   }
 }

@@ -155,7 +155,7 @@ import {
   refreshOutline,
   searchOutline,
 } from "ionicons/icons";
-import { useUser } from "@/controllers/usersController";
+import { useUser } from "@/controllers/userController";
 import { usePost } from "@/controllers/postController";
 import { useSystem } from "@/controllers/systemController";
 

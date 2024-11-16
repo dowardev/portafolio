@@ -357,7 +357,7 @@ import {
 } from "ionicons/icons";
 import AppsComponent from "../apps/Apps.vue";
 import DonationsComponent from "../donations/Donations.vue";
-import { useUser } from "../../../controllers/usersController";
+import { useUser } from "../../../controllers/userController";
 import { USER_MENU } from "../../../services/graphql";
 import { useSystem } from "../../../controllers/systemController";
 import ThemeComponente from "@/components/theme/ThemeComponente.vue";

@@ -8,7 +8,7 @@ import { User } from "../services/interfaces";
 // services
 import UserService from "../services/userService";
 
-export default class UsersController {
+export default class UserController {
   userStore = useUserStore();
   user = storeToRefs(this.userStore);
   imageProfile = storeToRefs(this.userStore);

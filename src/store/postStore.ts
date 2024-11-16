@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { Post } from "../services/interfaces";
 import formatISO from "date-fns/formatISO";
+import { ref } from "vue";
 
 interface PostState {
   posts: Array<Post>;
@@ -9,37 +10,30 @@ interface PostState {
 }
 
 export const usePostStore = defineStore("post", () => {
-  const posts = Array<Post>();
-  const dates = Array<string>();
-  const currentPage = undefined;
+  const posts = ref<Post[]>([]);
+  const dates = ref<string[]>([]);
+  const currentPage = ref<string | undefined>(undefined);
 
-  function formatDates(state) {
-    const dates = Array<string>();
-    state.dates.forEach((element: any) => {
-      dates.push(
+  function formatDates() {
+    const datesResult = Array<string>();
+    dates.value.forEach((element: any) => {
+      datesResult.push(
         formatISO(new Date(element), {
           representation: "date",
         }).replaceAll("/", "-")
       );
     });
-    return dates;
+    return datesResult;
   }
 
-  function getPosts(state) {
-    return () => {
-      let posts = JSON.parse(JSON.stringify(state.posts));
-      posts = posts.map((element: Post) => {
-        element.cover.source = "data:image/png;base64," + element.cover.source;
-        return element;
-      });
-      return posts;
-    };
+  function getPosts() {
+    return posts.value;
   }
 
-  function getPost(state) {
+  function getPost() {
     return (params: { id: string }) => {
       const id = params.id;
-      let post = state.posts.filter((element) => {
+      let post = posts.value.filter((element) => {
         return (element as any).id == id;
       });
       post = JSON.parse(JSON.stringify(post));
@@ -53,7 +47,7 @@ export const usePostStore = defineStore("post", () => {
   function addPost(params: { post: Post }) {
     const post = params.post;
 
-    if (posts.length == 0) posts = [post];
+    if (posts.value.length == 0) posts = [post];
     else {
       let exists = false as boolean;
       posts.forEach((element) => {
@@ -63,7 +57,7 @@ export const usePostStore = defineStore("post", () => {
       if (exists == false) posts.push(post);
 
       if (exists == true) {
-        posts = posts.map((element) => {
+        posts = posts.value.map((element) => {
           if (element.id == post.id) element = { ...element, ...post };
           return element;
         });
@@ -72,20 +66,21 @@ export const usePostStore = defineStore("post", () => {
   }
 
   function setPosts(params: { posts: Array<Post> }) {
-    posts = params.posts;
+    posts.value = params.posts;
   }
 
-  function updateDates(dates: Array<string>) {
-    dates = dates;
+  function updateDates(params: { dates: string[] }) {
+    const { dates: datesParams } = params;
+    dates.value = datesParams;
   }
 
   function updateCurrentPage(params: { currentPage: string }) {
-    currentPage = params.currentPage;
+    currentPage.value = params.currentPage;
   }
 
   function updatePost(params: { post: Post }) {
     const post = params.post;
-    posts = posts.map((element) => {
+    posts = posts.value.map((element) => {
       if (element.id == post.id || post.id == post.id)
         element = { ...element, ...post };
       return element;

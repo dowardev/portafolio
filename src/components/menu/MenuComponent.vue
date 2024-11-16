@@ -397,10 +397,10 @@ import FeedbackPage from "../feedback/FeedbackPage.vue";
 
 // controllers
 import ServerConfig from "@/controllers/serverConfigController";
-import UsersController from "@/controllers/usersController";
+import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
 const serverConfig = new ServerConfig();
-const userController = new UsersController();
+const userController = new UserController();
 const systemController = new SystemController();
 
 const router = useRouter();

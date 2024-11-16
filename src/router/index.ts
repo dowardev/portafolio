@@ -17,9 +17,9 @@ import AdminPanelPage from "@/views/admin/users/UsersPage.vue";
 import InformationComponent from "@/views/presentation/information/InformationComponent.vue";
 
 // controllers
-import UsersController from "@/controllers/usersController";
+import UserController from "@/controllers/userController";
 
-async function loadUser(controller: UsersController): Promise<void> {
+async function loadUser(controller: UserController): Promise<void> {
   try {
     await controller.loadUser();
   } catch (error: any) {
@@ -112,7 +112,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const userController = new UsersController();
+  const userController = new UserController();
   await loadUser(userController);
   const user = userController.user.user;
   const isAdmin = userController.user.isAdmin;

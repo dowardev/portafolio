@@ -206,7 +206,7 @@ import {
   searchOutline,
 } from "ionicons/icons";
 import { ALL_POSTS_DETAILS, POST_DATES } from "@/services/graphql";
-import { useUser } from "@/controllers/usersController";
+import { useUser } from "@/controllers/userController";
 import { usePost } from "@/controllers/postController";
 import { useSystem } from "@/controllers/systemController";
 
