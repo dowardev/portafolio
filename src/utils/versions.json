@@ -1,5 +1,9 @@
 {
   "8": {
+    "8.6.0": {
+      "improvements": ["Optimizaciones de generales"],
+      "corrections": ["Correcciones generales"]
+    },
     "8.5.2": {
       "improvements": [
         "Mejorado el listado de versiones",
