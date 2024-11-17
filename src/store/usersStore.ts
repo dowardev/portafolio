@@ -1,13 +1,14 @@
 import { defineStore } from "pinia";
 import { User } from "../services/interfaces";
 import userAvatar from "@/assets/otros/user.png";
+import { ref } from "vue";
 
 interface UsersState {
   users: User[];
 }
 
 export const useUsersStore = defineStore("users", () => {
-  const users = Array<User>();
+  const users = ref<User[]>([]);
 
   // getters: {
   //   imageProfile(state) {
@@ -18,8 +19,8 @@ export const useUsersStore = defineStore("users", () => {
   // },
 
   function updateUsersProps(params: { users: Array<User> }) {
-    const users = params.users;
-    users = users;
+    const { users: usersParams } = params;
+    users.value = usersParams;
   }
 
   return {
