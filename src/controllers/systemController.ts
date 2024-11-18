@@ -11,6 +11,7 @@ import { Theme as ThemeType } from "@/services/types";
 // services
 import SystemService from "@/services/systemService";
 import ContactService from "@/services/contactService";
+import { wb } from "@/main";
 
 export default class SystemController {
   systemService = new SystemService();
@@ -139,5 +140,16 @@ export default class SystemController {
 
   createFirstCookie() {
     this.systemService.createFirstCookie();
+  }
+
+  updateApp() {
+    if (wb) {
+      wb.addEventListener("controlling", () => {
+        window.location.reload();
+      });
+      wb.messageSkipWaiting();
+    } else {
+      console.error("Workbox no está inicializado.");
+    }
   }
 }

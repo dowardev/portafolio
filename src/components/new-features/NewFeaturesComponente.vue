@@ -12,8 +12,8 @@
 
         <ion-buttons slot="end">
           <ion-button
-            :disabled="systemComposable.getUpdateStatus() == false"
-            @click="updateApp()"
+            :disabled="systemController.getUpdateStatus() == false"
+            @click="systemController.updateApp()"
           >
             <ion-icon :icon="downloadOutline"></ion-icon>
           </ion-button>
@@ -115,7 +115,7 @@ import versionsDataJson from "@/utils/versions.json";
 
 // controllers
 import SystemController from "@/controllers/systemController";
-const systemComposable = new SystemController();
+const systemController = new SystemController();
 
 interface VersionsData {
   [version: string]: {
@@ -174,16 +174,5 @@ function onVersionChange() {
       corrections: data.corrections || [],
     })
   );
-}
-
-function updateApp() {
-  if (wb) {
-    wb.addEventListener("controlling", () => {
-      window.location.reload();
-    });
-    wb.messageSkipWaiting();
-  } else {
-    console.error("Workbox no está inicializado.");
-  }
 }
 </script>

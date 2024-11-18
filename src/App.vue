@@ -14,9 +14,11 @@
 
     <!-- toasts -->
     <ion-toast
-      :is-open="openToastUpdateApp"
       message="Nueva actualización disponible, más detalles en la sección de novedades"
+      :is-open="true"
+      :buttons="toastButtons"
       :duration="7000"
+      @didDismiss="updateApp($event)"
     ></ion-toast>
   </ion-app>
 </template>
@@ -28,6 +30,7 @@ import {
   IonMenu,
   IonSplitPane,
   IonToast,
+  toastController,
 } from "@ionic/vue";
 import { computed, onMounted, ref, watch } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
@@ -48,6 +51,12 @@ const route = useRoute();
 // vars
 const openToastUpdateApp = ref(false);
 const previousRoute = ref("");
+const toastButtons = [
+  {
+    text: "Actualizar",
+    role: "update",
+  },
+];
 
 // watch
 watch(
@@ -84,6 +93,7 @@ onMounted(async () => {
     });
   }
 });
+1;
 
 function createFirstCookie() {
   if (systemController.getFirstCookie()) {
@@ -117,6 +127,10 @@ async function openToastOptions() {
     ],
   });
   await toast.present();
+}
+
+function updateApp(e: any) {
+  if (e.detail.role == "update") systemController.updateApp();
 }
 </script>
 
