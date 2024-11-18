@@ -1,15 +1,19 @@
 {
   "name": "dowar-blog",
   "private": true,
-  "version": "8.7.0",
+  "version": "8.7.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
+    "build:prod": "vue-tsc && vite build --mode production",
     "preview": "vite preview",
     "test:e2e": "cypress run",
     "test:unit": "vitest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "ionic:build": "npm run build",
+    "ionic:build:prod": "npm run build:prod",
+    "ionic:serve": "npm run dev"
   },
   "dependencies": {
     "@capacitor/app": "6.0.1",
