@@ -87,6 +87,7 @@ ion-card {
 
 .selectable-card:hover {
   border: 1px solid var(--ion-color-primary);
+  background: var(--ion-color-selected);
 }
 
 .element-selected {
