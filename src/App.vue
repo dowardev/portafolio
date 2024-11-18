@@ -15,7 +15,7 @@
     <!-- toasts -->
     <ion-toast
       message="Nueva actualización disponible, más detalles en la sección de novedades"
-      :is-open="true"
+      :is-open="openToastUpdateApp"
       :buttons="toastButtons"
       :duration="7000"
       @didDismiss="updateApp($event)"
