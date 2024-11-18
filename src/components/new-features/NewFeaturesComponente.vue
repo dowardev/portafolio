@@ -113,6 +113,10 @@ import { ref, watch, onMounted, Ref } from "vue";
 import { wb } from "@/main";
 import versionsDataJson from "@/utils/versions.json";
 
+// controllers
+import SystemController from "@/controllers/systemController";
+const systemComposable = new SystemController();
+
 interface VersionsData {
   [version: string]: {
     [subVersion: string]: {
