@@ -49,92 +49,58 @@
 
             <!-- navigation -->
             <section>
-              <div>
+              <!-- presentation -->
+              <div
+                :class="{
+                  'menu-option-selected':
+                    $route.name == 'PresentationPage' ||
+                    $route.name == 'SkillsPage' ||
+                    $route.name == 'HistoryPage' ||
+                    $route.name == 'PortfolioPage',
+                }"
+              >
                 <ion-item
                   lines="none"
                   class="transparent"
                   button
                   @click="openRoute({ name: 'PresentationPage' })"
                 >
-                  <div slot="start">
-                    <ion-icon
-                      :icon="personOutline"
-                      :class="{
-                        iconOptionSelected:
-                          $route.name == 'PresentationPage' ||
-                          $route.name == 'SkillsPage' ||
-                          $route.name == 'HistoryPage' ||
-                          $route.name == 'PortfolioPage',
-
-                        iconOptionNoSelected:
-                          $route.name != 'PresentationPage' &&
-                          $route.name != 'SkillsPage' &&
-                          $route.name != 'HistoryPage' &&
-                          $route.name != 'PortfolioPage',
-                      }"
-                    ></ion-icon>
-                  </div>
-
-                  <ion-label
-                    :class="{
-                      labelOptionMenu:
-                        $route.name == 'PresentationPage' ||
-                        $route.name == 'SkillsPage' ||
-                        $route.name == 'HistoryPage' ||
-                        $route.name == 'PortfolioPage',
-                    }"
-                  >
-                    Presentación
-                  </ion-label>
+                  <ion-icon slot="start" :icon="personOutline"></ion-icon>
+                  <ion-label> Presentación </ion-label>
                 </ion-item>
               </div>
 
-              <div>
+              <!-- blog -->
+              <div
+                :class="{
+                  'menu-option-selected': $route.name == 'PostsPage',
+                }"
+              >
                 <ion-item
                   lines="none"
                   class="transparent"
                   button
                   @click="openRoute({ name: 'PostsPage' })"
                 >
-                  <div slot="start">
-                    <ion-icon
-                      :icon="libraryOutline"
-                      :class="{
-                        iconOptionSelected: $route.name == 'PostsPage',
-                        iconOptionNoSelected: $route.name != 'PostsPage',
-                      }"
-                    ></ion-icon>
-                  </div>
-
-                  <ion-label
-                    :class="{ labelOptionMenu: $route.name == 'PostsPage' }"
-                  >
-                    Blog
-                  </ion-label>
+                  <ion-icon slot="start" :icon="libraryOutline"></ion-icon>
+                  <ion-label> Blog </ion-label>
                 </ion-item>
               </div>
 
               <!-- policies -->
-              <div>
+              <div
+                :class="{
+                  'menu-option-selected': $route.name == 'PoliciesPage',
+                }"
+              >
                 <ion-item
                   lines="none"
                   class="transparent"
                   button
                   @click="openRoute({ name: 'PoliciesPage' })"
                 >
-                  <div slot="start">
-                    <ion-icon
-                      :icon="documentsOutline"
-                      :class="{
-                        iconOptionSelected: $route.path == '/policies',
-                        iconOptionNoSelected: $route.path != '/policies',
-                      }"
-                    ></ion-icon>
-                  </div>
-                  <ion-label
-                    :class="{ labelOptionMenu: $route.name == 'PoliciesPage' }"
-                    >Políticas</ion-label
-                  >
+                  <ion-icon slot="start" :icon="documentsOutline"></ion-icon>
+                  <ion-label>Políticas</ion-label>
                 </ion-item>
               </div>
             </section>
@@ -502,18 +468,20 @@ async function goToAdminPanel() {
 </script>
 
 <style scoped>
-.iconOptionSelected {
-  background: var(--ion-color-primary);
-  border-radius: 6px;
-  padding: 8px;
-  color: white;
+.menu-option-selected {
+  border-left: 4px solid var(--ion-color-secondary);
+  padding-left: 4px;
 }
 
-.iconOptionNoSelected {
-  padding: 8px;
+.menu-option-selected > ion-item {
+  background: var(--ion-color-selected);
 }
 
-.labelOptionMenu {
-  color: var(--ion-color-primary);
+.menu-option-selected > ion-item > ion-icon {
+  color: var(--ion-color-secondary);
+}
+
+.menu-option-selected > ion-item > ion-label {
+  color: var(--ion-color-secondary);
 }
 </style>
