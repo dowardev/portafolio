@@ -193,7 +193,7 @@ async function login(params: { email: string; password: string }) {
     });
 
     const token = response.token;
-    await serverConfig.store({ userToken: token });
+    await serverConfig.storeUserToken({ userToken: token });
 
     spinners.value.buttonLogin = false;
     clearInputs();

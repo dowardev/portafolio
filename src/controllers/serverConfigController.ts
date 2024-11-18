@@ -6,29 +6,23 @@ export default class ServerConfig {
   private userToken: string = "";
   private systemService = new SystemService();
 
-  public static async createInstance(): Promise<ServerConfig> {
-    const instance = new ServerConfig();
-    await instance.load();
-    return instance;
-  }
-
-  public async store(params: {
+  public async storeUserToken(params: {
     serverUrl?: string;
     userToken?: string;
   }): Promise<void> {
     const { serverUrl, userToken } = params;
-    if (serverUrl)
+    if (serverUrl) {
       await this.systemService.storeDataOnLocalStorage({
         key: "serverUrl",
         value: serverUrl,
       });
+    }
     if (userToken) {
       this.systemService.storeCookie({ key: "userToken", value: userToken });
     }
-    await this.load();
   }
 
-  private async load(): Promise<void> {
+  async load(): Promise<void> {
     this.serverUrl = await this.systemService.getDataFromLocalStorage({
       key: "serverUrl",
     });

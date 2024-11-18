@@ -45,16 +45,15 @@ export const storageInstance = await initStorage();
 
 // server config
 import ServerConfig from "@/controllers/serverConfigController";
-const serverConfigService = await ServerConfig.createInstance();
-await serverConfigService.store({
-  // serverUrl: "http://127.0.0.1:8000/api/",
-  serverUrl: "https://blog-backend.dowar.xyz/api/",
+const serverConfigController = new ServerConfig();
+await serverConfigController.storeUserToken({
+  serverUrl: import.meta.env.VITE_API_URL,
 });
-const serverConfig = await serverConfigService.getConfig();
+await serverConfigController.load();
 
 // api connector
 import APIService from "@/services/APIService";
-const api = new APIService(await serverConfigService.getConfig());
+const api = new APIService(await serverConfigController.getConfig());
 export const apiConnector = api;
 
 // service worker
