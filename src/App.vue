@@ -9,7 +9,7 @@
         <MenuComponent></MenuComponent>
       </ion-menu>
 
-      <ion-router-outlet id="main" />
+      <ion-router-outlet id="main" :animated="!disableAnimation" />
     </ion-split-pane>
 
     <!-- toasts -->
@@ -27,17 +27,12 @@ import {
   IonRouterOutlet,
   IonMenu,
   IonSplitPane,
-  toastController,
-  isPlatform,
   IonToast,
 } from "@ionic/vue";
-import { computed, nextTick, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
-
-import { closeOutline } from "ionicons/icons";
-
+import { useRouter, useRoute } from "vue-router";
 import { Storage } from "@ionic/storage";
-import { useRouter } from "vue-router";
 import { wb } from "./main";
 
 // controllers
@@ -48,9 +43,31 @@ const systemController = new SystemController();
 const store = new Storage();
 store.create();
 const router = useRouter();
+const route = useRoute();
 
 // vars
 const openToastUpdateApp = ref(false);
+const previousRoute = ref("");
+
+// watch
+watch(
+  () => route.path,
+  (newPath, oldPath) => {
+    if (oldPath) {
+      previousRoute.value = oldPath;
+    }
+  }
+);
+
+// computed
+const disableAnimation = computed(() => {
+  const currentPath = route.path;
+  const routes = ["/home/presentation", "/home/skills", "/home/portfolio"];
+  const isTargetRoute = routes.includes(currentPath);
+  const wasOnTargetRoute = routes.includes(previousRoute.value);
+
+  return isTargetRoute && wasOnTargetRoute;
+});
 
 // mounted
 onMounted(async () => {
