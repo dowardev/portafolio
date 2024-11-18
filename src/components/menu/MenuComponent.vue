@@ -73,7 +73,8 @@
               <!-- blog -->
               <div
                 :class="{
-                  'menu-option-selected': $route.name == 'PostsPage',
+                  'menu-option-selected':
+                    $route.name == 'PostsPage' || $route.name == 'PostPage',
                 }"
               >
                 <ion-item

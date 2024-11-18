@@ -42,8 +42,8 @@
             fill="clear"
             @click="openModalIndexContent()"
           >
-            <ion-icon :icon="menuOutline"></ion-icon> </ion-button
-          >r
+            <ion-icon :icon="menuOutline"></ion-icon>
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
