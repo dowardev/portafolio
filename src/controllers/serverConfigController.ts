@@ -25,6 +25,7 @@ export default class ServerConfig {
     if (userToken) {
       this.systemService.storeCookie({ key: "userToken", value: userToken });
     }
+    await this.load();
   }
 
   private async load(): Promise<void> {
@@ -34,8 +35,8 @@ export default class ServerConfig {
     this.userToken = this.systemService.getCookie({ key: "userToken" });
   }
 
-  public async getConfig(): Promise<{ serverUrl: string; UserToken: string }> {
-    return { serverUrl: this.serverUrl, UserToken: this.userToken };
+  public async getConfig(): Promise<{ serverUrl: string; userToken: string }> {
+    return { serverUrl: this.serverUrl, userToken: this.userToken };
   }
 
   public clearData() {

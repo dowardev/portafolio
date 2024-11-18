@@ -51,13 +51,11 @@ await serverConfigService.store({
   // serverUrl: "https://blog-backend.dowar.xyz/api/",
 });
 const serverConfig = await serverConfigService.getConfig();
+console.log(serverConfig);
 
 // api connector
 import APIService from "@/services/APIService";
-const api = new APIService({
-  serverUrl: serverConfig.serverUrl,
-  userToken: serverConfig.UserToken,
-});
+const api = new APIService(await serverConfigService.getConfig());
 export const apiConnector = api;
 
 // service worker
