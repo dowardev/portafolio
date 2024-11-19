@@ -8,19 +8,16 @@
         label="nombre"
         fill="outline"
         :value="form.name"
+        :error-text="v$.form.name.$errors[0]?.$message.toString()"
         :class="{
-          'input-error': v$.form.name.$invalid && v$.form.name.$dirty,
+          'ion-invalid': v$.form.name.$invalid && v$.form.name.$dirty,
+          'ion-touched': v$.form.name.$dirty,
         }"
         @ion-input="form.name = $event.detail.value!.toString()"
         @click="v$.form.name.$touch()"
       >
         <ion-icon slot="start" :icon="manOutline"></ion-icon>
       </ion-input>
-
-      <!-- errors -->
-      <div v-for="(error, index) of v$.form.name.$errors" :key="index">
-        <div class="error">{{ error.$message }}</div>
-      </div>
     </ion-col>
   </ion-row>
 
@@ -32,19 +29,16 @@
         fill="outline"
         label="Usuario"
         :value="form.user"
+        :error-text="v$.form.user.$errors[0]?.$message.toString()"
         :class="{
-          'input-error': v$.form.user.$invalid && v$.form.user.$dirty,
+          'ion-invalid': v$.form.user.$invalid && v$.form.user.$dirty,
+          'ion-touched': v$.form.user.$dirty,
         }"
         @ion-input="form.user = $event.detail.value!.toString()"
         @click="v$.form.user.$touch()"
       >
         <ion-icon slot="start" :icon="personOutline"></ion-icon>
       </ion-input>
-
-      <!-- errors -->
-      <div v-for="(error, index) of v$.form.user.$errors" :key="index">
-        <div class="error">{{ error.$message }}</div>
-      </div>
     </ion-col>
   </ion-row>
 
@@ -57,19 +51,16 @@
         fill="outline"
         label="Correo electrónico"
         :value="form.email"
+        :error-text="v$.form.email.$errors[0]?.$message.toString()"
         :class="{
-          'input-error': v$.form.email.$invalid && v$.form.email.$dirty,
+          'ion-invalid': v$.form.email.$invalid && v$.form.email.$dirty,
+          'ion-touched': v$.form.email.$dirty,
         }"
         @ion-input="form.email = $event.detail.value!.toString()"
         @click="v$.form.email.$touch()"
       >
         <ion-icon slot="start" :icon="mailOpenOutline"></ion-icon>
       </ion-input>
-
-      <!-- errors -->
-      <div v-for="(error, index) of v$.form.email.$errors" :key="index">
-        <div class="error">{{ error.$message }}</div>
-      </div>
     </ion-col>
   </ion-row>
 
@@ -81,40 +72,19 @@
         fill="outline"
         label="Contraseña"
         :value="form.password"
+        :error-text="v$.form.password.$errors[0]?.$message.toString()"
         :type="inputTypePassword1"
         :class="{
-          'input-error': v$.form.password.$invalid && v$.form.password.$dirty,
+          'ion-invalid': v$.form.password.$invalid && v$.form.password.$dirty,
+          'ion-touched': v$.form.password.$dirty,
         }"
         :clear-on-edit="false"
         @ion-input="form.password = $event.detail.value!.toString()"
         @click="v$.form.password.$touch()"
       >
         <ion-icon slot="start" :icon="keyOutline"> </ion-icon>
-
-        <ion-button
-          slot="end"
-          fill="clear"
-          @click="
-            inputTypePassword1 == 'password'
-              ? (inputTypePassword1 = 'text')
-              : (inputTypePassword1 = 'password')
-          "
-        >
-          <ion-icon
-            v-if="inputTypePassword1 == 'text'"
-            :icon="eyeOffOutline"
-          ></ion-icon>
-          <ion-icon
-            v-if="inputTypePassword1 == 'password'"
-            :icon="eyeOutline"
-          ></ion-icon>
-        </ion-button>
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
       </ion-input>
-
-      <!-- errors -->
-      <div v-for="(error, index) of v$.form.password.$errors" :key="index">
-        <div class="error">{{ error.$message }}</div>
-      </div>
     </ion-col>
   </ion-row>
 
@@ -126,9 +96,11 @@
         fill="outline"
         label="Repite contraseña"
         :value="form.password2"
+        :error-text="v$.form.password2.$errors[0]?.$message.toString()"
         :type="inputTypePassword2"
         :class="{
-          'input-error': v$.form.password2.$invalid && v$.form.password2.$dirty,
+          'ion-invalid': v$.form.password2.$invalid && v$.form.password2.$dirty,
+          'ion-touched': v$.form.password2.$dirty,
         }"
         :clear-on-edit="false"
         @ion-input="form.password2 = $event.detail.value!.toString()"
@@ -137,30 +109,8 @@
       >
         <ion-icon slot="start" :icon="keyOutline"></ion-icon>
 
-        <ion-button
-          slot="end"
-          fill="clear"
-          @click="
-            inputTypePassword2 == 'password'
-              ? (inputTypePassword2 = 'text')
-              : (inputTypePassword2 = 'password')
-          "
-        >
-          <ion-icon
-            v-if="inputTypePassword2 == 'text'"
-            :icon="eyeOffOutline"
-          ></ion-icon>
-          <ion-icon
-            v-if="inputTypePassword2 == 'password'"
-            :icon="eyeOutline"
-          ></ion-icon>
-        </ion-button>
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
       </ion-input>
-
-      <!-- errors -->
-      <div v-for="(error, index) of v$.form.password2.$errors" :key="index">
-        <div class="error">{{ error.$message }}</div>
-      </div>
     </ion-col>
   </ion-row>
 </template>
@@ -214,7 +164,11 @@ const rules = {
     },
     user: {
       required: helpers.withMessage(messageError.required, required),
-      space: helpers.withMessage(messageError.alpha, helpers.regex(/^\S*$/)),
+      maxLength: helpers.withMessage("Máximo 32 caracteres", maxLength(32)),
+      minLength: helpers.withMessage(
+        "Mínimo 4 caracteres",
+        helpers.regex(/^.{4,}$/)
+      ),
     },
     email: {
       required: helpers.withMessage(messageError.required, required),

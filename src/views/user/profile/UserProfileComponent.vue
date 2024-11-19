@@ -1,8 +1,9 @@
 <template>
+  <!-- profile -->
   <section>
     <ion-list class="transparent">
       <ion-list-header>
-        <ion-label>Informacion basica</ion-label>
+        <ion-label>Información básica</ion-label>
       </ion-list-header>
 
       <ion-row>
@@ -78,104 +79,131 @@
             </ion-card-header>
 
             <ion-card-content>
-              <form>
-                <div class="center">
-                  <img
-                    :src="userImage"
-                    style="
-                      width: 90px;
-                      height: 90px;
-                      border-radius: 50%;
-                      cursor: pointer;
-                    "
-                    @click="($refs as any).inputUserImage.click()"
-                  />
-                </div>
-                <ion-spinner
-                  v-if="spinners.uploadImage == true"
-                  name="crescent"
-                ></ion-spinner>
-                <input
-                  ref="inputUserImage"
-                  accept="image/*"
-                  type="file"
-                  style="display: none"
-                  :disabled="spinners.uploadImage == true"
-                  @change="uploadUserImage($event)"
+              <!-- img -->
+              <div class="center">
+                <img
+                  :src="userImage"
+                  style="
+                    width: 90px;
+                    height: 90px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                  "
+                  @click="($refs as any).inputUserImage.click()"
                 />
-                <ion-item class="transparent">
-                  <ion-icon
-                    slot="start"
-                    :icon="manOutline"
-                    class="item-icon"
-                  ></ion-icon>
-                  <ion-label position="floating">Nombre</ion-label>
+              </div>
+              <ion-spinner
+                v-if="spinners.uploadImage == true"
+                name="crescent"
+              ></ion-spinner>
+              <input
+                ref="inputUserImage"
+                accept="image/*"
+                type="file"
+                style="display: none"
+                :disabled="spinners.uploadImage == true"
+                @change="uploadUserImage($event)"
+              />
+
+              <!-- name -->
+              <ion-row>
+                <ion-col>
                   <ion-input
-                    v-model="(v$ as any).form.name.$model"
+                    label="Nombre"
+                    label-placement="stacked"
                     type="text"
                     autocomplete="name"
-                  ></ion-input>
-                </ion-item>
-                <div
-                  v-for="(error, index) of (v$ as any).form.name.$errors"
-                  :key="index"
-                >
-                  <div class="error">{{ error.$message }}</div>
-                </div>
+                    fill="outline"
+                    :value="form.name"
+                    :error-text="v$.form.name.$errors[0]?.$message.toString()"
+                    :class="{
+                      'ion-invalid':
+                        v$.form.name.$invalid && v$.form.name.$dirty,
+                      'ion-touched': v$.form.name.$dirty,
+                    }"
+                    @ion-input="form.name = $event.detail.value || ''"
+                    @click="v$.form.name.$touch()"
+                  >
+                    <ion-icon slot="start" :icon="manOutline"></ion-icon>
+                  </ion-input>
+                </ion-col>
+              </ion-row>
 
-                <ion-item class="transparent">
-                  <ion-icon
-                    slot="start"
-                    :icon="personOutline"
-                    class="item-icon"
-                  ></ion-icon>
-                  <ion-label position="floating">Usuario</ion-label>
+              <!-- user -->
+              <ion-row>
+                <ion-col>
                   <ion-input
-                    v-model="(v$ as any).form.user.$model"
-                    type="text"
+                    label-placement="stacked"
                     autocomplete="username"
-                  ></ion-input>
-                </ion-item>
-                <div
-                  v-for="(error, index) of (v$ as any).form.user.$errors"
-                  :key="index"
-                >
-                  <div class="error">{{ error.$message }}</div>
-                </div>
+                    fill="outline"
+                    label="Usuario"
+                    type="text"
+                    :value="form.user"
+                    :error-text="v$.form.user.$errors[0]?.$message.toString()"
+                    :class="{
+                      'ion-invalid':
+                        v$.form.user.$invalid && v$.form.user.$dirty,
+                      'ion-touched': v$.form.user.$dirty,
+                    }"
+                    @ion-input="form.user = $event.detail.value!.toString()"
+                    @click="v$.form.user.$touch()"
+                  >
+                    <ion-icon
+                      slot="start"
+                      :icon="personOutline"
+                      class="item-icon"
+                    ></ion-icon>
+                  </ion-input>
+                </ion-col>
+              </ion-row>
 
-                <ion-item class="transparent">
-                  <ion-icon
-                    slot="start"
-                    :icon="mailOpenOutline"
-                    class="item-icon"
-                  ></ion-icon>
-                  <ion-label position="floating">Correo electronico</ion-label>
+              <!-- email -->
+              <ion-row>
+                <ion-col>
                   <ion-input
-                    v-model="(v$ as any).form.email.$model"
+                    label-placement="stacked"
+                    fill="outline"
+                    label="Correo electrónico"
                     type="email"
                     autocomplete="email"
                     pattern="email"
                     inputmode="email"
-                  ></ion-input>
-                </ion-item>
-                <div
-                  v-for="(error, index) of (v$ as any).form.email.$errors"
-                  :key="index"
-                >
-                  <div class="error">{{ error.$message }}</div>
-                </div>
+                    :value="form.email"
+                    :error-text="v$.form.email.$errors[0]?.$message.toString()"
+                    :class="{
+                      'ion-invalid':
+                        v$.form.email.$invalid && v$.form.email.$dirty,
+                      'ion-touched': v$.form.email.$dirty,
+                    }"
+                    @ion-input="form.email = $event.detail.value!.toString()"
+                    @click="v$.form.email.$touch()"
+                  >
+                    <ion-icon
+                      slot="start"
+                      :icon="mailOpenOutline"
+                      class="item-icon"
+                    ></ion-icon>
+                  </ion-input>
+                </ion-col>
+              </ion-row>
 
-                <ion-button
-                  fill="clear"
-                  :disabled="(v$ as any).form.$invalid"
-                  expand="full"
-                  @click="saveUserData()"
-                >
-                  <ion-spinner v-if="spinners.saveUserData" name="crescent">
-                  </ion-spinner>
-                  <ion-label v-if="!spinners.saveUserData"> Guardar </ion-label>
-                </ion-button>
-              </form>
+              <!-- button -->
+              <ion-row>
+                <ion-col>
+                  <ion-button
+                    fill="clear"
+                    :disabled="(v$ as any).form.$invalid"
+                    expand="full"
+                    @click="saveUserData()"
+                  >
+                    <ion-spinner v-if="spinners.saveUserData" name="crescent">
+                    </ion-spinner>
+                    <ion-label v-if="!spinners.saveUserData">
+                      Guardar
+                    </ion-label>
+                  </ion-button>
+                </ion-col>
+              </ion-row>
             </ion-card-content>
           </ion-card>
         </ion-col>
@@ -183,6 +211,7 @@
     </ion-list>
   </section>
 
+  <!-- account -->
   <section>
     <ion-list class="transparent">
       <ion-list-header>
@@ -260,64 +289,55 @@
                 vez tu contraseña.
               </p>
 
-              <form>
-                <ion-item class="transparent">
-                  <ion-icon
-                    slot="start"
-                    :icon="keyOutline"
-                    class="item-icon"
-                  ></ion-icon>
-                  <ion-label position="floating">Contraseña</ion-label>
-                  <ion-input
-                    v-model="(v$ as any).formDeleteAccount.password.$model"
-                    :type="inputTypePassword"
-                    autocomplete="current-password"
-                  ></ion-input>
-                  <ion-button
-                    v-if="inputTypePassword == 'text'"
-                    slot="end"
-                    style="margin-top: 20px"
-                    fill="clear"
-                    @click="inputTypePassword = 'password'"
-                  >
-                    <ion-icon :icon="eyeOffOutline"></ion-icon>
-                  </ion-button>
-                  <ion-button
-                    v-if="inputTypePassword == 'password'"
-                    slot="end"
-                    fill="clear"
-                    style="margin-top: 20px"
-                    @click="inputTypePassword = 'text'"
-                  >
-                    <ion-icon :icon="eyeOutline"></ion-icon>
-                  </ion-button>
-                </ion-item>
-                <div
-                  v-for="(error, index) of (v$ as any).formDeleteAccount
-                    .password.$errors"
-                  :key="index"
-                >
-                  <div class="error">{{ error.$message }}</div>
-                </div>
+              <ion-input
+                autocomplete="current-password"
+                label-placement="stacked"
+                label="Contraseña"
+                fill="outline"
+                :value="formDeleteAccount.password"
+                :type="inputTypePassword"
+                :error-text="
+                  v$.formDeleteAccount.$errors[0]?.$message.toString()
+                "
+                :class="{
+                  'ion-invalid':
+                    v$.formDeleteAccount.$invalid &&
+                    v$.formDeleteAccount.$dirty,
+                  'ion-touched': v$.formDeleteAccount.$dirty,
+                }"
+                @ion-input="
+                  formDeleteAccount.password = $event.detail.value!.toString()
+                "
+                @click="v$.formDeleteAccount.$touch()"
+              >
+                <ion-icon
+                  slot="start"
+                  class="item-icon"
+                  :icon="keyOutline"
+                ></ion-icon>
 
-                <ion-button
-                  fill="clear"
-                  :disabled="(v$ as any).formDeleteAccount.$invalid"
+                <ion-input-password-toggle
+                  slot="end"
+                ></ion-input-password-toggle>
+              </ion-input>
+
+              <ion-button
+                fill="clear"
+                :disabled="(v$ as any).formDeleteAccount.$invalid"
+                color="danger"
+                expand="full"
+                @click="deleteUserAccount()"
+              >
+                <ion-spinner
+                  v-if="spinners.deleteUserAccount"
+                  name="crescent"
                   color="danger"
-                  expand="full"
-                  @click="deleteUserAccount()"
                 >
-                  <ion-spinner
-                    v-if="spinners.deleteUserAccount"
-                    name="crescent"
-                    color="danger"
-                  >
-                  </ion-spinner>
-                  <ion-label v-if="!spinners.deleteUserAccount">
-                    Borrar cuenta
-                  </ion-label>
-                </ion-button>
-              </form>
+                </ion-spinner>
+                <ion-label v-if="!spinners.deleteUserAccount">
+                  Borrar cuenta
+                </ion-label>
+              </ion-button>
             </ion-card-content>
           </ion-card>
         </ion-col>
@@ -343,7 +363,13 @@ import {
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
-import { required, helpers, email } from "@vuelidate/validators";
+import {
+  required,
+  helpers,
+  email,
+  maxLength,
+  minLength,
+} from "@vuelidate/validators";
 import {
   eyeOutline,
   eyeOffOutline,
@@ -375,7 +401,9 @@ const spinners = ref({
 const oldEmail = ref("");
 const userImage = ref(userAvatar);
 const inputTypePassword = "password" as "password" | "text";
-const formDeleteAccount = { password: "1" };
+const formDeleteAccount = ref({
+  password: "",
+});
 const information = [
   {
     basicCardInformation: [
@@ -423,6 +451,11 @@ const rules = {
     },
     user: {
       required: helpers.withMessage(messageError.required, required),
+      maxLength: helpers.withMessage("Máximo 32 caracteres", maxLength(32)),
+      minLength: helpers.withMessage(
+        "Mínimo 4 caracteres",
+        helpers.regex(/^.{4,}$/)
+      ),
     },
     email: {
       required: helpers.withMessage(messageError.required, required),
@@ -442,12 +475,12 @@ const deleteUserCardSelected = ref(false);
 
 // mounted
 onMounted(async () => {
-  await getUser();
+  await loadUser();
   oldEmail.value = form.value.email!;
 });
 
-async function getUser() {
-  await userController.loadUser({});
+async function loadUser() {
+  await userController.loadUser();
 
   form.value.name = userController.getUser()?.name!;
   form.value.user = userController.getUser()?.user!;
@@ -468,7 +501,7 @@ async function saveUserData() {
 
   try {
     await userController.saveUserData({ name, user, email, imageId });
-    getUser();
+    loadUser();
     await systemController.presentToast({
       message: "Datos actualizados",
     });

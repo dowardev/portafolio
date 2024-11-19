@@ -56,8 +56,8 @@ import {
   IonItemDivider,
 } from "@ionic/vue";
 import { ref } from "vue";
-import UserProfileComponent from "./profile/UserProfilePage.vue";
-import UserSecurityComponent from "./security/UserSecurityPage.vue";
+import UserProfileComponent from "./profile/UserProfileComponent.vue";
+import UserSecurityComponent from "./security/UserSecurityComponent.vue";
 
 const modeDesignElements = isPlatform("ios") ? "ios" : "md";
 const pageTitle = ref("Panel de Usurio");

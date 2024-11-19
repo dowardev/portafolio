@@ -8,27 +8,17 @@
         label-placement="stacked"
         fill="outline"
         :value="form.email"
+        :error-text="v$.form.email.$errors[0]?.$message.toString()"
         :class="{
-          'input-error': v$.form.email.$invalid && v$.form.email.$dirty,
+          'ion-invalid': v$.form.email.$invalid && v$.form.email.$dirty,
+          'ion-touched': v$.form.email.$dirty,
         }"
-        @ion-input="form.email = $event.detail.value as any"
+        @ion-input="form.email = $event.detail.value || ''"
         @keydown.enter="($refs as any).inputPassword.$el.setFocus()"
         @click="v$.form.email.$touch()"
       >
         <ion-icon slot="start" :icon="mailOpenOutline"> </ion-icon>
       </ion-input>
-
-      <!-- errors -->
-      <span
-        class="error ion-padding-start"
-        v-if="v$.form.email.$dirty && v$.form.email.required.$invalid"
-        >{{ v$.form.email.required.$message }}</span
-      >
-      <span
-        class="error"
-        v-if="v$.form.email.$dirty && v$.form.email.email.$invalid"
-        >{{ v$.form.email.email.$message }}</span
-      >
     </ion-col>
   </ion-row>
 
@@ -41,11 +31,13 @@
         label-placement="stacked"
         fill="outline"
         :value="form.password"
+        :error-text="v$.form.password.$errors[0]?.$message.toString()"
         :type="inputTypePassword"
         :class="{
-          'input-error': v$.form.password.$invalid && v$.form.password.$dirty,
+          'ion-invalid': v$.form.password.$invalid && v$.form.password.$dirty,
+          'ion-touched': v$.form.password.$dirty,
         }"
-        @ion-input="form.password = $event.detail.value as any"
+        @ion-input="form.password = $event.detail.value || ''"
         @keydown.enter="emits('enterPressed')"
         @click="v$.form.password.$touch()"
       >
@@ -71,13 +63,6 @@
           ></ion-icon>
         </ion-button>
       </ion-input>
-
-      <!-- errors -->
-      <span
-        class="error ion-padding-start"
-        v-if="v$.form.password.$dirty && v$.form.password.required.$invalid"
-        >{{ v$.form.password.required.$message }}</span
-      >
     </ion-col>
   </ion-row>
 </template>
@@ -101,8 +86,6 @@ defineExpose({ getData });
 const emits = defineEmits(["formStatus", "enterPressed"]);
 const inputTypePassword = ref("password" as "text" | "password");
 const form = ref({
-  // email: "admin@admin.com",
-  // password: "d2f%PF",
   email: "",
   password: "",
 });

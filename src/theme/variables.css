@@ -74,9 +74,6 @@ ul {
 .error {
   color: var(--ion-color-danger);
 }
-.item-icon {
-  margin-top: 28px;
-}
 
 ion-card {
   box-shadow: none;
@@ -183,6 +180,7 @@ ion-modal > .ion-delegate-host > .ion-page > ion-header > ion-toolbar {
   --background: var(--ion-color-dark-contrast);
 }
 
+/* TODO: remove */
 .input-error {
   --border-color: var(--ion-color-danger) !important
 ;
