@@ -40,35 +40,18 @@ export default class UserService {
   async saveUserData(params: SaveUserData): Promise<void> {
     const { name, user, email, imageId } = params;
 
-    await axios.request({
-      url: `http://127.0.0.1:8000/api/update-user`,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: getUserToken(),
-      },
-      params: {
-        name,
-        user,
-        email,
-        imageId,
-      },
+    await apiConnector.post({
+      url: `update-user`,
+      data: { name, user, email, imageId },
     });
   }
 
   async deleteUserAccount(params: { password: string }): Promise<void> {
     const { password } = params;
 
-    await axios.request({
-      url: `http://127.0.0.1:8000/api/delete-user`,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: getUserToken(),
-      },
-      params: {
-        password,
-      },
+    await apiConnector.post({
+      url: `delete-user`,
+      data: { password },
     });
   }
 

@@ -74,7 +74,10 @@
             <ion-card-content>
               <section style="overflow-y: scroll; height: 42vh">
                 <ion-accordion-group>
-                  <div v-for="user in useUsers().users.value" :key="user.id">
+                  <div
+                    v-for="user in userController.users.value"
+                    :key="user.id"
+                  >
                     <ion-item lines="none" class="transparent">
                       <ion-icon slot="start" :icon="personOutline"></ion-icon>
                       <ion-label>{{ user.email }}</ion-label>
@@ -324,7 +327,7 @@ import {
 // controllers
 import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
-const userController = new userController();
+const userController = new UserController();
 const systemController = new SystemController();
 
 const openToastError = systemController.openToastError;
@@ -410,12 +413,12 @@ async function loadContent() {
 }
 
 async function getUsersPaginated(): Promise<void> {
-  const response = await useUsers().getUsersPaginated({
+  const response = await userController.getUsersPaginated({
     page: pagInfo.value.currentPage,
     perPage: pagInfo.value.pagination,
   });
   const { users, paginatorInfo } = response;
-  useUsers().updateUsers({ users });
+  userController.updateUsers({ users });
   pagInfo.value.totalPaginacionElements = paginatorInfo.totalPages;
 }
 
@@ -424,7 +427,7 @@ async function getUsers(): Promise<void> {
   const search = searchTerm.value.replace(/ /g, "");
 
   try {
-    const { users, paginatorInfo } = await useUsers().loadUsers({
+    const { users, paginatorInfo } = await userController.loadUsers({
       paginatorInfo: {
         pagination: parseInt(pagInfo.value.pagination),
         page: parseInt(pagInfo.value.currentPage),
@@ -433,7 +436,7 @@ async function getUsers(): Promise<void> {
       filterOptions: JSON.stringify(getFilterOptions()),
     });
 
-    useUsers().updateUsers({ users });
+    userController.updateUsers({ users });
     pagInfo.value.totalPaginacionElements = paginatorInfo.total;
   } catch (e: any) {
     console.error(e);
@@ -579,7 +582,7 @@ function getFilterOptions(): Array<string> {
 async function filterContent() {
   spinners.filter = true;
   status.value = "loading";
-  await getUsers({ refetch: false });
+  await getUsers();
   spinners.filter = false;
   status.value = "loaded";
 }

@@ -40,6 +40,7 @@ import { wb } from "./main";
 
 // controllers
 import SystemController from "./controllers/systemController";
+import { closeOutline } from "ionicons/icons";
 const systemController = new SystemController();
 
 // store

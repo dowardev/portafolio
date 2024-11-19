@@ -231,6 +231,10 @@ import useVuelidate from "@vuelidate/core";
 // } from "@/services/session";
 // import { presentToast } from "@/services/system";
 
+// controllers
+import SystemController from "@/controllers/systemController";
+const systemController = new SystemController();
+
 // vars
 const email = ref("admin@admin.com");
 const code = ref<number | undefined>(undefined);
@@ -288,14 +292,14 @@ async function sendEmail() {
   try {
     await recoverPassword({ email: email.value });
 
-    await presentToast({
+    await systemController.presentToast({
       message: "Código enviado",
     });
 
     step.value = 2;
   } catch (error: any) {
     if (error.message == "Email not found")
-      await presentToast({
+      await systemController.presentToast({
         message: "Correo electrónico no encontrado",
         color: "danger",
       });
@@ -315,12 +319,12 @@ async function sendNewPassword() {
       password: newPassword.value,
     });
 
-    await presentToast({
+    await systemController.presentToast({
       message: "Contraseña actualizada",
     });
   } catch (error: any) {
     if (error.message == "Code invalid")
-      await presentToast({
+      await systemController.presentToast({
         message: "Código incorrecto",
         color: "danger",
       });

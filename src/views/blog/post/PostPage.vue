@@ -158,8 +158,6 @@ import {
   menuOutline,
   trashOutline,
 } from "ionicons/icons";
-import { useUser } from "@/controllers/userController";
-import { usePost } from "@/controllers/postController";
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref, watch } from "vue";
 import indexContentComponent from "./indexContentComponent.vue";

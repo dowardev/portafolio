@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { Post } from "../services/interfaces";
-import formatISO from "date-fns/formatISO";
+import { formatISO } from "date-fns/formatISO";
 import { ref } from "vue";
 
 interface PostState {
@@ -76,9 +76,9 @@ export const usePostStore = defineStore("post", () => {
     currentPage.value = params.currentPage;
   }
 
-  function updatePost(params: { post: Post }) {
-    const post = params.post;
-    posts = posts.value.map((element) => {
+  function updatePost(params: Post) {
+    const post = params;
+    posts.value = posts.value.map((element) => {
       if (element.id == post.id || post.id == post.id)
         element = { ...element, ...post };
       return element;

@@ -1,5 +1,4 @@
-import { DocumentNode } from "graphql";
-import { ThemeType } from "@/utils/types.ts";
+import { Theme as ThemeType } from "@/utils/types";
 import { filterPostOptions, StatusPost } from "./types";
 
 // feedback
@@ -61,7 +60,6 @@ export interface UpdatePost {
 }
 
 export interface GetPostsDates {
-  graphql: Graphql;
   refetch?: boolean;
 }
 
@@ -116,10 +114,6 @@ export interface User {
   isEmailVerified?: boolean;
   isDisabled?: boolean;
   imageProfile?: string;
-}
-
-export interface GetUser {
-  graphql: Graphql;
 }
 
 // export interface GetUserResponse {

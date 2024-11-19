@@ -1,6 +1,5 @@
 import axios from "axios";
 import { FeedbackParams } from "./interfaces";
-import { getUserToken } from "./userService";
 import { apiConnector } from "@/main";
 
 export default class FeedbackService {

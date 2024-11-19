@@ -279,9 +279,9 @@ async function getUser() {
   try {
     await userController.loadUser();
 
-    form.value.id = userController.user.value.id!;
-    form.value.name = userController.user.value.name!;
-    form.value.email = userController.user.value.email!;
+    form.value.id = userController.getUser()?.id!;
+    form.value.name = userController.getUser()?.name!;
+    form.value.email = userController.getUser()?.email!;
   } catch (e: any) {
     console.error(e);
     return;
@@ -302,7 +302,7 @@ async function sendFeedback() {
     description += "\nError " + JSON.stringify(props.data.error);
 
   try {
-    await createFeedback({
+    await systemController.createFeedback({
       userId,
       name,
       email,

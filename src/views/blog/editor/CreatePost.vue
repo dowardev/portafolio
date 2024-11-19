@@ -141,9 +141,7 @@ async function refreshPostsCotent() {
   if (currentPage == undefined) currentPage = "";
 
   try {
-    await postController.loadDates({
-      graphql: { name: POST_DATES, fragment: "PostDates", refetch: true },
-    });
+    await postController.loadDates();
   } catch (e: any) {
     console.error(e);
     openToastError(e);
@@ -153,11 +151,6 @@ async function refreshPostsCotent() {
   try {
     await postController.loadPosts({
       date: currentPage,
-      graphql: {
-        name: ALL_POSTS_DETAILS,
-        fragment: "PostsDetails",
-        refetch: true,
-      },
     });
   } catch (e: any) {
     console.error(e);

@@ -121,14 +121,13 @@ export default class PostController {
       });
 
       this.postStore.updatePost({
-        post: {
-          id,
-          title,
-          content,
-          cover: {
-            id: cover.newCoverId,
-          },
+        id,
+        title,
+        content,
+        cover: {
+          id: cover.newCoverId,
         },
+        status: "active",
       });
     } catch (error: any) {
       throw new Error(error);

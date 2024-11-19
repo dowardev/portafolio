@@ -184,14 +184,9 @@ export default class SystemService {
   }): Promise<{ id: string; name: string; url: string }> {
     const { name } = params;
 
-    const response = await axios.request({
-      url: `http://127.0.0.1:8000/api/get-image`,
-      method: "GET",
-      headers: {
-        contentType: "application/json",
-        Authorization: getUserToken(),
-      },
-      params: { name },
+    const response = await apiConnector.get({
+      url: `get-image`,
+      data: { name },
     });
 
     return {

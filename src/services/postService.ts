@@ -1,4 +1,4 @@
-import { Post, DeletePost, CreatePost, GetPost } from "./interfaces";
+import { Post, CreatePost, GetPost } from "./interfaces";
 import { apiConnector } from "@/main";
 
 import { filterPostOptions } from "./types";

@@ -122,7 +122,6 @@ async function alertExitApp(): Promise<void> {
 const showTitle = ref(true);
 </script>
 
-<style scoped src="../information/animacion-nombre.css"></style>
 <style scoped>
 .center {
   display: flex;

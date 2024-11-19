@@ -6,7 +6,6 @@ import {
 } from "./interfaces";
 import { apiConnector } from "@/main";
 
-import apolloClient from "../Apollo";
 import axios from "axios";
 import { getUserToken } from "./userService";
 

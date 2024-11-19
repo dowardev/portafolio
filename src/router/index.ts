@@ -1,11 +1,7 @@
-import { GetUser } from "./../services/interfaces";
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
 import NoFoundPage from "../views/404/404Page.vue";
 import HomePresentationPage from "../views/presentation/HomePresentationPage.vue";
-import SkillsPage from "@/views/skills/SkillsPage.vue";
-import HistoryPage from "@/views/history/HistoryPage.vue";
-import PortfolioPage from "@/views/portfolio/PortfolioPage.vue";
 import CreatePost from "@/views/blog/editor/CreatePost.vue";
 import UpdatePost from "@/views/blog/editor/UpdatePost.vue";
 import PostsPage from "@/views/blog/posts/PostsPage.vue";
@@ -15,7 +11,6 @@ import SignUpPage from "@/views/session/signup/SignUpPage.vue";
 import PoliciesPage from "@/views/policies/PoliciesPage.vue";
 import UserPanelPage from "@/views/user/UserPanelPage.vue";
 import AdminPanelPage from "@/views/admin/users/UsersPage.vue";
-import InformationComponent from "@/views/presentation/information/InformationComponent.vue";
 
 // controllers
 import UserController from "@/controllers/userController";

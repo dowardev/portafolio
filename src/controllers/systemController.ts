@@ -1,4 +1,4 @@
-import { ContactMessage, System } from "@/services/interfaces";
+import { ContactMessage, System, Toast } from "@/services/interfaces";
 import { modalController, toastController } from "@ionic/vue";
 import { alertCircleOutline, closeOutline } from "ionicons/icons";
 import { storeToRefs } from "pinia";
@@ -7,15 +7,17 @@ import { ReportError, Theme } from "../services/interfaces";
 import { useSystemStore } from "../store/systemStore";
 import { Storage } from "@ionic/storage";
 import { Theme as ThemeType } from "@/services/types";
+import { wb } from "@/main";
 
 // services
 import SystemService from "@/services/systemService";
 import ContactService from "@/services/contactService";
-import { wb } from "@/main";
+import FeedbackService from "@/services/feedbackService";
 
 export default class SystemController {
   systemService = new SystemService();
   contactService = new ContactService();
+  feedbackService = new FeedbackService();
 
   // TODO:remove
   systemStore = useSystemStore();
@@ -151,5 +153,18 @@ export default class SystemController {
     } else {
       console.error("Workbox no está inicializado.");
     }
+  }
+
+  async createFeedback(params: FeedbackParams): Promise<void> {
+    const { userId, name, email, description, contactMe, type } = params;
+
+    await this.feedbackService.createFeedback({
+      userId,
+      name,
+      email,
+      description,
+      contactMe,
+      type,
+    });
   }
 }

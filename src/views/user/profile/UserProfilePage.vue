@@ -447,18 +447,12 @@ onMounted(async () => {
 });
 
 async function getUser() {
-  await useUser().loadUser({
-    graphql: {
-      name: USER_BASIC_DETAILS,
-      fragment: "UserBasicDetails",
-      refetch: true,
-    },
-  });
+  await userController.loadUser({});
 
-  form.value.name = useUser().user.value.name!;
-  form.value.user = useUser().user.value.user!;
-  form.value.email = useUser().user.value.email!;
-  userImage.value = useUser().imageProfile.value.toString()!;
+  form.value.name = userController.getUser()?.name!;
+  form.value.user = userController.getUser()?.user!;
+  form.value.email = userController.getUser()?.email!;
+  userImage.value = userController.getUser()?.toString()!;
 }
 
 async function saveUserData() {
@@ -523,7 +517,6 @@ async function uploadUserImage(e: any) {
   try {
     const response = await userController.uploadImage({
       image,
-      graphql: { name: UPLOAD_IMAGE, fragment: "UploadImage" },
     });
 
     spinners.value.uploadImage = false;
@@ -531,7 +524,7 @@ async function uploadUserImage(e: any) {
       userImage.value = "data:image/png;base64," + response.source;
       form.value.userImageId = response.id!;
     }
-    useUser().updateUserProps({
+    userController.updateUserProps({
       user: {
         imageProfile: response.source,
       },
@@ -590,7 +583,7 @@ async function deleteUserAccount() {
 
   if (alertResponse.data) {
     try {
-      await useUser().deleteAccount({
+      await userController.deleteAccount({
         password: formDeleteAccount.password,
       });
 

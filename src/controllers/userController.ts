@@ -100,7 +100,7 @@ export default class UserController {
         image,
         type,
       });
-      return { id, path, name };
+      return { id: id ?? "", path: path ?? "", name: name ?? "" };
     } catch (error: any) {
       throw new Error(error);
     }
