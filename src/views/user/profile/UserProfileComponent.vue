@@ -1,349 +1,310 @@
 <template>
-  <!-- profile -->
-  <section>
-    <ion-list class="transparent">
-      <ion-list-header>
-        <ion-label>Información básica</ion-label>
-      </ion-list-header>
+  <ion-row>
+    <!-- profile -->
+    <ion-col size-lg="6">
+      <ion-list class="transparent">
+        <ion-list-header>
+          <ion-label>Actualizar datos</ion-label>
 
-      <ion-row>
-        <ion-modal
-          trigger="trigger-basicCardInformation"
-          :breakpoints="[0.1, 0.5, 1]"
-          :initial-breakpoint="0.5"
-        >
-          <ion-content class="ion-padding">
-            <ul
-              v-for="item in information[0].basicCardInformation"
-              :key="item.title"
+          <ion-button @click="modalInfoProfile.open = true">
+            <ion-icon :icon="informationCircleOutline"></ion-icon>
+          </ion-button>
+        </ion-list-header>
+
+        <ion-row class="center">
+          <!-- user fields -->
+          <ion-col size-lg="8">
+            <ion-card
+              :class="{
+                'element-post-selected': profileCardSelected,
+                'element-post-no-selected': !profileCardSelected,
+              }"
+              @mouseenter="profileCardSelected = true"
+              @mouseleave="profileCardSelected = false"
             >
-              <li>
-                <span class="important-text"> {{ item.title }} </span>
-                {{ item.content }}
-              </li>
-            </ul>
-          </ion-content>
-        </ion-modal>
+              <ion-card-header>
+                <ion-card-title style="top: 9px">
+                  Perfil de usuario
+                </ion-card-title>
+              </ion-card-header>
 
-        <ion-col
-          size-xs="12"
-          size-md="12"
-          size-lg="6"
-          size-xl="4"
-          class="ion-hide-lg-down"
-        >
-          <ul
-            v-for="item in information[0].basicCardInformation"
-            :key="item.title"
-          >
-            <li>
-              <span class="important-text"> {{ item.title }} </span>
-              {{ item.content }}
-            </li>
-          </ul>
-        </ion-col>
-
-        <!-- user fields -->
-        <ion-col
-          size-xs="12"
-          size-md="12"
-          size-lg="6"
-          size-xl="4"
-          offset-xl="1"
-        >
-          <ion-card
-            :class="{
-              'element-post-selected': profileCardSelected,
-              'element-post-no-selected': !profileCardSelected,
-            }"
-            @mouseenter="profileCardSelected = true"
-            @mouseleave="profileCardSelected = false"
-          >
-            <ion-card-header>
-              <div class="card-header">
-                <div class="card-title-container">
-                  <ion-card-title style="top: 9px">
-                    Perfil de usuario
-                  </ion-card-title>
+              <ion-card-content>
+                <!-- img -->
+                <div class="center">
+                  <img
+                    :src="userImage"
+                    style="
+                      width: 90px;
+                      height: 90px;
+                      border-radius: 50%;
+                      cursor: pointer;
+                    "
+                    @click="($refs as any).inputUserImage.click()"
+                  />
                 </div>
-                <div>
-                  <ion-button
-                    id="trigger-basicCardInformation"
-                    fill="clear"
-                    class="ion-hide-lg-up"
-                  >
-                    <ion-icon :icon="informationCircleOutline"></ion-icon>
-                  </ion-button>
-                </div>
-              </div>
-            </ion-card-header>
-
-            <ion-card-content>
-              <!-- img -->
-              <div class="center">
-                <img
-                  :src="userImage"
-                  style="
-                    width: 90px;
-                    height: 90px;
-                    border-radius: 50%;
-                    cursor: pointer;
-                  "
-                  @click="($refs as any).inputUserImage.click()"
-                />
-              </div>
-              <ion-spinner
-                v-if="spinners.uploadImage == true"
-                name="crescent"
-              ></ion-spinner>
-              <input
-                ref="inputUserImage"
-                accept="image/*"
-                type="file"
-                style="display: none"
-                :disabled="spinners.uploadImage == true"
-                @change="uploadUserImage($event)"
-              />
-
-              <!-- name -->
-              <ion-row>
-                <ion-col>
-                  <ion-input
-                    label="Nombre"
-                    label-placement="stacked"
-                    type="text"
-                    autocomplete="name"
-                    fill="outline"
-                    :value="form.name"
-                    :error-text="v$.form.name.$errors[0]?.$message.toString()"
-                    :class="{
-                      'ion-invalid':
-                        v$.form.name.$invalid && v$.form.name.$dirty,
-                      'ion-touched': v$.form.name.$dirty,
-                    }"
-                    @ion-input="form.name = $event.detail.value || ''"
-                    @click="v$.form.name.$touch()"
-                  >
-                    <ion-icon slot="start" :icon="manOutline"></ion-icon>
-                  </ion-input>
-                </ion-col>
-              </ion-row>
-
-              <!-- user -->
-              <ion-row>
-                <ion-col>
-                  <ion-input
-                    label-placement="stacked"
-                    autocomplete="username"
-                    fill="outline"
-                    label="Usuario"
-                    type="text"
-                    :value="form.user"
-                    :error-text="v$.form.user.$errors[0]?.$message.toString()"
-                    :class="{
-                      'ion-invalid':
-                        v$.form.user.$invalid && v$.form.user.$dirty,
-                      'ion-touched': v$.form.user.$dirty,
-                    }"
-                    @ion-input="form.user = $event.detail.value!.toString()"
-                    @click="v$.form.user.$touch()"
-                  >
-                    <ion-icon
-                      slot="start"
-                      :icon="personOutline"
-                      class="item-icon"
-                    ></ion-icon>
-                  </ion-input>
-                </ion-col>
-              </ion-row>
-
-              <!-- email -->
-              <ion-row>
-                <ion-col>
-                  <ion-input
-                    label-placement="stacked"
-                    fill="outline"
-                    label="Correo electrónico"
-                    type="email"
-                    autocomplete="email"
-                    pattern="email"
-                    inputmode="email"
-                    :value="form.email"
-                    :error-text="v$.form.email.$errors[0]?.$message.toString()"
-                    :class="{
-                      'ion-invalid':
-                        v$.form.email.$invalid && v$.form.email.$dirty,
-                      'ion-touched': v$.form.email.$dirty,
-                    }"
-                    @ion-input="form.email = $event.detail.value!.toString()"
-                    @click="v$.form.email.$touch()"
-                  >
-                    <ion-icon
-                      slot="start"
-                      :icon="mailOpenOutline"
-                      class="item-icon"
-                    ></ion-icon>
-                  </ion-input>
-                </ion-col>
-              </ion-row>
-
-              <!-- button -->
-              <ion-row>
-                <ion-col>
-                  <ion-button
-                    fill="clear"
-                    :disabled="(v$ as any).form.$invalid"
-                    expand="full"
-                    @click="saveUserData()"
-                  >
-                    <ion-spinner v-if="spinners.saveUserData" name="crescent">
-                    </ion-spinner>
-                    <ion-label v-if="!spinners.saveUserData">
-                      Guardar
-                    </ion-label>
-                  </ion-button>
-                </ion-col>
-              </ion-row>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-list>
-  </section>
-
-  <!-- account -->
-  <section>
-    <ion-list class="transparent">
-      <ion-list-header>
-        <ion-label>Cuenta</ion-label>
-      </ion-list-header>
-
-      <ion-row>
-        <ion-modal
-          trigger="trigger-cardDeleteAccount"
-          :breakpoints="[0.1, 0.5, 1]"
-          :initial-breakpoint="0.5"
-        >
-          <ion-content class="ion-padding">
-            <ul
-              v-for="item in information[0].cardDeleteAccount"
-              :key="item.content"
-            >
-              <li>{{ item.content }}</li>
-            </ul>
-          </ion-content>
-        </ion-modal>
-
-        <ion-col
-          size-xs="12"
-          size-md="12"
-          size-lg="6"
-          size-xl="4"
-          class="ion-hide-lg-down"
-        >
-          <ul
-            v-for="item in information[0].cardDeleteAccount"
-            :key="item.content"
-          >
-            <li>{{ item.content }}</li>
-          </ul>
-        </ion-col>
-
-        <ion-col
-          size-xs="12"
-          size-md="12"
-          size-lg="6"
-          size-xl="4"
-          offset-xl="1"
-        >
-          <ion-card
-            :class="{
-              'element-post-selected': deleteUserCardSelected,
-              'element-post-no-selected': !deleteUserCardSelected,
-            }"
-            @mouseenter="deleteUserCardSelected = true"
-            @mouseleave="deleteUserCardSelected = false"
-          >
-            <ion-card-header>
-              <div class="card-header">
-                <div class="card-title-container">
-                  <ion-card-title style="top: 9px">
-                    Borrar cuenta
-                  </ion-card-title>
-                </div>
-                <div>
-                  <ion-button
-                    id="trigger-cardDeleteAccount"
-                    fill="clear"
-                    class="ion-hide-lg-up"
-                  >
-                    <ion-icon :icon="informationCircleOutline"></ion-icon>
-                  </ion-button>
-                </div>
-              </div>
-            </ion-card-header>
-
-            <ion-card-content>
-              <p>
-                Para confirmar tu identidad es necesario que ingreses por ultima
-                vez tu contraseña.
-              </p>
-
-              <ion-input
-                autocomplete="current-password"
-                label-placement="stacked"
-                label="Contraseña"
-                fill="outline"
-                :value="formDeleteAccount.password"
-                :type="inputTypePassword"
-                :error-text="
-                  v$.formDeleteAccount.$errors[0]?.$message.toString()
-                "
-                :class="{
-                  'ion-invalid':
-                    v$.formDeleteAccount.$invalid &&
-                    v$.formDeleteAccount.$dirty,
-                  'ion-touched': v$.formDeleteAccount.$dirty,
-                }"
-                @ion-input="
-                  formDeleteAccount.password = $event.detail.value!.toString()
-                "
-                @click="v$.formDeleteAccount.$touch()"
-              >
-                <ion-icon
-                  slot="start"
-                  class="item-icon"
-                  :icon="keyOutline"
-                ></ion-icon>
-
-                <ion-input-password-toggle
-                  slot="end"
-                ></ion-input-password-toggle>
-              </ion-input>
-
-              <ion-button
-                fill="clear"
-                :disabled="(v$ as any).formDeleteAccount.$invalid"
-                color="danger"
-                expand="full"
-                @click="deleteUserAccount()"
-              >
                 <ion-spinner
-                  v-if="spinners.deleteUserAccount"
+                  v-if="spinners.uploadImage == true"
                   name="crescent"
-                  color="danger"
+                ></ion-spinner>
+                <input
+                  ref="inputUserImage"
+                  accept="image/*"
+                  type="file"
+                  style="display: none"
+                  :disabled="spinners.uploadImage == true"
+                  @change="uploadUserImage($event)"
+                />
+
+                <!-- name -->
+                <ion-row>
+                  <ion-col>
+                    <ion-input
+                      label="Nombre"
+                      label-placement="stacked"
+                      type="text"
+                      autocomplete="name"
+                      fill="outline"
+                      :value="form.name"
+                      :error-text="v$.form.name.$errors[0]?.$message.toString()"
+                      :class="{
+                        'ion-invalid':
+                          v$.form.name.$invalid && v$.form.name.$dirty,
+                        'ion-touched': v$.form.name.$dirty,
+                      }"
+                      @ion-input="form.name = $event.detail.value || ''"
+                      @click="v$.form.name.$touch()"
+                    >
+                      <ion-icon slot="start" :icon="manOutline"></ion-icon>
+                    </ion-input>
+                  </ion-col>
+                </ion-row>
+
+                <!-- user -->
+                <ion-row>
+                  <ion-col>
+                    <ion-input
+                      label-placement="stacked"
+                      autocomplete="username"
+                      fill="outline"
+                      label="Usuario"
+                      type="text"
+                      :value="form.user"
+                      :error-text="v$.form.user.$errors[0]?.$message.toString()"
+                      :class="{
+                        'ion-invalid':
+                          v$.form.user.$invalid && v$.form.user.$dirty,
+                        'ion-touched': v$.form.user.$dirty,
+                      }"
+                      @ion-input="form.user = $event.detail.value!.toString()"
+                      @click="v$.form.user.$touch()"
+                    >
+                      <ion-icon
+                        slot="start"
+                        :icon="personOutline"
+                        class="item-icon"
+                      ></ion-icon>
+                    </ion-input>
+                  </ion-col>
+                </ion-row>
+
+                <!-- email -->
+                <ion-row>
+                  <ion-col>
+                    <ion-input
+                      label-placement="stacked"
+                      fill="outline"
+                      label="Correo electrónico"
+                      type="email"
+                      autocomplete="email"
+                      pattern="email"
+                      inputmode="email"
+                      :value="form.email"
+                      :error-text="
+                        v$.form.email.$errors[0]?.$message.toString()
+                      "
+                      :class="{
+                        'ion-invalid':
+                          v$.form.email.$invalid && v$.form.email.$dirty,
+                        'ion-touched': v$.form.email.$dirty,
+                      }"
+                      @ion-input="form.email = $event.detail.value!.toString()"
+                      @click="v$.form.email.$touch()"
+                    >
+                      <ion-icon
+                        slot="start"
+                        :icon="mailOpenOutline"
+                        class="item-icon"
+                      ></ion-icon>
+                    </ion-input>
+                  </ion-col>
+                </ion-row>
+
+                <!-- button -->
+                <ion-row>
+                  <ion-col>
+                    <ion-button
+                      fill="clear"
+                      :disabled="(v$ as any).form.$invalid"
+                      expand="full"
+                      @click="saveUserData()"
+                    >
+                      <ion-spinner v-if="spinners.saveUserData" name="crescent">
+                      </ion-spinner>
+                      <ion-label v-if="!spinners.saveUserData">
+                        Guardar
+                      </ion-label>
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-list>
+    </ion-col>
+
+    <!-- account -->
+    <ion-col size-lg="6">
+      <ion-list class="transparent">
+        <ion-list-header>
+          <ion-label>Administrar cuenta</ion-label>
+        </ion-list-header>
+
+        <ion-row class="center">
+          <ion-col size-lg="8">
+            <ion-card
+              :class="{
+                'element-post-selected': deleteUserCardSelected,
+                'element-post-no-selected': !deleteUserCardSelected,
+              }"
+              @mouseenter="deleteUserCardSelected = true"
+              @mouseleave="deleteUserCardSelected = false"
+            >
+              <ion-card-header>
+                <div class="card-header">
+                  <div class="card-title-container">
+                    <ion-card-title style="top: 9px">
+                      Borrar cuenta
+                    </ion-card-title>
+                  </div>
+                  <div>
+                    <ion-button
+                      id="trigger-cardDeleteAccount"
+                      fill="clear"
+                      class="ion-hide-lg-up"
+                    >
+                      <ion-icon :icon="informationCircleOutline"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+              </ion-card-header>
+
+              <ion-card-content>
+                <p>
+                  Para confirmar tu identidad es necesario que ingreses por
+                  ultima vez tu contraseña.
+                </p>
+
+                <ion-input
+                  autocomplete="current-password"
+                  label-placement="stacked"
+                  label="Contraseña"
+                  fill="outline"
+                  :value="formDeleteAccount.password"
+                  :type="inputTypePassword"
+                  :error-text="
+                    v$.formDeleteAccount.$errors[0]?.$message.toString()
+                  "
+                  :class="{
+                    'ion-invalid':
+                      v$.formDeleteAccount.$invalid &&
+                      v$.formDeleteAccount.$dirty,
+                    'ion-touched': v$.formDeleteAccount.$dirty,
+                  }"
+                  @ion-input="
+                    formDeleteAccount.password = $event.detail.value!.toString()
+                  "
+                  @click="v$.formDeleteAccount.$touch()"
                 >
-                </ion-spinner>
-                <ion-label v-if="!spinners.deleteUserAccount">
-                  Borrar cuenta
-                </ion-label>
-              </ion-button>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-list>
-  </section>
+                  <ion-icon
+                    slot="start"
+                    class="item-icon"
+                    :icon="keyOutline"
+                  ></ion-icon>
+
+                  <ion-input-password-toggle
+                    slot="end"
+                  ></ion-input-password-toggle>
+                </ion-input>
+
+                <ion-button
+                  fill="clear"
+                  :disabled="(v$ as any).formDeleteAccount.$invalid"
+                  color="danger"
+                  expand="full"
+                  @click="deleteUserAccount()"
+                >
+                  <ion-spinner
+                    v-if="spinners.deleteUserAccount"
+                    name="crescent"
+                    color="danger"
+                  >
+                  </ion-spinner>
+                  <ion-label v-if="!spinners.deleteUserAccount">
+                    Borrar cuenta
+                  </ion-label>
+                </ion-button>
+              </ion-card-content>
+            </ion-card>
+
+            <ion-card class="danger-card-filled">
+              <ion-card-header>
+                <ion-card-title>Peligro</ion-card-title>
+              </ion-card-header>
+
+              <ion-card-content>
+                Al borrar tu cuenta todos los datos relacionados con ella serán
+                eliminados y ya no se podrán recuperar
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-list>
+    </ion-col>
+  </ion-row>
+
+  <!-- modals -->
+  <!-- modal info profile -->
+  <ion-modal :is-open="modalInfoProfile.open" class="modal">
+    <ion-header :translucent="true" class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>Información</ion-title>
+        <ion-buttons slot="end">
+          <ion-button @click="modalInfoProfile.open = false"
+            ><ion-icon :icon="closeOutline"></ion-icon
+          ></ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-card
+        class="primary-card"
+        v-for="item in information[0].basicCardInformation"
+        :key="item.title"
+      >
+        <ion-card-header>
+          <ion-card-title>
+            {{ item.title }}
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          {{ item.content }}
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  </ion-modal>
 </template>
 
 <script setup lang="ts">
@@ -378,6 +339,7 @@ import {
   personOutline,
   mailOpenOutline,
   keyOutline,
+  closeOutline,
 } from "ionicons/icons";
 import userAvatar from "../../../assets/otros/user.png";
 
@@ -387,6 +349,7 @@ import UserController from "@/controllers/userController";
 const systemController = new SystemController();
 const userController = new UserController();
 
+// vars
 const form = ref({
   name: "",
   user: "",
@@ -408,19 +371,19 @@ const information = [
   {
     basicCardInformation: [
       {
-        title: "Nombre:",
+        title: "Nombre",
         content:
-          "Solamente tú puedes ver tu nombre y lo usaremos única y exclusivamente para contactarte.",
+          "Tu nombre es visible solo para ti y será utilizado exclusivamente para fines de contacto.",
       },
       {
-        title: "Usuario:",
+        title: "Usuario",
         content:
-          "Es el único dato que los otros usuarios de este blog podrán conocer de ti.",
+          "Este es el único dato que otros usuarios de este blog podrán ver sobre ti.",
       },
       {
-        title: "Correo electrónico:",
+        title: "Correo electrónico",
         content:
-          "Al igual que tu nombre, este solamente será usado para contactar contigo.",
+          "Al igual que tu nombre, este será utilizado únicamente para fines de contacto.",
       },
     ],
     cardDeleteAccount: [
@@ -435,7 +398,6 @@ const information = [
     ],
   },
 ];
-
 const messageError = {
   required: "Campo requerido",
   alpha: "Solamente puede contener texto",
@@ -472,6 +434,7 @@ const rules = {
 const v$ = useVuelidate(rules, { form, formDeleteAccount });
 const profileCardSelected = ref(false);
 const deleteUserCardSelected = ref(false);
+const modalInfoProfile = ref({ open: false });
 
 // mounted
 onMounted(async () => {

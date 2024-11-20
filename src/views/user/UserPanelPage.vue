@@ -19,7 +19,7 @@
               </ion-segment-button>
 
               <ion-segment-button value="security">
-                <ion-label> Seguridad</ion-label>
+                <ion-label>Seguridad</ion-label>
               </ion-segment-button>
             </ion-segment>
           </ion-col>
@@ -27,16 +27,14 @@
       </section>
 
       <ion-row>
-        <ion-col size="12">
-          <ion-card class="card-main-content">
-            <section v-if="mainSegment == 'profile'">
-              <UserProfileComponent></UserProfileComponent>
-            </section>
+        <ion-col size-lg="12">
+          <section v-if="mainSegment == 'profile'">
+            <UserProfileComponent></UserProfileComponent>
+          </section>
 
-            <section v-if="mainSegment == 'security'">
-              <UserSecurityComponent></UserSecurityComponent>
-            </section>
-          </ion-card>
+          <section v-if="mainSegment == 'security'">
+            <UserSecurityComponent></UserSecurityComponent>
+          </section>
         </ion-col>
       </ion-row>
     </ion-content>

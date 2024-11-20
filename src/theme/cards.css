@@ -1,0 +1,51 @@
+/* vars */
+:root {
+  --border-width-card-styled: 8px;
+}
+
+/* color text */
+.info-card,
+.info-card > ion-card-header > ion-card-title,
+.info-card-filled,
+.info-card-filled > ion-card-header > ion-card-title,
+.primary-card,
+.primary-card > ion-card-header > ion-card-title,
+.primary-card-filled,
+.primary-card-filled > ion-card-header > ion-card-title,
+.danger-card,
+.danger-card > ion-card-header > ion-card-title,
+.danger-card-filled,
+.danger-card-filled > ion-card-header > ion-card-title {
+  color: var(--ion-text-color);
+}
+
+/* success */
+.info-card {
+  border-left: var(--border-width-card-styled) solid var(--ion-color-success);
+}
+
+.info-card-filled {
+  border-left: var(--border-width-card-styled) solid var(--ion-color-success);
+  background: var(--ion-color-success-tint);
+}
+
+/* primary */
+.primary-card {
+  border-left: var(--border-width-card-styled) solid var(--ion-color-primary);
+}
+
+.primary-card-filled {
+  border-left: var(--border-width-card-styled) solid var(--ion-color-primary);
+  background: var(--ion-color-primary-tint);
+  color: var(--ion-text-color);
+}
+
+/* danger */
+.danger-card {
+  border-left: var(--border-width-card-styled) solid var(--ion-color-danger);
+}
+
+.danger-card-filled {
+  border-left: var(--border-width-card-styled) solid var(--ion-color-danger);
+  background: var(--ion-color-danger-tint);
+}

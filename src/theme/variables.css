@@ -1,10 +1,14 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
 
+/* themes */
 @import url("./gruvbox.css");
 @import url("./nord.css");
 @import url("./light.css");
 @import url("./scrollbar.css");
+
+/* others */
+@import url("./cards.css");
 
 @font-face {
   font-family: "OpenSans-Regular";
@@ -175,13 +179,9 @@ ion-item {
   border-radius: 4px;
 }
 
+ion-modal > .ion-delegate-host > .ion-page > ion-header > ion-toolbar,
 ion-modal > .ion-delegate-host > .ion-page > ion-content,
-ion-modal > .ion-delegate-host > .ion-page > ion-header > ion-toolbar {
+.modal > .ion-delegate-host > ion-header > ion-toolbar,
+.modal > .ion-delegate-host > ion-content {
   --background: var(--ion-color-dark-contrast);
-}
-
-/* TODO: remove */
-.input-error {
-  --border-color: var(--ion-color-danger) !important
-;
 }
