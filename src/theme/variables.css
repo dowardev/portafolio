@@ -81,8 +81,11 @@ ul {
 }
 
 ion-card {
-  box-shadow: none;
-  box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
+  /* box-shadow: none; */
+  /* box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px; */
+  box-shadow:
+    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
   background: transparent;
   border: 1px solid transparent;
 }
@@ -180,9 +183,8 @@ ion-item {
   border-radius: 4px;
 }
 
-ion-modal > .ion-delegate-host > .ion-page > ion-header > ion-toolbar,
-ion-modal > .ion-delegate-host > .ion-page > ion-content,
-.modal > .ion-delegate-host > ion-header > ion-toolbar,
-.modal > .ion-delegate-host > ion-content {
-  --background: var(--ion-color-dark-contrast);
+ion-app,
+ion-menu {
+  background-color: #e5e9f0;
+  --background: #e5e9f0;
 }

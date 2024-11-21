@@ -470,19 +470,23 @@ async function goToAdminPanel() {
 
 <style scoped>
 .menu-option-selected {
-  border-left: 4px solid var(--ion-color-secondary);
-  padding-left: 4px;
+  border-left: 6px solid var(--ion-color-secondary);
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  transition: border-left 0.4s ease-in-out;
 }
 
 .menu-option-selected > ion-item {
   background: var(--ion-color-selected);
-}
-
-.menu-option-selected > ion-item > ion-icon {
-  color: var(--ion-color-secondary);
+  transition: background 0.4s ease-in-out;
 }
 
 .menu-option-selected > ion-item > ion-label {
   color: var(--ion-color-secondary);
+  transition: color 0.4s ease-in-out;
+}
+
+ion-icon {
+  color: var(--ion-color-primary);
 }
 </style>
