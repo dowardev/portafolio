@@ -6,16 +6,22 @@
 /* color text */
 .info-card,
 .info-card > ion-card-header > ion-card-title,
+.info-card > ion-card-content > ion-text,
 .info-card-filled,
 .info-card-filled > ion-card-header > ion-card-title,
+.info-card-filled > ion-card-content > ion-text,
 .primary-card,
 .primary-card > ion-card-header > ion-card-title,
+.primary-card > ion-card-content > ion-text,
 .primary-card-filled,
 .primary-card-filled > ion-card-header > ion-card-title,
+.primary-card-filled > ion-card-content > ion-text,
 .danger-card,
 .danger-card > ion-card-header > ion-card-title,
+.danger-card > ion-card-content > ion-text,
 .danger-card-filled,
-.danger-card-filled > ion-card-header > ion-card-title {
+.danger-card-filled > ion-card-header > ion-card-title,
+.danger-card-filled > ion-card-content > ion-text {
   color: var(--ion-text-color);
 }
 

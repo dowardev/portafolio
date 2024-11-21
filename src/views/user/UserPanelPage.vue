@@ -6,26 +6,22 @@
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
         <ion-title>{{ pageTitle }}</ion-title>
+
+        <ion-buttons slot="end">
+          <ion-segment v-model="mainSegment" scrollable>
+            <ion-segment-button value="profile">
+              <ion-label> Perfil </ion-label>
+            </ion-segment-button>
+
+            <ion-segment-button value="security">
+              <ion-label>Seguridad</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <section class="section-options">
-        <ion-row>
-          <ion-col size="12" class="center">
-            <ion-segment v-model="mainSegment" scrollable>
-              <ion-segment-button value="profile">
-                <ion-label> Perfil </ion-label>
-              </ion-segment-button>
-
-              <ion-segment-button value="security">
-                <ion-label>Seguridad</ion-label>
-              </ion-segment-button>
-            </ion-segment>
-          </ion-col>
-        </ion-row>
-      </section>
-
       <ion-row>
         <ion-col size-lg="12">
           <section v-if="mainSegment == 'profile'">

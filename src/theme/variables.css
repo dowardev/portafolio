@@ -9,6 +9,7 @@ http://ionicframework.com/docs/theming/ */
 
 /* others */
 @import url("./cards.css");
+@import url("./buttons-action.css");
 
 @font-face {
   font-family: "OpenSans-Regular";
@@ -113,9 +114,9 @@ ion-card {
 /*     rgba(0, 0, 0, 0.1) 0px 0px 1px 0px; */
 /* } */
 
-ion-icon {
+/* ion-icon {
   color: var(--ion-color-primary);
-}
+} */
 
 ion-accordion ion-item {
   --background: var(--ion-background-light-color) !important;
