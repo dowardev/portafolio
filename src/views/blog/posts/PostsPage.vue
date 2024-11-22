@@ -57,7 +57,7 @@
           size="12"
           size-md="6"
         >
-          <ion-card class="selectable-card" style="cursor: pointer">
+          <ion-card class="primary-select-animated" style="cursor: pointer">
             <ion-row>
               <!-- img post -->
               <ion-col

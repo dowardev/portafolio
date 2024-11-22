@@ -3,7 +3,7 @@
     <ion-card
       v-for="(project, index) in proyectos"
       :key="index"
-      class="blur-effect selectable-card"
+      class="blur-effect primary-select-animated"
       @mouseenter="elementPostHover = index"
       @mouseleave="elementPostHover = -1"
     >
@@ -69,7 +69,7 @@
 
             <ion-row>
               <ion-col size="12">
-                <ion-text>Enlaces de interes</ion-text>
+                <ion-text>Enlaces de interés</ion-text>
               </ion-col>
 
               <ion-col>

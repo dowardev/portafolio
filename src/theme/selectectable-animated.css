@@ -1,0 +1,60 @@
+.primary-select-animated,
+.success-select-animated,
+.danger-select-animated {
+  border: 1px solid transparent;
+}
+.primary-select-animated:hover {
+  --back: #f0f9fe;
+  border: 1.5px solid transparent;
+  border-radius: 4px;
+  background:
+    linear-gradient(var(--back), var(--back)) padding-box,
+    linear-gradient(
+        var(--angle),
+        #f0f9fe,
+        #d1edfb,
+        #a7ddf7,
+        #7ccbf3,
+        #51b9ef,
+        #3dade9
+      )
+      border-box;
+  animation: 2.5s rotate linear infinite;
+  transition: --back 0.3s ease;
+}
+
+.success-select-animated:hover {
+  --back: #e8fbed;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background:
+    linear-gradient(var(--back), var(--back)) padding-box,
+    linear-gradient(var(--angle), #e8fbed, #bdf3c7, #7ce68e, #4fdb74, #2dd55b)
+      border-box;
+  animation: 2.5s rotate linear infinite;
+  transition: --back 0.3s ease;
+}
+
+.danger-select-animated:hover {
+  --back: #ffb3b6;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background:
+    linear-gradient(var(--back), var(--back)) padding-box,
+    linear-gradient(var(--angle), #ffb3b6, #ff8c90, #f66066, #ed333b, #d41e26)
+      border-box;
+  animation: 2.5s rotate linear infinite;
+  transition: --back 0.3s ease;
+}
+
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}

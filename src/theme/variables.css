@@ -10,6 +10,7 @@ http://ionicframework.com/docs/theming/ */
 /* others */
 @import url("./cards.css");
 @import url("./buttons-action.css");
+@import url("./selectectable-animated.css");
 
 @font-face {
   font-family: "OpenSans-Regular";
@@ -98,7 +99,8 @@ ion-card {
 }
 
 .selectable-card:hover {
-  animation: dibujar-borde 1s linear forwards;
+  border: 1px solid var(--ion-color-primary);
+  background: var(--ion-color-selected);
 }
 
 @keyframes dibujar-borde {

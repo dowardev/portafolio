@@ -56,7 +56,10 @@
             </ion-list-header>
 
             <!-- improvements -->
-            <ion-card v-if="subversion.improvements.length > 0">
+            <ion-card
+              class="primary-select-animated"
+              v-if="subversion.improvements.length > 0"
+            >
               <ion-card-header>Mejoras</ion-card-header>
 
               <ion-card-content>
@@ -72,7 +75,10 @@
             </ion-card>
 
             <!-- corrections -->
-            <ion-card v-if="subversion.corrections.length > 0">
+            <ion-card
+              class="primary-select-animated"
+              v-if="subversion.corrections.length > 0"
+            >
               <ion-card-header>Correcciones</ion-card-header>
 
               <ion-card-content>
