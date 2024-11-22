@@ -7,15 +7,7 @@
     </ion-header>
 
     <ion-content>
-      <ion-row>
-        <ion-col size="6">
-          <div class="gradient-border">
-            <ion-card>
-              <ion-card-content>ssss</ion-card-content>
-            </ion-card>
-          </div>
-        </ion-col>
-      </ion-row>
+      <ion-card class="primary-select-animated">s</ion-card>
     </ion-content>
   </ion-page>
 </template>
@@ -25,56 +17,40 @@ import { IonPage } from "@ionic/vue";
 </script>
 
 <style scoped>
-.gradient-border {
-  --border-width: 4px;
-  position: relative;
-  display: inline-flex; /* Cambiado a inline-flex para ajustarse al contenido */
+.box {
+  display: flex;
   justify-content: center;
   align-items: center;
-  width: auto; /* Cambiado a auto para ajustarse al contenido */
-  height: auto;
-  padding: var(--border-width); /* Añadido padding para el borde */
-  font-family: Lato, sans-serif;
-  font-size: 2.5rem;
-  text-transform: uppercase;
-  color: white;
-  border-radius: 4px;
+  padding: 12px;
+  height: 400px;
+  width: 400px;
+  border: 4px solid transparent;
+  border-radius: 12px;
+  background:
+    linear-gradient(var(--ion-background-color), var(--ion-background-color))
+      padding-box,
+    linear-gradient(
+        var(--angle),
+        #f0f9fe,
+        #d1edfb,
+        #a7ddf7,
+        #7ccbf3,
+        #51b9ef,
+        #3dade9
+      )
+      border-box;
+  animation: 8s rotate linear infinite;
 }
 
-.gradient-border::after {
-  position: absolute;
-  content: "";
-  top: 0;
-  left: 0;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    60deg,
-    hsl(224, 85%, 66%),
-    hsl(269, 85%, 66%),
-    hsl(314, 85%, 66%),
-    hsl(359, 85%, 66%),
-    hsl(44, 85%, 66%),
-    hsl(89, 85%, 66%),
-    hsl(134, 85%, 66%),
-    hsl(179, 85%, 66%)
-  );
-  background-size: 300% 300%;
-  background-position: 0 50%;
-  border-radius: inherit; /* Heredar el border-radius del padre */
-  animation: moveGradient 4s alternate infinite;
-}
-
-@keyframes moveGradient {
-  50% {
-    background-position: 100% 50%;
+@keyframes rotate {
+  to {
+    --angle: 360deg;
   }
 }
 
-/* Asegúrate de que el ion-card ocupe todo el espacio disponible */
-ion-card {
-  width: 100%;
-  margin: 0;
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
 </style>
