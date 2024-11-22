@@ -1,124 +1,126 @@
 <template>
-  <ion-card class="ion-padding blur-effect">
-    <!-- perfil -->
-    <ion-row>
-      <ion-col class="center" size="12">
-        <img
-          src="@/assets/portafolio/foto_perfil.jpg"
-          alt=""
-          class="img-perfil"
-        />
-      </ion-col>
-    </ion-row>
+  <div class="gradient-border">
+    <ion-card class="ion-padding blur-effect">
+      <!-- perfil -->
+      <ion-row>
+        <ion-col class="center" size="12">
+          <img
+            src="@/assets/portafolio/foto_perfil.jpg"
+            alt=""
+            class="img-perfil"
+          />
+        </ion-col>
+      </ion-row>
 
-    <ion-row>
-      <ion-col class="center" size-lg="12">
-        <h1>Gonzalo Ponce</h1>
-      </ion-col>
-    </ion-row>
+      <ion-row>
+        <ion-col class="center" size-lg="12">
+          <h1>Gonzalo Ponce</h1>
+        </ion-col>
+      </ion-row>
 
-    <ion-row>
-      <ion-col class="center" size="12">
-        <img src="@/assets/portafolio/dowar.png" class="img-logo" />
-      </ion-col>
-    </ion-row>
+      <ion-row>
+        <ion-col class="center" size="12">
+          <img src="@/assets/portafolio/dowar.png" class="img-logo" />
+        </ion-col>
+      </ion-row>
 
-    <ion-row>
-      <ion-col class="center" size="12">
-        <p style="text-align: center">
-          Desarrollador de experiencias multiplataforma
-        </p>
-      </ion-col>
-    </ion-row>
+      <ion-row>
+        <ion-col class="center" size="12">
+          <p style="text-align: center">
+            Desarrollador de experiencias multiplataforma
+          </p>
+        </ion-col>
+      </ion-row>
 
-    <!-- redes -->
-    <ion-row>
-      <ion-col>
-        <div style="display: flex; justify-content: space-around">
-          <!-- email -->
-          <ion-button
-            id="click-trigger-bussiness-email"
-            button
-            class="social-button"
-            @mouseover="fillEmailContact = '#C87C5B'"
-            @mouseleave="fillEmailContact = defaultColorFill"
-          >
-            <ion-icon
-              :style="{ color: fillEmailContact }"
-              :icon="mail"
-            ></ion-icon>
-          </ion-button>
+      <!-- redes -->
+      <ion-row>
+        <ion-col>
+          <div style="display: flex; justify-content: space-around">
+            <!-- email -->
+            <ion-button
+              id="click-trigger-bussiness-email"
+              button
+              class="social-button"
+              @mouseover="fillEmailContact = '#C87C5B'"
+              @mouseleave="fillEmailContact = defaultColorFill"
+            >
+              <ion-icon
+                :style="{ color: fillEmailContact }"
+                :icon="mail"
+              ></ion-icon>
+            </ion-button>
 
-          <!-- LinkedIn -->
-          <ion-button
-            id="click-trigger-bussiness-linkedin"
-            button
-            class="social-button"
-            @mouseover="fillLinkedIn = '#7373FF'"
-            @mouseleave="fillLinkedIn = defaultColorFill"
-          >
-            <ion-icon
-              :style="{ color: fillLinkedIn }"
-              :icon="logoLinkedin"
-            ></ion-icon>
-          </ion-button>
+            <!-- LinkedIn -->
+            <ion-button
+              id="click-trigger-bussiness-linkedin"
+              button
+              class="social-button"
+              @mouseover="fillLinkedIn = '#7373FF'"
+              @mouseleave="fillLinkedIn = defaultColorFill"
+            >
+              <ion-icon
+                :style="{ color: fillLinkedIn }"
+                :icon="logoLinkedin"
+              ></ion-icon>
+            </ion-button>
 
-          <!-- contact form -->
-          <ion-button
-            id="open-modal-cocntacto-form"
-            button
-            class="social-button"
-            @mouseover="fillContactForm = '#5FFEF7'"
-            @mouseleave="fillContactForm = defaultColorFill"
-          >
-            <ion-icon
-              :icon="chatbubble"
-              :style="{ color: fillContactForm }"
-            ></ion-icon>
-          </ion-button>
+            <!-- contact form -->
+            <ion-button
+              id="open-modal-cocntacto-form"
+              button
+              class="social-button"
+              @mouseover="fillContactForm = '#5FFEF7'"
+              @mouseleave="fillContactForm = defaultColorFill"
+            >
+              <ion-icon
+                :icon="chatbubble"
+                :style="{ color: fillContactForm }"
+              ></ion-icon>
+            </ion-button>
 
-          <!-- cv -->
-          <ion-button
-            id="click-trigger-cv"
-            button
-            class="social-button"
-            @mouseover="fillCVForm = '#FFC65B'"
-            @mouseleave="fillCVForm = defaultColorFill"
-          >
-            <ion-icon
-              :icon="documentText"
-              :style="{ color: fillCVForm }"
-            ></ion-icon>
-          </ion-button>
+            <!-- cv -->
+            <ion-button
+              id="click-trigger-cv"
+              button
+              class="social-button"
+              @mouseover="fillCVForm = '#FFC65B'"
+              @mouseleave="fillCVForm = defaultColorFill"
+            >
+              <ion-icon
+                :icon="documentText"
+                :style="{ color: fillCVForm }"
+              ></ion-icon>
+            </ion-button>
 
-          <!-- upwork -->
-          <ion-button
-            id="click-trigger-upwork"
-            button
-            class="social-button"
-            @mouseover="fillUpwork = '#6bd341'"
-            @mouseleave="fillUpwork = defaultColorFill"
-          >
-            <img
-              v-if="fillUpwork == defaultColorFill"
-              src="../../../assets/otros/icons8-upwork-50.png"
-              alt="upwork-logo"
-              srcset=""
-              style="width: 22px"
-            />
+            <!-- upwork -->
+            <ion-button
+              id="click-trigger-upwork"
+              button
+              class="social-button"
+              @mouseover="fillUpwork = '#6bd341'"
+              @mouseleave="fillUpwork = defaultColorFill"
+            >
+              <img
+                v-if="fillUpwork == defaultColorFill"
+                src="../../../assets/otros/icons8-upwork-50.png"
+                alt="upwork-logo"
+                srcset=""
+                style="width: 22px"
+              />
 
-            <img
-              v-if="fillUpwork == '#6bd341'"
-              src="../../../assets/otros/icons8-upwork2-50.png"
-              alt="upwork-logo"
-              srcset=""
-              style="width: 22px"
-            />
-          </ion-button>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-card>
+              <img
+                v-if="fillUpwork == '#6bd341'"
+                src="../../../assets/otros/icons8-upwork2-50.png"
+                alt="upwork-logo"
+                srcset=""
+                style="width: 22px"
+              />
+            </ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+  </div>
 
   <!-- popovers -->
   <!-- popover email -->
@@ -386,7 +388,49 @@ function openMail(params: { mail: string; subject: string }) {
   backdrop-filter: blur(10px);
 }
 
+.gradient-border {
+  --border-width: 4px;
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  height: auto;
+  padding: var(--border-width);
+  border-radius: 4px;
+}
+
+.gradient-border::after {
+  position: absolute;
+  content: "";
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    60deg,
+    #f0f9fe,
+    #d1edfb,
+    #a7ddf7,
+    #7ccbf3,
+    #51b9ef,
+    #3dade9
+  );
+  background-size: 300% 300%;
+  background-position: 0 50%;
+  border-radius: inherit;
+  animation: moveGradient 1s alternate infinite;
+}
+
+@keyframes moveGradient {
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 ion-card {
-  border: 1px solid var(--ion-color-primary);
+  width: 100%;
+  margin: 0;
 }
 </style>

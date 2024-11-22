@@ -11,6 +11,7 @@ import SignUpPage from "@/views/session/signup/SignUpPage.vue";
 import PoliciesPage from "@/views/policies/PoliciesPage.vue";
 import UserPanelPage from "@/views/user/UserPanelPage.vue";
 import AdminPanelPage from "@/views/admin/users/UsersPage.vue";
+import Prueba from "@/views/prueba/Prueba.vue";
 
 // controllers
 import UserController from "@/controllers/userController";
@@ -24,6 +25,12 @@ async function loadUser(controller: UserController): Promise<void> {
 }
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: "/prueba",
+    name: "PruebaPage",
+    component: Prueba,
+  },
+
   {
     path: "/",
     redirect: "/home/presentation",
@@ -128,6 +135,7 @@ router.beforeEach(async (to, from, next) => {
     "PostsPage",
     "PostPage",
     "PoliciesPage",
+    "PruebaPage",
   ];
 
   if (user != undefined) {
