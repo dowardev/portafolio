@@ -11,6 +11,7 @@ http://ionicframework.com/docs/theming/ */
 @import url("./cards.css");
 @import url("./buttons-action.css");
 @import url("./selectectable-animated.css");
+@import url("./progress-bar.css");
 
 @font-face {
   font-family: "OpenSans-Regular";

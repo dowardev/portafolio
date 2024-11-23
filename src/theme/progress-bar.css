@@ -1,0 +1,38 @@
+/* primary */
+.primary-progress-bar {
+  --progress-background: linear-gradient(
+    90deg,
+    rgba(var(--ion-color-primary-rgb), 0%),
+    rgba(var(--ion-color-primary-rgb), 20%),
+    rgba(var(--ion-color-primary-rgb), 40%),
+    rgba(var(--ion-color-primary-rgb), 60%),
+    rgba(var(--ion-color-primary-rgb), 80%),
+    rgba(var(--ion-color-primary-rgb), 100%)
+  );
+}
+
+/* success */
+.success-progress-bar {
+  --progress-background: linear-gradient(
+    90deg,
+    rgba(var(--ion-color-success-rgb), 0%),
+    rgba(var(--ion-color-success-rgb), 20%),
+    rgba(var(--ion-color-success-rgb), 40%),
+    rgba(var(--ion-color-success-rgb), 60%),
+    rgba(var(--ion-color-success-rgb), 80%),
+    rgba(var(--ion-color-success-rgb), 100%)
+  );
+}
+
+/* danger */
+.danger-progress-bar {
+  --progress-background: linear-gradient(
+    90deg,
+    rgba(var(--ion-color-danger-rgb), 0%),
+    rgba(var(--ion-color-danger-rgb), 20%),
+    rgba(var(--ion-color-danger-rgb), 40%),
+    rgba(var(--ion-color-danger-rgb), 60%),
+    rgba(var(--ion-color-danger-rgb), 80%),
+    rgba(var(--ion-color-danger-rgb), 100%)
+  );
+}

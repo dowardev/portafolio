@@ -7,7 +7,14 @@
     </ion-header>
 
     <ion-content>
-      <ion-card class="primary-select-animated">s</ion-card>
+      <ion-card class="primary-select-animated">
+        <ion-progress-bar
+          class="danger-progress-bar"
+          type="indeterminate"
+        ></ion-progress-bar>
+
+        <ion-card-content> sss </ion-card-content>
+      </ion-card>
     </ion-content>
   </ion-page>
 </template>
@@ -17,40 +24,15 @@ import { IonPage } from "@ionic/vue";
 </script>
 
 <style scoped>
-.box {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 12px;
-  height: 400px;
-  width: 400px;
-  border: 4px solid transparent;
-  border-radius: 12px;
-  background:
-    linear-gradient(var(--ion-background-color), var(--ion-background-color))
-      padding-box,
-    linear-gradient(
-        var(--angle),
-        #f0f9fe,
-        #d1edfb,
-        #a7ddf7,
-        #7ccbf3,
-        #51b9ef,
-        #3dade9
-      )
-      border-box;
-  animation: 8s rotate linear infinite;
-}
-
-@keyframes rotate {
-  to {
-    --angle: 360deg;
-  }
-}
-
-@property --angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
+.gradient-progress-bar {
+  --progress-background: linear-gradient(
+    90deg,
+    rgba(var(--ion-color-primary-rgb), 0%),
+    rgba(var(--ion-color-primary-rgb), 20%),
+    rgba(var(--ion-color-primary-rgb), 40%),
+    rgba(var(--ion-color-primary-rgb), 60%),
+    rgba(var(--ion-color-primary-rgb), 80%),
+    rgba(var(--ion-color-primary-rgb), 100%)
+  );
 }
 </style>
