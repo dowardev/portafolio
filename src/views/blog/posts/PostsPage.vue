@@ -45,6 +45,13 @@
             <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
+
+        <!-- progress bar -->
+        <ion-progress-bar
+          v-if="postController.getPosts()!.length == 0 && loadFinished == false"
+          class="primary-progress-bar"
+          type="indeterminate"
+        ></ion-progress-bar>
       </ion-toolbar>
     </ion-header>
 
@@ -131,50 +138,26 @@
       </ion-row>
       <!-- end posts -->
 
+      <!-- no posts -->
       <section v-if="postController.getPosts()!.length == 0 && loadFinished">
-        <div class="align-vertical">
-          <div class="center">
-            <ion-item lines="none">
-              <ion-icon
-                slot="start"
-                :icon="banOutline"
-                color="danger"
-              ></ion-icon>
-              <ion-label color="danger">No se encontraron datos</ion-label>
-            </ion-item>
-          </div>
+        <div class="center">
+          <ion-item lines="none">
+            <ion-icon slot="start" :icon="banOutline" color="danger"></ion-icon>
+            <ion-label color="danger">No se encontraron datos</ion-label>
+          </ion-item>
         </div>
       </section>
 
+      <!-- loading posts -->
       <section
         v-if="postController.getPosts()!.length == 0 && loadFinished == false"
       >
         <ion-row>
-          <ion-col
-            v-for="(item, index) in 8"
-            :key="index"
-            size-xs="12"
-            size-md="6"
-            size-lg="3"
-          >
-            <ion-card style="border: 1px solid var(--ion-color-primary)">
-              <ion-item>
-                <ion-thumbnail slot="start">
-                  <ion-skeleton-text :animated="true"></ion-skeleton-text>
-                </ion-thumbnail>
-              </ion-item>
-
-              <ion-card-content>
-                <ion-label>
-                  <p>
-                    <ion-skeleton-text
-                      :animated="true"
-                      style="width: 70%"
-                    ></ion-skeleton-text>
-                  </p>
-                </ion-label>
-              </ion-card-content>
-            </ion-card>
+          <ion-col size="12" class="center" style="height: 91dvh">
+            <ion-item style="width: 20dvw; display: flex" lines="none">
+              <ion-label>Cargando, por favor espere</ion-label>
+              <ion-spinner name="dots"></ion-spinner>
+            </ion-item>
           </ion-col>
         </ion-row>
       </section>
