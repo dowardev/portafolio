@@ -1,8 +1,3 @@
-/* vars */
-:root {
-  --border-width-card-styled: 8px;
-}
-
 /* color text */
 .info-card,
 .info-card > ion-card-header > ion-card-title,
@@ -23,35 +18,37 @@
 .danger-card-filled > ion-card-header > ion-card-title,
 .danger-card-filled > ion-card-content > ion-text {
   color: var(--ion-text-color);
+  --border-width-card: 8px;
+  --background-opacity: 50%;
 }
 
 /* success */
 .info-card {
-  border-left: var(--border-width-card-styled) solid var(--ion-color-success);
+  border-left: var(--border-width-card) solid var(--ion-color-success);
 }
 
 .info-card-filled {
-  border-left: var(--border-width-card-styled) solid var(--ion-color-success);
-  background: var(--ion-color-success-tint);
+  border-left: var(--border-width-card) solid var(--ion-color-success);
+  background: rgba(var(--ion-color-success-rgb), var(--background-opacity));
 }
 
 /* primary */
 .primary-card {
-  border-left: var(--border-width-card-styled) solid var(--ion-color-primary);
+  border-left: var(--border-width-card) solid var(--ion-color-primary);
 }
 
 .primary-card-filled {
-  border-left: var(--border-width-card-styled) solid var(--ion-color-primary);
-  background: var(--ion-color-primary-tint);
+  border-left: var(--border-width-card) solid var(--ion-color-primary);
+  background: rgba(var(--ion-color-primary-rgb), var(--background-opacity));
   color: var(--ion-text-color);
 }
 
 /* danger */
 .danger-card {
-  border-left: var(--border-width-card-styled) solid var(--ion-color-danger);
+  border-left: var(--border-width-card) solid var(--ion-color-danger);
 }
 
 .danger-card-filled {
-  border-left: var(--border-width-card-styled) solid var(--ion-color-danger);
-  background: var(--ion-color-danger-tint);
+  border-left: var(--border-width-card) solid var(--ion-color-danger);
+  background: rgba(var(--ion-color-danger-rgb), var(--background-opacity));
 }
