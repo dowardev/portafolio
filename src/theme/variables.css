@@ -131,11 +131,9 @@ ion-card {
   border: 1px solid var(--ion-background-color-step-750);
 }
 
-/* ion-button { */
-/*   --box-shadow: none; */
-/*   --box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, */
-/*     rgba(0, 0, 0, 0.1) 0px 0px 1px 0px; */
-/* } */
+ion-button {
+  --box-shadow: none;
+}
 
 /* ion-icon {
   color: var(--ion-color-primary);
