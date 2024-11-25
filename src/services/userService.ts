@@ -1,13 +1,7 @@
 import { Storage } from "@ionic/storage";
 const store = new Storage();
 store.create();
-import {
-  SaveUserData,
-  UserToken,
-  DeleteUserAccount,
-  ResendEmailConfirmation,
-  User,
-} from "./interfaces";
+import { SaveUserData, UserToken, User } from "./interfaces";
 import ServerConfig from "@/controllers/serverConfigController";
 
 import axios from "axios";

@@ -78,7 +78,7 @@
                 @click="openPost(post.id!)"
               >
                 <img
-                  :src="post.cover.url!"
+                  :src="post.cover.url"
                   @click="openPost(post.id!)"
                   style="
                     border-top-left-radius: 4px;
@@ -105,7 +105,7 @@
                     <ion-button
                       fill="clear"
                       @click="
-                        idPostSelected = post.id;
+                        idPostSelected = parseInt(post.id);
                         popoverPostOptions.event = $event;
                         popoverPostOptions.isOpen = true;
                       "
@@ -276,7 +276,7 @@
           button
           lines="full"
           class="transparent"
-          @click="updatePost(idPostSelected)"
+          @click="updatePost(idPostSelected!.toString())"
         >
           <ion-icon slot="start" :icon="createOutline"> </ion-icon>
 
@@ -288,7 +288,7 @@
           v-if="userController.getUser()?.isAdmin"
           lines="none"
           class="transparent"
-          @click="deletePost({ id: idPostSelected })"
+          @click="deletePost({ id: idPostSelected!.toString() })"
         >
           <ion-icon slot="start" :icon="trashOutline" color="danger"></ion-icon>
 
@@ -489,7 +489,7 @@ async function updatePost(id: string) {
 
 async function deletePost(params: { id: string }) {
   const id = params.id;
-  const response = await presentAlertConfirmation({
+  const response = await systemController.presentAlertConfirmation({
     message: "¿Desea eliminar el post?",
   });
 
@@ -502,7 +502,7 @@ async function deletePost(params: { id: string }) {
   loading.present();
   try {
     await postController.deletePost({ id });
-    loadContent({ refetch: true });
+    loadContent({ status: filter.selected });
     await systemController.presentToast({ message: "Post eliminado" });
   } catch (error) {
     console.error(error);
@@ -512,7 +512,7 @@ async function deletePost(params: { id: string }) {
 }
 
 function closeModalSearchPosts() {
-  (modalSearchPosts as any).$el.dismiss(null, "cancel");
+  // (modalSearchPosts as any).$el.dismiss(null, "cancel");
 }
 
 async function nextDate(): Promise<void> {

@@ -183,8 +183,8 @@ const spinners = ref({ buttonUpdate: false, buttonDelete: false });
 const indexContent = ref(
   [] as Array<{ name: string; id: string; type: string }>
 );
-let headings = null;
-const indexRef = ref(null);
+let headings: NodeListOf<HTMLElement> | [] = [];
+const indexRef = ref<HTMLElement | null>(null);
 const useSytemComposable = systemController;
 const popoverMainOptions = ref({ open: false, event: Event });
 const scrollPosition = ref(0);
@@ -231,18 +231,18 @@ async function setThemeCodePreview(): Promise<void> {
   const theme = (await systemController.getTheme()) ?? "light";
   let file = "" as any;
 
-  if (theme == "nord")
-    file = await import(
-      "../../../../node_modules/highlight.js/styles/atom-one-dark.css"
-    );
-  if (theme == "gruvbox")
-    file = await import(
-      "../../../../node_modules/highlight.js/styles/dark.css"
-    );
-  if (theme == "light")
-    file = await import(
-      "../../../../node_modules/highlight.js/styles/atom-one-light.css"
-    );
+  // if (theme == "nord")
+  //   file = await import(
+  //     "../../../../node_modules/highlight.js/styles/atom-one-dark.css"
+  //   );
+  // if (theme == "gruvbox")
+  //   file = await import(
+  //     "../../../../node_modules/highlight.js/styles/dark.css"
+  //   );
+  // if (theme == "light")
+  //   file = await import(
+  //     "../../../../node_modules/highlight.js/styles/atom-one-light.css"
+  //   );
 
   const cssNode = document.createElement("style");
   cssNode.innerHTML = file.default;
@@ -250,22 +250,26 @@ async function setThemeCodePreview(): Promise<void> {
 }
 
 function generarIndexContent(): void {
-  headings = indexRef.value.querySelectorAll("h1, h2, h3, h4, h5, h6");
+  if (indexRef.value != null) {
+    headings = indexRef.value.querySelectorAll(
+      "h1, h2, h3, h4, h5, h6"
+    ) as NodeListOf<HTMLElement>;
+  } else {
+    headings = [];
+  }
 
   let count = 0;
-  headings.forEach(
-    (heading: { id: string; textContent: string; tagName: string }) => {
-      heading.id = count.toString();
+  (headings as NodeListOf<HTMLElement>).forEach((heading) => {
+    heading.id = count.toString();
 
-      indexContent.value.push({
-        name: heading.textContent as string,
-        id: count.toString(),
-        type: heading.tagName.toLowerCase(),
-      });
+    indexContent.value.push({
+      name: heading.textContent ?? "",
+      id: count.toString(),
+      type: heading.tagName.toLowerCase(),
+    });
 
-      count++;
-    }
-  );
+    count++;
+  });
 }
 
 async function updatePost(): Promise<void> {
@@ -287,7 +291,7 @@ async function deletePost(): Promise<void> {
   }
 
   try {
-    await deletePost({ id: postId as string });
+    await deletePost();
     spinners.value.buttonDelete = false;
     router.go(-1);
     // eventBus().emitter.emit("new-post");

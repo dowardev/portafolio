@@ -60,14 +60,14 @@ const systemController = new SystemController();
 
 const route = useRoute();
 const pageTitle = "404";
-const reportError = systemController.reportError;
+// const reportError = systemController.reportError;
 
 // functions
 function openReportError() {
   const error404 = {
     page: route,
   };
-  reportError({ error: error404, type: "error" });
+  // reportError({ error: error404, type: "error" });
 }
 </script>
 

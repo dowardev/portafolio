@@ -127,7 +127,13 @@ import {
   keyOutline,
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
-import { required, email, helpers, minLength } from "@vuelidate/validators";
+import {
+  required,
+  email,
+  helpers,
+  minLength,
+  maxLength,
+} from "@vuelidate/validators";
 import { useRouter } from "vue-router";
 
 const router = useRouter();

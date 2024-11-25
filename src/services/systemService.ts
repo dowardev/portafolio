@@ -94,18 +94,8 @@ export default class SystemService {
     return toast.present();
   }
 
-  getBaseURL(): string {
-    const mode = process.env.NODE_ENV;
-    if (mode == "development") {
-      return "http://127.0.0.1:8000/";
-    } else {
-      return "http://127.0.0.1:8000/";
-      // return "https://prueba-blogb.dowar.xyz/";
-    }
-  }
-
   async presentLoading(params: Loading): Promise<HTMLIonLoadingElement> {
-    const { message, color } = params;
+    const { message } = params;
     const loading = await loadingController.create({
       cssClass: "my-custom-class",
       message,
@@ -211,7 +201,7 @@ export default class SystemService {
     });
   }
 
-  getCookie(params: { key: string }): string {
+  getCookie(params: { key: string }): string | undefined {
     const { key } = params;
     return Cookies.get(key);
   }

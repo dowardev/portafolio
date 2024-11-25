@@ -1,13 +1,7 @@
-import {
-  UserRegister,
-  EmailResetPassword,
-  ResetPassword,
-  UpdateUserPassword,
-} from "./interfaces";
+import { UserRegister, ResetPassword, UpdateUserPassword } from "./interfaces";
 import { apiConnector } from "@/main";
 
 import axios from "axios";
-import { getUserToken } from "./userService";
 
 export default class SessionService {
   async userRegister(params: UserRegister): Promise<void> {

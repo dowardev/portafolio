@@ -240,7 +240,7 @@ async function alertConfirmationEmail() {
       {
         text: "Continuar",
         handler: () => {
-          resendEmailConfirmation({ email: form.value.email });
+          // resendEmailConfirmation({ email: form.value.email });
         },
       },
     ],

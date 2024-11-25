@@ -74,15 +74,12 @@
             <ion-card-content>
               <section style="overflow-y: scroll; height: 42vh">
                 <ion-accordion-group>
-                  <div
-                    v-for="user in userController.users.value"
-                    :key="user.id"
-                  >
-                    <ion-item lines="none" class="transparent">
-                      <ion-icon slot="start" :icon="personOutline"></ion-icon>
-                      <ion-label>{{ user.email }}</ion-label>
+                  <!-- <div v-for="user in userController.getUser()" :key="user.id"> -->
+                  <!-- <ion-item lines="none" class="transparent">
+                      <ion-icon slot="start" :icon="personOutline"></ion-icon> -->
+                  <!-- <ion-label>{{ user.email }}</ion-label> -->
 
-                      <ion-button
+                  <!-- <ion-button
                         :id="'trigger-button-' + user.id"
                         slot="end"
                         fill="clear"
@@ -98,14 +95,14 @@
                           v-if="spinners.optionsUser == user.id"
                           name="crescent"
                         ></ion-spinner>
-                      </ion-button>
+                      </ion-button> -->
 
-                      <ion-popover
+                  <!-- <ion-popover
                         :trigger="'trigger-button-' + user.id"
                         dismiss-on-select
-                      >
-                        <!-- user options -->
-                        <ion-content>
+                      > -->
+                  <!-- user options -->
+                  <!-- <ion-content>
                           <ion-item
                             button
                             lines="none"
@@ -175,16 +172,16 @@
                               :icon="thumbsUpOutline"
                             ></ion-icon>
                           </ion-item>
-                        </ion-content>
-                      </ion-popover>
-                    </ion-item>
+                        </ion-content> -->
+                  <!-- </ion-popover> -->
+                  <!-- </ion-item> -->
 
-                    <ion-accordion :value="user.id" class="transparent">
+                  <!-- <ion-accordion :value="user.id" class="transparent">
                       <ion-item slot="header" class="transparent">
-                        <ion-label>Informacion</ion-label>
-                      </ion-item>
+                        <ion-label>Informacion</ion-label> -->
+                  <!-- </ion-item> -->
 
-                      <ion-list slot="content">
+                  <!-- <ion-list slot="content">
                         <ion-item>
                           <ion-label>Nombre</ion-label>
                           <ion-label slot="end">{{ user.name }}</ion-label>
@@ -218,9 +215,9 @@
                             >No</ion-label
                           >
                         </ion-item>
-                      </ion-list>
-                    </ion-accordion>
-                  </div>
+                      </ion-list> -->
+                  <!-- </ion-accordion> -->
+                  <!-- </div> -->
                 </ion-accordion-group>
               </section>
 
@@ -429,15 +426,15 @@ async function getUsers(): Promise<void> {
   try {
     const { users, paginatorInfo } = await userController.loadUsers({
       paginatorInfo: {
-        pagination: parseInt(pagInfo.value.pagination),
-        page: parseInt(pagInfo.value.currentPage),
+        pagination: parseInt(pagInfo.value.pagination.toString()),
+        page: parseInt(pagInfo.value.currentPage.toString()),
       },
       search,
       filterOptions: JSON.stringify(getFilterOptions()),
     });
 
     userController.updateUsers({ users });
-    pagInfo.value.totalPaginacionElements = paginatorInfo.total;
+    // pagInfo.value.totalPaginacionElements = paginatorInfo.total;
   } catch (e: any) {
     console.error(e);
   }
@@ -446,7 +443,7 @@ async function getUsers(): Promise<void> {
 async function refreshContent() {
   spinners.refreshContent = true;
   status.value = "loading";
-  await getUsers({ refetch: true });
+  await getUsers();
   spinners.refreshContent = false;
   status.value = "loaded";
 }
@@ -510,9 +507,9 @@ async function sendMailResetPassword(params: { email: string }) {
   if (alertResponse == false) return;
 
   try {
-    await sendMailResetPasswordService({
-      email,
-    });
+    // await sendMailResetPasswordService({
+    //   email,
+    // });
 
     await systemController.presentToast({ message: "Instrucciones enviadas" });
   } catch (e: any) {
@@ -534,7 +531,7 @@ async function resendEmailConfirmation(params: { email: string }) {
   if (alertResponse == false) return;
 
   try {
-    await resendEmailConfirmationService({ email });
+    // await resendEmailConfirmationService({ email });
 
     await systemController.presentToast({ message: "Instrucciones enviadas" });
   } catch (e: any) {
@@ -560,7 +557,7 @@ async function deleteUser(email: string) {
   if (alertResponse == false) return;
 
   try {
-    await userController.deleteUserAccount({ email });
+    // await userController.deleteUserAccount({ email });
 
     await systemController.presentToast({ message: "Usuario eliminado" });
     refreshContent();

@@ -192,7 +192,7 @@ async function alertExitApp(): Promise<void> {
         text: "Continuar",
         id: "confirm-button",
         handler: () => {
-          App.exitApp();
+          // App.exitApp();
         },
       },
     ],

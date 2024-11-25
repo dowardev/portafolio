@@ -34,12 +34,15 @@
 import { IonSelect, IonSelectOption, isPlatform } from "@ionic/vue";
 import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
 import { reactive, ref, watch } from "vue";
-import { usePost } from "../../controllers/postController";
+
+// controllers
+import PostController from "@/controllers/postController";
+const postController = new PostController();
 
 const emits = defineEmits(["currentDateChange"]);
 
+// vars
 const modeDesingElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
-
 let dates = reactive([] as Array<string>);
 const currentDate = ref("");
 const index = ref();
@@ -47,13 +50,13 @@ const currentDateIndex = ref(0);
 
 // hooks
 watch(
-  () => usePost().getDates(),
+  () => postController.getDates(),
   (newValue) => {
     dates = newValue as any;
   }
 );
 watch(
-  () => usePost().getCurrentPage(),
+  () => postController.getCurrentPage(),
   (newValue) => {
     currentDate.value = newValue as string;
   }
@@ -99,6 +102,6 @@ function selectDate(params: { date: string }): void {
 }
 
 function updateCurrentDate(): void {
-  usePost().updateCurrentPage({ currentPage: currentDate.value });
+  postController.updateCurrentPage({ currentPage: currentDate.value });
 }
 </script>

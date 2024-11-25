@@ -31,7 +31,7 @@ export interface Post {
   cover: {
     id: string;
     name: string;
-    path: string;
+    url: string;
   };
   status: StatusPost;
 }

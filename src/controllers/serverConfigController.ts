@@ -26,7 +26,15 @@ export default class ServerConfig {
     this.serverUrl = await this.systemService.getDataFromLocalStorage({
       key: "serverUrl",
     });
-    this.userToken = this.systemService.getCookie({ key: "userToken" });
+    try {
+      const token = this.systemService.getCookie({ key: "userToken" });
+      if (!token) {
+        return;
+      }
+      this.userToken = token;
+    } catch (error: any) {
+      throw error;
+    }
   }
 
   public async getConfig(): Promise<{ serverUrl: string; userToken: string }> {

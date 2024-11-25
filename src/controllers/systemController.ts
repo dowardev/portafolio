@@ -1,4 +1,9 @@
-import { ContactMessage, System, Toast } from "@/services/interfaces";
+import {
+  ContactMessage,
+  FeedbackParams,
+  System,
+  Toast,
+} from "@/services/interfaces";
 import { modalController, toastController } from "@ionic/vue";
 import { alertCircleOutline, closeOutline } from "ionicons/icons";
 import { storeToRefs } from "pinia";

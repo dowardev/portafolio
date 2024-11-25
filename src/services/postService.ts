@@ -53,7 +53,7 @@ export default class PostService {
     const response = await apiConnector.get({ url: `posts/${date}/${filter}` });
 
     const posts = await Promise.all(
-      response.posts.map(async (post) => {
+      response.posts.map(async (post: any) => {
         post.createdAt = post.created_at;
         delete post.created_at;
         post.updatedAt = post.updated_at;

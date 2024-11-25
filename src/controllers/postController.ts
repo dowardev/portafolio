@@ -120,15 +120,15 @@ export default class PostController {
         post,
       });
 
-      this.postStore.updatePost({
-        id,
-        title,
-        content,
-        cover: {
-          id: cover.newCoverId,
-        },
-        status: "active",
-      });
+      // this.postStore.updatePost({
+      //   id,
+      //   title,
+      //   content,
+      //   cover: {
+      //     id: cover.newCoverId,
+      //   },
+      //   status: "active",
+      // });
     } catch (error: any) {
       throw new Error(error);
     }

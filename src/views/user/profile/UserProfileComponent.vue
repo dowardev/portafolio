@@ -555,27 +555,27 @@ async function uploadUserImage(e: any) {
   spinners.value.uploadImage = true;
   const image = await getImageBase64(e);
 
-  try {
-    const response = await userController.uploadImage({
-      image,
-    });
+  // try {
+  //   const response = await userController.uploadImage({
+  //     image,
+  //   });
 
-    spinners.value.uploadImage = false;
-    if (response.name) {
-      userImage.value = "data:image/png;base64," + response.source;
-      form.value.userImageId = response.id!;
-    }
-    userController.updateUserProps({
-      user: {
-        imageProfile: response.source,
-      },
-    });
-  } catch (e: any) {
-    console.error(e);
-    systemController.openToastError(e);
-  } finally {
-    spinners.value.uploadImage = false;
-  }
+  //   spinners.value.uploadImage = false;
+  //   if (response.name) {
+  //     userImage.value = "data:image/png;base64," + response.source;
+  //     form.value.userImageId = response.id!;
+  //   }
+  //   userController.updateUserProps({
+  //     user: {
+  //       imageProfile: response.source,
+  //     },
+  //   });
+  // } catch (e: any) {
+  //   console.error(e);
+  //   systemController.openToastError(e);
+  // } finally {
+  //   spinners.value.uploadImage = false;
+  // }
 }
 
 async function presentAlertDeleteAccount() {
@@ -624,9 +624,9 @@ async function deleteUserAccount() {
 
   if (alertResponse.data) {
     try {
-      await userController.deleteAccount({
-        password: formDeleteAccount.password,
-      });
+      // await userController.deleteAccount({
+      //   password: formDeleteAccount.password,
+      // });
 
       await systemController.presentToast({
         message: "Hasta pronto",

@@ -290,7 +290,7 @@ const v2$ = useVuelidate(rules2, { code, password: newPassword });
 async function sendEmail() {
   await startAnimationStep1();
   try {
-    await recoverPassword({ email: email.value });
+    // await recoverPassword({ email: email.value });
 
     await systemController.presentToast({
       message: "Código enviado",
@@ -313,11 +313,11 @@ async function sendNewPassword() {
   await startAnimationStep2();
 
   try {
-    await sendNewPasswordService({
-      email: email.value,
-      code: code.value,
-      password: newPassword.value,
-    });
+    // await sendNewPasswordService({
+    //   email: email.value,
+    //   code: code.value,
+    //   password: newPassword.value,
+    // });
 
     await systemController.presentToast({
       message: "Contraseña actualizada",

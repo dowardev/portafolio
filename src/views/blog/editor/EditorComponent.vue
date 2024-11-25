@@ -146,11 +146,11 @@
         <ion-item
           button
           lines="none"
-          :disabled="spinnerSaveImage"
+          :disabled="disableUI"
           @click="($refs as any).inputImage.click()"
         >
           <ion-icon
-            v-if="spinnerSaveImage == false"
+            v-if="disableUI == false"
             slot="start"
             :icon="imagesOutline"
             color="primary"
@@ -159,7 +159,7 @@
           <ion-label class="ion-text-wrap">Subir multimedia</ion-label>
 
           <ion-spinner
-            v-if="spinnerSaveImage"
+            v-if="disableUI"
             name="crescent"
             color="primary"
           ></ion-spinner>
