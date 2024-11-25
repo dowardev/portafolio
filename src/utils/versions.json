@@ -1,5 +1,9 @@
 {
   "8": {
+    "8.8.0": {
+      "improvements": ["Mejoras de diseño"],
+      "corrections": ["Correcciones generales"]
+    },
     "8.6.5": {
       "improvements": ["Mejoras de diseño"]
     },
