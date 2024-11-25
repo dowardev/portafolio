@@ -99,9 +99,7 @@ export default class SystemController {
     return this.systemStore.update;
   }
 
-  async getImageURL(params: {
-    name: string;
-  }): Promise<{ id: string; name: string; url: string }> {
+  async getImageURL(params: { name: string }): Promise<{ url: string }> {
     const { name } = params;
     return await this.systemService.getImageURL({ name });
   }

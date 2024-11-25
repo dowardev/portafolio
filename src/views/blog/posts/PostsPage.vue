@@ -370,10 +370,6 @@ const filterPosts = computed(() => {
   return result;
 });
 
-onMounted(() => {
-  loadContent({ status: filter.selected });
-});
-
 watch(
   () => postController.getDates(),
   (newValue) => {
@@ -392,6 +388,15 @@ watch(
     index.value = newValue.indexOf(currentPage.value);
     currentPageIndex.value = index.value;
   }
+);
+watch(
+  () => route.path,
+  (newPath) => {
+    if (newPath.startsWith("/blog")) {
+      loadContent({ status: filter.selected });
+    }
+  },
+  { immediate: true }
 );
 
 // functions

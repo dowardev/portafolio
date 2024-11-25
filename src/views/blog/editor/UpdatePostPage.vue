@@ -1,13 +1,20 @@
 <template>
-  <ion-page>
+  <ion-page class="page-container">
+    <!-- loader -->
+    <ion-progress-bar
+      v-if="progressBar"
+      class="primary-progress-bar"
+      type="indeterminate"
+    ></ion-progress-bar>
+
     <ion-content :fullscreen="true">
       <EditorComponent
+        v-if="contentLoaded"
         ref="editorRef"
         :title="title"
         :content="content"
-        :cover="cover"
-        :spinner-save-post="spinners.savePost"
-        :spinner-save-image="spinners.saveImage"
+        :cover="{ name: cover.name }"
+        :disableUI="progressBar"
         @upload-image="uploadImage($event)"
         @save="save($event)"
       ></EditorComponent>
@@ -27,6 +34,9 @@ import SystemController from "../../../controllers/systemController";
 const postController = new PostController();
 const systemController = new SystemController();
 
+// components
+import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
+
 const router = useRouter();
 const route = useRoute();
 
@@ -35,11 +45,12 @@ const openToastError = systemController.openToastError;
 const idPost = route.params.id as string;
 const title = ref("");
 const content = ref("");
-const cover = ref({ id: "", name: "", source: "" });
+const cover = ref({ id: "", name: "" });
 const newImages = ref(Array<string>());
-const images = ref(Array<string>());
-const spinners = { savePost: false, saveImage: false };
+const images = ref<string[]>([]);
 const editorRef = ref(null);
+const progressBar = ref<true | false>(false);
+const contentLoaded = ref(false);
 
 // mounted
 onMounted(() => {
@@ -48,10 +59,7 @@ onMounted(() => {
 
 // functions
 async function getPost(): Promise<void> {
-  const loading = await systemController.presentLoading({
-    message: "Obteniendo publicación",
-  });
-  loading.present();
+  progressBar.value = true;
 
   try {
     await postController.loadPost({
@@ -63,19 +71,18 @@ async function getPost(): Promise<void> {
     })!;
     const title = post.title ?? "";
     const content = post.content ?? "";
-    const coverName = post.cover.name ?? "";
     const coverId = post.cover.id ?? "";
-    const coverSource = post.cover.source ?? "";
+    const coverName = post.cover.name ?? "";
 
     if (post) {
-      setData({ title, content, coverId, coverName, coverSource });
+      setData({ title, content, coverId, coverName });
+      contentLoaded.value = true;
     }
-
-    loading.dismiss();
   } catch (e: any) {
     console.error(e);
-    loading.dismiss();
     openToastError(e);
+  } finally {
+    progressBar.value = false;
   }
 }
 
@@ -84,14 +91,12 @@ function setData(data: {
   content: string;
   coverId: string;
   coverName: string;
-  coverSource: string;
 }): void {
   title.value = data.title;
   content.value = data.content;
   cover.value = {
     id: data.coverId,
     name: data.coverName,
-    source: data.coverSource,
   };
   getPostImages(data.content);
 }
@@ -99,32 +104,30 @@ function setData(data: {
 async function save(data: {
   title: string;
   content: string;
-  coverSource: string;
-  newCoverStatus: boolean;
+  cover: File;
 }): Promise<void> {
-  spinners.savePost = true;
+  const { title, content, cover: newCover } = data;
+  progressBar.value = true;
 
   const id = idPost as string;
-  const title = data.title;
-  const content = data.content;
   const coverData = {
-    source: data.coverSource,
     newCoverId: "",
     oldCoverId: cover.value.id,
   };
-  const newCoverStatus = data.newCoverStatus;
   const images = newImages.value;
   const imagesRemoved = getRemovedImages(data.content);
 
-  if (newCoverStatus) {
+  if (newCover instanceof File && newCover.size > 0) {
+    console.log(newCover);
     try {
-      const response = await uploadCover({ image: coverData.source });
-      coverData.newCoverId = response!.id;
+      const response = await uploadCover({ image: newCover });
+      coverData.newCoverId = response.id;
     } catch (e: any) {
       console.error(e);
-      spinners.savePost = false;
       openToastError(e);
       return;
+    } finally {
+      progressBar.value = false;
     }
   }
 
@@ -139,14 +142,12 @@ async function save(data: {
         imagesRemoved,
       },
     });
-    await refreshPostsCotent();
-    spinners.savePost = false;
-    router.go(-1);
     await systemController.presentToast({ message: "Post actualizado" });
+    router.go(-1);
   } catch (e: any) {
-    console.error(e);
-    spinners.savePost = false;
     openToastError(e);
+  } finally {
+    progressBar.value = false;
   }
 }
 
@@ -159,7 +160,7 @@ async function updatePost(params: { post: UpdatePost }): Promise<void> {
 }
 
 async function uploadImage(e: any) {
-  spinners.saveImage = true;
+  progressBar.value = true;
   const image = e;
 
   try {
@@ -168,23 +169,21 @@ async function uploadImage(e: any) {
       type: "post",
     });
     const imageName = response.name;
-    spinners.saveImage = false;
 
-    const api = (await getImageURL({ name: imageName! })).url;
+    const imagUrl = await getImageURL({ name: imageName! });
     content.value =
-      '<div class="center"><img src="' + api + '" style="width:80%"/></div>';
-
-    if (response.id) images.value.push(response.id);
+      '<div class="center"><img src="' +
+      imagUrl +
+      '" style="width:80%"/></div>';
   } catch (e: any) {
     console.error(e);
-    spinners.saveImage = false;
     openToastError(e);
+  } finally {
+    progressBar.value = false;
   }
 }
 
-async function uploadCover(params: {
-  image: string;
-}): Promise<{ id: string } | undefined> {
+async function uploadCover(params: { image: File }): Promise<{ id: string }> {
   const { image } = params;
   try {
     const { id } = await postController.updateCover({ image });
@@ -196,37 +195,28 @@ async function uploadCover(params: {
 }
 
 function getPostImages(content: string) {
-  const imageId = content.match(/\bhttp?:\/\/\S+/gi);
-  imageId?.forEach((element) => {
-    images.value.push(element);
+  const imageUrls = content.match(/\bhttp?:\/\/[^\s"']+/gi);
+  imageUrls?.forEach((url) => {
+    console.log(url);
+    const imageName = url.split("/").pop();
+    if (imageName) {
+      images.value?.push(imageName);
+    }
   });
 }
 
 function getRemovedImages(content: string) {
-  const imagesRemoved = Array<string>();
+  const imagesRemoved: string[] = [];
   images.value.forEach((element: string) => {
     if (content.includes(element) == false) {
-      imagesRemoved.push(element.split("=")[1]);
+      imagesRemoved.push(element);
     }
   });
   return imagesRemoved;
 }
 
-async function refreshPostsCotent() {
-  try {
-    await postController.loadPost({
-      id: idPost,
-    });
-  } catch (e: any) {
-    console.error(e);
-  }
-}
-
-async function getImageURL(params: {
-  name: string;
-}): Promise<{ id: string; name: string; url: string }> {
+async function getImageURL(params: { name: string }): Promise<string> {
   const { name } = params;
-
-  return await systemController.getImageURL({ name });
+  return (await systemController.getImageURL({ name })).url;
 }
 </script>

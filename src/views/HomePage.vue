@@ -32,7 +32,7 @@ import PostPage from "../../src/views/blog/post/PostPage.vue";
 import PoliciesPage from "./policies/PoliciesPage.vue";
 import LoginPage from "./session/login/LoginPage.vue";
 import SignUpPage from "./session/signup/SignUpPage.vue";
-import CreatePost from "./blog/editor/CreatePost.vue";
+import CreatePost from "./blog/editor/CreatePostPage.vue";
 import AdminPanelPage from "./admin/PanelAdminPage.vue";
 import UserPanelPage from "./user/UserPanelPage.vue";
 </script>

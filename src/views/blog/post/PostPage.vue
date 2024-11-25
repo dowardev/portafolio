@@ -61,7 +61,9 @@
             class="fade-in-title ion-no-border"
           >
             <ion-toolbar class="condensed-toolbar">
-              <ion-title size="large">ss</ion-title>
+              <ion-title size="large">{{
+                postController.getPost({ id: postId })?.title
+              }}</ion-title>
             </ion-toolbar>
           </ion-header>
           <div

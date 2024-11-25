@@ -30,15 +30,11 @@ export const usePostStore = defineStore("post", () => {
     return posts.value;
   }
 
-  function getPost(params: { id: string }) {
+  function getPost(params: { id: string }): Post {
     const id = params.id;
     let post = posts.value.filter((element) => {
       return (element as any).id == id;
     });
-    post = JSON.parse(JSON.stringify(post));
-    if (post.length > 0) {
-      post[0].cover.source = "data:image/png;base64," + post[0].cover.source;
-    }
     return post[0];
   }
 

@@ -23,15 +23,15 @@ export interface FeedbackParams {
 
 // posts
 export interface Post {
-  id?: string;
-  title?: string;
-  content?: string;
+  id: string;
+  title: string;
+  content: string;
   createdAt?: string;
   updatedAt?: string;
   cover: {
-    id?: string;
-    name?: string;
-    path?: string;
+    id: string;
+    name: string;
+    path: string;
   };
   status: StatusPost;
 }

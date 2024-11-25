@@ -179,20 +179,16 @@ export default class SystemService {
     await toast.present();
   }
 
-  async getImageURL(params: {
-    name: string;
-  }): Promise<{ id: string; name: string; url: string }> {
+  async getImageURL(params: { name: string }): Promise<{ url: string }> {
     const { name } = params;
 
-    const response = await apiConnector.get({
+    const { url } = await apiConnector.get({
       url: `get-image`,
       data: { name },
     });
 
     return {
-      id: response.data.id,
-      name: response.data.name,
-      url: response.data.url,
+      url,
     };
   }
 

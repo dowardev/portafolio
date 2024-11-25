@@ -136,13 +136,13 @@ export default class PostController {
 
   async updateCover(params: {
     image: File;
-  }): Promise<{ id: string; path: string }> {
+  }): Promise<{ id: string; path: string; name: string }> {
     const { image } = params;
-    const { id, path } = await this.postService.uploadImage({
+    const { id, path, name } = await this.postService.uploadImage({
       image,
       type: "post",
     });
-    return { id, path };
+    return { id, path, name };
   }
 
   async createPost(params: CreatePost) {

@@ -17,7 +17,10 @@ export default class PostService {
   async createPost(params: CreatePost): Promise<void> {
     const { title, content, coverId, images } = params;
 
-    await apiConnector.post({ url: `create-post/` });
+    await apiConnector.post({
+      url: `create-post/`,
+      data: { title, content, coverId, images },
+    });
   }
 
   async updatePost(params: { post: UpdatePost }): Promise<void> {
@@ -108,7 +111,7 @@ export default class PostService {
   async uploadImage(params: {
     image: File;
     type: string;
-  }): Promise<{ id: string; path: string; name }> {
+  }): Promise<{ id: string; path: string; name: string }> {
     const { image, type } = params;
 
     const formData = new FormData();
@@ -118,6 +121,7 @@ export default class PostService {
     const response = await apiConnector.post({
       url: `upload-image`,
       data: formData,
+      contentType: "multipart/form-data",
     });
 
     return {
