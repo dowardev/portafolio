@@ -305,18 +305,17 @@ class PostsController extends Controller
       Post::where("id", "=", $id)->update([
         "cover_id" => $new_cover_id,
       ]);
-      Storage::delete("images_posts/" . $cover_name);
+      Storage::disk("posts_images")->delete($cover_name);
       Images::where("id", "=", $cover_id)->delete();
-      $this->moveImage($new_cover_id);
     }
 
     foreach ($images_removed as $value) {
-      Storage::delete("images_posts/" . $value);
+      Storage::disk("posts_images")->delete($value);
       Images::where("name", "=", $value)->delete();
     }
 
     foreach ($new_images as $value) {
-      $this->moveImage($value);
+      // $this->moveImage($value);
       PostImage::create([
         "image_id" => $value,
         "post_id" => $id,
