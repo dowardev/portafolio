@@ -34,12 +34,11 @@
               class="transparent"
               lines="none"
             >
-              <ion-button
-                fill="clear"
-                @click="openRoute({ name: 'LoginPage' })"
-              >
+              <!-- login -->
+              <ion-button @click="openRoute({ name: 'LoginPage' })">
                 Iniciar sesión
               </ion-button>
+              <!-- sign up -->
               <ion-button
                 fill="clear"
                 @click="openRoute({ name: 'SignUpPage' })"
@@ -511,8 +510,4 @@ async function goToAdminPanel() {
   color: var(--ion-color-secondary);
   transition: color 0.4s ease-in-out;
 }
-
-/* ion-icon {
-  color: var(--ion-color-primary);
-} */
 </style>
