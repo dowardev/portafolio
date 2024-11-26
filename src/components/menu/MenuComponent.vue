@@ -61,11 +61,14 @@
               >
                 <ion-item
                   lines="none"
-                  class="transparent"
                   button
                   @click="openRoute({ name: 'PresentationPage' })"
                 >
-                  <ion-icon slot="start" :icon="personOutline"></ion-icon>
+                  <ion-icon
+                    color="primary"
+                    slot="start"
+                    :icon="personOutline"
+                  ></ion-icon>
                   <ion-label> Presentación </ion-label>
                 </ion-item>
               </div>
@@ -79,11 +82,14 @@
               >
                 <ion-item
                   lines="none"
-                  class="transparent"
                   button
                   @click="openRoute({ name: 'PostsPage' })"
                 >
-                  <ion-icon slot="start" :icon="libraryOutline"></ion-icon>
+                  <ion-icon
+                    color="primary"
+                    slot="start"
+                    :icon="libraryOutline"
+                  ></ion-icon>
                   <ion-label> Blog </ion-label>
                 </ion-item>
               </div>
@@ -96,11 +102,14 @@
               >
                 <ion-item
                   lines="none"
-                  class="transparent"
                   button
                   @click="openRoute({ name: 'PoliciesPage' })"
                 >
-                  <ion-icon slot="start" :icon="documentsOutline"></ion-icon>
+                  <ion-icon
+                    color="primary"
+                    slot="start"
+                    :icon="documentsOutline"
+                  ></ion-icon>
                   <ion-label>Políticas</ion-label>
                 </ion-item>
               </div>
@@ -128,7 +137,11 @@
                         button
                         @click="modalContribute.open = true"
                       >
-                        <ion-icon slot="start" :icon="cashOutline"></ion-icon>
+                        <ion-icon
+                          color="primary"
+                          slot="start"
+                          :icon="cashOutline"
+                        ></ion-icon>
                         <ion-label>Contribuir</ion-label>
                       </ion-item>
 
@@ -138,9 +151,14 @@
                         lines="none"
                         button
                       >
-                        <ion-icon slot="start" :icon="logoGitlab"></ion-icon>
-                        <ion-label>Codigo fuente</ion-label>
+                        <ion-icon
+                          color="primary"
+                          slot="start"
+                          :icon="logoGitlab"
+                        ></ion-icon>
+                        <ion-label>Código fuente</ion-label>
                       </ion-item>
+
                       <ion-popover trigger="trigger-button-source-code">
                         <ion-content>
                           <ion-item
@@ -151,6 +169,7 @@
                           >
                             <ion-label>FrontEnd</ion-label>
                           </ion-item>
+
                           <ion-item
                             button
                             href="https://gitlab.com/gonzam4/portfolio-backend"
@@ -169,6 +188,7 @@
                         @click="modalComments.open = true"
                       >
                         <ion-icon
+                          color="primary"
                           slot="start"
                           :icon="thumbsUpOutline"
                         ></ion-icon>
@@ -192,6 +212,7 @@
                         button
                       >
                         <ion-icon
+                          color="primary"
                           slot="start"
                           :icon="newspaperOutline"
                         ></ion-icon>
@@ -207,7 +228,11 @@
 
                       <!-- more -->
                       <ion-item lines="none" button @click="openModalApps">
-                        <ion-icon slot="start" :icon="appsOutline"></ion-icon>
+                        <ion-icon
+                          color="primary"
+                          slot="start"
+                          :icon="appsOutline"
+                        ></ion-icon>
                         <ion-label>Mas</ion-label>
                       </ion-item>
                     </div>
@@ -356,6 +381,7 @@ import {
   cashOutline,
   libraryOutline,
   newspaperOutline,
+  createOutline,
 } from "ionicons/icons";
 import AppsComponent from "./apps/Apps.vue";
 import DonationsComponent from "./donations/Donations.vue";
@@ -477,7 +503,7 @@ async function goToAdminPanel() {
 }
 
 .menu-option-selected > ion-item {
-  background: var(--ion-color-selected);
+  --background: var(--ion-color-primary-background-hover);
   transition: background 0.4s ease-in-out;
 }
 
@@ -486,7 +512,7 @@ async function goToAdminPanel() {
   transition: color 0.4s ease-in-out;
 }
 
-ion-icon {
+/* ion-icon {
   color: var(--ion-color-primary);
-}
+} */
 </style>

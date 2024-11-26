@@ -2,10 +2,10 @@
 http://ionicframework.com/docs/theming/ */
 
 /* themes */
-@import url("./gruvbox.css");
-@import url("./nord.css");
 @import url("./light.css");
-@import url("./scrollbar.css");
+/* @import url("./gruvbox.css");
+@import url("./nord.css");
+@import url("./scrollbar.css"); */
 
 /* others */
 @import url("./cards.css");

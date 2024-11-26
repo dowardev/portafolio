@@ -107,12 +107,8 @@
   --ion-background-color-step-850: #262626;
   --ion-background-color-step-900: #191919;
   --ion-background-color-step-950: #0d0d0d;
+}
 
-  /* custom */
-  --ion-color-selected: #3dade912;
-  --ion-color-selected-rgb: 173, 233, 18;
-  --ion-color-selected-contrast: #000000;
-  --ion-color-selected-contrast-rgb: 0, 0, 0;
-  --ion-color-selected-shade: #98cd10;
-  --ion-color-selected-tint: #b5eb2a;
+.light {
+  --ion-color-primary-background-hover: rgba(var(--ion-color-primary-rgb), 0.1);
 }
