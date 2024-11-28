@@ -264,9 +264,9 @@ import mailImage from "@/assets/otros/mail.png";
 import keyImage from "@/assets/otros/key.png";
 
 // vars
-const email = ref("admin@admin.com");
-const code = ref<number | undefined>(9086212);
-const newPassword = ref("123456@As");
+const email = ref("");
+const code = ref<number | undefined>(undefined);
+const newPassword = ref("");
 const step = ref(1);
 const messageError = {
   required: "Campo requerido",

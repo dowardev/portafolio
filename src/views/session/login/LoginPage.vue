@@ -7,79 +7,106 @@
     </ion-header>
 
     <ion-content>
-      <section class="center">
-        <ion-card class="element-post-selected">
-          <ion-card-content>
-            <div class="center">
-              <img src="@/assets/otros/key.png" alt="" class="imagen-usuario" />
-            </div>
+      <div class="background-image">
+        <div
+          id="pr"
+          class="ion-justify-content-center ion-align-items-center"
+          style="
+            width: 100%;
+            height: 83dvh;
+            display: flex;
+            flex-direction: column;
+          "
+        >
+          <section>
+            <ion-row>
+              <ion-col size="12">
+                <ion-card class="primary-selected-border">
+                  <ion-card-content>
+                    <div class="center ion-padding-bottom d">
+                      <img
+                        src="@/assets/otros/key.png"
+                        alt=""
+                        class="imagen-usuario"
+                      />
+                    </div>
 
-            <!-- component -->
-            <LoginFormComponent
-              ref="loginFormComponentRef"
-              @form-status="formStatus = $event"
-              @enter-pressed="login((loginFormComponentRef as any).getData())"
-            />
+                    <!-- component -->
+                    <LoginFormComponent
+                      ref="loginFormComponentRef"
+                      @form-status="formStatus = $event"
+                      @enter-pressed="
+                        login((loginFormComponentRef as any).getData())
+                      "
+                    />
 
-            <ion-button
-              fill="clear"
-              :disabled="formStatus == false || spinners.buttonLogin"
-              expand="full"
-              @click="login((loginFormComponentRef as any).getData())"
-            >
-              <ion-label v-if="spinners.buttonLogin == false">
-                Iniciar sesión</ion-label
-              >
-              <ion-spinner
-                v-if="spinners.buttonLogin"
-                name="crescent"
-              ></ion-spinner>
-            </ion-button>
-          </ion-card-content>
-        </ion-card>
-      </section>
+                    <ion-button
+                      fill="clear"
+                      :disabled="formStatus == false || spinners.buttonLogin"
+                      expand="full"
+                      @click="login((loginFormComponentRef as any).getData())"
+                    >
+                      <ion-label v-if="spinners.buttonLogin == false">
+                        Iniciar sesión</ion-label
+                      >
+                      <ion-spinner
+                        v-if="spinners.buttonLogin"
+                        name="crescent"
+                      ></ion-spinner>
+                    </ion-button>
+                  </ion-card-content>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+          </section>
 
-      <!-- other options -->
-      <section>
-        <div class="center">
-          <ion-button
-            class="options"
-            fill="clear"
-            :disabled="spinners.buttonForgotPassword"
-            expand="full"
-            size="small"
-            @click="isOpenModalPasswordRecover = true"
-          >
-            <ion-label v-if="spinners.buttonForgotPassword == false"
-              >¿Olvidaste la contraseña?</ion-label
-            >
-            <ion-spinner
-              v-if="spinners.buttonForgotPassword"
-              name="crescent"
-            ></ion-spinner>
-          </ion-button>
+          <!-- other options -->
+          <section>
+            <ion-row>
+              <ion-col size="12">
+                <ion-button
+                  class="options"
+                  fill="clear"
+                  :disabled="spinners.buttonForgotPassword"
+                  expand="full"
+                  size="small"
+                  @click="isOpenModalPasswordRecover = true"
+                >
+                  <ion-label v-if="spinners.buttonForgotPassword == false"
+                    >¿Olvidaste la contraseña?</ion-label
+                  >
+                  <ion-spinner
+                    v-if="spinners.buttonForgotPassword"
+                    name="crescent"
+                  ></ion-spinner>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col size="12">
+                <ion-button
+                  class="options"
+                  fill="clear"
+                  :disabled="spinners.buttonCreateAccount"
+                  expand="full"
+                  size="small"
+                  @click="createAccount()"
+                >
+                  <ion-label v-if="spinners.buttonCreateAccount == false"
+                    >Crear cuenta</ion-label
+                  >
+                  <ion-spinner
+                    v-if="spinners.buttonCreateAccount"
+                    name="crescent"
+                    color="primary"
+                  ></ion-spinner>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </section>
         </div>
-
-        <div class="center">
-          <ion-button
-            class="options"
-            fill="clear"
-            :disabled="spinners.buttonCreateAccount"
-            expand="full"
-            size="small"
-            @click="createAccount()"
-          >
-            <ion-label v-if="spinners.buttonCreateAccount == false"
-              >Crear cuenta</ion-label
-            >
-            <ion-spinner
-              v-if="spinners.buttonCreateAccount"
-              name="crescent"
-              color="primary"
-            ></ion-spinner>
-          </ion-button>
-        </div>
-      </section>
+      </div>
 
       <!-- modals -->
       <ion-modal
@@ -285,59 +312,13 @@ async function presentAlertRestorePassword(): Promise<{
 
 <style scoped>
 .imagen-usuario {
-  border-radius: 50%;
   width: 90px;
 }
-.center-vertical-card-login {
-  align-items: center;
-  height: 83vh;
-}
-.img-fondo {
-  width: 100%;
-  height: 50%;
-  position: absolute;
-}
-.card-form {
-  margin-bottom: 18vh;
-}
-.main-content {
-  background-image: "https://image.winudf.com/v2/image/Y29tLnNhcmFzLkJlc3RNaW5pbWFsaXN0V2FsbHBhcGVyX3NjcmVlbl81Xzk4dHZtbnNw/screen-5.jpg?h=800&fakeurl=1&type=.jpg" !important;
-}
-.element-post-selected {
-  border: 1px solid var(--ion-color-primary);
-}
 
-@media only screen and (min-width: 768px) {
-  .img-fondo {
-    width: 100%;
-    height: 40%;
-    position: absolute;
-  }
-  .card-form {
-    margin-top: 0;
-  }
-  .main-section {
-    float: right;
-  }
-}
-@media only screen and (min-width: 992px) {
-  .img-fondo {
-    width: 100%;
-    height: auto;
-    position: absolute;
-  }
-  .card-form {
-    margin-top: 12vh;
-  }
-}
-@media only screen and (min-width: 1200px) {
-  .img-fondo {
-    width: 100%;
-    height: 50%;
-    position: absolute;
-  }
-  .card-form {
-    margin-top: 4vh;
-  }
+.background-image {
+  background-image: url("https://image.winudf.com/v2/image/Y29tLnNhcmFzLkJlc3RNaW5pbWFsaXN0V2FsbHBhcGVyX3NjcmVlbl81Xzk4dHZtbnNw/screen-5.jpg?h=800&fakeurl=1&type=.jpg");
+  background-size: cover;
+  background-position: center;
+  height: 40%;
 }
 </style>
