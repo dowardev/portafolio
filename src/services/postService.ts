@@ -1,4 +1,4 @@
-import { Post, CreatePost, GetPost } from "./interfaces";
+import { Post, CreatePost, GetPost, GetPostsServer } from "./interfaces";
 import { apiConnector } from "@/main";
 
 import { filterPostOptions } from "./types";
@@ -47,10 +47,13 @@ export default class PostService {
     await apiConnector.post({ url: `delete-post`, data: { id } });
   }
 
-  async getPosts(params: GetPost): Promise<Array<Post>> {
-    const { date, filter = "active" } = params;
+  async getPostsServer(params: GetPostsServer): Promise<Array<Post>> {
+    const { date, filter = "active", content = "all" } = params;
 
-    const response = await apiConnector.get({ url: `posts/${date}/${filter}` });
+    const response = await apiConnector.get({
+      url: `posts/${date}/${filter}`,
+      data: { content },
+    });
 
     const posts = await Promise.all(
       response.posts.map(async (post: any) => {
@@ -62,6 +65,7 @@ export default class PostService {
         return post;
       })
     );
+    console.log(posts);
     return posts;
   }
 

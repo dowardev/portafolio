@@ -389,6 +389,7 @@ watch(
     currentPageIndex.value = index.value;
   }
 );
+// load posts
 watch(
   () => route.path,
   (newPath) => {
@@ -426,7 +427,7 @@ async function loadContent(params: {
     currentPage = loadData({ dates });
     postController.updateCurrentPage({ currentPage });
 
-    await postController.loadPosts({
+    await postController.loadPostsTitles({
       date: currentPage,
       filter: status,
     });

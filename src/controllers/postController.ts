@@ -15,7 +15,23 @@ export default class PostController {
   async loadPosts(params: { date: string; filter?: filterPostOptions }) {
     const { date, filter } = params;
     try {
-      const posts = await this.postService.getPosts({ date, filter });
+      const posts = await this.postService.getPostsServer({ date, filter });
+
+      this.postStore.setPosts({ posts });
+    } catch (e: any) {
+      // this.openToastError(e);
+      throw e;
+    }
+  }
+
+  async loadPostsTitles(params: { date: string; filter?: filterPostOptions }) {
+    const { date, filter } = params;
+    try {
+      const posts = await this.postService.getPostsServer({
+        date,
+        filter,
+        content: "titles",
+      });
 
       this.postStore.setPosts({ posts });
     } catch (e: any) {

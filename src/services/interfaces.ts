@@ -25,19 +25,26 @@ export interface FeedbackParams {
 export interface Post {
   id: string;
   title: string;
-  content: string;
-  createdAt?: string;
+  content?: string;
+  createdAt: string;
   updatedAt?: string;
-  cover: {
+  cover?: {
     id: string;
     name: string;
     url: string;
   };
   status: StatusPost;
 }
+
 export interface GetPost {
   date: string;
   filter?: filterPostOptions;
+}
+
+export interface GetPostsServer {
+  date: string;
+  filter?: filterPostOptions;
+  content?: "all" | "titles";
 }
 
 export interface CreatePost {

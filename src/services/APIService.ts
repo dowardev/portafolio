@@ -14,7 +14,10 @@ export default class APIService {
     this.userToken = params.userToken;
   }
 
-  public async get(params: { url: string; data?: any }): Promise<any> {
+  public async get(params: {
+    url: string;
+    data?: Record<string, any>;
+  }): Promise<any> {
     const { url, data = {} } = params;
 
     const response = await axios.request({
@@ -24,7 +27,7 @@ export default class APIService {
         Accept: "application/json",
         Authorization: `${this.userToken}`,
       },
-      params: data,
+      params: { data },
     });
     return await response.data;
   }
