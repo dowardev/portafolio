@@ -42,179 +42,186 @@
     </ion-header>
 
     <ion-content class="ion-padding-start ion-padding-end">
-      <!-- first step -->
-      <section v-show="step == 1">
-        <ion-row>
-          <ion-col size="12">
-            <ion-card class="primary-selected-border">
-              <div class="center ion-padding-top">
-                <img style="width: 90px" :src="mailImage" alt="" />
-              </div>
+      <transition name="fade-transition" mode="out-in">
+        <section v-show="step === 1" v-if="step === 1">
+          <ion-row>
+            <ion-col size="12">
+              <ion-card class="primary-selected-border">
+                <div class="center ion-padding-top">
+                  <img style="width: 90px" :src="mailImage" alt="" />
+                </div>
 
-              <ion-card-header>
-                <ion-card-title style="text-align: center">
-                  Correo de recuperación
-                </ion-card-title>
+                <ion-card-header>
+                  <ion-card-title style="text-align: center">
+                    Correo de recuperación
+                  </ion-card-title>
 
-                <ion-card-subtitle style="text-align: center">
-                  Por favor, ingresa el correo electrónico asociado a tu cuenta.
-                </ion-card-subtitle>
-              </ion-card-header>
+                  <ion-card-subtitle style="text-align: center">
+                    Por favor, ingresa el correo electrónico asociado a tu
+                    cuenta.
+                  </ion-card-subtitle>
+                </ion-card-header>
 
-              <ion-card-content>
-                <ion-row>
-                  <ion-col size="12">
-                    <!-- email -->
-                    <ion-input
-                      label="Correo electrónico"
-                      fill="outline"
-                      :label-placement="
-                        isPlatform('ios') ? 'stacked' : 'floating'
-                      "
-                      type="email"
-                      :value="email"
-                      :error-text="v1$.email.$errors[0]?.$message.toString()"
-                      :class="{
-                        'ion-invalid': v1$.email.$invalid && v1$.email.$dirty,
-                        'ion-touched': v1$.email.$dirty,
-                      }"
-                      :disabled="mainLoad"
-                      @ion-input="email = $event.target.value?.toString() || ''"
-                      @click="v1$.email.$touch()"
-                    >
-                    </ion-input>
-                  </ion-col>
-                </ion-row>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
+                <ion-card-content>
+                  <ion-row>
+                    <ion-col size="12">
+                      <!-- email -->
+                      <ion-input
+                        label="Correo electrónico"
+                        fill="outline"
+                        :label-placement="
+                          isPlatform('ios') ? 'stacked' : 'floating'
+                        "
+                        type="email"
+                        :value="email"
+                        :error-text="v1$.email.$errors[0]?.$message.toString()"
+                        :class="{
+                          'ion-invalid': v1$.email.$invalid && v1$.email.$dirty,
+                          'ion-touched': v1$.email.$dirty,
+                        }"
+                        :disabled="mainLoad"
+                        @ion-input="
+                          email = $event.target.value?.toString() || ''
+                        "
+                        @click="v1$.email.$touch()"
+                      >
+                      </ion-input>
+                    </ion-col>
+                  </ion-row>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
 
-        <ion-row>
-          <ion-col size="12">
-            <ion-card class="info-card-filled">
-              <ion-card-content>
-                Recibirás un código en tu correo electrónico para restablecer tu
-                contraseña.
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </section>
+          <ion-row>
+            <ion-col size="12">
+              <ion-card class="info-card-filled">
+                <ion-card-content>
+                  Recibirás un código en tu correo electrónico para restablecer
+                  tu contraseña.
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </section>
 
-      <!-- second step -->
-      <section v-if="step == 2">
-        <ion-row>
-          <ion-col>
-            <ion-card
-              :class="{
-                'primary-selected-border': codeError == false,
-                'danger-selected-border': codeError,
-              }"
-            >
-              <div class="center ion-padding-top">
-                <img style="width: 90px" :src="keyImage" alt="" />
-              </div>
+        <section v-show="step === 2" v-else-if="step === 2">
+          <ion-row>
+            <ion-col>
+              <ion-card
+                :class="{
+                  'primary-selected-border': codeError == false,
+                  'danger-selected-border': codeError,
+                }"
+              >
+                <div class="center ion-padding-top">
+                  <img style="width: 90px" :src="keyImage" alt="" />
+                </div>
 
-              <ion-card-header>
-                <ion-card-title style="text-align: center">
-                  Actualización de contraseña
-                </ion-card-title>
+                <ion-card-header>
+                  <ion-card-title style="text-align: center">
+                    Actualización de contraseña
+                  </ion-card-title>
 
-                <ion-card-subtitle style="text-align: center">
-                  Por favor, introduce el código que has recibido y tu nueva
-                  contraseña.
-                </ion-card-subtitle>
-              </ion-card-header>
+                  <ion-card-subtitle style="text-align: center">
+                    Por favor, introduce el código que has recibido y tu nueva
+                    contraseña.
+                  </ion-card-subtitle>
+                </ion-card-header>
 
-              <ion-card-content>
-                <ion-row>
-                  <ion-col>
-                    <!-- code -->
-                    <ion-row>
-                      <ion-col>
-                        <ion-input
-                          type="number"
-                          label="Código"
-                          fill="outline"
-                          :label-placement="
-                            isPlatform('ios') ? 'stacked' : 'floating'
-                          "
-                          :value="code"
-                          :error-text="v2$.code.$errors[0]?.$message.toString()"
-                          :class="{
-                            'ion-invalid': v2$.code.$invalid && v2$.code.$dirty,
-                            'ion-touched': v2$.code.$dirty,
-                          }"
-                          :disabled="mainLoad"
-                          @ion-input="
-                            code = parseInt($event.target.value as string)
-                          "
-                          @click="v2$.code.$touch()"
-                        >
-                        </ion-input>
-                      </ion-col>
-                    </ion-row>
-
-                    <!-- new password -->
-                    <ion-row>
-                      <ion-col>
-                        <ion-input
-                          label="Nueva contraseña"
-                          fill="outline"
-                          :label-placement="
-                            isPlatform('ios') ? 'stacked' : 'floating'
-                          "
-                          :value="newPassword"
-                          :clear-on-edit="false"
-                          :error-text="
-                            v2$.password.$errors[0]?.$message.toString()
-                          "
-                          :class="{
-                            'ion-invalid':
-                              v2$.password.$invalid && v2$.password.$dirty,
-                            'ion-touched': v2$.password.$dirty,
-                          }"
-                          :disabled="mainLoad"
-                          @ion-input="
-                            newPassword = $event.target.value?.toString() || ''
-                          "
-                          @click="v2$.password.$touch()"
-                        >
-                          <ion-input-password-toggle
-                            slot="end"
-                            v-if="newPassword"
+                <ion-card-content>
+                  <ion-row>
+                    <ion-col>
+                      <!-- code -->
+                      <ion-row>
+                        <ion-col>
+                          <ion-input
+                            type="number"
+                            label="Código"
+                            fill="outline"
+                            :label-placement="
+                              isPlatform('ios') ? 'stacked' : 'floating'
+                            "
+                            :value="code"
+                            :error-text="
+                              v2$.code.$errors[0]?.$message.toString()
+                            "
+                            :class="{
+                              'ion-invalid':
+                                v2$.code.$invalid && v2$.code.$dirty,
+                              'ion-touched': v2$.code.$dirty,
+                            }"
+                            :disabled="mainLoad"
+                            @ion-input="
+                              code = parseInt($event.target.value as string)
+                            "
+                            @click="v2$.code.$touch()"
                           >
-                          </ion-input-password-toggle>
-                        </ion-input>
-                      </ion-col>
-                    </ion-row>
-                  </ion-col>
-                </ion-row>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
+                          </ion-input>
+                        </ion-col>
+                      </ion-row>
 
-        <ion-row
-          v-if="codeError"
-          class="ion-justify-content-center"
-          style="width: 100%"
-        >
-          <ion-col>
-            <ion-button
-              fill="clear"
-              expand="block"
-              @click="
-                resendEmail({ email });
-                codeError = false;
-              "
-            >
-              Volver a enviar código
-            </ion-button>
-          </ion-col>
-        </ion-row>
-      </section>
+                      <!-- new password -->
+                      <ion-row>
+                        <ion-col>
+                          <ion-input
+                            label="Nueva contraseña"
+                            fill="outline"
+                            :label-placement="
+                              isPlatform('ios') ? 'stacked' : 'floating'
+                            "
+                            :value="newPassword"
+                            :clear-on-edit="false"
+                            :error-text="
+                              v2$.password.$errors[0]?.$message.toString()
+                            "
+                            :class="{
+                              'ion-invalid':
+                                v2$.password.$invalid && v2$.password.$dirty,
+                              'ion-touched': v2$.password.$dirty,
+                            }"
+                            :disabled="mainLoad"
+                            @ion-input="
+                              newPassword =
+                                $event.target.value?.toString() || ''
+                            "
+                            @click="v2$.password.$touch()"
+                          >
+                            <ion-input-password-toggle
+                              slot="end"
+                              v-if="newPassword"
+                            >
+                            </ion-input-password-toggle>
+                          </ion-input>
+                        </ion-col>
+                      </ion-row>
+                    </ion-col>
+                  </ion-row>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+
+          <ion-row
+            v-if="codeError"
+            class="ion-justify-content-center"
+            style="width: 100%"
+          >
+            <ion-col>
+              <ion-button
+                fill="clear"
+                expand="block"
+                @click="
+                  resendEmail({ email });
+                  codeError = false;
+                "
+              >
+                Volver a enviar código
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </section>
+      </transition>
     </ion-content>
   </ion-page>
 </template>
@@ -317,7 +324,7 @@ async function handleStep1(params: { email: string }) {
   mainLoad.value = true;
 
   try {
-    await sendEmail({ email });
+    // await sendEmail({ email });
     step.value = 2;
   } catch (error) {
     console.error(error);
