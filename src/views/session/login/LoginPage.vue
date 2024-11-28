@@ -9,7 +9,6 @@
     <ion-content>
       <div class="background-image">
         <div
-          id="pr"
           class="ion-justify-content-center ion-align-items-center"
           style="
             width: 100%;
