@@ -71,18 +71,20 @@
             @scroll="setScrollPosition()"
             style="overflow: auto; height: calc(100dvh - 88px)"
           >
-            <MdPreview
-              style="
-                --md-bk-color: var(--ion-background-color-rgb);
-                --md-color: var(--ion-text-color);
-              "
-              :model-value="postController.getPost({ id: postId })!.content"
-              :theme="
-                useSytemComposable.getTheme().selected == 'light'
-                  ? 'light'
-                  : 'dark'
-              "
-            />
+            <article>
+              <MdPreview
+                style="
+                  --md-bk-color: var(--ion-background-color-rgb);
+                  --md-color: var(--ion-text-color);
+                "
+                :model-value="postController.getPost({ id: postId })!.content"
+                :theme="
+                  useSytemComposable.getTheme().selected == 'light'
+                    ? 'light'
+                    : 'dark'
+                "
+              />
+            </article>
           </div>
         </ion-col>
 

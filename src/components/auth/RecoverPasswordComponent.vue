@@ -324,7 +324,7 @@ async function handleStep1(params: { email: string }) {
   mainLoad.value = true;
 
   try {
-    // await sendEmail({ email });
+    await sendEmail({ email });
     step.value = 2;
   } catch (error) {
     console.error(error);
