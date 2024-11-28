@@ -40,7 +40,7 @@ h6,
 ion-title {
   font-family: Comfortaa-Bold;
 }
-p,
+
 ol,
 ul {
   font-family: OpenSans-Regular !important;
@@ -54,7 +54,6 @@ ion-label {
   line-height: 2em;
 }
 
-p,
 h1,
 h2,
 h3,
@@ -64,6 +63,17 @@ h6,
 ol,
 ul {
   color: var(--ion-text-color);
+}
+
+.text-small {
+  /* color: var(--ion-text-color); */
+  font-family: OpenSans-Regular !important;
+  font-size: 14px !important;
+}
+.text-medium {
+  /* color: var(--ion-text-color); */
+  font-family: OpenSans-Regular !important;
+  font-size: 16px !important;
 }
 
 .transparent {
@@ -84,11 +94,9 @@ ul {
 
 ion-card {
   /* box-shadow: none; */
-  /* box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px; */
   box-shadow:
-    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
-    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
-  /* background: transparent; */
+    rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
+    rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
   border: 1px solid transparent;
 }
 
@@ -128,6 +136,13 @@ ion-card {
   border: 1px solid var(--ion-background-color-step-750);
 }
 
+.primary-selected-border {
+  border: 1px solid var(--ion-color-primary);
+}
+.danger-selected-border {
+  border: 1px solid var(--ion-color-danger);
+}
+
 .ion-item-focus:hover {
   border: 1px solid var(--ion-background-color-step-750);
 }
@@ -140,13 +155,13 @@ ion-button {
   color: var(--ion-color-primary);
 } */
 
-ion-accordion ion-item {
+/* ion-accordion ion-item {
   --background: var(--ion-background-light-color) !important;
-}
+} */
 
-ion-accordion > div[slot="content"] {
+/* ion-accordion > div[slot="content"] {
   background: var(--ion-background-light-color) !important;
-}
+} */
 
 .section-options > ion-row {
   height: 58px;
@@ -206,4 +221,22 @@ ion-app,
 ion-menu {
   background-color: #e5e9f0;
   --background: #e5e9f0;
+}
+
+.list-md {
+  /* box-shadow:
+    rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px; */
+  border-radius: 4px;
+  padding: 4px;
+  /* background: #e5e9f0 !important; */
+}
+
+ion-modal {
+  --border-radius: 4px;
+}
+
+ion-list.border > div {
+  border: 1px solid #e5e9f0;
+  border-radius: 4px;
 }

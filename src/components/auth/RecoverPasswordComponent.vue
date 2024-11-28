@@ -1,220 +1,251 @@
 <template>
-  <p>
-    Sigue los siguientes pasos para completar la recuperación de tu contraseña.
-  </p>
+  <ion-page>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button color="primary" @click="modalController.dismiss()">
+            <ion-icon :icon="closeOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
 
-  <!-- first step -->
-  <ion-row v-show="step == 1">
-    <ion-col size="12">
-      <ion-row>
-        <ion-col size="12">
-          1- Ingresa el correo electrónico con el que te registraste.
-        </ion-col>
-      </ion-row>
+        <ion-title>Recuperar contraseña</ion-title>
 
-      <!-- email -->
-      <ion-row>
-        <ion-col size="12">
-          <ion-input
-            label="Correo electrónico"
-            label-placement="stacked"
-            fill="outline"
-            type="email"
-            :value="email"
-            :class="{
-              'input-error': v1$.email.$invalid && v1$.email.$dirty,
-            }"
-            @ion-input="email = $event.target.value as string"
-            @click="v1$.email.$touch()"
-          >
-          </ion-input>
-
-          <!-- errors -->
-          <span
-            class="error"
-            v-if="v1$.email.$dirty && v1$.email.required.$invalid"
-            >{{ v1$.email.required.$message }}</span
-          >
-          <span
-            class="error"
-            v-if="v1$.email.$dirty && v1$.email.email.$invalid"
-            >{{ v1$.email.email.$message }}</span
-          >
-        </ion-col>
-      </ion-row>
-
-      <!-- button send email -->
-      <ion-row>
-        <ion-col size="12">
+        <ion-buttons slot="end">
+          <!-- step 1 -->
           <ion-button
-            :disabled="loaderStep1 || v1$.email.$invalid"
-            expand="block"
+            color="primary"
+            v-if="step == 1"
+            :disabled="mainLoad || v1$.email.$invalid"
             @click="sendEmail()"
           >
-            <transition name="fade">
-              <ion-spinner
-                v-show="loaderStep1"
-                style="width: 20px; height: 20px"
-              >
-              </ion-spinner>
-            </transition>
-
-            <transition name="fade">
-              <div v-if="loaderTextStep1">Enviar</div></transition
-            >
+            <ion-icon :icon="chevronForwardOutline"></ion-icon>
           </ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-col>
-  </ion-row>
 
-  <!-- second step -->
-  <ion-row v-if="step == 2">
-    <ion-col>
-      <ion-row>
-        <ion-col size="12">
-          2- Ingresa el código que te enviamos a tu correo.
-        </ion-col>
-      </ion-row>
-
-      <!-- code -->
-      <ion-row>
-        <ion-col size="12">
-          <ion-input
-            type="number"
-            label="Código"
-            label-placement="stacked"
-            fill="outline"
-            :value="code"
-            :class="{
-              'input-error': v2$.code.$invalid && v2$.code.$dirty,
-            }"
-            @ion-input="code = parseInt($event.target.value as string)"
-            @click="v2$.code.$touch()"
-          >
-          </ion-input>
-
-          <!-- errors -->
-          <span
-            class="error"
-            v-if="v2$.code.$dirty && v2$.code.required.$invalid"
-            >{{ v2$.code.required.$message }}</span
-          >
-          <span
-            class="error"
-            v-if="v2$.code.$dirty && v2$.code.numeric.$invalid"
-            >{{ v2$.code.numeric.$message }}</span
-          >
-        </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col>3- Ingresa tu nueva contraseña</ion-col>
-      </ion-row>
-
-      <ion-row>
-        <!-- password -->
-        <ion-col size="12">
-          <div style="display: flex; justify-content: space-between">
-            <div style="width: 100%">
-              <ion-input
-                label="Nueva contraseña"
-                label-placement="stacked"
-                fill="outline"
-                :value="newPassword"
-                :clear-on-edit="false"
-                :type="password1Visible == true ? 'text' : 'password'"
-                :class="{
-                  'input-error': v2$.password.$invalid && v2$.password.$dirty,
-                }"
-                @ion-input="newPassword = $event.target.value as string"
-                @click="v2$.password.$touch()"
-              >
-                <ion-button
-                  slot="end"
-                  fill="clear"
-                  @click="password1Visible = !password1Visible"
-                >
-                  <ion-icon
-                    :icon="password1Visible == true ? eye : eyeOutline"
-                  ></ion-icon>
-                </ion-button>
-              </ion-input>
-            </div>
-          </div>
-
-          <!-- errors -->
-          <div v-if="v2$.password.$dirty && v2$.password.required.$invalid">
-            <span class="error">{{ v2$.password.required.$message }}</span>
-            <br />
-          </div>
-
-          <div v-if="v2$.password.$dirty && v2$.password.minLength.$invalid">
-            <span class="error">{{ v2$.password.minLength.$message }}</span>
-            <br />
-          </div>
-
-          <div v-if="v2$.password.$dirty && v2$.password.regexLower.$invalid">
-            <span class="error">{{ v2$.password.regexLower.$message }}</span>
-            <br />
-          </div>
-
-          <div v-if="v2$.password.$dirty && v2$.password.regexUpper.$invalid">
-            <span class="error">{{ v2$.password.regexUpper.$message }}</span>
-            <br />
-          </div>
-          <div v-if="v2$.password.$dirty && v2$.password.regexNumber.$invalid">
-            <span class="error">{{ v2$.password.regexNumber.$message }}</span>
-            <br />
-          </div>
-
-          <span
-            class="error"
-            v-if="v2$.password.$dirty && v2$.password.regexSpecial.$invalid"
-            >{{ v2$.password.regexSpecial.$message }}</span
-          >
-        </ion-col>
-      </ion-row>
-
-      <!-- button send new password -->
-      <ion-row>
-        <ion-col size="12">
+          <!-- step 2 -->
           <ion-button
-            :disabled="
-              loaderStep2 || v2$.code.$invalid || v2$.password.$invalid
+            v-if="step == 2"
+            color="primary"
+            :disabled="mainLoad || v2$.code.$invalid || v2$.password.$invalid"
+            @click="
+              sendNewPassword({ email, code: code!, password: newPassword! })
             "
-            expand="block"
-            @click="sendNewPassword()"
           >
-            <transition name="fade">
-              <ion-spinner
-                v-show="loaderStep2"
-                style="width: 20px; height: 20px"
-              >
-              </ion-spinner>
-            </transition>
-
-            <transition name="fade">
-              <div v-if="loaderTextStep2">Enviar</div></transition
-            >
+            <ion-icon :icon="saveOutline"></ion-icon>
           </ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-col>
-  </ion-row>
+        </ion-buttons>
+
+        <!-- progress bar -->
+        <ion-progress-bar
+          v-if="mainLoad == true"
+          class="primary-progress-bar"
+          type="indeterminate"
+        ></ion-progress-bar>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding-start ion-padding-end">
+      <!-- first step -->
+      <section v-show="step == 1">
+        <ion-row>
+          <ion-col size="12">
+            <ion-card class="primary-selected-border">
+              <div class="center ion-padding-top">
+                <img style="width: 90px" :src="mailImage" alt="" />
+              </div>
+
+              <ion-card-header>
+                <ion-card-title style="text-align: center">
+                  Correo de recuperación
+                </ion-card-title>
+
+                <ion-card-subtitle style="text-align: center">
+                  Por favor, ingresa el correo electrónico asociado a tu cuenta.
+                </ion-card-subtitle>
+              </ion-card-header>
+
+              <ion-card-content>
+                <ion-row>
+                  <ion-col size="12">
+                    <!-- email -->
+                    <ion-input
+                      label="Correo electrónico"
+                      fill="outline"
+                      :label-placement="
+                        isPlatform('ios') ? 'stacked' : 'floating'
+                      "
+                      type="email"
+                      :value="email"
+                      :error-text="v1$.email.$errors[0]?.$message.toString()"
+                      :class="{
+                        'ion-invalid': v1$.email.$invalid && v1$.email.$dirty,
+                        'ion-touched': v1$.email.$dirty,
+                      }"
+                      :disabled="mainLoad"
+                      @ion-input="email = $event.target.value?.toString() || ''"
+                      @click="v1$.email.$touch()"
+                    >
+                    </ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="12">
+            <ion-card class="info-card-filled">
+              <ion-card-content>
+                Recibirás un código en tu correo electrónico para restablecer tu
+                contraseña.
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </section>
+
+      <!-- second step -->
+      <section v-if="step == 2">
+        <ion-row>
+          <ion-col>
+            <ion-card
+              :class="{
+                'primary-selected-border': codeError == false,
+                'danger-selected-border': codeError,
+              }"
+            >
+              <div class="center ion-padding-top">
+                <img style="width: 90px" :src="keyImage" alt="" />
+              </div>
+
+              <ion-card-header>
+                <ion-card-title style="text-align: center">
+                  Actualización de contraseña
+                </ion-card-title>
+
+                <ion-card-subtitle style="text-align: center">
+                  Por favor, introduce el código que has recibido y tu nueva
+                  contraseña.
+                </ion-card-subtitle>
+              </ion-card-header>
+
+              <ion-card-content>
+                <ion-row>
+                  <ion-col>
+                    <!-- code -->
+                    <ion-row>
+                      <ion-col>
+                        <ion-input
+                          type="number"
+                          label="Código"
+                          fill="outline"
+                          :label-placement="
+                            isPlatform('ios') ? 'stacked' : 'floating'
+                          "
+                          :value="code"
+                          :error-text="v2$.code.$errors[0]?.$message.toString()"
+                          :class="{
+                            'ion-invalid': v2$.code.$invalid && v2$.code.$dirty,
+                            'ion-touched': v2$.code.$dirty,
+                          }"
+                          :disabled="mainLoad"
+                          @ion-input="
+                            code = parseInt($event.target.value as string)
+                          "
+                          @click="v2$.code.$touch()"
+                        >
+                        </ion-input>
+                      </ion-col>
+                    </ion-row>
+
+                    <!-- new password -->
+                    <ion-row>
+                      <ion-col>
+                        <ion-input
+                          label="Nueva contraseña"
+                          fill="outline"
+                          :label-placement="
+                            isPlatform('ios') ? 'stacked' : 'floating'
+                          "
+                          :value="newPassword"
+                          :clear-on-edit="false"
+                          :error-text="
+                            v2$.password.$errors[0]?.$message.toString()
+                          "
+                          :class="{
+                            'ion-invalid':
+                              v2$.password.$invalid && v2$.password.$dirty,
+                            'ion-touched': v2$.password.$dirty,
+                          }"
+                          :disabled="mainLoad"
+                          @ion-input="
+                            newPassword = $event.target.value?.toString() || ''
+                          "
+                          @click="v2$.password.$touch()"
+                        >
+                          <ion-input-password-toggle
+                            slot="end"
+                            v-if="newPassword"
+                          >
+                          </ion-input-password-toggle>
+                        </ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-col>
+                </ion-row>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+
+        <ion-row
+          v-if="codeError"
+          class="ion-justify-content-center"
+          style="width: 100%"
+        >
+          <ion-col>
+            <ion-button
+              fill="clear"
+              expand="block"
+              @click="
+                sendEmail();
+                codeError = false;
+              "
+            >
+              Volver a enviar código
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </section>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
 import {
+  IonPage,
   IonRow,
   IonCol,
   IonInput,
   IonButton,
   IonSpinner,
   IonIcon,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  modalController,
+  isPlatform,
+  IonGrid,
 } from "@ionic/vue";
 import { ref } from "vue";
-import { eye, eyeOutline } from "ionicons/icons";
+import {
+  chevronForwardOutline,
+  closeOutline,
+  eye,
+  eyeOutline,
+  saveOutline,
+  sendOutline,
+} from "ionicons/icons";
 import {
   email as emailHelper,
   helpers,
@@ -233,17 +264,18 @@ import useVuelidate from "@vuelidate/core";
 
 // controllers
 import SystemController from "@/controllers/systemController";
+import UserController from "@/controllers/userController";
 const systemController = new SystemController();
+const userController = new UserController();
+
+// images
+import mailImage from "@/assets/otros/mail.png";
+import keyImage from "@/assets/otros/key.png";
 
 // vars
 const email = ref("admin@admin.com");
-const code = ref<number | undefined>(undefined);
-const newPassword = ref("");
-const loaderStep1 = ref(false);
-const loaderTextStep1 = ref(true);
-const loaderStep2 = ref(false);
-const loaderTextStep2 = ref(true);
-const password1Visible = ref<boolean>(false);
+const code = ref<number | undefined>(9086212);
+const newPassword = ref("123456@As");
 const step = ref(1);
 const messageError = {
   required: "Campo requerido",
@@ -286,11 +318,14 @@ const rules2 = {
   },
 };
 const v2$ = useVuelidate(rules2, { code, password: newPassword });
+const mainLoad = ref(false);
+const codeError = ref(false);
 
+// functions
 async function sendEmail() {
-  await startAnimationStep1();
+  mainLoad.value = true;
   try {
-    // await recoverPassword({ email: email.value });
+    // await userController.recoverPassword({ email: email.value });
 
     await systemController.presentToast({
       message: "Código enviado",
@@ -305,99 +340,39 @@ async function sendEmail() {
       });
     else console.error(error);
   } finally {
-    stopAnimationStep1();
+    mainLoad.value = false;
   }
 }
 
-async function sendNewPassword() {
-  await startAnimationStep2();
+async function sendNewPassword(params: {
+  email: string;
+  code: number;
+  password: string;
+}) {
+  const { email, code, password } = params;
+  mainLoad.value = true;
 
   try {
-    // await sendNewPasswordService({
-    //   email: email.value,
-    //   code: code.value,
-    //   password: newPassword.value,
-    // });
+    await userController.sendNewPassword({
+      email,
+      code,
+      password,
+    });
 
+    await modalController.dismiss();
     await systemController.presentToast({
       message: "Contraseña actualizada",
     });
   } catch (error: any) {
-    if (error.message == "Code invalid")
+    if (error.message == "Code invalid") {
+      codeError.value = true;
       await systemController.presentToast({
         message: "Código incorrecto",
         color: "danger",
       });
-    else console.error(error);
+    } else console.error(error);
   } finally {
-    stopAnimationStep2();
+    mainLoad.value = false;
   }
 }
-
-async function startAnimationStep1(): Promise<void> {
-  const timeout = (ms: number) =>
-    new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-
-  await timeout(200);
-  loaderTextStep1.value = false;
-
-  await timeout(600);
-  loaderStep1.value = true;
-
-  await timeout(2000);
-}
-
-async function stopAnimationStep1(): Promise<void> {
-  const timeout = (ms: number) =>
-    new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-
-  loaderStep1.value = false;
-  await timeout(600);
-  loaderTextStep1.value = true;
-}
-
-async function stopAnimationStep2(): Promise<void> {
-  const timeout = (ms: number) =>
-    new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-
-  loaderStep2.value = false;
-  await timeout(600);
-  loaderTextStep2.value = true;
-}
-
-async function startAnimationStep2(): Promise<void> {
-  const timeout = (ms: number) =>
-    new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-
-  await timeout(200);
-  loaderTextStep2.value = false;
-
-  await timeout(600);
-  loaderStep2.value = true;
-
-  await timeout(2000);
-}
 </script>
-
-<style scoped>
-.fade-enter-active {
-  transition: opacity 0.5s ease-in-out;
-}
-
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

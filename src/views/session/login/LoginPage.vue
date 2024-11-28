@@ -86,21 +86,7 @@
         :is-open="isOpenModalPasswordRecover"
         @did-dismiss="isOpenModalPasswordRecover = false"
       >
-        <ion-header mode="ios" class="ion-bo-border">
-          <ion-toolbar>
-            <ion-buttons slot="start">
-              <ion-button @click="isOpenModalPasswordRecover = false">
-                <ion-icon :icon="closeOutline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-
-            <ion-title>Recuperar contraseña</ion-title>
-          </ion-toolbar>
-        </ion-header>
-
-        <ion-content class="ion-padding">
-          <RecoverPasswordComponent />
-        </ion-content>
+        <RecoverPasswordComponent />
       </ion-modal>
     </ion-content>
   </ion-page>

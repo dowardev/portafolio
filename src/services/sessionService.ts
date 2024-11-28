@@ -51,7 +51,7 @@ export default class SessionService {
 
   async sendNewPassword(params: {
     email: string;
-    code: string;
+    code: number;
     password: string;
   }) {
     const { code, password, email } = params;

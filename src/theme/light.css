@@ -36,8 +36,8 @@
 
   --ion-color-danger: #ed333b;
   --ion-color-danger-rgb: 237, 51, 59;
-  --ion-color-danger-contrast: #000000;
-  --ion-color-danger-contrast-rgb: 0, 0, 0;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
   --ion-color-danger-shade: #d12d34;
   --ion-color-danger-tint: #ef474f;
 
@@ -111,12 +111,20 @@
 
 :root {
   /* primary hover */
-  --ion-color-primary-background-hover: #ebf7fd;
-  --ion-color-primary-background-hover-rgb: 235, 247, 253;
+  --ion-color-primary-background-hover: #3dade933;
+  --ion-color-primary-background-hover-rgb: 173, 233, 51;
   --ion-color-primary-background-hover-contrast: #000000;
   --ion-color-primary-background-hover-contrast-rgb: 0, 0, 0;
-  --ion-color-primary-background-hover-shade: #cfd9df;
-  --ion-color-primary-background-hover-tint: #edf8fd;
+  --ion-color-primary-background-hover-shade: #98cd2d;
+  --ion-color-primary-background-hover-tint: #b5eb47;
+
+  /* secondary hover */
+  --ion-color-secondary-background-hover: #2dd55b33;
+  --ion-color-secondary-background-hover-rgb: 213, 91, 51;
+  --ion-color-secondary-background-hover-contrast: #000000;
+  --ion-color-secondary-background-hover-contrast-rgb: 0, 0, 0;
+  --ion-color-secondary-background-hover-shade: #bb502d;
+  --ion-color-secondary-background-hover-tint: #d96b47;
 }
 
 .light {
@@ -129,4 +137,14 @@
   );
   --ion-color-shade: var(--ion-color-primary-background-hover-shade);
   --ion-color-tint: var(--ion-color-primary-background-hover-tint);
+
+  /* secondary hover */
+  --ion-color-base: var(--ion-color-secondary-background-hover);
+  --ion-color-base-rgb: var(--ion-color-secondary-background-hover-rgb);
+  --ion-color-contrast: var(--ion-color-secondary-background-hover-contrast);
+  --ion-color-contrast-rgb: var(
+    --ion-color-secondary-background-hover-contrast-rgb
+  );
+  --ion-color-shade: var(--ion-color-secondary-background-hover-shade);
+  --ion-color-tint: var(--ion-color-secondary-background-hover-tint);
 }

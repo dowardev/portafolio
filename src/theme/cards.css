@@ -29,7 +29,7 @@
 
 .info-card-filled {
   border-left: var(--border-width-card) solid var(--ion-color-success);
-  background: rgba(var(--ion-color-success-rgb), var(--background-opacity));
+  background: var(--ion-color-secondary-background-hover);
 }
 
 /* primary */
@@ -39,7 +39,7 @@
 
 .primary-card-filled {
   border-left: var(--border-width-card) solid var(--ion-color-primary);
-  background: rgba(var(--ion-color-primary-rgb), var(--background-opacity));
+  background: var(--ion-color-ion-color-primary-background-hover);
   color: var(--ion-text-color);
 }
 

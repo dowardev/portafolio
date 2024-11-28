@@ -153,4 +153,28 @@ export default class UserController {
   getUser(): User | undefined {
     return this.userRefs.user.value ?? undefined;
   }
+
+  async recoverPassword(params: { email: string }) {
+    const { email } = params;
+
+    try {
+      await this.sessionService.recoverPassword({ email });
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async sendNewPassword(params: {
+    email: string;
+    code: number;
+    password: string;
+  }) {
+    const { code, password, email } = params;
+
+    try {
+      await this.sessionService.sendNewPassword({ code, password, email });
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }
