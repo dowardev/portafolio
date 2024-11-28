@@ -29,11 +29,13 @@ class PostsController extends Controller
   {
     $date = (new DateTime($request->date))->format("Y-m-d");
     $filter = $request->filter;
+    $content = $request->input("data.content", "all");
 
     try {
-      $query = DB::table("posts")
-        ->join("images", "cover_id", "=", "images.id")
-        ->select(
+      $query = DB::table("posts")->join("images", "cover_id", "=", "images.id");
+
+      if ($content == "all") {
+        $query->select(
           "posts.id as post_id",
           "posts.title as post_title",
           "posts.content as post_content",
@@ -43,8 +45,21 @@ class PostsController extends Controller
           "images.id as image_id",
           "images.name as image_name",
           "images.path as image_path"
-        )
-        ->whereDate("posts.created_at", $date);
+        );
+      } elseif ($content == "titles") {
+        $query->select(
+          "posts.id as post_id",
+          "posts.title as post_title",
+          "posts.created_at as post_created_at",
+          "posts.updated_at as post_updated_at",
+          "images.id as image_id",
+          "images.name as image_name",
+          "images.path as image_path",
+          "posts.status as post_status"
+        );
+      }
+
+      $query->whereDate("posts.created_at", $date);
 
       if ($filter !== "all") {
         $query->where("posts.status", $filter);
@@ -75,23 +90,40 @@ class PostsController extends Controller
       $imageRequest = new Request(["name" => $value->image_name]);
       $imageResponse = $systemController->getImage($imageRequest);
       $imageData = json_decode($imageResponse->getContent(), true);
-
-      $post = [
-        "id" => $value->post_id,
-        "title" => $value->post_title,
-        "content" => $value->post_content,
-        "created_at" => (new DateTime($value->post_created_at))->format(
-          DateTime::ATOM
-        ),
-        "updated_at" => $value->post_updated_at,
-        "status" => $value->post_status,
-        "cover" => [
-          "id" => $value->image_id,
-          "name" => $value->image_name,
-          "url" => $imageData["url"],
-        ],
-      ];
-      array_push($posts, $post);
+      if ($content == "all") {
+        $post = [
+          "id" => $value->post_id,
+          "title" => $value->post_title,
+          "content" => $value->post_content,
+          "created_at" => (new DateTime($value->post_created_at))->format(
+            DateTime::ATOM
+          ),
+          "updated_at" => $value->post_updated_at,
+          "status" => $value->post_status,
+          "cover" => [
+            "id" => $value->image_id,
+            "name" => $value->image_name,
+            "url" => $imageData["url"],
+          ],
+        ];
+        array_push($posts, $post);
+      } elseif ($content == "titles") {
+        $post = [
+          "id" => $value->post_id,
+          "title" => $value->post_title,
+          "created_at" => (new DateTime($value->post_created_at))->format(
+            DateTime::ATOM
+          ),
+          "updated_at" => $value->post_updated_at,
+          "cover" => [
+            "id" => $value->image_id,
+            "name" => $value->image_name,
+            "url" => $imageData["url"],
+            "status" => $value->post_status,
+          ],
+        ];
+        array_push($posts, $post);
+      }
     }
     return ["posts" => $posts];
   }
