@@ -16,7 +16,7 @@
             color="primary"
             v-if="step == 1"
             :disabled="mainLoad || v1$.email.$invalid"
-            @click="sendEmail()"
+            @click="handleStep1({ email })"
           >
             <ion-icon :icon="chevronForwardOutline"></ion-icon>
           </ion-button>
@@ -26,9 +26,7 @@
             v-if="step == 2"
             color="primary"
             :disabled="mainLoad || v2$.code.$invalid || v2$.password.$invalid"
-            @click="
-              sendNewPassword({ email, code: code!, password: newPassword! })
-            "
+            @click="handleStep2({ email, code: code!, password: newPassword! })"
           >
             <ion-icon :icon="saveOutline"></ion-icon>
           </ion-button>
@@ -208,7 +206,7 @@
               fill="clear"
               expand="block"
               @click="
-                sendEmail();
+                resendEmail({ email });
                 codeError = false;
               "
             >
@@ -254,13 +252,6 @@ import {
   numeric,
 } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
-
-// TODO: pending
-// import {
-//   recoverPassword,
-//   sendNewPassword as sendNewPasswordService,
-// } from "@/services/session";
-// import { presentToast } from "@/services/system";
 
 // controllers
 import SystemController from "@/controllers/systemController";
@@ -321,11 +312,57 @@ const v2$ = useVuelidate(rules2, { code, password: newPassword });
 const mainLoad = ref(false);
 const codeError = ref(false);
 
-// functions
-async function sendEmail() {
+async function handleStep1(params: { email: string }) {
+  const { email } = params;
   mainLoad.value = true;
+
   try {
-    // await userController.recoverPassword({ email: email.value });
+    await sendEmail({ email });
+    step.value = 2;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    mainLoad.value = false;
+  }
+}
+
+async function handleStep2(params: {
+  email: string;
+  code: number;
+  password: string;
+}) {
+  const { email, code, password } = params;
+  mainLoad.value = true;
+
+  try {
+    await sendNewPassword({ email, code, password });
+  } catch (error: any) {
+    if (error.message == "Code invalid") codeError.value = true;
+  } finally {
+    mainLoad.value = false;
+  }
+}
+
+async function resendEmail(params: { email: string }) {
+  const { email } = params;
+  mainLoad.value = true;
+
+  try {
+    await sendEmail({ email });
+  } catch (error) {
+    console.error(error);
+  } finally {
+    mainLoad.value = false;
+  }
+}
+
+// functions
+async function sendEmail(params: { email: string }) {
+  const { email } = params;
+  mainLoad.value = true;
+
+  try {
+    await userController.recoverPassword({ email });
 
     await systemController.presentToast({
       message: "Código enviado",
@@ -365,11 +402,11 @@ async function sendNewPassword(params: {
     });
   } catch (error: any) {
     if (error.message == "Code invalid") {
-      codeError.value = true;
       await systemController.presentToast({
         message: "Código incorrecto",
         color: "danger",
       });
+      throw error;
     } else console.error(error);
   } finally {
     mainLoad.value = false;
