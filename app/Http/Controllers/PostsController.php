@@ -29,37 +29,58 @@ class PostsController extends Controller
   {
     $date = (new DateTime($request->date))->format("Y-m-d");
     $filter = $request->filter;
-    $content = $request->input("data.content", "all");
+
+    $requestedFields = $request->input("data.fields", ["all"]);
+
+    $allowedFields = [
+      "id" => "posts.id as post_id",
+      "title" => "posts.title as post_title",
+      "content" => "posts.content as post_content",
+      "created_at" => "posts.created_at as post_created_at",
+      "updated_at" => "posts.updated_at as post_updated_at",
+      "status" => "posts.status as post_status",
+      "cover" => [
+        "images.id as image_id",
+        "images.name as image_name",
+        "images.path as image_path",
+      ],
+    ];
 
     try {
-      $query = DB::table("posts")->join("images", "cover_id", "=", "images.id");
+      if (in_array("all", $requestedFields) || empty($requestedFields)) {
+        $selectFields = array_merge(...array_values($allowedFields));
+        $requestedFields = array_keys($allowedFields);
+      } else {
+        $validFields = array_intersect(
+          $requestedFields,
+          array_keys($allowedFields)
+        );
 
-      if ($content == "all") {
-        $query->select(
-          "posts.id as post_id",
-          "posts.title as post_title",
-          "posts.content as post_content",
-          "posts.created_at as post_created_at",
-          "posts.updated_at as post_updated_at",
-          "posts.status as post_status",
-          "images.id as image_id",
-          "images.name as image_name",
-          "images.path as image_path"
-        );
-      } elseif ($content == "titles") {
-        $query->select(
-          "posts.id as post_id",
-          "posts.title as post_title",
-          "posts.created_at as post_created_at",
-          "posts.updated_at as post_updated_at",
-          "images.id as image_id",
-          "images.name as image_name",
-          "images.path as image_path",
-          "posts.status as post_status"
-        );
+        if (empty($validFields)) {
+          return response()->json(
+            [
+              "message" => "No valid fields requested",
+            ],
+            400
+          );
+        }
+
+        $selectFields = [];
+        foreach ($validFields as $field) {
+          if ($field === "cover") {
+            $selectFields = array_merge($selectFields, $allowedFields["cover"]);
+          } else {
+            $selectFields[] = $allowedFields[$field];
+          }
+        }
+
+        $requestedFields = $validFields;
       }
 
-      $query->whereDate("posts.created_at", $date);
+      $query = DB::table("posts")
+        ->join("images", "cover_id", "=", "images.id")
+        ->select($selectFields)
+        ->whereDate("posts.created_at", $date);
 
       if ($filter !== "all") {
         $query->where("posts.status", $filter);
@@ -80,52 +101,62 @@ class PostsController extends Controller
         [
           "message" => $e->getMessage(),
         ],
-        $e->getCode()
+        $e->getCode() ?: 500
       );
     }
 
     $posts = [];
     $systemController = new SystemController();
     foreach ($result as $value) {
-      $imageRequest = new Request(["name" => $value->image_name]);
-      $imageResponse = $systemController->getImage($imageRequest);
-      $imageData = json_decode($imageResponse->getContent(), true);
-      if ($content == "all") {
-        $post = [
-          "id" => $value->post_id,
-          "title" => $value->post_title,
-          "content" => $value->post_content,
-          "created_at" => (new DateTime($value->post_created_at))->format(
-            DateTime::ATOM
-          ),
-          "updated_at" => $value->post_updated_at,
-          "status" => $value->post_status,
-          "cover" => [
-            "id" => $value->image_id,
-            "name" => $value->image_name,
-            "url" => $imageData["url"],
-          ],
-        ];
-        array_push($posts, $post);
-      } elseif ($content == "titles") {
-        $post = [
-          "id" => $value->post_id,
-          "title" => $value->post_title,
-          "created_at" => (new DateTime($value->post_created_at))->format(
-            DateTime::ATOM
-          ),
-          "updated_at" => $value->post_updated_at,
-          "cover" => [
-            "id" => $value->image_id,
-            "name" => $value->image_name,
-            "url" => $imageData["url"],
-            "status" => $value->post_status,
-          ],
-        ];
-        array_push($posts, $post);
+      $post = [];
+
+      foreach ($requestedFields as $field) {
+        switch ($field) {
+          case "id":
+            $post["id"] = $value->post_id;
+            break;
+          case "title":
+            $post["title"] = $value->post_title;
+            break;
+          case "content":
+            $post["content"] = $value->post_content;
+            break;
+          case "created_at":
+            $post["created_at"] = (new DateTime(
+              $value->post_created_at
+            ))->format(DateTime::ATOM);
+            break;
+          case "updated_at":
+            $post["updated_at"] = (new DateTime(
+              $value->post_updated_at
+            ))->format(DateTime::ATOM);
+            break;
+          case "status":
+            $post["status"] = $value->post_status;
+            break;
+          case "cover":
+            $imageRequest = new Request(["name" => $value->image_name]);
+            $imageResponse = $systemController->getImage($imageRequest);
+            $imageData = json_decode($imageResponse->getContent(), true);
+
+            $post["cover"] = [
+              "id" => $value->image_id,
+              "name" => $value->image_name,
+              "url" => $imageData["url"],
+            ];
+            break;
+        }
       }
+
+      $posts[] = $post;
     }
-    return ["posts" => $posts];
+
+    return response()->json(
+      ["posts" => $posts],
+      200,
+      [],
+      JSON_UNESCAPED_SLASHES
+    );
   }
 
   public function getPostsDates(Request $request)
