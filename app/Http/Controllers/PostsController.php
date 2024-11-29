@@ -85,13 +85,12 @@ class PostsController extends Controller
         foreach ($requestedFields as $field) {
           if ($field === "cover") {
             if ($post->cover) {
-              // Obtener el disco usando el path almacenado
-              $disk = Storage::disk($post->cover->path);
-
               $postData["cover"] = [
                 "id" => $post->cover->id,
                 "name" => $post->cover->name,
-                "url" => URL::to($disk->url($post->cover->name)),
+                "url" => URL::to(
+                  Storage::url($post->cover->path . "/" . $post->cover->name)
+                ),
               ];
             } else {
               $postData["cover"] = null;

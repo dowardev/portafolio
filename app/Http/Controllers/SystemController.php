@@ -117,6 +117,7 @@ class SystemController extends Controller
     ]);
   }
 
+  // TODO: remove
   public function getImage(Request $request)
   {
     $imageName = $request->input("name");
