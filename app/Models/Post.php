@@ -14,12 +14,18 @@ class Post extends Model
   use HasApiTokens, HasFactory, Notifiable;
   protected $fillable = ["title", "content", "cover_id"];
 
-  public function cover(): BelongsTo
+  public function cover()
   {
-    return $this->belongsTo(Images::class, "cover_id");
+    return $this->belongsTo(Image::class, "cover_id");
   }
+
   public function images(): HasMany
   {
     return $this->hasMany(PostImage::class, "post_id");
+  }
+
+  public function image()
+  {
+    return $this->hasOne(Images::class);
   }
 }
