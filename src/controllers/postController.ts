@@ -15,7 +15,7 @@ export default class PostController {
   async loadPosts(params: {
     date: string;
     filter?: filterPostOptions;
-    fields: PostFields[];
+    fields?: PostFields[];
   }) {
     const { date, filter, fields } = params;
     try {
@@ -45,12 +45,13 @@ export default class PostController {
     }
   }
 
-  async loadPost(params: { id: number | string }) {
-    const id = params.id;
+  async loadPost(params: { id: number | string; fields?: PostFields[] }) {
+    const { id, fields } = params;
 
     try {
       const post = await this.postService.getPost({
         id,
+        fields,
       });
       this.postStore.addPost({ post });
     } catch (e: any) {

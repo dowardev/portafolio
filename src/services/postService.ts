@@ -1,7 +1,7 @@
 import { Post, CreatePost, GetPost, GetPostsServer } from "./interfaces";
 import { apiConnector } from "@/main";
 
-import { filterPostOptions } from "./types";
+import { filterPostOptions, PostFields } from "./types";
 
 interface UpdatePost {
   id: string;
@@ -48,7 +48,7 @@ export default class PostService {
   }
 
   async getPostsServer(params: GetPostsServer): Promise<Array<Post>> {
-    const { date, filter = "active", fields } = params;
+    const { date, filter = "active", fields = {} } = params;
 
     const response = await apiConnector.get({
       url: `posts/${date}/${filter}`,
@@ -68,10 +68,16 @@ export default class PostService {
     return posts;
   }
 
-  async getPost(params: { id: number | string }): Promise<Post> {
-    const { id } = params;
+  async getPost(params: {
+    id: number | string;
+    fields?: PostFields[];
+  }): Promise<Post> {
+    const { id, fields } = params;
 
-    const response = await apiConnector.get({ url: `post/${id}` });
+    const response = await apiConnector.get({
+      url: `post/${id}`,
+      data: { fields },
+    });
 
     const post = response.post;
 

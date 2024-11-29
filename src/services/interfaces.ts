@@ -44,7 +44,7 @@ export interface GetPost {
 export interface GetPostsServer {
   date: string;
   filter?: filterPostOptions;
-  fields: PostFields[];
+  fields?: PostFields[];
 }
 
 export interface CreatePost {

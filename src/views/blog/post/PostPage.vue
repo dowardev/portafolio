@@ -221,6 +221,7 @@ async function getPost(): Promise<void> {
   try {
     await postController.loadPost({
       id: postId,
+      fields: ["id", "title", "cover", "created_at", "content"],
     });
   } catch (e: any) {
     console.error(e);
