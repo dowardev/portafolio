@@ -389,11 +389,12 @@ watch(
     currentPageIndex.value = index.value;
   }
 );
+
 // load posts
 watch(
   () => route.path,
   (newPath) => {
-    if (newPath.startsWith("/blog")) {
+    if (newPath === "/blog") {
       loadContent({ status: filter.selected });
     }
   },
