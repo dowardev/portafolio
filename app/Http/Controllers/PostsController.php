@@ -164,32 +164,23 @@ class PostsController extends Controller
   public function getPost(Request $request)
   {
     $post_id = $request->id;
-
     $requestedFields = $request->input("data.fields", ["all"]);
 
     $allowedFields = [
-      "id" => "posts.id as post_id",
-      "title" => "posts.title as post_title",
-      "content" => "posts.content as post_content",
-      "created_at" => "posts.created_at as post_created_at",
-      "updated_at" => "posts.updated_at as post_updated_at",
-      "status" => "posts.status as post_status",
-      "cover" => [
-        "images.id as image_id",
-        "images.name as image_name",
-        "images.path as image_path",
-      ],
+      "id",
+      "title",
+      "content",
+      "created_at",
+      "updated_at",
+      "status",
+      "cover",
     ];
 
     try {
       if (in_array("all", $requestedFields) || empty($requestedFields)) {
-        $selectFields = array_merge(...array_values($allowedFields));
-        $requestedFields = array_keys($allowedFields);
+        $requestedFields = $allowedFields;
       } else {
-        $validFields = array_intersect(
-          $requestedFields,
-          array_keys($allowedFields)
-        );
+        $validFields = array_intersect($requestedFields, $allowedFields);
 
         if (empty($validFields)) {
           return response()->json(
@@ -200,25 +191,12 @@ class PostsController extends Controller
           );
         }
 
-        $selectFields = [];
-        foreach ($validFields as $field) {
-          if ($field === "cover") {
-            $selectFields = array_merge($selectFields, $allowedFields["cover"]);
-          } else {
-            $selectFields[] = $allowedFields[$field];
-          }
-        }
         $requestedFields = $validFields;
       }
 
-      $query = DB::table("posts")
-        ->join("images", "cover_id", "=", "images.id")
-        ->select($selectFields)
-        ->where("posts.id", $post_id);
+      $post = Post::with("cover")->find($post_id);
 
-      $result = $query->get();
-
-      if ($result->isEmpty()) {
+      if (!$post) {
         return response()->json(
           [
             "message" => "Post not found",
@@ -226,6 +204,34 @@ class PostsController extends Controller
           404
         );
       }
+
+      $postData = [];
+
+      foreach ($requestedFields as $field) {
+        if ($field === "cover") {
+          if ($post->cover) {
+            $disk = Storage::disk($post->cover->path);
+            $postData["cover"] = [
+              "id" => $post->cover->id,
+              "name" => $post->cover->name,
+              "url" => URL::to(
+                Storage::url($post->cover->path . "/" . $post->cover->name)
+              ),
+            ];
+          } else {
+            $postData["cover"] = null;
+          }
+        } else {
+          $postData[$field] = $post->$field;
+        }
+      }
+
+      return response()->json(
+        ["post" => $postData],
+        200,
+        [],
+        JSON_UNESCAPED_SLASHES
+      );
     } catch (Exception $e) {
       return response()->json(
         [
@@ -234,51 +240,6 @@ class PostsController extends Controller
         $e->getCode() ?: 500
       );
     }
-
-    $value = $result->first();
-
-    $systemController = new SystemController();
-    $post = [];
-
-    foreach ($requestedFields as $field) {
-      switch ($field) {
-        case "id":
-          $post["id"] = $value->post_id;
-          break;
-        case "title":
-          $post["title"] = $value->post_title;
-          break;
-        case "content":
-          $post["content"] = $value->post_content;
-          break;
-        case "created_at":
-          $post["created_at"] = (new DateTime($value->post_created_at))->format(
-            DateTime::ATOM
-          );
-          break;
-        case "updated_at":
-          $post["updated_at"] = (new DateTime($value->post_updated_at))->format(
-            DateTime::ATOM
-          );
-          break;
-        case "status":
-          $post["status"] = $value->post_status;
-          break;
-        case "cover":
-          $imageRequest = new Request(["name" => $value->image_name]);
-          $imageResponse = $systemController->getImage($imageRequest);
-          $imageData = json_decode($imageResponse->getContent(), true);
-
-          $post["cover"] = [
-            "id" => $value->image_id,
-            "name" => $value->image_name,
-            "url" => $imageData["url"],
-          ];
-          break;
-      }
-    }
-
-    return response()->json(["post" => $post], 200, [], JSON_UNESCAPED_SLASHES);
   }
 
   public function createPost(Request $request)
