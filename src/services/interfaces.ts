@@ -1,5 +1,5 @@
 import { Theme as ThemeType } from "@/utils/types";
-import { filterPostOptions, StatusPost } from "./types";
+import { filterPostOptions, PostFields, StatusPost } from "./types";
 
 // feedback
 export interface Feedback {
@@ -44,7 +44,7 @@ export interface GetPost {
 export interface GetPostsServer {
   date: string;
   filter?: filterPostOptions;
-  content?: "all" | "titles";
+  fields: PostFields[];
 }
 
 export interface CreatePost {

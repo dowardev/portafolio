@@ -2,7 +2,7 @@ import { CreatePost, GetPost } from "./../services/interfaces";
 import { usePostStore } from "../store/postStore";
 import { storeToRefs } from "pinia";
 import { Post, UpdatePost } from "../services/interfaces";
-import { filterPostOptions } from "@/services/types";
+import { filterPostOptions, PostFields } from "@/services/types";
 
 // services
 import PostService from "../services/postService";
@@ -12,25 +12,17 @@ export default class PostController {
   private postRefs = storeToRefs(this.postStore);
   private postService = new PostService();
 
-  async loadPosts(params: { date: string; filter?: filterPostOptions }) {
-    const { date, filter } = params;
-    try {
-      const posts = await this.postService.getPostsServer({ date, filter });
-
-      this.postStore.setPosts({ posts });
-    } catch (e: any) {
-      // this.openToastError(e);
-      throw e;
-    }
-  }
-
-  async loadPostsTitles(params: { date: string; filter?: filterPostOptions }) {
-    const { date, filter } = params;
+  async loadPosts(params: {
+    date: string;
+    filter?: filterPostOptions;
+    fields: PostFields[];
+  }) {
+    const { date, filter, fields } = params;
     try {
       const posts = await this.postService.getPostsServer({
         date,
         filter,
-        content: "titles",
+        fields,
       });
 
       this.postStore.setPosts({ posts });

@@ -427,9 +427,10 @@ async function loadContent(params: {
     currentPage = loadData({ dates });
     postController.updateCurrentPage({ currentPage });
 
-    await postController.loadPostsTitles({
+    await postController.loadPosts({
       date: currentPage,
       filter: status,
+      fields: ["id", "title", "cover", "created_at"],
     });
   } catch (error: any) {
     console.error(error.message);
