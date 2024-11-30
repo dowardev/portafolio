@@ -89,7 +89,7 @@ class PostsController extends Controller
                 "id" => $post->cover->id,
                 "name" => $post->cover->name,
                 "url" => URL::to(
-                  Storage::url($post->cover->path . "/" . $post->cover->name)
+                  Storage::disk($post->cover->path)->url($post->cover->name)
                 ),
               ];
             } else {
@@ -215,7 +215,7 @@ class PostsController extends Controller
               "id" => $post->cover->id,
               "name" => $post->cover->name,
               "url" => URL::to(
-                Storage::url($post->cover->path . "/" . $post->cover->name)
+                Storage::disk($post->cover->path)->url($post->cover->name)
               ),
             ];
           } else {
