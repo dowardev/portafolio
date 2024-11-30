@@ -431,7 +431,7 @@ async function loadContent(params: {
     await postController.loadPosts({
       date: currentPage,
       filter: status,
-      fields: ["id", "title", "cover", "created_at"],
+      fields: ["id", "title", "cover", "created_at", "status"],
     });
   } catch (error: any) {
     console.error(error.message);

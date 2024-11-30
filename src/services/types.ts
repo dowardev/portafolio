@@ -10,4 +10,5 @@ export type PostFields =
   | "content"
   | "created_at"
   | "updated_at"
-  | "cover";
+  | "cover"
+  | "status";
