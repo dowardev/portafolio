@@ -115,6 +115,25 @@
               style="width: 22px"
             />
           </ion-button>
+
+          <!-- bluesky -->
+          <ion-button
+            id="click-trigger-bluesky"
+            button
+            class="social-button"
+            @mouseover="fillBluesky = '#0084fe'"
+            @mouseleave="fillBluesky = defaultColorFill"
+          >
+            <img
+              style="width: 16px"
+              :src="
+                fillBluesky == defaultColorFill
+                  ? blueskyGrayImg
+                  : blueskyColorImg
+              "
+              alt=""
+            />
+          </ion-button>
         </div>
       </ion-col>
     </ion-row>
@@ -270,6 +289,51 @@
     </ion-content>
   </ion-popover>
 
+  <!-- popover bluesky -->
+  <ion-popover
+    trigger="click-trigger-bluesky"
+    trigger-action="click"
+    :dismiss-on-select="true"
+  >
+    <ion-content>
+      <ion-item
+        button
+        lines="none"
+        @click="copyToClipboard({ text: '@dowardev.bsky.social' })"
+        class="transparent"
+      >
+        <ion-icon slot="start" :icon="copyOutline" color="primary"></ion-icon>
+        <ion-label class="ion-text-wrap">Copiar usuario</ion-label>
+      </ion-item>
+
+      <ion-item
+        button
+        lines="none"
+        class="transparent"
+        @click="
+          copyToClipboard({
+            text: 'https://bsky.app/profile/dowardev.bsky.social',
+          })
+        "
+      >
+        <ion-icon slot="start" :icon="copyOutline" color="primary"></ion-icon>
+
+        <ion-label class="ion-text-wrap">Copiar enlace</ion-label>
+      </ion-item>
+
+      <ion-item
+        button
+        class="transparent"
+        href="https://bsky.app/profile/dowardev.bsky.social"
+        target="_blank"
+        lines="none"
+      >
+        <ion-icon slot="start" :icon="openOutline" color="primary"></ion-icon>
+        <ion-label class="ion-text-wrap">Abrir perfil</ion-label>
+      </ion-item>
+    </ion-content>
+  </ion-popover>
+
   <!-- modals -->
   <ion-modal ref="modal" trigger="open-modal-cocntacto-form">
     <ContactModal />
@@ -303,12 +367,18 @@ import {
 import { App } from "@capacitor/app";
 import ContactModal from "./ContactModal.vue";
 
+// images
+import blueskyGrayImg from "@/assets/otros/bluesky-gray.png";
+import blueskyColorImg from "@/assets/otros/bluesky-color.png";
+
+// vars
 const defaultColorFill = "#777777";
 const fillEmailContact = ref(defaultColorFill);
 const fillLinkedIn = ref(defaultColorFill);
 const fillContactForm = ref(defaultColorFill);
 const fillCVForm = ref(defaultColorFill);
 const fillUpwork = ref(defaultColorFill);
+const fillBluesky = ref(defaultColorFill);
 
 // mounted()
 onMounted(() => {
