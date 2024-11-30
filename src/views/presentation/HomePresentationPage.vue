@@ -32,7 +32,9 @@
               v-for="(option, key) in menuOptions"
               :key="key"
               :value="option.route"
-              @click="$router.push({ name: option.route })"
+              @click="
+                mainSelectHandler({ option: option.route as MainOptions })
+              "
             >
               <span>{{ option.title }}</span>
             </ion-segment-button>
@@ -48,19 +50,23 @@
     </ion-header>
 
     <ion-content>
-      <div style="height: 100%" v-if="$route.name == 'PresentationPage'">
-        <div size="12" style="height: 100%" class="center center-vertical">
-          <InformationComponent />
+      <transition name="fade" mode="out-in">
+        <div :key="opcSelected">
+          <div style="height: 100%" v-if="opcSelected == 'PresentationPage'">
+            <div size="12" style="height: 100%" class="center center-vertical">
+              <InformationComponent />
+            </div>
+          </div>
+
+          <div v-if="opcSelected == 'SkillsPage'">
+            <SkillsPage />
+          </div>
+
+          <div v-if="opcSelected == 'PortfolioPage'">
+            <PortfolioPage />
+          </div>
         </div>
-      </div>
-
-      <div v-if="$route.name == 'SkillsPage'">
-        <SkillsPage />
-      </div>
-
-      <div v-if="$route.name == 'PortfolioPage'">
-        <PortfolioPage />
-      </div>
+      </transition>
     </ion-content>
 
     <!-- popovers -->
@@ -140,7 +146,7 @@ import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 // interfaces
-type MainOptions = "contact" | "skills" | "history" | "portfolio";
+type MainOptions = "PresentationPage" | "SkillsPage" | "PortfolioPage";
 
 // components
 import InformationComponent from "./information/InformationComponent.vue";
@@ -166,6 +172,7 @@ const menuOptions = ref({
 const buttonMenuMobileOptions = ref({ open: false, event: null });
 const buttonMenuDesktopOptions = ref({ open: false, event: null });
 const backgroundActive = ref(false);
+const opcSelected = ref<MainOptions>("PresentationPage");
 
 onMounted(() => {
   useBackButton(10, () => {
@@ -202,17 +209,17 @@ async function alertExitApp(): Promise<void> {
 
 function mainSelectHandler(params: { option: MainOptions }) {
   const { option } = params;
-  if (option == "contact") {
-    router.push({ name: "PresentationPage" });
+  if (option == "PresentationPage") {
+    // router.push({ name: "PresentationPage" });
+    opcSelected.value = "PresentationPage";
   }
-  if (option == "skills") {
-    router.push({ name: "SkillsPage" });
+  if (option == "SkillsPage") {
+    // router.push({ name: "SkillsPage" });
+    opcSelected.value = "SkillsPage";
   }
-  if (option == "history") {
-    router.push({ name: "HistoryPage" });
-  }
-  if (option == "portfolio") {
-    router.push({ name: "PortfolioPage" });
+  if (option == "PortfolioPage") {
+    // router.push({ name: "PortfolioPage" });
+    opcSelected.value = "PortfolioPage";
   }
 }
 </script>
@@ -223,5 +230,15 @@ function mainSelectHandler(params: { option: MainOptions }) {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
