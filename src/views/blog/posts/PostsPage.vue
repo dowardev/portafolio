@@ -66,71 +66,77 @@
         >
           <ion-card class="primary-select-animated" style="cursor: pointer">
             <ion-row>
-              <!-- img post -->
-              <ion-col
-                size="4"
-                style="
-                  padding-bottom: 0px;
-                  padding-left: 0px;
-                  padding-top: 0px;
-                  cursor: pointer;
-                "
-                @click="openPost(post.id!)"
-              >
-                <img
-                  :src="post.cover.url"
-                  @click="openPost(post.id!)"
-                  style="
-                    border-top-left-radius: 4px;
-                    border-bottom-left-radius: 4px;
-                    width: 500px;
-                    height: 100%;
-                  "
-                />
+              <ion-col size="11" @click="openPost(post.id!)">
+                <ion-row>
+                  <!-- img post -->
+                  <ion-col
+                    size="4"
+                    style="
+                      padding-bottom: 0px;
+                      padding-left: 0px;
+                      padding-top: 0px;
+                      cursor: pointer;
+                    "
+                  >
+                    <img
+                      :src="post.cover.url"
+                      @click="openPost(post.id!)"
+                      style="
+                        border-top-left-radius: 4px;
+                        border-bottom-left-radius: 4px;
+                        width: 500px;
+                        height: 100%;
+                      "
+                    />
+                  </ion-col>
+
+                  <ion-col size="8">
+                    <ion-row>
+                      <ion-col
+                        :size="userController.getUser()?.isAdmin ? 10 : 12"
+                        @click="openPost(post.id!)"
+                        style="cursor: pointer"
+                      >
+                        <ion-card-title class="truncate-text">
+                          {{ post.title }}
+                        </ion-card-title>
+                      </ion-col>
+                    </ion-row>
+
+                    <!-- options post -->
+                    <ion-row
+                      @click="openPost(post.id!)"
+                      style="cursor: pointer"
+                    >
+                      <ion-col size="6">
+                        <ion-chip
+                          v-if="userController.getUser()?.isAdmin"
+                          :color="
+                            post.status == 'active'
+                              ? 'success'
+                              : post.status == 'inactive'
+                                ? 'danger'
+                                : 'warning'
+                          "
+                          >{{ post.status }}</ion-chip
+                        >
+                      </ion-col>
+                    </ion-row>
+                  </ion-col>
+                </ion-row>
               </ion-col>
 
-              <ion-col size="8">
-                <ion-row>
-                  <ion-col
-                    :size="userController.getUser()?.isAdmin ? 10 : 12"
-                    @click="openPost(post.id!)"
-                    style="cursor: pointer"
-                  >
-                    <ion-card-title class="truncate-text">
-                      {{ post.title }}
-                    </ion-card-title>
-                  </ion-col>
-
-                  <ion-col size="2" v-if="userController.getUser()?.isAdmin">
-                    <ion-button
-                      fill="clear"
-                      @click="
-                        idPostSelected = parseInt(post.id);
-                        popoverPostOptions.event = $event;
-                        popoverPostOptions.isOpen = true;
-                      "
-                    >
-                      <ion-icon :icon="ellipsisVerticalOutline"> </ion-icon>
-                    </ion-button>
-                  </ion-col>
-                </ion-row>
-
-                <!-- options post -->
-                <ion-row @click="openPost(post.id!)" style="cursor: pointer">
-                  <ion-col size="6">
-                    <ion-chip
-                      v-if="userController.getUser()?.isAdmin"
-                      :color="
-                        post.status == 'active'
-                          ? 'success'
-                          : post.status == 'inactive'
-                            ? 'danger'
-                            : 'warning'
-                      "
-                      >{{ post.status }}</ion-chip
-                    >
-                  </ion-col>
-                </ion-row>
+              <ion-col size="1" v-if="userController.getUser()?.isAdmin">
+                <ion-button
+                  fill="clear"
+                  @click="
+                    idPostSelected = parseInt(post.id);
+                    popoverPostOptions.event = $event;
+                    popoverPostOptions.isOpen = true;
+                  "
+                >
+                  <ion-icon :icon="ellipsisVerticalOutline"> </ion-icon>
+                </ion-button>
               </ion-col>
             </ion-row>
           </ion-card>
