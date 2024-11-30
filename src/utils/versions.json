@@ -1,13 +1,13 @@
 {
-  "8.10.0": {
-    "improvements": [
-      "Resuelto el problema que ocultaba el contenido del post",
-      "Mejorada la fluidez de navegación en la página de presentación",
-      "Optimización en la llamada a la API"
-    ],
-    "corrections": ["Correcciones generales"]
-  },
   "8": {
+    "8.10.0": {
+      "improvements": [
+        "Resuelto el problema que ocultaba el contenido del post",
+        "Mejorada la fluidez de navegación en la página de presentación",
+        "Optimización en la llamada a la API"
+      ],
+      "corrections": ["Correcciones generales"]
+    },
     "8.8.0": {
       "improvements": ["Mejoras de diseño"],
       "corrections": ["Correcciones generales"]
