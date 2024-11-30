@@ -2,17 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Models\Images;
+use App\Models\Image;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Images>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Image>
  */
-class ImagesFactory extends Factory
+class ImageFactory extends Factory
 {
-  protected $model = Images::class;
+  protected $model = Image::class;
 
   /**
    * The storage disk to use.

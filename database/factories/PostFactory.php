@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Images;
+use App\Models\Image;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -23,7 +23,7 @@ class PostFactory extends Factory
     return [
       "title" => $this->faker->title(),
       "content" => Str::random(5000),
-      "cover_id" => Images::factory()->disk("posts_images")->create()->id,
+      "cover_id" => Image::factory()->disk("posts_images")->create()->id,
       "created_at" => $randomDate,
       "status" => "active",
     ];

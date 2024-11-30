@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Images;
+use App\Models\Image;
 use App\Models\Post;
 use App\Models\PostImage;
 use DateTime;
@@ -280,7 +280,7 @@ class PostsController extends Controller
       $messages
     );
 
-    Images::where("id", $cover_id)->update(["status" => true]);
+    Image::where("id", $cover_id)->update(["status" => true]);
 
     $post = Post::create([
       "title" => $title,
@@ -294,13 +294,13 @@ class PostsController extends Controller
         "post_id" => $post_id,
         "image_id" => $value,
       ]);
-      Images::where("id", $value)->update(["status" => true]);
+      Image::where("id", $value)->update(["status" => true]);
     }
   }
 
   private function moveImage($id)
   {
-    $image = Images::find($id);
+    $image = Image::find($id);
     $old_disk = "tmp";
     $new_disk = "posts_images";
     $imageName = $image->name;
@@ -363,17 +363,17 @@ class PostsController extends Controller
     ]);
 
     if (!empty($new_cover_id)) {
-      $cover_name = Images::where("id", "=", $cover_id)->first()->name;
+      $cover_name = Image::where("id", "=", $cover_id)->first()->name;
       Post::where("id", "=", $id)->update([
         "cover_id" => $new_cover_id,
       ]);
       Storage::disk("posts_images")->delete($cover_name);
-      Images::where("id", "=", $cover_id)->delete();
+      Image::where("id", "=", $cover_id)->delete();
     }
 
     foreach ($images_removed as $value) {
       Storage::disk("posts_images")->delete($value);
-      Images::where("name", "=", $value)->delete();
+      Image::where("name", "=", $value)->delete();
     }
 
     foreach ($new_images as $value) {
@@ -401,15 +401,15 @@ class PostsController extends Controller
 
     $post_images = Post::find($id)->images;
     foreach ($post_images as $key => $value) {
-      $image_name = Images::find($value->image_id)->name;
-      Images::where("id", $value->image_id)->delete();
+      $image_name = Image::find($value->image_id)->name;
+      Image::where("id", $value->image_id)->delete();
       Storage::delete("images_posts/" . $image_name);
     }
 
     $cover_id = Post::find($id)->cover_id;
-    $image_name = Images::find($cover_id)->name;
+    $image_name = Image::find($cover_id)->name;
     Storage::delete("images_posts/" . $image_name);
-    Images::where("id", $cover_id)->delete();
+    Image::where("id", $cover_id)->delete();
 
     Post::where("id", $id)->delete();
 

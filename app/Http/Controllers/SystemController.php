@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
 use App\Models\Feedbacks;
-use App\Models\Images;
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +53,7 @@ class SystemController extends Controller
 
     Storage::disk($path)->put($filename, file_get_contents($file));
 
-    $image = Images::create([
+    $image = Image::create([
       "name" => $filename,
       "path" => $path,
       "status" => false,
