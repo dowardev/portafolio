@@ -263,11 +263,13 @@ class PostsController extends Controller
     } else {
       $images = [];
     }
+    $status = $request->status;
 
     $messages = [
       "title.required" => "The title field is required.",
       "content.required" => "The content field is required.",
       "cover_id.required" => "The cover_id field is required.",
+      "status.required" => "The status field is required.",
     ];
 
     $validator = Validator::make(
@@ -276,6 +278,7 @@ class PostsController extends Controller
         "title" => "required",
         "content" => "required",
         "cover_id" => "required",
+        "status" => "required",
       ],
       $messages
     );
@@ -286,6 +289,7 @@ class PostsController extends Controller
       "title" => $title,
       "content" => $content,
       "cover_id" => $cover_id,
+      "status" => $status,
     ]);
     $post_id = $post->id;
 

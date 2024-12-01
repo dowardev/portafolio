@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Post extends Model
 {
   use HasApiTokens, HasFactory, Notifiable;
-  protected $fillable = ["title", "content", "cover_id"];
+  protected $fillable = ["title", "content", "cover_id", "status"];
 
   public function cover()
   {
