@@ -23,7 +23,8 @@
           <ion-icon slot="start" :icon="saveOutline"></ion-icon>
         </ion-button>
 
-        <ion-button @click="openSettings()">
+        <!-- settings -->
+        <ion-button @click="openSettings()" v-if="!settingsSectionVisible">
           <ion-icon :icon="optionsOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -99,7 +100,11 @@
       </ion-col>
 
       <transition name="slide">
-        <ion-col size="3" class="settings-panel" v-if="isPlatform('desktop')">
+        <ion-col
+          size="3"
+          class="settings-panel"
+          v-if="isPlatform('desktop') && settingsSectionVisible"
+        >
           <ion-list>
             <ion-list-header>
               <ion-label>Opciones</ion-label>
@@ -110,7 +115,10 @@
 
             <OptionsEditorComponent
               :cover="cover"
+              :disableUI="props.disableUI"
+              :post-status="props.postStatus"
               @cover-change="setCover({ file: $event })"
+              @status-change="setPostStatus({ status: $event })"
             />
           </ion-list>
         </ion-col>
@@ -185,6 +193,7 @@
       <ion-content>
         <OptionsEditorComponent
           :cover="cover"
+          :disableUI="props.disableUI"
           @cover-change="setCover({ file: $event })"
         />
       </ion-content>
@@ -232,7 +241,7 @@ import { ref, watch } from "vue";
 
 // components
 import OptionsEditorComponent from "../../../../src/views/blog/editor/OptionsEditorComponent.vue";
-import eventBus from "@/EventBus";
+import { StatusPost } from "@/services/types";
 
 const router = useRouter();
 
@@ -246,10 +255,13 @@ const props = defineProps({
     type: Object,
   },
   disableUI: { default: false, type: Boolean, required: false },
+  postStatus: {
+    type: String as () => StatusPost,
+    default: "draft",
+    required: false,
+  },
 });
-
 const emits = defineEmits(["save", "uploadImage"]);
-
 const modeDesignElements = isPlatform("ios") ? "ios" : ("md" as "md" | "ios");
 v$: useVuelidate();
 modeDesignElements;
@@ -293,8 +305,9 @@ const toolbarMobile = [
   "pageFullscreen",
   "fullscreen",
 ] as ToolbarNames[];
-const settingsSectionVisible = ref(true);
+const settingsSectionVisible = ref(isPlatform("desktop") ? true : false);
 const modalSettings = ref(false);
+const postStatus = ref<StatusPost>(props.postStatus as StatusPost);
 
 // watch
 watch(
@@ -319,6 +332,7 @@ function save(): void {
     title,
     content,
     cover: coverFile,
+    status: postStatus.value,
   });
 }
 
@@ -357,6 +371,11 @@ function openSettings() {
   if (isPlatform("mobile")) {
     modalSettings.value = true;
   }
+}
+
+function setPostStatus(params: { status: StatusPost }) {
+  const { status } = params;
+  postStatus.value = status;
 }
 </script>
 

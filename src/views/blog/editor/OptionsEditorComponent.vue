@@ -4,7 +4,14 @@
     <ion-col>
       <ion-card>
         <ion-item lines="none">
-          <ion-toggle :checked="true">Borrador</ion-toggle>
+          <ion-toggle
+            :checked="postStatus == 'draft' ? true : false"
+            @ion-change="
+              setStatus({ status: $event.detail.checked ? 'draft' : 'active' })
+            "
+          >
+            Borrador
+          </ion-toggle>
         </ion-item>
       </ion-card>
     </ion-col>
@@ -42,7 +49,7 @@
           style="display: none"
           accept="image/*"
           type="file"
-          @change="setCover({ file: $event })"
+          @change="emitCover({ file: $event })"
           @click="v$.cover.$touch()"
         />
 
@@ -83,6 +90,7 @@ import { ref } from "vue";
 import { trashOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";
+import { StatusPost } from "@/services/types";
 
 // vars
 const props = defineProps({
@@ -92,8 +100,14 @@ const props = defineProps({
     },
     type: Object,
   },
+  disableUI: { default: false, type: Boolean, required: false },
+  postStatus: {
+    type: String as () => StatusPost,
+    default: "draft",
+    required: false,
+  },
 });
-const emits = defineEmits(["cover-change"]);
+const emits = defineEmits(["cover-change", "status-change"]);
 const deletePostAction = ref(false);
 const cover = ref({ name: props.cover.name, file: new File([], "") });
 const messageError = {
@@ -107,9 +121,10 @@ const rules = {
 const v$ = useVuelidate(rules, {
   cover: cover.value.file,
 });
+const postStatus = ref<StatusPost>(props.postStatus as StatusPost);
 
 // functions
-function setCover(params: { file: Event }) {
+function emitCover(params: { file: Event }) {
   const { file: element } = params;
   const input = element.target as HTMLInputElement;
   if (input.files && input.files[0]) {
@@ -123,5 +138,11 @@ function setCover(params: { file: Event }) {
 async function removeCover() {
   cover.value.name = "";
   cover.value.file = new File([], "");
+}
+
+function setStatus(params: { status: StatusPost }) {
+  const { status } = params;
+  postStatus.value = status;
+  emits("status-change", status);
 }
 </script>

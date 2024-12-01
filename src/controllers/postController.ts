@@ -156,12 +156,13 @@ export default class PostController {
 
   async createPost(params: CreatePost) {
     try {
-      const { title, content, coverId, images } = params;
+      const { title, content, coverId, images, status } = params;
       const post = {
         title,
         content,
         coverId,
         images,
+        status,
       };
       await this.postService.createPost(post);
     } catch (error: any) {

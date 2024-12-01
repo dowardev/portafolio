@@ -15,11 +15,11 @@ interface UpdatePost {
 
 export default class PostService {
   async createPost(params: CreatePost): Promise<void> {
-    const { title, content, coverId, images } = params;
+    const { title, content, coverId, images, status } = params;
 
     await apiConnector.post({
       url: `create-post/`,
-      data: { title, content, coverId, images },
+      data: { title, content, coverId, images, status },
     });
   }
 

@@ -52,6 +52,7 @@ export interface CreatePost {
   content: Post["content"];
   coverId: Post["cover"]["id"];
   images: string[];
+  status: StatusPost;
 }
 
 export interface UpdatePost {

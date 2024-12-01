@@ -18,6 +18,7 @@
             title: $event.title,
             content: $event.content,
             cover: $event.cover,
+            status: $event.status,
           })
         "
       ></EditorComponent>
@@ -31,10 +32,12 @@ import { defineComponent, ref } from "vue";
 import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
 import { CreatePost } from "../../../services/interfaces";
 import { useRouter } from "vue-router";
+import { StatusPost } from "@/services/types";
 
 // controllers
 import PostController from "../../../controllers/postController";
 import SystemController from "../../../controllers/systemController";
+
 const postController = new PostController();
 const systemController = new SystemController();
 
@@ -51,8 +54,9 @@ async function save(params: {
   title: string;
   content: string;
   cover: File;
+  status: StatusPost;
 }): Promise<void> {
-  const { title, content, cover } = params;
+  const { title, content, cover, status } = params;
   let coverId = "";
   progressBar.value = true;
 
@@ -73,6 +77,7 @@ async function save(params: {
       content,
       coverId,
       images,
+      status,
     });
     await systemController.presentToast({ message: "Post agregado" });
     router.go(-1);
@@ -88,6 +93,7 @@ async function createPost({
   content,
   coverId,
   images,
+  status,
 }: CreatePost): Promise<void> {
   try {
     await postController.createPost({
@@ -95,6 +101,7 @@ async function createPost({
       content,
       coverId,
       images,
+      status,
     });
   } catch (e: any) {
     throw new Error(e);
