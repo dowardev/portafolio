@@ -23,6 +23,13 @@
           <ion-icon slot="start" :icon="saveOutline"></ion-icon>
         </ion-button>
 
+        <ion-button
+          v-if="settingsVisible == false"
+          @click="settingsVisible = true"
+        >
+          <ion-icon :icon="optionsOutline"></ion-icon>
+        </ion-button>
+
         <ion-button id="click-trigger-more-options" fill="clear">
           <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
         </ion-button>
@@ -32,94 +39,174 @@
 
   <ion-content class="container-page">
     <ion-row>
-      <ion-col>
-        <!-- title -->
+      <ion-col :size="settingsVisible == true ? 9 : 12">
         <ion-row>
           <ion-col>
-            <ion-input
-              ref="inputPostTitle"
-              label="Titulo"
-              label-placement="stacked"
-              fill="outline"
-              autocorrect="on"
-              pattern="text"
-              :error-text="v$.postTitle.$errors[0]?.$message.toString()"
-              :class="[
-                v$.postTitle.$errors.length == 0 ? 'ion-valid' : 'ion-invalid',
-              ]"
-              :value="postTitle"
-              :spellcheck="true"
-              :disabled="props.disableUI"
-              @ion-input="postTitle = $event.target.value as string"
-              @ion-focus="
-                ($refs.inputPostTitle as any).$el.classList.add('ion-touched');
-                v$.postTitle.$touch();
-              "
-            >
-            </ion-input>
-          </ion-col>
-        </ion-row>
+            <!-- title -->
+            <ion-row>
+              <ion-col>
+                <ion-input
+                  ref="inputPostTitle"
+                  label="Titulo"
+                  label-placement="stacked"
+                  fill="outline"
+                  autocorrect="on"
+                  pattern="text"
+                  :error-text="v$.postTitle.$errors[0]?.$message.toString()"
+                  :class="[
+                    v$.postTitle.$errors.length == 0
+                      ? 'ion-valid'
+                      : 'ion-invalid',
+                  ]"
+                  :value="postTitle"
+                  :spellcheck="true"
+                  :disabled="props.disableUI"
+                  @ion-input="postTitle = $event.target.value as string"
+                  @ion-focus="
+                    ($refs.inputPostTitle as any).$el.classList.add(
+                      'ion-touched'
+                    );
+                    v$.postTitle.$touch();
+                  "
+                >
+                </ion-input>
+              </ion-col>
+            </ion-row>
 
-        <!-- input cover -->
-        <ion-row>
-          <ion-col>
-            <ion-item
-              button
-              lines="none"
-              fill="solid"
-              class="transparent element-outline-focus"
-              :disabled="props.disableUI"
-              @click="($refs as any).inputPostCover.click()"
-            >
-              <ion-label slot="start">
-                <ion-text>Portada</ion-text>
-                <p>{{ cover.name }}</p>
-              </ion-label>
-              <input
-                ref="inputPostCover"
-                style="display: none"
-                accept="image/*"
-                type="file"
-                @change="setCover({ file: $event })"
-                @click="v$.cover.$touch()"
-              />
-            </ion-item>
-            <!-- errors -->
-            <div
-              v-for="(error, index) of (v$ as any).cover.$errors"
-              :key="index"
-              class="ion-padding-start"
-            >
-              <span class="error" style="font-size: 12px">{{
-                error.$message
-              }}</span>
-            </div>
+            <!-- content -->
+            <ion-row>
+              <ion-col size="12" size-md="12" size-lg="12">
+                <MdEditor
+                  v-model="postContent"
+                  theme="dark"
+                  style="
+                    overflow: scroll;
+                    width: 100%;
+                    margin-top: 18px;
+                    --md-bk-color: var(--ion-background-color-rgb);
+                    --md-color: var(--ion-color-primary);
+                    --md-border-color: var(--ion-text-color-step-700);
+                  "
+                  class="element-outline-focus"
+                  :toolbars="
+                    isPlatform('mobile') ? toolbarMobile : toolbarDesktop
+                  "
+                  :language="'en-US'"
+                  :preview="false"
+                  :disabled="props.disableUI"
+                  @on-upload-img="uploadImage({ file: $event[0] })"
+                />
+              </ion-col>
+            </ion-row>
           </ion-col>
         </ion-row>
+      </ion-col>
 
-        <!-- content -->
-        <ion-row>
-          <ion-col size="12" size-md="12" size-lg="12">
-            <MdEditor
-              v-model="postContent"
-              theme="dark"
-              style="
-                overflow: scroll;
-                width: 100%;
-                margin-top: 18px;
-                --md-bk-color: var(--ion-background-color-rgb);
-                --md-color: var(--ion-color-primary);
-                --md-border-color: var(--ion-text-color-step-700);
-              "
-              class="element-outline-focus"
-              :toolbars="isPlatform('mobile') ? toolbarMobile : toolbarDesktop"
-              :language="'en-US'"
-              :preview="false"
-              :disabled="props.disableUI"
-              @on-upload-img="uploadImage({ file: $event[0] })"
-            />
-          </ion-col>
-        </ion-row>
+      <ion-col size="3" v-if="settingsVisible == true">
+        <ion-list>
+          <ion-list-header>
+            <ion-label>Opciones</ion-label>
+            <ion-button @click="settingsVisible = false">Ocultar</ion-button>
+          </ion-list-header>
+
+          <!-- type save -->
+          <ion-row>
+            <ion-col>
+              <ion-card class="primary-select-animated">
+                <ion-item lines="none">
+                  <ion-toggle :checked="true">Borrador</ion-toggle>
+                </ion-item>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+
+          <!-- cover-->
+          <ion-row>
+            <ion-col>
+              <ion-card class="primary-select-animated">
+                <ion-item
+                  :lines="cover.file.size > 0 ? 'full' : 'none'"
+                  button
+                  :disabled="props.disableUI"
+                  @click="($refs as any).inputPostCover.click()"
+                >
+                  <ion-label slot="start">
+                    <ion-text v-if="cover.file.size == 0"
+                      >Seleccionar Portada</ion-text
+                    >
+                    <ion-text v-else>Actualizar Portada</ion-text>
+                    <p>{{ cover.name }}</p>
+                  </ion-label>
+                </ion-item>
+
+                <ion-button
+                  v-if="cover.file.size > 0"
+                  color="danger"
+                  fill="clear"
+                  expand="full"
+                  @click="removeCover()"
+                >
+                  Quitar portada
+                </ion-button>
+
+                <input
+                  ref="inputPostCover"
+                  style="display: none"
+                  accept="image/*"
+                  type="file"
+                  @change="setCover({ file: $event })"
+                  @click="v$.cover.$touch()"
+                />
+
+                <!-- errors -->
+                <div
+                  v-for="(error, index) of (v$ as any).cover.$errors"
+                  :key="index"
+                  class="ion-padding-start"
+                >
+                  <span class="error" style="font-size: 12px">{{
+                    error.$message
+                  }}</span>
+                </div>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+
+          <!-- delete post button -->
+          <ion-row>
+            <ion-col size="12">
+              <ion-card class="danger-select-animated">
+                <ion-item
+                  button
+                  lines="none"
+                  v-if="deletePostAction == false"
+                  @click="deletePostAction = true"
+                >
+                  <ion-icon
+                    color="danger"
+                    slot="start"
+                    :icon="trashOutline"
+                  ></ion-icon>
+                  <ion-label color="danger">Eliminar post</ion-label>
+                </ion-item>
+
+                <ion-item v-else lines="none">
+                  <ion-label color="danger">Continuar?</ion-label>
+
+                  <ion-button slot="end" color="danger" fill="clear"
+                    >Si</ion-button
+                  >
+                  <ion-button
+                    slot="end"
+                    fill="clear"
+                    @click="deletePostAction = false"
+                    >No</ion-button
+                  >
+                </ion-item>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-list>
       </ion-col>
     </ion-row>
 
@@ -201,6 +288,8 @@ import {
   imagesOutline,
   eyeOutline,
   ellipsisVerticalOutline,
+  trashOutline,
+  optionsOutline,
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
@@ -230,11 +319,9 @@ const modeDesignElements = isPlatform("ios") ? "ios" : ("md" as "md" | "ios");
 v$: useVuelidate();
 modeDesignElements;
 const pageTitle = "Editor";
-
 const postTitle = ref(props.title);
 const postContent = ref(props.content);
 const cover = ref({ name: props.cover.name, file: new File([], "") });
-
 const messageError = {
   required: "Campo requerido",
 };
@@ -271,6 +358,8 @@ const toolbarMobile = [
   "pageFullscreen",
   "fullscreen",
 ] as ToolbarNames[];
+const settingsVisible = ref(true);
+const deletePostAction = ref(false);
 
 // watch
 watch(
@@ -328,6 +417,11 @@ async function openModalPreview() {
     },
   });
   modal.present();
+}
+
+async function removeCover() {
+  cover.value.name = "";
+  cover.value.file = new File([], "");
 }
 </script>
 
