@@ -23,15 +23,8 @@
           <ion-icon slot="start" :icon="saveOutline"></ion-icon>
         </ion-button>
 
-        <ion-button
-          v-if="settingsVisible == false"
-          @click="settingsVisible = true"
-        >
+        <ion-button v-if="settingsVisible == false" @click="openSettings()">
           <ion-icon :icon="optionsOutline"></ion-icon>
-        </ion-button>
-
-        <ion-button id="click-trigger-more-options" fill="clear">
-          <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
@@ -106,100 +99,22 @@
       </ion-col>
 
       <transition name="slide">
-        <ion-col size="3" v-show="settingsVisible" class="settings-panel">
+        <ion-col
+          size="3"
+          v-show="settingsVisible"
+          class="settings-panel"
+          v-if="isPlatform('desktop')"
+        >
           <ion-list>
             <ion-list-header>
               <ion-label>Opciones</ion-label>
               <ion-button @click="settingsVisible = false">Ocultar</ion-button>
             </ion-list-header>
 
-            <!-- type save -->
-            <ion-row>
-              <ion-col>
-                <ion-card>
-                  <ion-item lines="none">
-                    <ion-toggle :checked="true">Borrador</ion-toggle>
-                  </ion-item>
-                </ion-card>
-              </ion-col>
-            </ion-row>
-
-            <!-- cover-->
-            <ion-row>
-              <ion-col>
-                <ion-card>
-                  <ion-item
-                    :lines="cover.file.size > 0 ? 'full' : 'none'"
-                    button
-                    :disabled="props.disableUI"
-                    @click="($refs as any).inputPostCover.click()"
-                  >
-                    <ion-label slot="start">
-                      <ion-text v-if="cover.file.size == 0"
-                        >Seleccionar Portada</ion-text
-                      >
-                      <ion-text v-else>Actualizar Portada</ion-text>
-                      <p>{{ cover.name }}</p>
-                    </ion-label>
-                  </ion-item>
-
-                  <ion-button
-                    v-if="cover.file.size > 0"
-                    color="danger"
-                    fill="clear"
-                    expand="full"
-                    @click="removeCover()"
-                  >
-                    Quitar portada
-                  </ion-button>
-
-                  <input
-                    ref="inputPostCover"
-                    style="display: none"
-                    accept="image/*"
-                    type="file"
-                    @change="setCover({ file: $event })"
-                    @click="v$.cover.$touch()"
-                  />
-
-                  <!-- errors -->
-                  <div
-                    v-for="(error, index) of (v$ as any).cover.$errors"
-                    :key="index"
-                    class="ion-padding-start"
-                  >
-                    <span class="error" style="font-size: 12px">{{
-                      error.$message
-                    }}</span>
-                  </div>
-                </ion-card>
-              </ion-col>
-            </ion-row>
-
-            <!-- delete post button -->
-            <ion-row>
-              <ion-col size="12">
-                <ion-card class="danger-select-animated">
-                  <ion-item
-                    button
-                    lines="none"
-                    v-if="deletePostAction == false"
-                  >
-                    <ion-icon
-                      color="danger"
-                      slot="start"
-                      :icon="trashOutline"
-                    ></ion-icon>
-                    <ion-label color="danger">Eliminar post</ion-label>
-                  </ion-item>
-
-                  <ion-item v-else>
-                    <ion-button>Si</ion-button>
-                    <ion-button>No</ion-button>
-                  </ion-item>
-                </ion-card>
-              </ion-col>
-            </ion-row>
+            <OptionsEditorComponent
+              :cover="cover"
+              @cover-change="setCover({ file: $event })"
+            />
           </ion-list>
         </ion-col>
       </transition>
@@ -255,6 +170,28 @@
         />
       </ion-content>
     </ion-popover>
+
+    <!-- modals -->
+    <ion-modal :is-open="modalSettings">
+      <ion-header class="ion-no-border" mode="ios">
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button @click="modalSettings = false">
+              <ion-icon :icon="closeOutline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+
+          <ion-title>Opciones del Post</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content>
+        <OptionsEditorComponent
+          :cover="cover"
+          @cover-change="setCover({ file: $event })"
+        />
+      </ion-content>
+    </ion-modal>
   </ion-content>
 </template>
 
@@ -276,6 +213,7 @@ import {
   isPlatform,
   modalController,
   IonPopover,
+  IonModal,
 } from "@ionic/vue";
 import {
   saveOutline,
@@ -285,6 +223,7 @@ import {
   ellipsisVerticalOutline,
   trashOutline,
   optionsOutline,
+  closeOutline,
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
@@ -293,6 +232,10 @@ import { useRouter } from "vue-router";
 import { MdEditor, ToolbarNames } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import { ref, watch } from "vue";
+
+// components
+import OptionsEditorComponent from "../../../../src/views/blog/editor/OptionsEditorComponent.vue";
+import eventBus from "@/EventBus";
 
 const router = useRouter();
 
@@ -353,8 +296,8 @@ const toolbarMobile = [
   "pageFullscreen",
   "fullscreen",
 ] as ToolbarNames[];
-const settingsVisible = ref(true);
-const deletePostAction = ref(false);
+const settingsVisible = ref(isPlatform("desktop") ? true : false);
+const modalSettings = ref(false);
 
 // watch
 watch(
@@ -392,14 +335,10 @@ async function uploadImage(params: { file: Event }) {
   // }
 }
 
-async function setCover(params: { file: Event }) {
-  const { file: element } = params;
-  const input = element.target as HTMLInputElement;
-  if (input.files && input.files[0]) {
-    const file = input.files[0];
-    cover.value.name = file.name;
-    cover.value.file = file;
-  }
+async function setCover(params: { file: File }) {
+  const { file } = params;
+  cover.value.name = file.name;
+  cover.value.file = file;
 }
 
 async function openModalPreview() {
@@ -414,9 +353,13 @@ async function openModalPreview() {
   modal.present();
 }
 
-async function removeCover() {
-  cover.value.name = "";
-  cover.value.file = new File([], "");
+function openSettings() {
+  if (isPlatform("desktop")) {
+    settingsVisible.value = true;
+  }
+  if (isPlatform("mobile")) {
+    modalSettings.value = true;
+  }
 }
 </script>
 
