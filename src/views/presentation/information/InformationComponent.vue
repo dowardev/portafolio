@@ -457,8 +457,8 @@ function openMail(params: { mail: string; subject: string }) {
 }
 
 ion-card {
-  padding: 12px;
-  border: 4px solid transparent;
+  /* padding: 12px; */
+  border: 2px solid transparent;
   /* border-radius: 12px; */
   background:
     linear-gradient(var(--ion-background-color), var(--ion-background-color))
