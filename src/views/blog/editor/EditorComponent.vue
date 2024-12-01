@@ -23,7 +23,7 @@
           <ion-icon slot="start" :icon="saveOutline"></ion-icon>
         </ion-button>
 
-        <ion-button v-if="settingsVisible == false" @click="openSettings()">
+        <ion-button @click="openSettings()">
           <ion-icon :icon="optionsOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -33,8 +33,8 @@
   <ion-content class="container-page">
     <ion-row>
       <ion-col
-        :class="{ 'col-expanded': !settingsVisible }"
-        :size="settingsVisible ? '9' : '12'"
+        :class="{ 'col-expanded': !settingsSectionVisible }"
+        :size="settingsSectionVisible && isPlatform('desktop') ? '9' : '12'"
       >
         <ion-row>
           <ion-col>
@@ -99,16 +99,13 @@
       </ion-col>
 
       <transition name="slide">
-        <ion-col
-          size="3"
-          v-show="settingsVisible"
-          class="settings-panel"
-          v-if="isPlatform('desktop')"
-        >
+        <ion-col size="3" class="settings-panel" v-if="isPlatform('desktop')">
           <ion-list>
             <ion-list-header>
               <ion-label>Opciones</ion-label>
-              <ion-button @click="settingsVisible = false">Ocultar</ion-button>
+              <ion-button @click="settingsSectionVisible = false"
+                >Ocultar</ion-button
+              >
             </ion-list-header>
 
             <OptionsEditorComponent
@@ -296,7 +293,7 @@ const toolbarMobile = [
   "pageFullscreen",
   "fullscreen",
 ] as ToolbarNames[];
-const settingsVisible = ref(isPlatform("desktop") ? true : false);
+const settingsSectionVisible = ref(true);
 const modalSettings = ref(false);
 
 // watch
@@ -355,7 +352,7 @@ async function openModalPreview() {
 
 function openSettings() {
   if (isPlatform("desktop")) {
-    settingsVisible.value = true;
+    settingsSectionVisible.value = true;
   }
   if (isPlatform("mobile")) {
     modalSettings.value = true;
