@@ -39,7 +39,10 @@
 
   <ion-content class="container-page">
     <ion-row>
-      <ion-col :size="settingsVisible == true ? 9 : 12">
+      <ion-col
+        :class="{ 'col-expanded': !settingsVisible }"
+        :size="settingsVisible ? '9' : '12'"
+      >
         <ion-row>
           <ion-col>
             <!-- title -->
@@ -102,112 +105,104 @@
         </ion-row>
       </ion-col>
 
-      <ion-col size="3" v-if="settingsVisible == true">
-        <ion-list>
-          <ion-list-header>
-            <ion-label>Opciones</ion-label>
-            <ion-button @click="settingsVisible = false">Ocultar</ion-button>
-          </ion-list-header>
+      <transition name="slide">
+        <ion-col size="3" v-show="settingsVisible" class="settings-panel">
+          <ion-list>
+            <ion-list-header>
+              <ion-label>Opciones</ion-label>
+              <ion-button @click="settingsVisible = false">Ocultar</ion-button>
+            </ion-list-header>
 
-          <!-- type save -->
-          <ion-row>
-            <ion-col>
-              <ion-card class="primary-select-animated">
-                <ion-item lines="none">
-                  <ion-toggle :checked="true">Borrador</ion-toggle>
-                </ion-item>
-              </ion-card>
-            </ion-col>
-          </ion-row>
+            <!-- type save -->
+            <ion-row>
+              <ion-col>
+                <ion-card>
+                  <ion-item lines="none">
+                    <ion-toggle :checked="true">Borrador</ion-toggle>
+                  </ion-item>
+                </ion-card>
+              </ion-col>
+            </ion-row>
 
-          <!-- cover-->
-          <ion-row>
-            <ion-col>
-              <ion-card class="primary-select-animated">
-                <ion-item
-                  :lines="cover.file.size > 0 ? 'full' : 'none'"
-                  button
-                  :disabled="props.disableUI"
-                  @click="($refs as any).inputPostCover.click()"
-                >
-                  <ion-label slot="start">
-                    <ion-text v-if="cover.file.size == 0"
-                      >Seleccionar Portada</ion-text
-                    >
-                    <ion-text v-else>Actualizar Portada</ion-text>
-                    <p>{{ cover.name }}</p>
-                  </ion-label>
-                </ion-item>
-
-                <ion-button
-                  v-if="cover.file.size > 0"
-                  color="danger"
-                  fill="clear"
-                  expand="full"
-                  @click="removeCover()"
-                >
-                  Quitar portada
-                </ion-button>
-
-                <input
-                  ref="inputPostCover"
-                  style="display: none"
-                  accept="image/*"
-                  type="file"
-                  @change="setCover({ file: $event })"
-                  @click="v$.cover.$touch()"
-                />
-
-                <!-- errors -->
-                <div
-                  v-for="(error, index) of (v$ as any).cover.$errors"
-                  :key="index"
-                  class="ion-padding-start"
-                >
-                  <span class="error" style="font-size: 12px">{{
-                    error.$message
-                  }}</span>
-                </div>
-              </ion-card>
-            </ion-col>
-          </ion-row>
-
-          <!-- delete post button -->
-          <ion-row>
-            <ion-col size="12">
-              <ion-card class="danger-select-animated">
-                <ion-item
-                  button
-                  lines="none"
-                  v-if="deletePostAction == false"
-                  @click="deletePostAction = true"
-                >
-                  <ion-icon
-                    color="danger"
-                    slot="start"
-                    :icon="trashOutline"
-                  ></ion-icon>
-                  <ion-label color="danger">Eliminar post</ion-label>
-                </ion-item>
-
-                <ion-item v-else lines="none">
-                  <ion-label color="danger">Continuar?</ion-label>
-
-                  <ion-button slot="end" color="danger" fill="clear"
-                    >Si</ion-button
+            <!-- cover-->
+            <ion-row>
+              <ion-col>
+                <ion-card>
+                  <ion-item
+                    :lines="cover.file.size > 0 ? 'full' : 'none'"
+                    button
+                    :disabled="props.disableUI"
+                    @click="($refs as any).inputPostCover.click()"
                   >
+                    <ion-label slot="start">
+                      <ion-text v-if="cover.file.size == 0"
+                        >Seleccionar Portada</ion-text
+                      >
+                      <ion-text v-else>Actualizar Portada</ion-text>
+                      <p>{{ cover.name }}</p>
+                    </ion-label>
+                  </ion-item>
+
                   <ion-button
-                    slot="end"
+                    v-if="cover.file.size > 0"
+                    color="danger"
                     fill="clear"
-                    @click="deletePostAction = false"
-                    >No</ion-button
+                    expand="full"
+                    @click="removeCover()"
                   >
-                </ion-item>
-              </ion-card>
-            </ion-col>
-          </ion-row>
-        </ion-list>
-      </ion-col>
+                    Quitar portada
+                  </ion-button>
+
+                  <input
+                    ref="inputPostCover"
+                    style="display: none"
+                    accept="image/*"
+                    type="file"
+                    @change="setCover({ file: $event })"
+                    @click="v$.cover.$touch()"
+                  />
+
+                  <!-- errors -->
+                  <div
+                    v-for="(error, index) of (v$ as any).cover.$errors"
+                    :key="index"
+                    class="ion-padding-start"
+                  >
+                    <span class="error" style="font-size: 12px">{{
+                      error.$message
+                    }}</span>
+                  </div>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+
+            <!-- delete post button -->
+            <ion-row>
+              <ion-col size="12">
+                <ion-card class="danger-select-animated">
+                  <ion-item
+                    button
+                    lines="none"
+                    v-if="deletePostAction == false"
+                  >
+                    <ion-icon
+                      color="danger"
+                      slot="start"
+                      :icon="trashOutline"
+                    ></ion-icon>
+                    <ion-label color="danger">Eliminar post</ion-label>
+                  </ion-item>
+
+                  <ion-item v-else>
+                    <ion-button>Si</ion-button>
+                    <ion-button>No</ion-button>
+                  </ion-item>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+          </ion-list>
+        </ion-col>
+      </transition>
     </ion-row>
 
     <!-- popovers -->
@@ -452,5 +447,24 @@ ion-content,
     font-size: 1.2rem;
     line-height: 2em;
   }
+}
+
+.col-expanded {
+  transition: all 0.3s ease-in-out;
+}
+
+.settings-panel {
+  transition: all 0.3s ease-in-out;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(30px);
+  opacity: 0;
 }
 </style>
