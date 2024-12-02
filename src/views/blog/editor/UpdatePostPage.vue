@@ -15,8 +15,16 @@
         :content="content"
         :cover="{ name: cover.name }"
         :disableUI="progressBar"
+        :postStatus="postStatus"
         @upload-image="uploadImage($event)"
-        @save="save($event)"
+        @save="
+          save({
+            title: $event.title,
+            content: $event.content,
+            cover: $event.cover,
+            status: $event.status,
+          })
+        "
       ></EditorComponent>
     </ion-content>
   </ion-page>
@@ -36,6 +44,7 @@ const systemController = new SystemController();
 
 // components
 import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
+import { StatusPost } from "@/services/types";
 
 const router = useRouter();
 const route = useRoute();
@@ -45,12 +54,16 @@ const openToastError = systemController.openToastError;
 const idPost = route.params.id as string;
 const title = ref("");
 const content = ref("");
-const cover = ref({ id: "", name: "" });
+const cover = ref<{ id: string | undefined; name: string | undefined }>({
+  id: "",
+  name: "",
+});
 const newImages = ref(Array<string>());
 const images = ref<string[]>([]);
 const editorRef = ref(null);
 const progressBar = ref<true | false>(false);
 const contentLoaded = ref(false);
+const postStatus = ref<StatusPost>();
 
 // mounted
 onMounted(() => {
@@ -71,11 +84,12 @@ async function getPost(): Promise<void> {
     })!;
     const title = post.title ?? "";
     const content = post.content ?? "";
-    const coverId = post.cover.id ?? "";
-    const coverName = post.cover.name ?? "";
+    const coverId = post.cover?.id ?? undefined;
+    const coverName = post.cover?.name ?? undefined;
+    const status = post.status;
 
     if (post) {
-      setData({ title, content, coverId, coverName });
+      setData({ title, content, coverId, coverName, status });
       contentLoaded.value = true;
     }
   } catch (e: any) {
@@ -89,8 +103,9 @@ async function getPost(): Promise<void> {
 function setData(data: {
   title: string;
   content: string;
-  coverId: string;
-  coverName: string;
+  coverId: string | undefined;
+  coverName: string | undefined;
+  status: StatusPost;
 }): void {
   title.value = data.title;
   content.value = data.content;
@@ -98,6 +113,7 @@ function setData(data: {
     id: data.coverId,
     name: data.coverName,
   };
+  postStatus.value = data.status;
   getPostImages(data.content);
 }
 
@@ -105,8 +121,9 @@ async function save(data: {
   title: string;
   content: string;
   cover: File;
+  status: StatusPost;
 }): Promise<void> {
-  const { title, content, cover: newCover } = data;
+  const { title, content, cover: newCover, status } = data;
   progressBar.value = true;
 
   const id = idPost as string;
@@ -140,6 +157,7 @@ async function save(data: {
         cover: coverData,
         images,
         imagesRemoved,
+        status,
       },
     });
     await systemController.presentToast({ message: "Post actualizado" });

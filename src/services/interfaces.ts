@@ -65,6 +65,7 @@ export interface UpdatePost {
   };
   images: string[];
   imagesRemoved: string[];
+  status: StatusPost;
 }
 
 export interface GetPostsDates {

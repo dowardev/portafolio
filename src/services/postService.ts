@@ -11,6 +11,7 @@ interface UpdatePost {
   newCoverId: string;
   images: string[];
   imagesRemoved: string[];
+  status: string;
 }
 
 export default class PostService {
@@ -24,8 +25,16 @@ export default class PostService {
   }
 
   async updatePost(params: { post: UpdatePost }): Promise<void> {
-    const { images, coverId, content, title, id, newCoverId, imagesRemoved } =
-      params.post;
+    const {
+      images,
+      coverId,
+      content,
+      title,
+      id,
+      newCoverId,
+      imagesRemoved,
+      status,
+    } = params.post;
 
     await apiConnector.post({
       url: `update-post`,
@@ -37,6 +46,7 @@ export default class PostService {
         id,
         newCoverId,
         imagesRemoved,
+        status,
       },
     });
   }

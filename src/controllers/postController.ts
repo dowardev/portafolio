@@ -113,7 +113,8 @@ export default class PostController {
   }
 
   async updatePost(params: { post: UpdatePost }): Promise<void> {
-    const { id, title, content, cover, images, imagesRemoved } = params.post;
+    const { id, title, content, cover, images, imagesRemoved, status } =
+      params.post;
     const post = {
       id: id!,
       title,
@@ -122,6 +123,7 @@ export default class PostController {
       newCoverId: cover.newCoverId,
       images: images,
       imagesRemoved: imagesRemoved,
+      status,
     };
 
     try {
