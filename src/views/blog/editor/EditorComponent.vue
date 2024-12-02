@@ -17,6 +17,7 @@
         <!-- save -->
         <ion-button
           fill="clear"
+          color="primary"
           :disabled="v$.$invalid || props.disableUI"
           @click="save()"
         >

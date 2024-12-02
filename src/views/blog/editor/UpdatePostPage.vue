@@ -244,12 +244,8 @@ async function getImageURL(params: { name: string }): Promise<string> {
 
 async function deletePost(params: { id: string }) {
   const id = params.id;
+  progressBar.value = true;
 
-  const loading = await loadingController.create({
-    message: "Eliminando publicación",
-  });
-
-  loading.present();
   try {
     await postController.deletePost({ id });
     await systemController.presentToast({ message: "Post eliminado" });
@@ -257,7 +253,7 @@ async function deletePost(params: { id: string }) {
   } catch (error) {
     console.error(error);
   } finally {
-    loading.dismiss();
+    progressBar.value = false;
   }
 }
 </script>
