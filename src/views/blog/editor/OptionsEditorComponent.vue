@@ -60,15 +60,25 @@
   <!-- delete post button -->
   <ion-row v-if="$route.name == 'UpdatePost'">
     <ion-col size="12">
-      <ion-card class="danger-select-animated">
-        <ion-item button lines="none" v-if="deletePostAction == false">
+      <ion-card class="selectable-danger-card">
+        <ion-item
+          button
+          lines="none"
+          v-if="deletePostAction == false"
+          @click="deletePostAction = true"
+        >
           <ion-icon color="danger" slot="start" :icon="trashOutline"></ion-icon>
           <ion-label color="danger">Eliminar post</ion-label>
         </ion-item>
 
-        <ion-item v-else>
-          <ion-button>Si</ion-button>
-          <ion-button>No</ion-button>
+        <ion-item lines="none" v-else>
+          <ion-label color="danger">Continuar?</ion-label>
+          <ion-button color="danger" fill="clear" @click="deletePost()"
+            >Si</ion-button
+          >
+          <ion-button @click="deletePostAction = false" fill="clear"
+            >No</ion-button
+          >
         </ion-item>
       </ion-card>
     </ion-col>
@@ -97,7 +107,7 @@ const props = defineProps({
     required: false,
   },
 });
-const emits = defineEmits(["cover-change", "status-change"]);
+const emits = defineEmits(["cover-change", "status-change", "delete-post"]);
 const deletePostAction = ref(false);
 const cover = ref({ name: props.cover.name, file: new File([], "") });
 const postStatus = ref<StatusPost>(props.postStatus as StatusPost);
@@ -124,5 +134,9 @@ function setStatus(params: { status: StatusPost }) {
   const { status } = params;
   postStatus.value = status;
   emits("status-change", status);
+}
+
+function deletePost() {
+  emits("delete-post");
 }
 </script>

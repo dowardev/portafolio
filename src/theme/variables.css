@@ -113,6 +113,11 @@ ion-card {
   background: var(--ion-color-selected);
 }
 
+.selectable-danger-card:hover {
+  border: 1px solid var(--ion-color-danger);
+  background: var(--ion-color-selected);
+}
+
 @keyframes dibujar-borde {
   0% {
     border-color: transparent;

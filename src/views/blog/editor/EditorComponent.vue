@@ -119,6 +119,7 @@
               :post-status="props.postStatus"
               @cover-change="setCover({ file: $event })"
               @status-change="setPostStatus({ status: $event })"
+              @delete-post="deletePost()"
             />
           </ion-list>
         </ion-col>
@@ -197,6 +198,7 @@
           :post-status="props.postStatus"
           @cover-change="setCover({ file: $event })"
           @status-change="setPostStatus({ status: $event })"
+          @delete-post="deletePost()"
         />
       </ion-content>
     </ion-modal>
@@ -263,7 +265,7 @@ const props = defineProps({
     required: false,
   },
 });
-const emits = defineEmits(["save", "uploadImage"]);
+const emits = defineEmits(["save", "uploadImage", "delete-post"]);
 const modeDesignElements = isPlatform("ios") ? "ios" : ("md" as "md" | "ios");
 v$: useVuelidate();
 modeDesignElements;
@@ -378,6 +380,10 @@ function openSettings() {
 function setPostStatus(params: { status: StatusPost }) {
   const { status } = params;
   postStatus.value = status;
+}
+
+function deletePost() {
+  emits("delete-post");
 }
 </script>
 

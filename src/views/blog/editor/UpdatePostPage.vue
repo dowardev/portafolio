@@ -25,13 +25,14 @@
             status: $event.status,
           })
         "
+        @delete-post="deletePost({ id: idPost })"
       ></EditorComponent>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage } from "@ionic/vue";
+import { IonPage, loadingController } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UpdatePost } from "@/services/interfaces";
@@ -239,5 +240,24 @@ function getRemovedImages(content: string) {
 async function getImageURL(params: { name: string }): Promise<string> {
   const { name } = params;
   return (await systemController.getImageURL({ name })).url;
+}
+
+async function deletePost(params: { id: string }) {
+  const id = params.id;
+
+  const loading = await loadingController.create({
+    message: "Eliminando publicación",
+  });
+
+  loading.present();
+  try {
+    await postController.deletePost({ id });
+    await systemController.presentToast({ message: "Post eliminado" });
+    await router.push({ name: "PostsPage" });
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loading.dismiss();
+  }
 }
 </script>
