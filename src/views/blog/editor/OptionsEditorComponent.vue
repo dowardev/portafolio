@@ -58,7 +58,7 @@
   </ion-row>
 
   <!-- delete post button -->
-  <ion-row>
+  <ion-row v-if="$route.name == 'UpdatePost'">
     <ion-col size="12">
       <ion-card class="danger-select-animated">
         <ion-item button lines="none" v-if="deletePostAction == false">
