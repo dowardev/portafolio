@@ -52,19 +52,7 @@
           accept="image/*"
           type="file"
           @change="emitCover({ file: $event })"
-          @click="v$.cover.$touch()"
         />
-
-        <!-- errors -->
-        <div
-          v-for="(error, index) of (v$ as any).cover.$errors"
-          :key="index"
-          class="ion-padding-start"
-        >
-          <span class="error" style="font-size: 12px">{{
-            error.$message
-          }}</span>
-        </div>
       </ion-card>
     </ion-col>
   </ion-row>
@@ -112,17 +100,6 @@ const props = defineProps({
 const emits = defineEmits(["cover-change", "status-change"]);
 const deletePostAction = ref(false);
 const cover = ref({ name: props.cover.name, file: new File([], "") });
-const messageError = {
-  required: "Campo requerido",
-};
-const rules = {
-  cover: {
-    required: helpers.withMessage(messageError.required, required),
-  },
-};
-const v$ = useVuelidate(rules, {
-  cover: cover.value.file,
-});
 const postStatus = ref<StatusPost>(props.postStatus as StatusPost);
 
 // functions

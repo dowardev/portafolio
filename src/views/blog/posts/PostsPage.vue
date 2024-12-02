@@ -79,14 +79,15 @@
                     "
                   >
                     <img
-                      :src="post.cover.url"
-                      @click="openPost(post.id!)"
                       style="
                         border-top-left-radius: 4px;
                         border-bottom-left-radius: 4px;
-                        width: 500px;
-                        height: 100%;
+                        width: 150px;
+                        max-width: 150px;
+                        max-height: 86px;
                       "
+                      :src="post.cover ? post.cover.url : noCover"
+                      @click="openPost(post.id!)"
                     />
                   </ion-col>
 
@@ -337,6 +338,9 @@ import DateSelectorComponent from "@/components/posts/DateSelectorComponent.vue"
 import { onMounted } from "vue";
 import { is } from "date-fns/locale";
 import { filterPostOptions } from "@/services/types";
+
+// imgs
+import noCover from "@/assets/otros/No_cover.png";
 
 // vars
 const pageTitle = ref("Blog");

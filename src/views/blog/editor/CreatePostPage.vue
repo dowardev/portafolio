@@ -60,15 +60,17 @@ async function save(params: {
   let coverId = "";
   progressBar.value = true;
 
-  try {
-    const response = await uploadCover({ image: cover });
-    coverId = response.id;
-  } catch (e: any) {
-    console.error(e);
-    openToastError(e);
-    return;
-  } finally {
-    progressBar.value = false;
+  if (cover.size > 0) {
+    try {
+      const response = await uploadCover({ image: cover });
+      coverId = response.id;
+    } catch (e: any) {
+      console.error(e);
+      openToastError(e);
+      return;
+    } finally {
+      progressBar.value = false;
+    }
   }
 
   try {
