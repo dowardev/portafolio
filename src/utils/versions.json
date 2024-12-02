@@ -1,5 +1,11 @@
 {
   "8": {
+    "8.11.0": {
+      "improvements": [
+        "Agredo un panel de ajustes al editor de posts",
+        "Mejoras menores al editor de posts"
+      ]
+    },
     "8.10.0": {
       "improvements": [
         "Resuelto el problema que ocultaba el contenido del post",
