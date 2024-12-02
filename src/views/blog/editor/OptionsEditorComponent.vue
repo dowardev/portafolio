@@ -24,20 +24,20 @@
     <ion-col>
       <ion-card>
         <ion-item
-          :lines="cover.file.size > 0 ? 'full' : 'none'"
+          :lines="cover.name ? 'full' : 'none'"
           button
           :disabled="props.disableUI"
           @click="($refs as any).inputPostCover.click()"
         >
           <ion-label slot="start">
-            <ion-text v-if="cover.file.size == 0">Seleccionar Portada</ion-text>
+            <ion-text v-if="cover.name">Seleccionar Portada</ion-text>
             <ion-text v-else>Actualizar Portada</ion-text>
             <p>{{ cover.name }}</p>
           </ion-label>
         </ion-item>
 
         <ion-button
-          v-if="cover.file.size > 0"
+          v-if="cover.name"
           color="danger"
           fill="clear"
           expand="full"
@@ -117,6 +117,7 @@ function emitCover(params: { file: Event }) {
 async function removeCover() {
   cover.value.name = "";
   cover.value.file = new File([], "");
+  emits("cover-change", new File([], ""));
 }
 
 function setStatus(params: { status: StatusPost }) {

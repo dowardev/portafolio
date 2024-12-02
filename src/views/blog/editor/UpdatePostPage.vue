@@ -135,7 +135,6 @@ async function save(data: {
   const imagesRemoved = getRemovedImages(data.content);
 
   if (newCover instanceof File && newCover.size > 0) {
-    console.log(newCover);
     try {
       const response = await uploadCover({ image: newCover });
       coverData.newCoverId = response.id;
@@ -146,6 +145,10 @@ async function save(data: {
     } finally {
       progressBar.value = false;
     }
+  }
+
+  if (newCover instanceof File && newCover.size == 0) {
+    coverData.newCoverId = "-1";
   }
 
   try {
