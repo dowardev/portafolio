@@ -268,7 +268,6 @@ class PostsController extends Controller
     $messages = [
       "title.required" => "The title field is required.",
       "content.required" => "The content field is required.",
-      "cover_id.required" => "The cover_id field is required.",
       "status.required" => "The status field is required.",
     ];
 
@@ -277,18 +276,19 @@ class PostsController extends Controller
       [
         "title" => "required",
         "content" => "required",
-        "cover_id" => "required",
         "status" => "required",
       ],
       $messages
     );
 
-    Image::where("id", $cover_id)->update(["status" => true]);
+    if ($cover_id) {
+      Image::where("id", $cover_id)->update(["status" => true]);
+    }
 
     $post = Post::create([
       "title" => $title,
       "content" => $content,
-      "cover_id" => $cover_id,
+      "cover_id" => $cover_id ?? null,
       "status" => $status,
     ]);
     $post_id = $post->id;
