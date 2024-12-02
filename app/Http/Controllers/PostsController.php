@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\SystemController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Log;
 
 class PostsController extends Controller
 {
@@ -368,7 +369,7 @@ class PostsController extends Controller
       "status" => $request->status,
     ]);
 
-    if (!empty($new_cover_id)) {
+    if (!empty($new_cover_id >= 0)) {
       Post::where("id", "=", $id)->update([
         "cover_id" => $new_cover_id,
       ]);
@@ -376,6 +377,24 @@ class PostsController extends Controller
         $cover_name = Image::where("id", "=", $cover_id)->first()->name;
         Storage::disk("posts_images")->delete($cover_name);
         Image::where("id", "=", $cover_id)->delete();
+      }
+    }
+
+    if ($new_cover_id == -1) {
+      Log::info("Entering cover removal block", ["post_id" => $id]);
+
+      $current_cover_id = Post::where("id", "=", $id)->first()->cover_id;
+      if ($current_cover_id) {
+        Log::info("Found current cover", ["cover_id" => $current_cover_id]);
+
+        $cover_name = Image::where("id", "=", $current_cover_id)->first()->name;
+        Storage::disk("posts_images")->delete($cover_name);
+        Image::where("id", "=", $current_cover_id)->delete();
+        Post::where("id", "=", $id)->update([
+          "cover_id" => null,
+        ]);
+
+        Log::info("Cover removed successfully");
       }
     }
 
