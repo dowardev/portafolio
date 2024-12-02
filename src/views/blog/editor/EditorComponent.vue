@@ -194,7 +194,9 @@
         <OptionsEditorComponent
           :cover="cover"
           :disableUI="props.disableUI"
+          :post-status="props.postStatus"
           @cover-change="setCover({ file: $event })"
+          @status-change="setPostStatus({ status: $event })"
         />
       </ion-content>
     </ion-modal>
@@ -257,7 +259,7 @@ const props = defineProps({
   disableUI: { default: false, type: Boolean, required: false },
   postStatus: {
     type: String as () => StatusPost,
-    default: "draft",
+    default: "active",
     required: false,
   },
 });

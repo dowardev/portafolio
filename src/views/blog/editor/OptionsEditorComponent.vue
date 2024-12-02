@@ -4,14 +4,16 @@
     <ion-col>
       <ion-card>
         <ion-item lines="none">
-          <ion-toggle
-            :checked="postStatus == 'draft' ? true : false"
-            @ion-change="
-              setStatus({ status: $event.detail.checked ? 'draft' : 'active' })
-            "
+          <ion-select
+            label="Estado"
+            interface="popover"
+            :value="postStatus"
+            @ion-change="setStatus({ status: $event.detail.value })"
           >
-            Borrador
-          </ion-toggle>
+            <ion-select-option value="active">Publicar</ion-select-option>
+            <ion-select-option value="draft">Borrador</ion-select-option>
+            <ion-select-option value="inactive">Inactivo</ion-select-option>
+          </ion-select>
         </ion-item>
       </ion-card>
     </ion-col>
@@ -103,7 +105,7 @@ const props = defineProps({
   disableUI: { default: false, type: Boolean, required: false },
   postStatus: {
     type: String as () => StatusPost,
-    default: "draft",
+    default: "active",
     required: false,
   },
 });
