@@ -338,10 +338,11 @@ class PostsController extends Controller
       "id" => "required|integer",
       "title" => "required|string",
       "content" => "required|string",
-      "coverId" => "required|integer",
+      "coverId" => "integer|nullable",
       "newCoverId" => "integer|nullable",
       "images" => "array|nullable",
       "imagesRemoved" => "array|nullable",
+      "status" => "required|string",
     ]);
 
     if ($validator->fails()) {
@@ -364,15 +365,18 @@ class PostsController extends Controller
     Post::where("id", "=", $id)->update([
       "title" => $title,
       "content" => $content,
+      "status" => $request->status,
     ]);
 
     if (!empty($new_cover_id)) {
-      $cover_name = Image::where("id", "=", $cover_id)->first()->name;
       Post::where("id", "=", $id)->update([
         "cover_id" => $new_cover_id,
       ]);
-      Storage::disk("posts_images")->delete($cover_name);
-      Image::where("id", "=", $cover_id)->delete();
+      if ($cover_id) {
+        $cover_name = Image::where("id", "=", $cover_id)->first()->name;
+        Storage::disk("posts_images")->delete($cover_name);
+        Image::where("id", "=", $cover_id)->delete();
+      }
     }
 
     foreach ($images_removed as $value) {
