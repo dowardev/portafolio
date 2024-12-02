@@ -11,13 +11,10 @@ return new class extends Migration {
   public function up(): void
   {
     Schema::table("posts", function (Blueprint $table) {
-      // Eliminar la clave foránea existente usando su nombre específico
       $table->dropForeign("posts_cover_id_foreign");
 
-      // Opcional: Si deseas asegurar que la columna es nullable
       $table->integer("cover_id")->unsigned()->nullable()->change();
 
-      // Agregar la nueva clave foránea con 'onDelete' set null
       $table
         ->foreign("cover_id")
         ->references("id")

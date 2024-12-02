@@ -245,8 +245,6 @@ class PostsController extends Controller
 
   public function createPost(Request $request)
   {
-    $images = $request->images;
-
     if (Auth::guard("api")->user()->is_admin == false) {
       return response()->json(
         [
@@ -266,21 +264,17 @@ class PostsController extends Controller
     }
     $status = $request->status;
 
-    $messages = [
-      "title.required" => "The title field is required.",
-      "content.required" => "The content field is required.",
-      "status.required" => "The status field is required.",
-    ];
+    $validator = Validator::make($request->all(), [
+      "title" => "required",
+      "content" => "required",
+      "status" => "required",
+      "coverId" => "integer|nullable",
+      "images" => "array|nullable",
+    ]);
 
-    $validator = Validator::make(
-      $request->all(),
-      [
-        "title" => "required",
-        "content" => "required",
-        "status" => "required",
-      ],
-      $messages
-    );
+    if ($validator->fails()) {
+      return response()->json(["errors" => $validator->errors()], 400);
+    }
 
     if ($cover_id) {
       Image::where("id", $cover_id)->update(["status" => true]);
@@ -434,9 +428,11 @@ class PostsController extends Controller
     }
 
     $cover_id = Post::find($id)->cover_id;
-    $image_name = Image::find($cover_id)->name;
-    Storage::delete("images_posts/" . $image_name);
-    Image::where("id", $cover_id)->delete();
+    if ($cover_id) {
+      $image_name = Image::find($cover_id)->name;
+      Storage::delete("images_posts/" . $image_name);
+      Image::where("id", $cover_id)->delete();
+    }
 
     Post::where("id", $id)->delete();
 
