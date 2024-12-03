@@ -59,11 +59,13 @@ class SystemController extends Controller
       "status" => false,
     ]);
 
+    $imgUrl = Storage::disk($path)->url($filename);
+
     return [
       "image" => [
         "id" => $image->id,
         "name" => $image->name,
-        "path" => $image->path,
+        "url" => $imgUrl,
       ],
     ];
   }
