@@ -115,18 +115,18 @@ async function uploadImage(e: File): Promise<void> {
   progressBar.value = true;
 
   try {
-    const response = await postController.uploadImage({
+    const { id: idImage, url: urlImage } = await postController.uploadImage({
       image,
       type: "post",
     });
 
-    const imageName = response.name;
-
-    const api = await getImageURL({ name: imageName! });
+    // const api = await getImageURL({ name: imageName! });
     content.value =
-      '<div class="center"><img src="' + api + '" style="width:80%"/></div>';
+      '<div class="center"><img src="' +
+      urlImage +
+      '" style="width:80%"/></div>';
 
-    if (response.id) images.push(response.id);
+    if (idImage) images.push(idImage);
   } catch (e: any) {
     console.error(e);
     openToastError(e);

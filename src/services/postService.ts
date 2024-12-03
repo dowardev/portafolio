@@ -1,4 +1,10 @@
-import { Post, CreatePost, GetPost, GetPostsServer } from "./interfaces";
+import {
+  Post,
+  CreatePost,
+  GetPost,
+  GetPostsServer,
+  ImageServer,
+} from "./interfaces";
 import { apiConnector } from "@/main";
 
 import { filterPostOptions, PostFields } from "./types";
@@ -19,7 +25,7 @@ export default class PostService {
     const { title, content, coverId, images, status } = params;
 
     await apiConnector.post({
-      url: `create-post/`,
+      url: `create-post`,
       data: { title, content, coverId, images, status },
     });
   }
@@ -130,7 +136,7 @@ export default class PostService {
   async uploadImage(params: {
     image: File;
     type: string;
-  }): Promise<{ id: string; path: string; name: string }> {
+  }): Promise<ImageServer> {
     const { image, type } = params;
 
     const formData = new FormData();
@@ -145,7 +151,7 @@ export default class PostService {
 
     return {
       id: response.data.image.id,
-      path: response.data.image.path,
+      url: response.data.image.url,
       name: response.data.image.name,
     };
   }

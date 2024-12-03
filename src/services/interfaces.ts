@@ -81,8 +81,12 @@ export interface GetImage {
 export interface Image {
   id?: string;
   name?: string;
-  path?: string;
-  source?: string;
+  url?: string;
+}
+export interface ImageServer {
+  id?: string;
+  name?: string;
+  url?: string;
 }
 
 export interface UploadImage {
