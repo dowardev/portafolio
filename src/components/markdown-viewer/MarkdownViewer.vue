@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
-import vueMarkdownIt from "vue3-markdown-it";
+import { VueMarkdownIt } from "@f3ve/vue-markdown-it";
 
 // const
 const props = defineProps({
@@ -23,7 +23,7 @@ const markdownOptions = {
         return hljs.highlight(lang, str).value;
       } catch (__) {}
     }
-    return ""; // use external default escaping
+    return "";
   },
 };
 </script>
@@ -40,10 +40,6 @@ pre {
     rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
   border-radius: 4px;
   padding: 16px;
-}
-
-pre > code {
-  background: transparent !important;
 }
 
 blockquote {
