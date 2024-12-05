@@ -49,7 +49,7 @@
     </ion-header>
 
     <ion-row style="height: 100dvh; overflow: hidden">
-      <ion-col size="9">
+      <ion-col :size="isPlatform('desktop') ? '9' : 12">
         <!-- ion content -->
         <ion-content
           :fullscreen="true"
@@ -122,7 +122,7 @@
         </ion-content>
       </ion-col>
 
-      <ion-col size="3">
+      <ion-col size="3" v-if="isPlatform('desktop')">
         <indexContentComponent
           :index-content="indexContent"
           :auto-hide-content="isPlatform('ios') || isPlatform('android')"
@@ -198,7 +198,6 @@ watch(
 // functions
 async function start(): Promise<void> {
   await getPost();
-  await setThemeCodePreview();
   generarIndexContent();
 }
 
