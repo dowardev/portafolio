@@ -59,87 +59,84 @@
       <!-- posts -->
       <ion-row v-if="postController.getPosts()!.length > 0">
         <ion-col
-          v-for="(post, indexPost) in filterPosts"
-          :key="post.id"
           size="12"
           size-md="6"
+          size-lg="4"
+          style="display: flex"
+          :class="{ 'ion-justify-content-center': isPlatform('mobile') }"
+          v-for="(post, indexPost) in filterPosts"
+          :key="post.id"
         >
-          <ion-card class="primary-select-animated" style="cursor: pointer">
-            <ion-row>
-              <ion-col size="11" @click="openPost(post.id!)">
-                <ion-row>
-                  <!-- img post -->
-                  <ion-col
-                    size="4"
-                    style="
-                      padding-bottom: 0px;
-                      padding-left: 0px;
-                      padding-top: 0px;
-                      cursor: pointer;
-                    "
+          <ion-card
+            :class="{
+              admin: userController.getUser()?.isAdmin && isPlatform('desktop'),
+            }"
+            class="post-card"
+            @touchstart="startPress({ event: $event, id: post.id })"
+            @touchend="endPress"
+            @contextmenu.prevent
+          >
+            <div style="position: relative; display: inline-block">
+              <img
+                style="
+                  border-top-left-radius: 4px;
+                  border-bottom-left-radius: 4px;
+                "
+                class="img-cover"
+                :src="post.cover ? post.cover.url : noCover"
+              />
+
+              <!-- degraded -->
+              <div class="degraded"></div>
+
+              <div class="card-post-content">
+                <section id="post-title">
+                  <!-- title -->
+                  <ion-card-title
+                    mode="md"
+                    style="color: white; cursor: pointer"
+                    @click="openPost(post.id!)"
                   >
-                    <img
-                      style="
-                        border-top-left-radius: 4px;
-                        border-bottom-left-radius: 4px;
-                        width: 150px;
-                        max-width: 150px;
-                        max-height: 86px;
-                      "
-                      :src="post.cover ? post.cover.url : noCover"
-                      @click="openPost(post.id!)"
-                    />
-                  </ion-col>
+                    {{ post.title }}
+                  </ion-card-title>
+                </section>
 
-                  <ion-col size="8">
-                    <ion-row>
-                      <ion-col
-                        :size="userController.getUser()?.isAdmin ? 10 : 12"
-                        @click="openPost(post.id!)"
-                        style="cursor: pointer"
-                      >
-                        <ion-card-title class="truncate-text">
-                          {{ post.title }}
-                        </ion-card-title>
-                      </ion-col>
-                    </ion-row>
-
-                    <!-- options post -->
-                    <ion-row
-                      @click="openPost(post.id!)"
-                      style="cursor: pointer"
-                    >
-                      <ion-col size="6">
-                        <ion-chip
-                          v-if="userController.getUser()?.isAdmin"
-                          :color="
-                            post.status == 'active'
-                              ? 'success'
-                              : post.status == 'inactive'
-                                ? 'danger'
-                                : 'warning'
-                          "
-                          >{{ post.status }}</ion-chip
-                        >
-                      </ion-col>
-                    </ion-row>
-                  </ion-col>
-                </ion-row>
-              </ion-col>
-
-              <ion-col size="1" v-if="userController.getUser()?.isAdmin">
-                <ion-button
-                  fill="clear"
-                  @click="
-                    idPostSelected = parseInt(post.id);
-                    popoverPostOptions.event = $event;
-                    popoverPostOptions.isOpen = true;
-                  "
+                <!-- options -->
+                <section
+                  v-if="userController.getUser()?.isAdmin"
+                  id="section-hide"
                 >
-                  <ion-icon :icon="ellipsisVerticalOutline"> </ion-icon>
-                </ion-button>
-              </ion-col>
-            </ion-row>
+                  <div>
+                    <!-- status -->
+                    <ion-chip
+                      v-if="userController.getUser()?.isAdmin"
+                      :color="
+                        post.status == 'active'
+                          ? 'success'
+                          : post.status == 'inactive'
+                            ? 'danger'
+                            : 'warning'
+                      "
+                      >{{ post.status }}</ion-chip
+                    >
+                  </div>
+
+                  <!-- button -->
+                  <div>
+                    <ion-button
+                      fill="clear"
+                      @click="
+                        idPostSelected = parseInt(post.id);
+                        popoverPostOptions.event = $event;
+                        popoverPostOptions.isOpen = true;
+                      "
+                    >
+                      <ion-icon :icon="ellipsisVerticalOutline"> </ion-icon>
+                    </ion-button>
+                  </div>
+                </section>
+              </div>
+            </div>
           </ion-card>
         </ion-col>
       </ion-row>
@@ -214,9 +211,10 @@
     </ion-modal>
 
     <!-- popovers -->
+    <!-- popover main options -->
     <ion-popover
-      :is-open="popOverMainOPtions.isOpen"
       @didDismiss="popOverMainOPtions.isOpen = false"
+      :is-open="popOverMainOPtions.isOpen"
       :event="popOverMainOPtions.event"
       ><ion-content>
         <!-- search -->
@@ -307,7 +305,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonItem, loadingController, IonPage } from "@ionic/vue";
+import { IonItem, loadingController, IonPage, isPlatform } from "@ionic/vue";
 import { computed, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -335,8 +333,6 @@ const systemController = new SystemController();
 
 // components
 import DateSelectorComponent from "@/components/posts/DateSelectorComponent.vue";
-import { onMounted } from "vue";
-import { is } from "date-fns/locale";
 import { filterPostOptions } from "@/services/types";
 
 // imgs
@@ -358,7 +354,7 @@ const currentPage = ref("");
 let dates = reactive([] as Array<string>);
 const index = ref();
 const currentPageIndex = ref(0);
-const popOverMainOPtions = ref({ isOpen: false, event: Event });
+const popOverMainOPtions = ref({ isOpen: false, event: {} as MouseEvent });
 const filter = reactive({
   selected: "active" as filterPostOptions,
   options: {
@@ -368,8 +364,9 @@ const filter = reactive({
     draft: "Borrador",
   },
 });
-const popoverPostOptions = ref({ isOpen: false, event: Event });
+const popoverPostOptions = ref({ isOpen: false, event: {} as MouseEvent });
 const idPostSelected = ref<undefined | number>(undefined);
+const pressTimer = ref(0);
 
 // computed
 const filterPosts = computed(() => {
@@ -591,6 +588,20 @@ async function selectDate(params: { date: string }): Promise<void> {
 function updatecurrentPage(): void {
   postController.updateCurrentPage({ currentPage: currentPage.value });
 }
+
+function startPress(params: { event: MouseEvent; id: string }) {
+  const { event, id } = params;
+  if (!userController.getUser()?.isAdmin) return;
+  pressTimer.value = setTimeout(() => {
+    idPostSelected.value = parseInt(id);
+    popoverPostOptions.value.event = event;
+    popoverPostOptions.value.isOpen = true;
+  }, 500);
+}
+
+function endPress() {
+  clearTimeout(pressTimer.value);
+}
 </script>
 
 <style scoped>
@@ -598,5 +609,56 @@ function updatecurrentPage(): void {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.img-cover {
+  width: 100dvw;
+  height: 200px;
+}
+
+@media (min-width: 1024px) {
+  .img-cover {
+    width: 100dvw;
+    height: 193px;
+  }
+}
+
+.card-post-content {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  transition: all 0.54s ease;
+  width: 100%;
+}
+
+.card-post-content > #section-hide {
+  margin-top: 10px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  display: flex;
+  justify-content: end;
+  position: absolute;
+  align-items: center;
+  width: 100%;
+}
+
+.card-post-content > #post-title {
+  width: 80%;
+}
+
+.admin:hover .card-post-content {
+  transform: translateY(-60px);
+}
+.admin:hover .card-post-content > #section-hide {
+  opacity: 1;
+}
+
+.degraded {
+  position: absolute;
+  top: 0%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), black);
 }
 </style>
