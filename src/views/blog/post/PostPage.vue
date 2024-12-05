@@ -50,10 +50,12 @@
 
     <ion-row id="pr" style="height: 100dvh; overflow: hidden">
       <ion-col size="9">
+        <!-- ion content -->
         <ion-content
           :fullscreen="true"
           v-if="postController.getPost({ id: postId }) != undefined"
         >
+          <ion-card></ion-card>
           <ion-header collapse="condense" mode="ios">
             <ion-toolbar>
               <ion-title size="large"
@@ -65,9 +67,9 @@
           </ion-header>
 
           <!-- content -->
-          <div ref="indexRef" @scroll="setScrollPosition()">
+          <div ref="indexRef" @scroll="setScrollPosition()" class="ion-padding">
             <article>
-              <MdPreview
+              <!-- <MdPreview
                 style="
                   --md-bk-color: var(--ion-background-color-rgb);
                   --md-color: var(--ion-text-color);
@@ -78,6 +80,10 @@
                     ? 'light'
                     : 'dark'
                 "
+              /> -->
+              <vue-markdown-it
+                :source="postController.getPost({ id: postId })!.content"
+                :options="markdownOptions"
               />
             </article>
           </div>
@@ -155,9 +161,11 @@ import {
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref, watch } from "vue";
 import indexContentComponent from "./indexContentComponent.vue";
-import { MdPreview } from "md-editor-v3";
+import { VueMarkdownIt } from "@f3ve/vue-markdown-it";
 import { isPlatform, modalController } from "@ionic/vue";
 import modalIndexContent from "./modalIndexContent.vue";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
 
 // controllers
 import SystemController from "@/controllers/systemController";
@@ -181,7 +189,18 @@ const useSytemComposable = systemController;
 const popoverMainOptions = ref({ open: false, event: Event });
 const scrollPosition = ref(0);
 const showTitle = ref(false);
-
+const markdownOptions = {
+  html: true,
+  linkify: true,
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(lang, str).value;
+      } catch (__) {}
+    }
+    return ""; // use external default escaping
+  },
+};
 // mounted
 onMounted(() => {
   start();
@@ -327,3 +346,33 @@ function setScrollPosition(): void {
   scrollPosition.value = (indexRef.value! as HTMLElement).scrollTop;
 }
 </script>
+
+<style>
+pre {
+  --border-width-card: 8px;
+  --background-opacity: 50%;
+
+  width: 100%;
+  background: #ddd6d661;
+  box-shadow:
+    rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
+    rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+blockquote {
+  --border-width-card: 8px;
+  --background-opacity: 50%;
+
+  width: 100%;
+  box-shadow:
+    rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
+    rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+  border-radius: 4px;
+  padding: 16px;
+  margin-left: 0px;
+  border-left: var(--border-width-card) solid var(--ion-color-success);
+  background: var(--ion-color-secondary-background-hover);
+}
+</style>

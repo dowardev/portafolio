@@ -1,7 +1,7 @@
 {
   "name": "dowar-blog",
   "private": true,
-  "version": "8.11.2",
+  "version": "8.11.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -17,6 +17,7 @@
     "@capacitor/haptics": "6.0.1",
     "@capacitor/keyboard": "6.0.2",
     "@capacitor/status-bar": "6.0.1",
+    "@f3ve/vue-markdown-it": "^0.2.3",
     "@ionic/storage": "^4.0.0",
     "@ionic/vue": "^8.4.0",
     "@ionic/vue-router": "^8.4.0",
@@ -33,7 +34,6 @@
     "pinia": "^2.2.6",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",
-    "vue3-markdown-it": "^1.0.10",
     "workbox-window": "^7.3.0"
   },
   "devDependencies": {
