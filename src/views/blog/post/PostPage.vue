@@ -1,6 +1,6 @@
 <template>
   <ion-page class="page-container">
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header :translucent="true" class="ion-no-border" mode="ios">
       <ion-toolbar class="container-page">
         <ion-buttons slot="start">
           <ion-button @click="$router.go(-1)">
@@ -9,9 +9,9 @@
         </ion-buttons>
 
         <!-- title -->
-        <ion-title class="fade-in-title" v-if="scrollPosition > 0"
-          >sss</ion-title
-        >
+        <ion-title class="fade-in-title">
+          {{ postController.getPost({ id: postId })?.title }}
+        </ion-title>
 
         <!-- mobile options -->
         <ion-buttons
@@ -48,29 +48,24 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content
-      v-if="postController.getPost({ id: postId }) != undefined"
-      :fullscreen="true"
-    >
-      <!-- content -->
-      <ion-row>
-        <ion-col size-xs="12" size-md="9">
-          <ion-header
-            mode="ios"
-            v-if="scrollPosition == 0"
-            class="fade-in-title ion-no-border"
-          >
-            <ion-toolbar class="condensed-toolbar">
-              <ion-title size="large">{{
-                postController.getPost({ id: postId })?.title
-              }}</ion-title>
+    <ion-row id="pr" style="height: 100dvh; overflow: hidden">
+      <ion-col size="9">
+        <ion-content
+          :fullscreen="true"
+          v-if="postController.getPost({ id: postId }) != undefined"
+        >
+          <ion-header collapse="condense" mode="ios">
+            <ion-toolbar>
+              <ion-title size="large"
+                ><div style="text-wrap: auto">
+                  {{ postController.getPost({ id: postId })?.title }}
+                </div></ion-title
+              >
             </ion-toolbar>
           </ion-header>
-          <div
-            ref="indexRef"
-            @scroll="setScrollPosition()"
-            style="overflow: auto; height: calc(100dvh - 88px)"
-          >
+
+          <!-- content -->
+          <div ref="indexRef" @scroll="setScrollPosition()">
             <article>
               <MdPreview
                 style="
@@ -86,64 +81,59 @@
               />
             </article>
           </div>
-        </ion-col>
 
-        <ion-col
-          v-if="isPlatform('desktop')"
-          size-md="3"
-          class="ion-padding-top"
-        >
-          <!-- index content -->
-          <indexContentComponent
-            :index-content="indexContent"
-            :auto-hide-content="isPlatform('ios') || isPlatform('android')"
-            @element-id="goToSection({ id: $event })"
-          />
-        </ion-col>
-      </ion-row>
-
-      <!-- popoovers -->
-      <ion-popover
-        :is-open="popoverMainOptions.open"
-        :event="popoverMainOptions.event"
-        @did-dismiss="popoverMainOptions.open = false"
-        @click="popoverMainOptions.open = false"
-      >
-        <ion-content>
-          <!-- index -->
-          <ion-item lines="full" button @click="openModalIndexContent()">
-            <ion-icon :icon="menuOutline" slot="start"></ion-icon>
-            <ion-label>Indice</ion-label>
-          </ion-item>
-
-          <!-- update -->
-          <ion-item
-            lines="full"
-            v-if="userController.getUser()?.isAdmin"
-            button
-            @click="updatePost()"
+          <!-- popoovers -->
+          <ion-popover
+            :is-open="popoverMainOptions.open"
+            :event="popoverMainOptions.event"
+            @did-dismiss="popoverMainOptions.open = false"
+            @click="popoverMainOptions.open = false"
           >
-            <ion-icon :icon="createOutline" slot="start"></ion-icon>
-            <ion-label>Actualizar post</ion-label>
-          </ion-item>
+            <ion-content>
+              <!-- index -->
+              <ion-item lines="full" button @click="openModalIndexContent()">
+                <ion-icon :icon="menuOutline" slot="start"></ion-icon>
+                <ion-label>Indice</ion-label>
+              </ion-item>
 
-          <!-- delete -->
-          <ion-item
-            lines="full"
-            v-if="userController.getUser()?.isAdmin"
-            button
-            @click="deletePost()"
-          >
-            <ion-icon
-              :icon="trashOutline"
-              color="danger"
-              slot="start"
-            ></ion-icon>
-            <ion-label>Indice</ion-label>
-          </ion-item>
+              <!-- update -->
+              <ion-item
+                lines="full"
+                v-if="userController.getUser()?.isAdmin"
+                button
+                @click="updatePost()"
+              >
+                <ion-icon :icon="createOutline" slot="start"></ion-icon>
+                <ion-label>Actualizar post</ion-label>
+              </ion-item>
+
+              <!-- delete -->
+              <ion-item
+                lines="full"
+                v-if="userController.getUser()?.isAdmin"
+                button
+                @click="deletePost()"
+              >
+                <ion-icon
+                  :icon="trashOutline"
+                  color="danger"
+                  slot="start"
+                ></ion-icon>
+                <ion-label>Indice</ion-label>
+              </ion-item>
+            </ion-content>
+          </ion-popover>
         </ion-content>
-      </ion-popover>
-    </ion-content>
+      </ion-col>
+
+      <ion-col size="3">
+        <indexContentComponent
+          :index-content="indexContent"
+          :auto-hide-content="isPlatform('ios') || isPlatform('android')"
+          @element-id="goToSection({ id: $event })"
+        />
+      </ion-col>
+    </ion-row>
   </ion-page>
 </template>
 
@@ -305,8 +295,10 @@ async function deletePost(): Promise<void> {
 }
 
 function goToSection(params: { id: string }): void {
-  const id = params.id;
+  const { id } = params;
+
   const element = document.getElementById(id);
+  console.log(id);
   if (element)
     element.scrollIntoView({
       behavior: "smooth",

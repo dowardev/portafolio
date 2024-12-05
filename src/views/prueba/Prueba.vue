@@ -1,38 +1,68 @@
 <template>
-  <ion-page class="page-container">
-    <ion-header class="ion-no-border">
-      <ion-toolbar class="container-page">
-        <ion-title>ss</ion-title>
+  <ion-page mode="ios">
+    <ion-header :translucent="true">
+      <ion-toolbar>
+        <ion-title
+          >Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptates,
+          unde incidunt. Velit nisi suscipit architecto aspernatur corporis iure
+          iste rerum. Inventore voluptates reiciendis minima corporis
+          accusantium praesentium distinctio neque rerum.</ion-title
+        >
       </ion-toolbar>
     </ion-header>
+    <ion-content :fullscreen="true">
+      <ion-header collapse="condense" mode="ios">
+        <ion-toolbar>
+          <ion-title size="large"
+            ><div style="text-wrap: auto">
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Illo
+              porro, laborum asperiores dolore mollitia illum. Quaerat ab
+              tempore placeat eos aliquam eveniet, et est delectus ad nobis
+              soluta dolorem debitis?
+            </div></ion-title
+          >
+        </ion-toolbar>
+      </ion-header>
 
-    <ion-content>
-      <ion-card class="primary-select-animated">
-        <ion-progress-bar
-          class="danger-progress-bar"
-          type="indeterminate"
-        ></ion-progress-bar>
+      <div class="ion-padding">Scroll the list to see the title collapse.</div>
 
-        <ion-card-content> sss </ion-card-content>
-      </ion-card>
+      <ion-list>
+        <ion-item>Item 1</ion-item>
+        <ion-item>Item 2</ion-item>
+        <ion-item>Item 3</ion-item>
+        <ion-item>Item 4</ion-item>
+        <ion-item>Item 5</ion-item>
+        <ion-item>Item 6</ion-item>
+        <ion-item>Item 7</ion-item>
+        <ion-item>Item 8</ion-item>
+        <ion-item>Item 9</ion-item>
+        <ion-item>Item 10</ion-item>
+        <ion-item>Item 11</ion-item>
+        <ion-item>Item 12</ion-item>
+        <ion-item>Item 13</ion-item>
+        <ion-item>Item 14</ion-item>
+        <ion-item>Item 15</ion-item>
+        <ion-item>Item 16</ion-item>
+        <ion-item>Item 17</ion-item>
+        <ion-item>Item 18</ion-item>
+        <ion-item>Item 19</ion-item>
+        <ion-item>Item 20</ion-item>
+      </ion-list>
     </ion-content>
   </ion-page>
 </template>
 
-<script lang="ts" setup>
-import { IonPage } from "@ionic/vue";
-</script>
+<script lang="ts">
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonPage,
+} from "@ionic/vue";
+import { defineComponent } from "vue";
 
-<style scoped>
-.gradient-progress-bar {
-  --progress-background: linear-gradient(
-    90deg,
-    rgba(var(--ion-color-primary-rgb), 0%),
-    rgba(var(--ion-color-primary-rgb), 20%),
-    rgba(var(--ion-color-primary-rgb), 40%),
-    rgba(var(--ion-color-primary-rgb), 60%),
-    rgba(var(--ion-color-primary-rgb), 80%),
-    rgba(var(--ion-color-primary-rgb), 100%)
-  );
-}
-</style>
+export default defineComponent({
+  components: { IonContent, IonHeader, IonTitle, IonToolbar },
+});
+</script>
