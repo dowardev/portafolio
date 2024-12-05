@@ -48,7 +48,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-row id="pr" style="height: 100dvh; overflow: hidden">
+    <ion-row style="height: 100dvh; overflow: hidden">
       <ion-col size="9">
         <!-- ion content -->
         <ion-content
@@ -67,23 +67,15 @@
           </ion-header>
 
           <!-- content -->
-          <div ref="indexRef" @scroll="setScrollPosition()" class="ion-padding">
+          <div
+            ref="indexRef"
+            @scroll="setScrollPosition()"
+            class="ion-padding"
+            id="pr"
+          >
             <article>
-              <!-- <MdPreview
-                style="
-                  --md-bk-color: var(--ion-background-color-rgb);
-                  --md-color: var(--ion-text-color);
-                "
-                :model-value="postController.getPost({ id: postId })!.content"
-                :theme="
-                  useSytemComposable.getTheme().selected == 'light'
-                    ? 'light'
-                    : 'dark'
-                "
-              /> -->
-              <vue-markdown-it
-                :source="postController.getPost({ id: postId })!.content"
-                :options="markdownOptions"
+              <MarkdownViewer
+                :content="postController.getPost({ id: postId })!.content ?? ''"
               />
             </article>
           </div>
@@ -161,11 +153,8 @@ import {
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref, watch } from "vue";
 import indexContentComponent from "./indexContentComponent.vue";
-import { VueMarkdownIt } from "@f3ve/vue-markdown-it";
 import { isPlatform, modalController } from "@ionic/vue";
 import modalIndexContent from "./modalIndexContent.vue";
-import hljs from "highlight.js";
-import "highlight.js/styles/github.css";
 
 // controllers
 import SystemController from "@/controllers/systemController";
@@ -174,6 +163,9 @@ import PostController from "@/controllers/postController";
 const systemController = new SystemController();
 const userController = new UserController();
 const postController = new PostController();
+
+// components
+import MarkdownViewer from "@/components/markdown-viewer/MarkdownViewer.vue";
 
 // vars
 const route = useRoute();
@@ -185,22 +177,9 @@ const indexContent = ref(
 );
 let headings: NodeListOf<HTMLElement> | [] = [];
 const indexRef = ref<HTMLElement | null>(null);
-const useSytemComposable = systemController;
 const popoverMainOptions = ref({ open: false, event: Event });
 const scrollPosition = ref(0);
 const showTitle = ref(false);
-const markdownOptions = {
-  html: true,
-  linkify: true,
-  highlight: function (str, lang) {
-    if (lang && hljs.getLanguage(lang)) {
-      try {
-        return hljs.highlight(lang, str).value;
-      } catch (__) {}
-    }
-    return ""; // use external default escaping
-  },
-};
 // mounted
 onMounted(() => {
   start();
@@ -346,33 +325,3 @@ function setScrollPosition(): void {
   scrollPosition.value = (indexRef.value! as HTMLElement).scrollTop;
 }
 </script>
-
-<style>
-pre {
-  --border-width-card: 8px;
-  --background-opacity: 50%;
-
-  width: 100%;
-  background: #ddd6d661;
-  box-shadow:
-    rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
-    rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
-  border-radius: 4px;
-  padding: 16px;
-}
-
-blockquote {
-  --border-width-card: 8px;
-  --background-opacity: 50%;
-
-  width: 100%;
-  box-shadow:
-    rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
-    rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
-  border-radius: 4px;
-  padding: 16px;
-  margin-left: 0px;
-  border-left: var(--border-width-card) solid var(--ion-color-success);
-  background: var(--ion-color-secondary-background-hover);
-}
-</style>
