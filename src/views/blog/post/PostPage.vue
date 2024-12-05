@@ -49,7 +49,7 @@
     </ion-header>
 
     <ion-row style="height: 100dvh; overflow: hidden">
-      <ion-col :size="isPlatform('desktop') ? '9' : 12">
+      <ion-col :size="isPlatform('desktop') ? '9' : '12'">
         <!-- ion content -->
         <ion-content
           :fullscreen="true"
