@@ -55,7 +55,6 @@
           :fullscreen="true"
           v-if="postController.getPost({ id: postId }) != undefined"
         >
-          <ion-card></ion-card>
           <ion-header collapse="condense" mode="ios">
             <ion-toolbar>
               <ion-title size="large"
@@ -104,7 +103,6 @@
                 <ion-icon :icon="createOutline" slot="start"></ion-icon>
                 <ion-label>Actualizar post</ion-label>
               </ion-item>
-
               <!-- delete -->
               <ion-item
                 lines="full"
@@ -142,6 +140,13 @@ import {
   IonTitle,
   IonToolbar,
   IonContent,
+  IonButtons,
+  IonButton,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonCol,
+  IonRow,
 } from "@ionic/vue";
 import {
   chevronBackOutline,
@@ -154,7 +159,10 @@ import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref, watch } from "vue";
 import indexContentComponent from "./indexContentComponent.vue";
 import { isPlatform, modalController } from "@ionic/vue";
+
+// components
 import modalIndexContent from "./modalIndexContent.vue";
+import MarkdownViewer from "@/components/markdown-viewer/MarkdownViewer.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
@@ -164,23 +172,18 @@ const systemController = new SystemController();
 const userController = new UserController();
 const postController = new PostController();
 
-// components
-import MarkdownViewer from "@/components/markdown-viewer/MarkdownViewer.vue";
-
-// vars
+// const
 const route = useRoute();
 const router = useRouter();
 const postId = route.params.id as string;
 const spinners = ref({ buttonUpdate: false, buttonDelete: false });
-const indexContent = ref(
-  [] as Array<{ name: string; id: string; type: string }>
-);
+const indexContent = ref<Array<{ name: string; id: string; type: string }>>([]);
 let headings: NodeListOf<HTMLElement> | [] = [];
 const indexRef = ref<HTMLElement | null>(null);
-const popoverMainOptions = ref({ open: false, event: Event });
+const popoverMainOptions = ref({ open: false, event: null as Event | null });
 const scrollPosition = ref(0);
 const showTitle = ref(false);
-// mounted
+
 onMounted(() => {
   start();
 });
@@ -188,8 +191,7 @@ onMounted(() => {
 watch(
   () => scrollPosition.value,
   (newValue) => {
-    if (newValue == 0) showTitle.value = false;
-    else showTitle.value = true;
+    showTitle.value = newValue > 0;
   }
 );
 
@@ -218,54 +220,28 @@ async function getPost(): Promise<void> {
   }
 }
 
-async function setThemeCodePreview(): Promise<void> {
-  const theme = (await systemController.getTheme()) ?? "light";
-  let file = "" as any;
-
-  // if (theme == "nord")
-  //   file = await import(
-  //     "../../../../node_modules/highlight.js/styles/atom-one-dark.css"
-  //   );
-  // if (theme == "gruvbox")
-  //   file = await import(
-  //     "../../../../node_modules/highlight.js/styles/dark.css"
-  //   );
-  // if (theme == "light")
-  //   file = await import(
-  //     "../../../../node_modules/highlight.js/styles/atom-one-light.css"
-  //   );
-
-  const cssNode = document.createElement("style");
-  cssNode.innerHTML = file.default;
-  document.head.appendChild(cssNode);
-}
-
 function generarIndexContent(): void {
-  if (indexRef.value != null) {
-    headings = indexRef.value.querySelectorAll(
-      "h1, h2, h3, h4, h5, h6"
-    ) as NodeListOf<HTMLElement>;
+  if (indexRef.value) {
+    headings = indexRef.value.querySelectorAll("h1, h2, h3, h4, h5, h6");
   } else {
     headings = [];
   }
 
-  let count = 0;
-  (headings as NodeListOf<HTMLElement>).forEach((heading) => {
-    heading.id = count.toString();
-
+  indexContent.value = [];
+  headings.forEach((heading, index) => {
+    const id = `heading-${index}`;
+    heading.id = id;
     indexContent.value.push({
-      name: heading.textContent ?? "",
-      id: count.toString(),
+      name: heading.textContent || "",
+      id,
       type: heading.tagName.toLowerCase(),
     });
-
-    count++;
   });
 }
 
 async function updatePost(): Promise<void> {
   spinners.value.buttonUpdate = true;
-  await router.push("/blog/editor/update/" + postId);
+  await router.push(`/blog/editor/update/${postId}`);
   spinners.value.buttonUpdate = false;
 }
 
@@ -276,16 +252,15 @@ async function deletePost(): Promise<void> {
     message: "¿Desea eliminar el post?",
   });
 
-  if (alertResponse == false) {
+  if (!alertResponse) {
     spinners.value.buttonDelete = false;
     return;
   }
 
   try {
-    await deletePost();
+    await postController.deletePost(postId);
     spinners.value.buttonDelete = false;
     router.go(-1);
-    // eventBus().emitter.emit("new-post");
   } catch (e: any) {
     spinners.value.buttonDelete = false;
     systemController.openToastError(e);
@@ -294,15 +269,14 @@ async function deletePost(): Promise<void> {
 
 function goToSection(params: { id: string }): void {
   const { id } = params;
-
   const element = document.getElementById(id);
-  console.log(id);
-  if (element)
+  if (element) {
     element.scrollIntoView({
       behavior: "smooth",
       block: "start",
       inline: "nearest",
     });
+  }
 }
 
 async function openModalIndexContent(): Promise<void> {
@@ -315,13 +289,14 @@ async function openModalIndexContent(): Promise<void> {
   modal.present();
 
   const { data } = await modal.onWillDismiss();
-  if (data != null) {
-    const elementId = data.elementId;
-    goToSection({ id: elementId });
+  if (data?.elementId) {
+    goToSection({ id: data.elementId });
   }
 }
 
 function setScrollPosition(): void {
-  scrollPosition.value = (indexRef.value! as HTMLElement).scrollTop;
+  if (indexRef.value) {
+    scrollPosition.value = indexRef.value.scrollTop;
+  }
 }
 </script>
