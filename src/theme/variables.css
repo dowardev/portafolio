@@ -8,11 +8,11 @@ http://ionicframework.com/docs/theming/ */
 @import url("./scrollbar.css"); */
 
 /* others */
-@import url("./cards.css");
-@import url("./buttons-animation.css");
-@import url("./selectectable-animated.css");
-@import url("./progress-bar.css");
-@import url("./transitions.css");
+@import url("./styles/cards.css");
+@import url("./styles/buttons-animation.css");
+@import url("./styles/selectectable-animated.css");
+@import url("./styles/progress-bar.css");
+@import url("./styles/transitions.css");
 
 @font-face {
   font-family: "OpenSans-Regular";
