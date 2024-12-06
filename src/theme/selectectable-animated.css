@@ -1,10 +1,18 @@
-ion-card.primary-select-animated,
-ion-card.success-select-animated,
-ion-card.danger-select-animated {
-  border: 1px solid transparent;
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
 }
 
-ion-card.primary-select-animated:hover {
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* primary */
+ion-card.primary-select-animated:hover,
+ion-card.primary-select-animated-active {
   --back: var(--ion-text-color-step-950);
   border: 1.5px solid transparent;
   border-radius: 4px;
@@ -24,7 +32,9 @@ ion-card.primary-select-animated:hover {
   animation: 2.5s rotate linear infinite;
 }
 
-ion-card.success-select-animated:hover {
+/* success */
+ion-card.success-select-animated:hover,
+ion-card.success-select-animated-active {
   --back: #e8fbed;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -35,7 +45,9 @@ ion-card.success-select-animated:hover {
   animation: 2.5s rotate linear infinite;
 }
 
-ion-card.danger-select-animated:hover {
+/* danger */
+ion-card.danger-select-animated:hover,
+ion-card.danger-select-animated-active {
   --back: #ffb3b6;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -44,16 +56,4 @@ ion-card.danger-select-animated:hover {
     linear-gradient(var(--angle), #ffb3b6, #ff8c90, #f66066, #ed333b, #d41e26)
       border-box;
   animation: 2.5s rotate linear infinite;
-}
-
-@keyframes rotate {
-  to {
-    --angle: 360deg;
-  }
-}
-
-@property --angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
 }
