@@ -2,7 +2,7 @@
   <ion-row>
     <ion-col>
       <ion-list>
-        <ion-list-header>
+        <ion-list-header mode="ios">
           <ion-label>Usuarios</ion-label>
           <ion-button>
             <ion-icon :icon="addOutline"></ion-icon>

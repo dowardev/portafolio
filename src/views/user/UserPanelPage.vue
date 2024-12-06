@@ -1,6 +1,6 @@
 <template>
   <ion-page class="page-container">
-    <ion-header :translucent="true" class="ion-no-border">
+    <ion-header :translucent="true" class="ion-no-border" mode="ios">
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button menu="mainMenu"></ion-menu-button>

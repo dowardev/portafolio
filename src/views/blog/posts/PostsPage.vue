@@ -1,14 +1,14 @@
 <template>
   <ion-page class="page-container">
-    <ion-header class="ion-no-border">
+    <ion-header class="ion-no-border" mode="ios">
       <ion-toolbar class="container-page">
-        <ion-buttons slot="start">
+        <ion-buttons slot="start" :mode="designPlatform">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
 
         <ion-title>{{ pageTitle }}</ion-title>
 
-        <ion-buttons slot="end">
+        <ion-buttons slot="end" :mode="designPlatform">
           <!-- <DateSelectorComponent></DateSelectorComponent> -->
           <ion-button
             v-if="userController.getUser()?.isAdmin"
@@ -367,6 +367,7 @@ const filter = reactive({
 const popoverPostOptions = ref({ isOpen: false, event: {} as MouseEvent });
 const idPostSelected = ref<undefined | number>(undefined);
 const pressTimer = ref(0);
+const designPlatform = isPlatform("ios") ? "ios" : "md";
 
 // computed
 const filterPosts = computed(() => {

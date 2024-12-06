@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header mode="ios" class="ion-no-border">
       <ion-toolbar>
-        <ion-buttons slot="start">
+        <ion-buttons slot="start" :mode="designPlatform">
           <ion-button @click="closeModal()">
             <ion-icon :icon="closeOutline"></ion-icon>
           </ion-button>
@@ -10,7 +10,7 @@
 
         <ion-title>{{ pageTitle }}</ion-title>
 
-        <ion-buttons slot="end">
+        <ion-buttons slot="end" :mode="designPlatform">
           <ion-button
             :disabled="systemController.getUpdateStatus() == false"
             @click="systemController.updateApp()"
@@ -113,6 +113,7 @@ import {
   modalController,
   IonSelect,
   IonSelectOption,
+  isPlatform,
 } from "@ionic/vue";
 import { closeOutline, downloadOutline } from "ionicons/icons";
 import { ref, watch, onMounted, Ref } from "vue";
@@ -146,6 +147,7 @@ const mainVersions = Object.keys(versionsData).sort(
 const versionSelected: Ref<string> = ref(mainVersions[0]);
 
 const subVersions = ref<SubVersion[]>([]);
+const designPlatform = isPlatform("ios") ? "ios" : "md";
 
 onMounted(() => {
   onVersionChange();

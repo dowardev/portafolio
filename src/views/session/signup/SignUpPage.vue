@@ -1,6 +1,6 @@
 <template>
   <ion-page class="page-container">
-    <ion-header class="ion-no-border">
+    <ion-header class="ion-no-border" mode="ios">
       <ion-toolbar>
         <ion-title>Registro</ion-title>
       </ion-toolbar>

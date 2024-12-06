@@ -1,7 +1,11 @@
 <template>
   <ion-page class="page-container">
-    <ion-header class="ion-no-border">
+    <ion-header class="ion-no-border" mode="ios">
       <ion-toolbar>
+        <ion-buttons slot="start" :mode="designPlatform">
+          <ion-menu-button menu="mainMenu"></ion-menu-button>
+        </ion-buttons>
+
         <ion-title>Iniciar sesión</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -128,6 +132,7 @@ import {
   IonPage,
   IonContent,
   IonModal,
+  isPlatform,
 } from "@ionic/vue";
 import { ref } from "vue";
 import useVuelidate from "@vuelidate/core";
@@ -180,6 +185,7 @@ const v$ = useVuelidate(rules, form);
 const loginFormComponentRef = ref(null);
 const formStatus = ref(false);
 const isOpenModalPasswordRecover = ref(false);
+const designPlatform = isPlatform("ios") ? "ios" : "md";
 
 // functions
 async function presentToast(message: string, color: string) {

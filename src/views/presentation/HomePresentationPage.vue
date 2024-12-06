@@ -3,9 +3,9 @@
     class="page-container"
     :class="{ 'page-background': backgroundActive }"
   >
-    <ion-header class="ion-no-border">
+    <ion-header class="ion-no-border" mode="ios">
       <ion-toolbar>
-        <ion-buttons slot="start">
+        <ion-buttons slot="start" :mode="designPlatform">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
 
@@ -15,6 +15,7 @@
         <ion-buttons
           slot="end"
           v-if="isPlatform('android') || isPlatform('ios')"
+          :mode="designPlatform"
         >
           <div>
             <ion-button
@@ -26,7 +27,11 @@
         </ion-buttons>
 
         <!-- main options md and lg screen -->
-        <ion-buttons slot="end" v-if="isPlatform('desktop')">
+        <ion-buttons
+          slot="end"
+          v-if="isPlatform('desktop')"
+          :mode="designPlatform"
+        >
           <ion-segment :scrollable="true" :value="$route.name as string">
             <ion-segment-button
               v-for="(option, key) in menuOptions"
@@ -176,6 +181,7 @@ const buttonMenuMobileOptions = ref({ open: false, event: null });
 const buttonMenuDesktopOptions = ref({ open: false, event: null });
 const backgroundActive = ref(false);
 const opcSelected = ref<MainOptions>("PresentationPage");
+const designPlatform = isPlatform("ios") ? "ios" : "md";
 
 onMounted(() => {
   useBackButton(10, () => {

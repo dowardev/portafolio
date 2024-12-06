@@ -1,8 +1,8 @@
 <template>
   <ion-page>
-    <ion-header class="ion-no-border">
+    <ion-header class="ion-no-border" mode="ios">
       <ion-toolbar>
-        <ion-buttons slot="start">
+        <ion-buttons slot="start" :mode="designPlatform">
           <ion-button class="close-button" @click="closeModal()">
             <ion-icon :icon="closeOutline"></ion-icon>
           </ion-button>
@@ -17,7 +17,7 @@
           <ion-card>
             <ion-card-content>
               <ion-item class="transparent">
-                <ion-label>Donacion</ion-label>
+                <ion-label>Donación</ion-label>
                 <a href="https://liberapay.com/dowar/donate" target="_blank">
                   <img
                     alt="Donate using Liberapay"
@@ -66,10 +66,12 @@ import {
   IonToolbar,
   IonLabel,
   modalController,
+  isPlatform,
 } from "@ionic/vue";
 import { closeOutline } from "ionicons/icons";
 
 const pageTitle = "Contribuir";
+const designPlatform = isPlatform("ios") ? "ios" : "md";
 
 // functions
 function closeModal() {

@@ -1,8 +1,8 @@
 <template>
   <ion-page class="page-container">
-    <ion-header class="ion-no-border">
+    <ion-header class="ion-no-border" mode="ios">
       <ion-toolbar class="container-page">
-        <ion-buttons slot="start">
+        <ion-buttons slot="start" :mode="designPlatform">
           <ion-menu-button
             menu="mainMenu"
             :mode="modeDesignElements"
@@ -11,7 +11,7 @@
 
         <ion-title>{{ pageTitle }}</ion-title>
 
-        <ion-buttons slot="end">
+        <ion-buttons slot="end" :mode="designPlatform">
           <ion-segment
             v-model="policiesSegment"
             :mode="modeDesignElements"
@@ -168,10 +168,9 @@ import {
 } from "@ionic/vue";
 import { ref } from "vue";
 
-const modeDesignElements = isPlatform("ios") ? "ios" : ("md" as "ios" | "md");
-
-const pageTitle = "Politicas";
+const pageTitle = "Políticas";
 const policiesSegment = ref("privacy");
+const designPlatform = isPlatform("ios") ? "ios" : "md";
 </script>
 
 <style scoped>
