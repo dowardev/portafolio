@@ -2,12 +2,12 @@
   <ion-page class="page-container">
     <ion-header :translucent="true" class="ion-no-border" mode="ios">
       <ion-toolbar>
-        <ion-buttons slot="start">
+        <ion-buttons slot="start" :mode="designPlatform">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
         </ion-buttons>
         <ion-title>{{ pageTitle }}</ion-title>
 
-        <ion-buttons slot="end">
+        <ion-buttons slot="end" :mode="designPlatform">
           <ion-segment v-model="mainSegment" scrollable>
             <ion-segment-button value="profile">
               <ion-label> Perfil </ion-label>
@@ -53,9 +53,9 @@ import { ref } from "vue";
 import UserProfileComponent from "./profile/UserProfileComponent.vue";
 import UserSecurityComponent from "./security/UserSecurityComponent.vue";
 
-const modeDesignElements = isPlatform("ios") ? "ios" : "md";
 const pageTitle = ref("Panel de Usurio");
 const mainSegment = ref("profile");
+const designPlatform = isPlatform("ios") ? "ios" : "md";
 </script>
 
 <style scoped>

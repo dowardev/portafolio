@@ -161,7 +161,7 @@
           }"
         >
           <ion-col>
-            <ion-button fill="clear" class="button-primary">
+            <ion-button fill="clear" class="primary-animation">
               <ion-icon slot="start" :icon="keyOutline"></ion-icon>
               Actualizar contraseña
             </ion-button>
@@ -173,7 +173,7 @@
           <ion-col>
             <ion-button
               fill="clear"
-              class="button-primary"
+              class="primary-animation"
               @click="modalInfoProfile.open = true"
             >
               <ion-icon
@@ -190,7 +190,7 @@
           <ion-col>
             <ion-button
               fill="clear"
-              class="button-danger"
+              class="danger-animation"
               @click="modalDeleteAccount.open = true"
             >
               <ion-icon slot="start" :icon="trashBinOutline"></ion-icon>
@@ -223,7 +223,7 @@
 
     <ion-content class="ion-padding">
       <ion-card
-        class="primary-card-filled"
+        class="success-design-filled"
         v-for="item in information[0].basicCardInformation"
         :key="item.title"
       >

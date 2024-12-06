@@ -1,54 +1,180 @@
 /* color text */
-.info-card,
-.info-card > ion-card-header > ion-card-title,
-.info-card > ion-card-content > ion-text,
-.info-card-filled,
-.info-card-filled > ion-card-header > ion-card-title,
-.info-card-filled > ion-card-content > ion-text,
-.primary-card,
-.primary-card > ion-card-header > ion-card-title,
-.primary-card > ion-card-content > ion-text,
-.primary-card-filled,
-.primary-card-filled > ion-card-header > ion-card-title,
-.primary-card-filled > ion-card-content > ion-text,
-.danger-card,
-.danger-card > ion-card-header > ion-card-title,
-.danger-card > ion-card-content > ion-text,
-.danger-card-filled,
-.danger-card-filled > ion-card-header > ion-card-title,
-.danger-card-filled > ion-card-content > ion-text {
+ion-card.success-design,
+div.success-design,
+ion-card.success-design > ion-card-header > ion-card-title,
+ion-card.success-design > ion-card-content > ion-text,
+ion-card.success-design-filled,
+ion-card.success-design-filled > ion-card-header > ion-card-title,
+ion-card.success-design-filled > ion-card-content > ion-text,
+div.success-design-filled,
+ion-card.primary-design,
+div.primary-design,
+ion-card.primary-design > ion-card-header > ion-card-title,
+ion-card.primary-design > ion-card-content > ion-text,
+div.primary-design-filled,
+ion-card.primary-design-filled,
+ion-card.primary-design-filled > ion-card-header > ion-card-title,
+ion-card.primary-design-filled > ion-card-content > ion-text,
+ion-card.danger-card,
+div.danger-design,
+ion-card.danger-card > ion-card-header > ion-card-title,
+ion-card.danger-card > ion-card-content > ion-text,
+ion-card.danger-card-filled,
+ion-card.danger-card-filled > ion-card-header > ion-card-title,
+ion-card.danger-card-filled > ion-card-content > ion-text,
+div.danger-design-filled {
   color: var(--ion-text-color);
-  --border-width-card: 8px;
+  --border-indicator: 8px;
   --background-opacity: 50%;
 }
 
 /* success */
-.info-card {
-  border-left: var(--border-width-card) solid var(--ion-color-success);
+ion-card.success-design {
+  border-left: var(--border-indicator) solid var(--ion-color-success);
+}
+div.success-design {
+  border-left: var(--border-indicator) solid var(--ion-color-success);
+  margin: 4px;
+  border-radius: 4px;
+  padding: 4px;
+  border-top: 1px solid var(--ion-color-success);
+  border-right: 1px solid var(--ion-color-success);
+  border-bottom: 1px solid var(--ion-color-success);
+}
+div.success-design > .title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 0.6;
+  padding-left: 8px;
+  font-family: Comfortaa-Bold;
+}
+div.success-design > .content {
+  font-size: 0.875rem;
+  padding-left: 8px;
+  font-family: OpenSans-Regular;
 }
 
-.info-card-filled {
-  border-left: var(--border-width-card) solid var(--ion-color-success);
+ion-card.success-design-filled {
+  border-left: var(--border-indicator) solid var(--ion-color-success);
   background: var(--ion-color-secondary-background-hover);
+}
+div.success-design-filled {
+  border-left: var(--border-indicator) solid var(--ion-color-success);
+  background: var(--ion-color-secondary-background-hover);
+  margin: 4px;
+  border-radius: 4px;
+  padding: 4px;
+}
+div.success-design-filled > .title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 0.6;
+  padding-left: 8px;
+  font-family: Comfortaa-Bold;
+}
+div.success-design-filled > .content {
+  font-size: 0.875rem;
+  padding-left: 8px;
+  font-family: OpenSans-Regular;
 }
 
 /* primary */
-.primary-card {
-  border-left: var(--border-width-card) solid var(--ion-color-primary);
+ion-card.primary-design {
+  border-left: var(--border-indicator) solid var(--ion-color-primary);
+}
+div.primary-design {
+  border-left: var(--border-indicator) solid var(--ion-color-primary);
+  margin: 4px;
+  border-radius: 4px;
+  padding: 4px;
+  border-top: 1px solid var(--ion-color-primary);
+  border-right: 1px solid var(--ion-color-primary);
+  border-bottom: 1px solid var(--ion-color-primary);
+}
+div.primary-design > .title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 0.6;
+  padding-left: 8px;
+  font-family: Comfortaa-Bold;
+}
+div.primary-design > .content {
+  font-size: 0.875rem;
+  padding-left: 8px;
+  font-family: OpenSans-Regular;
 }
 
-.primary-card-filled {
-  border-left: var(--border-width-card) solid var(--ion-color-primary);
+ion-card.primary-design-filled {
+  border-left: var(--border-indicator) solid var(--ion-color-primary);
   background: var(--ion-color-ion-color-primary-background-hover);
   color: var(--ion-text-color);
 }
-
-/* danger */
-.danger-card {
-  border-left: var(--border-width-card) solid var(--ion-color-danger);
+div.primary-design-filled {
+  border-left: var(--border-indicator) solid var(--ion-color-primary);
+  background: var(--ion-color-primary-background-hover);
+  margin: 4px;
+  border-radius: 4px;
+  padding: 4px;
+}
+div.primary-design-filled > .title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 0.6;
+  padding-left: 8px;
+  font-family: Comfortaa-Bold;
+}
+div.primary-design-filled > .content {
+  font-size: 0.875rem;
+  padding-left: 8px;
+  font-family: OpenSans-Regular;
 }
 
-.danger-card-filled {
-  border-left: var(--border-width-card) solid var(--ion-color-danger);
+/* danger */
+ion-card.danger-card {
+  border-left: var(--border-indicator) solid var(--ion-color-danger);
+}
+div.danger-design {
+  border-left: var(--border-indicator) solid var(--ion-color-danger);
+  margin: 4px;
+  border-radius: 4px;
+  padding: 4px;
+  border-top: 1px solid var(--ion-color-success);
+  border-right: 1px solid var(--ion-color-success);
+  border-bottom: 1px solid var(--ion-color-success);
+}
+div.danger-design > .title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 0.6;
+  padding-left: 8px;
+  font-family: Comfortaa-Bold;
+}
+div.danger-design > .content {
+  font-size: 0.875rem;
+  padding-left: 8px;
+  font-family: OpenSans-Regular;
+}
+
+ion-card.danger-card-filled {
+  border-left: var(--border-indicator) solid var(--ion-color-danger);
   background: rgba(var(--ion-color-danger-rgb), var(--background-opacity));
+}
+div.danger-design-filled {
+  border-left: var(--border-indicator) solid var(--ion-color-danger);
+  background: var(--ion-color-secondary-background-hover);
+  margin: 4px;
+  border-radius: 4px;
+  padding: 4px;
+}
+div.danger-design-filled > .title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 0.6;
+  padding-left: 8px;
+  font-family: Comfortaa-Bold;
+}
+div.danger-design-filled > .content {
+  font-size: 0.875rem;
+  padding-left: 8px;
+  font-family: OpenSans-Regular;
 }
