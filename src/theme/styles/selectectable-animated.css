@@ -41,7 +41,8 @@ ion-card.primary-select-animated-active {
 }
 
 /* success */
-ion-card.success-select-border {
+ion-card.success-select-border:hover,
+ion-card.success-select-border-active {
   border: 1.5px solid var(--ion-color-success);
   border-radius: 4px;
 }
@@ -63,7 +64,8 @@ ion-card.success-select-animated-active {
 }
 
 /* danger */
-ion-card.danger-select-border {
+ion-card.danger-select-border:hover,
+ion-card.danger-select-border-active {
   border: 1.5px solid var(--ion-color-danger);
   border-radius: 4px;
 }

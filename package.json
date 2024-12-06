@@ -1,7 +1,7 @@
 {
   "name": "dowar-blog",
   "private": true,
-  "version": "8.11.15",
+  "version": "8.11.16",
   "type": "module",
   "scripts": {
     "dev": "vite",
