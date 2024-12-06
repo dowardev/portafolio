@@ -11,7 +11,8 @@
 }
 
 /* primary */
-ion-card.primary-select-border {
+ion-card.primary-select-border:hover,
+ion-card.primary-select-border-active {
   border: 1.5px solid var(--ion-color-primary);
   border-radius: 4px;
 }
