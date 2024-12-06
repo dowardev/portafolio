@@ -223,7 +223,7 @@
 
     <ion-content class="ion-padding">
       <ion-card
-        class="success-design-filled"
+        class="success-base-content-card success-border-indicator success-border success-fill"
         v-for="item in information[0].basicCardInformation"
         :key="item.title"
       >
