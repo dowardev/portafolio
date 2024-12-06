@@ -1,5 +1,5 @@
 <template>
-  <ion-page mode="ios">
+  <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title> Prueba </ion-title>
@@ -9,7 +9,7 @@
     <ion-content :fullscreen="true">
       <ion-row>
         <ion-col size="4">
-          <ion-card class="primary-select-animated">
+          <ion-card class="danger-select-animated-active">
             <ion-card-content>
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis,
               numquam. Praesentium cum rem modi porro, a voluptatibus quas nulla
