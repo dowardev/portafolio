@@ -1,5 +1,5 @@
 <template>
-  <ion-card class="ion-padding blur-effect">
+  <ion-card class="ion-padding blur-effect primary-select-animated-active">
     <!-- perfil -->
     <ion-row>
       <ion-col class="center" size="12">
@@ -454,37 +454,5 @@ function openMail(params: { mail: string; subject: string }) {
 
 .blur-effect {
   backdrop-filter: blur(10px);
-}
-
-ion-card {
-  /* padding: 12px; */
-  border: 2px solid transparent;
-  /* border-radius: 12px; */
-  background:
-    linear-gradient(var(--ion-background-color), var(--ion-background-color))
-      padding-box,
-    linear-gradient(
-        var(--angle),
-        #f0f9fe,
-        #d1edfb,
-        #a7ddf7,
-        #7ccbf3,
-        #51b9ef,
-        #3dade9
-      )
-      border-box;
-  animation: 8s rotate linear infinite;
-}
-
-@keyframes rotate {
-  to {
-    --angle: 360deg;
-  }
-}
-
-@property --angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
 }
 </style>

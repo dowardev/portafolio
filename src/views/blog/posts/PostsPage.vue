@@ -68,10 +68,18 @@
           :key="post.id"
         >
           <ion-card
+            class="post-card no-shadow"
             :class="{
               admin: userController.getUser()?.isAdmin && isPlatform('desktop'),
+              'primary-select-animated-active':
+                postProgress.status == true &&
+                postProgress.id == post.id &&
+                postProgress.color == 'primary',
+              'danger-select-animated-active':
+                postProgress.status == true &&
+                postProgress.id == post.id &&
+                postProgress.color == 'danger',
             }"
-            class="post-card"
             @touchstart="startPress({ event: $event, id: post.id })"
             @touchend="endPress"
             @contextmenu.prevent
@@ -81,13 +89,18 @@
                 style="
                   border-top-left-radius: 4px;
                   border-bottom-left-radius: 4px;
+                  border-radius: 4px;
                 "
                 class="img-cover"
                 :src="post.cover ? post.cover.url : noCover"
               />
 
               <!-- degraded -->
-              <div class="degraded"></div>
+              <div
+                class="degraded"
+                style="border-radius: 4px"
+                @click="openPost({ id: post.id })"
+              ></div>
 
               <div class="card-post-content">
                 <section id="post-title">
@@ -95,13 +108,12 @@
                   <ion-card-title
                     mode="md"
                     style="color: white; cursor: pointer"
-                    @click="openPost(post.id!)"
+                    @click="openPost({ id: post.id })"
                   >
                     {{ post.title }}
                   </ion-card-title>
                 </section>
 
-                <!-- options -->
                 <section
                   v-if="userController.getUser()?.isAdmin"
                   id="section-hide"
@@ -125,6 +137,7 @@
                   <div>
                     <ion-button
                       fill="clear"
+                      :disabled="postProgress.status"
                       @click="
                         idPostSelected = parseInt(post.id);
                         popoverPostOptions.event = $event;
@@ -216,6 +229,7 @@
       @didDismiss="popOverMainOPtions.isOpen = false"
       :is-open="popOverMainOPtions.isOpen"
       :event="popOverMainOPtions.event"
+      :show-backdrop="false"
       ><ion-content>
         <!-- search -->
         <ion-item
@@ -277,17 +291,19 @@
       @didDismiss="popoverPostOptions.isOpen = false"
     >
       <ion-content>
+        <!-- update post -->
         <ion-item
           button
           lines="full"
           class="transparent"
-          @click="updatePost(idPostSelected!.toString())"
+          @click="updatePost({ id: idPostSelected!.toString() })"
         >
           <ion-icon slot="start" :icon="createOutline"> </ion-icon>
 
           <ion-label>Editar</ion-label>
         </ion-item>
 
+        <!-- delete post -->
         <ion-item
           button
           v-if="userController.getUser()?.isAdmin"
@@ -368,6 +384,7 @@ const popoverPostOptions = ref({ isOpen: false, event: {} as MouseEvent });
 const idPostSelected = ref<undefined | number>(undefined);
 const pressTimer = ref(0);
 const designPlatform = isPlatform("ios") ? "ios" : "md";
+const postProgress = ref({ status: false, id: "", color: "" });
 
 // computed
 const filterPosts = computed(() => {
@@ -488,37 +505,40 @@ async function openPostSearch(params: { id: string }): Promise<void> {
   closeModalSearchPosts();
 }
 
-function openPost(id: string) {
-  router.push({ name: "PostPage", params: { id } });
+async function openPost(params: { id: string }) {
+  const { id } = params;
+  openPostLoader({ id });
+  await router.push({ name: "PostPage", params: { id } });
+  closePostLoader();
 }
 
-async function updatePost(id: string) {
-  spinners.value.buttonEditPost = id;
+async function updatePost(params: { id: string }) {
+  const { id } = params;
+  openPostLoader({ id, color: "primary" });
   await router.push("/blog/editor/update/" + id);
-  spinners.value.buttonEditPost = "";
+  closePostLoader();
 }
 
 async function deletePost(params: { id: string }) {
   const id = params.id;
+  openPostLoader({ id, color: "danger" });
+
   const response = await systemController.presentAlertConfirmation({
     message: "¿Desea eliminar el post?",
   });
 
-  if (response == false) return;
+  if (response == false) {
+    closePostLoader();
+    return;
+  }
 
-  const loading = await loadingController.create({
-    message: "Eliminando publicación",
-  });
-
-  loading.present();
   try {
-    await postController.deletePost({ id });
+    // await postController.deletePost({ id });
     loadContent({ status: filter.selected });
-    await systemController.presentToast({ message: "Post eliminado" });
   } catch (error) {
     console.error(error);
   } finally {
-    loading.dismiss();
+    closePostLoader();
   }
 }
 
@@ -602,6 +622,17 @@ function startPress(params: { event: MouseEvent; id: string }) {
 
 function endPress() {
   clearTimeout(pressTimer.value);
+}
+
+function openPostLoader(params: { id: string; color?: string }) {
+  const { id, color = "primary" } = params;
+  postProgress.value.status = true;
+  postProgress.value.id = id;
+  postProgress.value.color = color;
+}
+
+function closePostLoader() {
+  postProgress.value.status = false;
 }
 </script>
 

@@ -57,6 +57,7 @@
     <ion-content>
       <transition name="fade" mode="out-in">
         <div :key="opcSelected" style="height: 100%">
+          <!-- info -->
           <div
             size="12"
             style="height: 100%"
@@ -66,10 +67,12 @@
             <InformationComponent />
           </div>
 
+          <!-- skills -->
           <div v-if="opcSelected == 'SkillsPage'">
             <SkillsPage />
           </div>
 
+          <!-- projects -->
           <div v-if="opcSelected == 'PortfolioPage'">
             <PortfolioPage />
           </div>

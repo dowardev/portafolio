@@ -94,14 +94,6 @@ ul {
   color: var(--ion-color-danger);
 }
 
-ion-card {
-  /* box-shadow: none; */
-  box-shadow:
-    rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
-    rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
-  border: 1.5px solid transparent;
-}
-
 .ion-item-focus:hover {
   border: 1px solid var(--ion-background-color-step-750);
 }

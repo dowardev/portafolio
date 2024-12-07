@@ -13,7 +13,7 @@
 /* primary */
 ion-card.primary-select-border:hover,
 ion-card.primary-select-border-active {
-  border: 1.5px solid var(--ion-color-primary);
+  border: 4px solid var(--ion-color-primary);
   border-radius: 4px;
 }
 
@@ -43,7 +43,7 @@ ion-card.primary-select-animated-active {
 /* success */
 ion-card.success-select-border:hover,
 ion-card.success-select-border-active {
-  border: 1.5px solid var(--ion-color-success);
+  border: 4px solid var(--ion-color-success);
   border-radius: 4px;
 }
 
@@ -53,8 +53,6 @@ ion-card.success-select-background {
 
 ion-card.success-select-animated:hover,
 ion-card.success-select-animated-active {
-  border: 1px solid transparent;
-  border-radius: 4px;
   background:
     linear-gradient(var(--ion-background-color), var(--ion-background-color))
       padding-box,
@@ -66,7 +64,7 @@ ion-card.success-select-animated-active {
 /* danger */
 ion-card.danger-select-border:hover,
 ion-card.danger-select-border-active {
-  border: 1.5px solid var(--ion-color-danger);
+  border: 4px solid var(--ion-color-danger);
   border-radius: 4px;
 }
 
@@ -76,8 +74,6 @@ ion-card.danger-select-background {
 
 ion-card.danger-select-animated:hover,
 ion-card.danger-select-animated-active {
-  border: 1px solid transparent;
-  border-radius: 4px;
   background:
     linear-gradient(var(--ion-background-color), var(--ion-background-color))
       padding-box,

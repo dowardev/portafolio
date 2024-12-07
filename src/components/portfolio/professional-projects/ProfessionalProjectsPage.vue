@@ -3,7 +3,7 @@
     <ion-card
       v-for="(project, index) in proyectos"
       :key="index"
-      class="blur-effect primary-select-animated"
+      class="blur-effect primary-select-border"
     >
       <ion-card-content>
         <ion-row>
