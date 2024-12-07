@@ -79,6 +79,9 @@
                 postProgress.status == true &&
                 postProgress.id == post.id &&
                 postProgress.color == 'danger',
+              'card-up':
+                popoverPostOptions.isOpen &&
+                post.id == idPostSelected?.toString(),
             }"
             @touchstart="startPress({ event: $event, id: post.id })"
             @touchend="endPress"
@@ -678,9 +681,11 @@ function closePostLoader() {
   width: 80%;
 }
 
-.admin:hover .card-post-content {
+.admin:hover .card-post-content,
+.card-up .card-post-content {
   transform: translateY(-60px);
 }
+
 .admin:hover .card-post-content > #section-hide {
   opacity: 1;
 }
