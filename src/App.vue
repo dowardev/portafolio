@@ -1,7 +1,5 @@
 <template>
   <ion-app>
-    <ion-progress-bar type="indeterminate"></ion-progress-bar>
-
     <ion-split-pane when="lg" content-id="main" type="overlay">
       <ion-menu
         content-id="main"

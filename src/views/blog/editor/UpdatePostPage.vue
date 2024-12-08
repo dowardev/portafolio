@@ -1,37 +1,25 @@
 <template>
-  <ion-page class="page-container">
-    <!-- loader -->
-    <ion-progress-bar
-      v-if="progressBar.status"
-      :class="{
-        'primary-progress-bar': progressBar.color == 'primary' || '',
-        'danger-progress-bar': progressBar.color == 'danger',
-      }"
-      type="indeterminate"
-    ></ion-progress-bar>
-
-    <ion-content :fullscreen="true">
-      <EditorComponent
-        v-if="contentLoaded"
-        ref="editorRef"
-        :title="title"
-        :content="content"
-        :cover="{ name: cover.name }"
-        :disableUI="progressBar.status"
-        :postStatus="postStatus"
-        @upload-image="uploadImage($event)"
-        @save="
-          save({
-            title: $event.title,
-            content: $event.content,
-            cover: $event.cover,
-            status: $event.status,
-          })
-        "
-        @delete-post="deletePost({ id: idPost })"
-      ></EditorComponent>
-    </ion-content>
-  </ion-page>
+  <ion-content>
+    <EditorComponent
+      v-if="contentLoaded"
+      ref="editorRef"
+      :title="title"
+      :content="content"
+      :cover="{ name: cover.name }"
+      :disableUI="systemController.getLoader().status"
+      :postStatus="postStatus"
+      @upload-image="uploadImage($event)"
+      @save="
+        save({
+          title: $event.title,
+          content: $event.content,
+          cover: $event.cover,
+          status: $event.status,
+        })
+      "
+      @delete-post="deletePost({ id: idPost })"
+    ></EditorComponent>
+  </ion-content>
 </template>
 
 <script setup lang="ts">
@@ -65,10 +53,6 @@ const cover = ref<{ id: string | undefined; name: string | undefined }>({
 const newImages = ref(Array<string>());
 const images = ref<string[]>([]);
 const editorRef = ref(null);
-const progressBar = ref<{ status: boolean; color: string }>({
-  status: false,
-  color: "primary",
-});
 const contentLoaded = ref(false);
 const postStatus = ref<StatusPost>();
 
@@ -79,7 +63,7 @@ onMounted(() => {
 
 // functions
 async function getPost(): Promise<void> {
-  toggleLoader({ status: true });
+  openLoader({ color: "primary" });
 
   try {
     await postController.loadPost({
@@ -103,7 +87,7 @@ async function getPost(): Promise<void> {
     console.error(e);
     openToastError(e);
   } finally {
-    toggleLoader({ status: false });
+    closeLoader();
   }
 }
 
@@ -131,7 +115,7 @@ async function save(data: {
   status: StatusPost;
 }): Promise<void> {
   const { title, content, cover: newCover, status } = data;
-  toggleLoader({ status: true });
+  openLoader({ color: "primary" });
 
   const id = idPost as string;
   const coverData = {
@@ -150,7 +134,7 @@ async function save(data: {
       openToastError(e);
       return;
     } finally {
-      toggleLoader({ status: false });
+      closeLoader();
     }
   }
 
@@ -175,7 +159,7 @@ async function save(data: {
   } catch (e: any) {
     openToastError(e);
   } finally {
-    toggleLoader({ status: false });
+    closeLoader();
   }
 }
 
@@ -189,7 +173,7 @@ async function updatePost(params: { post: UpdatePost }): Promise<void> {
 
 async function uploadImage(e: any) {
   const image = e;
-  toggleLoader({ status: true });
+  openLoader({ color: "primary" });
 
   try {
     const response = await postController.uploadImage({
@@ -207,7 +191,7 @@ async function uploadImage(e: any) {
     console.error(e);
     openToastError(e);
   } finally {
-    toggleLoader({ status: false });
+    closeLoader();
   }
 }
 
@@ -250,7 +234,7 @@ async function getImageURL(params: { name: string }): Promise<string> {
 
 async function deletePost(params: { id: string }) {
   const id = params.id;
-  toggleLoader({ status: true, color: "danger" });
+  openLoader({ color: "danger" });
 
   try {
     await postController.deletePost({ id });
@@ -259,15 +243,16 @@ async function deletePost(params: { id: string }) {
   } catch (error) {
     console.error(error);
   } finally {
-    toggleLoader({ status: false });
+    closeLoader();
   }
 }
 
-function toggleLoader(params: { status: boolean; color?: string }) {
-  const { status, color = "primary" } = params;
-  progressBar.value = {
-    status: status,
-    color: color,
-  };
+function openLoader(params: { color: string }) {
+  const { color = "primary" } = params;
+  systemController.enableLoader({ color });
+}
+
+function closeLoader() {
+  systemController.disableLoader();
 }
 </script>

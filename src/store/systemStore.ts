@@ -11,6 +11,10 @@ export const useSystemStore = defineStore("system", () => {
     selected: "light",
   } as Theme);
   const update = ref(false);
+  const loader = ref<{ status: boolean; color: string }>({
+    status: false,
+    color: "",
+  });
 
   watch(theme, async (newValue, oldValue) => {
     if (
@@ -35,11 +39,18 @@ export const useSystemStore = defineStore("system", () => {
     update.value = !update.value;
   }
 
+  function updateLoader(params: { status: boolean; color?: string }) {
+    const { status, color = "primary" } = params;
+    loader.value = { status, color };
+  }
+
   return {
     theme,
     getThemeSelected,
     updateThemeSelected,
     toggleUpdateOption,
     update,
+    loader,
+    updateLoader,
   };
 });

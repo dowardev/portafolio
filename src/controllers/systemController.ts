@@ -170,4 +170,17 @@ export default class SystemController {
       type,
     });
   }
+
+  enableLoader(params: { color: string }) {
+    const { color } = params;
+    this.systemStore.updateLoader({ status: true, color });
+  }
+
+  disableLoader() {
+    this.systemStore.updateLoader({ status: false });
+  }
+
+  getLoader() {
+    return this.systemStore.loader;
+  }
 }

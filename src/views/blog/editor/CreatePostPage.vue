@@ -1,29 +1,20 @@
 <template>
-  <ion-page class="page-container">
-    <!-- loader -->
-    <ion-progress-bar
-      v-if="progressBar"
-      class="primary-progress-bar"
-      type="indeterminate"
-    ></ion-progress-bar>
-
-    <ion-content>
-      <EditorComponent
-        ref="editorRef"
-        :content="content"
-        :disableUI="progressBar"
-        @upload-image="uploadImage($event)"
-        @save="
-          save({
-            title: $event.title,
-            content: $event.content,
-            cover: $event.cover,
-            status: $event.status,
-          })
-        "
-      ></EditorComponent>
-    </ion-content>
-  </ion-page>
+  <ion-content>
+    <EditorComponent
+      ref="editorRef"
+      :content="content"
+      :disableUI="systemController.getLoader().status"
+      @upload-image="uploadImage($event)"
+      @save="
+        save({
+          title: $event.title,
+          content: $event.content,
+          cover: $event.cover,
+          status: $event.status,
+        })
+      "
+    ></EditorComponent>
+  </ion-content>
 </template>
 
 <script setup lang="ts">
@@ -37,7 +28,6 @@ import { StatusPost } from "@/services/types";
 // controllers
 import PostController from "../../../controllers/postController";
 import SystemController from "../../../controllers/systemController";
-
 const postController = new PostController();
 const systemController = new SystemController();
 
@@ -47,7 +37,6 @@ const openToastError = systemController.openToastError;
 const content = ref("");
 const images = Array<string>();
 const editorRef = ref(null);
-const progressBar = ref<true | false>(false);
 
 // functions
 async function save(params: {
@@ -58,7 +47,7 @@ async function save(params: {
 }): Promise<void> {
   const { title, content, cover, status } = params;
   let coverId = "";
-  progressBar.value = true;
+  openLoader({ color: "primary" });
 
   if (cover.size > 0) {
     try {
@@ -69,7 +58,7 @@ async function save(params: {
       openToastError(e);
       return;
     } finally {
-      progressBar.value = false;
+      closeLoader();
     }
   }
 
@@ -85,7 +74,7 @@ async function save(params: {
     router.go(-1);
   } catch (e: any) {
     console.error(e);
-    progressBar.value = false;
+    closeLoader();
     openToastError(e);
   }
 }
@@ -112,7 +101,7 @@ async function createPost({
 
 async function uploadImage(e: File): Promise<void> {
   const image = e;
-  progressBar.value = true;
+  openLoader({ color: "primary" });
 
   try {
     const { id: idImage, url: urlImage } = await postController.uploadImage({
@@ -131,7 +120,7 @@ async function uploadImage(e: File): Promise<void> {
     console.error(e);
     openToastError(e);
   } finally {
-    progressBar.value = false;
+    closeLoader();
   }
 }
 
@@ -153,5 +142,14 @@ async function uploadCover(params: { image: File }): Promise<{ id: string }> {
 async function getImageURL(params: { name: string }): Promise<string> {
   const { name } = params;
   return (await systemController.getImageURL({ name })).url;
+}
+
+async function openLoader(params: { color: string }): Promise<void> {
+  const { color } = params;
+  systemController.enableLoader({ color });
+}
+
+function closeLoader(): void {
+  systemController.disableLoader();
 }
 </script>

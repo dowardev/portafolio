@@ -13,6 +13,8 @@ import UserPanelPage from "@/views/user/UserPanelPage.vue";
 import AdminPanelPage from "@/views/admin/users/UsersPage.vue";
 import Prueba from "@/views/prueba/Prueba.vue";
 
+import HomePage from "@/views/HomePage.vue";
+
 // controllers
 import UserController from "@/controllers/userController";
 
@@ -39,73 +41,73 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/home/presentation",
     name: "PresentationPage",
-    component: HomePresentationPage,
+    component: HomePage,
   },
   {
     path: "/home/skills",
     name: "SkillsPage",
-    component: HomePresentationPage,
+    component: HomePage,
   },
   {
     path: "/home/history",
     name: "HistoryPage",
-    component: HomePresentationPage,
+    component: HomePage,
   },
   {
     path: "/home/portfolio",
     name: "PortfolioPage",
-    component: HomePresentationPage,
+    component: HomePage,
   },
   {
     path: "/blog/editor/create",
-    name: "CreatePost",
-    component: CreatePost,
+    name: "CreatePostPage",
+    component: HomePage,
   },
   {
     path: "/blog/editor/update/:id",
-    name: "UpdatePost",
-    component: UpdatePost,
+    name: "UpdatePostPage",
+    component: HomePage,
   },
   {
     path: "/blog",
     name: "PostsPage",
-    component: PostsPage,
+    component: HomePage,
     children: [
       {
         path: ":date",
-        component: PostsPage,
+        component: HomePage,
       },
     ],
   },
   {
     path: "/blog/post/:id",
     name: "PostPage",
-    component: PostPage,
+    component: HomePage,
   },
   {
     path: "/login",
     name: "LoginPage",
-    component: LoginPage,
+    component: HomePage,
   },
   {
     path: "/signup",
     name: "SignUpPage",
-    component: SignUpPage,
+    component: HomePage,
   },
   {
     path: "/policies",
     name: "PoliciesPage",
-    component: PoliciesPage,
+    component: HomePage,
   },
   {
     path: "/user",
     name: "UserPanelPage",
-    component: UserPanelPage,
+    component: HomePage,
   },
   {
     path: "/admin-panel",
     name: "AdminPanelPage",
-    component: AdminPanelPage,
+    component: HomePage,
   },
 ];
 
@@ -123,7 +125,7 @@ router.beforeEach(async (to, from, next) => {
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];
   const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
-  const adminRoutes = ["CreatePost", "UpdatePost", "AdminPanelPage"];
+  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "AdminPanelPage"];
   const noGuardRequired = [
     "RestorePasswordPage",
     "PresentationPage",

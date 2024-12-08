@@ -1,137 +1,130 @@
 <template>
-  <ion-page
-    class="page-container"
-    :class="{ 'page-background': backgroundActive }"
-  >
-    <ion-header class="ion-no-border" mode="ios">
-      <ion-toolbar>
-        <ion-buttons slot="start" :mode="designPlatform">
-          <ion-menu-button menu="mainMenu"></ion-menu-button>
-        </ion-buttons>
+  <ion-header class="ion-no-border" mode="ios">
+    <ion-toolbar>
+      <ion-buttons slot="start" :mode="designPlatform">
+        <ion-menu-button menu="mainMenu"></ion-menu-button>
+      </ion-buttons>
 
-        <ion-title>{{ pageTitle }}</ion-title>
+      <ion-title>{{ pageTitle }}</ion-title>
 
-        <!-- main options sm screen -->
-        <ion-buttons
-          slot="end"
-          v-if="isPlatform('android') || isPlatform('ios')"
-          :mode="designPlatform"
-        >
-          <div>
-            <ion-button
-              @click="buttonMenuMobileOptions = { open: true, event: $event }"
-            >
-              <ion-icon :icon="albumsOutline"></ion-icon>
-            </ion-button>
-          </div>
-        </ion-buttons>
-
-        <!-- main options md and lg screen -->
-        <ion-buttons
-          slot="end"
-          v-if="isPlatform('desktop')"
-          :mode="designPlatform"
-        >
-          <ion-segment :scrollable="true" :value="$route.name as string">
-            <ion-segment-button
-              v-for="(option, key) in menuOptions"
-              :key="key"
-              :value="option.route"
-              @click="
-                mainSelectHandler({ option: option.route as MainOptions })
-              "
-            >
-              <span>{{ option.title }}</span>
-            </ion-segment-button>
-          </ion-segment>
-
+      <!-- main options sm screen -->
+      <ion-buttons
+        slot="end"
+        v-if="isPlatform('android') || isPlatform('ios')"
+        :mode="designPlatform"
+      >
+        <div>
           <ion-button
-            @click="buttonMenuDesktopOptions = { open: true, event: $event }"
+            @click="buttonMenuMobileOptions = { open: true, event: $event }"
           >
-            <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
+            <ion-icon :icon="albumsOutline"></ion-icon>
           </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content>
-      <transition name="fade" mode="out-in">
-        <div :key="opcSelected" style="height: 100%">
-          <!-- info -->
-          <div
-            size="12"
-            style="height: 100%"
-            class="center center-vertical"
-            v-if="opcSelected == 'PresentationPage'"
-          >
-            <InformationComponent />
-          </div>
-
-          <!-- skills -->
-          <div v-if="opcSelected == 'SkillsPage'">
-            <SkillsPage />
-          </div>
-
-          <!-- projects -->
-          <div v-if="opcSelected == 'PortfolioPage'">
-            <PortfolioPage />
-          </div>
         </div>
-      </transition>
+      </ion-buttons>
+
+      <!-- main options md and lg screen -->
+      <ion-buttons
+        slot="end"
+        v-if="isPlatform('desktop')"
+        :mode="designPlatform"
+      >
+        <ion-segment :scrollable="true" :value="$route.name as string">
+          <ion-segment-button
+            v-for="(option, key) in menuOptions"
+            :key="key"
+            :value="option.route"
+            @click="mainSelectHandler({ option: option.route as MainOptions })"
+          >
+            <span>{{ option.title }}</span>
+          </ion-segment-button>
+        </ion-segment>
+
+        <ion-button
+          @click="buttonMenuDesktopOptions = { open: true, event: $event }"
+        >
+          <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <transition name="fade" mode="out-in">
+      <div :key="opcSelected" style="height: 100%">
+        <!-- info -->
+        <div
+          size="12"
+          style="height: 100%"
+          class="center center-vertical"
+          v-if="opcSelected == 'PresentationPage'"
+        >
+          <InformationComponent />
+        </div>
+
+        <!-- skills -->
+        <div v-if="opcSelected == 'SkillsPage'">
+          <SkillsPage />
+        </div>
+
+        <!-- projects -->
+        <div v-if="opcSelected == 'PortfolioPage'">
+          <PortfolioPage />
+        </div>
+      </div>
+    </transition>
+  </ion-content>
+
+  <!-- popovers -->
+  <!-- popover main options mobile -->
+  <ion-popover
+    :is-open="buttonMenuMobileOptions.open"
+    :event="buttonMenuMobileOptions.event"
+    :mode="isPlatform('ios') ? 'ios' : 'md'"
+    @did-dismiss="buttonMenuMobileOptions.open = false"
+  >
+    <ion-content>
+      <ion-item
+        lines="full"
+        button
+        @click="backgroundActive = !backgroundActive"
+      >
+        <ion-icon slot="start" :icon="imageOutline"></ion-icon>
+
+        <ion-label v-if="backgroundActive == false">Activar fondo</ion-label>
+        <ion-label v-else>Desactivar fondo</ion-label>
+      </ion-item>
+
+      <ion-item
+        v-for="(option, key) in menuOptions"
+        :key="key"
+        lines="none"
+        button
+        @click="$router.push({ name: option.route })"
+      >
+        <ion-label>{{ option.title }}</ion-label>
+      </ion-item>
     </ion-content>
+  </ion-popover>
+  <!-- popover main options desktop-->
+  <ion-popover
+    :is-open="buttonMenuDesktopOptions.open"
+    :event="buttonMenuDesktopOptions.event"
+    :mode="isPlatform('ios') ? 'ios' : 'md'"
+    @did-dismiss="buttonMenuDesktopOptions.open = false"
+  >
+    <ion-content>
+      <ion-item
+        lines="full"
+        button
+        @click="backgroundActive = !backgroundActive"
+      >
+        <ion-icon slot="start" :icon="imageOutline"></ion-icon>
 
-    <!-- popovers -->
-    <!-- popover main options mobile -->
-    <ion-popover
-      :is-open="buttonMenuMobileOptions.open"
-      :event="buttonMenuMobileOptions.event"
-      :mode="isPlatform('ios') ? 'ios' : 'md'"
-      @did-dismiss="buttonMenuMobileOptions.open = false"
-    >
-      <ion-content>
-        <ion-item
-          lines="full"
-          button
-          @click="backgroundActive = !backgroundActive"
-        >
-          <ion-icon slot="start" :icon="imageOutline"></ion-icon>
-
-          <ion-label v-if="backgroundActive == false">Activar fondo</ion-label>
-          <ion-label v-else>Desactivar fondo</ion-label>
-        </ion-item>
-
-        <ion-item
-          v-for="(option, key) in menuOptions"
-          :key="key"
-          lines="none"
-          button
-          @click="$router.push({ name: option.route })"
-        >
-          <ion-label>{{ option.title }}</ion-label>
-        </ion-item>
-      </ion-content>
-    </ion-popover>
-    <!-- popover main options desktop-->
-    <ion-popover
-      :is-open="buttonMenuDesktopOptions.open"
-      :event="buttonMenuDesktopOptions.event"
-      :mode="isPlatform('ios') ? 'ios' : 'md'"
-      @did-dismiss="buttonMenuDesktopOptions.open = false"
-    >
-      <ion-content>
-        <ion-item
-          lines="full"
-          button
-          @click="backgroundActive = !backgroundActive"
-        >
-          <ion-icon slot="start" :icon="imageOutline"></ion-icon>
-
-          <ion-label v-if="backgroundActive == false">Activar fondo</ion-label>
-          <ion-label v-else>Desactivar fondo</ion-label>
-        </ion-item>
-      </ion-content>
-    </ion-popover>
-  </ion-page>
+        <ion-label v-if="backgroundActive == false">Activar fondo</ion-label>
+        <ion-label v-else>Desactivar fondo</ion-label>
+      </ion-item>
+    </ion-content>
+  </ion-popover>
 </template>
 
 <script setup lang="ts">

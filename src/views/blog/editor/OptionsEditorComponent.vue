@@ -24,8 +24,8 @@
     <ion-col>
       <ion-card>
         <ion-item
-          :lines="cover.name ? 'full' : 'none'"
           button
+          :lines="cover.name ? 'full' : 'none'"
           :disabled="props.disableUI"
           @click="($refs as any).inputPostCover.click()"
         >
@@ -58,7 +58,7 @@
   </ion-row>
 
   <!-- delete post button -->
-  <ion-row v-if="$route.name == 'UpdatePost'">
+  <ion-row v-if="$route.name == 'UpdatePostPage'">
     <ion-col size="12">
       <ion-card
         class="selectable-danger-card"
@@ -141,21 +141,23 @@ let expandAnimation: Animation;
 let contractAnimation: Animation;
 
 onMounted(() => {
-  expandAnimation = createAnimation()
-    .addElement(cardEl.value.$el)
-    .duration(200)
-    .keyframes([
-      { offset: 0, height: "43%" },
-      { offset: 1, height: "84%" },
-    ]);
+  if (cardEl.value) {
+    expandAnimation = createAnimation()
+      .addElement(cardEl.value.$el)
+      .duration(200)
+      .keyframes([
+        { offset: 0, height: "43%" },
+        { offset: 1, height: "84%" },
+      ]);
 
-  contractAnimation = createAnimation()
-    .addElement(cardEl.value.$el)
-    .duration(200)
-    .keyframes([
-      { offset: 0, height: "84%" },
-      { offset: 1, height: "43%" },
-    ]);
+    contractAnimation = createAnimation()
+      .addElement(cardEl.value.$el)
+      .duration(200)
+      .keyframes([
+        { offset: 0, height: "84%" },
+        { offset: 1, height: "43%" },
+      ]);
+  }
 });
 
 // functions

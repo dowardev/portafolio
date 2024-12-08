@@ -1,146 +1,138 @@
 <template>
-  <ion-page class="page-container">
-    <ion-header :translucent="true" class="ion-no-border" mode="ios">
-      <!-- progress bar -->
-      <ion-progress-bar
-        v-if="load.status"
-        :class="{
-          'primary-progress-bar': load.color == 'primary' || '',
-          'danger-progress-bar': load.color == 'danger',
-        }"
-        type="indeterminate"
-      ></ion-progress-bar>
+  <ion-header :translucent="true" class="ion-no-border" mode="ios">
+    <ion-toolbar class="container-page">
+      <ion-buttons slot="start">
+        <ion-button @click="$router.go(-1)">
+          <ion-icon :icon="chevronBackOutline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
 
-      <ion-toolbar class="container-page">
-        <ion-buttons slot="start">
-          <ion-button @click="backPage()">
-            <ion-icon :icon="chevronBackOutline"></ion-icon>
+      <!-- title -->
+      <ion-title class="fade-in-title">
+        {{ postController.getPost({ id: postId })?.title }}
+      </ion-title>
+
+      <!-- mobile options -->
+      <ion-buttons slot="end" v-if="isPlatform('android') || isPlatform('ios')">
+        <ion-button @click="popoverMainOptions = { open: true, event: $event }">
+          <ion-icon :icon="ellipsisVerticalOutline" slot="start"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+
+      <!-- desktop options -->
+      <ion-buttons slot="end" v-if="isPlatform('desktop')">
+        <section v-if="userController.getUser()?.isAdmin">
+          <ion-button fill="clear" @click="updatePost()">
+            <ion-icon :icon="createOutline"></ion-icon>
           </ion-button>
-        </ion-buttons>
 
-        <!-- title -->
-        <ion-title class="fade-in-title">
-          {{ postController.getPost({ id: postId })?.title }}
-        </ion-title>
+          <ion-button fill="clear" @click="isOpenAlertDeletePost = true">
+            <ion-icon :icon="trashOutline" color="danger"></ion-icon>
+          </ion-button>
+        </section>
 
-        <!-- mobile options -->
-        <ion-buttons
-          slot="end"
+        <ion-button
           v-if="isPlatform('android') || isPlatform('ios')"
+          fill="clear"
+          @click="openModalIndexContent()"
         >
-          <ion-button
-            @click="popoverMainOptions = { open: true, event: $event }"
-          >
-            <ion-icon :icon="ellipsisVerticalOutline" slot="start"></ion-icon>
-          </ion-button>
-        </ion-buttons>
+          <ion-icon :icon="menuOutline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
 
-        <!-- desktop options -->
-        <ion-buttons slot="end" v-if="isPlatform('desktop')">
-          <section v-if="userController.getUser()?.isAdmin">
-            <ion-button fill="clear" @click="updatePost()">
-              <ion-icon :icon="createOutline"></ion-icon>
-            </ion-button>
+  <ion-row style="height: 100dvh; overflow: hidden">
+    <ion-col :size="isPlatform('desktop') ? '9' : '12'">
+      <!-- ion content -->
+      <ion-content
+        :fullscreen="true"
+        v-if="postController.getPost({ id: postId }) != undefined"
+      >
+        <ion-header collapse="condense" mode="ios">
+          <ion-toolbar>
+            <ion-title size="large"
+              ><div style="text-wrap: auto">
+                {{ postController.getPost({ id: postId })?.title }}
+              </div></ion-title
+            >
+          </ion-toolbar>
+        </ion-header>
 
-            <ion-button fill="clear" @click="deletePost()">
-              <ion-icon :icon="trashOutline" color="danger"></ion-icon>
-            </ion-button>
-          </section>
-
-          <ion-button
-            v-if="isPlatform('android') || isPlatform('ios')"
-            fill="clear"
-            @click="openModalIndexContent()"
-          >
-            <ion-icon :icon="menuOutline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-row style="height: 100dvh; overflow: hidden">
-      <ion-col :size="isPlatform('desktop') ? '9' : '12'">
-        <!-- ion content -->
-        <ion-content
-          :fullscreen="true"
-          v-if="postController.getPost({ id: postId }) != undefined"
+        <!-- content -->
+        <div
+          ref="indexRef"
+          @scroll="setScrollPosition()"
+          class="ion-padding"
+          id="pr"
         >
-          <ion-header collapse="condense" mode="ios">
-            <ion-toolbar>
-              <ion-title size="large"
-                ><div style="text-wrap: auto">
-                  {{ postController.getPost({ id: postId })?.title }}
-                </div></ion-title
-              >
-            </ion-toolbar>
-          </ion-header>
+          <article>
+            <MarkdownViewer
+              :content="postController.getPost({ id: postId })!.content ?? ''"
+            />
+          </article>
+        </div>
 
-          <!-- content -->
-          <div
-            ref="indexRef"
-            @scroll="setScrollPosition()"
-            class="ion-padding"
-            id="pr"
-          >
-            <article>
-              <MarkdownViewer
-                :content="postController.getPost({ id: postId })!.content ?? ''"
-              />
-            </article>
-          </div>
+        <!-- popoovers -->
+        <ion-popover
+          :is-open="popoverMainOptions.open"
+          :event="popoverMainOptions.event"
+          @did-dismiss="popoverMainOptions.open = false"
+          @click="popoverMainOptions.open = false"
+        >
+          <ion-content>
+            <!-- index -->
+            <ion-item lines="full" button @click="openModalIndexContent()">
+              <ion-icon :icon="menuOutline" slot="start"></ion-icon>
+              <ion-label>Indice</ion-label>
+            </ion-item>
 
-          <!-- popoovers -->
-          <ion-popover
-            :is-open="popoverMainOptions.open"
-            :event="popoverMainOptions.event"
-            @did-dismiss="popoverMainOptions.open = false"
-            @click="popoverMainOptions.open = false"
-          >
-            <ion-content>
-              <!-- index -->
-              <ion-item lines="full" button @click="openModalIndexContent()">
-                <ion-icon :icon="menuOutline" slot="start"></ion-icon>
-                <ion-label>Indice</ion-label>
-              </ion-item>
+            <!-- update -->
+            <ion-item
+              lines="full"
+              v-if="userController.getUser()?.isAdmin"
+              button
+              @click="updatePost()"
+            >
+              <ion-icon :icon="createOutline" slot="start"></ion-icon>
+              <ion-label>Actualizar post</ion-label>
+            </ion-item>
+            <!-- delete -->
+            <ion-item
+              lines="full"
+              v-if="userController.getUser()?.isAdmin"
+              button
+              @click="deletePost()"
+            >
+              <ion-icon
+                :icon="trashOutline"
+                color="danger"
+                slot="start"
+              ></ion-icon>
+              <ion-label>Indice</ion-label>
+            </ion-item>
+          </ion-content>
+        </ion-popover>
+      </ion-content>
+    </ion-col>
 
-              <!-- update -->
-              <ion-item
-                lines="full"
-                v-if="userController.getUser()?.isAdmin"
-                button
-                @click="updatePost()"
-              >
-                <ion-icon :icon="createOutline" slot="start"></ion-icon>
-                <ion-label>Actualizar post</ion-label>
-              </ion-item>
-              <!-- delete -->
-              <ion-item
-                lines="full"
-                v-if="userController.getUser()?.isAdmin"
-                button
-                @click="deletePost()"
-              >
-                <ion-icon
-                  :icon="trashOutline"
-                  color="danger"
-                  slot="start"
-                ></ion-icon>
-                <ion-label>Indice</ion-label>
-              </ion-item>
-            </ion-content>
-          </ion-popover>
-        </ion-content>
-      </ion-col>
+    <ion-col size="3" v-if="isPlatform('desktop')">
+      <indexContentComponent
+        :index-content="indexContent"
+        :auto-hide-content="isPlatform('ios') || isPlatform('android')"
+        @element-id="goToSection({ id: $event })"
+      />
+    </ion-col>
+  </ion-row>
 
-      <ion-col size="3" v-if="isPlatform('desktop')">
-        <indexContentComponent
-          :index-content="indexContent"
-          :auto-hide-content="isPlatform('ios') || isPlatform('android')"
-          @element-id="goToSection({ id: $event })"
-        />
-      </ion-col>
-    </ion-row>
-  </ion-page>
+  <!-- alerts -->
+  <!-- alert delete post -->
+  <ion-alert
+    header="Continuar?"
+    message="Eliminar Post"
+    :buttons="alertButtonsDeletePost"
+    :is-open="isOpenAlertDeletePost"
+  ></ion-alert>
 </template>
 
 <script setup lang="ts">
@@ -195,7 +187,20 @@ const indexRef = ref<HTMLElement | null>(null);
 const popoverMainOptions = ref({ open: false, event: null as Event | null });
 const scrollPosition = ref(0);
 const showTitle = ref(false);
-const load = ref({ status: false, color: "" });
+const alertButtonsDeletePost = [
+  {
+    text: "Cancelar",
+    role: "cancel",
+  },
+  {
+    text: "Confirmar",
+    cssClass: "alert-button-confirm",
+    handler: () => {
+      deletePost();
+    },
+  },
+];
+const isOpenAlertDeletePost = ref(false);
 
 onMounted(() => {
   start();
@@ -210,10 +215,10 @@ watch(
 
 // functions
 async function start(): Promise<void> {
-  toggleLoader({ status: true });
+  enableLoader({ color: "primary" });
   await getPost();
   generarIndexContent();
-  toggleLoader({ status: false });
+  disableLoader();
 }
 
 async function getPost(): Promise<void> {
@@ -254,23 +259,13 @@ function generarIndexContent(): void {
 }
 
 async function updatePost(): Promise<void> {
-  toggleLoader({ status: true });
-  await router.push(`/blog/editor/update/${postId}`);
-  toggleLoader({ status: false });
+  enableLoader({ color: "primary" });
+  await router.push({ name: "UpdatePostPage", params: { id: postId } });
+  disableLoader();
 }
 
 async function deletePost(): Promise<void> {
-  load.value.status = true;
-  toggleLoader({ status: true, color: "danger" });
-
-  const alertResponse = await systemController.presentAlertConfirmation({
-    message: "¿Desea eliminar el post?",
-  });
-
-  if (!alertResponse) {
-    toggleLoader({ status: false });
-    return;
-  }
+  enableLoader({ color: "danger" });
 
   try {
     await postController.deletePost({ id: postId });
@@ -279,7 +274,7 @@ async function deletePost(): Promise<void> {
   } catch (e: any) {
     systemController.openToastError(e);
   } finally {
-    toggleLoader({ status: false });
+    disableLoader();
   }
 }
 
@@ -316,15 +311,18 @@ function setScrollPosition(): void {
   }
 }
 
-async function backPage() {
-  toggleLoader({ status: true });
-  await router.go(-1);
-  toggleLoader({ status: false });
+function enableLoader(params: { color: string }) {
+  const { color } = params;
+  systemController.enableLoader({ color });
 }
 
-function toggleLoader(params: { status: boolean; color?: string }) {
-  const { status, color = "primary" } = params;
-  load.value.status = status;
-  load.value.color = color;
+function disableLoader() {
+  systemController.disableLoader();
 }
 </script>
+
+<style>
+.alert-button-confirm {
+  color: red !important;
+}
+</style>
