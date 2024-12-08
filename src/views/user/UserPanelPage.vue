@@ -1,6 +1,16 @@
 <template>
   <ion-page class="page-container">
     <ion-header :translucent="true" class="ion-no-border" mode="ios">
+      <!-- progress bar -->
+      <ion-progress-bar
+        v-if="load.status"
+        :class="{
+          'primary-progress-bar': load.color == 'primary' || '',
+          'danger-progress-bar': load.color == 'danger',
+        }"
+        type="indeterminate"
+      ></ion-progress-bar>
+
       <ion-toolbar>
         <ion-buttons slot="start" :mode="designPlatform">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
@@ -25,7 +35,9 @@
       <ion-row>
         <ion-col size-lg="12">
           <section v-if="mainSegment == 'profile'">
-            <UserProfileComponent></UserProfileComponent>
+            <UserProfileComponent
+              @content-loaded="load.status = false"
+            ></UserProfileComponent>
           </section>
 
           <section v-if="mainSegment == 'security'">
@@ -53,9 +65,10 @@ import { ref } from "vue";
 import UserProfileComponent from "./profile/UserProfileComponent.vue";
 import UserSecurityComponent from "./security/UserSecurityComponent.vue";
 
-const pageTitle = ref("Panel de Usurio");
+const pageTitle = ref("Panel de Usuario");
 const mainSegment = ref("profile");
 const designPlatform = isPlatform("ios") ? "ios" : "md";
+const load = ref({ status: true, color: "" });
 </script>
 
 <style scoped>

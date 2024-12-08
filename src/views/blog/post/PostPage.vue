@@ -1,9 +1,19 @@
 <template>
   <ion-page class="page-container">
     <ion-header :translucent="true" class="ion-no-border" mode="ios">
+      <!-- progress bar -->
+      <ion-progress-bar
+        v-if="load.status"
+        :class="{
+          'primary-progress-bar': load.color == 'primary' || '',
+          'danger-progress-bar': load.color == 'danger',
+        }"
+        type="indeterminate"
+      ></ion-progress-bar>
+
       <ion-toolbar class="container-page">
         <ion-buttons slot="start">
-          <ion-button @click="$router.go(-1)">
+          <ion-button @click="backPage()">
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -147,12 +157,14 @@ import {
   IonLabel,
   IonCol,
   IonRow,
+  IonProgressBar,
 } from "@ionic/vue";
 import {
   chevronBackOutline,
   createOutline,
   ellipsisVerticalOutline,
   menuOutline,
+  toggle,
   trashOutline,
 } from "ionicons/icons";
 import { useRoute, useRouter } from "vue-router";
@@ -183,6 +195,7 @@ const indexRef = ref<HTMLElement | null>(null);
 const popoverMainOptions = ref({ open: false, event: null as Event | null });
 const scrollPosition = ref(0);
 const showTitle = ref(false);
+const load = ref({ status: false, color: "" });
 
 onMounted(() => {
   start();
@@ -197,8 +210,10 @@ watch(
 
 // functions
 async function start(): Promise<void> {
+  toggleLoader({ status: true });
   await getPost();
   generarIndexContent();
+  toggleLoader({ status: false });
 }
 
 async function getPost(): Promise<void> {
@@ -239,30 +254,32 @@ function generarIndexContent(): void {
 }
 
 async function updatePost(): Promise<void> {
-  spinners.value.buttonUpdate = true;
+  toggleLoader({ status: true });
   await router.push(`/blog/editor/update/${postId}`);
-  spinners.value.buttonUpdate = false;
+  toggleLoader({ status: false });
 }
 
 async function deletePost(): Promise<void> {
-  spinners.value.buttonDelete = true;
+  load.value.status = true;
+  toggleLoader({ status: true, color: "danger" });
 
   const alertResponse = await systemController.presentAlertConfirmation({
     message: "¿Desea eliminar el post?",
   });
 
   if (!alertResponse) {
-    spinners.value.buttonDelete = false;
+    toggleLoader({ status: false });
     return;
   }
 
   try {
-    await postController.deletePost(postId);
+    await postController.deletePost({ id: postId });
     spinners.value.buttonDelete = false;
     router.go(-1);
   } catch (e: any) {
-    spinners.value.buttonDelete = false;
     systemController.openToastError(e);
+  } finally {
+    toggleLoader({ status: false });
   }
 }
 
@@ -297,5 +314,17 @@ function setScrollPosition(): void {
   if (indexRef.value) {
     scrollPosition.value = indexRef.value.scrollTop;
   }
+}
+
+async function backPage() {
+  toggleLoader({ status: true });
+  await router.go(-1);
+  toggleLoader({ status: false });
+}
+
+function toggleLoader(params: { status: boolean; color?: string }) {
+  const { status, color = "primary" } = params;
+  load.value.status = status;
+  load.value.color = color;
 }
 </script>

@@ -1,6 +1,13 @@
 <template>
   <ion-page class="page-container">
     <ion-header class="ion-no-border" mode="ios">
+      <!-- progress bar -->
+      <ion-progress-bar
+        v-if="loadFinished == false"
+        class="primary-progress-bar"
+        type="indeterminate"
+      ></ion-progress-bar>
+
       <ion-toolbar class="container-page">
         <ion-buttons slot="start" :mode="designPlatform">
           <ion-menu-button menu="mainMenu"></ion-menu-button>
@@ -45,13 +52,6 @@
             <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
-
-        <!-- progress bar -->
-        <ion-progress-bar
-          v-if="postController.getPosts()!.length == 0 && loadFinished == false"
-          class="primary-progress-bar"
-          type="indeterminate"
-        ></ion-progress-bar>
       </ion-toolbar>
     </ion-header>
 
@@ -101,7 +101,7 @@
               <!-- degraded -->
               <div
                 class="degraded"
-                style="border-radius: 4px"
+                style="border-radius: 4px; cursor: pointer"
                 @click="openPost({ id: post.id })"
               ></div>
 
@@ -437,13 +437,14 @@ async function addPost(): Promise<void> {
 }
 
 async function refreshContent(): Promise<void> {
-  loadContent({ status: filter.selected });
+  await loadContent({ status: filter.selected });
 }
 
 async function loadContent(params: {
   status: filterPostOptions;
 }): Promise<void> {
   const { status } = params;
+  loadFinished.value = false;
 
   try {
     await getPostsDates({ status });

@@ -94,9 +94,9 @@ ul {
   color: var(--ion-color-danger);
 }
 
-.ion-item-focus:hover {
+/* .ion-item-focus:hover {
   border: 1px solid var(--ion-background-color-step-750);
-}
+} */
 
 ion-button {
   --box-shadow: none;

@@ -2,8 +2,11 @@
   <ion-page class="page-container">
     <!-- loader -->
     <ion-progress-bar
-      v-if="progressBar"
-      class="primary-progress-bar"
+      v-if="progressBar.status"
+      :class="{
+        'primary-progress-bar': progressBar.color == 'primary' || '',
+        'danger-progress-bar': progressBar.color == 'danger',
+      }"
       type="indeterminate"
     ></ion-progress-bar>
 
@@ -14,7 +17,7 @@
         :title="title"
         :content="content"
         :cover="{ name: cover.name }"
-        :disableUI="progressBar"
+        :disableUI="progressBar.status"
         :postStatus="postStatus"
         @upload-image="uploadImage($event)"
         @save="
@@ -62,7 +65,10 @@ const cover = ref<{ id: string | undefined; name: string | undefined }>({
 const newImages = ref(Array<string>());
 const images = ref<string[]>([]);
 const editorRef = ref(null);
-const progressBar = ref<true | false>(false);
+const progressBar = ref<{ status: boolean; color: string }>({
+  status: false,
+  color: "primary",
+});
 const contentLoaded = ref(false);
 const postStatus = ref<StatusPost>();
 
@@ -73,7 +79,7 @@ onMounted(() => {
 
 // functions
 async function getPost(): Promise<void> {
-  progressBar.value = true;
+  toggleLoader({ status: true });
 
   try {
     await postController.loadPost({
@@ -97,7 +103,7 @@ async function getPost(): Promise<void> {
     console.error(e);
     openToastError(e);
   } finally {
-    progressBar.value = false;
+    toggleLoader({ status: false });
   }
 }
 
@@ -125,7 +131,7 @@ async function save(data: {
   status: StatusPost;
 }): Promise<void> {
   const { title, content, cover: newCover, status } = data;
-  progressBar.value = true;
+  toggleLoader({ status: true });
 
   const id = idPost as string;
   const coverData = {
@@ -144,7 +150,7 @@ async function save(data: {
       openToastError(e);
       return;
     } finally {
-      progressBar.value = false;
+      toggleLoader({ status: false });
     }
   }
 
@@ -169,7 +175,7 @@ async function save(data: {
   } catch (e: any) {
     openToastError(e);
   } finally {
-    progressBar.value = false;
+    toggleLoader({ status: false });
   }
 }
 
@@ -182,8 +188,8 @@ async function updatePost(params: { post: UpdatePost }): Promise<void> {
 }
 
 async function uploadImage(e: any) {
-  progressBar.value = true;
   const image = e;
+  toggleLoader({ status: true });
 
   try {
     const response = await postController.uploadImage({
@@ -201,7 +207,7 @@ async function uploadImage(e: any) {
     console.error(e);
     openToastError(e);
   } finally {
-    progressBar.value = false;
+    toggleLoader({ status: false });
   }
 }
 
@@ -244,7 +250,7 @@ async function getImageURL(params: { name: string }): Promise<string> {
 
 async function deletePost(params: { id: string }) {
   const id = params.id;
-  progressBar.value = true;
+  toggleLoader({ status: true, color: "danger" });
 
   try {
     await postController.deletePost({ id });
@@ -253,7 +259,15 @@ async function deletePost(params: { id: string }) {
   } catch (error) {
     console.error(error);
   } finally {
-    progressBar.value = false;
+    toggleLoader({ status: false });
   }
+}
+
+function toggleLoader(params: { status: boolean; color?: string }) {
+  const { status, color = "primary" } = params;
+  progressBar.value = {
+    status: status,
+    color: color,
+  };
 }
 </script>

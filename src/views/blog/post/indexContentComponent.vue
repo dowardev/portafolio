@@ -6,7 +6,6 @@
   >
     <ion-item class="transparent">
       <ion-label>Contenido</ion-label>
-      <ion-chip outline>Beta</ion-chip>
     </ion-item>
 
     <div

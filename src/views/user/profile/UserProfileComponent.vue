@@ -394,6 +394,7 @@ const systemController = new SystemController();
 const userController = new UserController();
 
 // vars
+const emits = defineEmits(["content-loaded"]);
 const form = ref({
   name: "",
   user: "",
@@ -485,6 +486,7 @@ const modalDeleteAccount = ref({ open: false });
 onMounted(async () => {
   await loadUser();
   oldEmail.value = form.value.email!;
+  emits("content-loaded");
 });
 
 async function loadUser() {

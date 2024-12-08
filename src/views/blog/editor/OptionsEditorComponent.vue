@@ -60,23 +60,37 @@
   <!-- delete post button -->
   <ion-row v-if="$route.name == 'UpdatePost'">
     <ion-col size="12">
-      <ion-card class="selectable-danger-card">
+      <ion-card
+        class="selectable-danger-card"
+        ref="cardEl"
+        style="height: 43%"
+        :class="{
+          'danger-select-animated-active': deletePostAction == true,
+          'danger-border': deletePostAction == 'confirm',
+        }"
+      >
         <ion-item
+          class="transparent"
           button
           lines="none"
-          v-if="deletePostAction == false"
-          @click="deletePostAction = true"
+          @click="handleConfirmDeletePost()"
         >
           <ion-icon color="danger" slot="start" :icon="trashOutline"></ion-icon>
           <ion-label color="danger">Eliminar post</ion-label>
         </ion-item>
 
-        <ion-item lines="none" v-else>
+        <ion-item lines="none">
           <ion-label color="danger">Continuar?</ion-label>
-          <ion-button color="danger" fill="clear" @click="deletePost()"
+          <ion-button
+            color="danger"
+            fill="clear"
+            @click="
+              deletePostAction = true;
+              deletePost();
+            "
             >Si</ion-button
           >
-          <ion-button @click="deletePostAction = false" fill="clear"
+          <ion-button @click="handleConfirmDeletePost()" fill="clear"
             >No</ion-button
           >
         </ion-item>
@@ -86,11 +100,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { trashOutline } from "ionicons/icons";
+import { ref, onMounted } from "vue";
+import {
+  IonButton,
+  IonCard,
+  IonCardContent,
+  createAnimation,
+  IonItem,
+} from "@ionic/vue";
+import type { Animation } from "@ionic/vue";
 import useVuelidate from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";
 import { StatusPost } from "@/services/types";
+import { trashOutline } from "ionicons/icons";
 
 // vars
 const props = defineProps({
@@ -108,9 +130,33 @@ const props = defineProps({
   },
 });
 const emits = defineEmits(["cover-change", "status-change", "delete-post"]);
-const deletePostAction = ref(false);
+const deletePostAction = ref<true | false | "confirm">(false);
 const cover = ref({ name: props.cover.name, file: new File([], "") });
 const postStatus = ref<StatusPost>(props.postStatus as StatusPost);
+
+const cardEl = ref(null);
+const isExpanded = ref(false);
+
+let expandAnimation: Animation;
+let contractAnimation: Animation;
+
+onMounted(() => {
+  expandAnimation = createAnimation()
+    .addElement(cardEl.value.$el)
+    .duration(200)
+    .keyframes([
+      { offset: 0, height: "43%" },
+      { offset: 1, height: "84%" },
+    ]);
+
+  contractAnimation = createAnimation()
+    .addElement(cardEl.value.$el)
+    .duration(200)
+    .keyframes([
+      { offset: 0, height: "84%" },
+      { offset: 1, height: "43%" },
+    ]);
+});
 
 // functions
 function emitCover(params: { file: Event }) {
@@ -138,5 +184,18 @@ function setStatus(params: { status: StatusPost }) {
 
 function deletePost() {
   emits("delete-post");
+}
+
+async function handleConfirmDeletePost() {
+  if (isExpanded.value) {
+    contractAnimation.stop();
+    await contractAnimation.play();
+    deletePostAction.value = false;
+  } else {
+    expandAnimation.stop();
+    await expandAnimation.play();
+    deletePostAction.value = "confirm";
+  }
+  isExpanded.value = !isExpanded.value;
 }
 </script>
