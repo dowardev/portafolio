@@ -9,13 +9,11 @@
     <ion-content :fullscreen="true">
       <ion-row>
         <ion-col size="12">
-          <SuccessCard
+          <CardCode
             color="success"
-            cardTitle="Tarjeta de prueba success"
+            cardTitle="HTML"
             :border="true"
-            cardContent=" Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita omnis modi
-  vel fugiat ut, et debitis soluta, excepturi optio nam vero eum nostrum enim
-  atque praesentium, quis consectetur iure ipsam!"
+            cardContent="<pre><code><p>ssss</p></code></pre>"
             :icon="ellipsisVerticalOutline"
           />
         </ion-col>
@@ -34,5 +32,6 @@ import {
 } from "@ionic/vue";
 
 import SuccessCard from "@/components/cards/CardAlert.vue";
+import CardCode from "@/components/cards/CardCode.vue";
 import { ellipsisVerticalOutline } from "ionicons/icons";
 </script>

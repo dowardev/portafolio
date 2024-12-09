@@ -169,6 +169,7 @@ import { isPlatform, modalController } from "@ionic/vue";
 import modalIndexContent from "./modalIndexContent.vue";
 import MarkdownViewer from "@/components/markdown-viewer/MarkdownViewer.vue";
 import CardsAlert from "@/components/cards/CardAlert.vue";
+import CardCode from "@/components/cards/CardCode.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
@@ -206,43 +207,8 @@ const isOpenAlertDeletePost = ref(false);
 
 onMounted(async () => {
   await start();
-  setTimeout(() => {
-    const article = document.getElementById("pr");
-    if (article) {
-      const blockquotes = article.querySelectorAll("blockquote");
-      blockquotes.forEach((blockquote) => {
-        // Get first paragraph
-        const firstP = blockquote.querySelector("p");
-        if (!firstP) return;
-
-        // Split content at first <br>
-        const html = firstP.innerHTML;
-        const [title, ...rest] = html.split("<br>");
-
-        // Remove <code> tags from content
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = rest.join("<br>");
-        const codes = tempDiv.querySelectorAll("code");
-        codes.forEach((code) => {
-          code.replaceWith(code.textContent);
-        });
-        const content = tempDiv.innerHTML;
-
-        // Create CardsAlert with additional props
-        const container = document.createElement("div");
-        const vnode = h(CardsAlert, {
-          cardTitle: title,
-          cardContent: content,
-          color: "success",
-          border: false,
-          icon: informationOutline,
-        });
-
-        render(vnode, container);
-        blockquote.replaceWith(container.firstElementChild);
-      });
-    }
-  }, 100);
+  generateCardAlerts();
+  generateCardCodes();
 });
 
 watch(
@@ -357,6 +323,79 @@ function enableLoader(params: { color: string }) {
 
 function disableLoader() {
   systemController.disableLoader();
+}
+
+function generateCardAlerts() {
+  setTimeout(() => {
+    const article = document.getElementById("pr");
+    if (article) {
+      const blockquotes = article.querySelectorAll("blockquote");
+      blockquotes.forEach((blockquote) => {
+        // Get first paragraph
+        const firstP = blockquote.querySelector("p");
+        if (!firstP) return;
+
+        // Split content at first <br>
+        const html = firstP.innerHTML;
+        const [title, ...rest] = html.split("<br>");
+
+        // Remove <code> tags from content
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = rest.join("<br>");
+        const codes = tempDiv.querySelectorAll("code");
+        codes.forEach((code) => {
+          code.replaceWith(code.textContent);
+        });
+        const content = tempDiv.innerHTML;
+
+        // Create CardsAlert with additional props
+        const container = document.createElement("div");
+        const vnode = h(CardsAlert, {
+          cardTitle: title,
+          cardContent: content,
+          color: "success",
+          border: false,
+          icon: informationOutline,
+        });
+
+        render(vnode, container);
+        blockquote.replaceWith(container.firstElementChild);
+      });
+    }
+  }, 100);
+}
+
+function generateCardCodes() {
+  setTimeout(() => {
+    const article = document.getElementById("pr");
+    if (article) {
+      const codeBlocks = article.querySelectorAll("pre > code");
+      codeBlocks.forEach((codeBlock) => {
+        // Get language from class
+        const languageClass = codeBlock.className.match(/language-(\w+)/);
+        const language = languageClass
+          ? languageClass[1].toUpperCase()
+          : "CODE";
+
+        // Get the entire pre+code content
+        const preElement = codeBlock.parentElement;
+        const content = preElement ? preElement.outerHTML : "";
+
+        // Create CardCode component
+        const container = document.createElement("div");
+        const vnode = h(CardCode, {
+          cardTitle: language,
+          cardContent: content,
+          color: "success",
+          border: false,
+          icon: ellipsisVerticalOutline,
+        });
+
+        render(vnode, container);
+        preElement?.replaceWith(container.firstElementChild);
+      });
+    }
+  }, 100);
 }
 </script>
 
