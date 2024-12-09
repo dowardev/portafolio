@@ -8,22 +8,23 @@
 
     <ion-content :fullscreen="true">
       <ion-row>
-        <ion-col size="4">
-          <ion-card class="danger-select-animated-active">
-            <ion-card-content>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis,
-              numquam. Praesentium cum rem modi porro, a voluptatibus quas nulla
-              iure nam corrupti omnis aspernatur. Similique, error. Inventore
-              est hic expedita!
-            </ion-card-content>
-          </ion-card>
+        <ion-col size="12">
+          <SuccessCard
+            color="success"
+            cardTitle="Tarjeta de prueba success"
+            :border="true"
+            cardContent=" Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita omnis modi
+  vel fugiat ut, et debitis soluta, excepturi optio nam vero eum nostrum enim
+  atque praesentium, quis consectetur iure ipsam!"
+            :icon="ellipsisVerticalOutline"
+          />
         </ion-col>
       </ion-row>
     </ion-content>
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   IonContent,
   IonHeader,
@@ -31,9 +32,7 @@ import {
   IonToolbar,
   IonPage,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
 
-export default defineComponent({
-  components: { IonContent, IonHeader, IonTitle, IonToolbar },
-});
+import SuccessCard from "@/components/cards/CardAlert.vue";
+import { ellipsisVerticalOutline } from "ionicons/icons";
 </script>
