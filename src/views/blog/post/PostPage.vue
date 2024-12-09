@@ -66,7 +66,7 @@
           class="ion-padding"
           id="pr"
         >
-          <article>
+          <article id="pr">
             <MarkdownViewer
               :content="postController.getPost({ id: postId })!.content ?? ''"
             />
@@ -158,15 +158,17 @@ import {
   menuOutline,
   toggle,
   trashOutline,
+  informationOutline,
 } from "ionicons/icons";
 import { useRoute, useRouter } from "vue-router";
-import { onMounted, ref, watch } from "vue";
+import { h, onMounted, ref, render, watch } from "vue";
 import indexContentComponent from "./indexContentComponent.vue";
 import { isPlatform, modalController } from "@ionic/vue";
 
 // components
 import modalIndexContent from "./modalIndexContent.vue";
 import MarkdownViewer from "@/components/markdown-viewer/MarkdownViewer.vue";
+import CardsAlert from "@/components/cards/CardAlert.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
@@ -202,8 +204,45 @@ const alertButtonsDeletePost = [
 ];
 const isOpenAlertDeletePost = ref(false);
 
-onMounted(() => {
-  start();
+onMounted(async () => {
+  await start();
+  setTimeout(() => {
+    const article = document.getElementById("pr");
+    if (article) {
+      const blockquotes = article.querySelectorAll("blockquote");
+      blockquotes.forEach((blockquote) => {
+        // Get first paragraph
+        const firstP = blockquote.querySelector("p");
+        if (!firstP) return;
+
+        // Split content at first <br>
+        const html = firstP.innerHTML;
+        const [title, ...rest] = html.split("<br>");
+
+        // Remove <code> tags from content
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = rest.join("<br>");
+        const codes = tempDiv.querySelectorAll("code");
+        codes.forEach((code) => {
+          code.replaceWith(code.textContent);
+        });
+        const content = tempDiv.innerHTML;
+
+        // Create CardsAlert with additional props
+        const container = document.createElement("div");
+        const vnode = h(CardsAlert, {
+          cardTitle: title,
+          cardContent: content,
+          color: "success",
+          border: false,
+          icon: informationOutline,
+        });
+
+        render(vnode, container);
+        blockquote.replaceWith(container.firstElementChild);
+      });
+    }
+  }, 100);
 });
 
 watch(

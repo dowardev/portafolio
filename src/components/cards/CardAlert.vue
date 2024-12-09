@@ -33,7 +33,7 @@
 
     <ion-row>
       <ion-col size="12">
-        <ion-row>
+        <ion-row v-if="cardTitle">
           <ion-col>
             <h1 style="font-size: 20px">
               {{ cardTitle }}
@@ -76,7 +76,7 @@ type Colors = "success" | "danger" | "primary";
 const props = defineProps({
   cardTitle: {
     type: String,
-    required: true,
+    required: false,
   },
   cardSubtitle: {
     type: String,
