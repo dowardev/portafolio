@@ -42,88 +42,49 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-row style="height: 100dvh; overflow: hidden">
-    <ion-col :size="isPlatform('desktop') ? '9' : '12'">
-      <!-- ion content -->
-      <ion-content
-        :fullscreen="true"
-        v-if="postController.getPost({ id: postId }) != undefined"
-      >
-        <ion-header collapse="condense" mode="ios">
-          <ion-toolbar>
-            <ion-title size="large"
-              ><div style="text-wrap: auto">
-                {{ postController.getPost({ id: postId })?.title }}
-              </div></ion-title
-            >
-          </ion-toolbar>
-        </ion-header>
-
-        <!-- content -->
-        <div
-          ref="indexRef"
-          @scroll="setScrollPosition()"
-          class="ion-padding"
-          id="pr"
+  <ion-content
+    :fullscreen="true"
+    v-if="postController.getPost({ id: postId }) != undefined"
+  >
+    <ion-header collapse="condense" mode="ios">
+      <ion-toolbar>
+        <ion-title size="large"
+          ><div style="text-wrap: auto">
+            {{ postController.getPost({ id: postId })?.title }}
+          </div></ion-title
         >
-          <article id="pr">
-            <MarkdownViewer
-              :content="postController.getPost({ id: postId })!.content ?? ''"
-            />
-          </article>
-        </div>
+      </ion-toolbar>
+    </ion-header>
 
-        <!-- popoovers -->
-        <ion-popover
-          :is-open="popoverMainOptions.open"
-          :event="popoverMainOptions.event"
-          @did-dismiss="popoverMainOptions.open = false"
-          @click="popoverMainOptions.open = false"
-        >
-          <ion-content>
-            <!-- index -->
-            <ion-item lines="full" button @click="openModalIndexContent()">
-              <ion-icon :icon="menuOutline" slot="start"></ion-icon>
-              <ion-label>Indice</ion-label>
-            </ion-item>
+    <!-- Layout container -->
+    <div class="content-layout">
+      <!-- Main content -->
+      <div id="pr" ref="indexRef" class="ion-padding">
+        <article id="content-container">
+          <MarkdownViewer
+            :content="postController.getPost({ id: postId })!.content ?? ''"
+          />
+        </article>
+      </div>
 
-            <!-- update -->
-            <ion-item
-              lines="full"
-              v-if="userController.getUser()?.isAdmin"
-              button
-              @click="updatePost()"
-            >
-              <ion-icon :icon="createOutline" slot="start"></ion-icon>
-              <ion-label>Actualizar post</ion-label>
-            </ion-item>
-            <!-- delete -->
-            <ion-item
-              lines="full"
-              v-if="userController.getUser()?.isAdmin"
-              button
-              @click="deletePost()"
-            >
-              <ion-icon
-                :icon="trashOutline"
-                color="danger"
-                slot="start"
-              ></ion-icon>
-              <ion-label>Indice</ion-label>
-            </ion-item>
-          </ion-content>
-        </ion-popover>
-      </ion-content>
-    </ion-col>
-
-    <ion-col size="3" v-if="isPlatform('desktop')">
+      <!-- Floating index -->
       <indexContentComponent
+        id="pr2"
+        class="floating-index"
         :index-content="indexContent"
         :auto-hide-content="isPlatform('ios') || isPlatform('android')"
         @element-id="goToSection({ id: $event })"
       />
-    </ion-col>
-  </ion-row>
+    </div>
+  </ion-content>
+
+  <!-- <ion-col size="3" v-if="isPlatform('desktop')">
+    <indexContentComponent
+      :index-content="indexContent"
+      :auto-hide-content="isPlatform('ios') || isPlatform('android')"
+      @element-id="goToSection({ id: $event })"
+    />
+  </ion-col> -->
 
   <!-- alerts -->
   <!-- alert delete post -->
@@ -133,6 +94,43 @@
     :buttons="alertButtonsDeletePost"
     :is-open="isOpenAlertDeletePost"
   ></ion-alert>
+
+  <!-- popoovers -->
+  <ion-popover
+    :is-open="popoverMainOptions.open"
+    :event="popoverMainOptions.event"
+    @did-dismiss="popoverMainOptions.open = false"
+    @click="popoverMainOptions.open = false"
+  >
+    <ion-content>
+      <!-- index -->
+      <ion-item lines="full" button @click="openModalIndexContent()">
+        <ion-icon :icon="menuOutline" slot="start"></ion-icon>
+        <ion-label>Indice</ion-label>
+      </ion-item>
+
+      <!-- update -->
+      <ion-item
+        lines="full"
+        v-if="userController.getUser()?.isAdmin"
+        button
+        @click="updatePost()"
+      >
+        <ion-icon :icon="createOutline" slot="start"></ion-icon>
+        <ion-label>Actualizar post</ion-label>
+      </ion-item>
+      <!-- delete -->
+      <ion-item
+        lines="full"
+        v-if="userController.getUser()?.isAdmin"
+        button
+        @click="deletePost()"
+      >
+        <ion-icon :icon="trashOutline" color="danger" slot="start"></ion-icon>
+        <ion-label>Indice</ion-label>
+      </ion-item>
+    </ion-content>
+  </ion-popover>
 </template>
 
 <script setup lang="ts">
@@ -327,7 +325,7 @@ function disableLoader() {
 
 function generateCardAlerts() {
   setTimeout(() => {
-    const article = document.getElementById("pr");
+    const article = document.getElementById("content-container");
     if (article) {
       const blockquotes = article.querySelectorAll("blockquote");
       blockquotes.forEach((blockquote) => {
@@ -344,7 +342,9 @@ function generateCardAlerts() {
         tempDiv.innerHTML = rest.join("<br>");
         const codes = tempDiv.querySelectorAll("code");
         codes.forEach((code) => {
-          code.replaceWith(code.textContent);
+          if (code.textContent !== null) {
+            code.replaceWith(code.textContent);
+          }
         });
         const content = tempDiv.innerHTML;
 
@@ -359,7 +359,9 @@ function generateCardAlerts() {
         });
 
         render(vnode, container);
-        blockquote.replaceWith(container.firstElementChild);
+        if (container.firstElementChild) {
+          blockquote.replaceWith(container.firstElementChild);
+        }
       });
     }
   }, 100);
@@ -367,7 +369,7 @@ function generateCardAlerts() {
 
 function generateCardCodes() {
   setTimeout(() => {
-    const article = document.getElementById("pr");
+    const article = document.getElementById("content-container");
     if (article) {
       const codeBlocks = article.querySelectorAll("pre > code");
       codeBlocks.forEach((codeBlock) => {
@@ -392,7 +394,9 @@ function generateCardCodes() {
         });
 
         render(vnode, container);
-        preElement?.replaceWith(container.firstElementChild);
+        if (preElement && container.firstElementChild) {
+          preElement.replaceWith(container.firstElementChild);
+        }
       });
     }
   }, 100);
@@ -402,5 +406,40 @@ function generateCardCodes() {
 <style>
 .alert-button-confirm {
   color: red !important;
+}
+
+.content-layout {
+  /* position: relative; */
+  display: flex;
+  justify-content: center;
+  width: 90%;
+  /* margin: 0 auto; */
+}
+
+.floating-index {
+  position: fixed;
+  right: 22px;
+  top: 16%;
+  width: 230px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+#pr {
+  width: 66%;
+  /* max-width: 900px; */
+  /* margin: 0 auto; */
+  padding: 0 20px;
+}
+
+/* Hide floating index on mobile */
+@media (max-width: 768px) {
+  .main-content {
+    margin-right: 0;
+  }
+
+  .floating-index {
+    display: none;
+  }
 }
 </style>
