@@ -34,7 +34,7 @@
 
     <ion-row>
       <ion-col size="12">
-        <!-- <ion-row v-if="cardTitle">
+        <ion-row v-if="cardTitle">
           <ion-col>
             <h1 style="font-size: 20px">
               {{ cardTitle }}
@@ -49,11 +49,12 @@
               {{ cardSubtitle }}
             </h2>
           </ion-col>
-        </ion-row> -->
+        </ion-row>
 
         <ion-row>
           <ion-col>
-            <div id="content" v-html="cardContent"></div>
+            <!-- <div id="content" v-html="cardContent"></div> -->
+            {{ cardContent }}
           </ion-col>
         </ion-row>
       </ion-col>
@@ -63,7 +64,7 @@
 
 <script setup lang="ts">
 import { codeOutline, copyOutline } from "ionicons/icons";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 
 type Colors = "success" | "danger" | "primary";
 
@@ -98,6 +99,10 @@ const props = defineProps({
 // const iconClasses = computed(() => [`icon-${props.color}`]);
 // const borderStyle = computed(() => {
 //   return props.border ? `1px solid var(--ion-color-${props.color})` : "none";
+// });
+
+// onMounted(() => {
+//   console.log(props.cardContent);
 // });
 
 // functions

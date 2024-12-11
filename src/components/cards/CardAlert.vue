@@ -59,7 +59,7 @@
                 color: var(--ion-text-color);
               "
             >
-              {{ cardContent }}
+              <div id="content" v-html="cardContent"></div>
             </p>
           </ion-col>
         </ion-row>
