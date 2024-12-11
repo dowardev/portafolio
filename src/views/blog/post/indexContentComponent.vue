@@ -37,6 +37,7 @@
       <div
         v-for="element in indexContent"
         :key="element.id"
+        :data-section-id="element.id"
         style="margin-bottom: 10px"
       >
         <div
@@ -45,6 +46,7 @@
             h4Button: element.type == 'h4',
             h5Button: element.type == 'h5',
             h6Button: element.type == 'h6',
+            'active-section': activeSection === element.id,
           }"
         >
           <span
@@ -60,7 +62,7 @@
 
 <script setup lang="ts">
 import { alertCircleOutline } from "ionicons/icons";
-import { defineComponent } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 
 const props = defineProps({
   indexContent: {
@@ -71,10 +73,70 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["elementId"]);
+const activeSection = ref("");
 
-// functions
+function createObserver() {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          updateActiveSection(entry.target.id);
+        }
+      });
+    },
+    {
+      rootMargin: "-10% 0px -85% 0px",
+    }
+  );
+
+  props.indexContent.forEach((element) => {
+    const target = document.getElementById(element.id);
+    if (target) {
+      observer.observe(target);
+    }
+  });
+
+  return observer;
+}
+
+function scrollActiveIntoView(id: string) {
+  const indexContent = document.getElementById("indexContent");
+  const activeElement = indexContent?.querySelector(
+    `[data-section-id="${id}"]`
+  );
+
+  if (indexContent && activeElement) {
+    const containerHeight = indexContent.clientHeight;
+    const elementOffset = (activeElement as HTMLElement).offsetTop;
+    const scrollPosition = elementOffset - containerHeight / 2;
+
+    indexContent.scrollTo({
+      top: scrollPosition,
+      behavior: "smooth",
+    });
+  }
+}
+
+function updateActiveSection(id: string) {
+  activeSection.value = id;
+  scrollActiveIntoView(id);
+}
+
+let observer: IntersectionObserver;
+
+onMounted(() => {
+  observer = createObserver();
+});
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect();
+  }
+});
+
 function goToSection(params: { id: string }) {
   const id = params.id;
+  updateActiveSection(id); // Update active section on click
   emits("elementId", id);
 }
 </script>
@@ -108,5 +170,23 @@ function goToSection(params: { id: string }) {
 
 .h6Button {
   margin-left: 25px;
+}
+
+.active-section {
+  color: var(--ion-color-primary);
+  font-weight: bold;
+  position: relative;
+}
+
+.active-section::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 100%;
+  background-color: var(--ion-color-primary);
+  border-radius: 2px;
 }
 </style>
