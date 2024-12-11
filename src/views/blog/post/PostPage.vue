@@ -248,7 +248,9 @@ async function getPost(): Promise<void> {
 
 function generarIndexContent(): void {
   if (indexRef.value) {
-    headings = indexRef.value.querySelectorAll("h1, h2, h3, h4, h5, h6");
+    headings = indexRef.value.querySelectorAll(
+      "h1:not(ion-card *), h2:not(ion-card *), h3:not(ion-card *), h4:not(ion-card *), h5:not(ion-card *), h6:not(ion-card *)"
+    );
   } else {
     headings = [];
   }
