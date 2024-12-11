@@ -99,27 +99,8 @@ function createObserver() {
   return observer;
 }
 
-function scrollActiveIntoView(id: string) {
-  const indexContent = document.getElementById("indexContent");
-  const activeElement = indexContent?.querySelector(
-    `[data-section-id="${id}"]`
-  );
-
-  if (indexContent && activeElement) {
-    const containerHeight = indexContent.clientHeight;
-    const elementOffset = (activeElement as HTMLElement).offsetTop;
-    const scrollPosition = elementOffset - containerHeight / 2;
-
-    indexContent.scrollTo({
-      top: scrollPosition,
-      behavior: "smooth",
-    });
-  }
-}
-
 function updateActiveSection(id: string) {
   activeSection.value = id;
-  scrollActiveIntoView(id);
 }
 
 let observer: IntersectionObserver;
