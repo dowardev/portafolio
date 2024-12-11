@@ -61,10 +61,7 @@
       <!-- Main content -->
       <div id="pr" ref="indexRef" class="ion-padding">
         <article id="content-container">
-          <!-- <MarkdownViewer
-            :content="postController.getPost({ id: postId })!.content ?? ''"
-          /> -->
-          <PruebaPage
+          <MarkdownViewer
             :content="postController.getPost({ id: postId })!.content ?? ''"
           />
         </article>
@@ -171,7 +168,6 @@ import modalIndexContent from "./modalIndexContent.vue";
 import MarkdownViewer from "@/components/markdown-viewer/MarkdownViewer.vue";
 import CardsAlert from "@/components/cards/CardAlert.vue";
 import CardCode from "@/components/cards/CardCode.vue";
-import PruebaPage from "@/views/prueba/Prueba.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
