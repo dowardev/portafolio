@@ -5,7 +5,6 @@
 </template>
 
 <script setup lang="ts">
-// funciona 9
 import { computed } from "vue";
 import CardCode from "@/components/cards/CardCode.vue";
 import CardsAlert from "@/components/cards/CardAlert.vue";
@@ -18,9 +17,7 @@ const props = defineProps({
   },
 });
 
-// Update the escapeHtml function to preserve anchor tags and images
 const escapeHtml = (text: string): string => {
-  // Store HTML elements temporarily
   const htmlElements: string[] = [];
   let processedText = text;
 
@@ -48,7 +45,7 @@ const escapeHtml = (text: string): string => {
     }
   );
 
-  // Escape HTML
+  // Escape HTML characters
   const map: { [key: string]: string } = {
     "&": "&amp;",
     "<": "&lt;",
@@ -58,7 +55,7 @@ const escapeHtml = (text: string): string => {
   };
   processedText = processedText.replace(/[&<>"']/g, (m) => map[m]);
 
-  // Restore HTML elements
+  // Restore preserved HTML elements
   processedText = processedText.replace(
     /%%HTML(\d+)%%/g,
     (_, index) => htmlElements[parseInt(index)]
@@ -71,20 +68,30 @@ const contentBlocks = computed(() => {
   const blocks = [];
   let currentListItems: string[] = [];
   let isOrderedList = false;
+  let currentHtml = "";
 
-  // Dividir el contenido en segmentos, manteniendo los bloques de código
+  // Split content into segments, preserving code blocks
   const segments = props.content.split(/(```[\s\S]+?```)/g);
 
   segments.forEach((segment) => {
     if (segment.startsWith("```")) {
-      // Procesar bloque de código
+      // Process code blocks
       const match = segment.match(/```(\w*)\n([\s\S]*?)```/);
       if (match) {
+        // Flush any pending HTML
+        if (currentHtml.trim()) {
+          blocks.push({
+            type: "div",
+            props: { innerHTML: currentHtml.trim() },
+          });
+          currentHtml = "";
+        }
+
         const [_, lang, code] = match;
         blocks.push({
           type: CardCode,
           props: {
-            cardContent: code.trim(), // Solo el contenido del código
+            cardContent: code.trim(),
             cardTitle: lang || "Code",
             border: false,
           },
@@ -93,15 +100,24 @@ const contentBlocks = computed(() => {
     } else if (segment.trim()) {
       let processedSegment = segment;
 
-      // Remove HTML comments before any other processing
+      // Remove HTML comments
       processedSegment = processedSegment.replace(/<!--[\s\S]*?-->/g, "");
 
-      // Procesar blockquotes
+      // Process blockquotes
       const blockquoteRegex = /^(?:\>\s+.*(?:\n|$))+/gm;
       let blockquoteMatch;
       while (
         (blockquoteMatch = blockquoteRegex.exec(processedSegment)) !== null
       ) {
+        // Flush any pending HTML
+        if (currentHtml.trim()) {
+          blocks.push({
+            type: "div",
+            props: { innerHTML: currentHtml.trim() },
+          });
+          currentHtml = "";
+        }
+
         const blockquoteContent = blockquoteMatch[0]
           .split("\n")
           .map((line) => line.replace(/^>\s?/, "").trim())
@@ -117,73 +133,74 @@ const contentBlocks = computed(() => {
             color: "success",
           },
         });
-        // Remover el blockquote procesado del segmento
+
         processedSegment = processedSegment.replace(blockquoteMatch[0], "");
       }
 
-      // Procesar líneas restantes
+      // Process remaining lines
       const lines = processedSegment.split("\n");
-      let html = "";
 
       lines.forEach((line) => {
         if (line.trim()) {
-          // Procesar encabezados
+          // Process headers
           if (/^#{1,6}\s/.test(line)) {
+            // Flush any pending lists
+            if (currentListItems.length > 0) {
+              currentHtml += isOrderedList
+                ? `<ol>${currentListItems.join("")}</ol>`
+                : `<ul>${currentListItems.join("")}</ul>`;
+              currentListItems = [];
+              isOrderedList = false;
+            }
+
             const levelMatch = line.match(/^#{1,6}/);
             const level = levelMatch ? levelMatch[0].length : 1;
             let content = line.replace(/^#{1,6}\s/, "");
 
-            // Procesar negritas y cursivas
             content = escapeHtml(content);
             content = content
               .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
               .replace(/\*(.+?)\*/g, "<i>$1</i>");
 
-            html += `<h${level}>${content}</h${level}>`;
+            currentHtml += `<h${level}>${content}</h${level}>`;
           }
-          // Procesar listas ordenadas
+          // Process ordered lists
           else if (/^\d+\.\s+/.test(line)) {
             if (!isOrderedList) {
               if (currentListItems.length > 0) {
-                html += `<ul>${currentListItems.join("")}</ul>`;
+                currentHtml += `<ul>${currentListItems.join("")}</ul>`;
                 currentListItems = [];
               }
               isOrderedList = true;
             }
             let item = line.replace(/^\d+\.\s+/, "").trim();
-
-            // Procesar negritas y cursivas
             item = escapeHtml(item);
             item = item
               .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
               .replace(/\*(.+?)\*/g, "<i>$1</i>");
-
             currentListItems.push(`<li>${item}</li>`);
           }
-          // Procesar listas no ordenadas
+          // Process unordered lists
           else if (/^\s*-\s+/.test(line)) {
             if (isOrderedList) {
               if (currentListItems.length > 0) {
-                html += `<ol>${currentListItems.join("")}</ol>`;
+                currentHtml += `<ol>${currentListItems.join("")}</ol>`;
                 currentListItems = [];
               }
               isOrderedList = false;
             }
             let item = line.replace(/^\s*-\s+/, "").trim();
-
-            // Procesar negritas y cursivas
             item = escapeHtml(item);
             item = item
               .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
               .replace(/\*(.+?)\*/g, "<i>$1</i>");
-
             currentListItems.push(`<li>${item}</li>`);
           }
-          // Procesar texto normal
+          // Process normal text
           else {
-            // Finalizar cualquier lista abierta
+            // Flush any pending lists
             if (currentListItems.length > 0) {
-              html += isOrderedList
+              currentHtml += isOrderedList
                 ? `<ol>${currentListItems.join("")}</ol>`
                 : `<ul>${currentListItems.join("")}</ul>`;
               currentListItems = [];
@@ -191,48 +208,36 @@ const contentBlocks = computed(() => {
             }
 
             let textLine = line.trim();
-
-            // First escape HTML characters
             textLine = escapeHtml(textLine);
-
-            // Then process inline code blocks, but keep <code> tags unescaped
-            textLine = textLine.replace(/`([^`]+)`/g, (_, code) => {
-              return `<code>${code}</code>`;
-            });
-
-            // Process bold and italics
+            textLine = textLine.replace(/`([^`]+)`/g, "<code>$1</code>");
             textLine = textLine
               .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
               .replace(/\*(.+?)\*/g, "<i>$1</i>");
-
-            // Process links
             textLine = textLine.replace(
               /\[(.*?)\]\((.*?)\)/g,
               '<a href="$2">$1</a>'
             );
 
-            html += `<p>${textLine}</p>`;
+            currentHtml += `<p>${textLine}</p>`;
           }
         }
       });
-
-      // Finalizar cualquier lista abierta al final del segmento
-      if (currentListItems.length > 0) {
-        html += isOrderedList
-          ? `<ol>${currentListItems.join("")}</ol>`
-          : `<ul>${currentListItems.join("")}</ul>`;
-        currentListItems = [];
-        isOrderedList = false;
-      }
-
-      if (html.trim()) {
-        blocks.push({
-          type: "div",
-          props: { innerHTML: html.trim() },
-        });
-      }
     }
   });
+
+  // Flush any remaining content
+  if (currentListItems.length > 0) {
+    currentHtml += isOrderedList
+      ? `<ol>${currentListItems.join("")}</ol>`
+      : `<ul>${currentListItems.join("")}</ul>`;
+  }
+
+  if (currentHtml.trim()) {
+    blocks.push({
+      type: "div",
+      props: { innerHTML: currentHtml.trim() },
+    });
+  }
 
   return blocks;
 });
