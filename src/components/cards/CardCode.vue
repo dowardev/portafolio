@@ -170,16 +170,15 @@ pre {
   white-space: pre-wrap !important;
   word-wrap: break-word !important;
   margin: 0;
-  background: transparent !important; /* Remove background */
+  background: transparent !important;
 }
 
 code {
   font-family: "Fira Code", monospace;
   color: var(--ion-color-dark);
-  background: transparent !important; /* Remove background */
+  background: transparent !important;
 }
 
-/* Optional: if you want to keep syntax highlighting but remove background */
 .hljs {
   background: transparent !important;
 }

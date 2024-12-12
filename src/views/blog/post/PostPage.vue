@@ -59,10 +59,10 @@
     <ion-row>
       <ion-col
         size="12"
-        :style="{ left: isPlatform('desktop') ? '22%' : '0%' }"
+        :style="{ left: isPlatform('desktop') ? '14%' : '0%' }"
       >
         <div
-          :style="{ width: isPlatform('desktop') ? '50%' : '100%' }"
+          :style="{ width: isPlatform('desktop') ? '55%' : '100%' }"
           :class="{ 'ion-padding': isPlatform('mobile') }"
         >
           <article id="content-container" ref="indexRef">
