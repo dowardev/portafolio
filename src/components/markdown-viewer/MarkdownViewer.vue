@@ -21,6 +21,12 @@ const escapeHtml = (text: string): string => {
   const htmlElements: string[] = [];
   let processedText = text;
 
+  // Preserve iframe tags
+  processedText = processedText.replace(/<iframe.*?<\/iframe>/gs, (match) => {
+    htmlElements.push(match);
+    return `%%HTML${htmlElements.length - 1}%%`;
+  });
+
   // Preserve div with class center containing img
   processedText = processedText.replace(
     /<div\s+class="center">\s*<img[^>]+\/>\s*<\/div>/g,
