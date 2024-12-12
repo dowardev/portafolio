@@ -38,17 +38,16 @@
         v-for="element in indexContent"
         :key="element.id"
         :data-section-id="element.id"
+        :class="{
+          'active-section': activeSection === element.id,
+          h3Button: element.type === 'h3',
+          h4Button: element.type === 'h4',
+          h5Button: element.type === 'h5',
+          h6Button: element.type === 'h6',
+        }"
         style="margin-bottom: 10px"
       >
-        <div
-          :class="{
-            h3Button: element.type == 'h3',
-            h4Button: element.type == 'h4',
-            h5Button: element.type == 'h5',
-            h6Button: element.type == 'h6',
-            'active-section': activeSection === element.id,
-          }"
-        >
+        <div>
           <span
             style="cursor: pointer"
             @click="goToSection({ id: element.id })"
@@ -62,8 +61,9 @@
 
 <script setup lang="ts">
 import { alertCircleOutline } from "ionicons/icons";
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 
+// vars
 const props = defineProps({
   indexContent: {
     type: Array<{ id: string; type: string; name: string }>,
@@ -71,38 +71,8 @@ const props = defineProps({
   },
   autoHideContent: { type: Boolean, default: true },
 });
-
 const emits = defineEmits(["elementId"]);
 const activeSection = ref("");
-
-function createObserver() {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          updateActiveSection(entry.target.id);
-        }
-      });
-    },
-    {
-      rootMargin: "-10% 0px -85% 0px",
-    }
-  );
-
-  props.indexContent.forEach((element) => {
-    const target = document.getElementById(element.id);
-    if (target) {
-      observer.observe(target);
-    }
-  });
-
-  return observer;
-}
-
-function updateActiveSection(id: string) {
-  activeSection.value = id;
-}
-
 let observer: IntersectionObserver;
 
 onMounted(() => {
@@ -115,9 +85,51 @@ onUnmounted(() => {
   }
 });
 
+watch(
+  () => props.indexContent,
+  () => {
+    observer = createObserver();
+  }
+);
+
+function createObserver() {
+  if (observer) {
+    observer.disconnect();
+  }
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          updateActiveSection(entry.target.id);
+        }
+      });
+    },
+    {
+      threshold: 0.2,
+      rootMargin: "-10% 0px -70% 0px",
+    }
+  );
+
+  setTimeout(() => {
+    props.indexContent.forEach((element) => {
+      const target = document.getElementById(element.id);
+      if (target) {
+        observer.observe(target);
+      }
+    });
+  }, 100);
+
+  return observer;
+}
+
+function updateActiveSection(id: string) {
+  activeSection.value = id;
+}
+
 function goToSection(params: { id: string }) {
   const id = params.id;
-  updateActiveSection(id); // Update active section on click
+  updateActiveSection(id);
   emits("elementId", id);
 }
 </script>
