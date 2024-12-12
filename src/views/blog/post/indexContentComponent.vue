@@ -31,6 +31,7 @@
 
     <div
       id="indexContent"
+      ref="indexContainer"
       style="overflow: auto; height: 70vh"
       class="ion-padding-start"
     >
@@ -73,6 +74,7 @@ const props = defineProps({
 });
 const emits = defineEmits(["elementId"]);
 const activeSection = ref("");
+const indexContainer = ref<HTMLElement | null>(null);
 let observer: IntersectionObserver;
 
 onMounted(() => {
@@ -125,6 +127,34 @@ function createObserver() {
 
 function updateActiveSection(id: string) {
   activeSection.value = id;
+  scrollActiveSectionIntoView();
+}
+
+function scrollActiveSectionIntoView() {
+  if (!indexContainer.value) return;
+
+  const activeElement = indexContainer.value.querySelector(".active-section");
+  if (!activeElement) return;
+
+  const container = indexContainer.value;
+  const elementRect = activeElement.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+
+  // Calculate if element is in view
+  const isInView =
+    elementRect.top >= containerRect.top &&
+    elementRect.bottom <= containerRect.bottom;
+
+  if (!isInView) {
+    // Add padding to avoid edge positioning
+    const padding = 2 00;
+    const scrollTop = activeElement.offsetTop - container.offsetTop - padding;
+
+    container.scrollTo({
+      top: scrollTop,
+      behavior: "smooth",
+    });
+  }
 }
 
 function goToSection(params: { id: string }) {
