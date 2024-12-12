@@ -1,5 +1,11 @@
 {
   "8": {
+    "8.12.13": {
+      "improvements": [
+        "Lectura mejorada: se realizaron varias mejoras en el diseño de la pagina de posts"
+      ],
+      "corrections": ["Correcciones generales"]
+    },
     "8.11.0": {
       "improvements": [
         "Agredo un panel de ajustes al editor de posts",
