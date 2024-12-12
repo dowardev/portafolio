@@ -53,8 +53,7 @@
 
         <ion-row>
           <ion-col>
-            <!-- <div id="content" v-html="cardContent"></div> -->
-            {{ cardContent }}
+            <pre><code>{{ cardContent }}</code></pre>
           </ion-col>
         </ion-row>
       </ion-col>
@@ -107,7 +106,8 @@ const props = defineProps({
 
 // functions
 function copyContent() {
-  const content = document.getElementById("content").textContent;
+  const contentElement = document.getElementById("content");
+  const content = contentElement ? (contentElement.textContent ?? "") : "";
   navigator.clipboard
     .writeText(content)
     .then(() => {
@@ -149,5 +149,13 @@ function copyContent() {
 pre {
   background: transparent !important;
   box-shadow: none !important;
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  margin: 0;
+}
+
+code {
+  font-family: monospace;
+  color: var(--ion-color-dark);
 }
 </style>
