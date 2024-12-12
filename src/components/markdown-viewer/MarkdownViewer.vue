@@ -8,7 +8,7 @@
 import { computed } from "vue";
 import CardCode from "@/components/cards/CardCode.vue";
 import CardsAlert from "@/components/cards/CardAlert.vue";
-import { informationOutline } from "ionicons/icons";
+import { informationOutline, language } from "ionicons/icons";
 
 const props = defineProps({
   content: {
@@ -94,6 +94,7 @@ const contentBlocks = computed(() => {
             cardContent: code.trim(),
             cardTitle: lang || "Code",
             border: false,
+            language: lang,
           },
         });
       }

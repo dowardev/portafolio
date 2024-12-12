@@ -35,9 +35,9 @@
     <ion-row>
       <ion-col size="12">
         <ion-row v-if="cardTitle">
-          <ion-col>
+          <!-- <ion-col>
             <h1 style="font-size: 20px">
-              {{ cardTitle }}
+              {{ cardTitle.toUpperCase() }}
             </h1>
             <h2
               v-if="cardSubtitle"
@@ -48,12 +48,12 @@
             >
               {{ cardSubtitle }}
             </h2>
-          </ion-col>
+          </ion-col> -->
         </ion-row>
 
         <ion-row>
           <ion-col>
-            <pre><code>{{ cardContent }}</code></pre>
+            <pre><code ref="codeBlock" :class="languageClass" id="codeContent">{{ cardContent }}</code></pre>
           </ion-col>
         </ion-row>
       </ion-col>
@@ -63,7 +63,10 @@
 
 <script setup lang="ts">
 import { codeOutline, copyOutline } from "ionicons/icons";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onUpdated } from "vue";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
+import { ref } from "vue";
 
 type Colors = "success" | "danger" | "primary";
 
@@ -92,32 +95,46 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  language: {
+    type: String,
+    required: true,
+    default: "",
+  },
+});
+const codeBlock = ref<HTMLElement | null>(null);
+
+// computed
+const languageClass = computed(() => {
+  return props.language ? `language-${props.language}` : "";
 });
 
-// const cardClasses = computed(() => [`card-${props.color}`]);
-// const iconClasses = computed(() => [`icon-${props.color}`]);
-// const borderStyle = computed(() => {
-//   return props.border ? `1px solid var(--ion-color-${props.color})` : "none";
-// });
+onMounted(() => {
+  if (codeBlock.value) {
+    if (props.language) {
+      hljs.highlightElement(codeBlock.value);
+    } else {
+      const text = codeBlock.value.textContent || "";
+      const result = hljs.highlightAuto(text);
+      codeBlock.value.innerHTML = result.value;
+    }
+  }
+});
 
-// onMounted(() => {
-//   console.log(props.cardContent);
-// });
+onUpdated(() => {
+  if (codeBlock.value) {
+    hljs.highlightElement(codeBlock.value);
+  }
+});
 
 // functions
 function copyContent() {
-  const contentElement = document.getElementById("content");
-  const content = contentElement ? (contentElement.textContent ?? "") : "";
-  navigator.clipboard
-    .writeText(content)
-    .then(() => {
-      // Optional: Show success feedback
-      console.log("Content copied!");
-      // You could also add a toast/notification here
-    })
-    .catch((err) => {
-      console.error("Failed to copy content: ", err);
-    });
+  if (codeBlock.value) {
+    const content = codeBlock.value.textContent || "";
+    navigator.clipboard
+      .writeText(content)
+      .then(() => console.log("Content copied!"))
+      .catch((err) => console.error("Failed to copy content: ", err));
+  }
 }
 </script>
 
@@ -147,15 +164,23 @@ function copyContent() {
 }
 
 pre {
-  background: transparent !important;
+  padding: 1em;
+  border-radius: 5px;
   box-shadow: none !important;
   white-space: pre-wrap !important;
   word-wrap: break-word !important;
   margin: 0;
+  background: transparent !important; /* Remove background */
 }
 
 code {
-  font-family: monospace;
+  font-family: "Fira Code", monospace;
   color: var(--ion-color-dark);
+  background: transparent !important; /* Remove background */
+}
+
+/* Optional: if you want to keep syntax highlighting but remove background */
+.hljs {
+  background: transparent !important;
 }
 </style>
