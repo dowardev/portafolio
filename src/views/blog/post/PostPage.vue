@@ -56,35 +56,34 @@
       </ion-toolbar>
     </ion-header>
 
-    <!-- Layout container -->
-    <div class="content-layout">
-      <!-- Main content -->
-      <div id="pr" ref="indexRef" class="ion-padding">
-        <article id="content-container">
-          <MarkdownViewer
-            :content="postController.getPost({ id: postId })!.content ?? ''"
-          />
-        </article>
-      </div>
+    <ion-row>
+      <ion-col
+        size="12"
+        :style="{ left: isPlatform('desktop') ? '22%' : '0%' }"
+      >
+        <div
+          :style="{ width: isPlatform('desktop') ? '50%' : '100%' }"
+          :class="{ 'ion-padding': isPlatform('mobile') }"
+        >
+          <article id="content-container" ref="indexRef">
+            <MarkdownViewer
+              :content="postController.getPost({ id: postId })!.content ?? ''"
+            />
+          </article>
+        </div>
+      </ion-col>
+    </ion-row>
 
-      <!-- Floating index -->
-      <indexContentComponent
-        id="pr2"
-        class="floating-index"
-        :index-content="indexContent"
-        :auto-hide-content="isPlatform('ios') || isPlatform('android')"
-        @element-id="goToSection({ id: $event })"
-      />
-    </div>
-  </ion-content>
-
-  <!-- <ion-col size="3" v-if="isPlatform('desktop')">
+    <!-- Floating index -->
     <indexContentComponent
+      id="pr2"
+      class="floating-index"
+      v-if="isPlatform('desktop')"
       :index-content="indexContent"
       :auto-hide-content="isPlatform('ios') || isPlatform('android')"
       @element-id="goToSection({ id: $event })"
     />
-  </ion-col> -->
+  </ion-content>
 
   <!-- alerts -->
   <!-- alert delete post -->
