@@ -86,6 +86,11 @@ const escapeHtml = (text: string): string => {
   return processedText;
 };
 
+const processAlertContent = (text: string): string => {
+  // Convert inline code blocks to bold text
+  return text.replace(/`([^`]+)`/g, "<b>$1</b>");
+};
+
 const contentBlocks = computed(() => {
   const blocks = [];
   let currentListItems = [];
@@ -200,7 +205,7 @@ const contentBlocks = computed(() => {
               blocks.push({
                 type: CardsAlert,
                 props: {
-                  cardContent: blockquoteContent,
+                  cardContent: processAlertContent(blockquoteContent),
                   cardTitle: "Nota",
                   border: false,
                   icon: informationOutline,
