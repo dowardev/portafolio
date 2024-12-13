@@ -5,6 +5,7 @@
 </template>
 
 <script setup lang="ts">
+// funciona 3
 import { computed } from "vue";
 import CardCode from "@/components/cards/CardCode.vue";
 import CardsAlert from "@/components/cards/CardAlert.vue";
@@ -17,9 +18,24 @@ const props = defineProps({
   },
 });
 
+const processInlineCode = (text: string): string => {
+  // Process single word code blocks first
+  if (/^`[^`\n]+`$/.test(text)) {
+    const content = text.replace(/^`|`$/g, "");
+    return `<code class="inline-code">${content}</code>`;
+  }
+  return text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+};
+
 const escapeHtml = (text: string): string => {
   const htmlElements: string[] = [];
   let processedText = text;
+
+  // Preserve inline code blocks first
+  processedText = processedText.replace(/`([^`]+)`/g, (match) => {
+    htmlElements.push(match);
+    return `%%HTML${htmlElements.length - 1}%%`;
+  });
 
   // Preserve iframe tags
   processedText = processedText.replace(/<iframe.*?<\/iframe>/gs, (match) => {
@@ -61,22 +77,20 @@ const escapeHtml = (text: string): string => {
   };
   processedText = processedText.replace(/[&<>"']/g, (m) => map[m]);
 
-  // Restore preserved HTML elements
-  processedText = processedText.replace(
-    /%%HTML(\d+)%%/g,
-    (_, index) => htmlElements[parseInt(index)]
-  );
+  // Restore preserved HTML elements and process inline code
+  processedText = processedText.replace(/%%HTML(\d+)%%/g, (_, index) => {
+    const element = htmlElements[parseInt(index)];
+    return element.startsWith("`") ? processInlineCode(element) : element;
+  });
 
   return processedText;
 };
 
 const contentBlocks = computed(() => {
   const blocks = [];
-  let currentListItems: string[] = [];
-  let isOrderedList = false;
+  let currentListItems = [];
   let currentHtml = "";
 
-  // Split content into segments, preserving code blocks
   const segments = props.content.split(/(```[\s\S]+?```)/g);
 
   segments.forEach((segment) => {
@@ -106,139 +120,107 @@ const contentBlocks = computed(() => {
       }
     } else if (segment.trim()) {
       let processedSegment = segment;
+      let lines = processedSegment.split("\n");
+      let i = 0;
 
-      // Remove HTML comments
-      processedSegment = processedSegment.replace(/<!--[\s\S]*?-->/g, "");
+      while (i < lines.length) {
+        const line = lines[i].trim();
 
-      // Process blockquotes
-      const blockquoteRegex = /^(?:\>\s+.*(?:\n|$))+/gm;
-      let blockquoteMatch;
-      while (
-        (blockquoteMatch = blockquoteRegex.exec(processedSegment)) !== null
-      ) {
-        // Flush any pending HTML
-        if (currentHtml.trim()) {
-          blocks.push({
-            type: "div",
-            props: { innerHTML: currentHtml.trim() },
-          });
-          currentHtml = "";
-        }
-
-        const blockquoteContent = blockquoteMatch[0]
-          .split("\n")
-          .map((line) => line.replace(/^>\s?/, "").trim())
-          .join("<br />");
-
-        blocks.push({
-          type: CardsAlert,
-          props: {
-            cardContent: blockquoteContent,
-            cardTitle: "Nota",
-            border: false,
-            icon: informationOutline,
-            color: "success",
-          },
-        });
-
-        processedSegment = processedSegment.replace(blockquoteMatch[0], "");
-      }
-
-      // Process remaining lines
-      const lines = processedSegment.split("\n");
-
-      lines.forEach((line) => {
-        if (line.trim()) {
-          // Process headers
-          if (/^#{1,6}\s/.test(line)) {
-            // Flush any pending lists
-            if (currentListItems.length > 0) {
-              currentHtml += isOrderedList
-                ? `<ol>${currentListItems.join("")}</ol>`
-                : `<ul>${currentListItems.join("")}</ul>`;
-              currentListItems = [];
-              isOrderedList = false;
-            }
-
-            const levelMatch = line.match(/^#{1,6}/);
-            const level = levelMatch ? levelMatch[0].length : 1;
-            let content = line.replace(/^#{1,6}\s/, "");
-
-            content = escapeHtml(content);
-            content = content
-              .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
-              .replace(/\*(.+?)\*/g, "<i>$1</i>");
-
-            currentHtml += `<h${level}>${content}</h${level}>`;
-          }
-          // Process ordered lists
-          else if (/^\d+\.\s+/.test(line)) {
-            if (!isOrderedList) {
-              if (currentListItems.length > 0) {
-                currentHtml += `<ul>${currentListItems.join("")}</ul>`;
-                currentListItems = [];
-              }
-              isOrderedList = true;
-            }
-            let item = line.replace(/^\d+\.\s+/, "").trim();
-            item = escapeHtml(item);
-            item = item
-              .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
-              .replace(/\*(.+?)\*/g, "<i>$1</i>");
-            currentListItems.push(`<li>${item}</li>`);
-          }
+        if (line) {
           // Process unordered lists
-          else if (/^\s*-\s+/.test(line)) {
-            if (isOrderedList) {
-              if (currentListItems.length > 0) {
-                currentHtml += `<ol>${currentListItems.join("")}</ol>`;
-                currentListItems = [];
+          if (/^\s*-\s+/.test(line)) {
+            // Flush any pending content
+            if (currentHtml.trim()) {
+              blocks.push({
+                type: "div",
+                props: { innerHTML: currentHtml.trim() },
+              });
+              currentHtml = "";
+            }
+
+            // Start collecting list items
+            let listItems = [];
+            while (i < lines.length && /^\s*-\s+/.test(lines[i])) {
+              let item = lines[i].replace(/^\s*-\s+/, "").trim();
+              // Process bold and italics within list item
+              item = escapeHtml(item)
+                .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+                .replace(/\*(.+?)\*/g, "<i>$1</i>");
+              listItems.push(`<li>${item}</li>`);
+              i++;
+            }
+            i--; // Adjust for outer loop increment
+
+            blocks.push({
+              type: "div",
+              props: { innerHTML: `<ul>${listItems.join("")}</ul>` },
+            });
+          } else {
+            // Process headers
+            if (/^#{1,6}\s/.test(line)) {
+              // Flush pending content
+              if (currentHtml.trim()) {
+                blocks.push({
+                  type: "div",
+                  props: { innerHTML: currentHtml.trim() },
+                });
+                currentHtml = "";
               }
-              isOrderedList = false;
-            }
-            let item = line.replace(/^\s*-\s+/, "").trim();
-            item = escapeHtml(item);
-            item = item
-              .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
-              .replace(/\*(.+?)\*/g, "<i>$1</i>");
-            currentListItems.push(`<li>${item}</li>`);
-          }
-          // Process normal text
-          else {
-            // Flush any pending lists
-            if (currentListItems.length > 0) {
-              currentHtml += isOrderedList
-                ? `<ol>${currentListItems.join("")}</ol>`
-                : `<ul>${currentListItems.join("")}</ul>`;
-              currentListItems = [];
-              isOrderedList = false;
-            }
 
-            let textLine = line.trim();
-            textLine = escapeHtml(textLine);
-            textLine = textLine.replace(/`([^`]+)`/g, "<code>$1</code>");
-            textLine = textLine
-              .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
-              .replace(/\*(.+?)\*/g, "<i>$1</i>");
-            textLine = textLine.replace(
-              /\[(.*?)\]\((.*?)\)/g,
-              '<a href="$2">$1</a>'
-            );
+              const levelMatch = line.match(/^#{1,6}/);
+              const level = levelMatch ? levelMatch[0].length : 1;
+              let content = line.replace(/^#{1,6}\s/, "");
+              content = escapeHtml(content);
 
-            currentHtml += `<p>${textLine}</p>`;
+              blocks.push({
+                type: "div",
+                props: { innerHTML: `<h${level}>${content}</h${level}>` },
+              });
+            }
+            // Process blockquotes
+            else if (line.startsWith(">")) {
+              // Flush pending content
+              if (currentHtml.trim()) {
+                blocks.push({
+                  type: "div",
+                  props: { innerHTML: currentHtml.trim() },
+                });
+                currentHtml = "";
+              }
+
+              let blockquoteContent = line.replace(/^>\s?/, "").trim();
+
+              // Collect all consecutive blockquote lines
+              while (i + 1 < lines.length && lines[i + 1].startsWith(">")) {
+                i++;
+                blockquoteContent +=
+                  "<br />" + lines[i].replace(/^>\s?/, "").trim();
+              }
+
+              blocks.push({
+                type: CardsAlert,
+                props: {
+                  cardContent: blockquoteContent,
+                  cardTitle: "Nota",
+                  border: false,
+                  icon: informationOutline,
+                  color: "success",
+                },
+              });
+            }
+            // Process normal text
+            else {
+              let textLine = escapeHtml(line.trim());
+              currentHtml += `<p>${textLine}</p>`;
+            }
           }
         }
-      });
+        i++;
+      }
     }
   });
 
-  // Flush any remaining content
-  if (currentListItems.length > 0) {
-    currentHtml += isOrderedList
-      ? `<ol>${currentListItems.join("")}</ol>`
-      : `<ul>${currentListItems.join("")}</ul>`;
-  }
-
+  // Flush remaining content
   if (currentHtml.trim()) {
     blocks.push({
       type: "div",
@@ -266,5 +248,27 @@ const contentBlocks = computed(() => {
   margin: 1rem 0;
   padding: 0.5rem 1rem;
   background: var(--ion-color-light);
+}
+
+:deep(code) {
+  background: var(--ion-color-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+:deep(code[class*="language-"]) {
+  color: var(--ion-color-primary);
+  background: var(--ion-color-light);
+}
+
+:deep(.inline-code) {
+  background: var(--ion-color-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: var(--ion-color-primary);
 }
 </style>
