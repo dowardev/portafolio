@@ -1,105 +1,97 @@
-# Portafolio web
+# Portafolio Web
 
-Sitio web aplicación móvil(Android), PWA diseñado para desarrolladores, el cual les permite mostrar sus conocimientos y proyectos realizados además de un editor para publicar contenido en un blog.
+Este proyecto consiste en una aplicación web y móvil (Android), así como una PWA, diseñada para desarrolladores. Permite mostrar conocimientos y proyectos realizados, además de ofrecer un editor para publicar contenido en un blog.
 
 ## Demo
 
-<a href="https://dowar.xyz" target="_blank">Aplicación en producción</a>
+Puede acceder a la aplicación en producción a través del siguiente enlace: [Aplicación en producción](https://dowar.xyz)
 
-## Tecnologías usadas
+## Tecnologías Utilizadas
 
-- Ionic Framework 6
-- Vuejs 3
-- Capacitorjs 4
-- Vue Apollo 4
-- Vue3-markdown-it 1
-- Vite 4
+- Ionic Framework
+- Vue.js
+- Capacitor.js
+- Vite
+- Pinia
 
 ## Ejecución
 
 ### Requisitos
 
 - Node.js LTS
-- Gestor de dependencias PNPM
-- Configurado e instalado el proyecto del <a href='https://gitlab.com/gonzam4/portfolio-backend' target='_blank'>BackEnd</a>.
+- Gestor de dependencias NodeJS
+- Proyecto del [BackEnd](https://gitlab.com/gonzam4/portfolio-backend) configurado e instalado.
 
-### Instalación de dependencias
+### Instalación de Dependencias
 
-- Acceder con nuestra terminal de comandos a la ubicación del proyecto y ejecutar.
+Para instalar las dependencias, acceda a la ubicación del proyecto mediante la terminal de comandos y ejecute:
 
 ```bash
 pnpm i
 ```
 
+### Configuración Previa
+
+#### Creación de Archivos de Configuración
+
+- .env
+- .env.production
+
+Estos archivos deben contener la URL de la API del backend a la que se conectará el sistema, por ejemplo: `VITE_API_URL=http://localhost:8100/api/`
+
 ### Despliegue
 
 #### Local
 
-- Ejecutar.
+Para ejecutar el proyecto localmente, ejecute:
 
 ```bash
-pnpm dev
+ionic s
 ```
 
 #### Producción
 
-- Ejecutar.
+Para generar una versión de producción, ejecute:
 
 ```bash
-pnpm build
+ionic build --prod
 ```
 
-- Copiar contenido del directorio `dist` en tu hosting.
+Luego, copie el contenido del directorio `dist` en su hosting.
 
-Recomendado leer el siguiente <a href='https://dowar.xyz/blog/post/31' target='_blank'>post</a>.
+Se recomienda leer el siguiente [post](https://dowar.xyz/blog/post/31).
 
-### Generación de la apk/bundle
+### Generación de la APK/Bundle
 
-Puedes generar dos tipos de apk/bundle la versión de producción(prod) o la de testeo(testing).
+Puede generar dos tipos de APK/Bundle: la versión de producción (prod) o la de testeo (testing).
 
 #### Testing
 
-- Acceder a la carpeta `Android` y ejecutamos.
+##### Apk de testeo
+
+Para generar una apk de testeo, acceda a la carpeta `Android` y ejecute:
 
 ```bash
 ./gradlew assembleDebug
 ```
 
-- Podremos encontrar la aplicación en `app/build/outputs/apk/debug/`.
+La aplicación se encontrará en `app/build/outputs/apk/debug/`.
 
-#### Prod
+##### Probar en dispositivo
 
-- Ejecutamos
+Probar directamente en un dispositivo movil
 
 ```bash
-pnpm exex cap open android
+ionic cap run android
 ```
 
-## Resolucion de problemas
+#### Producción
 
-Para cualquier problema relacionado, siéntete libre de contactarme por alguno de los medio listados en <a href="https://dowar.xyz/presentation" target="_blank">dowar.xyz</a>
+Para generar una versión de producción, ejecute:
 
-## Recursos
-
-### Iconos
-
-<!-- - Telegram: <a href="https://icons8.com/icon/F4ZPUh2Mk5tk/telegram-app" target="_blank">icon8</a> -->
-
-- <a href="https://ionic.io/ionicons" target="_blank">Ionic icons</a>
-
-## Información adicional
-
-- Tablero de novedades <a href="https://board.disroot.org/project/portafolio/kanban" target="_blank">Kanban</a>.
-
-- Si te gusta el proyecto puedes contribuir de las siguientes formas
-
-  - Contribuyendo a la corrección de errores.
-  - Reporte de errores
-    - Crear un issue en este mismo repositorio.
-    - Contactarme a través de los medios listados en <a href="https://dowar.xyz/presentation" target="_blank">dowar.xyz</a>.
-  - Realizando una donación <a href="https://liberapay.com/dowar/donate" target="_blank"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"/></a>
-
-Este es un proyecto de software libre, por lo que podrás utilizar de manera total o parcial el código contenido en él, siempre y cuando se mantenga dentro de las normas establecidas en la licencia con la cual está siendo desarrollado.
+```bash
+ionic cap open android
+```
 
 ## Licencia
 
