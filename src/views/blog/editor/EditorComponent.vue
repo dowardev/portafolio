@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO: remove header and ion-content from this component -->
   <ion-header class="ion-no-border">
     <ion-toolbar class="container-page">
       <ion-buttons slot="start">
@@ -32,72 +33,77 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="container-page">
+  <ion-content class="container-page" style="height: 89dvh">
     <ion-row>
       <ion-col
         :class="{ 'col-expanded': !settingsSectionVisible }"
         :size="settingsSectionVisible && isPlatform('desktop') ? '9' : '12'"
       >
-        <ion-row>
-          <ion-col>
-            <!-- title -->
-            <ion-row>
-              <ion-col>
-                <ion-input
-                  ref="inputPostTitle"
-                  label="Titulo"
-                  label-placement="stacked"
-                  fill="outline"
-                  autocorrect="on"
-                  pattern="text"
-                  :error-text="v$.postTitle.$errors[0]?.$message.toString()"
-                  :class="[
-                    v$.postTitle.$errors.length == 0
-                      ? 'ion-valid'
-                      : 'ion-invalid',
-                  ]"
-                  :value="postTitle"
-                  :spellcheck="true"
-                  :disabled="props.disableUI"
-                  @ion-input="postTitle = $event.target.value as string"
-                  @ion-focus="
-                    ($refs.inputPostTitle as any).$el.classList.add(
-                      'ion-touched'
-                    );
-                    v$.postTitle.$touch();
-                  "
-                >
-                </ion-input>
-              </ion-col>
-            </ion-row>
+        <ion-card>
+          <ion-row>
+            <ion-col>
+              <!-- title -->
+              <ion-row>
+                <ion-col>
+                  <ion-input
+                    ref="inputPostTitle"
+                    label="Titulo"
+                    label-placement="stacked"
+                    fill="outline"
+                    autocorrect="on"
+                    pattern="text"
+                    :error-text="v$.postTitle.$errors[0]?.$message.toString()"
+                    :class="[
+                      v$.postTitle.$errors.length == 0
+                        ? 'ion-valid'
+                        : 'ion-invalid',
+                    ]"
+                    :value="postTitle"
+                    :spellcheck="true"
+                    :disabled="props.disableUI"
+                    @ion-input="postTitle = $event.target.value as string"
+                    @ion-focus="
+                      ($refs.inputPostTitle as any).$el.classList.add(
+                        'ion-touched'
+                      );
+                      v$.postTitle.$touch();
+                    "
+                  >
+                  </ion-input>
+                </ion-col>
+              </ion-row>
 
-            <!-- content -->
-            <ion-row>
-              <ion-col size="12" size-md="12" size-lg="12">
-                <MdEditor
-                  v-model="postContent"
-                  theme="dark"
-                  style="
-                    overflow: scroll;
-                    width: 100%;
-                    margin-top: 18px;
-                    --md-bk-color: var(--ion-background-color-rgb);
-                    --md-color: var(--ion-color-primary);
-                    --md-border-color: var(--ion-text-color-step-700);
-                  "
-                  class="element-outline-focus"
-                  :toolbars="
-                    isPlatform('mobile') ? toolbarMobile : toolbarDesktop
-                  "
-                  :language="'en-US'"
-                  :preview="false"
-                  :disabled="props.disableUI"
-                  @on-upload-img="uploadImage({ file: $event[0] })"
-                />
-              </ion-col>
-            </ion-row>
-          </ion-col>
-        </ion-row>
+              <!-- content -->
+              <ion-row v-show="viewMode == 'editor'">
+                <ion-col
+                  size="12"
+                  size-md="12"
+                  size-lg="12"
+                  style="min-height: 27vh; max-height: 77dvh"
+                >
+                  <MarkdownCreator
+                    :content="postContent"
+                    @image-upload="uploadImage({ file: $event })"
+                    @update-content="postContent = $event"
+                  />
+                </ion-col>
+              </ion-row>
+
+              <!-- preview -->
+              <ion-row v-if="viewMode == 'preview'">
+                <ion-col size="12" size-md="12" size-lg="12">
+                  <div
+                    class="content-container ion-padding"
+                    style="overflow: auto; min-height: 27dhv; max-height: 74dvh"
+                    id="pr1"
+                  >
+                    <MarkdownViewer :content="postContent" />
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+          </ion-row>
+        </ion-card>
       </ion-col>
 
       <transition name="slide">
@@ -114,14 +120,17 @@
               >
             </ion-list-header>
 
-            <OptionsEditorComponent
-              :cover="cover"
-              :disableUI="props.disableUI"
-              :post-status="props.postStatus"
-              @cover-change="setCover({ file: $event })"
-              @status-change="setPostStatus({ status: $event })"
-              @delete-post="deletePost()"
-            />
+            <ion-card>
+              <OptionsEditorComponent
+                :cover="cover"
+                :disableUI="props.disableUI"
+                :post-status="props.postStatus"
+                @cover-change="setCover({ file: $event })"
+                @status-change="setPostStatus({ status: $event })"
+                @delete-post="deletePost()"
+                @update-view="viewMode = $event"
+              />
+            </ion-card>
           </ion-list>
         </ion-col>
       </transition>
@@ -200,6 +209,7 @@
           @cover-change="setCover({ file: $event })"
           @status-change="setPostStatus({ status: $event })"
           @delete-post="deletePost()"
+          @update-view="viewMode = $event"
         />
       </ion-content>
     </ion-modal>
@@ -235,6 +245,9 @@ import {
   trashOutline,
   optionsOutline,
   closeOutline,
+  arrowUndoCircleOutline,
+  arrowUndoOutline,
+  arrowRedoOutline,
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
@@ -243,13 +256,15 @@ import { useRouter } from "vue-router";
 import { MdEditor, ToolbarNames } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import { ref, watch } from "vue";
+import { StatusPost } from "@/services/types";
 
 // components
 import OptionsEditorComponent from "../../../../src/views/blog/editor/OptionsEditorComponent.vue";
-import { StatusPost } from "@/services/types";
+import MarkdownCreator from "@/components/markdown-creator/MarkdownCreator.vue";
+import MarkdownViewer from "@/components/markdown-viewer/MarkdownViewer.vue";
 
+// vars
 const router = useRouter();
-
 const props = defineProps({
   title: { default: "", type: String },
   content: { default: "", type: String },
@@ -313,6 +328,7 @@ const toolbarMobile = [
 const settingsSectionVisible = ref(isPlatform("desktop") ? true : false);
 const modalSettings = ref(false);
 const postStatus = ref<StatusPost>(props.postStatus as StatusPost);
+const viewMode = ref<"editor" | "preview">("editor");
 
 // watch
 watch(
@@ -434,5 +450,13 @@ ion-content,
 .slide-leave-to {
   transform: translateX(30px);
   opacity: 0;
+}
+
+.content-container {
+  border: 1px solid var(--ion-background-color-step-300);
+  border-radius: 4px;
+}
+.content-container:hover {
+  border: 1px solid var(--ion-background-color-step-850);
 }
 </style>
