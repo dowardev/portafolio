@@ -1,0 +1,43 @@
+image: node:18-alpine
+
+stages:
+  - install
+  - build
+  - package
+  - deploy
+
+cache:
+  paths:
+    - node_modules/
+
+install_job:
+  stage: install
+  script:
+    - npm install -g pnpm
+    - npm install -g @ionic/cli
+
+build_job:
+  stage: build
+  script:
+    - pnpm install
+    - ionic build --prod
+
+package_job:
+  stage: package
+  script:
+    - cd dist
+    - tar czvf ../dist.tar.gz *
+    - cd ..
+
+deploy_job:
+  stage: deploy
+  script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan your_server >> ~/.ssh/known_hosts
+    - ssh -p 65002 u902881280@195.179.236.189 "cd /home/u902881280/public_html && rm -rf * && mkdir dist"
+    - scp -P 65002 dist.tar.gz u902881280@195.179.236.189:/home/u902881280/public_html
+    - ssh -p 65002 u902881280@195.179.236.189 "cd /home/u902881280/public_html && tar xzf dist.tar.gz && rm dist.tar.gz"
+  only:
+    - main
