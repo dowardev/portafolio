@@ -9,6 +9,7 @@ build_job:
   stage: build
   script:
     - npm install
+    - npm install -g @ionic/cli
     - ionic build --prod
 
 package_job:
