@@ -1,4 +1,4 @@
-image: node:18-alpine
+image: node:18-lts
 
 stages:
   - install
@@ -6,15 +6,10 @@ stages:
   - package
   - deploy
 
-cache:
-  paths:
-    - node_modules/
-
 install_job:
   stage: install
   script:
     - npm install -g pnpm
-    - npm install -g @ionic/cli
 
 build_job:
   stage: build
