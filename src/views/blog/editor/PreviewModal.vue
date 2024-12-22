@@ -37,7 +37,6 @@ import {
 } from "@ionic/vue";
 import { closeOutline } from "ionicons/icons";
 import { MdPreview } from "md-editor-v3";
-import "md-editor-v3/lib/style.css";
 
 const props = defineProps({
   content: { default: "", type: String },
