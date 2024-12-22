@@ -253,8 +253,6 @@ import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import PreviewModal from "./PreviewModal.vue";
 import { useRouter } from "vue-router";
-import { MdEditor, ToolbarNames } from "md-editor-v3";
-import "md-editor-v3/lib/style.css";
 import { ref, watch } from "vue";
 import { StatusPost } from "@/services/types";
 
@@ -308,23 +306,6 @@ const v$ = useVuelidate(rules, {
   postContent,
   cover: cover.value.file,
 });
-const toolbarDesktop = [
-  "revoke",
-  "next",
-  "image",
-  "prettier",
-  "pageFullscreen",
-  "fullscreen",
-  "preview",
-] as ToolbarNames[];
-const toolbarMobile = [
-  "revoke",
-  "next",
-  "image",
-  "prettier",
-  "pageFullscreen",
-  "fullscreen",
-] as ToolbarNames[];
 const settingsSectionVisible = ref(isPlatform("desktop") ? true : false);
 const modalSettings = ref(false);
 const postStatus = ref<StatusPost>(props.postStatus as StatusPost);
