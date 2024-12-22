@@ -36,7 +36,6 @@ import {
   modalController,
 } from "@ionic/vue";
 import { closeOutline } from "ionicons/icons";
-import { MdPreview } from "md-editor-v3";
 
 const props = defineProps({
   content: { default: "", type: String },
