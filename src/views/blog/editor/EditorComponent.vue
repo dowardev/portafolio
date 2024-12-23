@@ -1,39 +1,5 @@
 <template>
-  <!-- TODO: remove header and ion-content from this component -->
-  <ion-header class="ion-no-border">
-    <ion-toolbar class="container-page">
-      <ion-buttons slot="start">
-        <ion-button
-          fill="clear"
-          @click="router.go(-1)"
-          :disabled="props.disableUI"
-        >
-          <ion-icon :icon="chevronBackOutline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-
-      <ion-title>{{ pageTitle }}</ion-title>
-
-      <ion-buttons slot="end">
-        <!-- save -->
-        <ion-button
-          fill="clear"
-          color="primary"
-          :disabled="v$.$invalid || props.disableUI"
-          @click="save()"
-        >
-          <ion-icon slot="start" :icon="saveOutline"></ion-icon>
-        </ion-button>
-
-        <!-- settings -->
-        <ion-button @click="openSettings()" v-if="!settingsSectionVisible">
-          <ion-icon :icon="optionsOutline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content class="container-page" style="height: 89dvh">
+  <div>
     <ion-row>
       <ion-col
         :class="{ 'col-expanded': !settingsSectionVisible }"
@@ -61,7 +27,10 @@
                     :value="postTitle"
                     :spellcheck="true"
                     :disabled="props.disableUI"
-                    @ion-input="postTitle = $event.target.value as string"
+                    @ion-input="
+                      postTitle = $event.target.value as string;
+                      emitData();
+                    "
                     @ion-focus="
                       ($refs.inputPostTitle as any).$el.classList.add(
                         'ion-touched'
@@ -84,7 +53,10 @@
                   <MarkdownCreator
                     :content="postContent"
                     @image-upload="uploadImage({ file: $event })"
-                    @update-content="postContent = $event"
+                    @update-content="
+                      postContent = $event;
+                      emitData();
+                    "
                   />
                 </ion-col>
               </ion-row>
@@ -115,7 +87,11 @@
           <ion-list>
             <ion-list-header>
               <ion-label>Opciones</ion-label>
-              <ion-button @click="settingsSectionVisible = false"
+              <ion-button
+                @click="
+                  settingsSectionVisible = false;
+                  emits('update-visible-editor-settings', false);
+                "
                 >Ocultar</ion-button
               >
             </ion-list-header>
@@ -125,7 +101,7 @@
                 :cover="cover"
                 :disableUI="props.disableUI"
                 :post-status="props.postStatus"
-                @cover-change="setCover({ file: $event })"
+                @cover-change="(setCover({ file: $event }), emitData())"
                 @status-change="setPostStatus({ status: $event })"
                 @delete-post="deletePost()"
                 @update-view="viewMode = $event"
@@ -213,7 +189,7 @@
         />
       </ion-content>
     </ion-modal>
-  </ion-content>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -279,11 +255,16 @@ const props = defineProps({
     required: false,
   },
 });
-const emits = defineEmits(["save", "uploadImage", "delete-post"]);
+const emits = defineEmits([
+  "updateData",
+  "uploadImage",
+  "delete-post",
+  "update-visible-editor-settings",
+]);
 const modeDesignElements = isPlatform("ios") ? "ios" : ("md" as "md" | "ios");
 v$: useVuelidate();
 modeDesignElements;
-const pageTitle = "Editor";
+
 const postTitle = ref(props.title);
 const postContent = ref(props.content);
 const cover = ref({ name: props.cover.name, file: new File([], "") });
@@ -326,11 +307,14 @@ watch(
 );
 
 // functions
-function save(): void {
+defineExpose({
+  openSettings,
+});
+function emitData(): void {
   const title = postTitle.value;
   const content = postContent.value;
   const coverFile = cover.value.file;
-  emits("save", {
+  emits("updateData", {
     title,
     content,
     cover: coverFile,

@@ -1,18 +1,55 @@
 <template>
-  <ion-content>
+  <ion-header class="ion-no-border">
+    <ion-toolbar class="container-page">
+      <ion-buttons slot="start">
+        <ion-button
+          fill="clear"
+          @click="router.go(-1)"
+          :disabled="systemController.getLoader().status"
+        >
+          <ion-icon :icon="chevronBackOutline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+
+      <ion-title>{{ pageTitle }}</ion-title>
+
+      <ion-buttons slot="end">
+        <!-- save -->
+        <ion-button
+          fill="clear"
+          color="primary"
+          :disabled="!validateData() || systemController.getLoader().status"
+          @click="save({ title, content, coverId, status })"
+        >
+          <ion-icon slot="start" :icon="saveOutline"></ion-icon>
+        </ion-button>
+
+        <!-- settings -->
+        <ion-button
+          @click="openEditorSettings()"
+          v-if="!isVisibleEditorSettings"
+        >
+          <ion-icon :icon="optionsOutline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="container-page" style="height: 89dvh">
     <EditorComponent
       ref="editorRef"
       :content="content"
       :disableUI="systemController.getLoader().status"
       @upload-image="uploadImage($event)"
-      @save="
-        save({
+      @update-data="
+        setData({
           title: $event.title,
           content: $event.content,
           cover: $event.cover,
           status: $event.status,
         })
       "
+      @update-visible-editor-settings="isVisibleEditorSettings = $event"
     ></EditorComponent>
   </ion-content>
 </template>
@@ -28,39 +65,35 @@ import { StatusPost } from "@/services/types";
 // controllers
 import PostController from "../../../controllers/postController";
 import SystemController from "../../../controllers/systemController";
+import {
+  chevronBackOutline,
+  optionsOutline,
+  saveOutline,
+} from "ionicons/icons";
 const postController = new PostController();
 const systemController = new SystemController();
+const isVisibleEditorSettings = ref(true);
 
 // vars
 const router = useRouter();
 const openToastError = systemController.openToastError;
 const content = ref("");
 const images = Array<string>();
-const editorRef = ref(null);
+const editorRef = ref<InstanceType<typeof EditorComponent>>();
+const pageTitle = "Editor";
+const coverId = ref("");
+const status = ref<StatusPost>("draft");
+const title = ref("");
 
 // functions
 async function save(params: {
   title: string;
   content: string;
-  cover: File;
+  coverId: string;
   status: StatusPost;
 }): Promise<void> {
-  const { title, content, cover, status } = params;
-  let coverId = "";
+  const { title, content, coverId, status } = params;
   openLoader({ color: "primary" });
-
-  if (cover.size > 0) {
-    try {
-      const response = await uploadCover({ image: cover });
-      coverId = response.id;
-    } catch (e: any) {
-      console.error(e);
-      openToastError(e);
-      return;
-    } finally {
-      closeLoader();
-    }
-  }
 
   try {
     await createPost({
@@ -151,5 +184,47 @@ async function openLoader(params: { color: string }): Promise<void> {
 
 function closeLoader(): void {
   systemController.disableLoader();
+}
+
+async function setData(params: {
+  title: string;
+  content: string;
+  cover: File;
+  status: StatusPost;
+}): Promise<void> {
+  const {
+    title: titleData,
+    content: contentData,
+    cover: coverData,
+    status: statusData,
+  } = params;
+  console.log(params);
+  title.value = titleData;
+  content.value = contentData;
+  if (coverData.size > 0) {
+    try {
+      const response = await uploadCover({ image: coverData });
+      coverId.value = response.id;
+    } catch (e: any) {
+      console.error(e);
+      openToastError(e);
+      return;
+    } finally {
+      closeLoader();
+    }
+  }
+  status.value = statusData;
+}
+
+function openEditorSettings() {
+  editorRef.value?.openSettings();
+  isVisibleEditorSettings.value = true;
+}
+
+function validateData() {
+  if (!title.value || !content.value) {
+    return false;
+  }
+  return true;
 }
 </script>
