@@ -334,7 +334,6 @@ class PostsController extends Controller
       "title" => "required|string",
       "content" => "required|string",
       "coverId" => "integer|nullable",
-      "newCoverId" => "integer|nullable",
       "images" => "array|nullable",
       "imagesRemoved" => "array|nullable",
       "status" => "required|string",
@@ -347,12 +346,9 @@ class PostsController extends Controller
     $id = intval($request->id);
     $title = $request->title;
     $content = $request->content;
-    $cover_id = intval($request->coverId);
-
-    $new_cover_id = $request->has("newCoverId") ? $request->newCoverId : "";
+    $cover_id = $request->has("coverId") ? intval($request->coverId) : null;
 
     $new_images = $request->has("images") ? $request->images : [];
-
     $images_removed = $request->has("imagesRemoved")
       ? $request->imagesRemoved
       : [];
@@ -363,32 +359,20 @@ class PostsController extends Controller
       "status" => $request->status,
     ]);
 
-    if (!empty($new_cover_id >= 0)) {
+    $current_post = Post::where("id", "=", $id)->first();
+    $current_cover_id = $current_post->cover_id;
+
+    if ($current_cover_id !== $cover_id) {
       Post::where("id", "=", $id)->update([
-        "cover_id" => $new_cover_id,
+        "cover_id" => $cover_id,
       ]);
-      if ($cover_id) {
-        $cover_name = Image::where("id", "=", $cover_id)->first()->name;
-        Storage::disk("posts_images")->delete($cover_name);
-        Image::where("id", "=", $cover_id)->delete();
-      }
-    }
 
-    if ($new_cover_id == -1) {
-      Log::info("Entering cover removal block", ["post_id" => $id]);
-
-      $current_cover_id = Post::where("id", "=", $id)->first()->cover_id;
       if ($current_cover_id) {
-        Log::info("Found current cover", ["cover_id" => $current_cover_id]);
-
-        $cover_name = Image::where("id", "=", $current_cover_id)->first()->name;
-        Storage::disk("posts_images")->delete($cover_name);
-        Image::where("id", "=", $current_cover_id)->delete();
-        Post::where("id", "=", $id)->update([
-          "cover_id" => null,
-        ]);
-
-        Log::info("Cover removed successfully");
+        $old_cover = Image::where("id", "=", $current_cover_id)->first();
+        if ($old_cover) {
+          Storage::disk("posts_images")->delete($old_cover->name);
+          Image::where("id", "=", $current_cover_id)->delete();
+        }
       }
     }
 
@@ -398,7 +382,6 @@ class PostsController extends Controller
     }
 
     foreach ($new_images as $value) {
-      // $this->moveImage($value);
       PostImage::create([
         "image_id" => $value,
         "post_id" => $id,
