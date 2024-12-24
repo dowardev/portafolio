@@ -60,7 +60,7 @@ export default class PostController {
     }
   }
 
-  getPost(params: { id: string }): Post | undefined {
+  getPost(params: { id: number }): Post | undefined {
     const id = params.id;
     const post = this.postStore.getPost({ id });
     return post ? post : undefined;
@@ -85,7 +85,7 @@ export default class PostController {
     this.postStore.updateCurrentPage({ currentPage: params.currentPage });
   }
 
-  async deletePost(params: { id: string }): Promise<void> {
+  async deletePost(params: { id: number }): Promise<void> {
     const id = params.id;
 
     try {
@@ -113,14 +113,13 @@ export default class PostController {
   }
 
   async updatePost(params: { post: UpdatePost }): Promise<void> {
-    const { id, title, content, cover, images, imagesRemoved, status } =
+    const { id, title, content, coverId, images, imagesRemoved, status } =
       params.post;
     const post = {
       id: id!,
       title,
       content,
-      coverId: cover.oldCoverId,
-      newCoverId: cover.newCoverId,
+      coverId: coverId!,
       images: images,
       imagesRemoved: imagesRemoved,
       status,

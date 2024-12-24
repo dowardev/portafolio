@@ -10,11 +10,10 @@ import { apiConnector } from "@/main";
 import { filterPostOptions, PostFields } from "./types";
 
 interface UpdatePost {
-  id: string;
+  id: number;
   title: string;
   content: string;
-  coverId: string;
-  newCoverId: string;
+  coverId: number;
   images: string[];
   imagesRemoved: string[];
   status: string;
@@ -31,16 +30,8 @@ export default class PostService {
   }
 
   async updatePost(params: { post: UpdatePost }): Promise<void> {
-    const {
-      images,
-      coverId,
-      content,
-      title,
-      id,
-      newCoverId,
-      imagesRemoved,
-      status,
-    } = params.post;
+    const { images, coverId, content, title, id, imagesRemoved, status } =
+      params.post;
 
     await apiConnector.post({
       url: `update-post`,
@@ -50,7 +41,6 @@ export default class PostService {
         content,
         title,
         id,
-        newCoverId,
         imagesRemoved,
         status,
       },

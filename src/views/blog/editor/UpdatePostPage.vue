@@ -21,10 +21,12 @@
           :disabled="!validateData() || systemController.getLoader().status"
           @click="
             save({
-              title,
-              content,
-              coverData: { oldCoverId: cover.id, newCoverId: coverId },
-              status,
+              id: post.id!,
+              title: post.title,
+              content: post.content,
+              coverId: post.cover.id,
+              status: post.status,
+              newImages: post.newImages,
             })
           "
         >
@@ -46,11 +48,11 @@
     <EditorComponent
       v-if="contentLoaded"
       ref="editorRef"
-      :title="title"
-      :content="content"
-      :cover="{ name: cover.name }"
+      :title="post.title"
+      :content="post.content"
+      :cover="{ name: post.cover.name }"
       :disableUI="systemController.getLoader().status"
-      :postStatus="postStatus"
+      :postStatus="post.status"
       @upload-image="uploadImage($event)"
       @update-data="
         setData2({
@@ -60,7 +62,7 @@
           status: $event.status,
         })
       "
-      @delete-post="deletePost({ id: idPost })"
+      @delete-post="deletePost({ id: post.id! })"
       @update-visible-editor-settings="isVisibleEditorSettings = $event"
     ></EditorComponent>
   </ion-content>
@@ -91,22 +93,20 @@ import { StatusPost } from "@/services/types";
 const router = useRouter();
 const route = useRoute();
 const openToastError = systemController.openToastError;
-const idPost = route.params.id as string;
-const title = ref("");
-const content = ref("");
-const cover = ref<{ id: number | undefined; name: string | undefined }>({
-  id: "",
-  name: "",
-});
-const newImages = ref(Array<string>());
-const images = ref<string[]>([]);
 const editorRef = ref<InstanceType<typeof EditorComponent>>();
 const contentLoaded = ref(false);
-const postStatus = ref<StatusPost>();
 const pageTitle = "Editor";
-const coverId = ref<number | undefined>(undefined);
 const status = ref<StatusPost>("draft");
 const isVisibleEditorSettings = ref(true);
+const post = ref({
+  id: parseInt(route.params.id as string) as number | undefined,
+  title: "",
+  content: "",
+  cover: { id: 0, name: "" },
+  status: "draft" as StatusPost,
+  images: [] as string[],
+  newImages: [] as string[],
+});
 
 // mounted
 onMounted(() => {
@@ -119,20 +119,20 @@ async function getPost(): Promise<void> {
 
   try {
     await postController.loadPost({
-      id: idPost,
+      id: post.value.id!,
     });
 
-    const post = postController.getPost({
-      id: idPost,
+    const postResponse = postController.getPost({
+      id: post.value.id!,
     })!;
-    const title = post.title ?? "";
-    const content = post.content ?? "";
-    const coverId = post.cover?.id ?? undefined;
-    const coverName = post.cover?.name ?? undefined;
-    const status = post.status;
+    const title = postResponse.title ?? "";
+    const content = postResponse.content ?? "";
+    const coverId = postResponse.cover?.id ?? undefined;
+    const coverName = postResponse.cover?.name ?? undefined;
+    const status = postResponse.status;
 
     if (post) {
-      setData({ title, content, coverId, coverName, status });
+      setData({ title, content, coverId: coverId!, coverName, status });
       contentLoaded.value = true;
     }
   } catch (e: any) {
@@ -150,27 +150,27 @@ function setData(data: {
   coverName: string | undefined;
   status: StatusPost;
 }): void {
-  title.value = data.title;
-  content.value = data.content;
-  cover.value = {
-    id: data.coverId,
-    name: data.coverName,
+  post.value.title = data.title;
+  post.value.content = data.content;
+  post.value.cover = {
+    id: data.coverId!,
+    name: data.coverName!,
   };
-  postStatus.value = data.status;
+  post.value.status = data.status;
   getPostImages(data.content);
 }
 
 async function save(data: {
+  id: number;
   title: string;
   content: string;
-  coverData: { oldCoverId: number | undefined; newCoverId: number | undefined };
+  coverId: number;
   status: StatusPost;
+  newImages: string[];
 }): Promise<void> {
-  const { title, content, coverData, status } = data;
+  const { id, title, content, coverId, status, newImages } = data;
   openLoader({ color: "primary" });
 
-  const id = idPost as string;
-  const images = newImages.value;
   const imagesRemoved = getRemovedImages(data.content);
 
   try {
@@ -179,14 +179,14 @@ async function save(data: {
         id,
         title,
         content,
-        cover: coverData,
-        images,
+        coverId,
+        images: newImages,
         imagesRemoved,
         status,
       },
     });
     await systemController.presentToast({ message: "Post actualizado" });
-    router.go(-1);
+    await router.go(-1);
   } catch (e: any) {
     openToastError(e);
   } finally {
@@ -214,7 +214,7 @@ async function uploadImage(e: any) {
     const imageName = response.name;
 
     const imagUrl = await getImageURL({ name: imageName! });
-    content.value =
+    post.value.content =
       '<div class="center"><img src="' +
       imagUrl +
       '" style="width:80%"/></div>';
@@ -243,14 +243,14 @@ function getPostImages(content: string) {
     console.log(url);
     const imageName = url.split("/").pop();
     if (imageName) {
-      images.value?.push(imageName);
+      post.value.images?.push(imageName);
     }
   });
 }
 
 function getRemovedImages(content: string) {
   const imagesRemoved: string[] = [];
-  images.value.forEach((element: string) => {
+  post.value.images.forEach((element: string) => {
     if (content.includes(element) == false) {
       imagesRemoved.push(element);
     }
@@ -263,7 +263,7 @@ async function getImageURL(params: { name: string }): Promise<string> {
   return (await systemController.getImageURL({ name })).url;
 }
 
-async function deletePost(params: { id: string }) {
+async function deletePost(params: { id: number }) {
   const id = params.id;
   openLoader({ color: "danger" });
 
@@ -299,12 +299,12 @@ async function setData2(params: {
     cover: coverData,
     status: statusData,
   } = params;
-  title.value = titleData;
-  content.value = contentData;
+  post.value.title = titleData;
+  post.value.content = contentData;
   if (coverData.size > 0) {
     try {
       const response = await uploadCover({ image: coverData });
-      coverId.value = parseInt(response.id);
+      post.value.cover.id = parseInt(response.id);
     } catch (e: any) {
       console.error(e);
       openToastError(e);
@@ -322,7 +322,7 @@ function openEditorSettings() {
 }
 
 function validateData() {
-  if (!title.value || !content.value) {
+  if (!post.value.title || !post.value.content) {
     return false;
   }
   return true;
