@@ -19,7 +19,14 @@
           fill="clear"
           color="primary"
           :disabled="!validateData() || systemController.getLoader().status"
-          @click="save({ title, content, coverId, status })"
+          @click="
+            save({
+              title,
+              content,
+              coverData: { oldCoverId: cover.id, newCoverId: coverId },
+              status,
+            })
+          "
         >
           <ion-icon slot="start" :icon="saveOutline"></ion-icon>
         </ion-button>
@@ -87,7 +94,7 @@ const openToastError = systemController.openToastError;
 const idPost = route.params.id as string;
 const title = ref("");
 const content = ref("");
-const cover = ref<{ id: string | undefined; name: string | undefined }>({
+const cover = ref<{ id: number | undefined; name: string | undefined }>({
   id: "",
   name: "",
 });
@@ -97,7 +104,7 @@ const editorRef = ref<InstanceType<typeof EditorComponent>>();
 const contentLoaded = ref(false);
 const postStatus = ref<StatusPost>();
 const pageTitle = "Editor";
-const coverId = ref("");
+const coverId = ref<number | undefined>(undefined);
 const status = ref<StatusPost>("draft");
 const isVisibleEditorSettings = ref(true);
 
@@ -139,7 +146,7 @@ async function getPost(): Promise<void> {
 function setData(data: {
   title: string;
   content: string;
-  coverId: string | undefined;
+  coverId: number | undefined;
   coverName: string | undefined;
   status: StatusPost;
 }): void {
@@ -156,36 +163,15 @@ function setData(data: {
 async function save(data: {
   title: string;
   content: string;
-  cover: File;
+  coverData: { oldCoverId: number | undefined; newCoverId: number | undefined };
   status: StatusPost;
 }): Promise<void> {
-  const { title, content, cover: newCover, status } = data;
+  const { title, content, coverData, status } = data;
   openLoader({ color: "primary" });
 
   const id = idPost as string;
-  const coverData = {
-    newCoverId: "",
-    oldCoverId: cover.value.id,
-  };
   const images = newImages.value;
   const imagesRemoved = getRemovedImages(data.content);
-
-  if (newCover instanceof File && newCover.size > 0) {
-    try {
-      const response = await uploadCover({ image: newCover });
-      coverData.newCoverId = response.id;
-    } catch (e: any) {
-      console.error(e);
-      openToastError(e);
-      return;
-    } finally {
-      closeLoader();
-    }
-  }
-
-  if (newCover instanceof File && newCover.size == 0) {
-    coverData.newCoverId = "-1";
-  }
 
   try {
     await updatePost({
@@ -313,13 +299,12 @@ async function setData2(params: {
     cover: coverData,
     status: statusData,
   } = params;
-  console.log(params);
   title.value = titleData;
   content.value = contentData;
   if (coverData.size > 0) {
     try {
       const response = await uploadCover({ image: coverData });
-      coverId.value = response.id;
+      coverId.value = parseInt(response.id);
     } catch (e: any) {
       console.error(e);
       openToastError(e);

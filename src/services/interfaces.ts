@@ -60,8 +60,8 @@ export interface UpdatePost {
   title: string;
   content: string;
   cover: {
-    newCoverId: string;
-    oldCoverId: string;
+    newCoverId: number | undefined;
+    oldCoverId: number | undefined;
   };
   images: string[];
   imagesRemoved: string[];

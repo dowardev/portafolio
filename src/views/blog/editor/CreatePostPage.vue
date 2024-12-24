@@ -198,7 +198,6 @@ async function setData(params: {
     cover: coverData,
     status: statusData,
   } = params;
-  console.log(params);
   title.value = titleData;
   content.value = contentData;
   if (coverData.size > 0) {
