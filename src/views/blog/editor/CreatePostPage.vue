@@ -1,6 +1,6 @@
 <template>
   <ion-header class="ion-no-border">
-    <ion-toolbar class="container-page">
+    <ion-toolbar>
       <ion-buttons slot="start">
         <ion-button
           fill="clear"
@@ -35,7 +35,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="container-page" style="height: 89dvh">
+  <ion-content style="height: 89dvh">
     <EditorComponent
       ref="editorRef"
       :content="content"
@@ -61,18 +61,17 @@ import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
 import { CreatePost } from "../../../services/interfaces";
 import { useRouter } from "vue-router";
 import { StatusPost } from "@/services/types";
-
-// controllers
-import PostController from "../../../controllers/postController";
-import SystemController from "../../../controllers/systemController";
 import {
   chevronBackOutline,
   optionsOutline,
   saveOutline,
 } from "ionicons/icons";
+
+// controllers
+import PostController from "../../../controllers/postController";
+import SystemController from "../../../controllers/systemController";
 const postController = new PostController();
 const systemController = new SystemController();
-const isVisibleEditorSettings = ref(true);
 
 // vars
 const router = useRouter();
@@ -84,6 +83,7 @@ const pageTitle = "Editor";
 const coverId = ref("");
 const status = ref<StatusPost>("draft");
 const title = ref("");
+const isVisibleEditorSettings = ref(true);
 
 // functions
 async function save(params: {
