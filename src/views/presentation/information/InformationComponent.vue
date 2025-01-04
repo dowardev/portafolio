@@ -1,5 +1,8 @@
 <template>
-  <ion-card class="ion-padding blur-effect primary-select-animated-active">
+  <ion-card
+    class="ion-padding blur-effect primary-select-animated-active"
+    style="--background: var(--ion-background-color-step-50)"
+  >
     <!-- perfil -->
     <ion-row>
       <ion-col class="center" size="12">

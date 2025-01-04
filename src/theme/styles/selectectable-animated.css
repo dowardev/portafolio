@@ -1,3 +1,6 @@
+:root {
+  --background: var(--ion-background-color);
+}
 @keyframes rotate {
   to {
     --angle: 360deg;
@@ -24,8 +27,7 @@ ion-card.primary-select-background {
 ion-card.primary-select-animated:hover,
 ion-card.primary-select-animated-active {
   background:
-    linear-gradient(var(--ion-background-color), var(--ion-background-color))
-      padding-box,
+    linear-gradient(var(--background), var(--background)) padding-box,
     padding-box,
     linear-gradient(
         var(--angle),
@@ -54,8 +56,7 @@ ion-card.success-select-background {
 ion-card.success-select-animated:hover,
 ion-card.success-select-animated-active {
   background:
-    linear-gradient(var(--ion-background-color), var(--ion-background-color))
-      padding-box,
+    linear-gradient(var(--background), var(--background)) padding-box,
     linear-gradient(var(--angle), #e8fbed, #bdf3c7, #7ce68e, #4fdb74, #2dd55b)
       border-box;
   animation: 2.5s rotate linear infinite;
@@ -75,8 +76,7 @@ ion-card.danger-select-background {
 ion-card.danger-select-animated:hover,
 ion-card.danger-select-animated-active {
   background:
-    linear-gradient(var(--ion-background-color), var(--ion-background-color))
-      padding-box,
+    linear-gradient(var(--background), var(--background)) padding-box,
     linear-gradient(var(--angle), #ffb3b6, #ff8c90, #f66066, #ed333b, #d41e26)
       border-box;
   animation: 2.5s rotate linear infinite;
