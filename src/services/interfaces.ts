@@ -23,13 +23,13 @@ export interface FeedbackParams {
 
 // posts
 export interface Post {
-  id: string;
+  id: number;
   title: string;
   content?: string;
   createdAt: string;
   updatedAt?: string;
   cover?: {
-    id: string;
+    id: number;
     name: string;
     url: string;
   };
@@ -56,13 +56,10 @@ export interface CreatePost {
 }
 
 export interface UpdatePost {
-  id: string;
+  id: number;
   title: string;
   content: string;
-  cover: {
-    newCoverId: string;
-    oldCoverId: string;
-  };
+  coverId: number | undefined;
   images: string[];
   imagesRemoved: string[];
   status: StatusPost;

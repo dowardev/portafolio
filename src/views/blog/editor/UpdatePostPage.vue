@@ -1,32 +1,83 @@
 <template>
-  <ion-content>
+  <ion-header class="ion-no-border">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button
+          fill="clear"
+          @click="router.go(-1)"
+          :disabled="systemController.getLoader().status"
+        >
+          <ion-icon :icon="chevronBackOutline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+
+      <ion-title>{{ pageTitle }}</ion-title>
+
+      <ion-buttons slot="end">
+        <!-- save -->
+        <ion-button
+          fill="clear"
+          color="primary"
+          :disabled="!validateData() || systemController.getLoader().status"
+          @click="
+            save({
+              id: post.id!,
+              title: post.title,
+              content: post.content,
+              coverId: post.cover.id,
+              status: post.status,
+              newImages: post.newImages,
+            })
+          "
+        >
+          <ion-icon slot="start" :icon="saveOutline"></ion-icon>
+        </ion-button>
+
+        <!-- settings -->
+        <ion-button
+          @click="openEditorSettings()"
+          v-if="!isVisibleEditorSettings"
+        >
+          <ion-icon :icon="optionsOutline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content style="height: 89dvh">
     <EditorComponent
       v-if="contentLoaded"
       ref="editorRef"
-      :title="title"
-      :content="content"
-      :cover="{ name: cover.name }"
+      :title="post.title"
+      :content="post.content"
+      :cover="{ name: post.cover.name }"
       :disableUI="systemController.getLoader().status"
-      :postStatus="postStatus"
+      :postStatus="post.status"
       @upload-image="uploadImage($event)"
-      @save="
-        save({
+      @update-data="
+        setData2({
           title: $event.title,
           content: $event.content,
           cover: $event.cover,
           status: $event.status,
         })
       "
-      @delete-post="deletePost({ id: idPost })"
+      @delete-post="deletePost({ id: post.id! })"
+      @update-visible-editor-settings="isVisibleEditorSettings = $event"
     ></EditorComponent>
   </ion-content>
 </template>
 
 <script setup lang="ts">
-import { IonPage, loadingController } from "@ionic/vue";
+import { IonPage, isPlatform, loadingController } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UpdatePost } from "@/services/interfaces";
+import {
+  chevronBackOutline,
+  optionsOutline,
+  saveOutline,
+} from "ionicons/icons";
 
 // controllers
 import PostController from "../../../controllers/postController";
@@ -38,23 +89,24 @@ const systemController = new SystemController();
 import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
 import { StatusPost } from "@/services/types";
 
+// vars
 const router = useRouter();
 const route = useRoute();
-
 const openToastError = systemController.openToastError;
-
-const idPost = route.params.id as string;
-const title = ref("");
-const content = ref("");
-const cover = ref<{ id: string | undefined; name: string | undefined }>({
-  id: "",
-  name: "",
-});
-const newImages = ref(Array<string>());
-const images = ref<string[]>([]);
-const editorRef = ref(null);
+const editorRef = ref<InstanceType<typeof EditorComponent>>();
 const contentLoaded = ref(false);
-const postStatus = ref<StatusPost>();
+const pageTitle = "Editor";
+const status = ref<StatusPost>("draft");
+const isVisibleEditorSettings = ref(isPlatform("desktop") ? true : false);
+const post = ref({
+  id: parseInt(route.params.id as string) as number | undefined,
+  title: "",
+  content: "",
+  cover: { id: 0, name: "" },
+  status: "draft" as StatusPost,
+  images: [] as string[],
+  newImages: [] as string[],
+});
 
 // mounted
 onMounted(() => {
@@ -67,20 +119,20 @@ async function getPost(): Promise<void> {
 
   try {
     await postController.loadPost({
-      id: idPost,
+      id: post.value.id!,
     });
 
-    const post = postController.getPost({
-      id: idPost,
+    const postResponse = postController.getPost({
+      id: post.value.id!,
     })!;
-    const title = post.title ?? "";
-    const content = post.content ?? "";
-    const coverId = post.cover?.id ?? undefined;
-    const coverName = post.cover?.name ?? undefined;
-    const status = post.status;
+    const title = postResponse.title ?? "";
+    const content = postResponse.content ?? "";
+    const coverId = postResponse.cover?.id ?? undefined;
+    const coverName = postResponse.cover?.name ?? undefined;
+    const status = postResponse.status;
 
     if (post) {
-      setData({ title, content, coverId, coverName, status });
+      setData({ title, content, coverId: coverId!, coverName, status });
       contentLoaded.value = true;
     }
   } catch (e: any) {
@@ -94,53 +146,32 @@ async function getPost(): Promise<void> {
 function setData(data: {
   title: string;
   content: string;
-  coverId: string | undefined;
+  coverId: number | undefined;
   coverName: string | undefined;
   status: StatusPost;
 }): void {
-  title.value = data.title;
-  content.value = data.content;
-  cover.value = {
-    id: data.coverId,
-    name: data.coverName,
+  post.value.title = data.title;
+  post.value.content = data.content;
+  post.value.cover = {
+    id: data.coverId!,
+    name: data.coverName!,
   };
-  postStatus.value = data.status;
+  post.value.status = data.status;
   getPostImages(data.content);
 }
 
 async function save(data: {
+  id: number;
   title: string;
   content: string;
-  cover: File;
+  coverId: number;
   status: StatusPost;
+  newImages: string[];
 }): Promise<void> {
-  const { title, content, cover: newCover, status } = data;
+  const { id, title, content, coverId, status, newImages } = data;
   openLoader({ color: "primary" });
 
-  const id = idPost as string;
-  const coverData = {
-    newCoverId: "",
-    oldCoverId: cover.value.id,
-  };
-  const images = newImages.value;
   const imagesRemoved = getRemovedImages(data.content);
-
-  if (newCover instanceof File && newCover.size > 0) {
-    try {
-      const response = await uploadCover({ image: newCover });
-      coverData.newCoverId = response.id;
-    } catch (e: any) {
-      console.error(e);
-      openToastError(e);
-      return;
-    } finally {
-      closeLoader();
-    }
-  }
-
-  if (newCover instanceof File && newCover.size == 0) {
-    coverData.newCoverId = "-1";
-  }
 
   try {
     await updatePost({
@@ -148,14 +179,14 @@ async function save(data: {
         id,
         title,
         content,
-        cover: coverData,
-        images,
+        coverId,
+        images: newImages,
         imagesRemoved,
         status,
       },
     });
     await systemController.presentToast({ message: "Post actualizado" });
-    router.go(-1);
+    await router.go(-1);
   } catch (e: any) {
     openToastError(e);
   } finally {
@@ -183,7 +214,7 @@ async function uploadImage(e: any) {
     const imageName = response.name;
 
     const imagUrl = await getImageURL({ name: imageName! });
-    content.value =
+    post.value.content =
       '<div class="center"><img src="' +
       imagUrl +
       '" style="width:80%"/></div>';
@@ -212,14 +243,14 @@ function getPostImages(content: string) {
     console.log(url);
     const imageName = url.split("/").pop();
     if (imageName) {
-      images.value?.push(imageName);
+      post.value.images?.push(imageName);
     }
   });
 }
 
 function getRemovedImages(content: string) {
   const imagesRemoved: string[] = [];
-  images.value.forEach((element: string) => {
+  post.value.images.forEach((element: string) => {
     if (content.includes(element) == false) {
       imagesRemoved.push(element);
     }
@@ -232,7 +263,7 @@ async function getImageURL(params: { name: string }): Promise<string> {
   return (await systemController.getImageURL({ name })).url;
 }
 
-async function deletePost(params: { id: string }) {
+async function deletePost(params: { id: number }) {
   const id = params.id;
   openLoader({ color: "danger" });
 
@@ -254,5 +285,46 @@ function openLoader(params: { color: string }) {
 
 function closeLoader() {
   systemController.disableLoader();
+}
+
+async function setData2(params: {
+  title: string;
+  content: string;
+  cover: File;
+  status: StatusPost;
+}): Promise<void> {
+  const {
+    title: titleData,
+    content: contentData,
+    cover: coverData,
+    status: statusData,
+  } = params;
+  post.value.title = titleData;
+  post.value.content = contentData;
+  if (coverData.size > 0) {
+    try {
+      const response = await uploadCover({ image: coverData });
+      post.value.cover.id = parseInt(response.id);
+    } catch (e: any) {
+      console.error(e);
+      openToastError(e);
+      return;
+    } finally {
+      closeLoader();
+    }
+  }
+  status.value = statusData;
+}
+
+function openEditorSettings() {
+  editorRef.value?.openSettings();
+  isVisibleEditorSettings.value = true;
+}
+
+function validateData() {
+  if (!post.value.title || !post.value.content) {
+    return false;
+  }
+  return true;
 }
 </script>

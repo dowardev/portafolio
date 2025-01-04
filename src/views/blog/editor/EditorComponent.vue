@@ -1,45 +1,11 @@
 <template>
-  <!-- TODO: remove header and ion-content from this component -->
-  <ion-header class="ion-no-border">
-    <ion-toolbar class="container-page">
-      <ion-buttons slot="start">
-        <ion-button
-          fill="clear"
-          @click="router.go(-1)"
-          :disabled="props.disableUI"
-        >
-          <ion-icon :icon="chevronBackOutline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-
-      <ion-title>{{ pageTitle }}</ion-title>
-
-      <ion-buttons slot="end">
-        <!-- save -->
-        <ion-button
-          fill="clear"
-          color="primary"
-          :disabled="v$.$invalid || props.disableUI"
-          @click="save()"
-        >
-          <ion-icon slot="start" :icon="saveOutline"></ion-icon>
-        </ion-button>
-
-        <!-- settings -->
-        <ion-button @click="openSettings()" v-if="!settingsSectionVisible">
-          <ion-icon :icon="optionsOutline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content class="container-page" style="height: 89dvh">
+  <div>
     <ion-row>
       <ion-col
         :class="{ 'col-expanded': !settingsSectionVisible }"
         :size="settingsSectionVisible && isPlatform('desktop') ? '9' : '12'"
       >
-        <ion-card>
+        <ion-card class="no-shadow">
           <ion-row>
             <ion-col>
               <!-- title -->
@@ -48,8 +14,8 @@
                   <ion-input
                     ref="inputPostTitle"
                     label="Titulo"
-                    label-placement="stacked"
-                    fill="outline"
+                    label-placement="floating"
+                    fill="solid"
                     autocorrect="on"
                     pattern="text"
                     :error-text="v$.postTitle.$errors[0]?.$message.toString()"
@@ -61,10 +27,13 @@
                     :value="postTitle"
                     :spellcheck="true"
                     :disabled="props.disableUI"
-                    @ion-input="postTitle = $event.target.value as string"
+                    @ion-input="
+                      postTitle = $event.target.value as string;
+                      emitData();
+                    "
                     @ion-focus="
                       ($refs.inputPostTitle as any).$el.classList.add(
-                        'ion-touched'
+                        'ion-touched',
                       );
                       v$.postTitle.$touch();
                     "
@@ -84,7 +53,11 @@
                   <MarkdownCreator
                     :content="postContent"
                     @image-upload="uploadImage({ file: $event })"
-                    @update-content="postContent = $event"
+                    @update-content="
+                      postContent = $event;
+                      emitData();
+                    "
+                    style="background: var(--ion-background-color-step-50)"
                   />
                 </ion-col>
               </ion-row>
@@ -95,7 +68,6 @@
                   <div
                     class="content-container ion-padding"
                     style="overflow: auto; min-height: 27dhv; max-height: 74dvh"
-                    id="pr1"
                   >
                     <MarkdownViewer :content="postContent" />
                   </div>
@@ -115,7 +87,11 @@
           <ion-list>
             <ion-list-header>
               <ion-label>Opciones</ion-label>
-              <ion-button @click="settingsSectionVisible = false"
+              <ion-button
+                @click="
+                  settingsSectionVisible = false;
+                  emits('update-visible-editor-settings', false);
+                "
                 >Ocultar</ion-button
               >
             </ion-list-header>
@@ -125,7 +101,7 @@
                 :cover="cover"
                 :disableUI="props.disableUI"
                 :post-status="props.postStatus"
-                @cover-change="setCover({ file: $event })"
+                @cover-change="(setCover({ file: $event }), emitData())"
                 @status-change="setPostStatus({ status: $event })"
                 @delete-post="deletePost()"
                 @update-view="viewMode = $event"
@@ -213,7 +189,7 @@
         />
       </ion-content>
     </ion-modal>
-  </ion-content>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -279,11 +255,16 @@ const props = defineProps({
     required: false,
   },
 });
-const emits = defineEmits(["save", "uploadImage", "delete-post"]);
+const emits = defineEmits([
+  "updateData",
+  "uploadImage",
+  "delete-post",
+  "update-visible-editor-settings",
+]);
 const modeDesignElements = isPlatform("ios") ? "ios" : ("md" as "md" | "ios");
 v$: useVuelidate();
 modeDesignElements;
-const pageTitle = "Editor";
+
 const postTitle = ref(props.title);
 const postContent = ref(props.content);
 const cover = ref({ name: props.cover.name, file: new File([], "") });
@@ -316,21 +297,24 @@ watch(
   () => props.title,
   (newVal) => {
     postTitle.value = newVal;
-  }
+  },
 );
 watch(
   () => props.content,
   (newVal) => {
     postContent.value += newVal;
-  }
+  },
 );
 
 // functions
-function save(): void {
+defineExpose({
+  openSettings,
+});
+function emitData(): void {
   const title = postTitle.value;
   const content = postContent.value;
   const coverFile = cover.value.file;
-  emits("save", {
+  emits("updateData", {
     title,
     content,
     cover: coverFile,
@@ -434,7 +418,7 @@ ion-content,
 }
 
 .content-container {
-  border: 1px solid var(--ion-background-color-step-300);
+  border: 1px solid transparent;
   border-radius: 4px;
 }
 .content-container:hover {

@@ -215,16 +215,3 @@ function handleDrop(params: { event: DragEvent }) {
   }
 }
 </script>
-
-<style scoped>
-.content-container {
-  border: 1px solid var(--ion-background-color-step-300);
-  border-radius: 4px;
-}
-.content-container:hover {
-  border: 1px solid var(--ion-background-color-step-850);
-}
-.hover {
-  background-color: var(--ion-color-primary-background-hover);
-}
-</style>
