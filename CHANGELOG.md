@@ -4,119 +4,119 @@
 
 ### Added
 
-- Agregado archivo de changelog
+- Added changelog file
 
 ### Changed
 
-- Mejoras de diseño
+- Design improvements
 
 ### Removed
 
-- Eliminado antiguo sistema de registro de versiones
+- Removed old versioning system
 
 ## [8.12.13] - 2024-12-12
 
 ### Added
 
-- Lectura mejorada: se realizaron varias mejoras en el diseño de la pagina de posts
+- Improved readability: several improvements were made to the post page design
 
 ### Fixed
 
-- Correcciones generales
+- General fixes
 
 ## [8.11.0] - 2024-12-02
 
 ### Added
 
-- Agredo un panel de ajustes al editor de posts
-- Mejoras menores al editor de posts
+- Added a settings panel to the post editor
+- Minor improvements to the post editor
 
 ## [8.10.0] - 2024-11-29
 
 ### Added
 
-- Resuelto el problema que ocultaba el contenido del post
-- Mejorada la fluidez de navegación en la página de presentación
-- Optimización en la llamada a la API
+- Resolved the issue that hid the post content
+- Improved navigation fluidity on the presentation page
+- API call optimization
 
 ### Fixed
 
-- Correcciones generales
+- General fixes
 
 ## [8.8.0] - 2024-11-25
 
 ### Added
 
-- Mejoras de diseño
+- Design improvements
 
 ### Fixed
 
-- Correcciones generales
+- General fixes
 
 ## [8.6.5] - 2024-11-18
 
 ### Added
 
-- Mejoras de diseño
+- Design improvements
 
 ## [8.6.0] - 2024-11-17
 
 ### Added
 
-- Optimizaciones de generales
+- General optimizations
 
 ### Fixed
 
-- Correcciones generales
+- General fixes
 
 ## [8.5.2] - 2024-11-12
 
 ### Added
 
-- Mejorado el listado de versiones
-- Mejoras en la API
-- Mejoras en el diseño de la pagina de posts
-- Mejoras de rendimiento
+- Improved version listing
+- API improvements
+- Post page design improvements
+- Performance improvements
 
 ### Fixed
 
-- Reparado problema que impedía cerrar sesión
+- Fixed issue that prevented logging out
 
 ## [8.1.1] - 2024-11-23
 
 ### Fixed
 
-- Correcciones para el filtro de estatus
+- Fixes for status filter
 
 ## [8.1.0] - 2024-11-08
 
 ### Added
 
-- Capacidad para filtrar los posts por estatus (solo administrador)
+- Ability to filter posts by status (admin only)
 
 ## [8.0.1]
 
 ### Added
 
-- Optimizaciones de rendimiento
+- Performance optimizations
 
 ### Fixed
 
-- Correcciones menores
+- Minor fixes
 
 ## [8.0.0]
 
 ### Added
 
-- Nuevo diseño
-- Mejoras de rendimiento
+- New design
+- Performance improvements
 
 ## [7.5.6]
 
 ### Added
 
-- Efecto desenfoque
+- Blur effect
 
 ### Fixed
 
-- Correcciones menores
+- Minor fixes
