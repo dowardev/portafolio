@@ -5,7 +5,7 @@
         :class="{ 'col-expanded': !settingsSectionVisible }"
         :size="settingsSectionVisible && isPlatform('desktop') ? '9' : '12'"
       >
-        <ion-card>
+        <ion-card class="no-shadow">
           <ion-row>
             <ion-col>
               <!-- title -->
@@ -14,8 +14,8 @@
                   <ion-input
                     ref="inputPostTitle"
                     label="Titulo"
-                    label-placement="stacked"
-                    fill="outline"
+                    label-placement="floating"
+                    fill="solid"
                     autocorrect="on"
                     pattern="text"
                     :error-text="v$.postTitle.$errors[0]?.$message.toString()"
@@ -33,7 +33,7 @@
                     "
                     @ion-focus="
                       ($refs.inputPostTitle as any).$el.classList.add(
-                        'ion-touched'
+                        'ion-touched',
                       );
                       v$.postTitle.$touch();
                     "
@@ -57,6 +57,7 @@
                       postContent = $event;
                       emitData();
                     "
+                    style="background: var(--ion-background-color-step-50)"
                   />
                 </ion-col>
               </ion-row>
@@ -67,7 +68,6 @@
                   <div
                     class="content-container ion-padding"
                     style="overflow: auto; min-height: 27dhv; max-height: 74dvh"
-                    id="pr1"
                   >
                     <MarkdownViewer :content="postContent" />
                   </div>
@@ -297,13 +297,13 @@ watch(
   () => props.title,
   (newVal) => {
     postTitle.value = newVal;
-  }
+  },
 );
 watch(
   () => props.content,
   (newVal) => {
     postContent.value += newVal;
-  }
+  },
 );
 
 // functions
@@ -418,7 +418,7 @@ ion-content,
 }
 
 .content-container {
-  border: 1px solid var(--ion-background-color-step-300);
+  border: 1px solid transparent;
   border-radius: 4px;
 }
 .content-container:hover {

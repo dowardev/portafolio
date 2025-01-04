@@ -2,8 +2,8 @@
   <!-- viewer -->
   <ion-row>
     <ion-col>
-      <ion-card class="primary-select-border">
-        <ion-item lines="none" button>
+      <ion-card class="primary-select-border no-shadow">
+        <ion-item lines="full" button>
           <ion-toggle
             :checked="view === 'preview'"
             @ionChange="
@@ -23,13 +23,13 @@
       <ion-card
         :style="{ height: cardHeight }"
         ref="cardPostStatusRef"
-        class="primary-select-border"
+        class="primary-select-border no-shadow"
       >
         <div class="card-content">
           <ion-item
             class="transparent"
             button
-            :lines="isCardPostStatusExpanded ? 'full' : 'none'"
+            lines="full"
             @click="handleCardPostStatusAnimation()"
           >
             <ion-label slot="start">Estado</ion-label>
@@ -93,7 +93,7 @@
   <!-- cover-->
   <ion-row>
     <ion-col>
-      <ion-card class="primary-select-border">
+      <ion-card class="primary-select-border no-shadow">
         <ion-item
           button
           :lines="cover.name ? 'full' : 'none'"
@@ -132,7 +132,7 @@
   <ion-row v-if="$route.name == 'UpdatePostPage'">
     <ion-col size="12">
       <ion-card
-        class="selectable-danger-card"
+        class="selectable-danger-card no-shadow"
         ref="cardDeleteRef"
         style="height: 43%"
         :class="{
@@ -143,14 +143,14 @@
         <ion-item
           class="transparent"
           button
-          lines="none"
+          lines="full"
           @click="handleConfirmDeletePost()"
         >
           <ion-icon color="danger" slot="start" :icon="trashOutline"></ion-icon>
           <ion-label color="danger">Eliminar post</ion-label>
         </ion-item>
 
-        <ion-item lines="none">
+        <ion-item lines="full">
           <ion-label color="danger">Continuar?</ion-label>
           <ion-button
             color="danger"
@@ -216,7 +216,7 @@ const cardDeleteRef = ref(null);
 const cardPostStatusRef = ref(null);
 const isCardDeletePostExpanded = ref(false);
 const isCardPostStatusExpanded = ref(false);
-const COLLAPSED_HEIGHT = "54px";
+const COLLAPSED_HEIGHT = "55px";
 const EXPANDED_HEIGHT = "164px";
 const cardHeight = ref(COLLAPSED_HEIGHT);
 // animations

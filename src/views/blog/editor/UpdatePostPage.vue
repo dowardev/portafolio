@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, loadingController } from "@ionic/vue";
+import { IonPage, isPlatform, loadingController } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UpdatePost } from "@/services/interfaces";
@@ -97,7 +97,7 @@ const editorRef = ref<InstanceType<typeof EditorComponent>>();
 const contentLoaded = ref(false);
 const pageTitle = "Editor";
 const status = ref<StatusPost>("draft");
-const isVisibleEditorSettings = ref(true);
+const isVisibleEditorSettings = ref(isPlatform("desktop") ? true : false);
 const post = ref({
   id: parseInt(route.params.id as string) as number | undefined,
   title: "",
