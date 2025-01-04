@@ -206,7 +206,8 @@
 
                       <!-- new features -->
                       <ion-item
-                        id="open-modal-new-features"
+                        href="https://gitlab.com/dowardev/portafolio/-/blob/master/CHANGELOG.md?ref_type=heads"
+                        target="_blank"
                         lines="none"
                         button
                       >
@@ -333,11 +334,6 @@
         <ThemeComponente />
       </ion-modal>
 
-      <!-- modal new features -->
-      <ion-modal trigger="open-modal-new-features">
-        <NewFeaturesComponent />
-      </ion-modal>
-
       <!-- modal contribute -->
       <ion-modal :is-open="modalContribute.open">
         <DonationsComponent />
@@ -355,7 +351,6 @@
 import {
   IonContent,
   IonPage,
-  IonToolbar,
   modalController,
   isPlatform,
   menuController,
@@ -368,7 +363,6 @@ import {
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import {
-  brushOutline,
   logOutOutline,
   thumbsUpOutline,
   logoGitlab,
@@ -380,7 +374,6 @@ import {
   cashOutline,
   libraryOutline,
   newspaperOutline,
-  createOutline,
 } from "ionicons/icons";
 import AppsComponent from "./apps/Apps.vue";
 import DonationsComponent from "./donations/Donations.vue";
@@ -388,7 +381,6 @@ import { useRouter } from "vue-router";
 
 // components
 import ThemeComponente from "@/components/theme/ThemeComponente.vue";
-import NewFeaturesComponent from "@/components/new-features/NewFeaturesComponente.vue";
 import FeedbackPage from "../feedback/FeedbackPage.vue";
 
 // controllers
