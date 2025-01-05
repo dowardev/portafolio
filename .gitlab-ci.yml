@@ -8,19 +8,23 @@ stages:
 variables:
   SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY
 
-before_script:
-  - apt-get update && apt-get install -y openssh-client
-  - npm install -g @ionic/cli
-  - mkdir -p ~/.ssh
-  - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-  - chmod 600 ~/.ssh/id_rsa
-  - eval $(ssh-agent -s)
-  - ssh-add ~/.ssh/id_rsa
-  - ssh-keyscan -p 65002 195.179.236.189 >> ~/.ssh/known_hosts
+.default_before_script:
+  before_script:
+    - apt-get update && apt-get install -y openssh-client
+    - npm install -g @ionic/cli
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - eval $(ssh-agent -s)
+    - ssh-add ~/.ssh/id_rsa
+    - ssh-keyscan -p 65002 195.179.236.189 >> ~/.ssh/known_hosts
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
 
 build_job:
   stage: build
   script:
+    - npm install -g @ionic/cli
     - npm install
     - ionic build --prod
   artifacts:
@@ -34,12 +38,12 @@ package_job:
     - ls
   artifacts: 
     paths:
-      - dist.tar.gz 
+      - dist.tar.gz
+  extends: .default_before_script
 
 deploy_job:
   stage: deploy
   script:
     - scp -P 65002 dist.tar.gz u902881280@195.179.236.189:/home/u902881280/public_html
     - ssh -p 65002 u902881280@195.179.236.189 "cd /home/u902881280/public_html && tar xzvf dist.tar.gz && rm dist.tar.gz"
-  only:
-    - master
+  extends: .default_before_script
