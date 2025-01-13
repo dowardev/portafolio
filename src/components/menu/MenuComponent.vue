@@ -163,7 +163,7 @@
                           <ion-item
                             button
                             lines="none"
-                            href="https://www.gitlab.com/gonzam4/portafolio"
+                            href="https://www.gitlab.com/dowardev/portafolio"
                             target="_blank"
                           >
                             <ion-label>FrontEnd</ion-label>
@@ -478,7 +478,7 @@ async function goToUserPanel() {
 
 async function goToAdminPanel() {
   spinners.value.buttonAdminPanel = true;
-  await router.push("/admin-panel");
+  await router.push({ name: "PanelAdminPage" });
   spinners.value.buttonAdminPanel = false;
   isOpenRefPopOverUserOptions.value = false;
   if (isPlatform("mobile")) menuController.close();
