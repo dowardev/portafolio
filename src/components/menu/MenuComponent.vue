@@ -171,7 +171,7 @@
 
                           <ion-item
                             button
-                            href="https://gitlab.com/gonzam4/portfolio-backend"
+                            href="https://gitlab.com/dowardev/portfolio-backend"
                             target="_blank"
                             lines="none"
                           >

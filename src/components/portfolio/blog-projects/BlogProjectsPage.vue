@@ -147,7 +147,7 @@ const proyectos = [
       },
     ],
     page: "https://dowar.xyz/blog/post/40",
-    sourceCode: "https://gitlab.com/gonzam4/ionic-plants.id",
+    sourceCode: "https://gitlab.com/dowardev/ionic-plants.id",
   },
 ];
 const elementPostHover = ref(-1);

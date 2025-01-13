@@ -20,7 +20,7 @@ Puede acceder a la aplicación en producción a través del siguiente enlace: [A
 
 - Node.js LTS
 - Gestor de dependencias NodeJS
-- Proyecto del [BackEnd](https://gitlab.com/gonzam4/portfolio-backend) configurado e instalado.
+- Proyecto del [BackEnd](https://gitlab.com/dowardev/portfolio-backend) configurado e instalado.
 
 ### Instalación de Dependencias
 

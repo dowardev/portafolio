@@ -288,7 +288,7 @@ const proyectos = [
       },
     ],
     page: "https://lifeline.dowar.xyz",
-    sourceCode: "https://gitlab.com/gonzam4/lifeline",
+    sourceCode: "https://gitlab.com/dowardev/lifeline",
   },
   {
     name: "Nueva Visión F.A.",
