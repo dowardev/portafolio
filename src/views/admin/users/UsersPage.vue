@@ -24,48 +24,68 @@
           <ion-card>
             <ion-item lines="none" class="transparent">
               <ion-searchbar
-                v-model="searchTerm"
                 mode="ios"
-                :debounce="500"
+                :value="searchTerm"
+                :debounce="1000"
                 :disabled="status == 'loading'"
-                @ion-change="filterContent()"
+                @ion-input="
+                  searchTerm = $event.target.value!.toString();
+                  loadContent();
+                "
               ></ion-searchbar>
 
               <!-- filter -->
               <ion-button
-                id="trigger-button-filter"
                 fill="clear"
-                :disabled="status == 'loading'"
+                @click="
+                  popoverFilter.event = $event;
+                  popoverFilter.open = true;
+                "
               >
-                <ion-icon
-                  v-if="spinners.filter == false"
-                  :icon="filterOutline"
-                ></ion-icon>
-                <ion-spinner
-                  v-if="spinners.filter == true"
-                  name="crescent"
-                ></ion-spinner>
+                <ion-icon :icon="filterOutline"></ion-icon>
               </ion-button>
+
               <ion-popover
-                trigger="trigger-button-filter"
-                :dismiss-on-select="true"
-                @did-dismiss="filterContent()"
+                ref="popoverFilterRef"
+                :is-open="popoverFilter.open"
+                :dismiss-on-select="false"
+                :event="popoverFilter.event"
               >
                 <ion-content :scroll-events="true">
-                  <ion-item
-                    v-for="(option, index) in filterOptions"
-                    :key="option.value"
-                    button
-                    @click="onlyOneUserFilter(index)"
-                  >
-                    <ion-checkbox
-                      slot="start"
-                      :checked="option.isChecked"
-                    ></ion-checkbox>
-                    <ion-label class="ion-text-wrap">{{
-                      option.label
-                    }}</ion-label>
-                  </ion-item>
+                  <div style="height: calc(100dvh - 269px); overflow: auto">
+                    <FilterOptionsComponent
+                      ref="filterComponentRef"
+                      :filters="filterSelected"
+                    />
+                  </div>
+
+                  <div>
+                    <ion-item>
+                      <!-- clear filters -->
+                      <ion-button
+                        fill="clear"
+                        color="danger"
+                        @click="
+                          deleteFilters();
+                          getFilters();
+                          loadContent();
+                          popoverFilter.open = false;
+                        "
+                      >
+                        Eliminar filtros
+                      </ion-button>
+
+                      <ion-button
+                        fill="clear"
+                        @click="
+                          getFilters();
+                          loadContent();
+                          popoverFilter.open = false;
+                        "
+                        >Aplicar filtros</ion-button
+                      >
+                    </ion-item>
+                  </div>
                 </ion-content>
               </ion-popover>
             </ion-item>
@@ -74,12 +94,12 @@
             <ion-card-content>
               <section style="overflow-y: scroll; height: 42vh">
                 <ion-accordion-group>
-                  <!-- <div v-for="user in userController.getUser()" :key="user.id"> -->
-                  <!-- <ion-item lines="none" class="transparent">
-                      <ion-icon slot="start" :icon="personOutline"></ion-icon> -->
-                  <!-- <ion-label>{{ user.email }}</ion-label> -->
+                  <div v-for="user in users" :key="user.id">
+                    <ion-item lines="none" class="transparent">
+                      <ion-icon slot="start" :icon="personOutline"></ion-icon>
+                      <ion-label>{{ user.email }}</ion-label>
 
-                  <!-- <ion-button
+                      <ion-button
                         :id="'trigger-button-' + user.id"
                         slot="end"
                         fill="clear"
@@ -95,14 +115,14 @@
                           v-if="spinners.optionsUser == user.id"
                           name="crescent"
                         ></ion-spinner>
-                      </ion-button> -->
+                      </ion-button>
 
-                  <!-- <ion-popover
+                      <ion-popover
                         :trigger="'trigger-button-' + user.id"
                         dismiss-on-select
-                      > -->
-                  <!-- user options -->
-                  <!-- <ion-content>
+                      >
+                        <!-- user options -->
+                        <ion-content>
                           <ion-item
                             button
                             lines="none"
@@ -172,16 +192,16 @@
                               :icon="thumbsUpOutline"
                             ></ion-icon>
                           </ion-item>
-                        </ion-content> -->
-                  <!-- </ion-popover> -->
-                  <!-- </ion-item> -->
+                        </ion-content>
+                      </ion-popover>
+                    </ion-item>
 
-                  <!-- <ion-accordion :value="user.id" class="transparent">
+                    <ion-accordion :value="user.id" class="transparent">
                       <ion-item slot="header" class="transparent">
-                        <ion-label>Informacion</ion-label> -->
-                  <!-- </ion-item> -->
+                        <ion-label>Información</ion-label>
+                      </ion-item>
 
-                  <!-- <ion-list slot="content">
+                      <ion-list slot="content">
                         <ion-item>
                           <ion-label>Nombre</ion-label>
                           <ion-label slot="end">{{ user.name }}</ion-label>
@@ -215,44 +235,41 @@
                             >No</ion-label
                           >
                         </ion-item>
-                      </ion-list> -->
-                  <!-- </ion-accordion> -->
-                  <!-- </div> -->
+                      </ion-list>
+                    </ion-accordion>
+                  </div>
                 </ion-accordion-group>
               </section>
 
+              <!-- table options -->
               <section class="pagination">
-                <ion-item lines="none" class="transparent">
-                  <ion-label slot="end">Usuarios a mostrar</ion-label>
+                <ion-item button lines="none" class="transparent">
                   <ion-select
-                    v-if="spinners.showUsers == false"
                     slot="end"
-                    :value="pagInfo.pagination"
+                    label="Usuarios a mostrar"
                     interface="popover"
+                    :value="pagInfo.pagination"
                     :disabled="status == 'loading'"
-                    @ion-change="setUsersDisplay()"
+                    @ion-change="
+                      pagInfo.pagination = $event.target.value;
+                      setUsersDisplay();
+                    "
                   >
-                    <ion-select-option value="10">10</ion-select-option>
-                    <ion-select-option value="15">15</ion-select-option>
-                    <ion-select-option value="20">20</ion-select-option>
-                    <ion-select-option value="50">50</ion-select-option>
-                    <ion-select-option value="100">100</ion-select-option>
+                    <ion-select-option :value="5">5</ion-select-option>
+                    <ion-select-option :value="10">10</ion-select-option>
+                    <ion-select-option :value="15">15</ion-select-option>
+                    <ion-select-option :value="20">20</ion-select-option>
+                    <ion-select-option :value="50">50</ion-select-option>
+                    <ion-select-option :value="100">100</ion-select-option>
                   </ion-select>
-                  <ion-spinner
-                    v-if="spinners.showUsers == true"
-                    slot="end"
-                    name="crescent"
-                    color="primary"
-                  ></ion-spinner>
                 </ion-item>
 
                 <ion-item lines="none" class="transparent">
                   <ion-label slot="end">Pagina</ion-label>
                   <ion-select
-                    v-if="spinners.pageUsers == false"
                     slot="end"
-                    v-model="pagInfo.currentPage"
                     interface="popover"
+                    :value="pagInfo.currentPage"
                     :disabled="status == 'loading'"
                     @ion-change="
                       pagInfo.currentPage = $event.target.value;
@@ -303,8 +320,10 @@ import {
   IonCheckbox,
   IonCardContent,
   IonSpinner,
+  createAnimation,
+  Animation,
 } from "@ionic/vue";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import {
   refreshOutline,
   ellipsisVerticalOutline,
@@ -321,14 +340,26 @@ import {
 // import { sendMailResetPassword as sendMailResetPasswordService } from "../../../services/session";
 // import { resendEmailConfirmation as resendEmailConfirmationService } from "../../../services/user";
 
+// interface
+import { FilterAdminPanelOptions, Link, User } from "@/services/interfaces";
+import {
+  EmailFilterOption,
+  UserFilterOption,
+  UserRolFilterOption,
+} from "@/utils/types";
+
 // controllers
 import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
 const userController = new UserController();
 const systemController = new SystemController();
 
-const openToastError = systemController.openToastError;
+// components
+import FilterOptionsComponent from "./components/FilterOptionsComponent.vue";
 
+// vars
+const emit = defineEmits(["on-content-loaded"]);
+const openToastError = systemController.openToastError;
 const pagInfo = ref({
   currentPage: 1,
   totalPaginacionElements: Number(),
@@ -338,18 +369,13 @@ const searchTerm = ref("");
 const searchMode = ref(false);
 const filterOptions = [
   {
-    label: "Sin filtro",
-    value: "unfiltered",
-    isChecked: true,
-  },
-  {
     label: "Mostrar usuarios verificados",
-    value: "verified",
+    value: "emailVerified",
     isChecked: false,
   },
   {
     label: "Mostrar usuario sin verificar",
-    value: "no verified",
+    value: "emailNoVerified",
     isChecked: false,
   },
   {
@@ -369,7 +395,7 @@ const filterOptions = [
   },
   {
     label: "Mostrar usuarios no administradores",
-    value: "no admin",
+    value: "noAdmin",
     isChecked: false,
   },
 ];
@@ -381,60 +407,62 @@ const spinners = {
   optionsUser: "",
 };
 const status = ref("loaded" as "loading" | "loaded");
-
-// // computed
-// const calculatePages = computed(() => {
-//   const elements = [] as any;
-//   let total = Math.round(
-//     pagInfo.value.totalPaginacionElements / parseInt(pagInfo.value.pagination)
-//   );
-//   if (total < 1) total = 1;
-//
-//   for (let index = 2; index <= total; index++) {
-//     elements.push(index.toString());
-//   }
-//   return elements;
-// });
+let users = ref<User[]>([]);
+const filterSelected = reactive<FilterAdminPanelOptions>({
+  email: "all",
+  user: "all",
+  rol: "all",
+});
+const filterComponentRef = ref<InstanceType<
+  typeof FilterOptionsComponent
+> | null>(null);
+const popoverFilter = reactive({ open: false, event: Event });
 
 // mounted
 onMounted(async () => {
   await loadContent();
 });
+watch(status, (newValue, oldValue) => {
+  if (newValue == "loaded") emit("on-content-loaded", true);
+  else emit("on-content-loaded", false);
+});
 
 // functions
 async function loadContent() {
   status.value = "loading";
-  // await getUsers();
-  await getUsersPaginated();
+  await getUsers({
+    search: searchTerm.value,
+    pagination: pagInfo.value.pagination,
+    page: pagInfo.value.currentPage,
+    options: filterSelected,
+  });
+  // await getUsersPaginated();
   status.value = "loaded";
 }
 
-async function getUsersPaginated(): Promise<void> {
-  const response = await userController.getUsersPaginated({
-    page: pagInfo.value.currentPage,
-    perPage: pagInfo.value.pagination,
-  });
-  const { users, paginatorInfo } = response;
-  userController.updateUsers({ users });
-  pagInfo.value.totalPaginacionElements = paginatorInfo.totalPages;
-}
-
-async function getUsers(): Promise<void> {
+async function getUsers(params: {
+  search?: string;
+  pagination?: number;
+  page: number;
+  options: FilterAdminPanelOptions;
+}): Promise<void> {
+  const { search, pagination, page, options } = params;
   searchMode.value = true;
-  const search = searchTerm.value.replace(/ /g, "");
+  // const search = searchTerm.value.replace(/ /g, "");
 
   try {
-    const { users, paginatorInfo } = await userController.loadUsers({
-      paginatorInfo: {
-        pagination: parseInt(pagInfo.value.pagination.toString()),
-        page: parseInt(pagInfo.value.currentPage.toString()),
-      },
+    const { data, links } = await userController.loadUsers({
       search,
-      filterOptions: JSON.stringify(getFilterOptions()),
+      pagination,
+      page,
+      options,
     });
 
-    userController.updateUsers({ users });
-    // pagInfo.value.totalPaginacionElements = paginatorInfo.total;
+    users.value = data;
+    userController.updateUsers({ users: data });
+    pagInfo.value.totalPaginacionElements = links.filter(
+      (item) => !isNaN(Number(item.label)),
+    ).length;
   } catch (e: any) {
     console.error(e);
   }
@@ -585,9 +613,8 @@ async function filterContent() {
 }
 
 async function setUsersDisplay() {
-  spinners.showUsers = true;
   status.value = "loading";
-  await getUsersPaginated();
+  await loadContent();
   spinners.showUsers = false;
   status.value = "loaded";
 }
@@ -600,9 +627,31 @@ async function setUsersPage() {
   status.value = "loaded";
   alert();
 }
+
+async function deleteFilters() {
+  filterComponentRef.value?.resetFilters();
+}
+
+function getFilters() {
+  const filters = filterComponentRef.value?.getFiltersSelected();
+  if (filters) Object.assign(filterSelected, filters);
+}
 </script>
 
 <style scoped>
+.wrap-text-item {
+  --min-height: auto;
+  white-space: normal;
+}
+
+.wrap-text-checkbox {
+  --ion-item-white-space: normal;
+  white-space: normal;
+}
+
+.card-content {
+  overflow: hidden;
+}
 @media only screen and (min-width: 600px) {
   .pagination {
     display: flex;

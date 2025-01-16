@@ -3,6 +3,7 @@ import {
   GetUsers,
   GetUsersResponse,
   SearchUsers,
+  SearchUsersParams,
   SearchUsersResponse,
 } from "./interfaces";
 import { apiConnector } from "@/main";
@@ -19,29 +20,15 @@ export default class AdminService {
     };
   }
 
-  async searchUsers(params: SearchUsers): Promise<SearchUsersResponse> {
-    const { page, search, filterOptions } = params;
+  async searchUsers(params: SearchUsersParams): Promise<SearchUsersResponse> {
+    const { search, pagination, page, options } = params;
 
-    const response = await apiConnector.get({ url: `search-user` });
+    const response = (await apiConnector.get({
+      url: `users`,
+      data: { search, pagination, page, options: JSON.stringify(options) },
+    })) as SearchUsersResponse;
 
-    // const users = response.data.data;
-
-    const users = response.users.map((element: any) => {
-      element.isAdmin = element.is_admin;
-      delete element.is_admin;
-
-      element.isEmailVerified = element.is_email_verified;
-      delete element.is_email_verified;
-
-      element.isUserDisabled = element.is_user_disabled;
-      delete element.is_user_disabled;
-      return element;
-    });
-
-    return {
-      users,
-      paginatorInfo: response.data.paginatorInfo,
-    };
+    return response;
   }
 
   async getUsersPaginated(params: {

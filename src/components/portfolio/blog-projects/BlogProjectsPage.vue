@@ -80,7 +80,7 @@
                   :href="project.sourceCode"
                   target="_blank"
                   fill="outline"
-                  >Codigo fuente</ion-button
+                  >Código fuente</ion-button
                 >
               </ion-col>
             </ion-row>

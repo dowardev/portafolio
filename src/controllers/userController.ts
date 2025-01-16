@@ -3,6 +3,7 @@ import { useUsersStore } from "../store/usersStore";
 import { storeToRefs } from "pinia";
 import {
   DisableUser,
+  SearchUsersParams,
   SearchUsersResponse,
   User,
   UserRegister,
@@ -23,27 +24,20 @@ export default class UserController {
   private userStore = useUserStore();
   private userRefs = storeToRefs(this.userStore);
 
-  async loadUsers(params: {
-    paginatorInfo: { pagination: number; page: number };
-    search: string;
-    filterOptions: string;
-  }): Promise<SearchUsersResponse> {
-    const first = params.paginatorInfo.pagination;
-    const page = params.paginatorInfo.page;
-    const search = params.search;
-    const filterOptions = params.filterOptions;
+  async loadUsers(params: SearchUsersParams): Promise<SearchUsersResponse> {
+    const { search, pagination, page, options } = params;
 
     try {
       const response = await this.adminService.searchUsers({
-        first,
-        page,
         search,
-        filterOptions,
+        pagination,
+        page,
+        options,
       });
 
       return response;
     } catch (error: any) {
-      if (error.message == "Unauthorized") console.log("Unauthorized user");
+      if (error.message == "Unauthorized") console.error("Unauthorized user");
       // this.openToastError(error);
       throw error;
     }
@@ -176,5 +170,9 @@ export default class UserController {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  getUsersLoaded() {
+    return this.usersStore.getUsers();
   }
 }

@@ -106,7 +106,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/admin-panel",
-    name: "AdminPanelPage",
+    name: "PanelAdminPage",
     component: HomePage,
   },
 ];
@@ -125,7 +125,7 @@ router.beforeEach(async (to, from, next) => {
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];
   const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
-  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "AdminPanelPage"];
+  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage"];
   const noGuardRequired = [
     "RestorePasswordPage",
     "PresentationPage",

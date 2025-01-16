@@ -1,4 +1,9 @@
-import { Theme as ThemeType } from "@/utils/types";
+import {
+  EmailFilterOption,
+  Theme as ThemeType,
+  UserFilterOption,
+  UserRolFilterOption,
+} from "@/utils/types";
 import { filterPostOptions, PostFields, StatusPost } from "./types";
 
 // feedback
@@ -190,17 +195,33 @@ export interface GetUsersResponse {
     total: number;
   };
 }
-export interface SearchUsers {
-  first: number;
-  page: number;
+export interface SearchUsersParams {
+  pagination?: number;
   search?: string;
-  filterOptions: string;
+  page: number;
+  options: FilterAdminPanelOptions;
 }
+
+export interface Link {
+  url: string | null;
+  label: string;
+  active: boolean;
+}
+
 export interface SearchUsersResponse {
-  users: Array<User>;
-  paginatorInfo: {
-    totalPages: number;
-  };
+  current_page: number;
+  data: User[];
+  first_page_url: string;
+  from: number;
+  last_page: number;
+  last_page_url: string;
+  links: Link[];
+  next_page_url: string | null;
+  path: string;
+  per_page: number;
+  prev_page_url: string | null;
+  to: number;
+  total: number;
 }
 export interface DisableUser {
   id: string;
@@ -223,4 +244,10 @@ export interface System {
 export interface Theme {
   selected: ThemeType;
   options?: { blur?: boolean };
+}
+
+export interface FilterAdminPanelOptions {
+  email: EmailFilterOption;
+  user: UserFilterOption;
+  rol: UserRolFilterOption;
 }

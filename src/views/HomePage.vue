@@ -56,6 +56,6 @@ watch(
     setTimeout(() => {
       systemController.disableLoader();
     }, 2000);
-  }
+  },
 );
 </script>
