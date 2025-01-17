@@ -5,6 +5,9 @@ import {
   SearchUsers,
   SearchUsersParams,
   SearchUsersResponse,
+  SearchUsersServerResponse,
+  User,
+  UserServerResponse,
 } from "./interfaces";
 import { apiConnector } from "@/main";
 
@@ -26,15 +29,43 @@ export default class AdminService {
     const response = (await apiConnector.get({
       url: `users`,
       data: { search, pagination, page, options: JSON.stringify(options) },
-    })) as SearchUsersResponse;
+    })) as SearchUsersServerResponse;
 
-    return response;
+    const mappedData = response.data.map(
+      (element: UserServerResponse): User => ({
+        id: element.id.toString(),
+        name: element.name,
+        user: element.user,
+        email: element.email,
+        isAdmin: element.is_admin,
+        isEmailVerified: element.is_email_verified,
+        isDisabled: element.is_user_disabled,
+      }),
+    );
+
+    const responseFinal: SearchUsersResponse = {
+      currentPage: response.current_page,
+      data: mappedData,
+      firstPageUrl: response.first_page_url,
+      from: response.from,
+      lastPage: response.last_page,
+      lastPageUrl: response.last_page_url,
+      links: response.links,
+      nextPageUrl: response.next_page_url,
+      perPage: response.per_page,
+      path: response.path,
+      prevPageUrl: response.prev_page_url,
+      to: response.to,
+      total: response.total,
+    };
+
+    return responseFinal;
   }
 
   async getUsersPaginated(params: {
     page: number;
     perPage: number;
-  }): Promise<SearchUsersResponse> {
+  }): Promise<SearchUsersServerResponse> {
     const { page, perPage: perpage } = params;
     const path =
       page == 1

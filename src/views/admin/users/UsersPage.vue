@@ -189,6 +189,7 @@
                       </ion-item>
 
                       <ion-list slot="content">
+                        {{ user }}
                         <ion-item>
                           <ion-label>Nombre</ion-label>
                           <ion-label slot="end">{{ user.name }}</ion-label>

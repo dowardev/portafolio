@@ -131,6 +131,21 @@ export interface User {
   imageProfile?: string;
 }
 
+export interface UserServerResponse {
+  created_at: string;
+  email: string;
+  email_verified_at: string | null;
+  id: number;
+  image_id: string | null;
+  is_admin: boolean;
+  is_email_verified: boolean;
+  is_user_disabled: boolean;
+  name: string;
+  role: string | null;
+  updated_at: string;
+  user: string;
+}
+
 // export interface GetUserResponse {
 //   id?: User["id"];
 //   name?: User["user"];
@@ -208,9 +223,9 @@ export interface Link {
   active: boolean;
 }
 
-export interface SearchUsersResponse {
+export interface SearchUsersServerResponse {
   current_page: number;
-  data: User[];
+  data: UserServerResponse[];
   first_page_url: string;
   from: number;
   last_page: number;
@@ -223,6 +238,23 @@ export interface SearchUsersResponse {
   to: number;
   total: number;
 }
+
+export interface SearchUsersResponse {
+  currentPage: number;
+  data: User[];
+  firstPageUrl: string;
+  from: number;
+  lastPage: number;
+  lastPageUrl: string;
+  links: Link[];
+  nextPageUrl: string | null;
+  path: string;
+  perPage: number;
+  prevPageUrl: string | null;
+  to: number;
+  total: number;
+}
+
 export interface DisableUser {
   id: string;
   disableUser: boolean;

@@ -4,7 +4,7 @@ import { storeToRefs } from "pinia";
 import {
   DisableUser,
   SearchUsersParams,
-  SearchUsersResponse,
+  SearchUsersServerResponse,
   User,
   UserRegister,
 } from "../services/interfaces";
@@ -24,7 +24,9 @@ export default class UserController {
   private userStore = useUserStore();
   private userRefs = storeToRefs(this.userStore);
 
-  async loadUsers(params: SearchUsersParams): Promise<SearchUsersResponse> {
+  async loadUsers(
+    params: SearchUsersParams,
+  ): Promise<SearchUsersServerResponse> {
     const { search, pagination, page, options } = params;
 
     try {
@@ -46,7 +48,7 @@ export default class UserController {
   async getUsersPaginated(params: {
     page: number;
     perPage: number;
-  }): Promise<SearchUsersResponse> {
+  }): Promise<SearchUsersServerResponse> {
     const { page, perPage } = params;
 
     try {
