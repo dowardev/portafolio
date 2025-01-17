@@ -4,19 +4,12 @@
       <ion-list>
         <ion-list-header mode="ios">
           <ion-label>Usuarios</ion-label>
-          <ion-button>
+          <ion-button :disabled="status == 'loading'">
             <ion-icon :icon="addOutline"></ion-icon>
           </ion-button>
 
           <ion-button :disabled="status == 'loading'" @click="loadContent()">
-            <ion-icon
-              v-if="spinners.refreshContent == false"
-              :icon="refreshOutline"
-            ></ion-icon>
-            <ion-spinner
-              v-if="spinners.refreshContent == true"
-              name="crescent"
-            ></ion-spinner>
+            <ion-icon :icon="refreshOutline"></ion-icon>
           </ion-button>
         </ion-list-header>
 
@@ -103,18 +96,12 @@
                         :id="'trigger-button-' + user.id"
                         slot="end"
                         fill="clear"
-                        :disabled="
-                          status == 'loading' || spinners.optionsUser == user.id
-                        "
+                        :disabled="status == 'loading'"
                       >
                         <ion-icon
-                          v-if="spinners.optionsUser != user.id"
+                          v-if="status != 'loading'"
                           :icon="ellipsisVerticalOutline"
                         ></ion-icon>
-                        <ion-spinner
-                          v-if="spinners.optionsUser == user.id"
-                          name="crescent"
-                        ></ion-spinner>
                       </ion-button>
 
                       <ion-popover
@@ -304,12 +291,6 @@
                       >{{ item }}
                     </ion-select-option>
                   </ion-select>
-                  <ion-spinner
-                    v-if="spinners.pageUsers == true"
-                    slot="end"
-                    name="crescent"
-                    color="primary"
-                  ></ion-spinner>
                 </ion-item>
               </section>
             </ion-card-content>
@@ -371,7 +352,7 @@ import FilterOptionsComponent from "./components/FilterOptionsComponent.vue";
 // vars
 const emit = defineEmits(["on-content-loaded"]);
 const openToastError = systemController.openToastError;
-const pagInfo = ref({
+const pagInfo = reactive({
   currentPage: 1,
   totalPaginacionElements: Number(),
   pagination: 10,
@@ -379,45 +360,6 @@ const pagInfo = ref({
 });
 const searchTerm = ref("");
 const searchMode = ref(false);
-const filterOptions = [
-  {
-    label: "Mostrar usuarios verificados",
-    value: "emailVerified",
-    isChecked: false,
-  },
-  {
-    label: "Mostrar usuario sin verificar",
-    value: "emailNoVerified",
-    isChecked: false,
-  },
-  {
-    label: "Mostrar usuario habilitados",
-    value: "enabled",
-    isChecked: false,
-  },
-  {
-    label: "Mostrar usuarios deshabilitados",
-    value: "disabled",
-    isChecked: false,
-  },
-  {
-    label: "Mostrar usuarios administradores",
-    value: "admin",
-    isChecked: false,
-  },
-  {
-    label: "Mostrar usuarios no administradores",
-    value: "noAdmin",
-    isChecked: false,
-  },
-];
-const spinners = {
-  refreshContent: false,
-  filter: false,
-  showUsers: false,
-  pageUsers: false,
-  optionsUser: "",
-};
 const status = ref("loaded" as "loading" | "loaded");
 let users = ref<User[]>([]);
 const filterSelected = reactive<FilterAdminPanelOptions>({
@@ -440,9 +382,9 @@ watch(status, (newValue) => {
 });
 
 watch(
-  () => pagInfo.value.pagination,
+  () => pagInfo.pagination,
   () => {
-    pagInfo.value.currentPage = 1;
+    pagInfo.currentPage = 1;
     setUsersDisplay();
   },
 );
@@ -452,8 +394,8 @@ async function loadContent() {
   status.value = "loading";
   await getUsers({
     search: searchTerm.value,
-    pagination: pagInfo.value.pagination,
-    page: pagInfo.value.currentPage,
+    pagination: pagInfo.pagination,
+    page: pagInfo.currentPage,
     options: filterSelected,
   });
   // await getUsersPaginated();
@@ -479,25 +421,17 @@ async function getUsers(params: {
 
     users.value = data;
     userController.updateUsers({ users: data });
-    pagInfo.value.totalPaginacionElements = links.filter(
+    pagInfo.totalPaginacionElements = links.filter(
       (item) => !isNaN(Number(item.label)),
     ).length;
-    pagInfo.value.totalElements = total;
+    pagInfo.totalElements = total;
   } catch (e: any) {
     console.error(e);
   }
 }
 
-async function refreshContent() {
-  spinners.refreshContent = true;
-  status.value = "loading";
-  await getUsers();
-  spinners.refreshContent = false;
-  status.value = "loaded";
-}
-
 async function disabledUser(params: { id: string; disableUser: boolean }) {
-  spinners.optionsUser = params.id;
+  // spinners.optionsUser = params.id;
   status.value = "loading";
 
   let alertResponse = true;
@@ -519,7 +453,7 @@ async function disabledUser(params: { id: string; disableUser: boolean }) {
       await systemController.presentToast({ message: "Usuario deshabilitado" });
     if (params.disableUser == false)
       await systemController.presentToast({ message: "Usuario habilitado" });
-    refreshContent();
+    loadContent();
   } catch (e: any) {
     if (e.message == "Can't disable admin") {
       await systemController.presentToast({
@@ -531,7 +465,7 @@ async function disabledUser(params: { id: string; disableUser: boolean }) {
     console.error(e);
     openToastError({ error: e });
   }
-  spinners.optionsUser = "";
+  // spinners.optionsUser = "";
   status.value = "loaded";
 }
 
@@ -600,7 +534,7 @@ async function deleteUser(email: string) {
     // await userController.deleteUserAccount({ email });
 
     await systemController.presentToast({ message: "Usuario eliminado" });
-    refreshContent();
+    loadContent();
   } catch (e: any) {
     console.error(e);
     openToastError({ error: e });
@@ -608,36 +542,11 @@ async function deleteUser(email: string) {
   // spinners.optionsUser = false;
 }
 
-function getFilterOptions(): Array<string> {
-  const options = Array<string>();
-  filterOptions.forEach((element) => {
-    if (element.isChecked) options.push(element.value);
-  });
-  return options;
-}
-
-async function filterContent() {
-  spinners.filter = true;
-  status.value = "loading";
-  await getUsers();
-  spinners.filter = false;
-  status.value = "loaded";
-}
-
 async function setUsersDisplay() {
   status.value = "loading";
   await loadContent();
-  spinners.showUsers = false;
+  // spinners.showUsers = false;
   status.value = "loaded";
-}
-
-async function setUsersPage() {
-  spinners.pageUsers = true;
-  status.value = "loading";
-  await getUsersPaginated();
-  spinners.pageUsers = false;
-  status.value = "loaded";
-  alert();
 }
 
 async function deleteFilters() {
