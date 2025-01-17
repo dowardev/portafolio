@@ -8,7 +8,7 @@
             <ion-icon :icon="addOutline"></ion-icon>
           </ion-button>
 
-          <ion-button :disabled="status == 'loading'" @click="refreshContent()">
+          <ion-button :disabled="status == 'loading'" @click="loadContent()">
             <ion-icon
               v-if="spinners.refreshContent == false"
               :icon="refreshOutline"
@@ -59,7 +59,7 @@
                     />
                   </div>
 
-                  <div>
+                  <div style="display: flex" class="ion-justify-content-center">
                     <ion-item>
                       <!-- clear filters -->
                       <ion-button
@@ -72,7 +72,7 @@
                           popoverFilter.open = false;
                         "
                       >
-                        Eliminar filtros
+                        Reiniciar
                       </ion-button>
 
                       <ion-button
@@ -82,8 +82,8 @@
                           loadContent();
                           popoverFilter.open = false;
                         "
-                        >Aplicar filtros</ion-button
-                      >
+                        >Aplicar
+                      </ion-button>
                     </ion-item>
                   </div>
                 </ion-content>
@@ -250,30 +250,51 @@
                     interface="popover"
                     :value="pagInfo.pagination"
                     :disabled="status == 'loading'"
-                    @ion-change="
-                      pagInfo.pagination = $event.target.value;
-                      setUsersDisplay();
-                    "
+                    @ion-change="pagInfo.pagination = $event.target.value"
                   >
-                    <ion-select-option :value="5">5</ion-select-option>
-                    <ion-select-option :value="10">10</ion-select-option>
-                    <ion-select-option :value="15">15</ion-select-option>
-                    <ion-select-option :value="20">20</ion-select-option>
-                    <ion-select-option :value="50">50</ion-select-option>
-                    <ion-select-option :value="100">100</ion-select-option>
+                    <ion-select-option
+                      v-if="pagInfo.totalElements >= 5"
+                      :value="5"
+                      >5</ion-select-option
+                    >
+                    <ion-select-option
+                      v-if="pagInfo.totalElements >= 10"
+                      :value="10"
+                      >10</ion-select-option
+                    >
+                    <ion-select-option
+                      v-if="pagInfo.totalElements >= 15"
+                      :value="15"
+                      >15</ion-select-option
+                    >
+                    <ion-select-option
+                      v-if="pagInfo.totalElements >= 20"
+                      :value="20"
+                      >20</ion-select-option
+                    >
+                    <ion-select-option
+                      v-if="pagInfo.totalElements >= 50"
+                      :value="50"
+                      >50</ion-select-option
+                    >
+                    <ion-select-option
+                      v-if="pagInfo.totalElements >= 100"
+                      :value="100"
+                      >100</ion-select-option
+                    >
                   </ion-select>
                 </ion-item>
 
                 <ion-item lines="none" class="transparent">
-                  <ion-label slot="end">Pagina</ion-label>
                   <ion-select
                     slot="end"
+                    label="Pagina"
                     interface="popover"
                     :value="pagInfo.currentPage"
                     :disabled="status == 'loading'"
                     @ion-change="
                       pagInfo.currentPage = $event.target.value;
-                      setUsersPage();
+                      loadContent();
                     "
                   >
                     <ion-select-option
@@ -317,13 +338,10 @@ import {
   IonCard,
   IonPopover,
   IonContent,
-  IonCheckbox,
   IonCardContent,
   IonSpinner,
-  createAnimation,
-  Animation,
 } from "@ionic/vue";
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import {
   refreshOutline,
   ellipsisVerticalOutline,
@@ -337,16 +355,9 @@ import {
   thumbsUpOutline,
 } from "ionicons/icons";
 // TODO: pending
-// import { sendMailResetPassword as sendMailResetPasswordService } from "../../../services/session";
-// import { resendEmailConfirmation as resendEmailConfirmationService } from "../../../services/user";
 
 // interface
-import { FilterAdminPanelOptions, Link, User } from "@/services/interfaces";
-import {
-  EmailFilterOption,
-  UserFilterOption,
-  UserRolFilterOption,
-} from "@/utils/types";
+import { FilterAdminPanelOptions, User } from "@/services/interfaces";
 
 // controllers
 import UserController from "@/controllers/userController";
@@ -364,6 +375,7 @@ const pagInfo = ref({
   currentPage: 1,
   totalPaginacionElements: Number(),
   pagination: 10,
+  totalElements: Number(),
 });
 const searchTerm = ref("");
 const searchMode = ref(false);
@@ -422,10 +434,18 @@ const popoverFilter = reactive({ open: false, event: Event });
 onMounted(async () => {
   await loadContent();
 });
-watch(status, (newValue, oldValue) => {
+watch(status, (newValue) => {
   if (newValue == "loaded") emit("on-content-loaded", true);
   else emit("on-content-loaded", false);
 });
+
+watch(
+  () => pagInfo.value.pagination,
+  () => {
+    pagInfo.value.currentPage = 1;
+    setUsersDisplay();
+  },
+);
 
 // functions
 async function loadContent() {
@@ -448,10 +468,9 @@ async function getUsers(params: {
 }): Promise<void> {
   const { search, pagination, page, options } = params;
   searchMode.value = true;
-  // const search = searchTerm.value.replace(/ /g, "");
 
   try {
-    const { data, links } = await userController.loadUsers({
+    const { data, links, total } = await userController.loadUsers({
       search,
       pagination,
       page,
@@ -463,6 +482,7 @@ async function getUsers(params: {
     pagInfo.value.totalPaginacionElements = links.filter(
       (item) => !isNaN(Number(item.label)),
     ).length;
+    pagInfo.value.totalElements = total;
   } catch (e: any) {
     console.error(e);
   }
@@ -474,14 +494,6 @@ async function refreshContent() {
   await getUsers();
   spinners.refreshContent = false;
   status.value = "loaded";
-}
-
-function onlyOneUserFilter(index: number) {
-  filterOptions.map((option) => {
-    option.isChecked = false;
-  });
-
-  filterOptions[index].isChecked = true;
 }
 
 async function disabledUser(params: { id: string; disableUser: boolean }) {

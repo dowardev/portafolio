@@ -14,8 +14,9 @@
               lines="full"
               @click="handleCardOptionAnimation('email')"
             >
-              <ion-label
-                >Email: {{ optionsProperties.email.value.label }}</ion-label
+              <ion-label class="truncate-text">
+                <span style="font-weight: bold">Email:</span>
+                {{ optionsProperties.email.value.label }}</ion-label
               >
               <ion-icon :icon="chevronExpandOutline"></ion-icon>
             </ion-item>
@@ -48,8 +49,9 @@
               lines="full"
               @click="handleCardOptionAnimation('user')"
             >
-              <ion-label
-                >Usuario: {{ optionsProperties.user.value.label }}</ion-label
+              <ion-label class="truncate-text">
+                <span style="font-weight: bold">Usuario:</span>
+                : {{ optionsProperties.user.value.label }}</ion-label
               >
               <ion-icon :icon="chevronExpandOutline"></ion-icon>
             </ion-item>
@@ -82,8 +84,9 @@
               lines="full"
               @click="handleCardOptionAnimation('rol')"
             >
-              <ion-label
-                >Rol: {{ optionsProperties.rol.value.label }}</ion-label
+              <ion-label class="truncate-text">
+                <span style="font-weight: bold">Rol:</span>
+                {{ optionsProperties.rol.value.label }}</ion-label
               >
               <ion-icon :icon="chevronExpandOutline"></ion-icon>
             </ion-item>
@@ -279,3 +282,12 @@ function applyInitialFilters() {
   }
 }
 </script>
+
+<style scoped>
+.truncate-text {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
