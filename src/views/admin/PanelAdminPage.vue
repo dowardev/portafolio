@@ -49,7 +49,7 @@ import {
   isPlatform,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
-import UsersComponent from "./users/UsersPage.vue";
+import UsersComponent from "./users/UsersComponent.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";

@@ -10,7 +10,7 @@ import LoginPage from "@/views/session/login/LoginPage.vue";
 import SignUpPage from "@/views/session/signup/SignUpPage.vue";
 import PoliciesPage from "@/views/policies/PoliciesPage.vue";
 import UserPanelPage from "@/views/user/UserPanelPage.vue";
-import AdminPanelPage from "@/views/admin/users/UsersPage.vue";
+import AdminPanelPage from "@/views/admin/users/UsersComponent.vue";
 import Prueba from "@/views/prueba/Prueba.vue";
 
 import HomePage from "@/views/HomePage.vue";
