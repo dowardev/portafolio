@@ -13,14 +13,14 @@
       </ion-title>
 
       <!-- mobile options -->
-      <ion-buttons slot="end" v-if="isPlatform('android') || isPlatform('ios')">
+      <ion-buttons v-if="isPlatform('android') || isPlatform('ios')" slot="end">
         <ion-button @click="popoverMainOptions = { open: true, event: $event }">
-          <ion-icon :icon="ellipsisVerticalOutline" slot="start"></ion-icon>
+          <ion-icon slot="start" :icon="ellipsisVerticalOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
 
       <!-- desktop options -->
-      <ion-buttons slot="end" v-if="isPlatform('desktop')">
+      <ion-buttons v-if="isPlatform('desktop')" slot="end">
         <section v-if="userController.getUser()?.isAdmin">
           <ion-button fill="clear" @click="updatePost()">
             <ion-icon :icon="createOutline"></ion-icon>
@@ -43,8 +43,8 @@
   </ion-header>
 
   <ion-content
-    :fullscreen="true"
     v-if="postController.getPost({ id: postId }) != undefined"
+    :fullscreen="true"
   >
     <ion-header collapse="condense" mode="ios">
       <ion-toolbar>
@@ -76,9 +76,9 @@
 
     <!-- Floating index -->
     <indexContentComponent
+      v-if="isPlatform('desktop')"
       id="pr2"
       class="floating-index"
-      v-if="isPlatform('desktop')"
       :index-content="indexContent"
       :auto-hide-content="isPlatform('ios') || isPlatform('android')"
       @element-id="goToSection({ id: $event })"
@@ -104,28 +104,28 @@
     <ion-content>
       <!-- index -->
       <ion-item lines="full" button @click="openModalIndexContent()">
-        <ion-icon :icon="menuOutline" slot="start"></ion-icon>
+        <ion-icon slot="start" :icon="menuOutline"></ion-icon>
         <ion-label>Indice</ion-label>
       </ion-item>
 
       <!-- update -->
       <ion-item
-        lines="full"
         v-if="userController.getUser()?.isAdmin"
+        lines="full"
         button
         @click="updatePost()"
       >
-        <ion-icon :icon="createOutline" slot="start"></ion-icon>
+        <ion-icon slot="start" :icon="createOutline"></ion-icon>
         <ion-label>Actualizar post</ion-label>
       </ion-item>
       <!-- delete -->
       <ion-item
-        lines="full"
         v-if="userController.getUser()?.isAdmin"
+        lines="full"
         button
         @click="deletePost()"
       >
-        <ion-icon :icon="trashOutline" color="danger" slot="start"></ion-icon>
+        <ion-icon slot="start" :icon="trashOutline" color="danger"></ion-icon>
         <ion-label>Indice</ion-label>
       </ion-item>
     </ion-content>
@@ -212,7 +212,7 @@ watch(
   () => scrollPosition.value,
   (newValue) => {
     showTitle.value = newValue > 0;
-  }
+  },
 );
 
 // functions
@@ -244,7 +244,7 @@ async function getPost(): Promise<void> {
 function generarIndexContent(): void {
   if (indexRef.value) {
     headings = indexRef.value.querySelectorAll(
-      "h1:not(ion-card *), h2:not(ion-card *), h3:not(ion-card *), h4:not(ion-card *), h5:not(ion-card *), h6:not(ion-card *)"
+      "h1:not(ion-card *), h2:not(ion-card *), h3:not(ion-card *), h4:not(ion-card *), h5:not(ion-card *), h6:not(ion-card *)",
     );
   } else {
     headings = [];
@@ -426,12 +426,12 @@ function generateCardCodes() {
   z-index: 100;
 }
 
-#pr {
-  width: 66%;
-  /* max-width: 900px; */
-  /* margin: 0 auto; */
-  padding: 0 20px;
-}
+/* #pr { */
+/* width: 66%; */
+/* max-width: 900px; */
+/* margin: 0 auto; */
+/* padding: 0 20px; */
+/* } */
 
 /* Hide floating index on mobile */
 @media (max-width: 768px) {

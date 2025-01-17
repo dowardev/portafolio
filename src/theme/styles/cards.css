@@ -9,13 +9,19 @@ ion-card.no-shadow {
   box-shadow: none;
 }
 
-ion-card {
-  /* box-shadow:
-    rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
-    rgba(0, 0, 0, 0.06) 0px 1px 2px 0px; */
+ion-card.shadow-1 {
   box-shadow:
     rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
     rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+ion-card.shadow-2 {
+  box-shadow:
+    rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
+    rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+}
+
+ion-card {
   border: 1.5px solid transparent;
 }
 
