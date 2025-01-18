@@ -14,7 +14,7 @@
         </ion-list-header>
 
         <div>
-          <ion-card style="height: calc(100dvh - 197px)" class="shadow-1">
+          <ion-card style="height: auto" class="shadow-1">
             <ion-item lines="none" class="transparent">
               <ion-searchbar
                 mode="ios"
@@ -62,68 +62,76 @@
 
               <!-- table options -->
               <section class="pagination">
-                <ion-item button lines="none" class="transparent">
-                  <ion-select
-                    slot="end"
-                    label="Usuarios a mostrar"
-                    interface="popover"
-                    :value="pagInfo.pagination"
-                    :disabled="status == 'loading'"
-                    @ion-change="pagInfo.pagination = $event.target.value"
-                  >
-                    <ion-select-option
-                      v-if="pagInfo.totalElements >= 5"
-                      :value="5"
-                      >5</ion-select-option
-                    >
-                    <ion-select-option
-                      v-if="pagInfo.totalElements >= 10"
-                      :value="10"
-                      >10</ion-select-option
-                    >
-                    <ion-select-option
-                      v-if="pagInfo.totalElements >= 15"
-                      :value="15"
-                      >15</ion-select-option
-                    >
-                    <ion-select-option
-                      v-if="pagInfo.totalElements >= 20"
-                      :value="20"
-                      >20</ion-select-option
-                    >
-                    <ion-select-option
-                      v-if="pagInfo.totalElements >= 50"
-                      :value="50"
-                      >50</ion-select-option
-                    >
-                    <ion-select-option
-                      v-if="pagInfo.totalElements >= 100"
-                      :value="100"
-                      >100</ion-select-option
-                    >
-                  </ion-select>
-                </ion-item>
+                <ion-row>
+                  <!-- users show -->
+                  <ion-col>
+                    <ion-item button lines="none" class="transparent">
+                      <ion-select
+                        slot="end"
+                        label="Usuarios a mostrar"
+                        interface="popover"
+                        :value="pagInfo.pagination"
+                        :disabled="status == 'loading'"
+                        @ion-change="pagInfo.pagination = $event.target.value"
+                      >
+                        <ion-select-option
+                          v-if="pagInfo.totalElements >= 5"
+                          :value="5"
+                          >5</ion-select-option
+                        >
+                        <ion-select-option
+                          v-if="pagInfo.totalElements >= 10"
+                          :value="10"
+                          >10</ion-select-option
+                        >
+                        <ion-select-option
+                          v-if="pagInfo.totalElements >= 15"
+                          :value="15"
+                          >15</ion-select-option
+                        >
+                        <ion-select-option
+                          v-if="pagInfo.totalElements >= 20"
+                          :value="20"
+                          >20</ion-select-option
+                        >
+                        <ion-select-option
+                          v-if="pagInfo.totalElements >= 50"
+                          :value="50"
+                          >50</ion-select-option
+                        >
+                        <ion-select-option
+                          v-if="pagInfo.totalElements >= 100"
+                          :value="100"
+                          >100</ion-select-option
+                        >
+                      </ion-select>
+                    </ion-item>
+                  </ion-col>
 
-                <ion-item lines="none" class="transparent">
-                  <ion-select
-                    slot="end"
-                    label="Pagina"
-                    interface="popover"
-                    :value="pagInfo.currentPage"
-                    :disabled="status == 'loading'"
-                    @ion-change="
-                      pagInfo.currentPage = $event.target.value;
-                      loadContent();
-                    "
-                  >
-                    <ion-select-option
-                      v-for="item in pagInfo.totalPaginacionElements"
-                      :key="item"
-                      :value="item"
-                      >{{ item }}
-                    </ion-select-option>
-                  </ion-select>
-                </ion-item>
+                  <!-- pagination -->
+                  <ion-col>
+                    <ion-item lines="none" class="transparent">
+                      <ion-select
+                        slot="end"
+                        label="Pagina"
+                        interface="popover"
+                        :value="pagInfo.currentPage"
+                        :disabled="status == 'loading'"
+                        @ion-change="
+                          pagInfo.currentPage = $event.target.value;
+                          loadContent();
+                        "
+                      >
+                        <ion-select-option
+                          v-for="item in pagInfo.totalPaginacionElements"
+                          :key="item"
+                          :value="item"
+                          >{{ item }}
+                        </ion-select-option>
+                      </ion-select>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
               </section>
             </ion-card-content>
           </ion-card>

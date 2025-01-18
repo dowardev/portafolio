@@ -193,4 +193,8 @@ export default class SystemController {
   getdesignMode(): DesignMode {
     return this.systemStore.getDesignMode();
   }
+
+  getScreenSize() {
+    return this.systemStore.screenSize;
+  }
 }

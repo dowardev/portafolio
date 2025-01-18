@@ -17,6 +17,13 @@ export const useSystemStore = defineStore("system", () => {
     color: "",
   });
   const designMode = ref<DesignMode>("md");
+  const screenSize = reactive({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    preset: "",
+  });
+
+  window.addEventListener("resize", updateScreenSize);
 
   watch(theme, async (newValue, oldValue) => {
     if (
@@ -55,6 +62,24 @@ export const useSystemStore = defineStore("system", () => {
     designMode.value = mode;
   }
 
+  function updateScreenSize(): void {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    let preset = "xxl";
+
+    if (width < 576) preset = "xs";
+    else if (width < 768) preset = "sm";
+    else if (width < 992) preset = "md";
+    else if (width < 1200) preset = "lg";
+    else if (width < 1400) preset = "xl";
+
+    Object.assign(screenSize, {
+      width,
+      height,
+      preset,
+    });
+  }
+
   return {
     theme,
     getThemeSelected,
@@ -66,5 +91,6 @@ export const useSystemStore = defineStore("system", () => {
     designMode,
     getDesignMode,
     setDesignMode,
+    screenSize,
   };
 });
