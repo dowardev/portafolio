@@ -2,12 +2,12 @@
   <ion-page class="page-container">
     <!-- progress bar -->
     <ion-progress-bar
+      v-if="systemController.getLoader().status"
       :class="{
         'primary-progress-bar': systemController.getLoader().color == 'primary',
         'danger-progress-bar': systemController.getLoader().color == 'danger',
       }"
       type="indeterminate"
-      v-if="systemController.getLoader().status"
     ></ion-progress-bar>
 
     <!-- pages -->

@@ -1,4 +1,5 @@
 import { System, Theme } from "@/services/interfaces";
+import { DesignMode } from "@/utils/types";
 import { defineStore } from "pinia";
 import { reactive, ref, watch } from "vue";
 
@@ -15,6 +16,7 @@ export const useSystemStore = defineStore("system", () => {
     status: false,
     color: "",
   });
+  const designMode = ref<DesignMode>("md");
 
   watch(theme, async (newValue, oldValue) => {
     if (
@@ -44,6 +46,15 @@ export const useSystemStore = defineStore("system", () => {
     loader.value = { status, color };
   }
 
+  function getDesignMode(): DesignMode {
+    return designMode.value;
+  }
+
+  function setDesignMode(params: { mode: DesignMode }) {
+    const { mode } = params;
+    designMode.value = mode;
+  }
+
   return {
     theme,
     getThemeSelected,
@@ -52,5 +63,8 @@ export const useSystemStore = defineStore("system", () => {
     update,
     loader,
     updateLoader,
+    designMode,
+    getDesignMode,
+    setDesignMode,
   };
 });

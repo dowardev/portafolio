@@ -139,6 +139,7 @@
     :is-open="popoverFilter.open"
     :dismiss-on-select="false"
     :event="popoverFilter.event"
+    @did-dismiss="popoverFilter.open = false"
   >
     <ion-content :scroll-events="true">
       <div>
@@ -259,7 +260,7 @@
   >
     <ion-header mode="ios" class="ion-no-border">
       <ion-toolbar>
-        <ion-buttons slot="start">
+        <ion-buttons slot="start" :mode="designMode">
           <ion-button @click="modalUserInfo.open = false">
             <ion-icon :icon="closeOutline"> </ion-icon>
           </ion-button>
@@ -267,7 +268,7 @@
 
         <ion-title>Información de usuario</ion-title>
 
-        <ion-buttons slot="end">
+        <ion-buttons slot="end" :mode="designMode">
           <ion-button
             slot="end"
             fill="clear"
@@ -287,7 +288,7 @@
     </ion-header>
 
     <ion-content class="ion-padding">
-      <ModalUserComponent :userProp="userSelected" :statusProp="status" />
+      <ModalUserComponent :user-prop="userSelected" :status-prop="status" />
     </ion-content>
   </ion-modal>
 </template>
@@ -332,6 +333,7 @@ import {
 
 // interface
 import { FilterAdminPanelOptions, User } from "@/services/interfaces";
+import { DesignMode } from "@/utils/types";
 
 // controllers
 import UserController from "@/controllers/userController";
@@ -368,11 +370,13 @@ const popoverFilter = reactive({ open: false, event: Event });
 const userSelected = reactive<User>({});
 const modalUserInfo = reactive({ open: false });
 const popoverUserOptions = reactive({ open: false, event: Event });
+const designMode = ref<DesignMode>(systemController.getdesignMode());
 
 // mounted
 onMounted(async () => {
   await loadContent();
 });
+// watch
 watch(status, (newValue) => {
   if (newValue == "loaded") emit("on-content-loaded", true);
   else emit("on-content-loaded", false);
@@ -383,6 +387,12 @@ watch(
   () => {
     pagInfo.currentPage = 1;
     setUsersDisplay();
+  },
+);
+watch(
+  () => systemController.getdesignMode(),
+  (newValue) => {
+    designMode.value = newValue;
   },
 );
 

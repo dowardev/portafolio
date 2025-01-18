@@ -18,7 +18,7 @@
       :is-open="openToastUpdateApp"
       :buttons="toastButtons"
       :duration="7000"
-      @didDismiss="updateApp($event)"
+      @did-dismiss="updateApp($event)"
     ></ion-toast>
   </ion-app>
 </template>
@@ -31,12 +31,16 @@ import {
   IonSplitPane,
   IonToast,
   toastController,
+  isPlatform,
 } from "@ionic/vue";
 import { computed, onMounted, ref, watch } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
 import { useRouter, useRoute } from "vue-router";
 import { Storage } from "@ionic/storage";
 import { wb } from "./main";
+
+// interface
+import { DesignMode } from "./utils/types";
 
 // controllers
 import SystemController from "./controllers/systemController";
@@ -58,6 +62,8 @@ const toastButtons = [
     role: "update",
   },
 ];
+const designMode = ref<DesignMode>(isPlatform("ios") ? "ios" : "md");
+// end vars
 
 // watch
 watch(
@@ -66,7 +72,7 @@ watch(
     if (oldPath) {
       previousRoute.value = oldPath;
     }
-  }
+  },
 );
 
 // computed
@@ -93,8 +99,8 @@ onMounted(async () => {
       openToastUpdateApp.value = true;
     });
   }
+  systemController.setDesignMode({ mode: designMode.value });
 });
-1;
 
 function createFirstCookie() {
   if (systemController.getFirstCookie()) {

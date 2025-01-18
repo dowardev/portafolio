@@ -5,7 +5,7 @@
         <!-- email options -->
         <ion-card
           ref="cardEmailOptionRef"
-          class="primary-select-border"
+          class="primary-select-border shadow-1"
           :style="{ height: optionsProperties.email.height }"
         >
           <div class="card-content">
@@ -40,7 +40,7 @@
         <!-- user options -->
         <ion-card
           ref="cardUserOptionRef"
-          class="primary-select-border"
+          class="primary-select-border shadow-1"
           :style="{ height: optionsProperties.user.height }"
         >
           <div class="card-content">
@@ -75,7 +75,7 @@
         <!-- user rol options -->
         <ion-card
           ref="cardUserRolOptionRef"
-          class="primary-select-border"
+          class="primary-select-border shadow-1"
           :style="{ height: optionsProperties.rol.height }"
         >
           <div class="card-content">
