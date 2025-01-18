@@ -43,167 +43,20 @@
             <ion-card-content>
               <section style="overflow-y: scroll; height: calc(100dvh - 318px)">
                 <div v-for="user in users" :key="user.id">
-                  <ion-card class="shadow-2">
-                    <ion-card-content>
-                      <ion-item lines="none" class="transparent">
-                        <ion-icon slot="start" :icon="personOutline"></ion-icon>
-                        <ion-label>{{ user.email }}</ion-label>
-
-                        <ion-button
-                          :id="'trigger-button-' + user.id"
-                          slot="end"
-                          fill="clear"
-                          :disabled="status == 'loading'"
-                        >
-                          <ion-icon
-                            v-if="status != 'loading'"
-                            :icon="ellipsisVerticalOutline"
-                          ></ion-icon>
-                        </ion-button>
-
-                        <ion-popover
-                          :trigger="'trigger-button-' + user.id"
-                          dismiss-on-select
-                        >
-                          <!-- user options -->
-                          <ion-content>
-                            <!-- enable user -->
-                            <ion-item
-                              v-if="user.isDisabled == true"
-                              button
-                              lines="none"
-                              @click="
-                                disabledUser({
-                                  id: user.id!,
-                                  disableUser: false,
-                                })
-                              "
-                            >
-                              <ion-icon
-                                slot="start"
-                                :icon="checkmarkOutline"
-                              ></ion-icon>
-                              <ion-label>Habilitar usuario</ion-label>
-                            </ion-item>
-
-                            <ion-item
-                              v-if="user.isDisabled == false"
-                              button
-                              lines="none"
-                              @click="
-                                disabledUser({
-                                  id: user.id!,
-                                  disableUser: true,
-                                })
-                              "
-                            >
-                              <ion-label>Deshabilitar usuario</ion-label>
-                              <ion-icon
-                                slot="start"
-                                :icon="banOutline"
-                              ></ion-icon>
-                            </ion-item>
-
-                            <!-- reset password -->
-                            <ion-item
-                              button
-                              lines="none"
-                              @click="
-                                sendMailResetPassword({ email: user.email! })
-                              "
-                            >
-                              <ion-label>Reiniciar contraseña</ion-label>
-                              <ion-icon
-                                slot="start"
-                                :icon="keyOutline"
-                              ></ion-icon>
-                            </ion-item>
-
-                            <!-- verify user -->
-                            <ion-item
-                              button
-                              lines="none"
-                              @click="
-                                resendEmailConfirmation({
-                                  email: user.email!,
-                                })
-                              "
-                            >
-                              <ion-label>Verificar usuario</ion-label>
-                              <ion-icon
-                                slot="start"
-                                :icon="thumbsUpOutline"
-                              ></ion-icon>
-                            </ion-item>
-
-                            <!-- delete user -->
-                            <ion-item
-                              button
-                              lines="none"
-                              @click="deleteUser(user.email!)"
-                            >
-                              <ion-icon
-                                slot="start"
-                                :icon="trashOutline"
-                                color="danger"
-                              ></ion-icon>
-                              <ion-label color="danger"
-                                >Borrar Usuario</ion-label
-                              >
-                            </ion-item>
-                          </ion-content>
-                        </ion-popover>
-                      </ion-item>
-
-                      <ion-accordion-group>
-                        <ion-accordion :value="user.id" class="transparent">
-                          <ion-item slot="header" class="transparent">
-                            <ion-label>Información</ion-label>
-                          </ion-item>
-
-                          <ion-list slot="content">
-                            <ion-item>
-                              <ion-label>Nombre</ion-label>
-                              <ion-label slot="end">{{ user.name }}</ion-label>
-                            </ion-item>
-
-                            <ion-item>
-                              <ion-label>Usuario</ion-label>
-                              <ion-label slot="end">{{ user.user }}</ion-label>
-                            </ion-item>
-
-                            <ion-item>
-                              <ion-label>Email verificado</ion-label>
-                              <ion-label
-                                v-if="user.isEmailVerified == true"
-                                slot="end"
-                                >Si</ion-label
-                              >
-                              <ion-label
-                                v-if="user.isEmailVerified == false"
-                                slot="end"
-                                >No</ion-label
-                              >
-                            </ion-item>
-
-                            <ion-item>
-                              <ion-label>Deshabilitado</ion-label>
-                              <ion-label
-                                v-if="user.isDisabled == true"
-                                slot="end"
-                                >Si</ion-label
-                              >
-                              <ion-label
-                                v-if="user.isDisabled == false"
-                                slot="end"
-                                >No</ion-label
-                              >
-                            </ion-item>
-                          </ion-list>
-                        </ion-accordion>
-                      </ion-accordion-group>
-                    </ion-card-content>
-                  </ion-card>
+                  <ion-list>
+                    <ion-item
+                      lines="full"
+                      class="transparent"
+                      button
+                      @click="
+                        userSelected = user;
+                        modalUserInfo.open = true;
+                      "
+                    >
+                      <ion-icon slot="start" :icon="personOutline"></ion-icon>
+                      <ion-label>{{ user.email }}</ion-label>
+                    </ion-item>
+                  </ion-list>
                 </div>
               </section>
 
@@ -324,6 +177,119 @@
       </div>
     </ion-content>
   </ion-popover>
+
+  <!-- popover user options -->
+  <ion-popover
+    :is-open="popoverUserOptions.open"
+    :event="popoverUserOptions.event"
+    dismiss-on-select
+    @did-dismiss="popoverUserOptions.open = false"
+  >
+    <!-- user options -->
+    <ion-content>
+      <!-- enable user -->
+      <ion-item
+        v-if="userSelected.isDisabled == true"
+        button
+        lines="none"
+        @click="
+          disabledUser({
+            id: userSelected.id!,
+            disableUser: false,
+          })
+        "
+      >
+        <ion-icon slot="start" :icon="checkmarkOutline"></ion-icon>
+        <ion-label>Habilitar usuario</ion-label>
+      </ion-item>
+
+      <ion-item
+        v-if="userSelected.isDisabled == false"
+        button
+        lines="none"
+        @click="
+          disabledUser({
+            id: userSelected.id!,
+            disableUser: true,
+          })
+        "
+      >
+        <ion-label>Deshabilitar usuario</ion-label>
+        <ion-icon slot="start" :icon="banOutline"></ion-icon>
+      </ion-item>
+
+      <!-- reset password -->
+      <ion-item
+        button
+        lines="none"
+        @click="sendMailResetPassword({ email: userSelected.email! })"
+      >
+        <ion-label>Reiniciar contraseña</ion-label>
+        <ion-icon slot="start" :icon="keyOutline"></ion-icon>
+      </ion-item>
+
+      <!-- verify user -->
+      <ion-item
+        button
+        lines="none"
+        @click="
+          resendEmailConfirmation({
+            email: userSelected.email!,
+          })
+        "
+      >
+        <ion-label>Verificar usuario</ion-label>
+        <ion-icon slot="start" :icon="thumbsUpOutline"></ion-icon>
+      </ion-item>
+
+      <!-- delete user -->
+      <ion-item button lines="none" @click="deleteUser(userSelected.email!)">
+        <ion-icon slot="start" :icon="trashOutline" color="danger"></ion-icon>
+        <ion-label color="danger">Borrar Usuario</ion-label>
+      </ion-item>
+    </ion-content>
+  </ion-popover>
+  <!-- end popovers -->
+
+  <!-- modals -->
+  <!-- modal user info -->
+  <ion-modal
+    :is-open="modalUserInfo.open"
+    @did-dismiss="modalUserInfo.open = false"
+  >
+    <ion-header mode="ios" class="ion-no-border">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button @click="modalUserInfo.open = false">
+            <ion-icon :icon="closeOutline"> </ion-icon>
+          </ion-button>
+        </ion-buttons>
+
+        <ion-title>Información de usuario</ion-title>
+
+        <ion-buttons slot="end">
+          <ion-button
+            slot="end"
+            fill="clear"
+            :disabled="status == 'loading'"
+            @click="
+              popoverUserOptions.event = $event;
+              popoverUserOptions.open = true;
+            "
+          >
+            <ion-icon
+              v-if="status != 'loading'"
+              :icon="ellipsisVerticalOutline"
+            ></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ModalUserComponent :userProp="userSelected" :statusProp="status" />
+    </ion-content>
+  </ion-modal>
 </template>
 
 <script setup lang="ts">
@@ -346,6 +312,7 @@ import {
   IonContent,
   IonCardContent,
   IonSpinner,
+  IonModal,
 } from "@ionic/vue";
 import { onMounted, reactive, ref, watch } from "vue";
 import {
@@ -359,6 +326,7 @@ import {
   keyOutline,
   checkmarkOutline,
   thumbsUpOutline,
+  closeOutline,
 } from "ionicons/icons";
 // TODO: pending
 
@@ -373,6 +341,7 @@ const systemController = new SystemController();
 
 // components
 import FilterOptionsComponent from "./components/FilterOptionsComponent.vue";
+import ModalUserComponent from "./components/ModalUserComponent.vue";
 
 // vars
 const emit = defineEmits(["on-content-loaded"]);
@@ -396,6 +365,9 @@ const filterComponentRef = ref<InstanceType<
   typeof FilterOptionsComponent
 > | null>(null);
 const popoverFilter = reactive({ open: false, event: Event });
+const userSelected = reactive<User>({});
+const modalUserInfo = reactive({ open: false });
+const popoverUserOptions = reactive({ open: false, event: Event });
 
 // mounted
 onMounted(async () => {
