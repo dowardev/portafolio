@@ -113,9 +113,9 @@ export default class UserController {
     await this.userService.saveUserData({ name, user, email, imageId });
   }
 
-  async disableUser(params: DisableUser): Promise<void> {
-    const { id, disableUser } = params;
-    await this.adminService.disableUser({ id, disableUser });
+  async updateUserStatus(params: DisableUser): Promise<void> {
+    const { id, status } = params;
+    await this.adminService.updateUserStatus({ id, status });
   }
 
   async deleteUserAccount(params: { id: number }): Promise<void> {

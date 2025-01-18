@@ -202,9 +202,9 @@
         button
         lines="none"
         @click="
-          disabledUser({
+          updateUserStatus({
             id: userSelected.id!,
-            disableUser: false,
+            status: false,
           })
         "
       >
@@ -217,9 +217,9 @@
         button
         lines="none"
         @click="
-          disabledUser({
+          updateUserStatus({
             id: userSelected.id!,
-            disableUser: true,
+            status: true,
           })
         "
       >
@@ -445,12 +445,12 @@ async function getUsers(params: {
   }
 }
 
-async function disabledUser(params: { id: string; disableUser: boolean }) {
+async function updateUserStatus(params: { id: string; status: boolean }) {
   // spinners.optionsUser = params.id;
   status.value = "loading";
 
   let alertResponse = true;
-  if (params.disableUser == true)
+  if (params.status == true)
     alertResponse = await systemController.presentAlertConfirmation({
       message:
         "Mientras esté deshabilitada, el usuario no podrá acceder a su cuenta.",
@@ -459,14 +459,14 @@ async function disabledUser(params: { id: string; disableUser: boolean }) {
   if (alertResponse == false) return;
 
   try {
-    await userController.disableUser({
+    await userController.updateUserStatus({
       id: params.id,
-      disableUser: params.disableUser,
+      status: params.status,
     });
 
-    if (params.disableUser)
+    if (params.status)
       await systemController.presentToast({ message: "Usuario deshabilitado" });
-    if (params.disableUser == false)
+    if (params.status == false)
       await systemController.presentToast({ message: "Usuario habilitado" });
     loadContent();
   } catch (e: any) {

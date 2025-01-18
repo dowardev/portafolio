@@ -257,7 +257,7 @@ export interface SearchUsersResponse {
 
 export interface DisableUser {
   id: string;
-  disableUser: boolean;
+  status: boolean;
 }
 
 // contact

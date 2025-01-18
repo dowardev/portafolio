@@ -94,10 +94,13 @@ export default class AdminService {
     };
   }
 
-  async disableUser(params: DisableUser): Promise<void> {
-    const { id, disableUser } = params;
+  async updateUserStatus(params: DisableUser): Promise<void> {
+    const { id, status } = params;
 
-    await apiConnector.get({ url: `disable-user/`, data: { id, disableUser } });
+    await apiConnector.post({
+      url: `update-user-status/`,
+      data: { userId: id, status },
+    });
   }
 
   async deleteUserAccount(params: { id: number }): Promise<void> {
