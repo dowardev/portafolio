@@ -40,4 +40,8 @@ Route::group(["middleware" => "auth:api"], function () {
 
   // admin users
   Route::get("users", [UserController::class, "getUsers"]);
+  Route::post("update-user-status", [
+    UserController::class,
+    "updateUserStatus",
+  ]);
 });

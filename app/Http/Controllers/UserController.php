@@ -80,4 +80,18 @@ class UserController extends Controller
 
     return $options;
   }
+
+  function updateUserStatus(Request $request)
+  {
+    $request->validate([
+      "userId" => "required|exists:users,id",
+      "status" => "required|boolean",
+    ]);
+
+    $user = User::find($request->input("userId"));
+    $user->is_user_disabled = $request->input("status");
+    $user->save();
+
+    return response()->json(["message" => "User status updated successfully"]);
+  }
 }
