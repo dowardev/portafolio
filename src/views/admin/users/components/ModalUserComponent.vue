@@ -4,17 +4,13 @@
       <ion-card-content>
         <ion-list>
           <ion-row v-for="user in userDisplay" :key="user.value">
-            <ion-col size-xs="12" size-md="6">
+            <ion-col size="6">
               <ion-label style="color: var(--ion-text-color)"
                 ><b>{{ user.text }}</b></ion-label
               >
             </ion-col>
 
-            <ion-col
-              size-xs="12"
-              size-md="6"
-              style="display: flex; justify-content: end"
-            >
+            <ion-col size="6" style="display: flex; justify-content: end">
               <ion-label
                 v-if="
                   user.name != 'emailVerified' && user.name != 'userDisabled'
@@ -28,6 +24,7 @@
                 {{ user.value == 0 ? "No" : "Si" }}
               </ion-label>
             </ion-col>
+            <hr id="pr" class="style1" />
           </ion-row>
         </ion-list>
       </ion-card-content>
