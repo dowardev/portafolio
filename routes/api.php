@@ -44,4 +44,5 @@ Route::group(["middleware" => "auth:api"], function () {
     UserController::class,
     "updateUserStatus",
   ]);
+  Route::post("admin/delete-user", [UserController::class, "adminDeleteUser"]);
 });
