@@ -411,7 +411,6 @@ async function loadContent() {
     page: pagInfo.currentPage,
     options: filterSelected,
   });
-  // await getUsersPaginated();
   status.value = "loaded";
 }
 

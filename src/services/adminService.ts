@@ -63,38 +63,6 @@ export default class AdminService {
     return responseFinal;
   }
 
-  async getUsersPaginated(params: {
-    page: number;
-    perPage: number;
-  }): Promise<SearchUsersServerResponse> {
-    const { page, perPage: perpage } = params;
-    const path =
-      page == 1
-        ? `http://127.0.0.1:8000/api/search-user/${perpage}`
-        : `http://127.0.0.1:8000/api/search-user?page=${page}`;
-
-    const response = await apiConnector.get({ url: path });
-
-    const users = response.data.map((element: any) => {
-      element.isAdmin = element.is_admin;
-      delete element.is_admin;
-
-      element.isEmailVerified = element.is_email_verified;
-      delete element.is_email_verified;
-
-      element.isUserDisabled = element.is_user_disabled;
-      delete element.is_user_disabled;
-      return element;
-    });
-
-    const totalPages = response.data.last_page;
-
-    return {
-      users,
-      paginatorInfo: { totalPages },
-    };
-  }
-
   async updateUserStatus(params: DisableUser): Promise<void> {
     const { id, status } = params;
 

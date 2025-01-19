@@ -45,26 +45,6 @@ export default class UserController {
     }
   }
 
-  async getUsersPaginated(params: {
-    page: number;
-    perPage: number;
-  }): Promise<SearchUsersServerResponse> {
-    const { page, perPage } = params;
-
-    try {
-      const response = await this.adminService.getUsersPaginated({
-        page,
-        perPage,
-      });
-
-      return response;
-    } catch (error: any) {
-      if (error.message == "Unauthorized") console.log("Unauthorized user");
-      // this.openToastError(error);
-      throw error;
-    }
-  }
-
   updateUsers(params: { users: Array<User> }) {
     const users = params.users;
     this.usersStore.updateUsersProps({ users });
