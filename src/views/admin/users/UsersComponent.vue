@@ -49,7 +49,7 @@
                       class="transparent"
                       button
                       @click="
-                        userSelected = user;
+                        userSelected = Object.assign(userSelected, user);
                         modalUserInfo.open = true;
                       "
                     >
@@ -202,7 +202,7 @@
         button
         lines="none"
         @click="
-          updateUserStatus({
+          handleUpdateUserStatus({
             id: userSelected.id!,
             status: false,
           })
@@ -217,7 +217,7 @@
         button
         lines="none"
         @click="
-          updateUserStatus({
+          handleUpdateUserStatus({
             id: userSelected.id!,
             status: true,
           })
@@ -303,8 +303,6 @@
 
 <script setup lang="ts">
 import {
-  IonAccordion,
-  IonAccordionGroup,
   IonButton,
   IonItem,
   IonLabel,
@@ -365,7 +363,7 @@ const pagInfo = reactive({
 const searchTerm = ref("");
 const searchMode = ref(false);
 const status = ref("loaded" as "loading" | "loaded");
-let users = ref<User[]>([]);
+let users = reactive<User[]>([]);
 const filterSelected = reactive<FilterAdminPanelOptions>({
   email: "all",
   user: "all",
@@ -407,7 +405,7 @@ watch(
 // functions
 async function loadContent() {
   status.value = "loading";
-  await getUsers({
+  await loadUsers({
     search: searchTerm.value,
     pagination: pagInfo.pagination,
     page: pagInfo.currentPage,
@@ -417,7 +415,7 @@ async function loadContent() {
   status.value = "loaded";
 }
 
-async function getUsers(params: {
+async function loadUsers(params: {
   search?: string;
   pagination?: number;
   page: number;
@@ -434,8 +432,8 @@ async function getUsers(params: {
       options,
     });
 
-    users.value = data;
-    userController.updateUsers({ users: data });
+    Object.assign(users, data);
+    // userController.updateUsers({ users: data });
     pagInfo.totalPaginacionElements = links.filter(
       (item) => !isNaN(Number(item.label)),
     ).length;
@@ -446,11 +444,34 @@ async function getUsers(params: {
 }
 
 async function updateUserStatus(params: { id: string; status: boolean }) {
-  // spinners.optionsUser = params.id;
-  status.value = "loading";
+  try {
+    await userController.updateUserStatus({
+      id: params.id,
+      status: params.status,
+    });
+  } catch (e: unknown) {
+    if (e instanceof Error && e.message === "Operation failed") {
+      const message = status.value
+        ? "Problema al habilitar el usuario"
+        : "Problema al deshabilitar el usuario";
+      await systemController.presentToast({
+        message,
+        color: "danger",
+      });
+      throw e.message;
+    } else {
+      console.error(e);
+      throw e;
+    }
+  }
+}
 
+async function handleUpdateUserStatus(params: { id: string; status: boolean }) {
+  const { id, status } = params;
+  const oldValue = !params.status;
   let alertResponse = true;
-  if (params.status == true)
+
+  if (status == true)
     alertResponse = await systemController.presentAlertConfirmation({
       message:
         "Mientras esté deshabilitada, el usuario no podrá acceder a su cuenta.",
@@ -458,30 +479,25 @@ async function updateUserStatus(params: { id: string; status: boolean }) {
 
   if (alertResponse == false) return;
 
-  try {
-    await userController.updateUserStatus({
-      id: params.id,
-      status: params.status,
-    });
-
-    if (params.status)
-      await systemController.presentToast({ message: "Usuario deshabilitado" });
-    if (params.status == false)
-      await systemController.presentToast({ message: "Usuario habilitado" });
-    loadContent();
-  } catch (e: any) {
-    if (e.message == "Can't disable admin") {
-      await systemController.presentToast({
-        message: "No se puede deshabilitar al administrador",
-        color: "warning",
-      });
-      return;
-    }
-    console.error(e);
-    openToastError({ error: e });
+  if (status) {
+    await systemController.presentToast({ message: "Usuario habilitado" });
+  } else {
+    await systemController.presentToast({ message: "Usuario deshabilitado" });
   }
-  // spinners.optionsUser = "";
-  status.value = "loaded";
+
+  const index = users.findIndex((user) => user.id === id);
+  if (index !== -1) {
+    users[index].isDisabled = status;
+    userSelected.isDisabled = status;
+  }
+
+  try {
+    await updateUserStatus(params);
+  } catch (e: unknown) {
+    console.error(e);
+    users[index].isDisabled = oldValue;
+    userSelected.isDisabled = oldValue;
+  }
 }
 
 async function sendMailResetPassword(params: { email: string }) {

@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, watch } from "vue";
 import { User } from "@/services/interfaces";
 
 // vars
@@ -45,21 +45,33 @@ const userDisplay = reactive<
   { name: string; text: string; value: string | number }[]
 >([]);
 
-onMounted(() => {
+const updateUserDisplay = (user: User) => {
   Object.assign(userDisplay, [
-    { name: "id", text: "id", value: props.userProp.id },
-    { name: "name", text: "Nombre", value: props.userProp.name },
-    { name: "email", text: "Email", value: props.userProp.email },
+    { name: "id", text: "id", value: user.id },
+    { name: "name", text: "Nombre", value: user.name },
+    { name: "email", text: "Email", value: user.email },
     {
       name: "emailVerified",
       text: "Email verificado",
-      value: props.userProp.isEmailVerified,
+      value: user.isEmailVerified,
     },
     {
       name: "userDisabled",
       text: "Usuario deshabilitado",
-      value: props.userProp.isDisabled,
+      value: user.isDisabled,
     },
   ]);
+};
+
+onMounted(() => {
+  updateUserDisplay(props.userProp);
 });
+
+watch(
+  () => props.userProp,
+  (newVal) => {
+    updateUserDisplay(newVal);
+  },
+  { deep: true, immediate: true },
+);
 </script>

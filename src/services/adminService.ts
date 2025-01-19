@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import {
   DisableUser,
   GetUsers,
@@ -97,10 +98,17 @@ export default class AdminService {
   async updateUserStatus(params: DisableUser): Promise<void> {
     const { id, status } = params;
 
-    await apiConnector.post({
-      url: `update-user-status/`,
-      data: { userId: id, status },
-    });
+    try {
+      await apiConnector.post({
+        url: `update-user-status/`,
+        data: { userId: id, status },
+      });
+    } catch (e: unknown) {
+      if (e instanceof AxiosError && e.response) {
+        throw new Error(e.response.data.error);
+      }
+      throw e;
+    }
   }
 
   async deleteUserAccount(params: { id: number }): Promise<void> {
