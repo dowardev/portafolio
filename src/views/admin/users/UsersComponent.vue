@@ -231,7 +231,9 @@
       <ion-item
         button
         lines="none"
-        @click="deleteUser({ email: userSelected.email, id: userSelected.id })"
+        @click="
+          handleDeleteUser({ email: userSelected.email, id: userSelected.id })
+        "
       >
         <ion-icon slot="start" :icon="trashOutline" color="danger"></ion-icon>
         <ion-label color="danger">Borrar Usuario</ion-label>
@@ -513,21 +515,52 @@ async function resendEmailConfirmation(params: { email: string }) {
 
 async function deleteUser(params: AdminDeleteUserAccount) {
   const { email, id } = params;
+
+  try {
+    await userController.deleteUserAccount({ email, id });
+  } catch (e: unknown) {
+    if (e instanceof Error && e.message === "Operation failed") {
+      const message = status.value
+        ? "Problema al eliminar el usuario"
+        : "Problema al eliminar el usuario";
+      await systemController.presentToast({
+        message,
+        color: "danger",
+      });
+      throw e.message;
+    } else {
+      console.error(e);
+      throw e;
+    }
+  }
+}
+
+async function handleDeleteUser(params: AdminDeleteUserAccount) {
+  const { email, id } = params;
+  const index = users.findIndex(
+    (user) => user.id === id || user.email === email,
+  );
+
+  if (index === -1) return;
+
+  const oldUser = { user: users[index], index };
+
   const alertResponse = await systemController.presentAlertConfirmation({
     message: "Esta acción no es reversible.",
   });
 
-  if (alertResponse == false) return;
+  if (!alertResponse) return;
+
+  modalUserInfo.open = false;
+  users.splice(index, 1);
+  await systemController.presentToast({ message: "Usuario eliminado" });
 
   try {
-    await userController.deleteUserAccount({ email, id });
-
-    await systemController.presentToast({ message: "Usuario eliminado" });
-    loadContent();
-  } catch (e: any) {
+    await deleteUser(params);
+  } catch (e: unknown) {
     console.error(e);
+    users.splice(oldUser.index, 0, oldUser.user);
   }
-  // spinners.optionsUser = false;
 }
 
 async function setUsersDisplay() {

@@ -83,6 +83,16 @@ export default class AdminService {
   async deleteUserAccount(params: AdminDeleteUserAccount): Promise<void> {
     const { id, email } = params;
 
-    await apiConnector.post({ url: `admin/delete-user/`, data: { id, email } });
+    try {
+      await apiConnector.post({
+        url: `admin/delete-user/`,
+        data: { id, email },
+      });
+    } catch (e: unknown) {
+      if (e instanceof AxiosError && e.response) {
+        throw new Error(e.response.data.error);
+      }
+      throw e;
+    }
   }
 }
