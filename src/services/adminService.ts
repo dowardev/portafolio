@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import {
+  AdminDeleteUserAccount,
   DisableUser,
   GetUsers,
   GetUsersResponse,
@@ -79,9 +80,9 @@ export default class AdminService {
     }
   }
 
-  async deleteUserAccount(params: { id: number }): Promise<void> {
-    const { id } = params;
+  async deleteUserAccount(params: AdminDeleteUserAccount): Promise<void> {
+    const { id, email } = params;
 
-    await apiConnector.post({ url: `delete-user/`, data: { id } });
+    await apiConnector.post({ url: `admin/delete-user/`, data: { id, email } });
   }
 }

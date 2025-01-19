@@ -2,6 +2,7 @@ import SystemService from "@/services/systemService";
 import { useUsersStore } from "../store/usersStore";
 import { storeToRefs } from "pinia";
 import {
+  AdminDeleteUserAccount,
   DisableUser,
   SearchUsersParams,
   SearchUsersServerResponse,
@@ -98,9 +99,9 @@ export default class UserController {
     await this.adminService.updateUserStatus({ id, status });
   }
 
-  async deleteUserAccount(params: { id: number }): Promise<void> {
-    const { id } = params;
-    await this.adminService.deleteUserAccount({ id });
+  async deleteUserAccount(params: AdminDeleteUserAccount): Promise<void> {
+    const { id, email } = params;
+    await this.adminService.deleteUserAccount({ id, email });
   }
 
   async login(params: {

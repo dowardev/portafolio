@@ -227,32 +227,12 @@
         <ion-icon slot="start" :icon="banOutline"></ion-icon>
       </ion-item>
 
-      <!-- reset password -->
-      <ion-item
-        button
-        lines="none"
-        @click="sendMailResetPassword({ email: userSelected.email! })"
-      >
-        <ion-label>Reiniciar contraseña</ion-label>
-        <ion-icon slot="start" :icon="keyOutline"></ion-icon>
-      </ion-item>
-
-      <!-- verify user -->
-      <ion-item
-        button
-        lines="none"
-        @click="
-          resendEmailConfirmation({
-            email: userSelected.email!,
-          })
-        "
-      >
-        <ion-label>Verificar usuario</ion-label>
-        <ion-icon slot="start" :icon="thumbsUpOutline"></ion-icon>
-      </ion-item>
-
       <!-- delete user -->
-      <ion-item button lines="none" @click="deleteUser(userSelected.email!)">
+      <ion-item
+        button
+        lines="none"
+        @click="deleteUser({ email: userSelected.email, id: userSelected.id })"
+      >
         <ion-icon slot="start" :icon="trashOutline" color="danger"></ion-icon>
         <ion-label color="danger">Borrar Usuario</ion-label>
       </ion-item>
@@ -338,7 +318,11 @@ import {
 // TODO: pending
 
 // interface
-import { FilterAdminPanelOptions, User } from "@/services/interfaces";
+import {
+  AdminDeleteUserAccount,
+  FilterAdminPanelOptions,
+  User,
+} from "@/services/interfaces";
 import { DesignMode } from "@/utils/types";
 
 // controllers
@@ -499,30 +483,6 @@ async function handleUpdateUserStatus(params: { id: string; status: boolean }) {
   }
 }
 
-async function sendMailResetPassword(params: { email: string }) {
-  const { email } = params;
-  // spinners.optionsUser = true;
-
-  const alertResponse = await systemController.presentAlertConfirmation({
-    message:
-      "Se enviarán las instrucciones para restaurar la contraseña al correo electrónico del usuario.",
-  });
-
-  if (alertResponse == false) return;
-
-  try {
-    // await sendMailResetPasswordService({
-    //   email,
-    // });
-
-    await systemController.presentToast({ message: "Instrucciones enviadas" });
-  } catch (e: any) {
-    console.error(e);
-    openToastError(e);
-  }
-  // spinners.optionsUser = false;
-}
-
 async function resendEmailConfirmation(params: { email: string }) {
   const { email } = params;
   // spinners.optionsUser = true;
@@ -551,9 +511,8 @@ async function resendEmailConfirmation(params: { email: string }) {
   // spinners.optionsUser = false;
 }
 
-async function deleteUser(email: string) {
-  // spinners.optionsUser = true;
-
+async function deleteUser(params: AdminDeleteUserAccount) {
+  const { email, id } = params;
   const alertResponse = await systemController.presentAlertConfirmation({
     message: "Esta acción no es reversible.",
   });
@@ -561,13 +520,12 @@ async function deleteUser(email: string) {
   if (alertResponse == false) return;
 
   try {
-    // await userController.deleteUserAccount({ email });
+    await userController.deleteUserAccount({ email, id });
 
     await systemController.presentToast({ message: "Usuario eliminado" });
     loadContent();
   } catch (e: any) {
     console.error(e);
-    openToastError({ error: e });
   }
   // spinners.optionsUser = false;
 }

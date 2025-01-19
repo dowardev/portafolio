@@ -260,6 +260,11 @@ export interface DisableUser {
   status: boolean;
 }
 
+export interface AdminDeleteUserAccount {
+  id?: string;
+  email?: string;
+}
+
 // contact
 export interface ContactMessage {
   name: string;
