@@ -88,10 +88,22 @@ class UserController extends Controller
       "status" => "required|boolean",
     ]);
 
-    $user = User::find($request->input("userId"));
-    $user->is_user_disabled = $request->input("status");
-    $user->save();
+    try {
+      $user = User::find($request->input("userId"));
+      $user->is_user_disabled = $request->input("status");
+      $user->save();
 
-    return response()->json(["message" => "User status updated successfully"]);
+      return response()->json([
+        "message" => "User status updated successfully",
+      ]);
+    } catch (\Exception $e) {
+      return response()->json(
+        [
+          "error" => "Operation failed",
+          "message" => $e->getMessage(),
+        ],
+        500
+      );
+    }
   }
 }
