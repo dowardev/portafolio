@@ -42,19 +42,77 @@
             <!-- users -->
             <ion-card-content>
               <section style="overflow-y: scroll; height: calc(100dvh - 318px)">
-                <div v-for="user in users" :key="user.id">
+                <div v-for="(user, userIndex) in users" :key="user.id">
                   <ion-list>
                     <ion-item
                       lines="full"
-                      class="transparent"
                       button
-                      @click="
-                        userSelected = Object.assign(userSelected, user);
-                        modalUserInfo.open = true;
+                      class="transparent"
+                      @mouseover="userHoverIndex = userIndex"
+                      @mouseleave="userHoverIndex = -1"
+                      @contextmenu.prevent="
+                        popoverUserOptions.event = $event;
+                        userSelected = user;
+                        popoverUserOptions.open = true;
                       "
                     >
                       <ion-icon slot="start" :icon="personOutline"></ion-icon>
-                      <ion-label>{{ user.email }}</ion-label>
+                      <ion-label
+                        @click="
+                          userSelected = Object.assign(userSelected, user);
+                          modalUserInfo.open = true;
+                        "
+                        >{{ user.email }}</ion-label
+                      >
+
+                      <!-- disable/enable user button -->
+                      <ion-button
+                        v-if="
+                          userHoverIndex == userIndex &&
+                          (screenSize.preset == 'md' ||
+                            screenSize.preset == 'lg' ||
+                            screenSize.preset == 'xl' ||
+                            screenSize.preset == 'xxl')
+                        "
+                        fill="clear"
+                        @click="
+                          handleUpdateUserStatus({
+                            id: user.id!,
+                            status: !user.isDisabled,
+                          })
+                        "
+                      >
+                        <ion-icon
+                          :icon="
+                            user.isDisabled == true
+                              ? checkmarkOutline
+                              : banOutline
+                          "
+                        ></ion-icon>
+                      </ion-button>
+
+                      <!-- delete user button -->
+                      <ion-button
+                        v-if="
+                          userHoverIndex == userIndex &&
+                          (screenSize.preset == 'md' ||
+                            screenSize.preset == 'lg' ||
+                            screenSize.preset == 'xl' ||
+                            screenSize.preset == 'xxl')
+                        "
+                        fill="clear"
+                        @click="
+                          handleDeleteUser({
+                            email: userSelected.email,
+                            id: userSelected.id,
+                          })
+                        "
+                      >
+                        <ion-icon
+                          :icon="trashOutline"
+                          color="danger"
+                        ></ion-icon>
+                      </ion-button>
                     </ion-item>
                   </ion-list>
                 </div>
@@ -302,6 +360,7 @@ import {
   IonCardContent,
   IonSpinner,
   IonModal,
+  isPlatform,
 } from "@ionic/vue";
 import { onMounted, reactive, ref, watch } from "vue";
 import {
@@ -316,6 +375,7 @@ import {
   checkmarkOutline,
   thumbsUpOutline,
   closeOutline,
+  createOutline,
 } from "ionicons/icons";
 // TODO: pending
 
@@ -363,6 +423,9 @@ const userSelected = reactive<User>({});
 const modalUserInfo = reactive({ open: false });
 const popoverUserOptions = reactive({ open: false, event: Event });
 const designMode = ref<DesignMode>(systemController.getdesignMode());
+const userHoverIndex = ref<number>(-1);
+const screenSize = ref(systemController.getScreenSize());
+// end vars
 
 // mounted
 onMounted(async () => {
@@ -387,6 +450,9 @@ watch(
     designMode.value = newValue;
   },
 );
+watch(systemController.getScreenSize(), (newVal) => {
+  screenSize.value = newVal;
+});
 
 // functions
 async function loadContent() {
