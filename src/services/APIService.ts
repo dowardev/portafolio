@@ -49,6 +49,6 @@ export default class APIService {
       data,
     });
 
-    return await response;
+    return response;
   }
 }

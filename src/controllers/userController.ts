@@ -6,6 +6,7 @@ import {
   DisableUser,
   SearchUsersParams,
   SearchUsersServerResponse,
+  SignUpUserResponse,
   User,
   UserRegister,
 } from "../services/interfaces";
@@ -61,10 +62,15 @@ export default class UserController {
     }
   }
 
-  async createUserAccount(params: UserRegister) {
+  async createUserAccount(params: UserRegister): Promise<SignUpUserResponse> {
     const { name, user, password, email } = params;
 
-    await this.sessionService.userRegister({ name, user, password, email });
+    return await this.sessionService.userRegister({
+      name,
+      user,
+      password,
+      email,
+    });
   }
 
   async uploadImage(params: {

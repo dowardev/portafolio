@@ -117,7 +117,7 @@
 
 <script setup lang="ts">
 import { IonInput, IonButton, IonIcon } from "@ionic/vue";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import {
   eyeOutline,
   eyeOffOutline,
@@ -135,6 +135,7 @@ import {
   maxLength,
 } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
+import { faker } from "@faker-js/faker";
 
 const router = useRouter();
 defineExpose({ getData });
@@ -147,10 +148,6 @@ const form = ref({
   email: "",
   password: "",
   password2: "",
-});
-const spinners = ref({
-  buttonSignup: false,
-  buttonLogin: false,
 });
 
 // validation
@@ -165,7 +162,7 @@ const rules = {
       required: helpers.withMessage(messageError.required, required),
       alpha: helpers.withMessage(
         messageError.alpha,
-        helpers.regex(/^[a-zA-Z ]*$/)
+        helpers.regex(/^[a-zA-Z ]*$/),
       ),
     },
     user: {
@@ -173,7 +170,7 @@ const rules = {
       maxLength: helpers.withMessage("Máximo 32 caracteres", maxLength(32)),
       minLength: helpers.withMessage(
         "Mínimo 4 caracteres",
-        helpers.regex(/^.{4,}$/)
+        helpers.regex(/^.{4,}$/),
       ),
     },
     email: {
@@ -184,23 +181,23 @@ const rules = {
       required: helpers.withMessage(messageError.required, required),
       minLength: helpers.withMessage(
         "La contraseña debe tener al menos 8 caracteres",
-        minLength(8)
+        minLength(8),
       ),
       regexLower: helpers.withMessage(
         "La contraseña debe contener al menos una letra minúscula",
-        helpers.regex(/[a-z]/)
+        helpers.regex(/[a-z]/),
       ),
       regexUpper: helpers.withMessage(
         "La contraseña debe contener al menos una letra mayúscula",
-        helpers.regex(/[A-Z]/)
+        helpers.regex(/[A-Z]/),
       ),
       regexNumber: helpers.withMessage(
         "La contraseña debe contener al menos un número",
-        helpers.regex(/[0-9]/)
+        helpers.regex(/[0-9]/),
       ),
       regexSpecial: helpers.withMessage(
         "La contraseña debe contener al menos un carácter especial",
-        helpers.regex(/[@$!%*?&]/)
+        helpers.regex(/[@$!%*?&]/),
       ),
     },
     password2: {
@@ -213,12 +210,16 @@ const v$ = useVuelidate(rules, { form });
 
 // watch
 watch(form.value, (newValue, oldValue) => {
-  console.log(!v$.value.$invalid);
   emits("formStatus", !v$.value.$invalid);
+});
+onMounted(() => {
+  // generateRandomData();
 });
 
 // functions
-function getData() {
+function getData():
+  | { name: string; user: string; email: string; password: string }
+  | undefined {
   v$.value.$validate();
   if (!v$.value.$invalid) {
     return {
@@ -228,6 +229,14 @@ function getData() {
       password: form.value.password,
     };
   } else return undefined;
+}
+
+function generateRandomData() {
+  form.value.user = faker.internet.username();
+  form.value.name = faker.person.fullName();
+  form.value.email = faker.internet.email();
+  form.value.password = faker.internet.password() + "1@";
+  form.value.password2 = form.value.password;
 }
 </script>
 

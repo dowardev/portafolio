@@ -4,7 +4,10 @@
       <ion-list>
         <ion-list-header mode="ios">
           <ion-label>Usuarios</ion-label>
-          <ion-button :disabled="status == 'loading'">
+          <ion-button
+            :disabled="status == 'loading'"
+            @click="modalUserRegister.open = true"
+          >
             <ion-icon :icon="addOutline"></ion-icon>
           </ion-button>
 
@@ -339,6 +342,45 @@
       <ModalUserComponent :user-prop="userSelected" :status-prop="status" />
     </ion-content>
   </ion-modal>
+
+  <!-- moda user register -->
+  <ion-modal
+    :is-open="modalUserRegister.open"
+    @did-dismiss="modalUserRegister.open = false"
+  >
+    <ion-header mode="ios" class="ion-no-border">
+      <ion-toolbar>
+        <ion-buttons slot="start" :mode="designMode">
+          <ion-button @click="modalUserRegister.open = false">
+            <ion-icon :icon="closeOutline"> </ion-icon>
+          </ion-button>
+        </ion-buttons>
+
+        <ion-title>Información de usuario</ion-title>
+
+        <ion-buttons slot="end" :mode="designMode">
+          <ion-button
+            slot="end"
+            fill="clear"
+            @click="handleCreateUserAccount(signUpFormComponentRef?.getData()!)"
+          >
+            <ion-icon :icon="saveOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-card class="shadow-1 ion-padding">
+        <SignUpFormComponent
+          ref="signUpFormComponentRef"
+          @enter-pressed="
+            handleCreateUserAccount(signUpFormComponentRef?.getData()!)
+          "
+        />
+      </ion-card>
+    </ion-content>
+  </ion-modal>
 </template>
 
 <script setup lang="ts">
@@ -376,6 +418,7 @@ import {
   thumbsUpOutline,
   closeOutline,
   createOutline,
+  saveOutline,
 } from "ionicons/icons";
 // TODO: pending
 
@@ -396,6 +439,7 @@ const systemController = new SystemController();
 // components
 import FilterOptionsComponent from "./components/FilterOptionsComponent.vue";
 import ModalUserComponent from "./components/ModalUserComponent.vue";
+import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
 
 // vars
 const emit = defineEmits(["on-content-loaded"]);
@@ -421,10 +465,13 @@ const filterComponentRef = ref<InstanceType<
 const popoverFilter = reactive({ open: false, event: Event });
 const userSelected = reactive<User>({});
 const modalUserInfo = reactive({ open: false });
+const modalUserRegister = reactive({ open: false });
 const popoverUserOptions = reactive({ open: false, event: Event });
 const designMode = ref<DesignMode>(systemController.getdesignMode());
 const userHoverIndex = ref<number>(-1);
 const screenSize = ref(systemController.getScreenSize());
+const editorRef = ref<InstanceType<typeof EditorComponent>>();
+const signUpFormComponentRef = ref<InstanceType<typeof SignUpFormComponent>>();
 // end vars
 
 // mounted
@@ -643,6 +690,67 @@ async function deleteFilters() {
 function getFilters() {
   const filters = filterComponentRef.value?.getFiltersSelected();
   if (filters) Object.assign(filterSelected, filters);
+}
+
+async function handleCreateUserAccount(params: {
+  name: string;
+  user: string;
+  email: string;
+  password: string;
+}) {
+  const { name, user, email, password } = params;
+  await systemController.presentToast({ message: "Usuario agregado" });
+  users.push({
+    name,
+    user,
+    email,
+    password,
+    isDisabled: false,
+    id: "",
+  });
+
+  try {
+    const { id } = await createUserAccount(params);
+    const index = users.findIndex((user) => user.email === email);
+    if (index !== -1) {
+      users[index].id = id;
+      userSelected.id = id;
+    }
+  } catch (e: unknown) {
+    console.error(e);
+    users.pop();
+  }
+}
+
+async function createUserAccount(params: {
+  name: string;
+  user: string;
+  email: string;
+  password: string;
+}): Promise<{ id: number } | undefined> {
+  const { name, user, password, email } = params;
+
+  try {
+    const { id } = await userController.createUserAccount({
+      name,
+      user,
+      email,
+      password,
+    });
+    return { id };
+  } catch (e: unknown) {
+    if (e instanceof Error && e.message === "Operation failed") {
+      const message = "Problema al crear el usuario";
+      await systemController.presentToast({
+        message,
+        color: "danger",
+      });
+      throw e.message;
+    } else {
+      console.error(e);
+      throw e;
+    }
+  }
 }
 </script>
 

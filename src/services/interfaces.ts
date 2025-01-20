@@ -196,6 +196,22 @@ export interface UpdateUserPassword {
   newPassword: string;
   newPasswordRepeat: string;
 }
+
+export interface SignUpUserServerResponse {
+  id: number;
+  name: string;
+  user: string;
+  email: string;
+  updated_at: string;
+  created_at: string;
+}
+export interface SignUpUserResponse {
+  id: number;
+  name: string;
+  user: string;
+  email: string;
+}
+// end user
 // admin
 export interface GetUsers {
   first: number;
@@ -262,7 +278,7 @@ export interface DisableUser {
 
 export interface AdminDeleteUserAccount {
   id?: string;
-  email?: string;
+  email: string;
 }
 
 // contact

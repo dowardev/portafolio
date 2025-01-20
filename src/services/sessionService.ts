@@ -1,16 +1,38 @@
-import { UserRegister, ResetPassword, UpdateUserPassword } from "./interfaces";
+import {
+  UserRegister,
+  ResetPassword,
+  UpdateUserPassword,
+  SignUpUserServerResponse,
+  SignUpUserResponse,
+} from "./interfaces";
 import { apiConnector } from "@/main";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export default class SessionService {
-  async userRegister(params: UserRegister): Promise<void> {
+  async userRegister(params: UserRegister): Promise<SignUpUserResponse> {
     const { name, user, password, email } = params;
 
-    await apiConnector.post({
-      url: `signup`,
-      data: { name, user, password, email },
-    });
+    try {
+      const response = (
+        await apiConnector.post({
+          url: `signup`,
+          data: { name, user, password, email },
+        })
+      ).data.user as SignUpUserServerResponse;
+
+      return {
+        id: response.id,
+        name: response.name,
+        user: response.user,
+        email: response.email,
+      };
+    } catch (e: unknown) {
+      if (e instanceof AxiosError && e.response) {
+        throw new Error(e.response.data.error);
+      }
+      throw e;
+    }
   }
 
   async userLogin(params: {
