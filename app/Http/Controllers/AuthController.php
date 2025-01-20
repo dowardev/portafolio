@@ -46,7 +46,13 @@ class AuthController extends Controller
       $message->subject("Email Verification Mail");
     });
 
-    return response()->json("success", 201);
+    return response()->json(
+      [
+        "message" => "success",
+        "user" => $user,
+      ],
+      201
+    );
   }
 
   public function login(Request $request)
