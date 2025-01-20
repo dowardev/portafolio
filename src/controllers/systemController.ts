@@ -197,4 +197,9 @@ export default class SystemController {
   getScreenSize() {
     return this.systemStore.screenSize;
   }
+
+  updateScreenSize(params: { width: number; height: number; preset: string }) {
+    const { width, height, preset } = params;
+    this.systemStore.updateScreenSize({ width, height, preset });
+  }
 }

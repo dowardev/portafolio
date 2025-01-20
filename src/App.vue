@@ -33,6 +33,7 @@ import {
   toastController,
   isPlatform,
 } from "@ionic/vue";
+import { closeOutline } from "ionicons/icons";
 import { computed, onMounted, ref, watch } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
 import { useRouter, useRoute } from "vue-router";
@@ -44,7 +45,6 @@ import { DesignMode } from "./utils/types";
 
 // controllers
 import SystemController from "./controllers/systemController";
-import { closeOutline } from "ionicons/icons";
 const systemController = new SystemController();
 
 // store
@@ -100,6 +100,8 @@ onMounted(async () => {
     });
   }
   systemController.setDesignMode({ mode: designMode.value });
+  updateScreenSize();
+  window.addEventListener("resize", updateScreenSize);
 });
 
 function createFirstCookie() {
@@ -138,6 +140,19 @@ async function openToastOptions() {
 
 function updateApp(e: any) {
   if (e.detail.role == "update") systemController.updateApp();
+}
+
+function updateScreenSize(): void {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  let preset = "xxl";
+
+  if (width < 576) preset = "xs";
+  else if (width < 768) preset = "sm";
+  else if (width < 992) preset = "md";
+  else if (width < 1200) preset = "lg";
+  else if (width < 1400) preset = "xl";
+  systemController.updateScreenSize({ width, height, preset });
 }
 </script>
 

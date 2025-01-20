@@ -1,4 +1,4 @@
-import { System, Theme } from "@/services/interfaces";
+import { Theme } from "@/services/interfaces";
 import { DesignMode } from "@/utils/types";
 import { defineStore } from "pinia";
 import { reactive, ref, watch } from "vue";
@@ -22,8 +22,6 @@ export const useSystemStore = defineStore("system", () => {
     height: window.innerHeight,
     preset: "",
   });
-
-  window.addEventListener("resize", updateScreenSize);
 
   watch(theme, async (newValue, oldValue) => {
     if (
@@ -62,16 +60,12 @@ export const useSystemStore = defineStore("system", () => {
     designMode.value = mode;
   }
 
-  function updateScreenSize(): void {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    let preset = "xxl";
-
-    if (width < 576) preset = "xs";
-    else if (width < 768) preset = "sm";
-    else if (width < 992) preset = "md";
-    else if (width < 1200) preset = "lg";
-    else if (width < 1400) preset = "xl";
+  function updateScreenSize(params: {
+    width: number;
+    height: number;
+    preset: string;
+  }): void {
+    const { width, height, preset } = params;
 
     Object.assign(screenSize, {
       width,
@@ -92,5 +86,6 @@ export const useSystemStore = defineStore("system", () => {
     getDesignMode,
     setDesignMode,
     screenSize,
+    updateScreenSize,
   };
 });
