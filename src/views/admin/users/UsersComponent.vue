@@ -51,11 +51,13 @@
                       lines="full"
                       button
                       class="transparent"
-                      @mouseover="userHoverIndex = userIndex"
+                      @mouseover="
+                        userSelected = user;
+                        userHoverIndex = userIndex;
+                      "
                       @mouseleave="userHoverIndex = -1"
                       @contextmenu.prevent="
                         popoverUserOptions.event = $event;
-                        userSelected = user;
                         popoverUserOptions.open = true;
                       "
                     >
@@ -80,8 +82,8 @@
                         fill="clear"
                         @click="
                           handleUpdateUserStatus({
-                            id: user.id!,
-                            status: !user.isDisabled,
+                            id: userSelected.id!,
+                            status: !userSelected.isDisabled,
                           })
                         "
                       >
@@ -106,8 +108,8 @@
                         fill="clear"
                         @click="
                           handleDeleteUser({
-                            email: userSelected.email,
-                            id: userSelected.id,
+                            email: userSelected.email ?? '',
+                            id: userSelected.id ?? '',
                           })
                         "
                       >
@@ -710,12 +712,15 @@ async function handleCreateUserAccount(params: {
   });
 
   try {
-    const { id } = await createUserAccount(params);
-    const index = users.findIndex((user) => user.email === email);
-    if (index !== -1) {
-      users[index].id = id;
-      userSelected.id = id;
+    const result = await createUserAccount(params);
+    if (result) {
+      const index = users.findIndex((user) => user.email === email);
+      if (index !== -1) {
+        users[index].id = result.id.toString();
+        userSelected.id = result.id.toString();
+      }
     }
+    modalUserRegister.open = false;
   } catch (e: unknown) {
     console.error(e);
     users.pop();
