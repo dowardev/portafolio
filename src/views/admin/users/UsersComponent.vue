@@ -57,6 +57,7 @@
                       "
                       @mouseleave="userHoverIndex = -1"
                       @contextmenu.prevent="
+                        userSelected = user;
                         popoverUserOptions.event = $event;
                         popoverUserOptions.open = true;
                       "
@@ -65,6 +66,7 @@
                       <ion-label
                         @click="
                           userSelected = Object.assign(userSelected, user);
+                          contextMenu = 'modal';
                           modalUserInfo.open = true;
                         "
                         >{{ user.email }}</ion-label
@@ -80,20 +82,9 @@
                             screenSize.preset == 'xxl')
                         "
                         fill="clear"
-                        @click="
-                          handleUpdateUserStatus({
-                            id: userSelected.id!,
-                            status: !userSelected.isDisabled,
-                          })
-                        "
+                        @click="modalUserRegister.open = true"
                       >
-                        <ion-icon
-                          :icon="
-                            user.isDisabled == true
-                              ? checkmarkOutline
-                              : banOutline
-                          "
-                        ></ion-icon>
+                        <ion-icon :icon="createOutline"></ion-icon>
                       </ion-button>
 
                       <!-- delete user button -->
@@ -106,17 +97,31 @@
                             screenSize.preset == 'xxl')
                         "
                         fill="clear"
-                        @click="
-                          handleDeleteUser({
-                            email: userSelected.email ?? '',
-                            id: userSelected.id ?? '',
-                          })
-                        "
+                        @click="modalUserRegister.open = true"
                       >
                         <ion-icon
                           :icon="trashOutline"
                           color="danger"
                         ></ion-icon>
+                      </ion-button>
+
+                      <!-- more options -->
+                      <ion-button
+                        v-if="
+                          userHoverIndex == userIndex &&
+                          (screenSize.preset == 'md' ||
+                            screenSize.preset == 'lg' ||
+                            screenSize.preset == 'xl' ||
+                            screenSize.preset == 'xxl')
+                        "
+                        fill="clear"
+                        @click="
+                          contextMenu = 'main';
+                          popoverUserOptions.event = $event;
+                          popoverUserOptions.open = true;
+                        "
+                      >
+                        <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
                       </ion-button>
                     </ion-item>
                   </ion-list>
@@ -257,8 +262,21 @@
     dismiss-on-select
     @did-dismiss="popoverUserOptions.open = false"
   >
-    <!-- user options -->
     <ion-content>
+      <!-- edit user -->
+      <ion-item
+        v-if="
+          contextMenu == 'modal' ||
+          (contextMenu == 'main' && screenSize.preset == 'xs')
+        "
+        button
+        lines="none"
+        @click="handleUpdateUserProfile()"
+      >
+        <ion-icon slot="start" :icon="createOutline"></ion-icon>
+        <ion-label>Editar usuario</ion-label>
+      </ion-item>
+
       <!-- enable user -->
       <ion-item
         v-if="userSelected.isDisabled == true"
@@ -292,10 +310,14 @@
 
       <!-- delete user -->
       <ion-item
+        v-if="
+          contextMenu == 'modal' ||
+          (contextMenu == 'main' && screenSize.preset == 'xs')
+        "
         button
         lines="none"
         @click="
-          handleDeleteUser({ email: userSelected.email, id: userSelected.id })
+          handleDeleteUser({ email: userSelected.email!, id: userSelected.id! })
         "
       >
         <ion-icon slot="start" :icon="trashOutline" color="danger"></ion-icon>
@@ -474,6 +496,7 @@ const userHoverIndex = ref<number>(-1);
 const screenSize = ref(systemController.getScreenSize());
 const editorRef = ref<InstanceType<typeof EditorComponent>>();
 const signUpFormComponentRef = ref<InstanceType<typeof SignUpFormComponent>>();
+const contextMenu = ref<"modal" | "main">("modal");
 // end vars
 
 // mounted
@@ -756,6 +779,14 @@ async function createUserAccount(params: {
       throw e;
     }
   }
+}
+
+async function handleUpdateUserProfile() {
+  await updateUserProfile();
+}
+
+async function updateUserProfile() {
+  //
 }
 </script>
 
