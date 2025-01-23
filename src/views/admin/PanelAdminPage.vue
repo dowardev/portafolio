@@ -48,11 +48,7 @@
 
   <ion-content class="container-page">
     <section v-if="mainSegment == 'users'">
-      <UsersComponent
-        @on-content-loaded="
-          toggleLoader({ show: $event == true ? false : true })
-        "
-      />
+      <UsersComponent />
     </section>
 
     <!-- popovers -->
@@ -86,7 +82,7 @@ import {
   isPlatform,
   IonPopover,
 } from "@ionic/vue";
-import { onMounted, reactive, ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import UsersComponent from "./users/UsersComponent.vue";
 
 // controllers
@@ -101,20 +97,9 @@ const designElements = isPlatform("ios") ? "ios" : "md";
 const screenSize = ref(systemController.getScreenSize());
 const popoverMainOptions = reactive({ open: false, event: Event });
 
-onMounted(() => {
-  // toggleLoader({ show: true });
-});
 watch(systemController.getScreenSize(), (newVal) => {
   screenSize.value = newVal;
 });
 
 // functions
-function toggleLoader(params: { show: boolean }) {
-  const { show } = params;
-  if (show) {
-    systemController.enableLoader({ color: "primary" });
-  } else {
-    systemController.disableLoader();
-  }
-}
 </script>

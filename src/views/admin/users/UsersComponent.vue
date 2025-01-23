@@ -16,18 +16,17 @@
             <ion-button
               :mode="designMode"
               :class="
-                refreshContent ? 'btn-refresh-expanded' : 'btn-refresh-normal'
+                isButtonRefreshUsersActive
+                  ? 'btn-refresh-expanded'
+                  : 'btn-refresh-normal'
               "
               :disabled="status == 'loading'"
-              :fill="refreshContent ? 'solid' : 'clear'"
-              @click="
-                loadContent();
-                refreshContent = true;
-              "
+              :fill="isButtonRefreshUsersActive ? 'solid' : 'clear'"
+              @click="handleButtonRefreshUsers()"
             >
               <ion-icon :icon="refreshOutline"></ion-icon>
               <transition name="fade-refresh">
-                <span v-if="refreshContent">Cargando</span>
+                <span v-if="isButtonRefreshUsersActive">Cargando</span>
               </transition>
             </ion-button>
           </div>
@@ -62,86 +61,104 @@
             <!-- users -->
             <ion-card-content>
               <section style="overflow-y: scroll; height: calc(100dvh - 318px)">
-                <div v-for="(user, userIndex) in users" :key="user.id">
-                  <ion-list>
-                    <ion-item
-                      lines="full"
-                      button
-                      class="transparent"
-                      @mouseover="
-                        userSelected = user;
-                        userHoverIndex = userIndex;
-                      "
-                      @mouseleave="userHoverIndex = -1"
-                      @contextmenu.prevent="
-                        userSelected = user;
-                        popoverUserOptions.event = $event;
-                        popoverUserOptions.open = true;
-                      "
-                    >
-                      <ion-icon slot="start" :icon="personOutline"></ion-icon>
-                      <ion-label
-                        @click="
-                          userSelected = Object.assign(userSelected, user);
-                          contextMenu = 'modal';
-                          modalUserInfo.open = true;
+                <div v-if="refreshContent.users == false">
+                  <div v-for="(user, userIndex) in users" :key="user.id">
+                    <ion-list>
+                      <ion-item
+                        lines="full"
+                        button
+                        class="transparent"
+                        @mouseover="
+                          userSelected = user;
+                          userHoverIndex = userIndex;
                         "
-                        >{{ user.email }}</ion-label
-                      >
-
-                      <!-- disable/enable user button -->
-                      <ion-button
-                        v-if="
-                          userHoverIndex == userIndex &&
-                          (screenSize.preset == 'md' ||
-                            screenSize.preset == 'lg' ||
-                            screenSize.preset == 'xl' ||
-                            screenSize.preset == 'xxl')
-                        "
-                        fill="clear"
-                        @click="modalUserRegister.open = true"
-                      >
-                        <ion-icon :icon="createOutline"></ion-icon>
-                      </ion-button>
-
-                      <!-- delete user button -->
-                      <ion-button
-                        v-if="
-                          userHoverIndex == userIndex &&
-                          (screenSize.preset == 'md' ||
-                            screenSize.preset == 'lg' ||
-                            screenSize.preset == 'xl' ||
-                            screenSize.preset == 'xxl')
-                        "
-                        fill="clear"
-                        @click="modalUserRegister.open = true"
-                      >
-                        <ion-icon
-                          :icon="trashOutline"
-                          color="danger"
-                        ></ion-icon>
-                      </ion-button>
-
-                      <!-- more options -->
-                      <ion-button
-                        v-if="
-                          userHoverIndex == userIndex &&
-                          (screenSize.preset == 'md' ||
-                            screenSize.preset == 'lg' ||
-                            screenSize.preset == 'xl' ||
-                            screenSize.preset == 'xxl')
-                        "
-                        fill="clear"
-                        @click="
-                          contextMenu = 'main';
+                        @mouseleave="userHoverIndex = -1"
+                        @contextmenu.prevent="
+                          userSelected = user;
                           popoverUserOptions.event = $event;
                           popoverUserOptions.open = true;
                         "
                       >
-                        <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
-                      </ion-button>
-                    </ion-item>
-                  </ion-list>
+                        <ion-icon slot="start" :icon="personOutline"></ion-icon>
+                        <ion-label
+                          @click="
+                            userSelected = Object.assign(userSelected, user);
+                            contextMenu = 'modal';
+                            modalUserInfo.open = true;
+                          "
+                          >{{ user.email }}</ion-label
+                        >
+
+                        <!-- disable/enable user button -->
+                        <ion-button
+                          v-if="
+                            userHoverIndex == userIndex &&
+                            (screenSize.preset == 'md' ||
+                              screenSize.preset == 'lg' ||
+                              screenSize.preset == 'xl' ||
+                              screenSize.preset == 'xxl')
+                          "
+                          fill="clear"
+                          @click="modalUserRegister.open = true"
+                        >
+                          <ion-icon :icon="createOutline"></ion-icon>
+                        </ion-button>
+
+                        <!-- delete user button -->
+                        <ion-button
+                          v-if="
+                            userHoverIndex == userIndex &&
+                            (screenSize.preset == 'md' ||
+                              screenSize.preset == 'lg' ||
+                              screenSize.preset == 'xl' ||
+                              screenSize.preset == 'xxl')
+                          "
+                          fill="clear"
+                          @click="modalUserRegister.open = true"
+                        >
+                          <ion-icon
+                            :icon="trashOutline"
+                            color="danger"
+                          ></ion-icon>
+                        </ion-button>
+
+                        <!-- more options -->
+                        <ion-button
+                          v-if="
+                            userHoverIndex == userIndex &&
+                            (screenSize.preset == 'md' ||
+                              screenSize.preset == 'lg' ||
+                              screenSize.preset == 'xl' ||
+                              screenSize.preset == 'xxl')
+                          "
+                          fill="clear"
+                          @click="
+                            contextMenu = 'main';
+                            popoverUserOptions.event = $event;
+                            popoverUserOptions.open = true;
+                          "
+                        >
+                          <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
+                        </ion-button>
+                      </ion-item>
+                    </ion-list>
+                  </div>
+                </div>
+
+                <div v-if="refreshContent.users == true">
+                  <div v-for="n in 8" :key="n">
+                    <ion-list>
+                      <ion-item lines="full" class="transparent">
+                        <ion-icon slot="start" :icon="personOutline"></ion-icon>
+                        <ion-label>
+                          <ion-skeleton-text
+                            animated
+                            style="width: 70%"
+                          ></ion-skeleton-text>
+                        </ion-label>
+                      </ion-item>
+                    </ion-list>
+                  </div>
                 </div>
               </section>
 
@@ -479,7 +496,6 @@ import ModalUserComponent from "./components/ModalUserComponent.vue";
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
 
 // vars
-const emit = defineEmits(["on-content-loaded"]);
 const pagInfo = reactive({
   currentPage: 1,
   totalPaginacionElements: Number(),
@@ -508,7 +524,8 @@ const userHoverIndex = ref<number>(-1);
 const screenSize = ref(systemController.getScreenSize());
 const signUpFormComponentRef = ref<InstanceType<typeof SignUpFormComponent>>();
 const contextMenu = ref<"modal" | "main">("modal");
-const refreshContent = ref(false);
+const refreshContent = reactive({ users: false });
+const isButtonRefreshUsersActive = ref(false);
 // end vars
 
 // mounted
@@ -516,11 +533,6 @@ onMounted(async () => {
   await loadContent();
 });
 // watch
-watch(status, (newValue) => {
-  if (newValue == "loaded") emit("on-content-loaded", true);
-  else emit("on-content-loaded", false);
-});
-
 watch(
   () => pagInfo.pagination,
   () => {
@@ -540,15 +552,12 @@ watch(systemController.getScreenSize(), (newVal) => {
 
 // functions
 async function loadContent() {
-  // status.value = "loading";
   await loadUsers({
     search: searchTerm.value,
     pagination: pagInfo.pagination,
     page: pagInfo.currentPage,
     options: filterSelected,
   });
-  status.value = "loaded";
-  refreshContent.value = false;
 }
 
 async function loadUsers(params: {
@@ -772,6 +781,12 @@ async function handleUpdateUserProfile() {
 
 async function updateUserProfile() {
   //
+}
+
+async function handleButtonRefreshUsers() {
+  isButtonRefreshUsersActive.value = true;
+  await loadContent();
+  isButtonRefreshUsersActive.value = false;
 }
 </script>
 
