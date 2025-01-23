@@ -8,7 +8,10 @@
     :ripple-effect="false"
     style="--ripple-color: transparent"
   >
-    <ion-icon :color="props.color" :icon="props.icon"></ion-icon>
+    <ion-icon
+      :class="{ 'ion-padding-end': active }"
+      :icon="props.icon"
+    ></ion-icon>
     <transition name="fade-refresh">
       <span v-if="status">{{ props.message }}</span>
     </transition>
@@ -56,7 +59,7 @@ watch(
 }
 
 .btn-refresh-expanded {
-  width: 140px;
+  width: 150px;
   transition: all 0.4s ease;
 }
 

@@ -76,7 +76,6 @@ const systemController = new SystemController();
 // vars
 const props = defineProps<{
   userProp: User;
-  statusProp: string;
 }>();
 const userDisplay = reactive<
   { name: string; text: string; value: string | number }[]

@@ -7,8 +7,8 @@
 
           <div style="display: flex">
             <ion-button
-              :disabled="status == 'loading'"
-              @click="modalUserRegister.open = true"
+              :disabled="refreshContent.users"
+              @click="modals.userRegister.open = true"
             >
               <ion-icon :icon="addOutline"></ion-icon>
             </ion-button>
@@ -16,8 +16,11 @@
             <ButtonIconAnimationComponent
               :message="'Cargando'"
               :active="isButtonRefreshUsersActive"
-              :disabled="status == 'loading'"
+              :disabled="
+                refreshContent.users && isButtonRefreshUsersActive == false
+              "
               :icon="refreshOutline"
+              :fill="isButtonRefreshUsersActive ? 'solid' : 'clear'"
               @click="handleButtonRefreshUsers()"
             />
           </div>
@@ -30,7 +33,7 @@
                 mode="ios"
                 :value="searchTerm"
                 :debounce="1000"
-                :disabled="status == 'loading'"
+                :disabled="refreshContent.users"
                 @ion-input="
                   searchTerm = $event.target.value!.toString();
                   loadContent();
@@ -41,8 +44,8 @@
               <ion-button
                 fill="clear"
                 @click="
-                  popoverFilter.event = $event;
-                  popoverFilter.open = true;
+                  popovers.filter.event = $event;
+                  popovers.filter.open = true;
                 "
               >
                 <ion-icon :icon="filterOutline"></ion-icon>
@@ -66,8 +69,8 @@
                         @mouseleave="userHoverIndex = -1"
                         @contextmenu.prevent="
                           userSelected = user;
-                          popoverUserOptions.event = $event;
-                          popoverUserOptions.open = true;
+                          popovers.userOptions.event = $event;
+                          popovers.userOptions.open = true;
                         "
                       >
                         <ion-icon slot="start" :icon="personOutline"></ion-icon>
@@ -75,7 +78,7 @@
                           @click="
                             userSelected = Object.assign(userSelected, user);
                             contextMenu = 'modal';
-                            modalUserInfo.open = true;
+                            modals.userInfo.open = true;
                           "
                           >{{ user.email }}</ion-label
                         >
@@ -90,7 +93,7 @@
                               screenSize.preset == 'xxl')
                           "
                           fill="clear"
-                          @click="modalUserRegister.open = true"
+                          @click="modals.userRegister.open = true"
                         >
                           <ion-icon :icon="createOutline"></ion-icon>
                         </ion-button>
@@ -105,7 +108,7 @@
                               screenSize.preset == 'xxl')
                           "
                           fill="clear"
-                          @click="modalUserRegister.open = true"
+                          @click="modals.userRegister.open = true"
                         >
                           <ion-icon
                             :icon="trashOutline"
@@ -125,8 +128,8 @@
                           fill="clear"
                           @click="
                             contextMenu = 'main';
-                            popoverUserOptions.event = $event;
-                            popoverUserOptions.open = true;
+                            popovers.userOptions.event = $event;
+                            popovers.userOptions.open = true;
                           "
                         >
                           <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
@@ -164,7 +167,6 @@
                         label="Usuarios a mostrar"
                         interface="popover"
                         :value="pagInfo.pagination"
-                        :disabled="status == 'loading'"
                         @ion-change="pagInfo.pagination = $event.target.value"
                       >
                         <ion-select-option
@@ -209,7 +211,7 @@
                         label="Pagina"
                         interface="popover"
                         :value="pagInfo.currentPage"
-                        :disabled="status == 'loading'"
+                        :disabled="refreshContent.users"
                         @ion-change="
                           pagInfo.currentPage = $event.target.value;
                           loadContent();
@@ -236,16 +238,15 @@
   <!-- popovers -->
   <!-- popover filter options -->
   <ion-popover
-    ref="popoverFilterRef"
-    :is-open="popoverFilter.open"
+    :is-open="popovers.filter.open"
     :dismiss-on-select="false"
-    :event="popoverFilter.event"
-    @did-dismiss="popoverFilter.open = false"
+    :event="popovers.filter.event"
+    @did-dismiss="popovers.filter.open = false"
   >
     <ion-content :scroll-events="true">
       <div>
         <FilterOptionsComponent
-          ref="filterComponentRef"
+          ref="componentRefs.filterComponent"
           :filters="filterSelected"
         />
       </div>
@@ -260,7 +261,7 @@
               deleteFilters();
               getFilters();
               loadContent();
-              popoverFilter.open = false;
+              popovers.filter.open = false;
             "
           >
             Reiniciar
@@ -271,7 +272,7 @@
             @click="
               getFilters();
               loadContent();
-              popoverFilter.open = false;
+              popovers.filter.open = false;
             "
             >Aplicar
           </ion-button>
@@ -282,10 +283,10 @@
 
   <!-- popover user options -->
   <ion-popover
-    :is-open="popoverUserOptions.open"
-    :event="popoverUserOptions.event"
+    :is-open="popovers.userOptions.open"
+    :event="popovers.userOptions.event"
     dismiss-on-select
-    @did-dismiss="popoverUserOptions.open = false"
+    @did-dismiss="popovers.userOptions.open = false"
   >
     <ion-content>
       <!-- edit user -->
@@ -355,13 +356,13 @@
   <!-- modals -->
   <!-- modal user info -->
   <ion-modal
-    :is-open="modalUserInfo.open"
-    @did-dismiss="modalUserInfo.open = false"
+    :is-open="modals.userInfo.open"
+    @did-dismiss="modals.userInfo.open = false"
   >
     <ion-header mode="ios" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start" :mode="designMode">
-          <ion-button @click="modalUserInfo.open = false">
+          <ion-button @click="modals.userInfo.open = false">
             <ion-icon :icon="closeOutline"> </ion-icon>
           </ion-button>
         </ion-buttons>
@@ -372,14 +373,14 @@
           <ion-button
             slot="end"
             fill="clear"
-            :disabled="status == 'loading'"
+            :disabled="refreshContent.users"
             @click="
-              popoverUserOptions.event = $event;
-              popoverUserOptions.open = true;
+              popovers.userOptions.event = $event;
+              popovers.userOptions.open = true;
             "
           >
             <ion-icon
-              v-if="status != 'loading'"
+              v-if="refreshContent.users == false"
               :icon="ellipsisVerticalOutline"
             ></ion-icon>
           </ion-button>
@@ -388,19 +389,23 @@
     </ion-header>
 
     <ion-content class="ion-padding">
-      <ModalUserComponent :user-prop="userSelected" :status-prop="status" />
+      <ModalUserComponent :user-prop="userSelected" />
     </ion-content>
   </ion-modal>
 
   <!-- moda user register -->
   <ion-modal
-    :is-open="modalUserRegister.open"
-    @did-dismiss="modalUserRegister.open = false"
+    :is-open="modals.userRegister.open"
+    @did-dismiss="modals.userRegister.open = false"
   >
     <ion-header mode="ios" class="ion-no-border">
       <ion-toolbar>
         <ion-buttons slot="start" :mode="designMode">
-          <ion-button @click="modalUserRegister.open = false">
+          <ion-button
+            :disabled="isButtonSaveUserActive"
+            :backdrop-dismiss="isButtonSaveUserActive"
+            @click="modals.userRegister.open = false"
+          >
             <ion-icon :icon="closeOutline"> </ion-icon>
           </ion-button>
         </ion-buttons>
@@ -408,20 +413,17 @@
         <ion-title>Información de usuario</ion-title>
 
         <ion-buttons slot="end" :mode="designMode">
-          <!-- <ion-button -->
-          <!--   slot="end" -->
-          <!--   fill="clear" -->
-          <!--   @click="handleCreateUserAccount(signUpFormComponentRef?.getData()!)" -->
-          <!-- > -->
-          <!--   <ion-icon :icon="saveOutline"></ion-icon> -->
-          <!-- </ion-button> -->
-
           <ButtonIconAnimationComponent
             :message="'Guardando'"
             :active="isButtonSaveUserActive"
-            :disabled="status == 'loading'"
+            :disabled="refreshContent.users"
             :icon="saveOutline"
-            @click="handleCreateUserAccount(signUpFormComponentRef?.getData()!)"
+            :fill="isButtonSaveUserActive ? 'solid' : 'clear'"
+            @click="
+              handleCreateUserAccount(
+                componentRefs.signUpFormComponent?.getData()!,
+              )
+            "
           />
         </ion-buttons>
       </ion-toolbar>
@@ -430,9 +432,11 @@
     <ion-content class="ion-padding">
       <ion-card class="shadow-1 ion-padding">
         <SignUpFormComponent
-          ref="signUpFormComponentRef"
+          ref="componentRefs.signUpFormComponent"
           @enter-pressed="
-            handleCreateUserAccount(signUpFormComponentRef?.getData()!)
+            handleCreateUserAccount(
+              componentRefs.signUpFormComponent?.getData()!,
+            )
           "
         />
       </ion-card>
@@ -503,26 +507,32 @@ const pagInfo = reactive({
   totalElements: Number(),
 });
 const searchTerm = ref("");
-const searchMode = ref(false);
-const status = ref("loaded" as "loading" | "loaded");
 let users = reactive<User[]>([]);
 const filterSelected = reactive<FilterAdminPanelOptions>({
   email: "all",
   user: "all",
   rol: "all",
 });
-const filterComponentRef = ref<InstanceType<
-  typeof FilterOptionsComponent
-> | null>(null);
-const popoverFilter = reactive({ open: false, event: Event });
+const componentRefs = reactive({
+  filterComponent: ref<InstanceType<typeof FilterOptionsComponent> | null>(
+    null,
+  ),
+  signUpFormComponent: ref<InstanceType<typeof SignUpFormComponent> | null>(
+    null,
+  ),
+});
+const popovers = reactive({
+  filter: reactive({ open: false, event: Event }),
+  userOptions: reactive({ open: false, event: Event }),
+});
+const modals = reactive({
+  userInfo: reactive({ open: false }),
+  userRegister: reactive({ open: false }),
+});
 const userSelected = reactive<User>({});
-const modalUserInfo = reactive({ open: false });
-const modalUserRegister = reactive({ open: false });
-const popoverUserOptions = reactive({ open: false, event: Event });
 const designMode = ref<DesignMode>(systemController.getdesignMode());
 const userHoverIndex = ref<number>(-1);
 const screenSize = ref(systemController.getScreenSize());
-const signUpFormComponentRef = ref<InstanceType<typeof SignUpFormComponent>>();
 const contextMenu = ref<"modal" | "main">("modal");
 const refreshContent = reactive({ users: false });
 const isButtonRefreshUsersActive = ref(false);
@@ -553,12 +563,14 @@ watch(systemController.getScreenSize(), (newVal) => {
 
 // functions
 async function loadContent() {
+  refreshContent.users = true;
   await loadUsers({
     search: searchTerm.value,
     pagination: pagInfo.pagination,
     page: pagInfo.currentPage,
     options: filterSelected,
   });
+  refreshContent.users = false;
 }
 
 async function loadUsers(params: {
@@ -568,7 +580,6 @@ async function loadUsers(params: {
   options: FilterAdminPanelOptions;
 }): Promise<void> {
   const { search, pagination, page, options } = params;
-  searchMode.value = true;
 
   try {
     const { data, links, total } = await userController.loadUsers({
@@ -590,14 +601,15 @@ async function loadUsers(params: {
 }
 
 async function updateUserStatus(params: { id: string; status: boolean }) {
+  const { id, status } = params;
   try {
     await userController.updateUserStatus({
-      id: params.id,
-      status: params.status,
+      id: id,
+      status: status,
     });
   } catch (e: unknown) {
     if (e instanceof Error && e.message === "Operation failed") {
-      const message = status.value
+      const message = status
         ? "Problema al habilitar el usuario"
         : "Problema al deshabilitar el usuario";
       await systemController.presentToast({
@@ -653,9 +665,7 @@ async function deleteUser(params: AdminDeleteUserAccount) {
     await userController.deleteUserAccount({ email, id });
   } catch (e: unknown) {
     if (e instanceof Error && e.message === "Operation failed") {
-      const message = status.value
-        ? "Problema al eliminar el usuario"
-        : "Problema al eliminar el usuario";
+      const message = "Problema al eliminar el usuario";
       await systemController.presentToast({
         message,
         color: "danger",
@@ -684,7 +694,7 @@ async function handleDeleteUser(params: AdminDeleteUserAccount) {
 
   if (!alertResponse) return;
 
-  modalUserInfo.open = false;
+  modals.userInfo.open = false;
   users.splice(index, 1);
   await systemController.presentToast({ message: "Usuario eliminado" });
 
@@ -697,18 +707,17 @@ async function handleDeleteUser(params: AdminDeleteUserAccount) {
 }
 
 async function setUsersDisplay() {
-  status.value = "loading";
+  refreshContent.users = true;
   await loadContent();
-  // spinners.showUsers = false;
-  status.value = "loaded";
+  refreshContent.users = false;
 }
 
 async function deleteFilters() {
-  filterComponentRef.value?.resetFilters();
+  componentRefs.filterComponent?.resetFilters();
 }
 
 function getFilters() {
-  const filters = filterComponentRef.value?.getFiltersSelected();
+  const filters = componentRefs.filterComponent?.getFiltersSelected();
   if (filters) Object.assign(filterSelected, filters);
 }
 
@@ -743,8 +752,9 @@ async function handleCreateUserAccount(params: {
       id: "",
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    modalUserRegister.open = false;
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    isButtonSaveUserActive.value = false;
+    modals.userRegister.open = false;
 
     const result = await createUserAccount(params);
     if (result) {
