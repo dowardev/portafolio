@@ -13,22 +13,13 @@
               <ion-icon :icon="addOutline"></ion-icon>
             </ion-button>
 
-            <ion-button
-              :mode="designMode"
-              :class="
-                isButtonRefreshUsersActive
-                  ? 'btn-refresh-expanded'
-                  : 'btn-refresh-normal'
-              "
+            <ButtonRefreshComponent
+              ref="buttonRefreshUsersComponentRef"
+              :message="'Cargando'"
+              :active="isButtonRefreshUsersActive"
               :disabled="status == 'loading'"
-              :fill="isButtonRefreshUsersActive ? 'solid' : 'clear'"
               @click="handleButtonRefreshUsers()"
-            >
-              <ion-icon :icon="refreshOutline"></ion-icon>
-              <transition name="fade-refresh">
-                <span v-if="isButtonRefreshUsersActive">Cargando</span>
-              </transition>
-            </ion-button>
+            />
           </div>
         </ion-list-header>
 
@@ -494,6 +485,7 @@ const systemController = new SystemController();
 import FilterOptionsComponent from "./components/FilterOptionsComponent.vue";
 import ModalUserComponent from "./components/ModalUserComponent.vue";
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
+import ButtonRefreshComponent from "@/components/buttons/RefreshButtonComponent.vue";
 
 // vars
 const pagInfo = reactive({
@@ -526,6 +518,9 @@ const signUpFormComponentRef = ref<InstanceType<typeof SignUpFormComponent>>();
 const contextMenu = ref<"modal" | "main">("modal");
 const refreshContent = reactive({ users: false });
 const isButtonRefreshUsersActive = ref(false);
+const buttonRefreshUsersComponentRef = ref<InstanceType<
+  typeof ButtonRefreshComponent
+> | null>(null);
 // end vars
 
 // mounted
@@ -813,24 +808,5 @@ async function handleButtonRefreshUsers() {
   .pagination > div {
     display: inline-block;
   }
-}
-
-.btn-refresh-normal {
-  width: 50px;
-  transition: all 0.4s ease;
-}
-
-.btn-refresh-expanded {
-  width: 140px;
-  transition: all 0.4s ease;
-}
-
-.fade-refresh-enter-active,
-.fade-refresh-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-refresh-enter,
-.fade-refresh-leave-to {
-  opacity: 0;
 }
 </style>
