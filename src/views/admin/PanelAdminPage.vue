@@ -102,7 +102,7 @@ const screenSize = ref(systemController.getScreenSize());
 const popoverMainOptions = reactive({ open: false, event: Event });
 
 onMounted(() => {
-  toggleLoader({ show: true });
+  // toggleLoader({ show: true });
 });
 watch(systemController.getScreenSize(), (newVal) => {
   screenSize.value = newVal;

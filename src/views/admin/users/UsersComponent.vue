@@ -4,16 +4,33 @@
       <ion-list>
         <ion-list-header mode="ios">
           <ion-label>Usuarios</ion-label>
-          <ion-button
-            :disabled="status == 'loading'"
-            @click="modalUserRegister.open = true"
-          >
-            <ion-icon :icon="addOutline"></ion-icon>
-          </ion-button>
 
-          <ion-button :disabled="status == 'loading'" @click="loadContent()">
-            <ion-icon :icon="refreshOutline"></ion-icon>
-          </ion-button>
+          <div style="display: flex">
+            <ion-button
+              :disabled="status == 'loading'"
+              @click="modalUserRegister.open = true"
+            >
+              <ion-icon :icon="addOutline"></ion-icon>
+            </ion-button>
+
+            <ion-button
+              :mode="designMode"
+              :class="
+                refreshContent ? 'btn-refresh-expanded' : 'btn-refresh-normal'
+              "
+              :disabled="status == 'loading'"
+              :fill="refreshContent ? 'solid' : 'clear'"
+              @click="
+                loadContent();
+                refreshContent = true;
+              "
+            >
+              <ion-icon :icon="refreshOutline"></ion-icon>
+              <transition name="fade-refresh">
+                <span v-if="refreshContent">Cargando</span>
+              </transition>
+            </ion-button>
+          </div>
         </ion-list-header>
 
         <div>
@@ -491,6 +508,7 @@ const userHoverIndex = ref<number>(-1);
 const screenSize = ref(systemController.getScreenSize());
 const signUpFormComponentRef = ref<InstanceType<typeof SignUpFormComponent>>();
 const contextMenu = ref<"modal" | "main">("modal");
+const refreshContent = ref(false);
 // end vars
 
 // mounted
@@ -522,7 +540,7 @@ watch(systemController.getScreenSize(), (newVal) => {
 
 // functions
 async function loadContent() {
-  status.value = "loading";
+  // status.value = "loading";
   await loadUsers({
     search: searchTerm.value,
     pagination: pagInfo.pagination,
@@ -530,6 +548,7 @@ async function loadContent() {
     options: filterSelected,
   });
   status.value = "loaded";
+  refreshContent.value = false;
 }
 
 async function loadUsers(params: {
@@ -779,5 +798,24 @@ async function updateUserProfile() {
   .pagination > div {
     display: inline-block;
   }
+}
+
+.btn-refresh-normal {
+  width: 50px;
+  transition: all 0.4s ease;
+}
+
+.btn-refresh-expanded {
+  width: 140px;
+  transition: all 0.4s ease;
+}
+
+.fade-refresh-enter-active,
+.fade-refresh-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-refresh-enter,
+.fade-refresh-leave-to {
+  opacity: 0;
 }
 </style>
