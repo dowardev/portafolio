@@ -424,9 +424,7 @@ import {
   IonPopover,
   IonContent,
   IonCardContent,
-  IonSpinner,
   IonModal,
-  isPlatform,
 } from "@ionic/vue";
 import { onMounted, reactive, ref, watch } from "vue";
 import {
@@ -437,9 +435,7 @@ import {
   personOutline,
   banOutline,
   trashOutline,
-  keyOutline,
   checkmarkOutline,
-  thumbsUpOutline,
   closeOutline,
   createOutline,
   saveOutline,
@@ -467,7 +463,6 @@ import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
 
 // vars
 const emit = defineEmits(["on-content-loaded"]);
-const openToastError = systemController.openToastError;
 const pagInfo = reactive({
   currentPage: 1,
   totalPaginacionElements: Number(),
@@ -494,7 +489,6 @@ const popoverUserOptions = reactive({ open: false, event: Event });
 const designMode = ref<DesignMode>(systemController.getdesignMode());
 const userHoverIndex = ref<number>(-1);
 const screenSize = ref(systemController.getScreenSize());
-const editorRef = ref<InstanceType<typeof EditorComponent>>();
 const signUpFormComponentRef = ref<InstanceType<typeof SignUpFormComponent>>();
 const contextMenu = ref<"modal" | "main">("modal");
 // end vars
@@ -561,7 +555,7 @@ async function loadUsers(params: {
       (item) => !isNaN(Number(item.label)),
     ).length;
     pagInfo.totalElements = total;
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error(e);
   }
 }
@@ -621,34 +615,6 @@ async function handleUpdateUserStatus(params: { id: string; status: boolean }) {
     users[index].isDisabled = oldValue;
     userSelected.isDisabled = oldValue;
   }
-}
-
-async function resendEmailConfirmation(params: { email: string }) {
-  const { email } = params;
-  // spinners.optionsUser = true;
-
-  const alertResponse = await systemController.presentAlertConfirmation({
-    message:
-      "Se enviarán las instrucciones para la verificación de la cuenta al correo electrónico del usuario.",
-  });
-
-  if (alertResponse == false) return;
-
-  try {
-    // await resendEmailConfirmationService({ email });
-
-    await systemController.presentToast({ message: "Instrucciones enviadas" });
-  } catch (e: any) {
-    if (e.message == "User already verified") {
-      await systemController.presentToast({
-        message: "Ya se encuentra activado",
-      });
-      return;
-    }
-    console.error(e);
-    openToastError({ error: e });
-  }
-  // spinners.optionsUser = false;
 }
 
 async function deleteUser(params: AdminDeleteUserAccount) {
