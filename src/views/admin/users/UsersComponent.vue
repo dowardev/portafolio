@@ -13,8 +13,7 @@
               <ion-icon :icon="addOutline"></ion-icon>
             </ion-button>
 
-            <ButtonRefreshComponent
-              ref="buttonRefreshUsersComponentRef"
+            <ButtonIconAnimationComponent
               :message="'Cargando'"
               :active="isButtonRefreshUsersActive"
               :disabled="status == 'loading'"
@@ -409,13 +408,21 @@
         <ion-title>Información de usuario</ion-title>
 
         <ion-buttons slot="end" :mode="designMode">
-          <ion-button
-            slot="end"
-            fill="clear"
+          <!-- <ion-button -->
+          <!--   slot="end" -->
+          <!--   fill="clear" -->
+          <!--   @click="handleCreateUserAccount(signUpFormComponentRef?.getData()!)" -->
+          <!-- > -->
+          <!--   <ion-icon :icon="saveOutline"></ion-icon> -->
+          <!-- </ion-button> -->
+
+          <ButtonIconAnimationComponent
+            :message="'Guardando'"
+            :active="isButtonSaveUserActive"
+            :disabled="status == 'loading'"
+            :icon="saveOutline"
             @click="handleCreateUserAccount(signUpFormComponentRef?.getData()!)"
-          >
-            <ion-icon :icon="saveOutline"></ion-icon>
-          </ion-button>
+          />
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -486,7 +493,7 @@ const systemController = new SystemController();
 import FilterOptionsComponent from "./components/FilterOptionsComponent.vue";
 import ModalUserComponent from "./components/ModalUserComponent.vue";
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
-import ButtonRefreshComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
+import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
 
 // vars
 const pagInfo = reactive({
@@ -519,9 +526,7 @@ const signUpFormComponentRef = ref<InstanceType<typeof SignUpFormComponent>>();
 const contextMenu = ref<"modal" | "main">("modal");
 const refreshContent = reactive({ users: false });
 const isButtonRefreshUsersActive = ref(false);
-const buttonRefreshUsersComponentRef = ref<InstanceType<
-  typeof ButtonRefreshComponent
-> | null>(null);
+const isButtonSaveUserActive = ref(false);
 // end vars
 
 // mounted
@@ -713,18 +718,34 @@ async function handleCreateUserAccount(params: {
   email: string;
   password: string;
 }) {
-  const { name, user, email, password } = params;
-  await systemController.presentToast({ message: "Usuario agregado" });
-  users.push({
-    name,
-    user,
-    email,
-    password,
-    isDisabled: false,
-    id: "",
-  });
+  if (
+    !params ||
+    !params.name ||
+    !params.user ||
+    !params.email ||
+    !params.password
+  ) {
+    console.error("Invalid parameters");
+    return;
+  }
 
+  isButtonSaveUserActive.value = true;
+
+  const { name, user, email, password } = params;
   try {
+    await systemController.presentToast({ message: "Usuario agregado" });
+    users.push({
+      name,
+      user,
+      email,
+      password,
+      isDisabled: false,
+      id: "",
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    modalUserRegister.open = false;
+
     const result = await createUserAccount(params);
     if (result) {
       const index = users.findIndex((user) => user.email === email);
@@ -733,10 +754,11 @@ async function handleCreateUserAccount(params: {
         userSelected.id = result.id.toString();
       }
     }
-    modalUserRegister.open = false;
   } catch (e: unknown) {
     console.error(e);
     users.pop();
+  } finally {
+    isButtonSaveUserActive.value = false;
   }
 }
 

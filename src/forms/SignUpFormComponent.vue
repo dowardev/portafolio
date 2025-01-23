@@ -213,7 +213,7 @@ watch(form.value, (newValue, oldValue) => {
   emits("formStatus", !v$.value.$invalid);
 });
 onMounted(() => {
-  // generateRandomData();
+  generateRandomData();
 });
 
 // functions

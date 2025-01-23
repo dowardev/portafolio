@@ -7,7 +7,6 @@
     :color="props.color"
     :ripple-effect="false"
     style="--ripple-color: transparent"
-    @click="handleClickButton()"
   >
     <ion-icon :color="props.color" :icon="props.icon"></ion-icon>
     <transition name="fade-refresh">
@@ -38,7 +37,6 @@ const props = withDefaults(
     fill: "clear",
   },
 );
-const emit = defineEmits(["click"]);
 const status = ref(props.active);
 
 watch(
@@ -49,10 +47,6 @@ watch(
 );
 
 // functions
-function handleClickButton() {
-  status.value = true;
-  emit("click");
-}
 </script>
 
 <style scoped>
