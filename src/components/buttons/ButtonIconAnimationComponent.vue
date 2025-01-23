@@ -9,7 +9,7 @@
     style="--ripple-color: transparent"
     @click="handleClickButton()"
   >
-    <ion-icon :icon="refreshOutline"></ion-icon>
+    <ion-icon :color="props.color" :icon="props.icon"></ion-icon>
     <transition name="fade-refresh">
       <span v-if="status">{{ props.message }}</span>
     </transition>
@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { refreshOutline } from "ionicons/icons";
 import { ref, watch } from "vue";
 import { IonButton } from "@ionic/vue";
 
@@ -28,6 +27,7 @@ const props = withDefaults(
     designMode?: "md" | "ios";
     disabled?: boolean;
     fill?: "clear" | "outline" | "solid" | "default";
+    icon: string;
     message: string;
   }>(),
   {

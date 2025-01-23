@@ -18,6 +18,7 @@
               :message="'Cargando'"
               :active="isButtonRefreshUsersActive"
               :disabled="status == 'loading'"
+              :icon="refreshOutline"
               @click="handleButtonRefreshUsers()"
             />
           </div>
@@ -485,7 +486,7 @@ const systemController = new SystemController();
 import FilterOptionsComponent from "./components/FilterOptionsComponent.vue";
 import ModalUserComponent from "./components/ModalUserComponent.vue";
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
-import ButtonRefreshComponent from "@/components/buttons/RefreshButtonComponent.vue";
+import ButtonRefreshComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
 
 // vars
 const pagInfo = reactive({
