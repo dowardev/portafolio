@@ -285,7 +285,6 @@
   <ion-popover
     :is-open="popovers.userOptions.open"
     :event="popovers.userOptions.event"
-    dismiss-on-select
     @did-dismiss="popovers.userOptions.open = false"
   >
     <ion-content>
@@ -335,20 +334,19 @@
       </ion-item>
 
       <!-- delete user -->
-      <ion-item
-        v-if="
-          contextMenu == 'modal' ||
-          (contextMenu == 'main' && screenSize.preset == 'xs')
-        "
-        button
-        lines="none"
-        @click="
+      <CardOptions
+        ref="cardOptions1Ref"
+        :icon="trashOutline"
+        :main-message="{ color: 'danger', message: 'Eliminar post' }"
+        :option1="{ color: 'danger', message: 'Si' }"
+        :option2="{ color: 'primary', message: 'No' }"
+        :border="{ active: true, color: 'danger', mode: 'hover' }"
+        style="margin: 2px"
+        @click-op1="
           handleDeleteUser({ email: userSelected.email!, id: userSelected.id! })
         "
-      >
-        <ion-icon slot="start" :icon="trashOutline" color="danger"></ion-icon>
-        <ion-label color="danger">Borrar Usuario</ion-label>
-      </ion-item>
+        @click-op2="cardOptions1Ref?.toggleExpand()"
+      />
     </ion-content>
   </ion-popover>
   <!-- end popovers -->
@@ -498,6 +496,7 @@ import FilterOptionsComponent from "./components/FilterOptionsComponent.vue";
 import ModalUserComponent from "./components/ModalUserComponent.vue";
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
 import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
+import CardOptions from "@/components/cards/CardOptions.vue";
 
 // vars
 const pagInfo = reactive({
@@ -538,6 +537,10 @@ const refreshContent = reactive({ users: false });
 const isButtonRefreshUsersActive = ref(false);
 const isButtonSaveUserActive = ref(false);
 // end vars
+
+// refs
+const cardOptions1Ref = ref<InstanceType<typeof CardOptions> | null>(null);
+// end refs
 
 // mounted
 onMounted(async () => {
@@ -688,14 +691,15 @@ async function handleDeleteUser(params: AdminDeleteUserAccount) {
 
   const oldUser = { user: users[index], index };
 
-  const alertResponse = await systemController.presentAlertConfirmation({
-    message: "Esta acción no es reversible.",
-  });
+  cardOptions1Ref.value?.toggleExpand();
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
-  if (!alertResponse) return;
+  popovers.userOptions.open = false;
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
-  modals.userInfo.open = false;
   users.splice(index, 1);
+  modals.userInfo.open = false;
+  await new Promise((resolve) => setTimeout(resolve, 500));
   await systemController.presentToast({ message: "Usuario eliminado" });
 
   try {

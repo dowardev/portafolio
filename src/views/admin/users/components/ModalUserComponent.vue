@@ -102,7 +102,7 @@ const emailValueHover = ref(false);
 // end vars
 
 onMounted(() => {
-  updateUserDisplay(props.userProp);
+  // updateUserDisplay(props.userProp);
 });
 
 watch(

@@ -51,6 +51,7 @@ ion-card {
   font-family: var(--font-family-content);
 }
 
+/* border */
 ion-card.success-border-indicator,
 div.success-border-indicator {
   border-left: var(--border-indicator) solid var(--ion-color-success) !important;
@@ -67,12 +68,22 @@ div.success-fill {
 ion-card.success-border,
 div.success-border {
   border: 1px solid var(--ion-color-success);
+  border-radius: 4px;
 }
 
 ion-card.success-fill,
 div.success-fill {
   background: var(--ion-color-secondary-background-hover);
 }
+
+/* hover */
+ion-card.success-border-hover:hover,
+div.success-border-hover:hover {
+  border: 1px solid var(--ion-color-success);
+  border-radius: 4px;
+}
+
+/* end success */
 
 /*  primary */
 .primary-base-content-card > ion-card-header > ion-card-title,
@@ -96,6 +107,7 @@ div.success-fill {
   font-family: var(--font-family-content);
 }
 
+/* border */
 ion-card.primary-border-indicator,
 div.primary-border-indicator {
   border-left: var(--border-indicator) solid var(--ion-color-primary) !important;
@@ -112,12 +124,21 @@ div.primary-fill {
 ion-card.primary-border,
 div.primary-border {
   border: 1px solid var(--ion-color-primary);
+  border-radius: 4px;
 }
 
 ion-card.primary-fill,
 div.primary-fill {
   background: var(--ion-color-primary-background-hover);
 }
+
+/* hover */
+ion-card.primary-border-hover:hover,
+div.primary-border-hover:hover {
+  border: 1px solid var(--ion-color-primary);
+  border-radius: 4px;
+}
+/* end primary */
 
 /* Variantes danger */
 .danger-base-content-card > ion-card-header > ion-card-title,
@@ -158,9 +179,18 @@ div.danger-fill {
 ion-card.danger-border,
 div.danger-border {
   border: 1.5px solid var(--ion-color-danger);
+  border-radius: 4px;
 }
 
 ion-card.danger-fill,
 div.danger-fill {
   background: var(--ion-color-danger-background-hover);
 }
+
+/* hover */
+ion-card.danger-border-hover:hover,
+div.danger-border-hover:hover {
+  border: 1.5px solid var(--ion-color-danger);
+  border-radius: 4px;
+}
+/* end danger */
