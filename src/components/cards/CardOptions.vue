@@ -1,4 +1,5 @@
 <template>
+  <!-- 1 -->
   <div
     ref="cardRef"
     class="container"
@@ -7,58 +8,47 @@
       'primary-border':
         props.border.active &&
         props.border.color == 'primary' &&
-        props.border.mode == 'normal',
-
+        props.border.trigger == 'none',
       'danger-border':
         props.border.active &&
         props.border.color == 'danger' &&
-        props.border.mode == 'normal',
-
+        props.border.trigger == 'none',
       'primary-border-hover':
         props.border.active &&
         props.border.color == 'primary' &&
-        props.border.mode == 'hover',
-
+        props.border.trigger == 'hover',
       'danger-border-hover':
         props.border.active &&
         props.border.color == 'danger' &&
-        props.border.mode == 'hover',
-
+        props.border.trigger == 'hover',
       'primary-fill':
         props.background.active && props.background.color == 'primary',
-
       'danger-fill':
         props.background.active && props.background.color == 'danger',
-
       'primary-select-animated':
         props.animatedBorder.active &&
         props.animatedBorder.color == 'primary' &&
-        props.animatedBorder.mode == 'always',
-
+        props.animatedBorder.trigger == 'always',
       'primary-select-animated-hover':
         props.animatedBorder.active &&
         props.animatedBorder.color == 'primary' &&
-        props.animatedBorder.mode == 'hover',
-
+        props.animatedBorder.trigger == 'hover',
       'success-select-animated':
         props.animatedBorder.active &&
         props.animatedBorder.color == 'success' &&
-        props.animatedBorder.mode == 'always',
-
+        props.animatedBorder.trigger == 'always',
       'success-select-animated-hover':
         props.animatedBorder.active &&
         props.animatedBorder.color == 'success' &&
-        props.animatedBorder.mode == 'hover',
-
+        props.animatedBorder.trigger == 'hover',
       'danger-select-animated':
         props.animatedBorder.active &&
         props.animatedBorder.color == 'danger' &&
-        props.animatedBorder.mode == 'always',
-
+        props.animatedBorder.trigger == 'always',
       'danger-select-animated-hover':
         props.animatedBorder.active &&
         props.animatedBorder.color == 'danger' &&
-        props.animatedBorder.mode == 'hover',
+        props.animatedBorder.trigger == 'hover',
     }"
   >
     <ion-item
@@ -110,10 +100,10 @@ const props = withDefaults(
     animatedBorder?: {
       active: boolean;
       color?: "primary" | "success" | "danger";
-      mode?: "always" | "hover";
+      trigger?: "always" | "hover";
     };
     background?: { active: boolean; color?: string };
-    border?: { active: boolean; color?: string; mode?: "normal" | "hover" };
+    border?: { active: boolean; color?: string; trigger?: "none" | "hover" };
     icon: string;
     lines?: boolean;
     mainMessage: { color?: "primary" | "danger"; message: string };
@@ -121,9 +111,13 @@ const props = withDefaults(
     option2: { color?: "primary" | "danger"; message: string };
   }>(),
   {
-    animatedBorder: () => ({ active: false, color: "primary", mode: "hover" }),
+    animatedBorder: () => ({
+      active: false,
+      color: "primary",
+      trigger: "hover",
+    }),
     background: () => ({ active: false, color: "primary" }),
-    border: () => ({ active: false, color: "primary", mode: "normal" }),
+    border: () => ({ active: false, color: "primary", trigger: "none" }),
     lines: false,
     mainMessage: () => ({ color: "primary", message: "" }),
     option1: () => ({ color: "primary", message: "" }),
