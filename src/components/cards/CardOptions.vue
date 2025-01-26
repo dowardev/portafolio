@@ -5,60 +5,60 @@
     :class="{
       shadow: props.lines,
       'primary-border':
-        props.border.active &&
-        props.border.color == 'primary' &&
-        props.border.style == 'normal' &&
-        props.border.trigger == 'none',
+        borderConfig.active &&
+        borderConfig.color == 'primary' &&
+        borderConfig.style == 'normal' &&
+        borderConfig.trigger == 'none',
       'danger-border':
-        props.border.active &&
-        props.border.color == 'danger' &&
-        props.border.style == 'normal' &&
-        props.border.trigger == 'none',
+        borderConfig.active &&
+        borderConfig.color == 'danger' &&
+        borderConfig.style == 'normal' &&
+        borderConfig.trigger == 'none',
       'primary-border-hover':
-        props.border.active &&
-        props.border.color == 'primary' &&
-        props.border.style == 'normal' &&
-        props.border.trigger == 'hover',
+        borderConfig.active &&
+        borderConfig.color == 'primary' &&
+        borderConfig.style == 'normal' &&
+        borderConfig.trigger == 'hover',
       'danger-border-hover':
-        props.border.active &&
-        props.border.color == 'danger' &&
-        props.border.style == 'normal' &&
-        props.border.trigger == 'hover',
+        borderConfig.active &&
+        borderConfig.color == 'danger' &&
+        borderConfig.style == 'normal' &&
+        borderConfig.trigger == 'hover',
 
       'primary-fill':
         props.background.active && props.background.color == 'primary',
       'danger-fill':
         props.background.active && props.background.color == 'danger',
       'primary-select-animated':
-        props.border.active &&
-        props.border.color == 'primary' &&
-        props.border.style == 'animated' &&
-        props.border.trigger == 'none',
+        borderConfig.active &&
+        borderConfig.color == 'primary' &&
+        borderConfig.style == 'animated' &&
+        borderConfig.trigger == 'none',
       'primary-select-animated-hover':
-        props.border.active &&
-        props.border.color == 'primary' &&
-        props.border.style == 'animated' &&
-        props.border.trigger == 'hover',
+        borderConfig.active &&
+        borderConfig.color == 'primary' &&
+        borderConfig.style == 'animated' &&
+        borderConfig.trigger == 'hover',
       'success-select-animated':
-        props.border.active &&
-        props.border.color == 'success' &&
-        props.border.style == 'animated' &&
-        props.border.trigger == 'none',
+        borderConfig.active &&
+        borderConfig.color == 'success' &&
+        borderConfig.style == 'animated' &&
+        borderConfig.trigger == 'none',
       'success-select-animated-hover':
-        props.border.active &&
-        props.border.color == 'success' &&
-        props.border.style == 'animated' &&
-        props.border.trigger == 'hover',
+        borderConfig.active &&
+        borderConfig.color == 'success' &&
+        borderConfig.style == 'animated' &&
+        borderConfig.trigger == 'hover',
       'danger-select-animated':
-        props.border.active &&
-        props.border.color == 'danger' &&
-        props.border.style == 'animated' &&
-        props.border.trigger == 'none',
+        borderConfig.active &&
+        borderConfig.color == 'danger' &&
+        borderConfig.style == 'animated' &&
+        borderConfig.trigger == 'none',
       'danger-select-animated-hover':
-        props.border.active &&
-        props.border.color == 'danger' &&
-        props.border.style == 'animated' &&
-        props.border.trigger == 'hover',
+        borderConfig.active &&
+        borderConfig.color == 'danger' &&
+        borderConfig.style == 'animated' &&
+        borderConfig.trigger == 'hover',
     }"
   >
     <ion-item
@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, reactive, watch } from "vue";
 import { Animation, createAnimation } from "@ionic/vue";
 import { IonButton } from "@ionic/vue";
 
@@ -112,9 +112,9 @@ const props = withDefaults(
       active: boolean;
       color?: string;
       trigger?: "none" | "hover";
-      style: "normal" | "animated";
+      style?: "normal" | "animated";
     };
-    icon: string;
+    icon?: string;
     lines?: boolean;
     mainMessage: { color?: "primary" | "danger"; message: string };
     option1: { color?: "primary" | "danger"; message: string };
@@ -133,6 +133,7 @@ const props = withDefaults(
       trigger: "none",
       style: "normal",
     }),
+    icon: "",
     lines: false,
     mainMessage: () => ({ color: "primary", message: "" }),
     option1: () => ({ color: "primary", message: "" }),
@@ -140,7 +141,7 @@ const props = withDefaults(
   },
 );
 const emit = defineEmits(["click-op1", "click-op2"]);
-defineExpose({ toggleExpand });
+defineExpose({ toggleExpand, updateBorderProp });
 // end props
 
 // compontents refs
@@ -151,6 +152,7 @@ const cardRef = ref<HTMLElement | null>(null);
 const isExpanded = ref(false);
 let expandAnimation: Animation;
 let contractAnimation: Animation;
+const borderConfig = reactive(props.border);
 // end vars
 
 // life
@@ -182,6 +184,12 @@ onMounted(() => {
       });
   }
 });
+watch(
+  () => props.border,
+  (newVal) => {
+    Object.assign(borderConfig, newVal);
+  },
+);
 // end life
 
 // functions
@@ -217,6 +225,19 @@ async function toggleExpand() {
   } catch (error) {
     console.error("Animation error:", error);
   }
+}
+
+function updateBorderProp(params: {
+  active?: boolean;
+  color?: string;
+  trigger?: "none" | "hover";
+  style?: "normal" | "animated";
+}) {
+  const { active, color, trigger, style } = params;
+  if (active !== undefined) borderConfig.active = active;
+  if (color) borderConfig.color = color;
+  if (trigger) borderConfig.trigger = trigger;
+  if (style) borderConfig.style = style;
 }
 // end functions
 </script>

@@ -340,7 +340,7 @@
         :main-message="{ color: 'danger', message: 'Eliminar post' }"
         :option1="{ color: 'danger', message: 'Si' }"
         :option2="{ color: 'primary', message: 'No' }"
-        :border="{ active: true, color: 'danger', mode: 'hover' }"
+        :border="{ active: true, color: 'danger', trigger: 'hover' }"
         style="margin: 2px"
         @click-op1="
           handleDeleteUser({ email: userSelected.email!, id: userSelected.id! })
@@ -692,7 +692,11 @@ async function handleDeleteUser(params: AdminDeleteUserAccount) {
   const oldUser = { user: users[index], index };
 
   cardOptions1Ref.value?.toggleExpand();
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  cardOptions1Ref.value?.updateBorderProp({
+    style: "animated",
+    trigger: "none",
+  });
+  await new Promise((resolve) => setTimeout(resolve, 1500));
 
   popovers.userOptions.open = false;
   await new Promise((resolve) => setTimeout(resolve, 500));
@@ -703,7 +707,7 @@ async function handleDeleteUser(params: AdminDeleteUserAccount) {
   await systemController.presentToast({ message: "Usuario eliminado" });
 
   try {
-    await deleteUser(params);
+    // await deleteUser(params);
   } catch (e: unknown) {
     console.error(e);
     users.splice(oldUser.index, 0, oldUser.user);
