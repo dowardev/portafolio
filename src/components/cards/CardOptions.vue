@@ -1,5 +1,4 @@
 <template>
-  <!-- 1 -->
   <div
     ref="cardRef"
     class="container"
@@ -8,47 +7,58 @@
       'primary-border':
         props.border.active &&
         props.border.color == 'primary' &&
+        props.border.style == 'normal' &&
         props.border.trigger == 'none',
       'danger-border':
         props.border.active &&
         props.border.color == 'danger' &&
+        props.border.style == 'normal' &&
         props.border.trigger == 'none',
       'primary-border-hover':
         props.border.active &&
         props.border.color == 'primary' &&
+        props.border.style == 'normal' &&
         props.border.trigger == 'hover',
       'danger-border-hover':
         props.border.active &&
         props.border.color == 'danger' &&
+        props.border.style == 'normal' &&
         props.border.trigger == 'hover',
+
       'primary-fill':
         props.background.active && props.background.color == 'primary',
       'danger-fill':
         props.background.active && props.background.color == 'danger',
       'primary-select-animated':
-        props.animatedBorder.active &&
-        props.animatedBorder.color == 'primary' &&
-        props.animatedBorder.trigger == 'always',
+        props.border.active &&
+        props.border.color == 'primary' &&
+        props.border.style == 'animated' &&
+        props.border.trigger == 'none',
       'primary-select-animated-hover':
-        props.animatedBorder.active &&
-        props.animatedBorder.color == 'primary' &&
-        props.animatedBorder.trigger == 'hover',
+        props.border.active &&
+        props.border.color == 'primary' &&
+        props.border.style == 'animated' &&
+        props.border.trigger == 'hover',
       'success-select-animated':
-        props.animatedBorder.active &&
-        props.animatedBorder.color == 'success' &&
-        props.animatedBorder.trigger == 'always',
+        props.border.active &&
+        props.border.color == 'success' &&
+        props.border.style == 'animated' &&
+        props.border.trigger == 'none',
       'success-select-animated-hover':
-        props.animatedBorder.active &&
-        props.animatedBorder.color == 'success' &&
-        props.animatedBorder.trigger == 'hover',
+        props.border.active &&
+        props.border.color == 'success' &&
+        props.border.style == 'animated' &&
+        props.border.trigger == 'hover',
       'danger-select-animated':
-        props.animatedBorder.active &&
-        props.animatedBorder.color == 'danger' &&
-        props.animatedBorder.trigger == 'always',
+        props.border.active &&
+        props.border.color == 'danger' &&
+        props.border.style == 'animated' &&
+        props.border.trigger == 'none',
       'danger-select-animated-hover':
-        props.animatedBorder.active &&
-        props.animatedBorder.color == 'danger' &&
-        props.animatedBorder.trigger == 'hover',
+        props.border.active &&
+        props.border.color == 'danger' &&
+        props.border.style == 'animated' &&
+        props.border.trigger == 'hover',
     }"
   >
     <ion-item
@@ -97,13 +107,13 @@ import { IonButton } from "@ionic/vue";
 // Props
 const props = withDefaults(
   defineProps<{
-    animatedBorder?: {
-      active: boolean;
-      color?: "primary" | "success" | "danger";
-      trigger?: "always" | "hover";
-    };
     background?: { active: boolean; color?: string };
-    border?: { active: boolean; color?: string; trigger?: "none" | "hover" };
+    border?: {
+      active: boolean;
+      color?: string;
+      trigger?: "none" | "hover";
+      style: "normal" | "animated";
+    };
     icon: string;
     lines?: boolean;
     mainMessage: { color?: "primary" | "danger"; message: string };
@@ -117,7 +127,12 @@ const props = withDefaults(
       trigger: "hover",
     }),
     background: () => ({ active: false, color: "primary" }),
-    border: () => ({ active: false, color: "primary", trigger: "none" }),
+    border: () => ({
+      active: false,
+      color: "primary",
+      trigger: "none",
+      style: "normal",
+    }),
     lines: false,
     mainMessage: () => ({ color: "primary", message: "" }),
     option1: () => ({ color: "primary", message: "" }),
@@ -207,6 +222,12 @@ async function toggleExpand() {
 </script>
 
 <style scoped>
+ion-item {
+  --background-hover: transparent;
+  --background-focused: transparent;
+  --background-activated: transparent;
+}
+
 .container {
   --border: 1.5px;
   border-radius: 4px;
