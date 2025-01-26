@@ -246,7 +246,7 @@
     <ion-content :scroll-events="true">
       <div>
         <FilterOptionsComponent
-          ref="componentRefs.filterComponent"
+          ref="filterComponentRef"
           :filters="filterSelected"
         />
       </div>
@@ -318,7 +318,7 @@
             status: false,
           })
         "
-        @click-op2="cardOptionsDeleUserRef?.toggleExpand()"
+        @click-op2="cardOptionsEnableUserRef?.toggleExpand()"
       />
 
       <!-- disable user -->
@@ -337,7 +337,7 @@
             status: true,
           })
         "
-        @click-op2="cardOptionsDeleUserRef?.toggleExpand()"
+        @click-op2="cardOptionsDisableUserRef?.toggleExpand()"
       />
 
       <!-- delete user -->
@@ -424,11 +424,7 @@
             :disabled="refreshContent.users"
             :icon="saveOutline"
             :fill="isButtonSaveUserActive ? 'solid' : 'clear'"
-            @click="
-              handleCreateUserAccount(
-                componentRefs.signUpFormComponent?.getData()!,
-              )
-            "
+            @click="handleCreateUserAccount(signUpFormComponentRef?.getData()!)"
           />
         </ion-buttons>
       </ion-toolbar>
@@ -437,11 +433,9 @@
     <ion-content class="ion-padding">
       <ion-card class="shadow-1 ion-padding">
         <SignUpFormComponent
-          ref="componentRefs.signUpFormComponent"
+          ref="signUpFormComponentRef"
           @enter-pressed="
-            handleCreateUserAccount(
-              componentRefs.signUpFormComponent?.getData()!,
-            )
+            handleCreateUserAccount(signUpFormComponentRef?.getData()!)
           "
         />
       </ion-card>
@@ -519,14 +513,6 @@ const filterSelected = reactive<FilterAdminPanelOptions>({
   user: "all",
   rol: "all",
 });
-const componentRefs = reactive({
-  filterComponent: ref<InstanceType<typeof FilterOptionsComponent> | null>(
-    null,
-  ),
-  signUpFormComponent: ref<InstanceType<typeof SignUpFormComponent> | null>(
-    null,
-  ),
-});
 const popovers = reactive({
   filter: reactive({ open: false, event: Event }),
   userOptions: reactive({ open: false, event: Event }),
@@ -545,7 +531,7 @@ const isButtonRefreshUsersActive = ref(false);
 const isButtonSaveUserActive = ref(false);
 // end vars
 
-// refs
+// component refs
 const cardOptionsDeleUserRef = ref<InstanceType<typeof CardOptions> | null>(
   null,
 );
@@ -555,6 +541,12 @@ const cardOptionsEnableUserRef = ref<InstanceType<typeof CardOptions> | null>(
 const cardOptionsDisableUserRef = ref<InstanceType<typeof CardOptions> | null>(
   null,
 );
+const filterComponentRef = ref<InstanceType<
+  typeof FilterOptionsComponent
+> | null>(null);
+const signUpFormComponentRef = ref<InstanceType<
+  typeof SignUpFormComponent
+> | null>(null);
 // end refs
 
 // mounted
@@ -739,11 +731,11 @@ async function setUsersDisplay() {
 }
 
 async function deleteFilters() {
-  componentRefs.filterComponent?.resetFilters();
+  filterComponentRef.value?.resetFilters();
 }
 
 function getFilters() {
-  const filters = componentRefs.filterComponent?.getFiltersSelected();
+  const filters = filterComponentRef.value?.getFiltersSelected();
   if (filters) Object.assign(filterSelected, filters);
 }
 
