@@ -303,41 +303,48 @@
       </ion-item>
 
       <!-- enable user -->
-      <ion-item
+      <CardOptions
         v-if="userSelected.isDisabled == true"
-        button
-        lines="none"
-        @click="
+        ref="cardOptionsEnableUserRef"
+        :icon="checkmarkOutline"
+        :main-message="{ message: 'Habilitar usuario' }"
+        :option1="{ message: 'Si' }"
+        :option2="{ message: 'No' }"
+        :border="{ active: true, color: 'primary', trigger: 'hover' }"
+        style="margin: 2px"
+        @click-op1="
           handleUpdateUserStatus({
             id: userSelected.id!,
             status: false,
           })
         "
-      >
-        <ion-icon slot="start" :icon="checkmarkOutline"></ion-icon>
-        <ion-label>Habilitar usuario</ion-label>
-      </ion-item>
+        @click-op2="cardOptionsDeleUserRef?.toggleExpand()"
+      />
 
-      <ion-item
+      <!-- disable user -->
+      <CardOptions
         v-if="userSelected.isDisabled == false"
-        button
-        lines="none"
-        @click="
+        ref="cardOptionsDisableUserRef"
+        :icon="banOutline"
+        :main-message="{ message: 'Deshabilitar usuario' }"
+        :option1="{ color: 'danger', message: 'Si' }"
+        :option2="{ message: 'No' }"
+        :border="{ active: true, color: 'primary', trigger: 'hover' }"
+        style="margin: 2px"
+        @click-op1="
           handleUpdateUserStatus({
             id: userSelected.id!,
             status: true,
           })
         "
-      >
-        <ion-label>Deshabilitar usuario</ion-label>
-        <ion-icon slot="start" :icon="banOutline"></ion-icon>
-      </ion-item>
+        @click-op2="cardOptionsDeleUserRef?.toggleExpand()"
+      />
 
       <!-- delete user -->
       <CardOptions
-        ref="cardOptions1Ref"
+        ref="cardOptionsDeleUserRef"
         :icon="trashOutline"
-        :main-message="{ color: 'danger', message: 'Eliminar post' }"
+        :main-message="{ color: 'danger', message: 'Eliminar usuario' }"
         :option1="{ color: 'danger', message: 'Si' }"
         :option2="{ color: 'primary', message: 'No' }"
         :border="{ active: true, color: 'danger', trigger: 'hover' }"
@@ -345,7 +352,7 @@
         @click-op1="
           handleDeleteUser({ email: userSelected.email!, id: userSelected.id! })
         "
-        @click-op2="cardOptions1Ref?.toggleExpand()"
+        @click-op2="cardOptionsDeleUserRef?.toggleExpand()"
       />
     </ion-content>
   </ion-popover>
@@ -539,7 +546,15 @@ const isButtonSaveUserActive = ref(false);
 // end vars
 
 // refs
-const cardOptions1Ref = ref<InstanceType<typeof CardOptions> | null>(null);
+const cardOptionsDeleUserRef = ref<InstanceType<typeof CardOptions> | null>(
+  null,
+);
+const cardOptionsEnableUserRef = ref<InstanceType<typeof CardOptions> | null>(
+  null,
+);
+const cardOptionsDisableUserRef = ref<InstanceType<typeof CardOptions> | null>(
+  null,
+);
 // end refs
 
 // mounted
@@ -629,22 +644,23 @@ async function updateUserStatus(params: { id: string; status: boolean }) {
 
 async function handleUpdateUserStatus(params: { id: string; status: boolean }) {
   const { id, status } = params;
-  const oldValue = !params.status;
-  let alertResponse = true;
+  const oldValue = !status;
+  const cardOptionsRef = status
+    ? cardOptionsDisableUserRef
+    : cardOptionsEnableUserRef;
+  const toastMessage = status ? "Usuario habilitado" : "Usuario deshabilitado";
 
-  if (status == true)
-    alertResponse = await systemController.presentAlertConfirmation({
-      message:
-        "Mientras esté deshabilitada, el usuario no podrá acceder a su cuenta.",
-    });
+  cardOptionsRef.value?.toggleExpand();
+  cardOptionsRef.value?.updateBorderProp({
+    style: "animated",
+    trigger: "none",
+  });
+  await new Promise((resolve) => setTimeout(resolve, 1500));
 
-  if (alertResponse == false) return;
+  popovers.userOptions.open = false;
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
-  if (status) {
-    await systemController.presentToast({ message: "Usuario habilitado" });
-  } else {
-    await systemController.presentToast({ message: "Usuario deshabilitado" });
-  }
+  await systemController.presentToast({ message: toastMessage });
 
   const index = users.findIndex((user) => user.id === id);
   if (index !== -1) {
@@ -656,8 +672,10 @@ async function handleUpdateUserStatus(params: { id: string; status: boolean }) {
     await updateUserStatus(params);
   } catch (e: unknown) {
     console.error(e);
-    users[index].isDisabled = oldValue;
-    userSelected.isDisabled = oldValue;
+    if (index !== -1) {
+      users[index].isDisabled = oldValue;
+      userSelected.isDisabled = oldValue;
+    }
   }
 }
 
@@ -691,8 +709,8 @@ async function handleDeleteUser(params: AdminDeleteUserAccount) {
 
   const oldUser = { user: users[index], index };
 
-  cardOptions1Ref.value?.toggleExpand();
-  cardOptions1Ref.value?.updateBorderProp({
+  cardOptionsDeleUserRef.value?.toggleExpand();
+  cardOptionsDeleUserRef.value?.updateBorderProp({
     style: "animated",
     trigger: "none",
   });
@@ -707,7 +725,7 @@ async function handleDeleteUser(params: AdminDeleteUserAccount) {
   await systemController.presentToast({ message: "Usuario eliminado" });
 
   try {
-    // await deleteUser(params);
+    await deleteUser(params);
   } catch (e: unknown) {
     console.error(e);
     users.splice(oldUser.index, 0, oldUser.user);

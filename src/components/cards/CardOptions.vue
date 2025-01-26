@@ -72,7 +72,9 @@
         :color="props.mainMessage.color"
         :icon="props.icon"
       ></ion-icon>
-      <ion-label color="danger">{{ props.mainMessage.message }}</ion-label>
+      <ion-label :color="props.mainMessage.color">{{
+        props.mainMessage.message
+      }}</ion-label>
     </ion-item>
 
     <div style="display: flex">
