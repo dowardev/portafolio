@@ -4,11 +4,11 @@
     class="container"
     :class="{
       shadow: props.lines,
-
       'primary-border':
         props.border.active &&
         props.border.color == 'primary' &&
         props.border.mode == 'normal',
+
       'danger-border':
         props.border.active &&
         props.border.color == 'danger' &&
@@ -18,6 +18,7 @@
         props.border.active &&
         props.border.color == 'primary' &&
         props.border.mode == 'hover',
+
       'danger-border-hover':
         props.border.active &&
         props.border.color == 'danger' &&
@@ -25,8 +26,39 @@
 
       'primary-fill':
         props.background.active && props.background.color == 'primary',
+
       'danger-fill':
         props.background.active && props.background.color == 'danger',
+
+      'primary-select-animated':
+        props.animatedBorder.active &&
+        props.animatedBorder.color == 'primary' &&
+        props.animatedBorder.mode == 'always',
+
+      'primary-select-animated-hover':
+        props.animatedBorder.active &&
+        props.animatedBorder.color == 'primary' &&
+        props.animatedBorder.mode == 'hover',
+
+      'success-select-animated':
+        props.animatedBorder.active &&
+        props.animatedBorder.color == 'success' &&
+        props.animatedBorder.mode == 'always',
+
+      'success-select-animated-hover':
+        props.animatedBorder.active &&
+        props.animatedBorder.color == 'success' &&
+        props.animatedBorder.mode == 'hover',
+
+      'danger-select-animated':
+        props.animatedBorder.active &&
+        props.animatedBorder.color == 'danger' &&
+        props.animatedBorder.mode == 'always',
+
+      'danger-select-animated-hover':
+        props.animatedBorder.active &&
+        props.animatedBorder.color == 'danger' &&
+        props.animatedBorder.mode == 'hover',
     }"
   >
     <ion-item
@@ -75,6 +107,11 @@ import { IonButton } from "@ionic/vue";
 // Props
 const props = withDefaults(
   defineProps<{
+    animatedBorder?: {
+      active: boolean;
+      color?: "primary" | "success" | "danger";
+      mode?: "always" | "hover";
+    };
     background?: { active: boolean; color?: string };
     border?: { active: boolean; color?: string; mode?: "normal" | "hover" };
     icon: string;
@@ -84,6 +121,7 @@ const props = withDefaults(
     option2: { color?: "primary" | "danger"; message: string };
   }>(),
   {
+    animatedBorder: () => ({ active: false, color: "primary", mode: "hover" }),
     background: () => ({ active: false, color: "primary" }),
     border: () => ({ active: false, color: "primary", mode: "normal" }),
     lines: false,
@@ -171,7 +209,6 @@ async function toggleExpand() {
     console.error("Animation error:", error);
   }
 }
-
 // end functions
 </script>
 
@@ -210,5 +247,87 @@ async function toggleExpand() {
 
 .danger-fill {
   background: var(--ion-color-danger-background-hover);
+}
+
+.primary-select-animated {
+  background:
+    linear-gradient(var(--background), var(--background)) padding-box,
+    padding-box,
+    linear-gradient(
+        var(--angle),
+        rgba(var(--ion-color-primary-rgb), 0%),
+        rgba(var(--ion-color-primary-rgb), 20%),
+        rgba(var(--ion-color-primary-rgb), 40%),
+        rgba(var(--ion-color-primary-rgb), 60%),
+        rgba(var(--ion-color-primary-rgb), 80%),
+        rgba(var(--ion-color-primary-rgb), 100%)
+      )
+      border-box;
+  animation: 2.5s rotate linear infinite;
+}
+
+.primary-select-animated-hover:hover {
+  background:
+    linear-gradient(var(--background), var(--background)) padding-box,
+    padding-box,
+    linear-gradient(
+        var(--angle),
+        rgba(var(--ion-color-primary-rgb), 0%),
+        rgba(var(--ion-color-primary-rgb), 20%),
+        rgba(var(--ion-color-primary-rgb), 40%),
+        rgba(var(--ion-color-primary-rgb), 60%),
+        rgba(var(--ion-color-primary-rgb), 80%),
+        rgba(var(--ion-color-primary-rgb), 100%)
+      )
+      border-box;
+  animation: 2.5s rotate linear infinite;
+}
+
+.success-select-animated {
+  background:
+    linear-gradient(var(--background), var(--background)) padding-box,
+    linear-gradient(var(--angle), #e8fbed, #bdf3c7, #7ce68e, #4fdb74, #2dd55b)
+      border-box;
+  animation: 2.5s rotate linear infinite;
+}
+
+.success-select-animated-hover:hover {
+  background:
+    linear-gradient(var(--background), var(--background)) padding-box,
+    linear-gradient(var(--angle), #e8fbed, #bdf3c7, #7ce68e, #4fdb74, #2dd55b)
+      border-box;
+  animation: 2.5s rotate linear infinite;
+}
+
+.danger-select-animated {
+  background:
+    linear-gradient(var(--background), var(--background)) padding-box,
+    linear-gradient(var(--angle), #ffb3b6, #ff8c90, #f66066, #ed333b, #d41e26)
+      border-box;
+  animation: 2.5s rotate linear infinite;
+}
+
+.danger-select-animated-hover:hover {
+  background:
+    linear-gradient(var(--background), var(--background)) padding-box,
+    linear-gradient(var(--angle), #ffb3b6, #ff8c90, #f66066, #ed333b, #d41e26)
+      border-box;
+  animation: 2.5s rotate linear infinite;
+}
+
+:root {
+  --background: var(--ion-background-color);
+}
+
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
 </style>
