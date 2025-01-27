@@ -18,6 +18,7 @@ import { wb } from "@/main";
 import SystemService from "@/services/systemService";
 import ContactService from "@/services/contactService";
 import FeedbackService from "@/services/feedbackService";
+import { DesignMode } from "@/utils/types";
 
 export default class SystemController {
   systemService = new SystemService();
@@ -182,5 +183,23 @@ export default class SystemController {
 
   getLoader() {
     return this.systemStore.loader;
+  }
+
+  setDesignMode(params: { mode: DesignMode }) {
+    const { mode } = params;
+    this.systemStore.setDesignMode({ mode });
+  }
+
+  getdesignMode(): DesignMode {
+    return this.systemStore.getDesignMode();
+  }
+
+  getScreenSize() {
+    return this.systemStore.screenSize;
+  }
+
+  updateScreenSize(params: { width: number; height: number; preset: string }) {
+    const { width, height, preset } = params;
+    this.systemStore.updateScreenSize({ width, height, preset });
   }
 }

@@ -6,12 +6,14 @@ http://ionicframework.com/docs/theming/ */
 /* @import url("./gruvbox.css");
 @import url("./nord.css"); */
 @import url("./styles/scrollbar.css");
+
 /* others */
 @import url("./styles/cards.css");
 @import url("./styles/buttons-animation.css");
 @import url("./styles/selectectable-animated.css");
 @import url("./styles/progress-bar.css");
 @import url("./styles/transitions.css");
+@import url("./styles/hr.css");
 
 @font-face {
   font-family: "OpenSans-Regular";

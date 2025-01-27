@@ -1,4 +1,9 @@
-import { Theme as ThemeType } from "@/utils/types";
+import {
+  EmailFilterOption,
+  Theme as ThemeType,
+  UserFilterOption,
+  UserRolFilterOption,
+} from "@/utils/types";
 import { filterPostOptions, PostFields, StatusPost } from "./types";
 
 // feedback
@@ -126,6 +131,21 @@ export interface User {
   imageProfile?: string;
 }
 
+export interface UserServerResponse {
+  created_at: string;
+  email: string;
+  email_verified_at: string | null;
+  id: number;
+  image_id: string | null;
+  is_admin: boolean;
+  is_email_verified: boolean;
+  is_user_disabled: boolean;
+  name: string;
+  role: string | null;
+  updated_at: string;
+  user: string;
+}
+
 // export interface GetUserResponse {
 //   id?: User["id"];
 //   name?: User["user"];
@@ -144,6 +164,13 @@ export interface UserRegister {
   user: User["user"];
   email: User["email"];
   password: User["password"];
+}
+
+export interface UpdateUserAccount {
+  id: string;
+  name: string;
+  user: string;
+  email: string;
 }
 
 export interface SetUserData {
@@ -176,6 +203,22 @@ export interface UpdateUserPassword {
   newPassword: string;
   newPasswordRepeat: string;
 }
+
+export interface SignUpUserServerResponse {
+  id: number;
+  name: string;
+  user: string;
+  email: string;
+  updated_at: string;
+  created_at: string;
+}
+export interface SignUpUserResponse {
+  id: number;
+  name: string;
+  user: string;
+  email: string;
+}
+// end user
 // admin
 export interface GetUsers {
   first: number;
@@ -190,21 +233,59 @@ export interface GetUsersResponse {
     total: number;
   };
 }
-export interface SearchUsers {
-  first: number;
-  page: number;
+export interface SearchUsersParams {
+  pagination?: number;
   search?: string;
-  filterOptions: string;
+  page: number;
+  options: FilterAdminPanelOptions;
 }
+
+export interface Link {
+  url: string | null;
+  label: string;
+  active: boolean;
+}
+
+export interface SearchUsersServerResponse {
+  current_page: number;
+  data: UserServerResponse[];
+  first_page_url: string;
+  from: number;
+  last_page: number;
+  last_page_url: string;
+  links: Link[];
+  next_page_url: string | null;
+  path: string;
+  per_page: number;
+  prev_page_url: string | null;
+  to: number;
+  total: number;
+}
+
 export interface SearchUsersResponse {
-  users: Array<User>;
-  paginatorInfo: {
-    totalPages: number;
-  };
+  currentPage: number;
+  data: User[];
+  firstPageUrl: string;
+  from: number;
+  lastPage: number;
+  lastPageUrl: string;
+  links: Link[];
+  nextPageUrl: string | null;
+  path: string;
+  perPage: number;
+  prevPageUrl: string | null;
+  to: number;
+  total: number;
 }
+
 export interface DisableUser {
   id: string;
-  disableUser: boolean;
+  status: boolean;
+}
+
+export interface AdminDeleteUserAccount {
+  id?: string;
+  email: string;
 }
 
 // contact
@@ -223,4 +304,10 @@ export interface System {
 export interface Theme {
   selected: ThemeType;
   options?: { blur?: boolean };
+}
+
+export interface FilterAdminPanelOptions {
+  email: EmailFilterOption;
+  user: UserFilterOption;
+  rol: UserRolFilterOption;
 }

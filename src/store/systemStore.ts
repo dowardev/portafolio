@@ -1,4 +1,5 @@
-import { System, Theme } from "@/services/interfaces";
+import { Theme } from "@/services/interfaces";
+import { DesignMode } from "@/utils/types";
 import { defineStore } from "pinia";
 import { reactive, ref, watch } from "vue";
 
@@ -14,6 +15,12 @@ export const useSystemStore = defineStore("system", () => {
   const loader = ref<{ status: boolean; color: string }>({
     status: false,
     color: "",
+  });
+  const designMode = ref<DesignMode>("md");
+  const screenSize = reactive({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    preset: "",
   });
 
   watch(theme, async (newValue, oldValue) => {
@@ -44,6 +51,29 @@ export const useSystemStore = defineStore("system", () => {
     loader.value = { status, color };
   }
 
+  function getDesignMode(): DesignMode {
+    return designMode.value;
+  }
+
+  function setDesignMode(params: { mode: DesignMode }) {
+    const { mode } = params;
+    designMode.value = mode;
+  }
+
+  function updateScreenSize(params: {
+    width: number;
+    height: number;
+    preset: string;
+  }): void {
+    const { width, height, preset } = params;
+
+    Object.assign(screenSize, {
+      width,
+      height,
+      preset,
+    });
+  }
+
   return {
     theme,
     getThemeSelected,
@@ -52,5 +82,10 @@ export const useSystemStore = defineStore("system", () => {
     update,
     loader,
     updateLoader,
+    designMode,
+    getDesignMode,
+    setDesignMode,
+    screenSize,
+    updateScreenSize,
   };
 });

@@ -27,7 +27,7 @@ export default class APIService {
         Accept: "application/json",
         Authorization: `${this.userToken}`,
       },
-      params: { data },
+      params: data,
     });
     return await response.data;
   }
@@ -49,6 +49,6 @@ export default class APIService {
       data,
     });
 
-    return await response;
+    return response;
   }
 }

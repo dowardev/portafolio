@@ -23,8 +23,13 @@ export const useUsersStore = defineStore("users", () => {
     users.value = usersParams;
   }
 
+  function getUsers() {
+    return users.value;
+  }
+
   return {
     users,
     updateUsersProps,
+    getUsers,
   };
 });

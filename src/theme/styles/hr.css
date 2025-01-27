@@ -1,0 +1,4 @@
+hr.style1 {
+  border-top: 1px solid var(--ion-background-color-step-50);
+  width: 100%;
+}

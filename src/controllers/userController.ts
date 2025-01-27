@@ -2,8 +2,12 @@ import SystemService from "@/services/systemService";
 import { useUsersStore } from "../store/usersStore";
 import { storeToRefs } from "pinia";
 import {
+  AdminDeleteUserAccount,
   DisableUser,
-  SearchUsersResponse,
+  SearchUsersParams,
+  SearchUsersServerResponse,
+  SignUpUserResponse,
+  UpdateUserAccount,
   User,
   UserRegister,
 } from "../services/interfaces";
@@ -23,47 +27,22 @@ export default class UserController {
   private userStore = useUserStore();
   private userRefs = storeToRefs(this.userStore);
 
-  async loadUsers(params: {
-    paginatorInfo: { pagination: number; page: number };
-    search: string;
-    filterOptions: string;
-  }): Promise<SearchUsersResponse> {
-    const first = params.paginatorInfo.pagination;
-    const page = params.paginatorInfo.page;
-    const search = params.search;
-    const filterOptions = params.filterOptions;
+  async loadUsers(
+    params: SearchUsersParams,
+  ): Promise<SearchUsersServerResponse> {
+    const { search, pagination, page, options } = params;
 
     try {
       const response = await this.adminService.searchUsers({
-        first,
-        page,
         search,
-        filterOptions,
-      });
-
-      return response;
-    } catch (error: any) {
-      if (error.message == "Unauthorized") console.log("Unauthorized user");
-      // this.openToastError(error);
-      throw error;
-    }
-  }
-
-  async getUsersPaginated(params: {
-    page: number;
-    perPage: number;
-  }): Promise<SearchUsersResponse> {
-    const { page, perPage } = params;
-
-    try {
-      const response = await this.adminService.getUsersPaginated({
+        pagination,
         page,
-        perPage,
+        options,
       });
 
       return response;
     } catch (error: any) {
-      if (error.message == "Unauthorized") console.log("Unauthorized user");
+      if (error.message == "Unauthorized") console.error("Unauthorized user");
       // this.openToastError(error);
       throw error;
     }
@@ -84,10 +63,26 @@ export default class UserController {
     }
   }
 
-  async createUserAccount(params: UserRegister) {
+  async createUserAccount(params: UserRegister): Promise<SignUpUserResponse> {
     const { name, user, password, email } = params;
 
-    await this.sessionService.userRegister({ name, user, password, email });
+    return await this.sessionService.userRegister({
+      name,
+      user,
+      password,
+      email,
+    });
+  }
+
+  async updateUserAccount(params: UpdateUserAccount): Promise<void> {
+    const { id, name, user, email } = params;
+
+    await this.sessionService.updateUserAccount({
+      id,
+      name,
+      user,
+      email,
+    });
   }
 
   async uploadImage(params: {
@@ -117,14 +112,14 @@ export default class UserController {
     await this.userService.saveUserData({ name, user, email, imageId });
   }
 
-  async disableUser(params: DisableUser): Promise<void> {
-    const { id, disableUser } = params;
-    await this.adminService.disableUser({ id, disableUser });
+  async updateUserStatus(params: DisableUser): Promise<void> {
+    const { id, status } = params;
+    await this.adminService.updateUserStatus({ id, status });
   }
 
-  async deleteUserAccount(params: { id: number }): Promise<void> {
-    const { id } = params;
-    await this.adminService.deleteUserAccount({ id });
+  async deleteUserAccount(params: AdminDeleteUserAccount): Promise<void> {
+    const { id, email } = params;
+    await this.adminService.deleteUserAccount({ id, email });
   }
 
   async login(params: {
@@ -176,5 +171,9 @@ export default class UserController {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  getUsersLoaded() {
+    return this.usersStore.getUsers();
   }
 }

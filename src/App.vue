@@ -18,7 +18,7 @@
       :is-open="openToastUpdateApp"
       :buttons="toastButtons"
       :duration="7000"
-      @didDismiss="updateApp($event)"
+      @did-dismiss="updateApp($event)"
     ></ion-toast>
   </ion-app>
 </template>
@@ -31,16 +31,20 @@ import {
   IonSplitPane,
   IonToast,
   toastController,
+  isPlatform,
 } from "@ionic/vue";
+import { closeOutline } from "ionicons/icons";
 import { computed, onMounted, ref, watch } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
 import { useRouter, useRoute } from "vue-router";
 import { Storage } from "@ionic/storage";
 import { wb } from "./main";
 
+// interface
+import { DesignMode } from "./utils/types";
+
 // controllers
 import SystemController from "./controllers/systemController";
-import { closeOutline } from "ionicons/icons";
 const systemController = new SystemController();
 
 // store
@@ -58,6 +62,8 @@ const toastButtons = [
     role: "update",
   },
 ];
+const designMode = ref<DesignMode>(isPlatform("ios") ? "ios" : "md");
+// end vars
 
 // watch
 watch(
@@ -66,7 +72,7 @@ watch(
     if (oldPath) {
       previousRoute.value = oldPath;
     }
-  }
+  },
 );
 
 // computed
@@ -93,8 +99,10 @@ onMounted(async () => {
       openToastUpdateApp.value = true;
     });
   }
+  systemController.setDesignMode({ mode: designMode.value });
+  updateScreenSize();
+  window.addEventListener("resize", updateScreenSize);
 });
-1;
 
 function createFirstCookie() {
   if (systemController.getFirstCookie()) {
@@ -132,6 +140,19 @@ async function openToastOptions() {
 
 function updateApp(e: any) {
   if (e.detail.role == "update") systemController.updateApp();
+}
+
+function updateScreenSize(): void {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  let preset = "xxl";
+
+  if (width < 576) preset = "xs";
+  else if (width < 768) preset = "sm";
+  else if (width < 992) preset = "md";
+  else if (width < 1200) preset = "lg";
+  else if (width < 1400) preset = "xl";
+  systemController.updateScreenSize({ width, height, preset });
 }
 </script>
 

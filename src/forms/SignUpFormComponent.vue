@@ -5,7 +5,7 @@
       <ion-input
         autocomplete="name"
         label-placement="stacked"
-        label="nombre"
+        label="Nombre"
         fill="outline"
         :value="form.name"
         :error-text="v$.form.name.$errors[0]?.$message.toString()"
@@ -108,7 +108,6 @@
         @keydown.enter="emits('enterPressed')"
       >
         <ion-icon slot="start" :icon="keyOutline"></ion-icon>
-
         <ion-input-password-toggle slot="end"></ion-input-password-toggle>
       </ion-input>
     </ion-col>
@@ -116,11 +115,9 @@
 </template>
 
 <script setup lang="ts">
-import { IonInput, IonButton, IonIcon } from "@ionic/vue";
-import { ref, watch } from "vue";
+import { IonInput, IonIcon } from "@ionic/vue";
+import { onMounted, ref, watch } from "vue";
 import {
-  eyeOutline,
-  eyeOffOutline,
   manOutline,
   personOutline,
   mailOpenOutline,
@@ -134,24 +131,37 @@ import {
   minLength,
   maxLength,
 } from "@vuelidate/validators";
-import { useRouter } from "vue-router";
+import { faker } from "@faker-js/faker";
 
-const router = useRouter();
-defineExpose({ getData });
+// componente props
+const props = withDefaults(
+  defineProps<{
+    form?: {
+      user: string;
+      name: string;
+      email: string;
+      password: string;
+      password2: string;
+    };
+  }>(),
+  {
+    form: () => ({
+      user: "",
+      name: "",
+      email: "",
+      password: "",
+      password2: "",
+    }),
+  },
+);
 const emits = defineEmits(["formStatus", "enterPressed"]);
+defineExpose({ getData, setFormData });
+// end componente props
+
+// vars
 const inputTypePassword1 = ref("password" as "text" | "password");
 const inputTypePassword2 = ref("password" as "text" | "password");
-const form = ref({
-  user: "",
-  name: "",
-  email: "",
-  password: "",
-  password2: "",
-});
-const spinners = ref({
-  buttonSignup: false,
-  buttonLogin: false,
-});
+const form = ref(props.form);
 
 // validation
 const samePassword = () => form.value.password == form.value.password2;
@@ -165,7 +175,7 @@ const rules = {
       required: helpers.withMessage(messageError.required, required),
       alpha: helpers.withMessage(
         messageError.alpha,
-        helpers.regex(/^[a-zA-Z ]*$/)
+        helpers.regex(/^[a-zA-Z ]*$/),
       ),
     },
     user: {
@@ -173,7 +183,7 @@ const rules = {
       maxLength: helpers.withMessage("Máximo 32 caracteres", maxLength(32)),
       minLength: helpers.withMessage(
         "Mínimo 4 caracteres",
-        helpers.regex(/^.{4,}$/)
+        helpers.regex(/^.{4,}$/),
       ),
     },
     email: {
@@ -184,23 +194,23 @@ const rules = {
       required: helpers.withMessage(messageError.required, required),
       minLength: helpers.withMessage(
         "La contraseña debe tener al menos 8 caracteres",
-        minLength(8)
+        minLength(8),
       ),
       regexLower: helpers.withMessage(
         "La contraseña debe contener al menos una letra minúscula",
-        helpers.regex(/[a-z]/)
+        helpers.regex(/[a-z]/),
       ),
       regexUpper: helpers.withMessage(
         "La contraseña debe contener al menos una letra mayúscula",
-        helpers.regex(/[A-Z]/)
+        helpers.regex(/[A-Z]/),
       ),
       regexNumber: helpers.withMessage(
         "La contraseña debe contener al menos un número",
-        helpers.regex(/[0-9]/)
+        helpers.regex(/[0-9]/),
       ),
       regexSpecial: helpers.withMessage(
         "La contraseña debe contener al menos un carácter especial",
-        helpers.regex(/[@$!%*?&]/)
+        helpers.regex(/[@$!%*?&]/),
       ),
     },
     password2: {
@@ -210,15 +220,26 @@ const rules = {
   },
 };
 const v$ = useVuelidate(rules, { form });
+// end vars
 
-// watch
-watch(form.value, (newValue, oldValue) => {
-  console.log(!v$.value.$invalid);
+onMounted(() => {
+  generateRandomData();
+});
+watch(form.value, () => {
   emits("formStatus", !v$.value.$invalid);
 });
+watch(
+  () => props.form,
+  (newForm) => {
+    form.value = newForm;
+  },
+);
+// end life
 
 // functions
-function getData() {
+function getData():
+  | { name: string; user: string; email: string; password: string }
+  | undefined {
   v$.value.$validate();
   if (!v$.value.$invalid) {
     return {
@@ -228,6 +249,27 @@ function getData() {
       password: form.value.password,
     };
   } else return undefined;
+}
+
+function generateRandomData() {
+  form.value.user = faker.internet.username();
+  form.value.name = faker.person.fullName();
+  form.value.email = faker.internet.email();
+  form.value.password = faker.internet.password() + "1@";
+  form.value.password2 = form.value.password;
+}
+
+function setFormData(data: {
+  name: string;
+  user: string;
+  email: string;
+  password: string;
+}) {
+  form.value.name = data.name;
+  form.value.user = data.user;
+  form.value.email = data.email;
+  form.value.password = data.password;
+  form.value.password2 = data.password;
 }
 </script>
 
