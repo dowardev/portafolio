@@ -4,6 +4,7 @@ import {
   UpdateUserPassword,
   SignUpUserServerResponse,
   SignUpUserResponse,
+  UpdateUserAccount,
 } from "./interfaces";
 import { apiConnector } from "@/main";
 
@@ -27,6 +28,22 @@ export default class SessionService {
         user: response.user,
         email: response.email,
       };
+    } catch (e: unknown) {
+      if (e instanceof AxiosError && e.response) {
+        throw new Error(e.response.data.error);
+      }
+      throw e;
+    }
+  }
+
+  async updateUserAccount(params: UpdateUserAccount): Promise<void> {
+    const { id, name, user, email } = params;
+
+    try {
+      await apiConnector.post({
+        url: `admin/update-user-account`,
+        data: { id, name, user, email },
+      });
     } catch (e: unknown) {
       if (e instanceof AxiosError && e.response) {
         throw new Error(e.response.data.error);

@@ -83,7 +83,7 @@
                           >{{ user.email }}</ion-label
                         >
 
-                        <!-- disable/enable user button -->
+                        <!-- update user button -->
                         <ion-button
                           v-if="
                             userHoverIndex == userIndex &&
@@ -93,7 +93,7 @@
                               screenSize.preset == 'xxl')
                           "
                           fill="clear"
-                          @click="modals.userRegister.open = true"
+                          @click="modals.userUpdate.open = true"
                         >
                           <ion-icon :icon="createOutline"></ion-icon>
                         </ion-button>
@@ -296,7 +296,14 @@
         "
         button
         lines="none"
-        @click="handleUpdateUserProfile()"
+        @click="
+          handleUpdateUserAccount({
+            id: userSelected.id!,
+            name: userSelected.name!,
+            user: userSelected.user!,
+            email: userSelected.email!,
+          })
+        "
       >
         <ion-icon slot="start" :icon="createOutline"></ion-icon>
         <ion-label>Editar usuario</ion-label>
@@ -415,7 +422,7 @@
           </ion-button>
         </ion-buttons>
 
-        <ion-title>Información de usuario</ion-title>
+        <ion-title>Crear usuario</ion-title>
 
         <ion-buttons slot="end" :mode="designMode">
           <ButtonIconAnimationComponent
@@ -436,6 +443,67 @@
           ref="signUpFormComponentRef"
           @enter-pressed="
             handleCreateUserAccount(signUpFormComponentRef?.getData()!)
+          "
+        />
+      </ion-card>
+    </ion-content>
+  </ion-modal>
+
+  <!-- modal user update -->
+  <ion-modal
+    :is-open="modals.userUpdate.open"
+    @did-dismiss="modals.userUpdate.open = false"
+  >
+    <ion-header mode="ios" class="ion-no-border">
+      <ion-toolbar>
+        <ion-buttons slot="start" :mode="designMode">
+          <ion-button
+            :disabled="isButtonSaveUserActive"
+            :backdrop-dismiss="isButtonSaveUserActive"
+            @click="modals.userUpdate.open = false"
+          >
+            <ion-icon :icon="closeOutline"> </ion-icon>
+          </ion-button>
+        </ion-buttons>
+
+        <ion-title>Actualizar usuario</ion-title>
+
+        <ion-buttons slot="end" :mode="designMode">
+          <ButtonIconAnimationComponent
+            :message="'Guardando'"
+            :active="isButtonSaveUserActive"
+            :disabled="refreshContent.users"
+            :icon="saveOutline"
+            :fill="isButtonSaveUserActive ? 'solid' : 'clear'"
+            @click="
+              handleUpdateUserAccount({
+                id: userSelected.id!,
+                name: updateUserFormComponentRef?.getData()?.name!,
+                user: updateUserFormComponentRef?.getData()?.user!,
+                email: updateUserFormComponentRef?.getData()?.email!,
+              })
+            "
+          />
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-card class="shadow-1 ion-padding">
+        <UserUpdateFormComponent
+          ref="updateUserFormComponentRef"
+          :form="{
+            name: userSelected.name!,
+            user: userSelected.user!,
+            email: userSelected.email!,
+          }"
+          @enter-pressed="
+            handleUpdateUserAccount({
+              id: userSelected.id!,
+              name: updateUserFormComponentRef?.getData()?.name!,
+              user: updateUserFormComponentRef?.getData()?.user!,
+              email: updateUserFormComponentRef?.getData()?.email!,
+            })
           "
         />
       </ion-card>
@@ -498,6 +566,7 @@ import ModalUserComponent from "./components/ModalUserComponent.vue";
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
 import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
 import CardOptions from "@/components/cards/CardOptions.vue";
+import UserUpdateFormComponent from "@/forms/UserUpdateFormComponent.vue";
 
 // vars
 const pagInfo = reactive({
@@ -520,6 +589,9 @@ const popovers = reactive({
 const modals = reactive({
   userInfo: reactive({ open: false }),
   userRegister: reactive({ open: false }),
+  userUpdate: reactive({
+    open: false,
+  }),
 });
 const userSelected = reactive<User>({});
 const designMode = ref<DesignMode>(systemController.getdesignMode());
@@ -546,6 +618,9 @@ const filterComponentRef = ref<InstanceType<
 > | null>(null);
 const signUpFormComponentRef = ref<InstanceType<
   typeof SignUpFormComponent
+> | null>(null);
+const updateUserFormComponentRef = ref<InstanceType<
+  typeof UserUpdateFormComponent
 > | null>(null);
 // end refs
 
@@ -823,18 +898,81 @@ async function createUserAccount(params: {
   }
 }
 
-async function handleUpdateUserProfile() {
-  await updateUserProfile();
-}
-
-async function updateUserProfile() {
-  //
-}
-
 async function handleButtonRefreshUsers() {
   isButtonRefreshUsersActive.value = true;
   await loadContent();
   isButtonRefreshUsersActive.value = false;
+}
+
+async function handleUpdateUserAccount(params: {
+  id: string;
+  name: string;
+  user: string;
+  email: string;
+}) {
+  if (!params || !params.id || !params.name || !params.user || !params.email) {
+    console.error("Invalid parameters");
+    return;
+  }
+
+  const { id, name, user, email } = params;
+  const oldUser = { ...params };
+  isButtonSaveUserActive.value = true;
+
+  const index = users.findIndex((user) => user.email === email);
+  if (index === -1) {
+    console.error("User not found");
+    isButtonSaveUserActive.value = false;
+    return;
+  }
+
+  try {
+    await systemController.presentToast({ message: "Usuario actualizado" });
+
+    users[index] = { ...users[index], name, user, email };
+
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    modals.userUpdate.open = false;
+
+    await updateUserAccount({ id, name, user, email });
+  } catch (e: unknown) {
+    console.error(e);
+    users[index] = { ...oldUser };
+    updateUserFormComponentRef.value?.setFormData(params);
+    modals.userUpdate.open = true;
+  } finally {
+    isButtonSaveUserActive.value = false;
+  }
+}
+
+async function updateUserAccount(params: {
+  id: string;
+  name: string;
+  user: string;
+  email: string;
+}): Promise<void> {
+  const { id, name, user, email } = params;
+
+  try {
+    await userController.updateUserAccount({
+      id,
+      name,
+      user,
+      email,
+    });
+  } catch (e: unknown) {
+    if (e instanceof Error && e.message === "Operation failed") {
+      const message = "Problema al crear el usuario";
+      await systemController.presentToast({
+        message,
+        color: "danger",
+      });
+      throw e.message;
+    } else {
+      console.error(e);
+      throw e;
+    }
+  }
 }
 </script>
 

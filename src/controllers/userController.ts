@@ -7,6 +7,7 @@ import {
   SearchUsersParams,
   SearchUsersServerResponse,
   SignUpUserResponse,
+  UpdateUserAccount,
   User,
   UserRegister,
 } from "../services/interfaces";
@@ -69,6 +70,17 @@ export default class UserController {
       name,
       user,
       password,
+      email,
+    });
+  }
+
+  async updateUserAccount(params: UpdateUserAccount): Promise<void> {
+    const { id, name, user, email } = params;
+
+    await this.sessionService.updateUserAccount({
+      id,
+      name,
+      user,
       email,
     });
   }

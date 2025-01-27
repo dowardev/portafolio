@@ -166,6 +166,13 @@ export interface UserRegister {
   password: User["password"];
 }
 
+export interface UpdateUserAccount {
+  id: string;
+  name: string;
+  user: string;
+  email: string;
+}
+
 export interface SetUserData {
   name: User["name"];
   email: User["email"];
