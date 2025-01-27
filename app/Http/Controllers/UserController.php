@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -79,5 +80,84 @@ class UserController extends Controller
     }
 
     return $options;
+  }
+
+  function updateUserStatus(Request $request)
+  {
+    $request->validate([
+      "userId" => "required|exists:users,id",
+      "status" => "required|boolean",
+    ]);
+
+    try {
+      $user = User::find($request->input("userId"));
+      $user->is_user_disabled = $request->input("status");
+      $user->save();
+
+      return response()->json([
+        "message" => "User status updated successfully",
+      ]);
+    } catch (\Exception $e) {
+      return response()->json(
+        [
+          "error" => "Operation failed",
+          "message" => $e->getMessage(),
+        ],
+        500
+      );
+    }
+  }
+
+  function adminDeleteUser(Request $request)
+  {
+    $validator = Validator::make($request->all(), [
+      "id" => "nullable|integer|exists:users,id",
+      "email" => "nullable|email|exists:users,email",
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json(["error" => $validator->errors()], 400);
+    }
+
+    $id = $request->input("id");
+    $email = $request->input("email");
+
+    if ($id) {
+      $user = User::find($id);
+    } elseif ($email) {
+      $user = User::where("email", $email)->first();
+    } else {
+      return response()->json(["error" => "No id or email provided"], 400);
+    }
+
+    if ($user) {
+      $user->delete();
+      return response()->json(["success" => "User deleted successfully"]);
+    } else {
+      return response()->json(["error" => "User not found"], 404);
+    }
+  }
+
+  function adminUpdateUserAccount(Request $request)
+  {
+    $input = $request->validate([
+      "id" => "required|exists:users,id",
+      "name" => "required|string|max:255",
+      "user" => "required|string|unique:users,user," . $request->id,
+      "email" => "required|email|unique:users,email," . $request->id,
+    ]);
+
+    $user = User::findOrFail($input["id"]);
+
+    $user->update([
+      "name" => $input["name"],
+      "email" => $input["email"],
+      "user" => $input["user"],
+    ]);
+
+    return response()->json([
+      "message" => "User updated successfully",
+      "user" => $user,
+    ]);
   }
 }
