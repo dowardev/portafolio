@@ -137,4 +137,27 @@ class UserController extends Controller
       return response()->json(["error" => "User not found"], 404);
     }
   }
+
+  function adminUpdateUserAccount(Request $request)
+  {
+    $input = $request->validate([
+      "id" => "required|exists:users,id",
+      "name" => "required|string|max:255",
+      "user" => "required|string|unique:users,user," . $request->id,
+      "email" => "required|email|unique:users,email," . $request->id,
+    ]);
+
+    $user = User::findOrFail($input["id"]);
+
+    $user->update([
+      "name" => $input["name"],
+      "email" => $input["email"],
+      "user" => $input["user"],
+    ]);
+
+    return response()->json([
+      "message" => "User updated successfully",
+      "user" => $user,
+    ]);
+  }
 }
