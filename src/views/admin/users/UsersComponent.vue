@@ -80,7 +80,7 @@
                             contextMenu = 'modal';
                             modals.userInfo.open = true;
                           "
-                          >{{ user.email }}</ion-label
+                          >{{ user.name }}</ion-label
                         >
 
                         <!-- update user button -->
@@ -297,12 +297,8 @@
         button
         lines="none"
         @click="
-          handleUpdateUserAccount({
-            id: userSelected.id!,
-            name: userSelected.name!,
-            user: userSelected.user!,
-            email: userSelected.email!,
-          })
+          popovers.userOptions.open = false;
+          modals.userUpdate.open = true;
         "
       >
         <ion-icon slot="start" :icon="createOutline"></ion-icon>
@@ -918,6 +914,7 @@ async function handleUpdateUserAccount(params: {
   const { id, name, user, email } = params;
   const oldUser = { ...params };
   isButtonSaveUserActive.value = true;
+  popovers.userOptions.open = false;
 
   const index = users.findIndex((user) => user.email === email);
   if (index === -1) {
