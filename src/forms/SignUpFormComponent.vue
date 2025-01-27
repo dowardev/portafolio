@@ -5,7 +5,7 @@
       <ion-input
         autocomplete="name"
         label-placement="stacked"
-        label="nombre"
+        label="Nombre"
         fill="outline"
         :value="form.name"
         :error-text="v$.form.name.$errors[0]?.$message.toString()"
@@ -108,7 +108,6 @@
         @keydown.enter="emits('enterPressed')"
       >
         <ion-icon slot="start" :icon="keyOutline"></ion-icon>
-
         <ion-input-password-toggle slot="end"></ion-input-password-toggle>
       </ion-input>
     </ion-col>
@@ -116,11 +115,9 @@
 </template>
 
 <script setup lang="ts">
-import { IonInput, IonButton, IonIcon } from "@ionic/vue";
+import { IonInput, IonIcon } from "@ionic/vue";
 import { onMounted, ref, watch } from "vue";
 import {
-  eyeOutline,
-  eyeOffOutline,
   manOutline,
   personOutline,
   mailOpenOutline,
@@ -134,21 +131,37 @@ import {
   minLength,
   maxLength,
 } from "@vuelidate/validators";
-import { useRouter } from "vue-router";
 import { faker } from "@faker-js/faker";
 
-const router = useRouter();
-defineExpose({ getData });
+// componente props
+const props = withDefaults(
+  defineProps<{
+    form?: {
+      user: string;
+      name: string;
+      email: string;
+      password: string;
+      password2: string;
+    };
+  }>(),
+  {
+    form: () => ({
+      user: "",
+      name: "",
+      email: "",
+      password: "",
+      password2: "",
+    }),
+  },
+);
 const emits = defineEmits(["formStatus", "enterPressed"]);
+defineExpose({ getData, setFormData });
+// end componente props
+
+// vars
 const inputTypePassword1 = ref("password" as "text" | "password");
 const inputTypePassword2 = ref("password" as "text" | "password");
-const form = ref({
-  user: "",
-  name: "",
-  email: "",
-  password: "",
-  password2: "",
-});
+const form = ref(props.form);
 
 // validation
 const samePassword = () => form.value.password == form.value.password2;
@@ -207,14 +220,21 @@ const rules = {
   },
 };
 const v$ = useVuelidate(rules, { form });
+// end vars
 
-// watch
-watch(form.value, (newValue, oldValue) => {
+onMounted(() => {
+  generateRandomData();
+});
+watch(form.value, () => {
   emits("formStatus", !v$.value.$invalid);
 });
-onMounted(() => {
-  // generateRandomData();
-});
+watch(
+  () => props.form,
+  (newForm) => {
+    form.value = newForm;
+  },
+);
+// end life
 
 // functions
 function getData():
@@ -237,6 +257,19 @@ function generateRandomData() {
   form.value.email = faker.internet.email();
   form.value.password = faker.internet.password() + "1@";
   form.value.password2 = form.value.password;
+}
+
+function setFormData(data: {
+  name: string;
+  user: string;
+  email: string;
+  password: string;
+}) {
+  form.value.name = data.name;
+  form.value.user = data.user;
+  form.value.email = data.email;
+  form.value.password = data.password;
+  form.value.password2 = data.password;
 }
 </script>
 

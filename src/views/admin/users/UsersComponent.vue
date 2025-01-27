@@ -785,6 +785,8 @@ async function handleCreateUserAccount(params: {
   } catch (e: unknown) {
     console.error(e);
     users.pop();
+    modals.userRegister.open = true;
+    signUpFormComponentRef.value?.setFormData(params);
   } finally {
     isButtonSaveUserActive.value = false;
   }
