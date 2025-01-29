@@ -3,58 +3,54 @@
     <ion-col v-for="(experience, index) in experiences" :key="index" size="4">
       <ion-card class="shadow-1">
         <ion-card-header>
-          <div style="display: flex; align-items: center">
-            <div style="margin-right: 20px">
-              <img
-                :src="experience.img"
-                alt=""
-                style="height: 45px; border-radius: 50%"
-              />
-            </div>
+          <div style="display: flex; justify-content: space-between">
+            <img
+              :src="experience.img"
+              alt=""
+              style="height: 45px; border-radius: 50%"
+            />
 
-            <div>
-              <ion-card-title>
-                {{ experience.title }}
-              </ion-card-title>
-              <ion-card-subtitle>{{ experience.date }}</ion-card-subtitle>
-            </div>
+            <ion-button
+              size="small"
+              fill="clear"
+              @click="
+                modals.modalInfoExperience.title = experience.title;
+                modals.modalInfoExperience.content =
+                  experience.details!.description;
+                modals.modalInfoExperience.url = experience.details!.website;
+                modals.modalInfoExperience.open = true;
+              "
+            >
+              <ion-icon :icon="openOutline"> </ion-icon>
+            </ion-button>
           </div>
+          <ion-card-title>
+            {{ experience.title }}
+          </ion-card-title>
+          <ion-card-subtitle>{{ experience.date }}</ion-card-subtitle>
         </ion-card-header>
 
         <ion-card-content>
           <ion-row>
-            <ion-col size="10">
-              <div style="overflow-x: auto; white-space: nowrap">
-                <ion-chip
-                  v-for="(tech, techIndex) in experience.technologies"
-                  :key="techIndex"
-                  color="primary"
-                >
-                  <img
-                    :src="tech.img"
-                    :alt="tech.name"
-                    :style="{ width: tech.size }"
-                  />
-                  <ion-label>{{ tech.name }}</ion-label>
-                </ion-chip>
-              </div>
-            </ion-col>
-          </ion-row>
-
-          <ion-row>
-            <ion-col style="display: flex; justify-content: end">
-              <ion-button
-                fill="clear"
-                @click="
-                  modals.modalInfoExperience.title = experience.title;
-                  modals.modalInfoExperience.content =
-                    experience.details!.description;
-                  modals.modalInfoExperience.url = experience.details!.website;
-                  modals.modalInfoExperience.open = true;
-                "
+            <ion-col size="10" style="display: flex">
+              <div
+                v-for="(tech, techIndex) in experience.technologies"
+                :key="techIndex"
+                style="display: flex; align-items: center; margin-right: 10px"
               >
-                Mas información
-              </ion-button>
+                <img
+                  v-if="tech.type === 'img'"
+                  :src="tech.source"
+                  :alt="tech.name"
+                  :style="{ width: tech.size }"
+                />
+
+                <ion-icon
+                  v-if="tech.type == 'icon'"
+                  :style="{ fontSize: tech.size }"
+                  :icon="tech.source"
+                ></ion-icon>
+              </div>
             </ion-col>
           </ion-row>
         </ion-card-content>
@@ -97,18 +93,21 @@
 <script lang="ts" setup>
 import { reactive } from "vue";
 import { IonModal } from "@ionic/vue";
-import { closeOutline, openOutline } from "ionicons/icons";
+import {
+  closeOutline,
+  logoFirebase,
+  logoIonic,
+  logoLaravel,
+  logoVue,
+  openOutline,
+} from "ionicons/icons";
 
 // media
 import PengyiLabsLogo from "@/assets/otros/pengyilabs_logo.jpg";
 import NuxtImg from "@/assets/otros/nuxt-svgrepo-com.svg";
-import VueLogo from "@/assets/otros/vue-js-1.svg";
-import LaravelLogo from "@/assets/otros/laravel-2.svg";
 import MysqlLogo from "@/assets/otros/mysql-6.svg";
-import IonicLogo from "@/assets/otros/ionicframework-icon.svg";
 import UpworkLogo from "@/assets/otros/icons8-upwork-50.png";
 import WorkanaLogo from "@/assets/otros/Workana_ISOLOGO_W.png";
-import FirebaseLogo from "@/assets/otros/Firebase_Logo_Logomark.svg";
 
 // vars
 const experiences = [
@@ -117,8 +116,8 @@ const experiences = [
     title: "Pengyi Labs",
     date: "Diciembre 2024 - Actualidad",
     technologies: [
-      { img: NuxtImg, name: "Nuxt", size: "25px" },
-      { img: VueLogo, name: "Vue", size: "25px" },
+      { source: NuxtImg, name: "Nuxt", size: "22px", type: "img" },
+      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
     ],
     details: {
       description:
@@ -131,10 +130,10 @@ const experiences = [
     title: "Upwork",
     date: "Marzo 2023 - Actualidad",
     technologies: [
-      { img: VueLogo, name: "Vue", size: "25px" },
-      { img: IonicLogo, name: "Ionic", size: "25px" },
-      { img: LaravelLogo, name: "Laravel", size: "25px" },
-      { img: MysqlLogo, name: "MySql", size: "25px" },
+      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
+      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
+      { source: logoLaravel, name: "Laravel", size: "18px", type: "icon" },
+      { source: MysqlLogo, name: "MySql", size: "16px", type: "img" },
     ],
     details: {
       description:
@@ -147,10 +146,10 @@ const experiences = [
     title: "Workana",
     date: "Enero 2021 - Actualidad",
     technologies: [
-      { img: VueLogo, name: "Vue", size: "25px" },
-      { img: IonicLogo, name: "Ionic", size: "25px" },
-      { img: LaravelLogo, name: "Laravel", size: "25px" },
-      { img: FirebaseLogo, name: "Firebase", size: "20px" },
+      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
+      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
+      { source: logoLaravel, name: "Laravel", size: "18px", type: "icon" },
+      { source: logoFirebase, name: "Firebase", size: "18px", type: "icon" },
     ],
     details: {
       description:
