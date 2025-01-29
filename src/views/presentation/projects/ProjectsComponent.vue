@@ -3,66 +3,59 @@
     <ion-col v-for="(project, index) in projects" :key="index" size="4">
       <ion-card class="shadow-1">
         <ion-card-header>
+          <div style="display: flex; justify-content: space-between">
+            <img :src="project.img" alt="" style="height: 45px" />
+
+            <ion-button
+              size="small"
+              fill="clear"
+              @click="
+                modals.modalInfoExperience.title = project.title;
+                modals.modalInfoExperience.content =
+                  project.details!.description;
+                modals.modalInfoExperience.url = project.details!.website;
+                modals.modalInfoExperience.open = true;
+              "
+            >
+              <ion-icon :icon="openOutline"> </ion-icon>
+            </ion-button>
+          </div>
+
           <ion-card-title>
             {{ project.title }}
           </ion-card-title>
+          <ion-card-subtitle>
+            {{
+              project.status == "progress"
+                ? "En progeso"
+                : project.status == "indeterminate"
+                  ? "Indeterminado"
+                  : "Terminado"
+            }}
+          </ion-card-subtitle>
         </ion-card-header>
 
         <ion-card-content>
           <ion-row>
-            <ion-col>
-              <ion-chip
-                :color="
-                  project.status == 'progress'
-                    ? 'primary'
-                    : project.status == 'indeterminate'
-                      ? 'warning'
-                      : 'success'
-                "
-                >{{
-                  project.status == "progress"
-                    ? "En progeso"
-                    : project.status == "indeterminate"
-                      ? "Indeterminado"
-                      : "Terminado"
-                }}</ion-chip
+            <ion-col size="10" style="display: flex">
+              <div
+                v-for="(tech, techIndex) in project.technologies"
+                :key="techIndex"
+                style="display: flex; align-items: center; margin-right: 10px"
               >
-            </ion-col>
-          </ion-row>
+                <img
+                  v-if="tech.type === 'img'"
+                  :src="tech.source"
+                  :alt="tech.name"
+                  :style="{ width: tech.size }"
+                />
 
-          <ion-row>
-            <ion-col>
-              <div style="overflow-x: auto; white-space: nowrap">
-                <ion-chip
-                  v-for="(tech, techIndex) in project.technologies"
-                  :key="techIndex"
-                  color="primary"
-                >
-                  <img
-                    :src="tech.img"
-                    :alt="tech.name"
-                    :style="{ width: tech.size }"
-                  />
-                  <ion-label>{{ tech.name }}</ion-label>
-                </ion-chip>
+                <ion-icon
+                  v-if="tech.type == 'icon'"
+                  :style="{ fontSize: tech.size }"
+                  :icon="tech.source"
+                ></ion-icon>
               </div>
-            </ion-col>
-          </ion-row>
-
-          <ion-row>
-            <ion-col style="display: flex; justify-content: end">
-              <ion-button
-                fill="clear"
-                @click="
-                  modals.modalInfoExperience.title = project.title;
-                  modals.modalInfoExperience.content =
-                    project.details!.description;
-                  modals.modalInfoExperience.url = project.details!.website;
-                  modals.modalInfoExperience.open = true;
-                "
-              >
-                Mas información
-              </ion-button>
             </ion-col>
           </ion-row>
         </ion-card-content>
@@ -105,29 +98,32 @@
 <script lang="ts" setup>
 import { reactive } from "vue";
 import { IonModal } from "@ionic/vue";
-import { closeOutline, openOutline } from "ionicons/icons";
+import {
+  closeOutline,
+  openOutline,
+  logoVue,
+  logoIonic,
+  logoLaravel,
+  logoFirebase,
+} from "ionicons/icons";
 
 // media
 import PengyiLabsLogo from "@/assets/otros/pengyilabs_logo.jpg";
 import NuxtImg from "@/assets/otros/nuxt-svgrepo-com.svg";
-import VueLogo from "@/assets/otros/vue-js-1.svg";
-import LaravelLogo from "@/assets/otros/laravel-2.svg";
 import MysqlLogo from "@/assets/otros/mysql-6.svg";
-import IonicLogo from "@/assets/otros/ionicframework-icon.svg";
-import UpworkLogo from "@/assets/otros/icons8-upwork-50.png";
-import WorkanaLogo from "@/assets/otros/Workana_ISOLOGO_W.png";
-import FirebaseLogo from "@/assets/otros/Firebase_Logo_Logomark.svg";
-import LifeLineLogo from "@/assets/otros/lifeline_v1.webp";
 import DowarLogo from "@/assets/portafolio/logo_dowar_2.1.png";
+import MoneyFlapLogo from "@/assets/otros/moneyflap-logo-white.svg";
+import LifelineLogo from "@/assets/otros/lifeline_v1.webp";
 
 // vars
 const projects = [
   {
+    img: MoneyFlapLogo,
     title: "Moneyflap",
     status: "indeterminate",
     technologies: [
-      { img: NuxtImg, name: "Nuxt", size: "25px" },
-      { img: VueLogo, name: "Vue", size: "25px" },
+      { source: NuxtImg, name: "Nuxt", size: "22px", type: "img" },
+      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
     ],
     source: {
       img: PengyiLabsLogo,
@@ -141,13 +137,14 @@ const projects = [
     },
   },
   {
+    img: LifelineLogo,
     title: "LifeLine",
     status: "progress",
     technologies: [
-      { img: VueLogo, name: "Vue", size: "25px" },
-      { img: IonicLogo, name: "Ionic", size: "25px" },
-      { img: LaravelLogo, name: "Laravel", size: "25px" },
-      { img: MysqlLogo, name: "MySql", size: "25px" },
+      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
+      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
+      { source: logoLaravel, name: "Laravel", size: "18px", type: "icon" },
+      { source: MysqlLogo, name: "MySql", size: "16px", type: "img" },
     ],
     source: {
       img: DowarLogo,
@@ -161,13 +158,14 @@ const projects = [
     },
   },
   {
+    img: LifelineLogo,
     title: "Blog",
     status: "progress",
     technologies: [
-      { img: VueLogo, name: "Vue", size: "25px" },
-      { img: IonicLogo, name: "Ionic", size: "25px" },
-      { img: LaravelLogo, name: "Laravel", size: "25px" },
-      { img: FirebaseLogo, name: "Firebase", size: "20px" },
+      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
+      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
+      { source: logoLaravel, name: "Laravel", size: "18px", type: "icon" },
+      { source: logoFirebase, name: "Firebase", size: "20px", type: "icon" },
     ],
     source: {
       img: DowarLogo,

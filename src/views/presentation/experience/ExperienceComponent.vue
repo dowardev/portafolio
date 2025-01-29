@@ -4,11 +4,7 @@
       <ion-card class="shadow-1">
         <ion-card-header>
           <div style="display: flex; justify-content: space-between">
-            <img
-              :src="experience.img"
-              alt=""
-              style="height: 45px; border-radius: 50%"
-            />
+            <img :src="experience.img" alt="" style="height: 45px" />
 
             <ion-button
               size="small"
