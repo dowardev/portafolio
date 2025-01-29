@@ -1,57 +1,31 @@
 <template>
-  <ion-card
-    class="ion-padding blur-effect primary-select-animated-active"
-    style="--background: var(--ion-background-color-step-50)"
-  >
-    <!-- perfil -->
-    <ion-row>
-      <ion-col class="center" size="12">
-        <img
-          src="@/assets/portafolio/foto_perfil.jpg"
-          alt=""
-          class="img-perfil"
-        />
-      </ion-col>
-    </ion-row>
+  <ion-row class="ion-justify-content-center" style="display: flex">
+    <ion-col size="6">
+      <ion-row>
+        <ion-col>
+          <h1>Gonzalo Ponce</h1>
+        </ion-col>
+      </ion-row>
 
-    <ion-row>
-      <ion-col class="center" size-lg="12">
-        <h1>Gonzalo Ponce</h1>
-      </ion-col>
-    </ion-row>
+      <ion-row>
+        <ion-col>
+          <div>
+            <ion-chip color="primary">Full-Stack Developer</ion-chip>
+          </div>
+        </ion-col>
+      </ion-row>
 
-    <ion-row>
-      <ion-col class="center" size="12">
-        <img src="@/assets/portafolio/dowar.png" class="img-logo" />
-      </ion-col>
-    </ion-row>
+      <ion-row>
+        <ion-col>
+          <p>
+            Desarrollador Full-Stack con mas de 5 años de experiencia en el
+            desarrollo de aplicaciones multiplataforma.
+          </p>
+        </ion-col>
+      </ion-row>
 
-    <ion-row>
-      <ion-col class="center" size="12">
-        <p style="text-align: center">
-          Desarrollador de experiencias multiplataforma
-        </p>
-      </ion-col>
-    </ion-row>
-
-    <!-- redes -->
-    <ion-row>
-      <ion-col>
-        <div style="display: flex; justify-content: space-around">
-          <!-- email -->
-          <ion-button
-            id="click-trigger-bussiness-email"
-            button
-            class="social-button"
-            @mouseover="fillEmailContact = '#C87C5B'"
-            @mouseleave="fillEmailContact = defaultColorFill"
-          >
-            <ion-icon
-              :style="{ color: fillEmailContact }"
-              :icon="mail"
-            ></ion-icon>
-          </ion-button>
-
+      <ion-row>
+        <ion-col>
           <!-- LinkedIn -->
           <ion-button
             id="click-trigger-bussiness-linkedin"
@@ -66,81 +40,56 @@
             ></ion-icon>
           </ion-button>
 
-          <!-- contact form -->
+          <!-- email -->
           <ion-button
-            id="open-modal-cocntacto-form"
+            id="click-trigger-bussiness-email"
             button
             class="social-button"
-            @mouseover="fillContactForm = '#5FFEF7'"
-            @mouseleave="fillContactForm = defaultColorFill"
+            @mouseover="fillEmailContact = '#C87C5B'"
+            @mouseleave="fillEmailContact = defaultColorFill"
           >
             <ion-icon
-              :icon="chatbubble"
-              :style="{ color: fillContactForm }"
+              :style="{ color: fillEmailContact }"
+              :icon="mail"
             ></ion-icon>
           </ion-button>
 
-          <!-- cv -->
+          <!-- calendly -->
           <ion-button
-            id="click-trigger-cv"
             button
+            href="https://calendly.com/dowardev"
+            target="_blank"
             class="social-button"
-            @mouseover="fillCVForm = '#FFC65B'"
-            @mouseleave="fillCVForm = defaultColorFill"
+            @mouseover="fillcalendly = '#006dff'"
+            @mouseleave="fillcalendly = defaultColorFill"
           >
             <ion-icon
-              :icon="documentText"
-              :style="{ color: fillCVForm }"
+              :style="{ color: fillcalendly }"
+              :icon="calendar"
             ></ion-icon>
           </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-col>
 
-          <!-- upwork -->
-          <ion-button
-            id="click-trigger-upwork"
-            button
-            class="social-button"
-            @mouseover="fillUpwork = '#6bd341'"
-            @mouseleave="fillUpwork = defaultColorFill"
-          >
-            <img
-              v-if="fillUpwork == defaultColorFill"
-              src="../../../assets/otros/icons8-upwork-50.png"
-              alt="upwork-logo"
-              srcset=""
-              style="width: 22px"
-            />
+    <ion-col size="4">
+      <ion-row>
+        <ion-col style="display: flex" class="ion-justify-content-center">
+          <img
+            src="@/assets/portafolio/foto_perfil.jpg"
+            alt=""
+            class="img-perfil"
+          />
+        </ion-col>
+      </ion-row>
 
-            <img
-              v-if="fillUpwork == '#6bd341'"
-              src="../../../assets/otros/icons8-upwork2-50.png"
-              alt="upwork-logo"
-              srcset=""
-              style="width: 22px"
-            />
-          </ion-button>
-
-          <!-- bluesky -->
-          <ion-button
-            id="click-trigger-bluesky"
-            button
-            class="social-button"
-            @mouseover="fillBluesky = '#0084fe'"
-            @mouseleave="fillBluesky = defaultColorFill"
-          >
-            <img
-              style="width: 16px"
-              :src="
-                fillBluesky == defaultColorFill
-                  ? blueskyGrayImg
-                  : blueskyColorImg
-              "
-              alt=""
-            />
-          </ion-button>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-card>
+      <ion-row>
+        <ion-col style="display: flex" class="ion-justify-content-center">
+          <img src="@/assets/portafolio/dowar.png" class="img-logo" />
+        </ion-col>
+      </ion-row>
+    </ion-col>
+  </ion-row>
 
   <!-- popovers -->
   <!-- popover email -->
@@ -191,8 +140,8 @@
       <ion-item
         button
         lines="none"
-        @click="copyToClipboard({ text: 'dowar' })"
         class="transparent"
+        @click="copyToClipboard({ text: 'dowar' })"
       >
         <ion-icon slot="start" :icon="copyOutline" color="primary"></ion-icon>
         <ion-label class="ion-text-wrap">Copiar usuario</ion-label>
@@ -302,8 +251,8 @@
       <ion-item
         button
         lines="none"
-        @click="copyToClipboard({ text: '@dowardev.bsky.social' })"
         class="transparent"
+        @click="copyToClipboard({ text: '@dowardev.bsky.social' })"
       >
         <ion-icon slot="start" :icon="copyOutline" color="primary"></ion-icon>
         <ion-label class="ion-text-wrap">Copiar usuario</ion-label>
@@ -356,6 +305,7 @@ import {
   IonContent,
   IonIcon,
   IonButton,
+  IonChip,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import {
@@ -366,9 +316,15 @@ import {
   openOutline,
   chatbubble,
   documentText,
+  calendarOutline,
+  closeOutline,
+  calendar,
 } from "ionicons/icons";
 import { App } from "@capacitor/app";
 import ContactModal from "./ContactModal.vue";
+
+// components
+import CardVerticalOptionsComponent from "@/components/cards/CardVerticalOptionsComponent.vue";
 
 // images
 import blueskyGrayImg from "@/assets/otros/bluesky-gray.png";
@@ -382,6 +338,7 @@ const fillContactForm = ref(defaultColorFill);
 const fillCVForm = ref(defaultColorFill);
 const fillUpwork = ref(defaultColorFill);
 const fillBluesky = ref(defaultColorFill);
+const fillcalendly = ref(defaultColorFill);
 
 // mounted()
 onMounted(() => {

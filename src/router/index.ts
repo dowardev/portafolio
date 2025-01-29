@@ -1,16 +1,6 @@
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
 import NoFoundPage from "../views/404/404Page.vue";
-import HomePresentationPage from "../views/presentation/HomePresentationPage.vue";
-import CreatePost from "@/views/blog/editor/CreatePostPage.vue";
-import UpdatePost from "@/views/blog/editor/UpdatePostPage.vue";
-import PostsPage from "@/views/blog/posts/PostsPage.vue";
-import PostPage from "@/views/blog/post/PostPage.vue";
-import LoginPage from "@/views/session/login/LoginPage.vue";
-import SignUpPage from "@/views/session/signup/SignUpPage.vue";
-import PoliciesPage from "@/views/policies/PoliciesPage.vue";
-import UserPanelPage from "@/views/user/UserPanelPage.vue";
-import AdminPanelPage from "@/views/admin/users/UsersComponent.vue";
 import Prueba from "@/views/prueba/Prueba.vue";
 
 import HomePage from "@/views/HomePage.vue";
