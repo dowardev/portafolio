@@ -197,6 +197,7 @@
                 <div
                   style="cursor: pointer"
                   class="ion-padding-start ion-padding-end"
+                  @click="modalContactForm?.$el.present()"
                 >
                   <img style="width: 40px" :src="ContractLogo" alt="" />
                 </div>
@@ -259,6 +260,39 @@
       </ion-item>
     </ion-content>
   </ion-popover>
+
+  <!-- modals -->
+  <!-- modal contact form -->
+  <ion-modal
+    ref="modalContactForm"
+    trigger="open-modal-contact-form"
+    @will-dismiss="modalContactForm?.$el.dismiss()"
+  >
+    <ion-header mode="ios">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button @click="modalContactForm?.$el.dismiss()">
+            <ion-icon :icon="closeOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+
+        <ion-title>Contacto</ion-title>
+
+        <ion-buttons slot="end">
+          <ion-button
+            :strong="true"
+            @click="sendMessage(contactForm?.getData()!)"
+          >
+            <ion-icon :icon="sendOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ContactForm ref="contactForm" />
+    </ion-content>
+  </ion-modal>
 </template>
 
 <script setup lang="ts">
@@ -277,14 +311,17 @@ import {
   IonIcon,
   IonContent,
   IonPopover,
+  IonModal,
 } from "@ionic/vue";
 import { isPlatform } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import {
   albumsOutline,
+  closeOutline,
   ellipsisVerticalOutline,
   imageOutline,
+  sendOutline,
 } from "ionicons/icons";
 
 // interfaces
@@ -298,11 +335,22 @@ import PortfolioPage from "../portfolio/PortfolioPage.vue";
 import ExperienceComponent from "./experience/ExperienceComponent.vue";
 import ProjectsComponent from "./projects/ProjectsComponent.vue";
 import CertificatesComponent from "./certificates/CertificatesComponent.vue";
+import ContactForm from "@/components/forms/contact/ContactForm.vue";
+// end components
+
+// controllers
+import SystemController from "@/controllers/systemController";
+const systemController = new SystemController();
+// end controllers
 
 // media
 import UpworkLogo from "../../assets/otros/brand-upwork-svgrepo-com.svg";
 import WorkanaLogo from "../../assets/otros/Workana_ISOLOGO_W.png";
 import ContractLogo from "../../assets/otros/contract-svgrepo-com.svg";
+
+// interface
+import { ContactMessage } from "@/services/interfaces";
+// end interface
 
 // vars
 const showTitle = ref(true);
@@ -320,6 +368,12 @@ const backgroundActive = ref(false);
 const opcSelected = ref<MainOptions>("PresentationPage");
 const designPlatform = isPlatform("ios") ? "ios" : "md";
 const selectedSegment = ref("contact");
+// end vars
+
+// refs
+const modalContactForm = ref<InstanceType<typeof IonModal>>();
+const contactForm = ref<InstanceType<typeof ContactForm>>();
+// end refs
 
 onMounted(() => {
   useBackButton(10, () => {
@@ -400,6 +454,27 @@ function scrollToSection(event) {
 function openUrl(params: { url: string }) {
   const { url } = params;
   window.open(url, "_blank");
+}
+
+async function sendMessage(params: ContactMessage) {
+  const { name, email, subject, description } = params;
+
+  try {
+    await systemController.createContactMessage({
+      name,
+      email,
+      subject,
+      description,
+    });
+    await systemController.presentToast({ message: "Mensaje recibido" });
+    modalContactForm.value?.$el.dismiss();
+  } catch (e: unknown) {
+    await systemController.presentToast({ message: "Error al enviar mensaje" });
+    console.error(e);
+    return;
+  } finally {
+    //
+  }
 }
 </script>
 
