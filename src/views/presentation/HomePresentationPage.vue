@@ -279,12 +279,17 @@
         <ion-title>Contacto</ion-title>
 
         <ion-buttons slot="end">
-          <ion-button
-            :strong="true"
-            @click="sendMessage(contactForm?.getData()!)"
+          <ButtonIconAnimationComponent
+            ref="buttonAnimation1"
+            color="primary"
+            @click="handleSendMessage(contactForm?.getData()!)"
           >
-            <ion-icon :icon="sendOutline"></ion-icon>
-          </ion-button>
+            <template #icon-start>
+              <ion-icon :icon="sendOutline"></ion-icon>
+            </template>
+
+            <template #message>Enviando</template>
+          </ButtonIconAnimationComponent>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -336,6 +341,7 @@ import ExperienceComponent from "./experience/ExperienceComponent.vue";
 import ProjectsComponent from "./projects/ProjectsComponent.vue";
 import CertificatesComponent from "./certificates/CertificatesComponent.vue";
 import ContactForm from "@/components/forms/contact/ContactForm.vue";
+import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
 // end components
 
 // controllers
@@ -370,9 +376,11 @@ const designPlatform = isPlatform("ios") ? "ios" : "md";
 const selectedSegment = ref("contact");
 // end vars
 
-// refs
+// component refs
 const modalContactForm = ref<InstanceType<typeof IonModal>>();
 const contactForm = ref<InstanceType<typeof ContactForm>>();
+const buttonAnimation1 =
+  ref<InstanceType<typeof ButtonIconAnimationComponent>>();
 // end refs
 
 onMounted(() => {
@@ -456,6 +464,20 @@ function openUrl(params: { url: string }) {
   window.open(url, "_blank");
 }
 
+async function handleSendMessage(params: ContactMessage) {
+  const { name, email, subject, description } = params;
+  buttonAnimation1.value?.updateConfig({ status: true, fill: "solid" });
+
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  await sendMessage({ name, email, subject, description });
+  await new Promise((resolve) => setTimeout(resolve, 800));
+
+  buttonAnimation1.value?.updateConfig({ status: false, fill: "default" });
+
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  modalContactForm.value?.$el.dismiss();
+}
+
 async function sendMessage(params: ContactMessage) {
   const { name, email, subject, description } = params;
 
@@ -467,7 +489,6 @@ async function sendMessage(params: ContactMessage) {
       description,
     });
     await systemController.presentToast({ message: "Mensaje recibido" });
-    modalContactForm.value?.$el.dismiss();
   } catch (e: unknown) {
     await systemController.presentToast({ message: "Error al enviar mensaje" });
     console.error(e);
