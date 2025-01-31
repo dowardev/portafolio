@@ -33,7 +33,7 @@
           class="hide-scroll"
           scrollable
           style="width: 24dvw"
-          @ion-change="scrollToSection($event)"
+          @ion-change="scrollToSection({ event: $event })"
         >
           <ion-segment-button value="contact">Contacto</ion-segment-button>
           <ion-segment-button value="skills">Skills</ion-segment-button>
@@ -320,7 +320,6 @@ import {
 } from "@ionic/vue";
 import { isPlatform } from "@ionic/vue";
 import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
 import {
   albumsOutline,
   closeOutline,
@@ -330,13 +329,10 @@ import {
 } from "ionicons/icons";
 
 // interfaces
-type MainOptions = "PresentationPage" | "SkillsPage" | "PortfolioPage";
 
 // components
 import InformationComponent from "./information/InformationComponent.vue";
 import SkillsPage from "../skills/SkillsPage.vue";
-import HistoryPage from "../history/HistoryPage.vue";
-import PortfolioPage from "../portfolio/PortfolioPage.vue";
 import ExperienceComponent from "./experience/ExperienceComponent.vue";
 import ProjectsComponent from "./projects/ProjectsComponent.vue";
 import CertificatesComponent from "./certificates/CertificatesComponent.vue";
@@ -359,19 +355,15 @@ import { ContactMessage } from "@/services/interfaces";
 // end interface
 
 // vars
-const showTitle = ref(true);
-const router = useRouter();
 const pageTitle = "Presentación";
 const menuOptions = ref({
   contact: { title: "Contacto", route: "PresentationPage" },
   skills: { title: "Habilidades", route: "SkillsPage" },
-  // history: { title: "Historia", route: "HistoryPage" },
   portfolio: { title: "Porfolio", route: "PortfolioPage" },
 });
 const buttonMenuMobileOptions = ref({ open: false, event: null });
 const buttonMenuDesktopOptions = ref({ open: false, event: null });
 const backgroundActive = ref(false);
-const opcSelected = ref<MainOptions>("PresentationPage");
 const designPlatform = isPlatform("ios") ? "ios" : "md";
 const selectedSegment = ref("contact");
 // end vars
@@ -399,7 +391,7 @@ onMounted(() => {
       });
     },
     {
-      threshold: 0.9,
+      threshold: 0.7,
     },
   );
 
@@ -435,23 +427,8 @@ async function alertExitApp(): Promise<void> {
   await alert.present();
 }
 
-function mainSelectHandler(params: { option: MainOptions }) {
-  const { option } = params;
-  if (option == "PresentationPage") {
-    // router.push({ name: "PresentationPage" });
-    opcSelected.value = "PresentationPage";
-  }
-  if (option == "SkillsPage") {
-    // router.push({ name: "SkillsPage" });
-    opcSelected.value = "SkillsPage";
-  }
-  if (option == "PortfolioPage") {
-    // router.push({ name: "PortfolioPage" });
-    opcSelected.value = "PortfolioPage";
-  }
-}
-
-function scrollToSection(event) {
+function scrollToSection(params: { event: CustomEvent }) {
+  const { event } = params;
   const sectionId = event.detail.value;
   const element = document.getElementById(sectionId);
   if (element) {

@@ -21,7 +21,7 @@
     <PoliciesPage v-if="$route.name == 'PoliciesPage'" />
     <UserPanelPage v-if="$route.name == 'UserPanelPage'" />
     <PanelAdminPage v-if="$route.name == 'PanelAdminPage'" />
-    <PorfolioPage v-if="$route.name == 'PorfolioPage'" />
+    <PortfolioPage v-if="$route.name == 'PortfolioPage'" />
   </ion-page>
 </template>
 
