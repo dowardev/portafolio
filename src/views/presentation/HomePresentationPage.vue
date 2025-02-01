@@ -182,7 +182,7 @@
                 <div
                   style="cursor: pointer"
                   class="ion-padding-start ion-padding-end"
-                  @click="modalContactForm?.$el.present()"
+                  @click="openContactModal()"
                 >
                   <img style="width: 40px" :src="ContractLogo" alt="" />
                 </div>
@@ -247,42 +247,6 @@
   </ion-popover>
 
   <!-- modals -->
-  <!-- modal contact form -->
-  <ion-modal
-    ref="modalContactForm"
-    trigger="open-modal-contact-form"
-    @will-dismiss="modalContactForm?.$el.dismiss()"
-  >
-    <ion-header mode="ios">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button @click="modalContactForm?.$el.dismiss()">
-            <ion-icon :icon="closeOutline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-
-        <ion-title>Contacto</ion-title>
-
-        <ion-buttons slot="end">
-          <ButtonIconAnimationComponent
-            ref="buttonAnimation1"
-            color="primary"
-            @click="handleSendMessage(contactForm?.getData()!)"
-          >
-            <template #icon-start>
-              <ion-icon :icon="sendOutline"></ion-icon>
-            </template>
-
-            <template #message>Enviando</template>
-          </ButtonIconAnimationComponent>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content class="ion-padding">
-      <ContactForm ref="contactForm" />
-    </ion-content>
-  </ion-modal>
 </template>
 
 <script setup lang="ts">
@@ -302,15 +266,14 @@ import {
   IonContent,
   IonPopover,
   IonModal,
+  modalController,
 } from "@ionic/vue";
 import { isPlatform } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import {
   albumsOutline,
-  closeOutline,
   ellipsisVerticalOutline,
   imageOutline,
-  sendOutline,
 } from "ionicons/icons";
 
 // interfaces
@@ -323,11 +286,11 @@ import ProjectsComponent from "./projects/ProjectsComponent.vue";
 import CertificatesComponent from "./certificates/CertificatesComponent.vue";
 import ContactForm from "@/components/forms/contact/ContactForm.vue";
 import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
+import ContactModal from "./information/ContactModal.vue";
 // end components
 
 // controllers
 import SystemController from "@/controllers/systemController";
-const systemController = new SystemController();
 // end controllers
 
 // media
@@ -336,7 +299,6 @@ import WorkanaLogo from "../../assets/otros/Workana_ISOLOGO_W.png";
 import ContractLogo from "../../assets/otros/contract-svgrepo-com.svg";
 
 // interface
-import { ContactMessage } from "@/services/interfaces";
 // end interface
 
 // vars
@@ -354,10 +316,7 @@ const selectedSegment = ref("contact");
 // end vars
 
 // component refs
-const modalContactForm = ref<InstanceType<typeof IonModal>>();
-const contactForm = ref<InstanceType<typeof ContactForm>>();
-const buttonAnimation1 =
-  ref<InstanceType<typeof ButtonIconAnimationComponent>>();
+ref<InstanceType<typeof ButtonIconAnimationComponent>>();
 // end refs
 
 onMounted(() => {
@@ -426,38 +385,12 @@ function openUrl(params: { url: string }) {
   window.open(url, "_blank");
 }
 
-async function handleSendMessage(params: ContactMessage) {
-  const { name, email, subject, description } = params;
-  buttonAnimation1.value?.updateConfig({ status: true, fill: "solid" });
+async function openContactModal() {
+  const modal = await modalController.create({
+    component: ContactModal,
+  });
 
-  await new Promise((resolve) => setTimeout(resolve, 800));
-  await sendMessage({ name, email, subject, description });
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  buttonAnimation1.value?.updateConfig({ status: false, fill: "default" });
-
-  await new Promise((resolve) => setTimeout(resolve, 800));
-  modalContactForm.value?.$el.dismiss();
-}
-
-async function sendMessage(params: ContactMessage) {
-  const { name, email, subject, description } = params;
-
-  try {
-    await systemController.createContactMessage({
-      name,
-      email,
-      subject,
-      description,
-    });
-    await systemController.presentToast({ message: "Mensaje recibido" });
-  } catch (e: unknown) {
-    await systemController.presentToast({ message: "Error al enviar mensaje" });
-    console.error(e);
-    return;
-  } finally {
-    //
-  }
+  modal.present();
 }
 </script>
 

@@ -4,7 +4,7 @@
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-buttons slot="start">
-            <ion-button @click="closeModal({})">
+            <ion-button @click="closeModal()">
               <ion-icon :icon="closeOutline"> </ion-icon>
             </ion-button>
           </ion-buttons>
@@ -13,25 +13,23 @@
         <ion-title>{{ pageTitle }}</ion-title>
 
         <ion-buttons slot="end">
-          <ion-button
-            :disabled="spinners.sendMessage || formStatus == false"
-            @click="
-              sendMessage({
-                data: (contactFormRef as any).getData(),
-              })
-            "
+          <ButtonIconAnimationComponent
+            ref="buttonAnimation1"
+            color="primary"
+            @click="handleSendMessage(contactForm?.getData()!)"
           >
-            <ion-icon v-if="spinners.sendMessage == false" :icon="sendOutline">
-            </ion-icon>
-            <ion-spinner v-if="spinners.sendMessage" name="crescent">
-            </ion-spinner>
-          </ion-button>
+            <template #icon-start>
+              <ion-icon :icon="sendOutline"></ion-icon>
+            </template>
+
+            <template #message>Enviando</template>
+          </ButtonIconAnimationComponent>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
-      <ContactForm ref="contactFormRef" @form-status="formStatus = $event" />
+    <ion-content class="ion-padding">
+      <ContactForm ref="contactForm" />
     </ion-content>
   </ion-page>
 </template>
@@ -47,14 +45,13 @@ import {
 } from "@ionic/vue";
 import { closeOutline, sendOutline } from "ionicons/icons";
 import { ref } from "vue";
-import { helpers, required } from "@vuelidate/validators";
-import useVuelidate from "@vuelidate/core";
 
 // interface
 import { ContactMessage } from "@/services/interfaces";
 
 // components
-import ContactForm from "../../contact/ContactPage.vue";
+import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
+import ContactForm from "@/components/forms/contact/ContactForm.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
@@ -62,64 +59,46 @@ const systemController = new SystemController();
 
 // vars
 const pageTitle = "Formulario de contacto";
-const spinners = ref({
-  sendMessage: false,
-});
-const contactData = ref({
-  name: "",
-  subject: "",
-  email: "",
-  description: "",
-});
-const messageError = {
-  required: "Campo requerido",
-};
-const rules = {
-  contactData: {
-    name: {
-      required: helpers.withMessage(messageError.required, required),
-    },
-    email: {
-      required: helpers.withMessage(messageError.required, required),
-    },
-    subject: {
-      required: helpers.withMessage(messageError.required, required),
-    },
-    description: {
-      required: helpers.withMessage(messageError.required, required),
-    },
-  },
-};
-const v$ = useVuelidate(rules, { contactData });
-const contactFormRef = ref(null);
-const formStatus = ref(false);
+const contactForm = ref<InstanceType<typeof ContactForm>>();
+const buttonAnimation1 =
+  ref<InstanceType<typeof ButtonIconAnimationComponent>>();
 
 // functions
-function closeModal(params: { data?: any }) {
-  const data = params.data;
-  modalController.dismiss({ data });
+function closeModal() {
+  modalController.dismiss();
 }
 
-async function sendMessage(params: { data: ContactMessage }) {
-  spinners.value.sendMessage = true;
-
-  const form = {
-    name: params.data.name,
-    subject: params.data.subject,
-    email: params.data.email,
-    description: params.data.description,
-  };
+async function sendMessage(params: ContactMessage) {
+  const { name, email, subject, description } = params;
 
   try {
-    await systemController.createContactMessage(form);
+    await systemController.createContactMessage({
+      name,
+      email,
+      subject,
+      description,
+    });
     await systemController.presentToast({ message: "Mensaje recibido" });
-    closeModal({});
-  } catch (error) {
+  } catch (e: unknown) {
     await systemController.presentToast({ message: "Error al enviar mensaje" });
-    spinners.value.sendMessage = false;
+    console.error(e);
     return;
   } finally {
-    spinners.value.sendMessage = false;
+    //
   }
+}
+
+async function handleSendMessage(params: ContactMessage) {
+  const { name, email, subject, description } = params;
+  buttonAnimation1.value?.updateConfig({ status: true, fill: "solid" });
+
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  await sendMessage({ name, email, subject, description });
+  await new Promise((resolve) => setTimeout(resolve, 800));
+
+  buttonAnimation1.value?.updateConfig({ status: false, fill: "default" });
+
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  closeModal();
 }
 </script>

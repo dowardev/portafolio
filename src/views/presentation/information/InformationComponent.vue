@@ -33,7 +33,6 @@
           <!-- LinkedIn -->
           <ion-button
             id="click-trigger-bussiness-linkedin"
-            button
             class="social-button"
             @mouseover="fillLinkedIn = '#7373FF'"
             @mouseleave="fillLinkedIn = defaultColorFill"
@@ -48,7 +47,6 @@
           <!-- email -->
           <ion-button
             id="click-trigger-bussiness-email"
-            button
             class="social-button"
             @mouseover="fillEmailContact = '#C87C5B'"
             @mouseleave="fillEmailContact = defaultColorFill"
@@ -62,7 +60,6 @@
 
           <!-- calendly -->
           <ion-button
-            button
             href="https://calendly.com/dowardev"
             target="_blank"
             class="social-button"
@@ -73,6 +70,20 @@
               slot="icon-only"
               :style="{ color: fillcalendly }"
               :icon="calendar"
+            ></ion-icon>
+          </ion-button>
+
+          <!-- form contact -->
+          <ion-button
+            class="social-button"
+            @mouseover="fillContactForm = '#ff5b29'"
+            @mouseleave="fillContactForm = defaultColorFill"
+            @click="openContactModal()"
+          >
+            <ion-icon
+              slot="icon-only"
+              :style="{ color: fillContactForm }"
+              :icon="chatbox"
             ></ion-icon>
           </ion-button>
         </ion-col>
@@ -313,6 +324,7 @@ import {
   IonIcon,
   IonButton,
   IonChip,
+  modalController,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import {
@@ -326,12 +338,13 @@ import {
   calendarOutline,
   closeOutline,
   calendar,
+  chatbox,
 } from "ionicons/icons";
 import { App } from "@capacitor/app";
-import ContactModal from "./ContactModal.vue";
 
 // components
 import CardVerticalOptionsComponent from "@/components/cards/CardVerticalOptionsComponent.vue";
+import ContactModal from "./ContactModal.vue";
 
 //controllers
 import SystemController from "@/controllers/systemController";
@@ -404,6 +417,14 @@ function openMail(params: { mail: string; subject: string }) {
   const mail = params.mail;
   const subject = params.subject;
   location.href = `mailto:${mail}?Subject=${subject}`;
+}
+
+async function openContactModal() {
+  const modal = await modalController.create({
+    component: ContactModal,
+  });
+
+  modal.present();
 }
 </script>
 
