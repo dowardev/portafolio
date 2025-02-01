@@ -51,7 +51,7 @@ import { ContactMessage } from "@/services/interfaces";
 
 // components
 import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
-import ContactForm from "@/components/forms/contact/ContactForm.vue";
+import ContactForm from "@/forms/ContactForm.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";

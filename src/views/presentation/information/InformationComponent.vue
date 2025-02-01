@@ -329,40 +329,29 @@ import {
 import { onMounted, ref } from "vue";
 import {
   mail,
-  logoMastodon,
   logoLinkedin,
   copyOutline,
   openOutline,
-  chatbubble,
-  documentText,
-  calendarOutline,
-  closeOutline,
   calendar,
   chatbox,
 } from "ionicons/icons";
 import { App } from "@capacitor/app";
 
 // components
-import CardVerticalOptionsComponent from "@/components/cards/CardVerticalOptionsComponent.vue";
-import ContactModal from "./ContactModal.vue";
+import ContactModal from "../../../components/modals/contact/ContactModal.vue";
 
-//controllers
+// controllers
 import SystemController from "@/controllers/systemController";
 const systemController = new SystemController();
-//end controllser
+// end controllser
 
 // images
-import blueskyGrayImg from "@/assets/otros/bluesky-gray.png";
-import blueskyColorImg from "@/assets/otros/bluesky-color.png";
 
 // vars
 const defaultColorFill = "#777777";
 const fillEmailContact = ref(defaultColorFill);
 const fillLinkedIn = ref(defaultColorFill);
 const fillContactForm = ref(defaultColorFill);
-const fillCVForm = ref(defaultColorFill);
-const fillUpwork = ref(defaultColorFill);
-const fillBluesky = ref(defaultColorFill);
 const fillcalendly = ref(defaultColorFill);
 const screenSize = ref(systemController.getScreenSize());
 // end vars

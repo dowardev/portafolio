@@ -286,7 +286,7 @@ import ProjectsComponent from "./projects/ProjectsComponent.vue";
 import CertificatesComponent from "./certificates/CertificatesComponent.vue";
 import ContactForm from "@/components/forms/contact/ContactForm.vue";
 import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
-import ContactModal from "./information/ContactModal.vue";
+import ContactModal from "../../components/modals/contact/ContactModal.vue";
 // end components
 
 // controllers
