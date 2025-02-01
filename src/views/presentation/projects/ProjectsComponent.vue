@@ -1,6 +1,12 @@
 <template>
-  <ion-row>
-    <ion-col v-for="(project, index) in projects" :key="index" size="4">
+  <ion-row style="overflow: auto; max-height: calc(100% - 8dvh)">
+    <ion-col
+      v-for="(project, index) in projects"
+      :key="index"
+      size-xs="12"
+      size-md="6"
+      size-lg="6"
+    >
       <ion-card class="shadow-1">
         <ion-card-header>
           <div style="display: flex; justify-content: space-between">

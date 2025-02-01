@@ -10,17 +10,17 @@
       <ion-row class="sec2">
         <ion-col style="display: flex" class="ion-justify-content-center">
           <ion-row
-            style="display: flex; justify-content: space-between; width: 40%"
+            style="display: flex; justify-content: space-between; width: 205px"
           >
-            <ion-col size="auto">
+            <ion-col size="4" class="center">
               <img :src="vueLogo" alt="" />
             </ion-col>
 
-            <ion-col size="auto">
+            <ion-col size="4" class="center">
               <img :src="laravelLogo" alt="" />
             </ion-col>
 
-            <ion-col size="auto">
+            <ion-col size="4" class="center">
               <img :src="mysqlLogo" alt="" />
             </ion-col>
           </ion-row>
@@ -29,7 +29,10 @@
     </ion-col>
   </ion-row>
 
-  <ion-row>
+  <ion-row
+    style="overflow: auto; max-height: calc(100% - 22dvh)"
+    class="sec-skill"
+  >
     <ion-col
       v-for="(skill, indexSkill) in skills[0].tipo"
       :key="indexSkill"
@@ -196,7 +199,7 @@ const skills = ref([
 </script>
 
 <style scoped>
-.sec2 img {
-  width: 80px;
-}
+/* .sec2 img { */
+/*   width: 10dvh; */
+/* } */
 </style>

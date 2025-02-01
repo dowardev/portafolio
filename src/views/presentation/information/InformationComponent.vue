@@ -1,15 +1,15 @@
 <template>
   <ion-row class="ion-justify-content-center" style="display: flex">
-    <ion-col size="6">
+    <ion-col class="info-sec" size-xs="12" size-md="6">
       <ion-row>
-        <ion-col>
+        <ion-col :class="{ center: screenSize.preset == 'xs' }">
           <h1>Gonzalo Ponce</h1>
         </ion-col>
       </ion-row>
 
       <ion-row>
         <ion-col>
-          <div>
+          <div :class="{ center: screenSize.preset == 'xs' }">
             <ion-chip color="primary">Full-Stack Developer</ion-chip>
           </div>
         </ion-col>
@@ -17,15 +17,19 @@
 
       <ion-row>
         <ion-col>
-          <p>
+          <p
+            :style="{
+              textAlign: screenSize.preset == 'xs' ? 'center' : 'initial',
+            }"
+          >
             Desarrollador Full-Stack con mas de 5 años de experiencia en el
             desarrollo de aplicaciones multiplataforma.
           </p>
         </ion-col>
       </ion-row>
 
-      <ion-row>
-        <ion-col>
+      <ion-row class="center">
+        <ion-col :class="{ center: screenSize.preset == 'xs' }">
           <!-- LinkedIn -->
           <ion-button
             id="click-trigger-bussiness-linkedin"
@@ -35,6 +39,7 @@
             @mouseleave="fillLinkedIn = defaultColorFill"
           >
             <ion-icon
+              slot="icon-only"
               :style="{ color: fillLinkedIn }"
               :icon="logoLinkedin"
             ></ion-icon>
@@ -49,6 +54,7 @@
             @mouseleave="fillEmailContact = defaultColorFill"
           >
             <ion-icon
+              slot="icon-only"
               :style="{ color: fillEmailContact }"
               :icon="mail"
             ></ion-icon>
@@ -64,6 +70,7 @@
             @mouseleave="fillcalendly = defaultColorFill"
           >
             <ion-icon
+              slot="icon-only"
               :style="{ color: fillcalendly }"
               :icon="calendar"
             ></ion-icon>
@@ -72,7 +79,7 @@
       </ion-row>
     </ion-col>
 
-    <ion-col size="4">
+    <ion-col clas="img-sec" size-xs="12" size-md="4">
       <ion-row>
         <ion-col style="display: flex" class="ion-justify-content-center">
           <img
@@ -326,6 +333,11 @@ import ContactModal from "./ContactModal.vue";
 // components
 import CardVerticalOptionsComponent from "@/components/cards/CardVerticalOptionsComponent.vue";
 
+//controllers
+import SystemController from "@/controllers/systemController";
+const systemController = new SystemController();
+//end controllser
+
 // images
 import blueskyGrayImg from "@/assets/otros/bluesky-gray.png";
 import blueskyColorImg from "@/assets/otros/bluesky-color.png";
@@ -339,6 +351,8 @@ const fillCVForm = ref(defaultColorFill);
 const fillUpwork = ref(defaultColorFill);
 const fillBluesky = ref(defaultColorFill);
 const fillcalendly = ref(defaultColorFill);
+const screenSize = ref(systemController.getScreenSize());
+// end vars
 
 // mounted()
 onMounted(() => {
@@ -396,8 +410,8 @@ function openMail(params: { mail: string; subject: string }) {
 <style scoped>
 .img-perfil {
   border-radius: 50%;
-  width: 27vh;
-  height: 27vh;
+  width: 18vh;
+  height: 18vh;
 }
 
 .img-logo {
@@ -414,5 +428,25 @@ function openMail(params: { mail: string; subject: string }) {
 
 .blur-effect {
   backdrop-filter: blur(10px);
+}
+
+@media (max-width: 768px) {
+  .info-sec {
+    order: 2;
+  }
+  .img-sec {
+    order: 1;
+  }
+}
+.text-center {
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .img-perfil {
+    border-radius: 50%;
+    width: 27vh;
+    height: 27vh;
+  }
 }
 </style>

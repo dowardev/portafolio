@@ -60,10 +60,7 @@
     <div class="snap-container">
       <!-- info -->
       <section id="contact">
-        <ion-row
-          style="height: 88dvh; display: flex"
-          class="ion-align-items-center snap-section"
-        >
+        <ion-row class="ion-align-items-center snap-section">
           <ion-col class="ion-justify-content-center" style="display: flex">
             <InformationComponent />
           </ion-col>
@@ -72,11 +69,8 @@
 
       <!-- skills -->
       <section id="skills">
-        <ion-row
-          style="height: 88dvh; display: flex"
-          class="ion-align-items-center snap-section"
-        >
-          <ion-col>
+        <ion-row class="snap-section">
+          <ion-col style="height: 100%">
             <SkillsPage />
           </ion-col>
         </ion-row>
@@ -84,12 +78,9 @@
 
       <!-- experience -->
       <section id="experience">
-        <ion-row
-          style="height: 88dvh; display: flex"
-          class="ion-align-items-center snap-section"
-        >
-          <ion-col>
-            <ion-list>
+        <ion-row class="snap-section">
+          <ion-col style="height: 100%">
+            <ion-list style="height: 100%">
               <ion-list-header>
                 <ion-label>Experiencia reciente</ion-label>
                 <ion-button
@@ -107,12 +98,9 @@
 
       <!-- projects -->
       <section id="projects">
-        <ion-row
-          style="height: 88dvh; display: flex"
-          class="ion-align-items-center snap-section"
-        >
-          <ion-col>
-            <ion-list>
+        <ion-row class="snap-section">
+          <ion-col style="height: 100%">
+            <ion-list style="height: 100%">
               <ion-list-header>
                 <ion-label>Últimos proyectos</ion-label>
                 <ion-button @click="$router.push({ name: 'PortfolioPage' })"
@@ -128,12 +116,9 @@
 
       <!-- certificates -->
       <section id="certificates">
-        <ion-row
-          style="height: 88dvh; display: flex"
-          class="ion-align-items-center snap-section"
-        >
-          <ion-col>
-            <ion-list>
+        <ion-row class="snap-section">
+          <ion-col style="height: 100%">
+            <ion-list style="height: 100%">
               <ion-list-header>
                 <ion-label>Certificados recientes</ion-label>
                 <ion-button
@@ -152,7 +137,7 @@
       <!-- final -->
       <section id="final" class="snap-section">
         <div
-          style="height: 88dvh; display: flex"
+          style="display: flex; height: 100%"
           class="ion-align-items-center ion-justify-content-center"
         >
           <div>
@@ -477,13 +462,6 @@ async function sendMessage(params: ContactMessage) {
 </script>
 
 <style scoped>
-.page-background {
-  background-image: url("../../assets/backgrounds/b5.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.4s ease;
@@ -504,13 +482,13 @@ async function sendMessage(params: ContactMessage) {
 }
 
 .snap-container {
-  height: 100vh;
+  height: 100%;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   scroll-snap-stop: always;
 }
 .snap-section {
-  height: 100vh;
+  height: 100%;
   scroll-snap-align: start;
 }
 
@@ -521,5 +499,8 @@ ion-content::part(scroll) {
 
 ion-content::part(scroll)::-webkit-scrollbar {
   display: none;
+}
+.snap-container > section {
+  height: 100%;
 }
 </style>
