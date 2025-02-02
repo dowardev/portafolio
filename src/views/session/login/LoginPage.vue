@@ -1,125 +1,123 @@
 <template>
-  <ion-page class="page-container">
-    <ion-header class="ion-no-border" mode="ios">
-      <ion-toolbar>
-        <ion-buttons slot="start" :mode="designPlatform">
-          <ion-menu-button menu="mainMenu"></ion-menu-button>
-        </ion-buttons>
+  <ion-header class="ion-no-border" mode="ios">
+    <ion-toolbar>
+      <ion-buttons slot="start" :mode="designPlatform">
+        <ion-menu-button menu="mainMenu"></ion-menu-button>
+      </ion-buttons>
 
-        <ion-title>Iniciar sesión</ion-title>
-      </ion-toolbar>
-    </ion-header>
+      <ion-title>Iniciar sesión</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-    <ion-content>
-      <div class="background-image">
-        <div
-          class="ion-justify-content-center ion-align-items-center"
-          style="
-            width: 100%;
-            height: 83dvh;
-            display: flex;
-            flex-direction: column;
-          "
-        >
-          <section>
-            <ion-row>
-              <ion-col size="12">
-                <ion-card class="primary-selected-border">
-                  <ion-card-content>
-                    <div class="center ion-padding-bottom d">
-                      <img
-                        src="@/assets/otros/key.png"
-                        alt=""
-                        class="imagen-usuario"
-                      />
-                    </div>
-
-                    <!-- component -->
-                    <LoginFormComponent
-                      ref="loginFormComponentRef"
-                      @form-status="formStatus = $event"
-                      @enter-pressed="
-                        login((loginFormComponentRef as any).getData())
-                      "
-                    />
-
-                    <ion-button
-                      fill="clear"
-                      :disabled="formStatus == false || spinners.buttonLogin"
-                      expand="full"
-                      @click="login((loginFormComponentRef as any).getData())"
-                    >
-                      <ion-label v-if="spinners.buttonLogin == false">
-                        Iniciar sesión</ion-label
-                      >
-                      <ion-spinner
-                        v-if="spinners.buttonLogin"
-                        name="crescent"
-                      ></ion-spinner>
-                    </ion-button>
-                  </ion-card-content>
-                </ion-card>
-              </ion-col>
-            </ion-row>
-          </section>
-
-          <!-- other options -->
-          <section>
-            <ion-row>
-              <ion-col size="12">
-                <ion-button
-                  class="options"
-                  fill="clear"
-                  :disabled="spinners.buttonForgotPassword"
-                  expand="full"
-                  size="small"
-                  @click="isOpenModalPasswordRecover = true"
-                >
-                  <ion-label v-if="spinners.buttonForgotPassword == false"
-                    >¿Olvidaste la contraseña?</ion-label
-                  >
-                  <ion-spinner
-                    v-if="spinners.buttonForgotPassword"
-                    name="crescent"
-                  ></ion-spinner>
-                </ion-button>
-              </ion-col>
-            </ion-row>
-
-            <ion-row>
-              <ion-col size="12">
-                <ion-button
-                  class="options"
-                  fill="clear"
-                  :disabled="spinners.buttonCreateAccount"
-                  expand="full"
-                  size="small"
-                  @click="createAccount()"
-                >
-                  <ion-label v-if="spinners.buttonCreateAccount == false"
-                    >Crear cuenta</ion-label
-                  >
-                  <ion-spinner
-                    v-if="spinners.buttonCreateAccount"
-                    name="crescent"
-                    color="primary"
-                  ></ion-spinner>
-                </ion-button>
-              </ion-col>
-            </ion-row>
-          </section>
-        </div>
-      </div>
-
-      <!-- modals -->
-      <ion-modal
-        :is-open="isOpenModalPasswordRecover"
-        @did-dismiss="isOpenModalPasswordRecover = false"
+  <ion-content>
+    <div class="background-image">
+      <div
+        class="ion-justify-content-center ion-align-items-center"
+        style="
+          width: 100%;
+          height: 83dvh;
+          display: flex;
+          flex-direction: column;
+        "
       >
-        <RecoverPasswordComponent />
-      </ion-modal>
-    </ion-content>
-  </ion-page>
+        <section>
+          <ion-row>
+            <ion-col size="12">
+              <ion-card class="primary-selected-border">
+                <ion-card-content>
+                  <div class="center ion-padding-bottom d">
+                    <img
+                      src="@/assets/otros/key.png"
+                      alt=""
+                      class="imagen-usuario"
+                    />
+                  </div>
+
+                  <!-- component -->
+                  <LoginFormComponent
+                    ref="loginFormComponentRef"
+                    @form-status="formStatus = $event"
+                    @enter-pressed="
+                      login((loginFormComponentRef as any).getData())
+                    "
+                  />
+
+                  <ion-button
+                    fill="clear"
+                    :disabled="formStatus == false || spinners.buttonLogin"
+                    expand="full"
+                    @click="login((loginFormComponentRef as any).getData())"
+                  >
+                    <ion-label v-if="spinners.buttonLogin == false">
+                      Iniciar sesión</ion-label
+                    >
+                    <ion-spinner
+                      v-if="spinners.buttonLogin"
+                      name="crescent"
+                    ></ion-spinner>
+                  </ion-button>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </section>
+
+        <!-- other options -->
+        <section>
+          <ion-row>
+            <ion-col size="12">
+              <ion-button
+                class="options"
+                fill="clear"
+                :disabled="spinners.buttonForgotPassword"
+                expand="full"
+                size="small"
+                @click="isOpenModalPasswordRecover = true"
+              >
+                <ion-label v-if="spinners.buttonForgotPassword == false"
+                  >¿Olvidaste la contraseña?</ion-label
+                >
+                <ion-spinner
+                  v-if="spinners.buttonForgotPassword"
+                  name="crescent"
+                ></ion-spinner>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="12">
+              <ion-button
+                class="options"
+                fill="clear"
+                :disabled="spinners.buttonCreateAccount"
+                expand="full"
+                size="small"
+                @click="createAccount()"
+              >
+                <ion-label v-if="spinners.buttonCreateAccount == false"
+                  >Crear cuenta</ion-label
+                >
+                <ion-spinner
+                  v-if="spinners.buttonCreateAccount"
+                  name="crescent"
+                  color="primary"
+                ></ion-spinner>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </section>
+      </div>
+    </div>
+
+    <!-- modals -->
+    <ion-modal
+      :is-open="isOpenModalPasswordRecover"
+      @did-dismiss="isOpenModalPasswordRecover = false"
+    >
+      <RecoverPasswordComponent />
+    </ion-modal>
+  </ion-content>
 </template>
 
 <script setup lang="ts">
@@ -229,7 +227,7 @@ async function login(params: { email: string; password: string }) {
     if (e.message == "Disabled user") {
       presentToast(
         "Cuenta de usuario deshabilitada, para mas información contacte a soporte.",
-        "danger"
+        "danger",
       );
       return;
     }

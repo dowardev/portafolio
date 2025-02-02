@@ -1,5 +1,5 @@
 <template>
-  <ion-page class="menu-container">
+  <ion-page>
     <ion-content>
       <div>
         <ion-row>
@@ -46,156 +46,158 @@
               >
             </ion-item>
 
-            <!-- navigation -->
-            <section>
-              <!-- presentation -->
-              <div
-                :class="{
-                  'menu-option-selected':
-                    $route.name == 'PresentationPage' ||
-                    $route.name == 'SkillsPage' ||
-                    $route.name == 'HistoryPage' ||
-                    $route.name == 'PortfolioPage',
-                }"
-              >
-                <ion-item
-                  lines="none"
-                  button
-                  @click="openRoute({ name: 'PresentationPage' })"
-                >
-                  <ion-icon
-                    color="primary"
-                    slot="start"
-                    :icon="personOutline"
-                  ></ion-icon>
-                  <ion-label> Presentación </ion-label>
-                </ion-item>
-              </div>
-
-              <!-- blog -->
-              <div
-                :class="{
-                  'menu-option-selected':
-                    $route.name == 'PostsPage' || $route.name == 'PostPage',
-                }"
-              >
-                <ion-item
-                  lines="none"
-                  button
-                  @click="openRoute({ name: 'PostsPage' })"
-                >
-                  <ion-icon
-                    color="primary"
-                    slot="start"
-                    :icon="libraryOutline"
-                  ></ion-icon>
-                  <ion-label> Blog </ion-label>
-                </ion-item>
-              </div>
-
-              <!-- policies -->
-              <div
-                :class="{
-                  'menu-option-selected': $route.name == 'PoliciesPage',
-                }"
-              >
-                <ion-item
-                  lines="none"
-                  button
-                  @click="openRoute({ name: 'PoliciesPage' })"
-                >
-                  <ion-icon
-                    color="primary"
-                    slot="start"
-                    :icon="documentsOutline"
-                  ></ion-icon>
-                  <ion-label>Políticas</ion-label>
-                </ion-item>
-              </div>
-            </section>
-
-            <!-- more options -->
-            <section>
+            <div id="pr">
               <div>
-                <ion-accordion-group value="first">
-                  <ion-accordion
-                    value="first"
-                    style="background: var(--ion-color-dark-contrast)"
+                <!-- navigation -->
+                <section>
+                  <!-- presentation -->
+                  <div
+                    :class="{
+                      'menu-option-selected':
+                        $route.name == 'PresentationPage' ||
+                        $route.name == 'SkillsPage' ||
+                        $route.name == 'HistoryPage' ||
+                        $route.name == 'PortfolioPage',
+                    }"
                   >
                     <ion-item
-                      slot="header"
-                      style="background: var(--ion-color-dark-contrast)"
+                      lines="none"
+                      button
+                      @click="openRoute({ name: 'PresentationPage' })"
                     >
-                      <ion-label>Mas opciones</ion-label>
+                      <ion-icon
+                        slot="start"
+                        color="primary"
+                        :icon="personOutline"
+                      ></ion-icon>
+                      <ion-label> Presentación </ion-label>
                     </ion-item>
+                  </div>
 
-                    <!-- contribute -->
-                    <div slot="content">
-                      <ion-item
-                        lines="none"
-                        button
-                        @click="modalContribute.open = true"
+                  <!-- blog -->
+                  <div
+                    :class="{
+                      'menu-option-selected':
+                        $route.name == 'PostsPage' || $route.name == 'PostPage',
+                    }"
+                  >
+                    <ion-item
+                      lines="none"
+                      button
+                      @click="openRoute({ name: 'PostsPage' })"
+                    >
+                      <ion-icon
+                        slot="start"
+                        color="primary"
+                        :icon="libraryOutline"
+                      ></ion-icon>
+                      <ion-label> Blog </ion-label>
+                    </ion-item>
+                  </div>
+
+                  <!-- policies -->
+                  <div
+                    :class="{
+                      'menu-option-selected': $route.name == 'PoliciesPage',
+                    }"
+                  >
+                    <ion-item
+                      lines="none"
+                      button
+                      @click="openRoute({ name: 'PoliciesPage' })"
+                    >
+                      <ion-icon
+                        slot="start"
+                        color="primary"
+                        :icon="documentsOutline"
+                      ></ion-icon>
+                      <ion-label>Políticas</ion-label>
+                    </ion-item>
+                  </div>
+                </section>
+
+                <!-- more options -->
+                <section>
+                  <div>
+                    <ion-accordion-group value="">
+                      <ion-accordion
+                        value="first"
+                        style="background: var(--ion-color-dark-contrast)"
                       >
-                        <ion-icon
-                          color="primary"
-                          slot="start"
-                          :icon="cashOutline"
-                        ></ion-icon>
-                        <ion-label>Contribuir</ion-label>
-                      </ion-item>
+                        <ion-item
+                          slot="header"
+                          style="background: var(--ion-color-dark-contrast)"
+                        >
+                          <ion-label>Mas opciones</ion-label>
+                        </ion-item>
 
-                      <!-- source code options -->
-                      <ion-item
-                        id="trigger-button-source-code"
-                        lines="none"
-                        button
-                      >
-                        <ion-icon
-                          color="primary"
-                          slot="start"
-                          :icon="logoGitlab"
-                        ></ion-icon>
-                        <ion-label>Código fuente</ion-label>
-                      </ion-item>
-
-                      <ion-popover trigger="trigger-button-source-code">
-                        <ion-content>
+                        <!-- contribute -->
+                        <div slot="content">
                           <ion-item
-                            button
                             lines="none"
-                            href="https://www.gitlab.com/dowardev/portafolio"
-                            target="_blank"
+                            button
+                            @click="modalContribute.open = true"
                           >
-                            <ion-label>FrontEnd</ion-label>
+                            <ion-icon
+                              slot="start"
+                              color="primary"
+                              :icon="cashOutline"
+                            ></ion-icon>
+                            <ion-label>Contribuir</ion-label>
                           </ion-item>
 
+                          <!-- source code options -->
                           <ion-item
-                            button
-                            href="https://gitlab.com/dowardev/portfolio-backend"
-                            target="_blank"
+                            id="trigger-button-source-code"
                             lines="none"
+                            button
                           >
-                            <ion-label>Backend</ion-label>
+                            <ion-icon
+                              slot="start"
+                              color="primary"
+                              :icon="logoGitlab"
+                            ></ion-icon>
+                            <ion-label>Código fuente</ion-label>
                           </ion-item>
-                        </ion-content>
-                      </ion-popover>
 
-                      <!-- button feedback -->
-                      <ion-item
-                        lines="none"
-                        button
-                        @click="modalComments.open = true"
-                      >
-                        <ion-icon
-                          color="primary"
-                          slot="start"
-                          :icon="thumbsUpOutline"
-                        ></ion-icon>
-                        <ion-label>Comentarios</ion-label>
-                      </ion-item>
+                          <ion-popover trigger="trigger-button-source-code">
+                            <ion-content>
+                              <ion-item
+                                button
+                                lines="none"
+                                href="https://www.gitlab.com/dowardev/portafolio"
+                                target="_blank"
+                              >
+                                <ion-label>FrontEnd</ion-label>
+                              </ion-item>
 
-                      <!-- dark button desktop-->
-                      <!-- <ion-item
+                              <ion-item
+                                button
+                                href="https://gitlab.com/dowardev/portfolio-backend"
+                                target="_blank"
+                                lines="none"
+                              >
+                                <ion-label>Backend</ion-label>
+                              </ion-item>
+                            </ion-content>
+                          </ion-popover>
+
+                          <!-- button feedback -->
+                          <ion-item
+                            lines="none"
+                            button
+                            @click="modalComments.open = true"
+                          >
+                            <ion-icon
+                              slot="start"
+                              color="primary"
+                              :icon="thumbsUpOutline"
+                            ></ion-icon>
+                            <ion-label>Comentarios</ion-label>
+                          </ion-item>
+
+                          <!-- dark button desktop-->
+                          <!-- <ion-item
                         id="open-modal-theme-component"
                         lines="none"
                         button
@@ -204,42 +206,44 @@
                         <ion-label>Tema</ion-label>
                       </ion-item> -->
 
-                      <!-- new features -->
-                      <ion-item
-                        href="https://gitlab.com/dowardev/portafolio/-/blob/master/CHANGELOG.md?ref_type=heads"
-                        target="_blank"
-                        lines="none"
-                        button
-                      >
-                        <ion-icon
-                          color="primary"
-                          slot="start"
-                          :icon="newspaperOutline"
-                        ></ion-icon>
-                        <ion-label>Novedades</ion-label>
+                          <!-- new features -->
+                          <ion-item
+                            href="https://gitlab.com/dowardev/portafolio/-/blob/master/CHANGELOG.md?ref_type=heads"
+                            target="_blank"
+                            lines="none"
+                            button
+                          >
+                            <ion-icon
+                              slot="start"
+                              color="primary"
+                              :icon="newspaperOutline"
+                            ></ion-icon>
+                            <ion-label>Novedades</ion-label>
 
-                        <ion-chip
-                          slot="end"
-                          color="primary"
-                          v-if="systemController.getUpdateStatus() == true"
-                          >Novedad</ion-chip
-                        >
-                      </ion-item>
+                            <ion-chip
+                              v-if="systemController.getUpdateStatus() == true"
+                              slot="end"
+                              color="primary"
+                              >Novedad</ion-chip
+                            >
+                          </ion-item>
 
-                      <!-- more -->
-                      <ion-item lines="none" button @click="openModalApps">
-                        <ion-icon
-                          color="primary"
-                          slot="start"
-                          :icon="appsOutline"
-                        ></ion-icon>
-                        <ion-label>Mas</ion-label>
-                      </ion-item>
-                    </div>
-                  </ion-accordion>
-                </ion-accordion-group>
+                          <!-- more -->
+                          <ion-item lines="none" button @click="openModalApps">
+                            <ion-icon
+                              slot="start"
+                              color="primary"
+                              :icon="appsOutline"
+                            ></ion-icon>
+                            <ion-label>Mas</ion-label>
+                          </ion-item>
+                        </div>
+                      </ion-accordion>
+                    </ion-accordion-group>
+                  </div>
+                </section>
               </div>
-            </section>
+            </div>
           </ion-col>
         </ion-row>
       </div>
@@ -258,8 +262,8 @@
             button
             :disabled="spinners.buttonAdminPanel"
             lines="none"
-            @click="goToAdminPanel()"
             class="transparent"
+            @click="goToAdminPanel()"
           >
             <ion-icon
               v-if="spinners.buttonAdminPanel == false"
@@ -283,8 +287,8 @@
             :disabled="spinners.buttonUserPanel"
             button
             lines="none"
-            @click="goToUserPanel()"
             class="transparent"
+            @click="goToUserPanel()"
           >
             <ion-icon
               v-if="spinners.buttonUserPanel == false"
@@ -307,8 +311,8 @@
             :disabled="spinners.buttonLogout"
             button
             lines="none"
-            @click="logout()"
             class="transparent"
+            @click="logout()"
           >
             <ion-icon
               v-if="spinners.buttonLogout == false"

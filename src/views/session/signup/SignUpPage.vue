@@ -1,79 +1,73 @@
 <template>
-  <ion-page class="page-container">
-    <ion-header class="ion-no-border" mode="ios">
-      <ion-toolbar>
-        <ion-title>Registro</ion-title>
-      </ion-toolbar>
-    </ion-header>
+  <ion-header class="ion-no-border" mode="ios">
+    <ion-toolbar>
+      <ion-title>Registro</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-    <ion-content>
-      <section class="center">
-        <ion-card class="element-post-selected">
-          <ion-card-content>
-            <div class="center">
-              <img
-                src="@/assets/otros/user.png"
-                alt=""
-                class="imagen-usuario"
-              />
-            </div>
+  <ion-content>
+    <section class="center">
+      <ion-card class="element-post-selected">
+        <ion-card-content>
+          <div class="center">
+            <img src="@/assets/otros/user.png" alt="" class="imagen-usuario" />
+          </div>
 
-            <section>
-              <SignUpFormComponent
-                ref="signUpFormComponentRef"
-                @form-status="formStatus = $event"
-                @enter-pressed="
-                  register((signUpFormComponentRef as any).getData())
-                "
-              />
-            </section>
+          <section>
+            <SignUpFormComponent
+              ref="signUpFormComponentRef"
+              @form-status="formStatus = $event"
+              @enter-pressed="
+                register((signUpFormComponentRef as any).getData())
+              "
+            />
+          </section>
 
-            <!-- button send -->
-            <section>
-              <ion-button
-                fill="clear"
-                :disabled="formStatus == false || spinners.buttonSignup"
-                expand="full"
-                @click="register((signUpFormComponentRef as any).getData())"
-              >
-                <ion-label
-                  v-if="spinners.buttonSignup == false || formStatus == false"
-                >
-                  Registrar</ion-label
-                >
-                <ion-spinner
-                  v-if="spinners.buttonSignup"
-                  name="crescent"
-                  color="primary"
-                ></ion-spinner>
-              </ion-button>
-            </section>
-          </ion-card-content>
-        </ion-card>
-      </section>
-
-      <section>
-        <div class="center">
-          <ion-button
-            fill="clear"
-            :disabled="spinners.buttonLogin"
-            expand="full"
-            size="small"
-            @click="login()"
-          >
-            <ion-label v-if="spinners.buttonLogin == false"
-              >¿Ya tienes cuenta?</ion-label
+          <!-- button send -->
+          <section>
+            <ion-button
+              fill="clear"
+              :disabled="formStatus == false || spinners.buttonSignup"
+              expand="full"
+              @click="register((signUpFormComponentRef as any).getData())"
             >
-            <ion-spinner
-              v-if="spinners.buttonLogin"
-              name="crescent"
-              color="primary"
-            ></ion-spinner>
-          </ion-button>
-        </div>
-      </section>
-    </ion-content>
-  </ion-page>
+              <ion-label
+                v-if="spinners.buttonSignup == false || formStatus == false"
+              >
+                Registrar</ion-label
+              >
+              <ion-spinner
+                v-if="spinners.buttonSignup"
+                name="crescent"
+                color="primary"
+              ></ion-spinner>
+            </ion-button>
+          </section>
+        </ion-card-content>
+      </ion-card>
+    </section>
+
+    <section>
+      <div class="center">
+        <ion-button
+          fill="clear"
+          :disabled="spinners.buttonLogin"
+          expand="full"
+          size="small"
+          @click="login()"
+        >
+          <ion-label v-if="spinners.buttonLogin == false"
+            >¿Ya tienes cuenta?</ion-label
+          >
+          <ion-spinner
+            v-if="spinners.buttonLogin"
+            name="crescent"
+            color="primary"
+          ></ion-spinner>
+        </ion-button>
+      </div>
+    </section>
+  </ion-content>
 </template>
 
 <script setup lang="ts">
