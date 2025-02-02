@@ -1,6 +1,9 @@
 <template>
-  <ion-row class="ion-justify-content-center" style="display: flex">
-    <ion-col class="info-sec" size-xs="12" size-md="6">
+  <ion-row
+    class="ion-justify-content-center"
+    style="display: flex; align-items: center"
+  >
+    <ion-col class="info-sec" size-xs="12" size-md="6" size-xl="4">
       <ion-row>
         <ion-col :class="{ center: screenSize.preset == 'xs' }">
           <h1>Gonzalo Ponce</h1>
@@ -16,7 +19,7 @@
       </ion-row>
 
       <ion-row>
-        <ion-col>
+        <ion-col size-xs="12">
           <p
             :style="{
               textAlign: screenSize.preset == 'xs' ? 'center' : 'initial',
@@ -427,7 +430,7 @@ async function openContactModal() {
 .img-logo {
   max-width: 100%;
   max-height: 100%;
-  width: calc(100% - 70px);
+  width: 32dvh;
   height: 10dvh;
 }
 
@@ -440,7 +443,7 @@ async function openContactModal() {
   backdrop-filter: blur(10px);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 576px) {
   .info-sec {
     order: 2;
   }

@@ -7,24 +7,14 @@
 
       <ion-title>{{ pageTitle }}</ion-title>
 
-      <!-- main options sm screen -->
-      <ion-buttons
-        v-if="isPlatform('android') || isPlatform('ios')"
-        slot="end"
-        :mode="designPlatform"
-      >
-        <div>
-          <ion-button
-            @click="buttonMenuMobileOptions = { open: true, event: $event }"
-          >
-            <ion-icon :icon="albumsOutline"></ion-icon>
-          </ion-button>
-        </div>
-      </ion-buttons>
-
       <!-- main options md and lg screen -->
       <ion-buttons
-        v-if="isPlatform('desktop')"
+        v-if="
+          screenSize.preset == 'md' ||
+          screenSize.preset == 'lg' ||
+          screenSize.preset == 'xl' ||
+          screenSize.preset == 'xxl'
+        "
         slot="end"
         :mode="designPlatform"
       >
@@ -32,7 +22,7 @@
           :value="selectedSegment"
           class="hide-scroll"
           scrollable
-          style="width: 24dvw"
+          style="width: 20dvw"
           @ion-change="scrollToSection({ event: $event })"
         >
           <ion-segment-button value="contact">Contacto</ion-segment-button>
@@ -53,6 +43,24 @@
           <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
+    </ion-toolbar>
+
+    <ion-toolbar v-if="screenSize.preset == 'xs'" :mode="designMode">
+      <ion-segment
+        :value="selectedSegment"
+        class="hide-scroll"
+        scrollable
+        @ion-change="scrollToSection({ event: $event })"
+      >
+        <ion-segment-button value="contact">Contacto</ion-segment-button>
+        <ion-segment-button value="skills">Skills</ion-segment-button>
+        <ion-segment-button value="experience">Experiencia</ion-segment-button>
+        <ion-segment-button value="projects">Proyectos</ion-segment-button>
+        <ion-segment-button value="certificates"
+          >Certificados</ion-segment-button
+        >
+        <ion-segment-button value="final">Final</ion-segment-button>
+      </ion-segment>
     </ion-toolbar>
   </ion-header>
 
@@ -254,8 +262,6 @@ import {
   alertController,
   IonButtons,
   IonMenuButton,
-  IonSegment,
-  IonSegmentButton,
   useBackButton,
   IonItem,
   IonHeader,
@@ -265,16 +271,11 @@ import {
   IonIcon,
   IonContent,
   IonPopover,
-  IonModal,
   modalController,
 } from "@ionic/vue";
 import { isPlatform } from "@ionic/vue";
-import { onMounted, ref } from "vue";
-import {
-  albumsOutline,
-  ellipsisVerticalOutline,
-  imageOutline,
-} from "ionicons/icons";
+import { onMounted, ref, watch } from "vue";
+import { ellipsisVerticalOutline, imageOutline } from "ionicons/icons";
 
 // interfaces
 
@@ -284,13 +285,13 @@ import SkillsPage from "../skills/SkillsPage.vue";
 import ExperienceComponent from "./experience/ExperienceComponent.vue";
 import ProjectsComponent from "./projects/ProjectsComponent.vue";
 import CertificatesComponent from "./certificates/CertificatesComponent.vue";
-import ContactForm from "@/components/forms/contact/ContactForm.vue";
 import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
 import ContactModal from "../../components/modals/contact/ContactModal.vue";
 // end components
 
 // controllers
 import SystemController from "@/controllers/systemController";
+const systemController = new SystemController();
 // end controllers
 
 // media
@@ -299,6 +300,7 @@ import WorkanaLogo from "../../assets/otros/Workana_ISOLOGO_W.png";
 import ContractLogo from "../../assets/otros/contract-svgrepo-com.svg";
 
 // interface
+import { DesignMode } from "@/utils/types";
 // end interface
 
 // vars
@@ -313,12 +315,15 @@ const buttonMenuDesktopOptions = ref({ open: false, event: null });
 const backgroundActive = ref(false);
 const designPlatform = isPlatform("ios") ? "ios" : "md";
 const selectedSegment = ref("contact");
+const designMode = ref<DesignMode>(systemController.getdesignMode());
+const screenSize = ref(systemController.getScreenSize());
 // end vars
 
 // component refs
 ref<InstanceType<typeof ButtonIconAnimationComponent>>();
 // end refs
 
+// life
 onMounted(() => {
   useBackButton(10, () => {
     alertExitApp();
@@ -343,6 +348,13 @@ onMounted(() => {
     observer.observe(section);
   });
 });
+watch(
+  () => systemController.getdesignMode(),
+  (newValue) => {
+    designMode.value = newValue;
+  },
+);
+// end life
 
 // functions
 async function alertExitApp(): Promise<void> {
