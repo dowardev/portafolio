@@ -281,7 +281,7 @@ import { ellipsisVerticalOutline, imageOutline } from "ionicons/icons";
 
 // components
 import InformationComponent from "./information/InformationComponent.vue";
-import SkillsPage from "../skills/SkillsPage.vue";
+import SkillsPage from "./skills/SkillsPage.vue";
 import ExperienceComponent from "./experience/ExperienceComponent.vue";
 import ProjectsComponent from "./projects/ProjectsComponent.vue";
 import CertificatesComponent from "./certificates/CertificatesComponent.vue";

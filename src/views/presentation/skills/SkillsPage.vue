@@ -79,24 +79,14 @@ import { ref } from "vue";
 
 // multimedia
 // imgs
-import htmlLogo from "../../assets/otros/html-1.svg";
-import cssLogo from "../../assets/otros/css-3.svg";
-import javascriptLogo from "../../assets/otros/logo-javascript.svg";
-import phpLogo from "../../assets/otros/php-1.svg";
-import graphqlLogo from "../../assets/otros/GraphQL.svg";
-import angularLogo from "../../assets/otros/angular-icon-1.svg";
-import electronLogo from "../../assets/otros/electron-1.svg";
-import ionicLogo from "../../assets/otros/ionicframework-icon.svg";
-import vueLogo from "../../assets/otros/vue-js-1.svg";
-import laravelLogo from "../../assets/otros/laravel-2.svg";
-import firebaseLogo from "../../assets/otros/Firebase_Logo_Logomark.svg";
-import mysqlLogo from "../../assets/otros/mysql-6.svg";
-import gitLogo from "../../assets/otros/git-icon.svg";
-import tuxLogo from "../../assets/otros/linux-tux-2.svg";
-import viteLogo from "../../assets/otros/vite-color.svg";
-import piniaLogo from "../../assets/otros/pinia.svg";
-
-const emits = defineEmits(["scrollPosition"]);
+import electronLogo from "@/assets/otros/electron-1.svg";
+import ionicLogo from "@/assets/otros/ionicframework-icon.svg";
+import vueLogo from "@/assets/otros/vue-js-1.svg";
+import laravelLogo from "@/assets/otros/laravel-2.svg";
+import firebaseLogo from "@/assets/otros/Firebase_Logo_Logomark.svg";
+import mysqlLogo from "@/assets/otros/mysql-6.svg";
+import tuxLogo from "@/assets/otros/linux-tux-2.svg";
+import piniaLogo from "@/assets/otros/pinia.svg";
 
 const skills = ref([
   {
