@@ -80,7 +80,7 @@
                             contextMenu = 'modal';
                             modals.userInfo.open = true;
                           "
-                          >{{ user.name }}</ion-label
+                          >{{ user.email }}</ion-label
                         >
 
                         <!-- update user button -->

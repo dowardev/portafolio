@@ -21,6 +21,7 @@
     <PoliciesPage v-if="$route.name == 'PoliciesPage'" />
     <UserPanelPage v-if="$route.name == 'UserPanelPage'" />
     <PanelAdminPage v-if="$route.name == 'PanelAdminPage'" />
+    <PortfolioPage v-if="$route.name == 'PortfolioPage'" />
   </ion-page>
 </template>
 
@@ -38,6 +39,7 @@ import SignUpPage from "./session/signup/SignUpPage.vue";
 import PoliciesPage from "./policies/PoliciesPage.vue";
 import UserPanelPage from "./user/UserPanelPage.vue";
 import PanelAdminPage from "./admin/PanelAdminPage.vue";
+import PortfolioPage from "./portfolio/PortfolioPage.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";

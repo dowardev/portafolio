@@ -1,55 +1,105 @@
 <template>
   <ion-button
     :mode="props.designMode"
-    :class="status ? 'btn-refresh-expanded' : 'btn-refresh-normal'"
-    :disabled="props.disabled"
-    :fill="props.fill"
-    :color="props.color"
+    :class="config.status ? 'btn-refresh-expanded' : 'btn-refresh-normal'"
+    :disabled="config.disabled"
+    :fill="config.fill"
+    :color="config.color"
     :ripple-effect="false"
     style="--ripple-color: transparent"
   >
-    <ion-icon
-      :class="{ 'ion-padding-end': active }"
-      :icon="props.icon"
-    ></ion-icon>
+    <div
+      v-if="$slots['icon-start']"
+      :class="{ 'ion-padding-end': config.status }"
+    >
+      <slot name="icon-start"></slot>
+    </div>
+
     <transition name="fade-refresh">
-      <span v-if="status">{{ props.message }}</span>
+      <span v-if="config.status">
+        <slot name="message"></slot>
+      </span>
     </transition>
+
+    <div
+      v-if="$slots['icon-end']"
+      :class="{ 'ion-padding-start': config.status }"
+    >
+      <slot name="icon-end"></slot>
+    </div>
   </ion-button>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { reactive, watch } from "vue";
 import { IonButton } from "@ionic/vue";
 
+// component props
 const props = withDefaults(
   defineProps<{
-    active?: boolean;
+    status?: boolean;
     color?: "primary" | "danger";
     designMode?: "md" | "ios";
     disabled?: boolean;
     fill?: "clear" | "outline" | "solid" | "default";
-    icon: string;
-    message: string;
   }>(),
   {
-    active: false,
+    status: false,
     color: "primary",
     designMode: "md",
     disabled: false,
     fill: "clear",
   },
 );
-const status = ref(props.active);
+defineExpose({ updateConfig });
+// end component props
 
+// vars
+const config = reactive({
+  status: props.status,
+  fill: props.fill,
+  color: props.color,
+  designMode: props.designMode,
+  disabled: props.disabled,
+});
+// end vars
+
+// life
 watch(
-  () => props.active,
+  () => props.status,
   (newValue) => {
-    status.value = newValue;
+    config.status = newValue;
   },
 );
+watch(
+  () => props.fill,
+  (newValue) => {
+    config.fill = newValue;
+  },
+);
+watch(
+  () => props.color,
+  (newValue) => {
+    config.color = newValue;
+  },
+);
+// end life
 
 // functions
+function updateConfig(params: {
+  status?: boolean;
+  fill?: "clear" | "outline" | "solid" | "default";
+  color?: "primary" | "danger";
+  designMode?: "md" | "ios";
+  disabled?: boolean;
+}) {
+  const { status, fill, color, designMode, disabled } = params;
+  if (status !== undefined) config.status = status;
+  if (fill !== undefined) config.fill = fill;
+  if (color !== undefined) config.color = color;
+  if (designMode !== undefined) config.designMode = designMode;
+  if (disabled !== undefined) config.disabled = disabled;
+}
 </script>
 
 <style scoped>

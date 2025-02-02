@@ -1,25 +1,31 @@
 <template>
   <ion-app>
-    <ion-split-pane when="lg" content-id="main" type="overlay">
-      <ion-menu
-        content-id="main"
-        menu-id="mainMenu"
-        style="--side-max-width: 300px; border-right-width: 0px"
-      >
-        <MenuComponent></MenuComponent>
-      </ion-menu>
+    <div class="content">
+      <ion-split-pane when="lg" content-id="main" type="overlay">
+        <ion-menu
+          content-id="main"
+          menu-id="mainMenu"
+          style="--side-max-width: 300px; border-right-width: 0px"
+        >
+          <MenuComponent></MenuComponent>
+        </ion-menu>
 
-      <ion-router-outlet id="main" :animated="!disableAnimation" />
-    </ion-split-pane>
+        <ion-router-outlet id="main" :animated="!disableAnimation" />
+      </ion-split-pane>
 
-    <!-- toasts -->
-    <ion-toast
-      message="Nueva actualización disponible, más detalles en la sección de novedades"
-      :is-open="openToastUpdateApp"
-      :buttons="toastButtons"
-      :duration="7000"
-      @did-dismiss="updateApp($event)"
-    ></ion-toast>
+      <!-- toasts -->
+      <ion-toast
+        message="Nueva actualización disponible, más detalles en la sección de novedades"
+        :is-open="openToastUpdateApp"
+        :buttons="toastButtons"
+        :duration="7000"
+        @did-dismiss="updateApp($event)"
+      ></ion-toast>
+    </div>
+
+    <div class="landscape-warning">
+      <p>Por favor, gira tu dispositivo para ver este sitio web.</p>
+    </div>
   </ion-app>
 </template>
 
@@ -138,8 +144,8 @@ async function openToastOptions() {
   await toast.present();
 }
 
-function updateApp(e: any) {
-  if (e.detail.role == "update") systemController.updateApp();
+function updateApp(e: Event) {
+  if ((e as CustomEvent).detail.role == "update") systemController.updateApp();
 }
 
 function updateScreenSize(): void {
@@ -157,7 +163,24 @@ function updateScreenSize(): void {
 </script>
 
 <style scoped>
-.hideInstallPWA {
-  display: none !important;
+.landscape-warning {
+  display: none;
+  text-align: center;
+  margin-top: 50px;
+  font-size: 20px;
+}
+
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  .content {
+    display: none;
+  }
+
+  .landscape-warning {
+    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
 }
 </style>

@@ -7,36 +7,34 @@
 
       <ion-title>{{ pageTitle }}</ion-title>
 
-      <!-- main options sm screen -->
-      <ion-buttons
-        slot="end"
-        v-if="isPlatform('android') || isPlatform('ios')"
-        :mode="designPlatform"
-      >
-        <div>
-          <ion-button
-            @click="buttonMenuMobileOptions = { open: true, event: $event }"
-          >
-            <ion-icon :icon="albumsOutline"></ion-icon>
-          </ion-button>
-        </div>
-      </ion-buttons>
-
       <!-- main options md and lg screen -->
       <ion-buttons
+        v-if="
+          screenSize.preset == 'md' ||
+          screenSize.preset == 'lg' ||
+          screenSize.preset == 'xl' ||
+          screenSize.preset == 'xxl'
+        "
         slot="end"
-        v-if="isPlatform('desktop')"
         :mode="designPlatform"
       >
-        <ion-segment :scrollable="true" :value="$route.name as string">
-          <ion-segment-button
-            v-for="(option, key) in menuOptions"
-            :key="key"
-            :value="option.route"
-            @click="mainSelectHandler({ option: option.route as MainOptions })"
+        <ion-segment
+          :value="selectedSegment"
+          class="hide-scroll"
+          scrollable
+          style="width: 20dvw"
+          @ion-change="scrollToSection({ event: $event })"
+        >
+          <ion-segment-button value="contact">Contacto</ion-segment-button>
+          <ion-segment-button value="skills">Skills</ion-segment-button>
+          <ion-segment-button value="experience"
+            >Experiencia</ion-segment-button
           >
-            <span>{{ option.title }}</span>
-          </ion-segment-button>
+          <ion-segment-button value="projects">Proyectos</ion-segment-button>
+          <ion-segment-button value="certificates"
+            >Certificados</ion-segment-button
+          >
+          <ion-segment-button value="final">Final</ion-segment-button>
         </ion-segment>
 
         <ion-button
@@ -46,32 +44,162 @@
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
+
+    <ion-toolbar v-if="screenSize.preset == 'xs'" :mode="designMode">
+      <ion-segment
+        :value="selectedSegment"
+        class="hide-scroll"
+        scrollable
+        @ion-change="scrollToSection({ event: $event })"
+      >
+        <ion-segment-button value="contact">Contacto</ion-segment-button>
+        <ion-segment-button value="skills">Skills</ion-segment-button>
+        <ion-segment-button value="experience">Experiencia</ion-segment-button>
+        <ion-segment-button value="projects">Proyectos</ion-segment-button>
+        <ion-segment-button value="certificates"
+          >Certificados</ion-segment-button
+        >
+        <ion-segment-button value="final">Final</ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
   </ion-header>
 
   <ion-content>
-    <transition name="fade" mode="out-in">
-      <div :key="opcSelected" style="height: 100%">
-        <!-- info -->
+    <div class="snap-container">
+      <!-- info -->
+      <section id="contact">
+        <ion-row class="ion-align-items-center snap-section">
+          <ion-col class="ion-justify-content-center" style="display: flex">
+            <InformationComponent />
+          </ion-col>
+        </ion-row>
+      </section>
+
+      <!-- skills -->
+      <section id="skills">
+        <ion-row class="snap-section">
+          <ion-col style="height: 100%">
+            <SkillsPage />
+          </ion-col>
+        </ion-row>
+      </section>
+
+      <!-- experience -->
+      <section id="experience">
+        <ion-row class="snap-section">
+          <ion-col style="height: 100%">
+            <ion-list style="height: 100%">
+              <ion-list-header>
+                <ion-label>Experiencia reciente</ion-label>
+                <ion-button
+                  disabled
+                  @click="$router.push({ name: 'PortfolioPage' })"
+                  >Ver todo</ion-button
+                >
+              </ion-list-header>
+
+              <ExperienceComponent />
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </section>
+
+      <!-- projects -->
+      <section id="projects">
+        <ion-row class="snap-section">
+          <ion-col style="height: 100%">
+            <ion-list style="height: 100%">
+              <ion-list-header>
+                <ion-label>Últimos proyectos</ion-label>
+                <ion-button @click="$router.push({ name: 'PortfolioPage' })"
+                  >Ver todo</ion-button
+                >
+              </ion-list-header>
+
+              <ProjectsComponent />
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </section>
+
+      <!-- certificates -->
+      <section id="certificates">
+        <ion-row class="snap-section">
+          <ion-col style="height: 100%">
+            <ion-list style="height: 100%">
+              <ion-list-header>
+                <ion-label>Certificados recientes</ion-label>
+                <ion-button
+                  disabled
+                  @click="$router.push({ name: 'PortfolioPage' })"
+                  >Ver todo</ion-button
+                >
+              </ion-list-header>
+
+              <CertificatesComponent />
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </section>
+
+      <!-- final -->
+      <section id="final" class="snap-section">
         <div
-          size="12"
-          style="height: 100%"
-          class="center center-vertical"
-          v-if="opcSelected == 'PresentationPage'"
+          style="display: flex; height: 100%"
+          class="ion-align-items-center ion-justify-content-center"
         >
-          <InformationComponent />
-        </div>
+          <div>
+            <ion-row>
+              <ion-col>
+                <h2>Trabajemos juntos</h2>
+              </ion-col>
+            </ion-row>
 
-        <!-- skills -->
-        <div v-if="opcSelected == 'SkillsPage'">
-          <SkillsPage />
+            <ion-row>
+              <ion-col style="display: flex" class="ion-justify-content-center">
+                <div
+                  style="cursor: pointer"
+                  class="ion-padding-start ion-padding-end"
+                >
+                  <img
+                    style="width: 40px"
+                    :src="UpworkLogo"
+                    alt=""
+                    @click="
+                      openUrl({
+                        url: 'https://www.upwork.com/freelancers/~0162303a78d7d448db?mp_source=share',
+                      })
+                    "
+                  />
+                </div>
+                <div
+                  style="cursor: pointer"
+                  class="ion-padding-start ion-padding-end"
+                >
+                  <img
+                    style="width: 40px"
+                    :src="WorkanaLogo"
+                    alt=""
+                    @click="
+                      openUrl({
+                        url: 'https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c',
+                      })
+                    "
+                  />
+                </div>
+                <div
+                  style="cursor: pointer"
+                  class="ion-padding-start ion-padding-end"
+                  @click="openContactModal()"
+                >
+                  <img style="width: 40px" :src="ContractLogo" alt="" />
+                </div>
+              </ion-col>
+            </ion-row>
+          </div>
         </div>
-
-        <!-- projects -->
-        <div v-if="opcSelected == 'PortfolioPage'">
-          <PortfolioPage />
-        </div>
-      </div>
-    </transition>
+      </section>
+    </div>
   </ion-content>
 
   <!-- popovers -->
@@ -125,16 +253,15 @@
       </ion-item>
     </ion-content>
   </ion-popover>
+
+  <!-- modals -->
 </template>
 
 <script setup lang="ts">
 import {
-  IonPage,
   alertController,
   IonButtons,
   IonMenuButton,
-  IonSegment,
-  IonSegmentButton,
   useBackButton,
   IonItem,
   IonHeader,
@@ -144,46 +271,90 @@ import {
   IonIcon,
   IonContent,
   IonPopover,
+  modalController,
 } from "@ionic/vue";
 import { isPlatform } from "@ionic/vue";
 import { onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { ellipsisVerticalOutline, imageOutline } from "ionicons/icons";
 
 // interfaces
-type MainOptions = "PresentationPage" | "SkillsPage" | "PortfolioPage";
 
 // components
 import InformationComponent from "./information/InformationComponent.vue";
-import SkillsPage from "../skills/SkillsPage.vue";
-import HistoryPage from "../history/HistoryPage.vue";
-import PortfolioPage from "../portfolio/PortfolioPage.vue";
-import {
-  albumsOutline,
-  ellipsisVerticalOutline,
-  imageOutline,
-} from "ionicons/icons";
+import SkillsPage from "./skills/SkillsPage.vue";
+import ExperienceComponent from "./experience/ExperienceComponent.vue";
+import ProjectsComponent from "./projects/ProjectsComponent.vue";
+import CertificatesComponent from "./certificates/CertificatesComponent.vue";
+import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
+import ContactModal from "../../components/modals/contact/ContactModal.vue";
+// end components
+
+// controllers
+import SystemController from "@/controllers/systemController";
+const systemController = new SystemController();
+// end controllers
+
+// media
+import UpworkLogo from "../../assets/otros/brand-upwork-svgrepo-com.svg";
+import WorkanaLogo from "../../assets/otros/Workana_ISOLOGO_W.png";
+import ContractLogo from "../../assets/otros/contract-svgrepo-com.svg";
+
+// interface
+import { DesignMode } from "@/utils/types";
+// end interface
 
 // vars
-const showTitle = ref(true);
-const router = useRouter();
 const pageTitle = "Presentación";
 const menuOptions = ref({
   contact: { title: "Contacto", route: "PresentationPage" },
   skills: { title: "Habilidades", route: "SkillsPage" },
-  // history: { title: "Historia", route: "HistoryPage" },
   portfolio: { title: "Porfolio", route: "PortfolioPage" },
 });
 const buttonMenuMobileOptions = ref({ open: false, event: null });
 const buttonMenuDesktopOptions = ref({ open: false, event: null });
 const backgroundActive = ref(false);
-const opcSelected = ref<MainOptions>("PresentationPage");
 const designPlatform = isPlatform("ios") ? "ios" : "md";
+const selectedSegment = ref("contact");
+const designMode = ref<DesignMode>(systemController.getdesignMode());
+const screenSize = ref(systemController.getScreenSize());
+// end vars
 
+// component refs
+ref<InstanceType<typeof ButtonIconAnimationComponent>>();
+// end refs
+
+// life
 onMounted(() => {
   useBackButton(10, () => {
     alertExitApp();
   });
+
+  const sections = document.querySelectorAll("section");
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          selectedSegment.value = entry.target.id;
+        }
+      });
+    },
+    {
+      threshold: 0.7,
+    },
+  );
+
+  sections.forEach((section) => {
+    observer.observe(section);
+  });
 });
+watch(
+  () => systemController.getdesignMode(),
+  (newValue) => {
+    designMode.value = newValue;
+  },
+);
+// end life
 
 // functions
 async function alertExitApp(): Promise<void> {
@@ -212,31 +383,30 @@ async function alertExitApp(): Promise<void> {
   await alert.present();
 }
 
-function mainSelectHandler(params: { option: MainOptions }) {
-  const { option } = params;
-  if (option == "PresentationPage") {
-    // router.push({ name: "PresentationPage" });
-    opcSelected.value = "PresentationPage";
+function scrollToSection(params: { event: CustomEvent }) {
+  const { event } = params;
+  const sectionId = event.detail.value;
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth" });
   }
-  if (option == "SkillsPage") {
-    // router.push({ name: "SkillsPage" });
-    opcSelected.value = "SkillsPage";
-  }
-  if (option == "PortfolioPage") {
-    // router.push({ name: "PortfolioPage" });
-    opcSelected.value = "PortfolioPage";
-  }
+}
+
+function openUrl(params: { url: string }) {
+  const { url } = params;
+  window.open(url, "_blank");
+}
+
+async function openContactModal() {
+  const modal = await modalController.create({
+    component: ContactModal,
+  });
+
+  modal.present();
 }
 </script>
 
 <style scoped>
-.page-background {
-  background-image: url("../../assets/backgrounds/b5.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.4s ease;
@@ -245,5 +415,37 @@ function mainSelectHandler(params: { option: MainOptions }) {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.hide-scroll {
+  -ms-overflow-style: none; /* IE y Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari y Opera */
+}
+
+.snap-container {
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-snap-stop: always;
+}
+.snap-section {
+  height: 100%;
+  scroll-snap-align: start;
+}
+
+ion-content::part(scroll) {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+ion-content::part(scroll)::-webkit-scrollbar {
+  display: none;
+}
+.snap-container > section {
+  height: 100%;
 }
 </style>

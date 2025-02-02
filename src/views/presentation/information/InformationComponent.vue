@@ -1,146 +1,116 @@
 <template>
-  <ion-card
-    class="ion-padding blur-effect primary-select-animated-active"
-    style="--background: var(--ion-background-color-step-50)"
+  <ion-row
+    class="ion-justify-content-center"
+    style="display: flex; align-items: center"
   >
-    <!-- perfil -->
-    <ion-row>
-      <ion-col class="center" size="12">
-        <img
-          src="@/assets/portafolio/foto_perfil.jpg"
-          alt=""
-          class="img-perfil"
-        />
-      </ion-col>
-    </ion-row>
+    <ion-col class="info-sec" size-xs="12" size-md="6" size-xl="4">
+      <ion-row>
+        <ion-col :class="{ center: screenSize.preset == 'xs' }">
+          <h1>Gonzalo Ponce</h1>
+        </ion-col>
+      </ion-row>
 
-    <ion-row>
-      <ion-col class="center" size-lg="12">
-        <h1>Gonzalo Ponce</h1>
-      </ion-col>
-    </ion-row>
+      <ion-row>
+        <ion-col>
+          <div :class="{ center: screenSize.preset == 'xs' }">
+            <ion-chip color="primary">Full-Stack Developer</ion-chip>
+          </div>
+        </ion-col>
+      </ion-row>
 
-    <ion-row>
-      <ion-col class="center" size="12">
-        <img src="@/assets/portafolio/dowar.png" class="img-logo" />
-      </ion-col>
-    </ion-row>
-
-    <ion-row>
-      <ion-col class="center" size="12">
-        <p style="text-align: center">
-          Desarrollador de experiencias multiplataforma
-        </p>
-      </ion-col>
-    </ion-row>
-
-    <!-- redes -->
-    <ion-row>
-      <ion-col>
-        <div style="display: flex; justify-content: space-around">
-          <!-- email -->
-          <ion-button
-            id="click-trigger-bussiness-email"
-            button
-            class="social-button"
-            @mouseover="fillEmailContact = '#C87C5B'"
-            @mouseleave="fillEmailContact = defaultColorFill"
+      <ion-row>
+        <ion-col size-xs="12">
+          <p
+            :style="{
+              textAlign: screenSize.preset == 'xs' ? 'center' : 'initial',
+            }"
           >
-            <ion-icon
-              :style="{ color: fillEmailContact }"
-              :icon="mail"
-            ></ion-icon>
-          </ion-button>
+            Desarrollador Full-Stack con mas de 5 años de experiencia en el
+            desarrollo de aplicaciones multiplataforma.
+          </p>
+        </ion-col>
+      </ion-row>
 
+      <ion-row class="center">
+        <ion-col :class="{ center: screenSize.preset == 'xs' }">
           <!-- LinkedIn -->
           <ion-button
             id="click-trigger-bussiness-linkedin"
-            button
             class="social-button"
             @mouseover="fillLinkedIn = '#7373FF'"
             @mouseleave="fillLinkedIn = defaultColorFill"
           >
             <ion-icon
+              slot="icon-only"
               :style="{ color: fillLinkedIn }"
               :icon="logoLinkedin"
             ></ion-icon>
           </ion-button>
 
-          <!-- contact form -->
+          <!-- email -->
           <ion-button
-            id="open-modal-cocntacto-form"
-            button
+            id="click-trigger-bussiness-email"
             class="social-button"
-            @mouseover="fillContactForm = '#5FFEF7'"
+            @mouseover="fillEmailContact = '#C87C5B'"
+            @mouseleave="fillEmailContact = defaultColorFill"
+          >
+            <ion-icon
+              slot="icon-only"
+              :style="{ color: fillEmailContact }"
+              :icon="mail"
+            ></ion-icon>
+          </ion-button>
+
+          <!-- calendly -->
+          <ion-button
+            href="https://calendly.com/dowardev"
+            target="_blank"
+            class="social-button"
+            @mouseover="fillcalendly = '#006dff'"
+            @mouseleave="fillcalendly = defaultColorFill"
+          >
+            <ion-icon
+              slot="icon-only"
+              :style="{ color: fillcalendly }"
+              :icon="calendar"
+            ></ion-icon>
+          </ion-button>
+
+          <!-- form contact -->
+          <ion-button
+            class="social-button"
+            @mouseover="fillContactForm = '#ff5b29'"
             @mouseleave="fillContactForm = defaultColorFill"
+            @click="openContactModal()"
           >
             <ion-icon
-              :icon="chatbubble"
+              slot="icon-only"
               :style="{ color: fillContactForm }"
+              :icon="chatbox"
             ></ion-icon>
           </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-col>
 
-          <!-- cv -->
-          <ion-button
-            id="click-trigger-cv"
-            button
-            class="social-button"
-            @mouseover="fillCVForm = '#FFC65B'"
-            @mouseleave="fillCVForm = defaultColorFill"
-          >
-            <ion-icon
-              :icon="documentText"
-              :style="{ color: fillCVForm }"
-            ></ion-icon>
-          </ion-button>
+    <ion-col clas="img-sec" size-xs="12" size-md="4">
+      <ion-row>
+        <ion-col style="display: flex" class="ion-justify-content-center">
+          <img
+            src="@/assets/portafolio/foto_perfil.jpg"
+            alt=""
+            class="img-perfil"
+          />
+        </ion-col>
+      </ion-row>
 
-          <!-- upwork -->
-          <ion-button
-            id="click-trigger-upwork"
-            button
-            class="social-button"
-            @mouseover="fillUpwork = '#6bd341'"
-            @mouseleave="fillUpwork = defaultColorFill"
-          >
-            <img
-              v-if="fillUpwork == defaultColorFill"
-              src="../../../assets/otros/icons8-upwork-50.png"
-              alt="upwork-logo"
-              srcset=""
-              style="width: 22px"
-            />
-
-            <img
-              v-if="fillUpwork == '#6bd341'"
-              src="../../../assets/otros/icons8-upwork2-50.png"
-              alt="upwork-logo"
-              srcset=""
-              style="width: 22px"
-            />
-          </ion-button>
-
-          <!-- bluesky -->
-          <ion-button
-            id="click-trigger-bluesky"
-            button
-            class="social-button"
-            @mouseover="fillBluesky = '#0084fe'"
-            @mouseleave="fillBluesky = defaultColorFill"
-          >
-            <img
-              style="width: 16px"
-              :src="
-                fillBluesky == defaultColorFill
-                  ? blueskyGrayImg
-                  : blueskyColorImg
-              "
-              alt=""
-            />
-          </ion-button>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-card>
+      <ion-row>
+        <ion-col style="display: flex" class="ion-justify-content-center">
+          <img src="@/assets/portafolio/dowar.png" class="img-logo" />
+        </ion-col>
+      </ion-row>
+    </ion-col>
+  </ion-row>
 
   <!-- popovers -->
   <!-- popover email -->
@@ -191,8 +161,8 @@
       <ion-item
         button
         lines="none"
-        @click="copyToClipboard({ text: 'dowar' })"
         class="transparent"
+        @click="copyToClipboard({ text: 'dowar' })"
       >
         <ion-icon slot="start" :icon="copyOutline" color="primary"></ion-icon>
         <ion-label class="ion-text-wrap">Copiar usuario</ion-label>
@@ -302,8 +272,8 @@
       <ion-item
         button
         lines="none"
-        @click="copyToClipboard({ text: '@dowardev.bsky.social' })"
         class="transparent"
+        @click="copyToClipboard({ text: '@dowardev.bsky.social' })"
       >
         <ion-icon slot="start" :icon="copyOutline" color="primary"></ion-icon>
         <ion-label class="ion-text-wrap">Copiar usuario</ion-label>
@@ -356,32 +326,38 @@ import {
   IonContent,
   IonIcon,
   IonButton,
+  IonChip,
+  modalController,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import {
   mail,
-  logoMastodon,
   logoLinkedin,
   copyOutline,
   openOutline,
-  chatbubble,
-  documentText,
+  calendar,
+  chatbox,
 } from "ionicons/icons";
 import { App } from "@capacitor/app";
-import ContactModal from "./ContactModal.vue";
+
+// components
+import ContactModal from "../../../components/modals/contact/ContactModal.vue";
+
+// controllers
+import SystemController from "@/controllers/systemController";
+const systemController = new SystemController();
+// end controllser
 
 // images
-import blueskyGrayImg from "@/assets/otros/bluesky-gray.png";
-import blueskyColorImg from "@/assets/otros/bluesky-color.png";
 
 // vars
 const defaultColorFill = "#777777";
 const fillEmailContact = ref(defaultColorFill);
 const fillLinkedIn = ref(defaultColorFill);
 const fillContactForm = ref(defaultColorFill);
-const fillCVForm = ref(defaultColorFill);
-const fillUpwork = ref(defaultColorFill);
-const fillBluesky = ref(defaultColorFill);
+const fillcalendly = ref(defaultColorFill);
+const screenSize = ref(systemController.getScreenSize());
+// end vars
 
 // mounted()
 onMounted(() => {
@@ -434,19 +410,27 @@ function openMail(params: { mail: string; subject: string }) {
   const subject = params.subject;
   location.href = `mailto:${mail}?Subject=${subject}`;
 }
+
+async function openContactModal() {
+  const modal = await modalController.create({
+    component: ContactModal,
+  });
+
+  modal.present();
+}
 </script>
 
 <style scoped>
 .img-perfil {
   border-radius: 50%;
-  width: 27vh;
-  height: 27vh;
+  width: 18vh;
+  height: 18vh;
 }
 
 .img-logo {
   max-width: 100%;
   max-height: 100%;
-  width: calc(100% - 70px);
+  width: 32dvh;
   height: 10dvh;
 }
 
@@ -457,5 +441,25 @@ function openMail(params: { mail: string; subject: string }) {
 
 .blur-effect {
   backdrop-filter: blur(10px);
+}
+
+@media (max-width: 576px) {
+  .info-sec {
+    order: 2;
+  }
+  .img-sec {
+    order: 1;
+  }
+}
+.text-center {
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .img-perfil {
+    border-radius: 50%;
+    width: 27vh;
+    height: 27vh;
+  }
 }
 </style>
