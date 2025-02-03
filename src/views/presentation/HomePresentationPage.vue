@@ -161,13 +161,13 @@
 
       <!-- final -->
       <section id="final" class="snap-section">
-        <div
-          style="display: flex; height: 100%"
-          class="ion-align-items-center ion-justify-content-center"
+        <ion-row
+          class="snap-section ion-justify-content-center"
+          style="display: flex"
         >
-          <div>
+          <ion-col size-xs="12" size-md="8" size-lg="6">
             <ion-row>
-              <ion-col>
+              <ion-col style="display: flex" class="ion-justify-content-center">
                 <h2>Trabajemos juntos</h2>
               </ion-col>
             </ion-row>
@@ -213,8 +213,67 @@
                 </div>
               </ion-col>
             </ion-row>
-          </div>
-        </div>
+
+            <ion-row>
+              <ion-col>
+                <Swiper
+                  :modules="[Pagination, Navigation, Autoplay]"
+                  :slides-per-view="
+                    screenSize.preset == 'xs' || screenSize.preset == 'md'
+                      ? 1
+                      : 2
+                  "
+                  :loop="true"
+                  :pagination="{ clickable: true }"
+                  :autoplay="{ delay: 3000, disableOnInteraction: false }"
+                >
+                  <SwiperSlide v-for="(review, index) in reviews" :key="index">
+                    <ion-card class="shadow-1">
+                      <ion-card-header>
+                        <div
+                          style="display: flex; justify-content: space-between"
+                        >
+                          <img
+                            :src="
+                              review.platform === 'upwork'
+                                ? UpworkLogo
+                                : WorkanaLogo
+                            "
+                            alt=""
+                            style="height: 45px"
+                          />
+                        </div>
+                        <ion-card-title>{{ review.title }}</ion-card-title>
+                        <ion-card-subtitle>
+                          <ion-icon
+                            v-for="n in review.rating"
+                            :key="n"
+                            :icon="star"
+                          ></ion-icon>
+                        </ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content v-if="review.comment">
+                        <p>
+                          <ion-text>
+                            <span
+                              v-for="(line, indexComment) in review.comment"
+                              :key="indexComment"
+                            >
+                              {{ line
+                              }}<br
+                                v-if="indexComment < review.comment.length - 1"
+                              />
+                            </span>
+                          </ion-text>
+                        </p>
+                      </ion-card-content>
+                    </ion-card>
+                  </SwiperSlide>
+                </Swiper>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
       </section>
     </div>
   </ion-content>
@@ -270,11 +329,10 @@
       </ion-item>
     </ion-content>
   </ion-popover>
-
-  <!-- modals -->
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, watch } from "vue";
 import {
   alertController,
   IonButtons,
@@ -291,8 +349,12 @@ import {
   modalController,
 } from "@ionic/vue";
 import { isPlatform } from "@ionic/vue";
-import { onMounted, ref, watch } from "vue";
-import { ellipsisVerticalOutline, imageOutline } from "ionicons/icons";
+import { ellipsisVerticalOutline, imageOutline, star } from "ionicons/icons";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Pagination, Navigation, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 // interfaces
 
@@ -334,6 +396,58 @@ const designPlatform = isPlatform("ios") ? "ios" : "md";
 const selectedSegment = ref("contact");
 const designMode = ref<DesignMode>(systemController.getdesignMode());
 const screenSize = ref(systemController.getScreenSize());
+const reviews = ref([
+  {
+    platform: "upwork",
+    title: "SISTEMA DE INVENTARIO PARA CICLOPARTES AVILA",
+    rating: 5,
+    comment: [
+      "Excelente, es una persona muy dedicada en lo que hace",
+      "Muy atento y siempre tiene los trabajos a tiempo",
+      "Recomendadisimo",
+    ],
+  },
+  {
+    platform: "upwork",
+    title: "login laravel telegram",
+    rating: 5,
+    comment: [
+      "Excelente, es una persona muy dedicada en lo que hace",
+      "Muy atento y siempre tiene los trabajos a tiempo",
+      "Recomendadisimo",
+    ],
+  },
+  {
+    platform: "upwork",
+    title: "Modificación sistema y creación app web",
+    rating: 5,
+    comment: ["Good Worker"],
+  },
+  {
+    platform: "workana",
+    title: "Landing Page",
+    rating: 5,
+    comment: ["Excelente profesional y comunicación."],
+  },
+  {
+    platform: "workana",
+    title: "App iOS & Android Venta de productos para mascotas",
+    rating: 5,
+    comment: [],
+  },
+  {
+    platform: "workana",
+    title: "Agregar E-learning plugin y pasarela de pago local",
+    rating: 5,
+    comment: [],
+  },
+  {
+    platform: "workana",
+    title: "Pagina web Fcm",
+    rating: 5,
+    comment: ["Muy buena profesional y sabes lo que está haciendo."],
+  },
+]);
 // end vars
 
 // component refs
@@ -421,6 +535,7 @@ async function openContactModal() {
 
   modal.present();
 }
+// end functions
 </script>
 
 <style scoped>
@@ -461,5 +576,18 @@ ion-content::part(scroll) {
 
 ion-content::part(scroll)::-webkit-scrollbar {
   display: none;
+}
+.snap-container > section {
+  height: 100%;
+}
+
+.swiper {
+  height: auto;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
