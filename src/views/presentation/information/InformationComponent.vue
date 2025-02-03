@@ -1,6 +1,6 @@
 <template>
-  <ion-row class="ion-justify-content-center" style="display: flex">
-    <ion-col class="info-sec" size-xs="12" size-md="6" size-xl="4">
+  <ion-row>
+    <ion-col class="info-sec" size-xs="12" size-md="6" size-xl="6">
       <ion-row>
         <ion-col :class="{ center: screenSize.preset == 'xs' }">
           <h1>Gonzalo Ponce</h1>
@@ -92,10 +92,10 @@
     </ion-col>
 
     <ion-col
-      class="img-sec ion-align-items-center"
+      class="img-sec ion-align-items-center ion-justify-content-center"
       :class="{ 'ion-justify-content-center': screenSize.preset == 'xs' }"
       size-xs="12"
-      size-md="auto"
+      size-md="6"
       style="display: flex"
     >
       <div>
@@ -402,12 +402,13 @@ async function alertExitApp() {
   console.log("onDidDismiss resolved with role", role);
 }
 
-async function copyToClipboard(params: { text: any }) {
+async function copyToClipboard(params: { text: string }) {
   const text = params.text;
   try {
     await navigator.clipboard.writeText(text);
-  } catch ($e) {
+  } catch (e: unknown) {
     alert("Cannot copy");
+    console.error(e);
   }
 }
 

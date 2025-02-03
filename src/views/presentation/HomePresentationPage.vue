@@ -68,8 +68,11 @@
     <div class="snap-container">
       <!-- info -->
       <section id="contact">
-        <ion-row class="ion-align-items-center snap-section">
-          <ion-col class="ion-justify-content-center" style="display: flex">
+        <ion-row
+          class="snap-section ion-align-items-center ion-justify-content-center"
+          style="display: flex"
+        >
+          <ion-col size-xs="12" size-md="8" size-lg="6">
             <InformationComponent />
           </ion-col>
         </ion-row>
@@ -77,17 +80,25 @@
 
       <!-- skills -->
       <section id="skills">
-        <ion-row class="snap-section">
-          <ion-col style="height: 100%">
-            <SkillsPage />
+        <ion-row
+          class="snap-section ion-justify-content-center"
+          style="height: 100%; display: flex"
+        >
+          <ion-col size-xs="12" size-md="8" size-lg="6">
+            <div>
+              <SkillsPage />
+            </div>
           </ion-col>
         </ion-row>
       </section>
 
       <!-- experience -->
       <section id="experience">
-        <ion-row class="snap-section">
-          <ion-col style="height: 100%">
+        <ion-row
+          class="snap-section ion-justify-content-center"
+          style="height: 100%; display: flex"
+        >
+          <ion-col size-xs="12" size-md="8" size-lg="6">
             <ion-list style="height: 100%">
               <ion-list-header>
                 <ion-label>Experiencia reciente</ion-label>
@@ -106,8 +117,11 @@
 
       <!-- projects -->
       <section id="projects">
-        <ion-row class="snap-section">
-          <ion-col style="height: 100%">
+        <ion-row
+          class="snap-section ion-justify-content-center"
+          style="height: 100%; display: flex"
+        >
+          <ion-col size-xs="12" size-md="8" size-lg="6">
             <ion-list style="height: 100%">
               <ion-list-header>
                 <ion-label>Últimos proyectos</ion-label>
@@ -124,8 +138,11 @@
 
       <!-- certificates -->
       <section id="certificates">
-        <ion-row class="snap-section">
-          <ion-col style="height: 100%">
+        <ion-row
+          class="snap-section ion-justify-content-center"
+          style="display: flex"
+        >
+          <ion-col size-xs="12" size-md="8" size-lg="6" style="height: 100%">
             <ion-list style="height: 100%">
               <ion-list-header>
                 <ion-label>Certificados recientes</ion-label>
