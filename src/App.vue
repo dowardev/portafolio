@@ -1,17 +1,15 @@
 <template>
   <ion-app>
     <div class="content">
-      <ion-split-pane when="lg" content-id="main" type="overlay">
-        <ion-menu
-          content-id="main"
-          menu-id="mainMenu"
-          style="--side-max-width: 300px; border-right-width: 0px"
-        >
-          <MenuComponent></MenuComponent>
-        </ion-menu>
+      <ion-menu
+        content-id="main"
+        menu-id="mainMenu"
+        style="--side-max-width: 300px; border-right-width: 0px"
+      >
+        <MenuComponent></MenuComponent>
+      </ion-menu>
 
-        <ion-router-outlet id="main" :animated="!disableAnimation" />
-      </ion-split-pane>
+      <ion-router-outlet id="main" :animated="!disableAnimation" />
 
       <!-- toasts -->
       <ion-toast

@@ -1,9 +1,6 @@
 <template>
-  <ion-row
-    class="ion-justify-content-center"
-    style="display: flex; align-items: center"
-  >
-    <ion-col class="info-sec" size-xs="12" size-md="6" size-xl="4">
+  <ion-row>
+    <ion-col class="info-sec" size-xs="12" size-md="6" size-xl="6">
       <ion-row>
         <ion-col :class="{ center: screenSize.preset == 'xs' }">
           <h1>Gonzalo Ponce</h1>
@@ -14,6 +11,7 @@
         <ion-col>
           <div :class="{ center: screenSize.preset == 'xs' }">
             <ion-chip color="primary">Full-Stack Developer</ion-chip>
+            <ion-chip color="primary">Blogger</ion-chip>
           </div>
         </ion-col>
       </ion-row>
@@ -93,22 +91,30 @@
       </ion-row>
     </ion-col>
 
-    <ion-col clas="img-sec" size-xs="12" size-md="4">
-      <ion-row>
-        <ion-col style="display: flex" class="ion-justify-content-center">
-          <img
-            src="@/assets/portafolio/foto_perfil.jpg"
-            alt=""
-            class="img-perfil"
-          />
-        </ion-col>
-      </ion-row>
+    <ion-col
+      class="img-sec ion-align-items-center ion-justify-content-center"
+      :class="{ 'ion-justify-content-center': screenSize.preset == 'xs' }"
+      size-xs="12"
+      size-md="6"
+      style="display: flex"
+    >
+      <div>
+        <ion-row>
+          <ion-col style="display: flex" class="ion-justify-content-center">
+            <img
+              src="@/assets/portafolio/foto_perfil.jpg"
+              alt=""
+              class="img-perfil"
+            />
+          </ion-col>
+        </ion-row>
 
-      <ion-row>
-        <ion-col style="display: flex" class="ion-justify-content-center">
-          <img src="@/assets/portafolio/dowar.png" class="img-logo" />
-        </ion-col>
-      </ion-row>
+        <ion-row>
+          <ion-col>
+            <img src="@/assets/portafolio/dowar.png" class="img-logo" />
+          </ion-col>
+        </ion-row>
+      </div>
     </ion-col>
   </ion-row>
 
@@ -396,12 +402,13 @@ async function alertExitApp() {
   console.log("onDidDismiss resolved with role", role);
 }
 
-async function copyToClipboard(params: { text: any }) {
+async function copyToClipboard(params: { text: string }) {
   const text = params.text;
   try {
     await navigator.clipboard.writeText(text);
-  } catch ($e) {
+  } catch (e: unknown) {
     alert("Cannot copy");
+    console.error(e);
   }
 }
 
@@ -458,8 +465,8 @@ async function openContactModal() {
 @media (min-width: 768px) {
   .img-perfil {
     border-radius: 50%;
-    width: 27vh;
-    height: 27vh;
+    width: 24vh;
+    height: 24vh;
   }
 }
 </style>
