@@ -46,7 +46,7 @@
               >
             </ion-item>
 
-            <div id="pr">
+            <div>
               <div>
                 <!-- navigation -->
                 <section>
