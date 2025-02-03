@@ -3,7 +3,7 @@
     <ion-card
       v-for="(project, index) in proyectos"
       :key="index"
-      class="blur-effect primary-select-border"
+      class="shadow-1"
     >
       <ion-card-content>
         <ion-row>
@@ -117,8 +117,8 @@
                     <ion-col>
                       <!-- web site -->
                       <ion-item
-                        lines="full"
                         v-if="project.page"
+                        lines="full"
                         :href="project.page"
                         target="_blank"
                       >
@@ -131,8 +131,8 @@
 
                       <!-- play store -->
                       <ion-item
-                        lines="full"
                         v-if="project.appPlayStore"
+                        lines="full"
                         :href="project.appPlayStore"
                         target="_blank"
                       >
@@ -148,8 +148,8 @@
 
                       <!-- source code -->
                       <ion-item
-                        lines="full"
                         v-if="project.sourceCode"
+                        lines="full"
                         :href="project.sourceCode"
                         target="_blank"
                         ><ion-icon
@@ -164,8 +164,8 @@
 
                       <!-- platform -->
                       <ion-item
-                        lines="full"
                         v-if="project.platform"
+                        lines="full"
                         :href="project.platform.route"
                         target="_blank"
                       >
