@@ -82,10 +82,10 @@
       <section id="skills">
         <ion-row
           class="snap-section ion-justify-content-center"
-          style="height: 100%; display: flex"
+          style="display: flex"
         >
           <ion-col size-xs="12" size-md="8" size-lg="6">
-            <div>
+            <div style="height: 81dvh">
               <SkillsPage />
             </div>
           </ion-col>
@@ -96,10 +96,10 @@
       <section id="experience">
         <ion-row
           class="snap-section ion-justify-content-center"
-          style="height: 100%; display: flex"
+          style="display: flex"
         >
           <ion-col size-xs="12" size-md="8" size-lg="6">
-            <ion-list style="height: 100%">
+            <ion-list style="height: 82dvh">
               <ion-list-header>
                 <ion-label>Experiencia reciente</ion-label>
                 <ion-button
@@ -119,10 +119,10 @@
       <section id="projects">
         <ion-row
           class="snap-section ion-justify-content-center"
-          style="height: 100%; display: flex"
+          style="display: flex"
         >
           <ion-col size-xs="12" size-md="8" size-lg="6">
-            <ion-list style="height: 100%">
+            <ion-list style="height: 82dvh">
               <ion-list-header>
                 <ion-label>Últimos proyectos</ion-label>
                 <ion-button @click="$router.push({ name: 'PortfolioPage' })"
@@ -143,7 +143,7 @@
           style="display: flex"
         >
           <ion-col size-xs="12" size-md="8" size-lg="6" style="height: 100%">
-            <ion-list style="height: 100%">
+            <ion-list style="height: 82dvh">
               <ion-list-header>
                 <ion-label>Certificados recientes</ion-label>
                 <ion-button
@@ -461,8 +461,5 @@ ion-content::part(scroll) {
 
 ion-content::part(scroll)::-webkit-scrollbar {
   display: none;
-}
-.snap-container > section {
-  height: 100%;
 }
 </style>
