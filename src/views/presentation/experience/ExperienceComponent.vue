@@ -49,7 +49,10 @@
 
                 <ion-icon
                   v-if="tech.type == 'icon'"
-                  :style="{ fontSize: tech.size }"
+                  :style="{
+                    fontSize: tech.size,
+                    color: getIconColorByName({ name: tech.name }),
+                  }"
                   :icon="tech.source"
                 ></ion-icon>
               </div>
@@ -169,5 +172,23 @@ const modals = reactive({
 function openUrl(params: { url: string }) {
   const { url } = params;
   window.open(url, "_blank");
+}
+
+function getIconColorByName(params: { name: string }) {
+  const { name } = params;
+  const colors: { [key: string]: string } = {
+    Ionic: "#3356c7",
+    Vue: "#41b883",
+    Laravel: "#ff2819",
+    Firebase: "#ffca28",
+    Capacitorjs: "#119eff",
+    Electronjs: "#47848f",
+    Web: "#3356c7",
+    Linux: "#000000",
+    PWA: "#5905c8",
+    Android: "#44ac5a",
+    Windows: "#0078d4",
+  };
+  return colors[name] || "";
 }
 </script>
