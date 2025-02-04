@@ -197,3 +197,58 @@ div.danger-border-hover:hover {
   border-radius: 4px;
 }
 /* end danger */
+
+/* Variantes warning */
+.warning-base-content-card > ion-card-header > ion-card-title,
+.warning-base-content-card > ion-card-content > ion-text,
+.warning-base-content-container > .title-container,
+.warning-base-content-container > .content-container {
+  color: var(--ion-text-color-step-250);
+}
+
+.warning-base-content-container > .title-container {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 0.6;
+  padding-left: 8px;
+  font-family: var(--font-family-title);
+}
+
+.warning-base-content-container > .content-container {
+  font-size: 0.875rem;
+  padding-left: 8px;
+  font-family: var(--font-family-content);
+}
+
+/* border */
+ion-card.warning-border-indicator,
+div.warning-border-indicator {
+  border-left: var(--border-indicator) solid var(--ion-color-warning) !important;
+  border-radius: 4px;
+}
+
+div.warning-border-indicator,
+div.warning-border,
+div.warning-fill {
+  margin: 4px;
+  padding: 4px;
+}
+
+ion-card.warning-border,
+div.warning-border {
+  border: 1.5px solid var(--ion-color-warning);
+  border-radius: 4px;
+}
+
+ion-card.warning-fill,
+div.warning-fill {
+  background: var(--ion-color-warning-background-hover);
+}
+
+/* hover */
+ion-card.warning-border-hover:hover,
+div.warning-border-hover:hover {
+  border: 1.5px solid var(--ion-color-warning);
+  border-radius: 4px;
+}
+/* end danger */
