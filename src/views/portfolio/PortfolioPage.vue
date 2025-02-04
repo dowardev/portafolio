@@ -50,13 +50,6 @@
   </ion-header>
 
   <ion-content>
-    <!-- <ion-row class="ion-justify-content-center" style="display: flex"> -->
-    <!--   <ion-col size-xs="12" size-md="6" size-lg="6"> -->
-    <!--     <ProfessionalProjectsPage v-if="typeContent == 'projectsP'" /> -->
-    <!--     <BloglProjectsPage v-if="typeContent == 'projectsB'" /> -->
-    <!--   </ion-col> -->
-    <!-- </ion-row> -->
-
     <ion-row
       class="ion-justify-content-center"
       style="display: flex; overflow: auto; max-height: calc(100% - 8dvh)"
@@ -134,20 +127,7 @@
                         v-if="tech.type == 'icon'"
                         :style="{
                           fontSize: tech.size,
-                          color:
-                            tech.name == 'Ionic'
-                              ? '#3356c7'
-                              : tech.name == 'Vue'
-                                ? '#41b883'
-                                : tech.name == 'Laravel'
-                                  ? '#ff2819'
-                                  : tech.name == 'Firebase'
-                                    ? '#ffca28'
-                                    : tech.name == 'Capacitorjs'
-                                      ? '#119eff'
-                                      : tech.name == 'Electronjs'
-                                        ? '#47848f'
-                                        : '',
+                          color: getIconColorByName({ name: tech.name }),
                         }"
                         :icon="tech.source"
                       ></ion-icon>
@@ -290,20 +270,7 @@
                   v-if="tech.type == 'icon'"
                   :style="{
                     fontSize: tech.size,
-                    color:
-                      tech.name == 'Ionic'
-                        ? '#3356c7'
-                        : tech.name == 'Vue'
-                          ? '#41b883'
-                          : tech.name == 'Laravel'
-                            ? '#ff2819'
-                            : tech.name == 'Firebase'
-                              ? '#ffca28'
-                              : tech.name == 'Capacitorjs'
-                                ? '#119eff'
-                                : tech.name == 'Electronjs'
-                                  ? '#47848f'
-                                  : '',
+                    color: getIconColorByName({ name: tech.name }),
                   }"
                   :icon="tech.source"
                 ></ion-icon>
@@ -332,18 +299,7 @@
               >
                 <ion-icon
                   :style="{
-                    color:
-                      platform.name == 'Web'
-                        ? '#3356c7'
-                        : platform.name == 'Linux'
-                          ? '#000000'
-                          : platform.name == 'PWA'
-                            ? '#5905c8'
-                            : platform.name == 'Android'
-                              ? '#44ac5a'
-                              : platform.name == 'Windows'
-                                ? '#0078d4'
-                                : '',
+                    color: getIconColorByName({ name: platform.name }),
                   }"
                   :icon="platform.icon"
                 ></ion-icon>
@@ -393,7 +349,6 @@ import {
   globeOutline,
   hourglassOutline,
   logoAndroid,
-  logoApple,
   logoCapacitor,
   logoElectron,
   logoFirebase,
@@ -403,12 +358,7 @@ import {
   logoTux,
   logoVue,
   logoWindows,
-  openOutline,
 } from "ionicons/icons";
-
-// components
-import ProfessionalProjectsPage from "../../components/portfolio/professional-projects/ProfessionalProjectsPage.vue";
-import BloglProjectsPage from "../../components/portfolio/blog-projects/BlogProjectsPage.vue";
 
 // props component
 // end props component
@@ -592,9 +542,22 @@ const popovers = reactive({
 // end vars
 
 // functions
-function openUrl(params: { url: string }) {
-  const { url } = params;
-  window.open(url, "_blank");
+function getIconColorByName(params: { name: string }) {
+  const { name } = params;
+  const colors: { [key: string]: string } = {
+    Ionic: "#3356c7",
+    Vue: "#41b883",
+    Laravel: "#ff2819",
+    Firebase: "#ffca28",
+    Capacitorjs: "#119eff",
+    Electronjs: "#47848f",
+    Web: "#3356c7",
+    Linux: "#000000",
+    PWA: "#5905c8",
+    Android: "#44ac5a",
+    Windows: "#0078d4",
+  };
+  return colors[name] || "";
 }
 </script>
 

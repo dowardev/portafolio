@@ -58,7 +58,10 @@
 
                 <ion-icon
                   v-if="tech.type == 'icon'"
-                  :style="{ fontSize: tech.size }"
+                  :style="{
+                    fontSize: tech.size,
+                    color: getIconColorByName({ name: tech.name }),
+                  }"
                   :icon="tech.source"
                 ></ion-icon>
               </div>
@@ -120,6 +123,7 @@ import MysqlLogo from "@/assets/otros/mysql-6.svg";
 import DowarLogo from "@/assets/portafolio/logo_dowar_2.1.png";
 import MoneyFlapLogo from "@/assets/otros/moneyflap-logo-white.svg";
 import LifelineLogo from "@/assets/otros/lifeline_v1.webp";
+import NoLogoImage from "@/assets/otros/no-logo.png";
 
 // vars
 const projects = [
@@ -147,8 +151,8 @@ const projects = [
     title: "LifeLine",
     status: "progress",
     technologies: [
-      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
       { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
+      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
       { source: logoLaravel, name: "Laravel", size: "18px", type: "icon" },
       { source: MysqlLogo, name: "MySql", size: "16px", type: "img" },
     ],
@@ -164,7 +168,7 @@ const projects = [
     },
   },
   {
-    img: LifelineLogo,
+    img: NoLogoImage,
     title: "Blog",
     status: "progress",
     technologies: [
@@ -194,5 +198,23 @@ const modals = reactive({
 function openUrl(params: { url: string }) {
   const { url } = params;
   window.open(url, "_blank");
+}
+
+function getIconColorByName(params: { name: string }) {
+  const { name } = params;
+  const colors: { [key: string]: string } = {
+    Ionic: "#3356c7",
+    Vue: "#41b883",
+    Laravel: "#ff2819",
+    Firebase: "#ffca28",
+    Capacitorjs: "#119eff",
+    Electronjs: "#47848f",
+    Web: "#3356c7",
+    Linux: "#000000",
+    PWA: "#5905c8",
+    Android: "#44ac5a",
+    Windows: "#0078d4",
+  };
+  return colors[name] || "";
 }
 </script>
