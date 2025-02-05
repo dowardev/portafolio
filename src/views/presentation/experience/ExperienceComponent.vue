@@ -7,24 +7,18 @@
       size-md="6"
       size-lg="6"
     >
-      <ion-card class="shadow-1">
+      <ion-card
+        class="shadow-1"
+        @click="
+          modals.modalInfoExperience.title = experience.title;
+          modals.modalInfoExperience.content = experience.details!.description;
+          modals.modalInfoExperience.url = experience.details!.website;
+          modals.modalInfoExperience.open = true;
+        "
+      >
         <ion-card-header>
           <div style="display: flex; justify-content: space-between">
             <img :src="experience.img" alt="" style="height: 45px" />
-
-            <ion-button
-              size="small"
-              fill="clear"
-              @click="
-                modals.modalInfoExperience.title = experience.title;
-                modals.modalInfoExperience.content =
-                  experience.details!.description;
-                modals.modalInfoExperience.url = experience.details!.website;
-                modals.modalInfoExperience.open = true;
-              "
-            >
-              <ion-icon :icon="openOutline"> </ion-icon>
-            </ion-button>
           </div>
           <ion-card-title>
             {{ experience.title }}

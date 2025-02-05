@@ -7,22 +7,17 @@
       size-md="6"
       size-lg="6"
     >
-      <ion-card class="shadow-1">
+      <ion-card
+        class="shadow-1"
+        @click="
+          openUrl({
+            url: certifcate.url,
+          })
+        "
+      >
         <ion-card-header>
           <div style="display: flex; justify-content: space-between">
             <img :src="certifcate.img" alt="" style="height: 45px" />
-
-            <ion-button
-              size="small"
-              fill="clear"
-              @click="
-                openUrl({
-                  url: certifcate.url,
-                })
-              "
-            >
-              <ion-icon :icon="openOutline"> </ion-icon>
-            </ion-button>
           </div>
 
           <ion-card-title>
