@@ -9,6 +9,7 @@
     >
       <ion-card
         class="shadow-1"
+        style="cursor: pointer"
         @click="
           openUrl({
             url: certifcate.url,

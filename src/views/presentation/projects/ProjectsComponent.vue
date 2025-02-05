@@ -9,6 +9,7 @@
     >
       <ion-card
         class="shadow-1"
+        style="cursor: pointer"
         @click="
           modals.modalInfoExperience.title = project.title;
           modals.modalInfoExperience.content = project.details!.description;
