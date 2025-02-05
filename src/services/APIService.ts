@@ -32,8 +32,7 @@ export default class APIService {
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        throw new Error(axiosError.message);
+        throw new Error(error.response?.data.message);
       } else throw error;
     }
   }

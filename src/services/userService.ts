@@ -28,8 +28,7 @@ export default class UserService {
         isAdmin: response.is_admin,
       };
     } catch (error: any) {
-      if (error.response && error.response.data.message == "Unauthenticated.")
-        throw new Error("Unauthorized");
+      if (error.message == "Unauthenticated.") throw new Error("Unauthorized");
       throw error;
     }
   }

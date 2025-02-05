@@ -12,8 +12,11 @@ async function loadUser(controller: UserController): Promise<void> {
   try {
     await controller.loadUser();
   } catch (error: unknown) {
-    if (error.message != "Request failed with status code 500")
+    if (error instanceof Error) {
       throw new Error(error.message);
+    } else {
+      throw new Error(String(error));
+    }
   }
 }
 
