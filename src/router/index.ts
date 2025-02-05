@@ -11,8 +11,9 @@ import UserController from "@/controllers/userController";
 async function loadUser(controller: UserController): Promise<void> {
   try {
     await controller.loadUser();
-  } catch (error: any) {
-    throw new Error(error.message);
+  } catch (error: unknown) {
+    if (error.message != "Request failed with status code 500")
+      throw new Error(error.message);
   }
 }
 
