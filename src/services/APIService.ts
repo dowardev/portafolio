@@ -1,6 +1,6 @@
 import { UserToken } from "./interfaces";
 import { url } from "@vuelidate/validators";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 type ContentType = "application/json" | "multipart/form-data";
 
@@ -14,22 +14,28 @@ export default class APIService {
     this.userToken = params.userToken;
   }
 
-  public async get(params: {
+  public async get<T, P = Record<string, unknown>>(params: {
     url: string;
-    data?: Record<string, any>;
-  }): Promise<any> {
+    data?: P;
+  }): Promise<T> {
     const { url, data = {} } = params;
-
-    const response = await axios.request({
-      url: this.serverUrl + url,
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        Authorization: `${this.userToken}`,
-      },
-      params: data,
-    });
-    return await response.data;
+    try {
+      const response = await axios.request<T>({
+        url: this.serverUrl + url,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: `${this.userToken}`,
+        },
+        params: data,
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        throw new Error(axiosError.message);
+      } else throw error;
+    }
   }
 
   public async post(params: {

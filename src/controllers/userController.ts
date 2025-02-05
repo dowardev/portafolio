@@ -137,6 +137,7 @@ export default class UserController {
       this.updateUserProps({ user });
     } catch (error: any) {
       if (error.message != "Unauthorized") throw error;
+      else throw error;
     }
   }
 
