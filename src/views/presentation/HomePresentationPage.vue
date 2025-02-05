@@ -146,9 +146,7 @@
             <ion-list style="height: 82dvh">
               <ion-list-header>
                 <ion-label>Certificados recientes</ion-label>
-                <ion-button
-                  disabled
-                  @click="$router.push({ name: 'PortfolioPage' })"
+                <ion-button @click="$router.push({ name: 'CertificatesPage' })"
                   >Ver todo</ion-button
                 >
               </ion-list-header>

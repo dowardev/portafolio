@@ -50,6 +50,11 @@ const routes: Array<RouteRecordRaw> = [
     component: HomePage,
   },
   {
+    path: "/home/certifcates",
+    name: "CertificatesPage",
+    component: HomePage,
+  },
+  {
     path: "/blog/editor/create",
     name: "CreatePostPage",
     component: HomePage,
@@ -129,6 +134,7 @@ router.beforeEach(async (to, from, next) => {
     "PostPage",
     "PoliciesPage",
     "PruebaPage",
+    "CertificatesPage",
   ];
 
   if (user != undefined) {
