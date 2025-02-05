@@ -102,9 +102,7 @@
             <ion-list style="height: 82dvh">
               <ion-list-header>
                 <ion-label>Experiencia reciente</ion-label>
-                <ion-button
-                  disabled
-                  @click="$router.push({ name: 'PortfolioPage' })"
+                <ion-button @click="$router.push({ name: 'ExperiencePage' })"
                   >Ver todo</ion-button
                 >
               </ion-list-header>

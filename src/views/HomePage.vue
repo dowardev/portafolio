@@ -23,6 +23,7 @@
     <PanelAdminPage v-if="$route.name == 'PanelAdminPage'" />
     <PortfolioPage v-if="$route.name == 'PortfolioPage'" />
     <CertificatesPage v-if="$route.name == 'CertificatesPage'" />
+    <ExperiencePage v-if="$route.name == 'ExperiencePage'" />
   </ion-page>
 </template>
 
@@ -42,6 +43,7 @@ import UserPanelPage from "./user/UserPanelPage.vue";
 import PanelAdminPage from "./admin/PanelAdminPage.vue";
 import PortfolioPage from "./portfolio/PortfolioPage.vue";
 import CertificatesPage from "./certificates/CertificatesPage.vue";
+import ExperiencePage from "./experience/ExperiencePage.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
