@@ -139,7 +139,8 @@ export default class UserController {
       if (error instanceof Error) {
         if (
           error.message != "Unauthorized" &&
-          error.message != "Request failed with status code 500"
+          error.message != "Request failed with status code 500" &&
+          error.message != "Server Error"
         )
           throw error;
       }
