@@ -19,7 +19,7 @@
 
         <ion-row class="center">
           <ion-col size="12">
-            <ion-card>
+            <ion-card class="shadow-1">
               <ion-card-header>
                 <ion-card-title>PWA</ion-card-title>
               </ion-card-header>
@@ -50,7 +50,7 @@
           </ion-col>
 
           <ion-col size="12">
-            <ion-card>
+            <ion-card class="shadow-1">
               <ion-card-header>
                 <ion-card-title>Aplicación móvil</ion-card-title>
               </ion-card-header>
@@ -99,7 +99,7 @@
           </ion-col>
 
           <ion-col size="12">
-            <ion-card>
+            <ion-card class="shadow-1">
               <ion-card-header>
                 <ion-card-title>Aplicación de escritorio</ion-card-title>
               </ion-card-header>
@@ -138,7 +138,7 @@
         </ion-list-header>
         <ion-row class="center">
           <ion-col size="12">
-            <ion-card>
+            <ion-card class="shadow-1">
               <ion-card-header>
                 <ion-card-title
                   >Nuestro contenido en otras plataformas</ion-card-title
