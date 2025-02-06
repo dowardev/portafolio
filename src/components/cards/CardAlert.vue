@@ -1,6 +1,6 @@
 <template>
   <ion-card
-    class="ion-padding"
+    class="ion-padding no-shadow"
     :class="cardClasses"
     :style="{ border: borderStyle }"
   >

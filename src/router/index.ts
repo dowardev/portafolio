@@ -12,8 +12,11 @@ async function loadUser(controller: UserController): Promise<void> {
   try {
     await controller.loadUser();
   } catch (error: unknown) {
-    if (error.message != "Request failed with status code 500")
+    if (error instanceof Error) {
       throw new Error(error.message);
+    } else {
+      throw new Error(String(error));
+    }
   }
 }
 
@@ -47,6 +50,16 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/home/portfolio",
     name: "PortfolioPage",
+    component: HomePage,
+  },
+  {
+    path: "/home/certifcates",
+    name: "CertificatesPage",
+    component: HomePage,
+  },
+  {
+    path: "/home/experience",
+    name: "ExperiencePage",
     component: HomePage,
   },
   {
@@ -129,6 +142,8 @@ router.beforeEach(async (to, from, next) => {
     "PostPage",
     "PoliciesPage",
     "PruebaPage",
+    "CertificatesPage",
+    "ExperiencePage",
   ];
 
   if (user != undefined) {

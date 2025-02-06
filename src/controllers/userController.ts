@@ -135,9 +135,15 @@ export default class UserController {
       const user = await this.userService.getUser();
 
       this.updateUserProps({ user });
-    } catch (error: any) {
-      if (error.message != "Unauthorized") throw error;
-      else throw error;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        if (
+          error.message != "Unauthorized" &&
+          error.message != "Request failed with status code 500" &&
+          error.message != "Server Error"
+        )
+          throw error;
+      }
     }
   }
 

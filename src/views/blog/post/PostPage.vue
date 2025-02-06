@@ -46,31 +46,28 @@
     v-if="postController.getPost({ id: postId }) != undefined"
     :fullscreen="true"
   >
-    <ion-header collapse="condense" mode="ios">
-      <ion-toolbar>
-        <ion-title size="large"
-          ><div style="text-wrap: auto">
-            {{ postController.getPost({ id: postId })?.title }}
-          </div></ion-title
-        >
-      </ion-toolbar>
-    </ion-header>
+    <ion-row class="ion-justify-content-center" style="display: flex">
+      <ion-col size-md="8" size-xl="6">
+        <ion-header collapse="condense" mode="ios">
+          <ion-toolbar>
+            <ion-title size="large">
+              <div style="text-wrap: auto">
+                {{ postController.getPost({ id: postId })?.title }}
+              </div></ion-title
+            >
+          </ion-toolbar>
+        </ion-header>
 
-    <ion-row>
-      <ion-col
-        size="12"
-        :style="{ left: isPlatform('desktop') ? '14%' : '0%' }"
-      >
-        <div
-          :style="{ width: isPlatform('desktop') ? '55%' : '100%' }"
-          :class="{ 'ion-padding': isPlatform('mobile') }"
-        >
-          <article id="content-container" ref="indexRef">
-            <MarkdownViewer
-              :content="postController.getPost({ id: postId })!.content ?? ''"
-            />
-          </article>
-        </div>
+        <!-- content -->
+        <ion-row>
+          <ion-col>
+            <article id="content-container" ref="indexRef">
+              <MarkdownViewer
+                :content="postController.getPost({ id: postId })!.content ?? ''"
+              />
+            </article>
+          </ion-col>
+        </ion-row>
       </ion-col>
     </ion-row>
 

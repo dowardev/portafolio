@@ -14,7 +14,7 @@
     <ion-content :fullscreen="true">
       <ion-row class="center">
         <ion-col size="12">
-          <ion-card>
+          <ion-card class="no-shadow shadow-1">
             <ion-card-content>
               <ion-item class="transparent">
                 <ion-label>Donación</ion-label>

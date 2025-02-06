@@ -31,7 +31,7 @@
 
   <ion-content class="container-page">
     <ion-row class="center">
-      <ion-col size-xs="12" size-lg="8">
+      <ion-col size-md="8" size-xl="6">
         <p>
           Como desarrollador de software y usuario activo de internet entiendo
           lo importante que es la privacidad, por esta razón todo el software

@@ -1,5 +1,17 @@
 # Changelog
 
+## 9.0.0 - 2025-02-06
+
+### Changed
+
+- Updated the landing page to display information in a simpler and more centralized way.
+
+- Completely redesigned the site to make it simpler and more visually attractive.
+
+### Fixed
+
+- Corrected various issues in the user administration panel that prevented it from working correctly.
+
 ## [8.12.14] - 2024-12-13
 
 ### Added

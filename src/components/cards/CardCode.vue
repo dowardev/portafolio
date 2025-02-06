@@ -1,6 +1,6 @@
 <template>
   <ion-card
-    class="ion-padding card-primary"
+    class="ion-padding card-primary no-shadow"
     :style="{ border: border ? '1px solid var(--ion-color-primary)' : 'none' }"
   >
     <ion-row>
@@ -53,7 +53,7 @@
 
         <ion-row>
           <ion-col>
-            <pre><code ref="codeBlock" :class="languageClass" id="codeContent">{{ cardContent }}</code></pre>
+            <pre><code id="codeContent" ref="codeBlock" :class="languageClass">{{ cardContent }}</code></pre>
           </ion-col>
         </ion-row>
       </ion-col>

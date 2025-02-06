@@ -11,8 +11,8 @@
 
         <ion-buttons slot="end">
           <ion-button
-            @click="displayError = true"
             v-if="props.data.type == 'error'"
+            @click="displayError = true"
           >
             <ion-icon :icon="bugOutline"></ion-icon>
           </ion-button>
@@ -32,7 +32,7 @@
       <section v-if="displayError == false">
         <ion-row>
           <ion-col>
-            <ion-card>
+            <ion-card class="shadow-1">
               <ion-card-content>
                 <ion-row>
                   <ion-col size="12">
@@ -53,15 +53,15 @@
 
                     <!-- errors -->
                     <span
-                      class="error"
                       v-if="
                         v$.form.name.$dirty && v$.form.name.required.$invalid
                       "
+                      class="error"
                       >{{ v$.form.name.required.$message }}</span
                     >
                     <span
-                      class="error"
                       v-if="v$.form.name.$dirty && v$.form.name.alpha.$invalid"
+                      class="error"
                       >{{ v$.form.name.alpha.$message }}</span
                     >
                   </ion-col>
@@ -88,17 +88,17 @@
 
                     <!-- errors -->
                     <span
-                      class="error"
                       v-if="
                         v$.form.email.$dirty && v$.form.email.required.$invalid
                       "
+                      class="error"
                       >{{ v$.form.email.required.$message }}</span
                     >
                     <span
-                      class="error"
                       v-if="
                         v$.form.email.$dirty && v$.form.email.email.$invalid
                       "
+                      class="error"
                       >{{ v$.form.email.email.$message }}</span
                     >
                   </ion-col>
@@ -124,19 +124,19 @@
 
                     <!-- errors -->
                     <span
-                      class="error"
                       v-if="
                         v$.form.description.$dirty &&
                         v$.form.description.required.$invalid
                       "
+                      class="error"
                       >{{ v$.form.description.required.$message }}</span
                     >
                     <span
-                      class="error"
                       v-if="
                         v$.form.description.$dirty &&
                         v$.form.description.minLength.$invalid
                       "
+                      class="error"
                       >{{ v$.form.description.minLength.$message }}</span
                     >
                   </ion-col>
@@ -244,7 +244,7 @@ const rules = {
       required: helpers.withMessage(messageError.required, required),
       alpha: helpers.withMessage(
         "Solo texto",
-        helpers.regex(/^[a-zA-ZñÑ\s]+$/)
+        helpers.regex(/^[a-zA-ZñÑ\s]+$/),
       ),
     },
     email: {

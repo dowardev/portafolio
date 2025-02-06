@@ -36,12 +36,6 @@
           >
           <ion-segment-button value="final">Final</ion-segment-button>
         </ion-segment>
-
-        <ion-button
-          @click="buttonMenuDesktopOptions = { open: true, event: $event }"
-        >
-          <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
-        </ion-button>
       </ion-buttons>
     </ion-toolbar>
 
@@ -102,9 +96,7 @@
             <ion-list style="height: 82dvh">
               <ion-list-header>
                 <ion-label>Experiencia reciente</ion-label>
-                <ion-button
-                  disabled
-                  @click="$router.push({ name: 'PortfolioPage' })"
+                <ion-button @click="$router.push({ name: 'ExperiencePage' })"
                   >Ver todo</ion-button
                 >
               </ion-list-header>
@@ -146,9 +138,7 @@
             <ion-list style="height: 82dvh">
               <ion-list-header>
                 <ion-label>Certificados recientes</ion-label>
-                <ion-button
-                  disabled
-                  @click="$router.push({ name: 'PortfolioPage' })"
+                <ion-button @click="$router.push({ name: 'CertificatesPage' })"
                   >Ver todo</ion-button
                 >
               </ion-list-header>
@@ -288,17 +278,6 @@
   >
     <ion-content>
       <ion-item
-        lines="full"
-        button
-        @click="backgroundActive = !backgroundActive"
-      >
-        <ion-icon slot="start" :icon="imageOutline"></ion-icon>
-
-        <ion-label v-if="backgroundActive == false">Activar fondo</ion-label>
-        <ion-label v-else>Desactivar fondo</ion-label>
-      </ion-item>
-
-      <ion-item
         v-for="(option, key) in menuOptions"
         :key="key"
         lines="none"
@@ -310,25 +289,6 @@
     </ion-content>
   </ion-popover>
   <!-- popover main options desktop-->
-  <ion-popover
-    :is-open="buttonMenuDesktopOptions.open"
-    :event="buttonMenuDesktopOptions.event"
-    :mode="isPlatform('ios') ? 'ios' : 'md'"
-    @did-dismiss="buttonMenuDesktopOptions.open = false"
-  >
-    <ion-content>
-      <ion-item
-        lines="full"
-        button
-        @click="backgroundActive = !backgroundActive"
-      >
-        <ion-icon slot="start" :icon="imageOutline"></ion-icon>
-
-        <ion-label v-if="backgroundActive == false">Activar fondo</ion-label>
-        <ion-label v-else>Desactivar fondo</ion-label>
-      </ion-item>
-    </ion-content>
-  </ion-popover>
 </template>
 
 <script setup lang="ts">
@@ -349,7 +309,7 @@ import {
   modalController,
 } from "@ionic/vue";
 import { isPlatform } from "@ionic/vue";
-import { ellipsisVerticalOutline, imageOutline, star } from "ionicons/icons";
+import { star } from "ionicons/icons";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -390,8 +350,6 @@ const menuOptions = ref({
   portfolio: { title: "Porfolio", route: "PortfolioPage" },
 });
 const buttonMenuMobileOptions = ref({ open: false, event: null });
-const buttonMenuDesktopOptions = ref({ open: false, event: null });
-const backgroundActive = ref(false);
 const designPlatform = isPlatform("ios") ? "ios" : "md";
 const selectedSegment = ref("contact");
 const designMode = ref<DesignMode>(systemController.getdesignMode());
