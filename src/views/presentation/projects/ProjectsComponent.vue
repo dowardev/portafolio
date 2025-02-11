@@ -109,6 +109,7 @@ import {
   logoIonic,
   logoLaravel,
   logoFirebase,
+  logoNpm,
 } from "ionicons/icons";
 
 // media
@@ -182,6 +183,26 @@ const projects = [
         "Plataforma que permite compartir contenido en formato escrito con as herramientas necesarias para su gestion permite compartir contenido en formato escrito con as herramientas necesarias para su gestion.",
       website:
         "https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c",
+    },
+  },
+  {
+    img: NoLogoImage,
+    title: "Ionic extra components",
+    status: "progress",
+    technologies: [
+      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
+      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
+      { source: logoNpm, name: "Npm", size: "20px", type: "icon" },
+    ],
+    source: {
+      img: DowarLogo,
+      name: "DowarDev",
+      url: "https://www.dowar.xyz/",
+    },
+    details: {
+      description:
+        "Conjunto de componentes mejorados para proectos de Ionic Framework.",
+      website: "https://www.ionic-components.dowar.xyz",
     },
   },
 ];

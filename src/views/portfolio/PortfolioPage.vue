@@ -354,6 +354,7 @@ import {
   logoFirebase,
   logoIonic,
   logoLaravel,
+  logoNpm,
   logoPwa,
   logoTux,
   logoVue,
@@ -530,6 +531,32 @@ const projects = [
       ],
     },
     category: "professional",
+  },
+  {
+    img: NoLogoImage,
+    title: "Ionic extra components",
+    status: "progress",
+    technologies: [
+      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
+      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
+      { source: logoNpm, name: "Npm", size: "20px", type: "icon" },
+    ],
+    client: {
+      img: DowarLogo,
+      name: "DowarDev",
+    },
+    details: {
+      description:
+        "Conjunto de componentes mejorados para proectos de Ionic Framework.",
+      website: "https://www.ionic-components.dowar.xyz",
+      platforms: [
+        { name: "Web", icon: globeOutline },
+        { name: "PWA", icon: logoPwa },
+        { name: "Android", icon: logoAndroid },
+      ],
+    },
+    repository: "https://gitlab.com/dowardev/ionic-extra-components",
+    category: "personal",
   },
 ];
 const modals = reactive({
