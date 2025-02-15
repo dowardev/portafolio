@@ -548,7 +548,7 @@ const projects = [
     details: {
       description:
         "Conjunto de componentes mejorados para proectos de Ionic Framework.",
-      website: "https://www.ionic-components.dowar.xyz",
+      website: "https://ionic-components.dowar.xyz/",
       platforms: [
         { name: "Web", icon: globeOutline },
         { name: "PWA", icon: logoPwa },
