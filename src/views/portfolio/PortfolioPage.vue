@@ -67,7 +67,7 @@
               class="shadow-1"
               style="cursor: pointer"
               @click="
-                indexProjectSeleted = indexProject;
+                projectSelected = project;
                 modals.modalInfoExperience.open = true;
               "
             >
@@ -161,7 +161,7 @@
             </ion-button>
           </ion-buttons>
 
-          <ion-title>{{ projects[indexProjectSeleted].title }}</ion-title>
+          <ion-title>{{ projectSelected!.title }}</ion-title>
 
           <ion-buttons slot="end">
             <ion-button
@@ -181,12 +181,9 @@
           <ion-col>
             <ion-card
               :class="{
-                'success-border':
-                  projects[indexProjectSeleted].status == 'finished',
-                'primary-border':
-                  projects[indexProjectSeleted].status == 'progress',
-                'warning-border':
-                  projects[indexProjectSeleted].status == 'indeterminate',
+                'success-border': projectSelected!.status == 'finished',
+                'primary-border': projectSelected!.status == 'progress',
+                'warning-border': projectSelected!.status == 'indeterminate',
               }"
               class="shadow-1"
             >
@@ -194,11 +191,11 @@
                 <ion-icon
                   slot="start"
                   :color="
-                    projects[indexProjectSeleted].status == 'finished'
+                    projectSelected!.status == 'finished'
                       ? 'success'
-                      : projects[indexProjectSeleted].status == 'indeterminate'
+                      : projectSelected!.status == 'indeterminate'
                         ? 'warning'
-                        : projects[indexProjectSeleted].status == 'progress'
+                        : projectSelected!.status == 'progress'
                           ? 'primary'
                           : ''
                   "
@@ -207,21 +204,21 @@
                 </ion-icon>
                 <ion-label
                   :color="
-                    projects[indexProjectSeleted].status == 'finished'
+                    projectSelected!.status == 'finished'
                       ? 'success'
-                      : projects[indexProjectSeleted].status == 'indeterminate'
+                      : projectSelected!.status == 'indeterminate'
                         ? 'warning'
-                        : projects[indexProjectSeleted].status == 'progress'
+                        : projectSelected!.status == 'progress'
                           ? 'primary'
                           : ''
                   "
                 >
                   {{
-                    projects[indexProjectSeleted].status == "progress"
+                    projectSelected!.status == "progress"
                       ? "En progeso"
-                      : projects[indexProjectSeleted].status == "indeterminate"
+                      : projectSelected!.status == "indeterminate"
                         ? "Indeterminado"
-                        : projects[indexProjectSeleted].status == "finished"
+                        : projectSelected!.status == "finished"
                           ? "Terminado"
                           : ""
                   }}
@@ -235,7 +232,7 @@
                   <ion-col>
                     <p>
                       <ion-text>
-                        {{ projects[indexProjectSeleted].details.description }}
+                        {{ projectSelected!.details.description }}
                       </ion-text>
                     </p>
                   </ion-col>
@@ -254,8 +251,7 @@
               </ion-list-header>
 
               <ion-chip
-                v-for="(tech, indexTech) in projects[indexProjectSeleted]
-                  .technologies"
+                v-for="(tech, indexTech) in projectSelected!.technologies"
                 :key="indexTech"
                 outline
               >
@@ -291,9 +287,8 @@
               </ion-list-header>
 
               <ion-chip
-                v-for="(platform, indexPlatform) in projects[
-                  indexProjectSeleted
-                ].details.platforms"
+                v-for="(platform, indexPlatform) in projectSelected!.details
+                  .platforms"
                 :key="indexPlatform"
                 outline
               >
@@ -321,16 +316,14 @@
     >
       <ion-content>
         <!-- website -->
-        <ion-item
-          :href="projects[indexProjectSeleted].details.website"
-          target="_blank"
+        <ion-item :href="projectSelected!.details.website" target="_blank"
           >Sitio web</ion-item
         >
 
         <!-- repository -->
         <ion-item
-          v-if="projects[indexProjectSeleted].repository"
-          :href="projects[indexProjectSeleted].repository"
+          v-if="projectSelected!.repository"
+          :href="projectSelected!.repository"
           target="_blank"
           >Repositorio</ion-item
         >
@@ -366,6 +359,39 @@ import {
 
 // interface
 import { DesignMode } from "@/utils/types";
+interface Technology {
+  source: string;
+  name: string;
+  size: string;
+  type: string;
+}
+
+interface Client {
+  img: string;
+  name: string;
+}
+
+interface Platform {
+  name: string;
+  icon: string;
+}
+
+interface Details {
+  description: string;
+  website?: string;
+  platforms: Platform[];
+}
+
+interface Project {
+  img: string;
+  title: string;
+  status: string;
+  technologies: Technology[];
+  client: Client;
+  details: Details;
+  repository?: string;
+  category: string;
+}
 // end interface
 
 // media
@@ -562,7 +588,7 @@ const projects = [
 const modals = reactive({
   modalInfoExperience: { open: false },
 });
-const indexProjectSeleted = ref(-1);
+const projectSelected = ref<Project | null>(null);
 const popovers = reactive({
   popoverModalProjectOptions: { open: false, event: null },
 });
