@@ -214,7 +214,7 @@
                               align-items: center;
                             "
                           >
-                            <div>
+                            <div style="width: 100%">
                               <ion-item
                                 href="https://gitlab.com/dowardev/portafolio/-/blob/master/CHANGELOG.md?ref_type=heads"
                                 target="_blank"

@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.0.6 - 2025-02-15
+
+### Fixed
+
+- Fixed issue with the size of the new ion-item when the update button was not present
+
 ## 9.0.5 - 2025-02-15
 
 ### Added
