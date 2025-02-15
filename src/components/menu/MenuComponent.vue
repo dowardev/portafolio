@@ -207,27 +207,41 @@
                       </ion-item> -->
 
                           <!-- new features -->
-                          <ion-item
-                            href="https://gitlab.com/dowardev/portafolio/-/blob/master/CHANGELOG.md?ref_type=heads"
-                            target="_blank"
-                            lines="none"
-                            button
+                          <div
+                            style="
+                              display: flex;
+                              justify-content: space-between;
+                              align-items: center;
+                            "
                           >
-                            <ion-icon
-                              slot="start"
-                              color="primary"
-                              :icon="newspaperOutline"
-                            ></ion-icon>
-                            <ion-label>Novedades</ion-label>
+                            <div>
+                              <ion-item
+                                href="https://gitlab.com/dowardev/portafolio/-/blob/master/CHANGELOG.md?ref_type=heads"
+                                target="_blank"
+                                lines="none"
+                                button
+                              >
+                                <ion-icon
+                                  slot="start"
+                                  color="primary"
+                                  :icon="newspaperOutline"
+                                ></ion-icon>
+                                <ion-label>Novedades</ion-label>
+                              </ion-item>
+                            </div>
 
-                            <ion-chip
-                              v-if="systemController.getUpdateStatus() == true"
-                              slot="end"
-                              color="primary"
-                              >Novedad</ion-chip
-                            >
-                          </ion-item>
-
+                            <div>
+                              <ion-button
+                                v-if="
+                                  systemController.getUpdateStatus() == true
+                                "
+                                color="primary"
+                                size="small"
+                                @click="updateApp()"
+                                >Actualizar</ion-button
+                              >
+                            </div>
+                          </div>
                           <!-- more -->
                           <ion-item lines="none" button @click="openModalApps">
                             <ion-icon
@@ -486,6 +500,10 @@ async function goToAdminPanel() {
   spinners.value.buttonAdminPanel = false;
   isOpenRefPopOverUserOptions.value = false;
   if (isPlatform("mobile")) menuController.close();
+}
+
+function updateApp() {
+  systemController.updateApp();
 }
 </script>
 

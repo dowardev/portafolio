@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.0.5 - 2025-02-15
+
+### Added
+
+- Added button update app
+
 ## 9.0.4 - 2025-02-15
 
 ### Changed
