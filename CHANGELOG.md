@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.0.4 - 2025-02-15
+
+### Changed
+
+- Added component for reusing portfolio projects
+
 ## 9.0.3 - 2025-02-15
 
 ### Fixed
