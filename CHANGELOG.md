@@ -1,5 +1,12 @@
 # Changelog
 
+## 9.0.7 - 2025-02-15
+
+### changed
+
+- Replaced ButtonIconAnimationComponent with LoadButton in Admin Users Component
+- Replaced CardOptions with CardOptionsExpand in Admin Users Component
+
 ## 9.0.6 - 2025-02-15
 
 ### Fixed

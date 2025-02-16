@@ -56,6 +56,9 @@ importers:
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
+      ionic-extra-components:
+        specifier: ^0.9.0
+        version: 0.9.0(@ionic/vue-router@8.4.1)(@ionic/vue@8.4.1)(ionicons@7.4.0)(vue@3.5.13(typescript@5.7.3))
       ionicons:
         specifier: ^7.4.0
         version: 7.4.0
@@ -68,6 +71,9 @@ importers:
       pinia:
         specifier: ^2.3.1
         version: 2.3.1(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3))
+      swiper:
+        specifier: ^11.2.2
+        version: 11.2.4
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.7.3)
@@ -2275,6 +2281,14 @@ packages:
     resolution: {integrity: sha512-4gd7VpWNQNB4UKKCFFVcp1AVv+FMOgs9NKzjHKusc8jTMhd5eL1NqQqOpE0KzMds804/yHlglp3uxgluOqAPLw==}
     engines: {node: '>= 0.4'}
 
+  ionic-extra-components@0.9.0:
+    resolution: {integrity: sha512-VnElAOOikPWbGw/FNs8c74SieI18vtQZq525u6O5hFVMPZgVd4ouwV/YZIrIKWzezdoLVMZQCdKhgenKuXKNTA==}
+    peerDependencies:
+      '@ionic/vue': ^8.4.3
+      '@ionic/vue-router': ^8.4.3
+      ionicons: ^7.0.0
+      vue: ^3.3.0
+
   ionicons@7.4.0:
     resolution: {integrity: sha512-ZK94MMqgzMCPPMhmk8Ouu6goyVHFIlw/ACP6oe3FrikcI0N7CX0xcwVaEbUc0G/v3W0shI93vo+9ve/KpvcNhQ==}
 
@@ -3187,6 +3201,10 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  swiper@11.2.4:
+    resolution: {integrity: sha512-DTtglrsFfMYytid+oNy4QI3t2N2+XhhwSYbnyOhlwBmvY8Bkoj3ombK1/b80w8vDpQ+Lqlnbm+0737+i32MrcA==}
+    engines: {node: '>= 4.7.0'}
 
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
@@ -6137,6 +6155,13 @@ snapshots:
       hasown: 2.0.2
       side-channel: 1.1.0
 
+  ionic-extra-components@0.9.0(@ionic/vue-router@8.4.1)(@ionic/vue@8.4.1)(ionicons@7.4.0)(vue@3.5.13(typescript@5.7.3)):
+    dependencies:
+      '@ionic/vue': 8.4.1
+      '@ionic/vue-router': 8.4.1
+      ionicons: 7.4.0
+      vue: 3.5.13(typescript@5.7.3)
+
   ionicons@7.4.0:
     dependencies:
       '@stencil/core': 4.24.0
@@ -7087,6 +7112,8 @@ snapshots:
       has-flag: 4.0.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
+
+  swiper@11.2.4: {}
 
   symbol-tree@3.2.4: {}
 

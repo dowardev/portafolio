@@ -13,16 +13,22 @@
               <ion-icon :icon="addOutline"></ion-icon>
             </ion-button>
 
-            <ButtonIconAnimationComponent
-              :message="'Cargando'"
-              :active="isButtonRefreshUsersActive"
+            <LoadButton
+              :status="isButtonRefreshUsersActive"
               :disabled="
                 refreshContent.users && isButtonRefreshUsersActive == false
               "
-              :icon="refreshOutline"
               :fill="isButtonRefreshUsersActive ? 'solid' : 'clear'"
+              :mode="designMode"
+              :shadow="false"
               @click="handleButtonRefreshUsers()"
-            />
+            >
+              <template #icon-start>
+                <ion-icon :icon="refreshOutline"></ion-icon>
+              </template>
+
+              <template #message>Cargando</template>
+            </LoadButton>
           </div>
         </ion-list-header>
 
@@ -306,57 +312,147 @@
       </ion-item>
 
       <!-- enable user -->
-      <CardOptions
+      <CardOptionsExpand
         v-if="userSelected.isDisabled == true"
         ref="cardOptionsEnableUserRef"
-        :icon="checkmarkOutline"
-        :main-message="{ message: 'Habilitar usuario' }"
-        :option1="{ message: 'Si' }"
-        :option2="{ message: 'No' }"
-        :border="{ active: true, color: 'primary', trigger: 'hover' }"
-        style="margin: 2px"
-        @click-op1="
-          handleUpdateUserStatus({
-            id: userSelected.id!,
-            status: false,
-          })
-        "
-        @click-op2="cardOptionsEnableUserRef?.toggleExpand()"
-      />
+        style="margin: 0px"
+        class="no-shadow"
+      >
+        <template #header>
+          <ion-item button lines="none">
+            <ion-icon slot="start" :icon="checkmarkOutline"></ion-icon>
+            <ion-label>Habilitar usuario</ion-label>
+          </ion-item>
+        </template>
+
+        <template #content>
+          <div style="display: flex; justify-content: space-evenly">
+            <div style="width: 100%">
+              <ion-button
+                fill="clear"
+                expand="block"
+                @click="
+                  handleUpdateUserStatus({
+                    id: userSelected.id!,
+                    status: false,
+                  })
+                "
+              >
+                Si
+              </ion-button>
+            </div>
+
+            <div style="width: 100%">
+              <ion-button
+                fill="clear"
+                expand="block"
+                @click="cardOptionsEnableUserRef?.toggleExpand()"
+              >
+                No
+              </ion-button>
+            </div>
+          </div>
+          <hr class="style1" />
+        </template>
+      </CardOptionsExpand>
 
       <!-- disable user -->
-      <CardOptions
+      <CardOptionsExpand
         v-if="userSelected.isDisabled == false"
         ref="cardOptionsDisableUserRef"
-        :icon="banOutline"
-        :main-message="{ message: 'Deshabilitar usuario' }"
-        :option1="{ color: 'danger', message: 'Si' }"
-        :option2="{ message: 'No' }"
-        :border="{ active: true, color: 'primary', trigger: 'hover' }"
-        style="margin: 2px"
-        @click-op1="
-          handleUpdateUserStatus({
-            id: userSelected.id!,
-            status: true,
-          })
-        "
-        @click-op2="cardOptionsDisableUserRef?.toggleExpand()"
-      />
+        class="no-shadow"
+        style="margin: 0px"
+      >
+        <template #header>
+          <ion-item lines="none" button>
+            <ion-icon slot="start" :icon="banOutline"></ion-icon>
+            <ion-label>Deshabilitar usuario</ion-label>
+          </ion-item>
+        </template>
+
+        <template #content>
+          <div style="display: flex; justify-content: space-evenly">
+            <div style="width: 100%">
+              <ion-button
+                fill="clear"
+                expand="block"
+                color="danger"
+                @click="
+                  handleUpdateUserStatus({
+                    id: userSelected.id!,
+                    status: true,
+                  })
+                "
+              >
+                Si
+              </ion-button>
+            </div>
+
+            <div style="width: 100%">
+              <ion-button
+                fill="clear"
+                expand="block"
+                color="primary"
+                @click="cardOptionsDisableUserRef?.toggleExpand()"
+              >
+                No
+              </ion-button>
+            </div>
+          </div>
+          <hr class="style1" />
+        </template>
+      </CardOptionsExpand>
 
       <!-- delete user -->
-      <CardOptions
+      <CardOptionsExpand
+        v-if="userSelected.isDisabled == false"
         ref="cardOptionsDeleUserRef"
-        :icon="trashOutline"
-        :main-message="{ color: 'danger', message: 'Eliminar usuario' }"
-        :option1="{ color: 'danger', message: 'Si' }"
-        :option2="{ color: 'primary', message: 'No' }"
-        :border="{ active: true, color: 'danger', trigger: 'hover' }"
-        style="margin: 2px"
-        @click-op1="
-          handleDeleteUser({ email: userSelected.email!, id: userSelected.id! })
-        "
-        @click-op2="cardOptionsDeleUserRef?.toggleExpand()"
-      />
+        class="no-shadow"
+        style="margin: 0px"
+      >
+        <template #header>
+          <ion-item lines="none" button>
+            <ion-icon
+              slot="start"
+              color="danger"
+              :icon="trashOutline"
+            ></ion-icon>
+            <ion-label color="danger">Eliminar usuario</ion-label>
+          </ion-item>
+        </template>
+
+        <template #content>
+          <div style="display: flex; justify-content: space-evenly">
+            <div style="width: 100%">
+              <ion-button
+                fill="clear"
+                expand="block"
+                color="danger"
+                @click="
+                  handleDeleteUser({
+                    email: userSelected.email!,
+                    id: userSelected.id!,
+                  })
+                "
+              >
+                Si
+              </ion-button>
+            </div>
+
+            <div style="width: 100%">
+              <ion-button
+                fill="clear"
+                expand="block"
+                color="primary"
+                @click="cardOptionsDeleUserRef?.toggleExpand()"
+              >
+                No
+              </ion-button>
+            </div>
+          </div>
+          <hr class="style1" />
+        </template>
+      </CardOptionsExpand>
     </ion-content>
   </ion-popover>
   <!-- end popovers -->
@@ -421,14 +517,19 @@
         <ion-title>Crear usuario</ion-title>
 
         <ion-buttons slot="end" :mode="designMode">
-          <ButtonIconAnimationComponent
-            :message="'Guardando'"
-            :active="isButtonSaveUserActive"
+          <LoadButton
+            :status="isButtonSaveUserActive"
             :disabled="refreshContent.users"
-            :icon="saveOutline"
             :fill="isButtonSaveUserActive ? 'solid' : 'clear'"
+            :shadow="false"
             @click="handleCreateUserAccount(signUpFormComponentRef?.getData()!)"
-          />
+          >
+            <template #icon-start>
+              <ion-icon :icon="saveOutline"></ion-icon>
+            </template>
+
+            <template #message>Guardando</template>
+          </LoadButton>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -465,12 +566,11 @@
         <ion-title>Actualizar usuario</ion-title>
 
         <ion-buttons slot="end" :mode="designMode">
-          <ButtonIconAnimationComponent
-            :message="'Guardando'"
-            :active="isButtonSaveUserActive"
+          <LoadButton
+            :status="isButtonSaveUserActive"
             :disabled="refreshContent.users"
-            :icon="saveOutline"
             :fill="isButtonSaveUserActive ? 'solid' : 'clear'"
+            :shadow="false"
             @click="
               handleUpdateUserAccount({
                 id: userSelected.id!,
@@ -479,7 +579,13 @@
                 email: updateUserFormComponentRef?.getData()?.email!,
               })
             "
-          />
+          >
+            <template #icon-start>
+              <ion-icon :icon="saveOutline"></ion-icon>
+            </template>
+
+            <template #message>Guardando</template>
+          </LoadButton>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -560,9 +666,8 @@ const systemController = new SystemController();
 import FilterOptionsComponent from "./components/FilterOptionsComponent.vue";
 import ModalUserComponent from "./components/ModalUserComponent.vue";
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
-import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
-import CardOptions from "@/components/cards/CardOptions.vue";
 import UserUpdateFormComponent from "@/forms/UserUpdateFormComponent.vue";
+import { CardOptionsExpand, LoadButton } from "ionic-extra-components";
 
 // vars
 const pagInfo = reactive({
@@ -600,15 +705,15 @@ const isButtonSaveUserActive = ref(false);
 // end vars
 
 // component refs
-const cardOptionsDeleUserRef = ref<InstanceType<typeof CardOptions> | null>(
-  null,
-);
-const cardOptionsEnableUserRef = ref<InstanceType<typeof CardOptions> | null>(
-  null,
-);
-const cardOptionsDisableUserRef = ref<InstanceType<typeof CardOptions> | null>(
-  null,
-);
+const cardOptionsDeleUserRef = ref<InstanceType<
+  typeof CardOptionsExpand
+> | null>(null);
+const cardOptionsEnableUserRef = ref<InstanceType<
+  typeof CardOptionsExpand
+> | null>(null);
+const cardOptionsDisableUserRef = ref<InstanceType<
+  typeof CardOptionsExpand
+> | null>(null);
 const filterComponentRef = ref<InstanceType<
   typeof FilterOptionsComponent
 > | null>(null);
@@ -714,14 +819,14 @@ async function handleUpdateUserStatus(params: { id: string; status: boolean }) {
   const toastMessage = status ? "Usuario habilitado" : "Usuario deshabilitado";
 
   cardOptionsRef.value?.toggleExpand();
-  cardOptionsRef.value?.updateBorderProp({
-    style: "animated",
-    trigger: "none",
-  });
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+  // cardOptionsRef.value?.updateBorderProp({
+  //   style: "animated",
+  //   trigger: "none",
+  // });
+  // await new Promise((resolve) => setTimeout(resolve, 1500));
 
   popovers.userOptions.open = false;
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  // await new Promise((resolve) => setTimeout(resolve, 500));
 
   await systemController.presentToast({ message: toastMessage });
 
@@ -773,18 +878,18 @@ async function handleDeleteUser(params: AdminDeleteUserAccount) {
   const oldUser = { user: users[index], index };
 
   cardOptionsDeleUserRef.value?.toggleExpand();
-  cardOptionsDeleUserRef.value?.updateBorderProp({
-    style: "animated",
-    trigger: "none",
-  });
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+  // cardOptionsDeleUserRef.value?.updateBorderProp({
+  //   style: "animated",
+  //   trigger: "none",
+  // });
+  // await new Promise((resolve) => setTimeout(resolve, 1500));
 
   popovers.userOptions.open = false;
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  // await new Promise((resolve) => setTimeout(resolve, 500));
 
   users.splice(index, 1);
   modals.userInfo.open = false;
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  // await new Promise((resolve) => setTimeout(resolve, 500));
   await systemController.presentToast({ message: "Usuario eliminado" });
 
   try {
