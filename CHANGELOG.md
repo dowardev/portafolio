@@ -1,14 +1,20 @@
 # Changelog
 
+## 9.0.9 - 2025-02-15
+
+### Added
+
+- Added CardOptionsExpand to Options Edit Component Post
+
 ## 9.0.8 - 2025-02-15
 
 ### Added
 
-- Added UserUpdateFormComponent to Admin Users Filter Options Component
+- Added CardOptionsExpand to Admin Users Filter Options Component
 
 ## 9.0.7 - 2025-02-15
 
-### changed
+### Changed
 
 - Replaced ButtonIconAnimationComponent with LoadButton in Admin Users Component
 - Replaced CardOptions with CardOptionsExpand in Admin Users Component
