@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.0.8 - 2025-02-15
+
+### Added
+
+- Added UserUpdateFormComponent to Admin Users Filter Options Component
+
 ## 9.0.7 - 2025-02-15
 
 ### changed
