@@ -3,24 +3,22 @@
     <ion-row>
       <ion-col size="12">
         <!-- email options -->
-        <ion-card
+        <CardOptionsExpand
           ref="cardEmailOptionRef"
           class="primary-select-border shadow-1"
           :style="{ height: optionsProperties.email.height }"
         >
-          <div class="card-content">
-            <ion-item
-              button
-              lines="full"
-              @click="handleCardOptionAnimation('email')"
-            >
+          <template #header>
+            <ion-item button lines="full">
               <ion-label class="truncate-text">
                 <span style="font-weight: bold">Email:</span>
                 {{ optionsProperties.email.value.label }}</ion-label
               >
               <ion-icon :icon="chevronExpandOutline"></ion-icon>
             </ion-item>
-            <!-- options -->
+          </template>
+
+          <template #content>
             <ion-item
               v-for="option in optionsProperties.email.values"
               :key="option.name"
@@ -29,33 +27,31 @@
               button
               @click="
                 optionsProperties.email.value = option;
-                handleCardOptionAnimation('email');
+                cardEmailOptionRef?.toggleExpand();
               "
             >
               {{ option.label }}
             </ion-item>
-          </div>
-        </ion-card>
+          </template>
+        </CardOptionsExpand>
 
         <!-- user options -->
-        <ion-card
+        <CardOptionsExpand
           ref="cardUserOptionRef"
           class="primary-select-border shadow-1"
           :style="{ height: optionsProperties.user.height }"
         >
-          <div class="card-content">
-            <ion-item
-              button
-              lines="full"
-              @click="handleCardOptionAnimation('user')"
-            >
+          <template #header>
+            <ion-item button lines="full">
               <ion-label class="truncate-text">
                 <span style="font-weight: bold">Usuario:</span>
                 : {{ optionsProperties.user.value.label }}</ion-label
               >
               <ion-icon :icon="chevronExpandOutline"></ion-icon>
             </ion-item>
-            <!-- options -->
+          </template>
+
+          <template #content>
             <ion-item
               v-for="option in optionsProperties.user.values"
               :key="option.name"
@@ -64,33 +60,31 @@
               button
               @click="
                 optionsProperties.user.value = option;
-                handleCardOptionAnimation('user');
+                cardUserOptionRef?.toggleExpand();
               "
             >
               {{ option.label }}
             </ion-item>
-          </div>
-        </ion-card>
+          </template>
+        </CardOptionsExpand>
 
         <!-- user rol options -->
-        <ion-card
+        <CardOptionsExpand
           ref="cardUserRolOptionRef"
           class="primary-select-border shadow-1"
           :style="{ height: optionsProperties.rol.height }"
         >
-          <div class="card-content">
-            <ion-item
-              button
-              lines="full"
-              @click="handleCardOptionAnimation('rol')"
-            >
+          <template #header>
+            <ion-item button lines="full">
               <ion-label class="truncate-text">
                 <span style="font-weight: bold">Rol:</span>
                 {{ optionsProperties.rol.value.label }}</ion-label
               >
               <ion-icon :icon="chevronExpandOutline"></ion-icon>
             </ion-item>
-            <!-- options -->
+          </template>
+
+          <template #content>
             <ion-item
               v-for="option in optionsProperties.rol.values"
               :key="option.name"
@@ -99,26 +93,28 @@
               button
               @click="
                 optionsProperties.rol.value = option;
-                handleCardOptionAnimation('rol');
+                cardUserRolOptionRef?.toggleExpand();
               "
             >
               {{ option.label }}
             </ion-item>
-          </div>
-        </ion-card>
+          </template>
+        </CardOptionsExpand>
       </ion-col>
     </ion-row>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Animation, createAnimation } from "@ionic/vue";
 import { chevronExpandOutline } from "ionicons/icons";
 import { onMounted, ref, reactive } from "vue";
 
-const cardEmailOptionRef = ref<HTMLElement | null>(null);
-const cardUserOptionRef = ref<HTMLElement | null>(null);
-const cardUserRolOptionRef = ref<HTMLElement | null>(null);
+// components
+import { CardOptionsExpand } from "ionic-extra-components";
+
+const cardEmailOptionRef = ref<typeof CardOptionsExpand | null>(null);
+const cardUserOptionRef = ref<typeof CardOptionsExpand | null>(null);
+const cardUserRolOptionRef = ref<typeof CardOptionsExpand | null>(null);
 
 // interface
 import {
@@ -133,8 +129,6 @@ interface OptionProperties {
   collapsedHeight: string;
   expanded: boolean;
   height: string;
-  expandAnimation?: Animation;
-  contractAnimation?: Animation;
 }
 
 // vars
@@ -182,7 +176,6 @@ const optionsProperties: Record<"email" | "user" | "rol", OptionProperties> =
   });
 
 onMounted(async () => {
-  initAnimations();
   applyInitialFilters();
 });
 
@@ -192,64 +185,6 @@ defineExpose({
 });
 
 // functions
-async function handleCardOptionAnimation(optionType: "email" | "user" | "rol") {
-  const cardRef =
-    optionType === "email"
-      ? cardEmailOptionRef
-      : optionType === "user"
-        ? cardUserOptionRef
-        : cardUserRolOptionRef;
-  const option = optionsProperties[optionType];
-
-  if (!cardRef.value) {
-    return;
-  }
-  initAnimations();
-  if (option.expanded) {
-    option.contractAnimation?.stop();
-    await option.contractAnimation?.play();
-    option.height = option.collapsedHeight;
-  } else {
-    option.expandAnimation?.stop();
-    await option.expandAnimation?.play();
-    option.height = cardRef.value.scrollHeight + "px";
-  }
-  option.expanded = !option.expanded;
-}
-
-function initAnimations() {
-  (["email", "user", "rol"] as const).forEach((optionType) => {
-    const cardRef =
-      optionType === "email"
-        ? cardEmailOptionRef
-        : optionType === "user"
-          ? cardUserOptionRef
-          : cardUserRolOptionRef;
-    const option = optionsProperties[optionType];
-
-    if (cardRef.value) {
-      const cardElement = cardRef.value;
-      const expandedHeight = cardElement.scrollHeight + "px";
-
-      option.expandAnimation = createAnimation()
-        .addElement(cardElement)
-        .duration(200)
-        .keyframes([
-          { offset: 0, height: option.collapsedHeight },
-          { offset: 1, height: expandedHeight },
-        ]);
-
-      option.contractAnimation = createAnimation()
-        .addElement(cardElement)
-        .duration(200)
-        .keyframes([
-          { offset: 0, height: expandedHeight },
-          { offset: 1, height: option.collapsedHeight },
-        ]);
-    }
-  });
-}
-
 function getFiltersSelected(): FilterAdminPanelOptions {
   return {
     email: optionsProperties.email.value.name as EmailFilterOption,

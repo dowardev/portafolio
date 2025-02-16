@@ -6,7 +6,7 @@
         <ion-item lines="full" button>
           <ion-toggle
             :checked="view === 'preview'"
-            @ionChange="
+            @ion-change="
               emitView({ view: $event.detail.checked ? 'preview' : 'editor' })
             "
           >
@@ -20,18 +20,12 @@
   <!-- type save -->
   <ion-row>
     <ion-col>
-      <ion-card
-        :style="{ height: cardHeight }"
+      <CardOptionsExpand
         ref="cardPostStatusRef"
         class="primary-select-border no-shadow"
       >
-        <div class="card-content">
-          <ion-item
-            class="transparent"
-            button
-            lines="full"
-            @click="handleCardPostStatusAnimation()"
-          >
+        <template #header>
+          <ion-item class="transparent" button lines="full">
             <ion-label slot="start">Estado</ion-label>
             <ion-label slot="end">
               {{
@@ -43,7 +37,9 @@
               }}
             </ion-label>
           </ion-item>
+        </template>
 
+        <template #content>
           <!-- active -->
           <ion-item
             v-if="postStatus != 'active'"
@@ -52,7 +48,7 @@
             button
             @click="
               setStatus({ status: 'active' });
-              handleCardPostStatusAnimation();
+              cardPostStatusRef?.toggleExpand();
             "
           >
             <ion-label>Publicar</ion-label>
@@ -66,7 +62,7 @@
             button
             @click="
               setStatus({ status: 'draft' });
-              handleCardPostStatusAnimation();
+              cardPostStatusRef?.toggleExpand();
             "
           >
             <ion-label>Borrador</ion-label>
@@ -80,13 +76,13 @@
             button
             @click="
               setStatus({ status: 'inactive' });
-              handleCardPostStatusAnimation();
+              cardPostStatusRef?.toggleExpand();
             "
           >
             <ion-label>Inactivo</ion-label>
           </ion-item>
-        </div>
-      </ion-card>
+        </template>
+      </CardOptionsExpand>
     </ion-col>
   </ion-row>
 
@@ -131,61 +127,56 @@
   <!-- delete post button -->
   <ion-row v-if="$route.name == 'UpdatePostPage'">
     <ion-col size="12">
-      <ion-card
-        class="selectable-danger-card no-shadow"
+      <CardOptionsExpand
         ref="cardDeleteRef"
-        style="height: 43%"
+        class="selectable-danger-card no-shadow"
         :class="{
           'danger-select-animated-active': deletePostAction == true,
           'danger-border': deletePostAction == 'confirm',
         }"
       >
-        <ion-item
-          class="transparent"
-          button
-          lines="full"
-          @click="handleConfirmDeletePost()"
-        >
-          <ion-icon color="danger" slot="start" :icon="trashOutline"></ion-icon>
-          <ion-label color="danger">Eliminar post</ion-label>
-        </ion-item>
+        <template #header>
+          <ion-item class="transparent" button lines="full">
+            <ion-icon
+              slot="start"
+              color="danger"
+              :icon="trashOutline"
+            ></ion-icon>
+            <ion-label color="danger">Eliminar post</ion-label>
+          </ion-item>
+        </template>
 
-        <ion-item lines="full">
-          <ion-label color="danger">Continuar?</ion-label>
-          <ion-button
-            color="danger"
-            fill="clear"
-            @click="
-              deletePostAction = true;
-              deletePost();
-            "
-            >Si</ion-button
-          >
-          <ion-button @click="handleConfirmDeletePost()" fill="clear"
-            >No</ion-button
-          >
-        </ion-item>
-      </ion-card>
+        <template #content>
+          <ion-item lines="full">
+            <ion-label color="danger">Continuar?</ion-label>
+            <ion-button
+              color="danger"
+              fill="clear"
+              @click="
+                deletePostAction = true;
+                deletePost();
+                cardDeleteRef?.toggleExpand();
+              "
+              >Si</ion-button
+            >
+            <ion-button fill="clear" @click="cardDeleteRef?.toggleExpand()"
+              >No</ion-button
+            >
+          </ion-item>
+        </template>
+      </CardOptionsExpand>
     </ion-col>
   </ion-row>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import {
-  IonButton,
-  IonCard,
-  IonCardContent,
-  createAnimation,
-  IonItem,
-  IonSegment,
-  IonSegmentButton,
-} from "@ionic/vue";
-import type { Animation } from "@ionic/vue";
-import useVuelidate from "@vuelidate/core";
-import { helpers, required } from "@vuelidate/validators";
+import { ref } from "vue";
+import { IonButton, IonCard, IonItem } from "@ionic/vue";
 import { StatusPost } from "@/services/types";
 import { trashOutline } from "ionicons/icons";
+
+// components
+import { CardOptionsExpand } from "ionic-extra-components";
 
 // vars
 const props = defineProps({
@@ -212,21 +203,9 @@ const emits = defineEmits([
 const deletePostAction = ref<true | false | "confirm">(false);
 const cover = ref({ name: props.cover.name, file: new File([], "") });
 const postStatus = ref<StatusPost>(props.postStatus as StatusPost);
-const cardDeleteRef = ref(null);
-const cardPostStatusRef = ref(null);
-const isCardDeletePostExpanded = ref(false);
-const isCardPostStatusExpanded = ref(false);
-const COLLAPSED_HEIGHT = "55px";
-const EXPANDED_HEIGHT = "164px";
-const cardHeight = ref(COLLAPSED_HEIGHT);
+const cardDeleteRef = ref<typeof CardOptionsExpand>(null);
+const cardPostStatusRef = ref<typeof CardOptionsExpand>(null);
 // animations
-let cardDeletePostExpandAnimation: Animation;
-let cardDeletePostContractAnimation: Animation;
-let cardPostStatusExpandAnimation: Animation;
-let cardPostStatusContractAnimation: Animation;
-onMounted(() => {
-  initAnimations();
-});
 
 // functions
 function emitCover(params: { file: Event }) {
@@ -256,74 +235,9 @@ function deletePost() {
   emits("delete-post");
 }
 
-async function handleConfirmDeletePost() {
-  if (isCardDeletePostExpanded.value) {
-    cardDeletePostContractAnimation.stop();
-    await cardDeletePostContractAnimation.play();
-    deletePostAction.value = false;
-  } else {
-    cardDeletePostExpandAnimation.stop();
-    await cardDeletePostExpandAnimation.play();
-    deletePostAction.value = "confirm";
-  }
-  isCardDeletePostExpanded.value = !isCardDeletePostExpanded.value;
-}
-
 function emitView(params: { view: "editor" | "preview" }) {
   const { view } = params;
   emits("update-view", view);
-}
-
-function initAnimations() {
-  // card opost delete
-  if (cardDeleteRef.value) {
-    cardDeletePostExpandAnimation = createAnimation()
-      .addElement(cardDeleteRef.value.$el)
-      .duration(200)
-      .keyframes([
-        { offset: 0, height: "43%" },
-        { offset: 1, height: "84%" },
-      ]);
-
-    cardDeletePostContractAnimation = createAnimation()
-      .addElement(cardDeleteRef.value.$el)
-      .duration(200)
-      .keyframes([
-        { offset: 0, height: "84%" },
-        { offset: 1, height: "43%" },
-      ]);
-  }
-  // card post status
-  if (cardPostStatusRef.value) {
-    cardPostStatusExpandAnimation = createAnimation()
-      .addElement(cardPostStatusRef.value.$el)
-      .duration(200)
-      .keyframes([
-        { offset: 0, height: COLLAPSED_HEIGHT },
-        { offset: 1, height: EXPANDED_HEIGHT },
-      ]);
-
-    cardPostStatusContractAnimation = createAnimation()
-      .addElement(cardPostStatusRef.value.$el)
-      .duration(200)
-      .keyframes([
-        { offset: 0, height: EXPANDED_HEIGHT },
-        { offset: 1, height: COLLAPSED_HEIGHT },
-      ]);
-  }
-}
-
-async function handleCardPostStatusAnimation() {
-  if (isCardPostStatusExpanded.value) {
-    cardPostStatusContractAnimation.stop();
-    await cardPostStatusContractAnimation.play();
-    cardHeight.value = COLLAPSED_HEIGHT;
-  } else {
-    cardPostStatusExpandAnimation.stop();
-    await cardPostStatusExpandAnimation.play();
-    cardHeight.value = EXPANDED_HEIGHT;
-  }
-  isCardPostStatusExpanded.value = !isCardPostStatusExpanded.value;
 }
 </script>
 
