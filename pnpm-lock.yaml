@@ -57,8 +57,8 @@ importers:
         specifier: ^11.11.1
         version: 11.11.1
       ionic-extra-components:
-        specifier: ^0.9.0
-        version: 0.9.0(@ionic/vue-router@8.4.1)(@ionic/vue@8.4.1)(ionicons@7.4.0)(vue@3.5.13(typescript@5.7.3))
+        specifier: ^0.9.4
+        version: 0.9.4(@ionic/vue-router@8.4.1)(@ionic/vue@8.4.1)(ionicons@7.4.0)(vue@3.5.13(typescript@5.7.3))
       ionicons:
         specifier: ^7.4.0
         version: 7.4.0
@@ -2281,8 +2281,8 @@ packages:
     resolution: {integrity: sha512-4gd7VpWNQNB4UKKCFFVcp1AVv+FMOgs9NKzjHKusc8jTMhd5eL1NqQqOpE0KzMds804/yHlglp3uxgluOqAPLw==}
     engines: {node: '>= 0.4'}
 
-  ionic-extra-components@0.9.0:
-    resolution: {integrity: sha512-VnElAOOikPWbGw/FNs8c74SieI18vtQZq525u6O5hFVMPZgVd4ouwV/YZIrIKWzezdoLVMZQCdKhgenKuXKNTA==}
+  ionic-extra-components@0.9.4:
+    resolution: {integrity: sha512-Tbij2YoUvQnkIMD9qXxdAh9iW5YGIzYov6CRuxqT7PoXSdY3K3FBzr0bKZxxK5ZzHH35oBccTZoGb+71FxDgcw==}
     peerDependencies:
       '@ionic/vue': ^8.4.3
       '@ionic/vue-router': ^8.4.3
@@ -6155,7 +6155,7 @@ snapshots:
       hasown: 2.0.2
       side-channel: 1.1.0
 
-  ionic-extra-components@0.9.0(@ionic/vue-router@8.4.1)(@ionic/vue@8.4.1)(ionicons@7.4.0)(vue@3.5.13(typescript@5.7.3)):
+  ionic-extra-components@0.9.4(@ionic/vue-router@8.4.1)(@ionic/vue@8.4.1)(ionicons@7.4.0)(vue@3.5.13(typescript@5.7.3)):
     dependencies:
       '@ionic/vue': 8.4.1
       '@ionic/vue-router': 8.4.1
