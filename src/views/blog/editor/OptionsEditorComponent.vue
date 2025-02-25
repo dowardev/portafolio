@@ -23,9 +23,26 @@
       <CardOptionsExpand
         ref="cardPostStatusRef"
         class="primary-select-border no-shadow"
+        :border="{
+          active:
+            cardPostStatusProperties.expanded || cardPostStatusProperties.hover,
+          type: 'solid',
+          color: 'primary',
+        }"
+        :expanded="cardPostStatusProperties.expanded"
+        @mouseover="cardPostStatusProperties.hover = true"
+        @mouseleave="cardPostStatusProperties.hover = false"
       >
         <template #header>
-          <ion-item class="transparent" button lines="full">
+          <ion-item
+            class="transparent"
+            button
+            lines="full"
+            @click="
+              cardPostStatusProperties.expanded =
+                !cardPostStatusProperties.expanded
+            "
+          >
             <ion-label slot="start">Estado</ion-label>
             <ion-label slot="end">
               {{
@@ -48,7 +65,7 @@
             button
             @click="
               setStatus({ status: 'active' });
-              cardPostStatusRef?.toggleExpand();
+              cardPostStatusProperties.expanded = false;
             "
           >
             <ion-label>Publicar</ion-label>
@@ -62,7 +79,7 @@
             button
             @click="
               setStatus({ status: 'draft' });
-              cardPostStatusRef?.toggleExpand();
+              cardPostStatusProperties.expanded = false;
             "
           >
             <ion-label>Borrador</ion-label>
@@ -76,7 +93,7 @@
             button
             @click="
               setStatus({ status: 'inactive' });
-              cardPostStatusRef?.toggleExpand();
+              cardPostStatusProperties.expanded = false;
             "
           >
             <ion-label>Inactivo</ion-label>
@@ -129,14 +146,29 @@
     <ion-col size="12">
       <CardOptionsExpand
         ref="cardDeleteRef"
-        class="selectable-danger-card no-shadow"
-        :class="{
-          'danger-select-animated-active': deletePostAction == true,
-          'danger-border': deletePostAction == 'confirm',
+        class="no-shadow"
+        :border="{
+          active:
+            cardPostDeleteProperties.expanded ||
+            cardPostDeleteProperties.hover ||
+            deletePostAction == true,
+          type: deletePostAction == true ? 'animated' : 'solid',
+          color: 'danger',
         }"
+        :expanded="cardPostDeleteProperties.expanded"
+        @mouseover="cardPostDeleteProperties.hover = true"
+        @mouseleave="cardPostDeleteProperties.hover = false"
       >
         <template #header>
-          <ion-item class="transparent" button lines="full">
+          <ion-item
+            class="transparent"
+            button
+            lines="full"
+            @click="
+              cardPostDeleteProperties.expanded =
+                !cardPostDeleteProperties.expanded
+            "
+          >
             <ion-icon
               slot="start"
               color="danger"
@@ -155,11 +187,13 @@
               @click="
                 deletePostAction = true;
                 deletePost();
-                cardDeleteRef?.toggleExpand();
+                cardPostDeleteProperties.expanded = false;
               "
               >Si</ion-button
             >
-            <ion-button fill="clear" @click="cardDeleteRef?.toggleExpand()"
+            <ion-button
+              fill="clear"
+              @click="cardPostDeleteProperties.expanded = false"
               >No</ion-button
             >
           </ion-item>
@@ -170,7 +204,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { IonButton, IonCard, IonItem } from "@ionic/vue";
 import { StatusPost } from "@/services/types";
 import { trashOutline } from "ionicons/icons";
@@ -205,7 +239,15 @@ const cover = ref({ name: props.cover.name, file: new File([], "") });
 const postStatus = ref<StatusPost>(props.postStatus as StatusPost);
 const cardDeleteRef = ref<typeof CardOptionsExpand>(null);
 const cardPostStatusRef = ref<typeof CardOptionsExpand>(null);
-// animations
+const cardPostStatusProperties = reactive({
+  hover: false,
+  expanded: false,
+});
+const cardPostDeleteProperties = reactive({
+  hover: false,
+  expanded: false,
+});
+// end vars
 
 // functions
 function emitCover(params: { file: Event }) {

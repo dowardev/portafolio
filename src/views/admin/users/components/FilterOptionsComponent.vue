@@ -3,103 +3,164 @@
     <ion-row>
       <ion-col size="12">
         <!-- email options -->
-        <CardOptionsExpand
-          ref="cardEmailOptionRef"
-          class="primary-select-border shadow-1"
-          :style="{ height: optionsProperties.email.height }"
-        >
-          <template #header>
-            <ion-item button lines="full">
-              <ion-label class="truncate-text">
-                <span style="font-weight: bold">Email:</span>
-                {{ optionsProperties.email.value.label }}</ion-label
-              >
-              <ion-icon :icon="chevronExpandOutline"></ion-icon>
-            </ion-item>
-          </template>
-
-          <template #content>
-            <ion-item
-              v-for="option in optionsProperties.email.values"
-              :key="option.name"
-              :value="option.name"
-              :disabled="optionsProperties.email.value == option"
-              button
-              @click="
-                optionsProperties.email.value = option;
-                cardEmailOptionRef?.toggleExpand();
-              "
+        <ion-row>
+          <ion-col>
+            <CardOptionsExpand
+              ref="cardEmailOptionRef"
+              class="shadow-1"
+              :style="{ height: optionsProperties.email.height }"
+              :border="{
+                active:
+                  emailOptionsProperties.expanded ||
+                  emailOptionsProperties.hover,
+                type: 'solid',
+                color: 'primary',
+              }"
+              :expanded="emailOptionsProperties.expanded"
+              @mouseover="emailOptionsProperties.hover = true"
+              @mouseleave="emailOptionsProperties.hover = false"
             >
-              {{ option.label }}
-            </ion-item>
-          </template>
-        </CardOptionsExpand>
+              <template #header>
+                <ion-item
+                  button
+                  :lines="emailOptionsProperties.expanded ? 'full' : 'none'"
+                  @click="
+                    emailOptionsProperties.expanded =
+                      !emailOptionsProperties.expanded
+                  "
+                >
+                  <ion-label class="truncate-text">
+                    <span style="font-weight: bold">Email:</span>
+                    {{ optionsProperties.email.value.label }}</ion-label
+                  >
+                  <ion-icon :icon="chevronExpandOutline"></ion-icon>
+                </ion-item>
+              </template>
+
+              <template #content>
+                <ion-item
+                  v-for="option in optionsProperties.email.values"
+                  :key="option.name"
+                  :value="option.name"
+                  :disabled="optionsProperties.email.value == option"
+                  button
+                  @click="
+                    optionsProperties.email.value = option;
+                    emailOptionsProperties.expanded = false;
+                  "
+                >
+                  {{ option.label }}
+                </ion-item>
+              </template>
+            </CardOptionsExpand>
+          </ion-col>
+        </ion-row>
 
         <!-- user options -->
-        <CardOptionsExpand
-          ref="cardUserOptionRef"
-          class="primary-select-border shadow-1"
-          :style="{ height: optionsProperties.user.height }"
-        >
-          <template #header>
-            <ion-item button lines="full">
-              <ion-label class="truncate-text">
-                <span style="font-weight: bold">Usuario:</span>
-                : {{ optionsProperties.user.value.label }}</ion-label
-              >
-              <ion-icon :icon="chevronExpandOutline"></ion-icon>
-            </ion-item>
-          </template>
-
-          <template #content>
-            <ion-item
-              v-for="option in optionsProperties.user.values"
-              :key="option.name"
-              :value="option.name"
-              :disabled="optionsProperties.user.value == option"
-              button
-              @click="
-                optionsProperties.user.value = option;
-                cardUserOptionRef?.toggleExpand();
-              "
+        <ion-row>
+          <ion-col>
+            <CardOptionsExpand
+              ref="cardUserOptionRef"
+              class="shadow-1"
+              :style="{ height: optionsProperties.user.height }"
+              :border="{
+                active:
+                  userOptionsProperties.expanded || userOptionsProperties.hover,
+                type: 'solid',
+                color: 'primary',
+              }"
+              :expanded="userOptionsProperties.expanded"
+              @mouseover="userOptionsProperties.hover = true"
+              @mouseleave="userOptionsProperties.hover = false"
             >
-              {{ option.label }}
-            </ion-item>
-          </template>
-        </CardOptionsExpand>
+              <template #header>
+                <ion-item
+                  button
+                  :lines="userOptionsProperties.expanded ? 'full' : 'none'"
+                  @click="
+                    userOptionsProperties.expanded =
+                      !userOptionsProperties.expanded
+                  "
+                >
+                  <ion-label class="truncate-text">
+                    <span style="font-weight: bold">Usuario:</span>
+                    : {{ optionsProperties.user.value.label }}</ion-label
+                  >
+                  <ion-icon :icon="chevronExpandOutline"></ion-icon>
+                </ion-item>
+              </template>
+
+              <template #content>
+                <ion-item
+                  v-for="option in optionsProperties.user.values"
+                  :key="option.name"
+                  :value="option.name"
+                  :disabled="optionsProperties.user.value == option"
+                  button
+                  @click="
+                    optionsProperties.user.value = option;
+                    userOptionsProperties.expanded = false;
+                  "
+                >
+                  {{ option.label }}
+                </ion-item>
+              </template>
+            </CardOptionsExpand>
+          </ion-col>
+        </ion-row>
 
         <!-- user rol options -->
-        <CardOptionsExpand
-          ref="cardUserRolOptionRef"
-          class="primary-select-border shadow-1"
-          :style="{ height: optionsProperties.rol.height }"
-        >
-          <template #header>
-            <ion-item button lines="full">
-              <ion-label class="truncate-text">
-                <span style="font-weight: bold">Rol:</span>
-                {{ optionsProperties.rol.value.label }}</ion-label
-              >
-              <ion-icon :icon="chevronExpandOutline"></ion-icon>
-            </ion-item>
-          </template>
-
-          <template #content>
-            <ion-item
-              v-for="option in optionsProperties.rol.values"
-              :key="option.name"
-              :value="option.name"
-              :disabled="optionsProperties.rol.value == option"
-              button
-              @click="
-                optionsProperties.rol.value = option;
-                cardUserRolOptionRef?.toggleExpand();
-              "
+        <ion-row>
+          <ion-col>
+            <CardOptionsExpand
+              ref="cardUserRolOptionRef"
+              class="shadow-1"
+              :style="{ height: optionsProperties.rol.height }"
+              :border="{
+                active:
+                  rolOptionsProperties.expanded || rolOptionsProperties.hover,
+                type: 'solid',
+                color: 'primary',
+              }"
+              :expanded="rolOptionsProperties.expanded"
+              @mouseover="rolOptionsProperties.hover = true"
+              @mouseleave="rolOptionsProperties.hover = false"
             >
-              {{ option.label }}
-            </ion-item>
-          </template>
-        </CardOptionsExpand>
+              <template #header>
+                <ion-item
+                  button
+                  :lines="rolOptionsProperties.expanded ? 'full' : 'none'"
+                  @click="
+                    rolOptionsProperties.expanded =
+                      !rolOptionsProperties.expanded
+                  "
+                >
+                  <ion-label class="truncate-text">
+                    <span style="font-weight: bold">Rol:</span>
+                    {{ optionsProperties.rol.value.label }}</ion-label
+                  >
+                  <ion-icon :icon="chevronExpandOutline"></ion-icon>
+                </ion-item>
+              </template>
+
+              <template #content>
+                <ion-item
+                  v-for="option in optionsProperties.rol.values"
+                  :key="option.name"
+                  :value="option.name"
+                  :disabled="optionsProperties.rol.value == option"
+                  button
+                  @click="
+                    optionsProperties.rol.value = option;
+                    rolOptionsProperties.expanded = false;
+                  "
+                >
+                  {{ option.label }}
+                </ion-item>
+              </template>
+            </CardOptionsExpand>
+          </ion-col>
+        </ion-row>
       </ion-col>
     </ion-row>
   </div>
@@ -174,7 +235,21 @@ const optionsProperties: Record<"email" | "user" | "rol", OptionProperties> =
       height: "58px",
     },
   });
+const emailOptionsProperties = reactive({
+  hover: false,
+  expanded: false,
+});
+const userOptionsProperties = reactive({
+  hover: false,
+  expanded: false,
+});
+const rolOptionsProperties = reactive({
+  hover: false,
+  expanded: false,
+});
+// end vars
 
+// life
 onMounted(async () => {
   applyInitialFilters();
 });
@@ -183,6 +258,7 @@ defineExpose({
   getFiltersSelected,
   resetFilters,
 });
+// end life
 
 // functions
 function getFiltersSelected(): FilterAdminPanelOptions {

@@ -258,31 +258,31 @@
       </div>
 
       <div style="display: flex" class="ion-justify-content-center">
-        <ion-item>
-          <!-- clear filters -->
-          <ion-button
-            fill="clear"
-            color="danger"
-            @click="
-              deleteFilters();
-              getFilters();
-              loadContent();
-              popovers.filter.open = false;
-            "
-          >
-            Reiniciar
-          </ion-button>
+        <!-- clear filters -->
+        <ion-button
+          expand="block"
+          fill="clear"
+          color="danger"
+          @click="
+            deleteFilters();
+            getFilters();
+            loadContent();
+            popovers.filter.open = false;
+          "
+        >
+          Reiniciar
+        </ion-button>
 
-          <ion-button
-            fill="clear"
-            @click="
-              getFilters();
-              loadContent();
-              popovers.filter.open = false;
-            "
-            >Aplicar
-          </ion-button>
-        </ion-item>
+        <ion-button
+          expand="block"
+          fill="clear"
+          @click="
+            getFilters();
+            loadContent();
+            popovers.filter.open = false;
+          "
+          >Aplicar
+        </ion-button>
       </div>
     </ion-content>
   </ion-popover>
@@ -291,168 +291,227 @@
   <ion-popover
     :is-open="popovers.userOptions.open"
     :event="popovers.userOptions.event"
-    @did-dismiss="popovers.userOptions.open = false"
+    @did-dismiss="
+      popovers.userOptions.open = false;
+      collapseUserOptions();
+    "
   >
     <ion-content>
       <!-- edit user -->
-      <ion-item
-        v-if="
-          contextMenu == 'modal' ||
-          (contextMenu == 'main' && screenSize.preset == 'xs')
-        "
-        button
-        lines="none"
-        @click="
-          popovers.userOptions.open = false;
-          modals.userUpdate.open = true;
-        "
-      >
-        <ion-icon slot="start" :icon="createOutline"></ion-icon>
-        <ion-label>Editar usuario</ion-label>
-      </ion-item>
+      <ion-row>
+        <ion-col>
+          <ion-item
+            v-if="
+              contextMenu == 'modal' ||
+              (contextMenu == 'main' && screenSize.preset == 'xs')
+            "
+            button
+            lines="none"
+            @click="
+              popovers.userOptions.open = false;
+              modals.userUpdate.open = true;
+            "
+          >
+            <ion-icon slot="start" :icon="createOutline"></ion-icon>
+            <ion-label>Editar usuario</ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-row>
 
       <!-- enable user -->
-      <CardOptionsExpand
-        v-if="userSelected.isDisabled == true"
-        ref="cardOptionsEnableUserRef"
-        style="margin: 0px"
-        class="no-shadow"
-      >
-        <template #header>
-          <ion-item button lines="none">
-            <ion-icon slot="start" :icon="checkmarkOutline"></ion-icon>
-            <ion-label>Habilitar usuario</ion-label>
-          </ion-item>
-        </template>
-
-        <template #content>
-          <div style="display: flex; justify-content: space-evenly">
-            <div style="width: 100%">
-              <ion-button
-                fill="clear"
-                expand="block"
+      <ion-row v-if="userSelected.isDisabled == true">
+        <ion-col>
+          <CardOptionsExpand
+            ref="cardOptionsEnableUserRef"
+            class="no-shadow"
+            :border="{
+              active:
+                enableUserProperties.expanded || enableUserProperties.hover,
+              type: 'solid',
+              color: 'primary',
+            }"
+            :expanded="enableUserProperties.expanded"
+            @mouseover="enableUserProperties.hover = true"
+            @mouseleave="enableUserProperties.hover = false"
+          >
+            <template #header>
+              <ion-item
+                button
+                :lines="enableUserProperties.expanded ? 'full' : 'none'"
                 @click="
-                  handleUpdateUserStatus({
-                    id: userSelected.id!,
-                    status: false,
-                  })
+                  enableUserProperties.expanded = !enableUserProperties.expanded
                 "
               >
-                Si
-              </ion-button>
-            </div>
+                <ion-icon slot="start" :icon="checkmarkOutline"></ion-icon>
+                <ion-label>Habilitar usuario</ion-label>
+              </ion-item>
+            </template>
 
-            <div style="width: 100%">
-              <ion-button
-                fill="clear"
-                expand="block"
-                @click="cardOptionsEnableUserRef?.toggleExpand()"
-              >
-                No
-              </ion-button>
-            </div>
-          </div>
-          <hr class="style1" />
-        </template>
-      </CardOptionsExpand>
+            <template #content>
+              <div style="display: flex; justify-content: space-evenly">
+                <div style="width: 100%">
+                  <ion-button
+                    fill="clear"
+                    expand="block"
+                    @click="
+                      handleUpdateUserStatus({
+                        id: userSelected.id!,
+                        status: false,
+                      })
+                    "
+                  >
+                    Si
+                  </ion-button>
+                </div>
+
+                <div style="width: 100%">
+                  <ion-button
+                    fill="clear"
+                    expand="block"
+                    @click="cardOptionsEnableUserRef?.toggleExpand()"
+                  >
+                    No
+                  </ion-button>
+                </div>
+              </div>
+              <hr class="style1" />
+            </template>
+          </CardOptionsExpand>
+        </ion-col>
+      </ion-row>
 
       <!-- disable user -->
-      <CardOptionsExpand
-        v-if="userSelected.isDisabled == false"
-        ref="cardOptionsDisableUserRef"
-        class="no-shadow"
-        style="margin: 0px"
-      >
-        <template #header>
-          <ion-item lines="none" button>
-            <ion-icon slot="start" :icon="banOutline"></ion-icon>
-            <ion-label>Deshabilitar usuario</ion-label>
-          </ion-item>
-        </template>
-
-        <template #content>
-          <div style="display: flex; justify-content: space-evenly">
-            <div style="width: 100%">
-              <ion-button
-                fill="clear"
-                expand="block"
-                color="danger"
+      <ion-row v-if="userSelected.isDisabled == false">
+        <ion-col>
+          <CardOptionsExpand
+            ref="cardOptionsDisableUserRef"
+            class="no-shadow"
+            :border="{
+              active:
+                disableUserProperties.expanded || disableUserProperties.hover,
+              type: 'solid',
+              color: 'primary',
+            }"
+            :expanded="disableUserProperties.expanded"
+            @mouseover="disableUserProperties.hover = true"
+            @mouseleave="disableUserProperties.hover = false"
+          >
+            <template #header>
+              <ion-item
+                :lines="disableUserProperties.expanded ? 'full' : 'none'"
+                button
                 @click="
-                  handleUpdateUserStatus({
-                    id: userSelected.id!,
-                    status: true,
-                  })
+                  disableUserProperties.expanded =
+                    !disableUserProperties.expanded
                 "
               >
-                Si
-              </ion-button>
-            </div>
+                <ion-icon slot="start" :icon="banOutline"></ion-icon>
+                <ion-label>Deshabilitar usuario</ion-label>
+              </ion-item>
+            </template>
 
-            <div style="width: 100%">
-              <ion-button
-                fill="clear"
-                expand="block"
-                color="primary"
-                @click="cardOptionsDisableUserRef?.toggleExpand()"
-              >
-                No
-              </ion-button>
-            </div>
-          </div>
-          <hr class="style1" />
-        </template>
-      </CardOptionsExpand>
+            <template #content>
+              <div style="display: flex; justify-content: space-evenly">
+                <div style="width: 100%">
+                  <ion-button
+                    fill="clear"
+                    expand="block"
+                    color="danger"
+                    @click="
+                      handleUpdateUserStatus({
+                        id: userSelected.id!,
+                        status: true,
+                      })
+                    "
+                  >
+                    Si
+                  </ion-button>
+                </div>
+
+                <div style="width: 100%">
+                  <ion-button
+                    fill="clear"
+                    expand="block"
+                    color="primary"
+                    @click="cardOptionsDisableUserRef?.toggleExpand()"
+                  >
+                    No
+                  </ion-button>
+                </div>
+              </div>
+              <hr class="style1" />
+            </template>
+          </CardOptionsExpand>
+        </ion-col>
+      </ion-row>
 
       <!-- delete user -->
-      <CardOptionsExpand
-        v-if="userSelected.isDisabled == false"
-        ref="cardOptionsDeleUserRef"
-        class="no-shadow"
-        style="margin: 0px"
-      >
-        <template #header>
-          <ion-item lines="none" button>
-            <ion-icon
-              slot="start"
-              color="danger"
-              :icon="trashOutline"
-            ></ion-icon>
-            <ion-label color="danger">Eliminar usuario</ion-label>
-          </ion-item>
-        </template>
-
-        <template #content>
-          <div style="display: flex; justify-content: space-evenly">
-            <div style="width: 100%">
-              <ion-button
-                fill="clear"
-                expand="block"
-                color="danger"
+      <ion-row v-if="userSelected.isDisabled == false">
+        <ion-col>
+          <CardOptionsExpand
+            ref="cardOptionsDeleUserRef"
+            class="no-shadow"
+            :border="{
+              active:
+                deleteUserProperties.expanded || deleteUserProperties.hover,
+              type: 'solid',
+              color: 'danger',
+            }"
+            :expanded="deleteUserProperties.expanded"
+            @mouseover="deleteUserProperties.hover = true"
+            @mouseleave="deleteUserProperties.hover = false"
+          >
+            <template #header>
+              <ion-item
+                button
+                :lines="deleteUserProperties.expanded ? 'full' : 'none'"
                 @click="
-                  handleDeleteUser({
-                    email: userSelected.email!,
-                    id: userSelected.id!,
-                  })
+                  deleteUserProperties.expanded = !deleteUserProperties.expanded
                 "
               >
-                Si
-              </ion-button>
-            </div>
+                <ion-icon
+                  slot="start"
+                  color="danger"
+                  :icon="trashOutline"
+                ></ion-icon>
+                <ion-label color="danger">Eliminar usuario</ion-label>
+              </ion-item>
+            </template>
 
-            <div style="width: 100%">
-              <ion-button
-                fill="clear"
-                expand="block"
-                color="primary"
-                @click="cardOptionsDeleUserRef?.toggleExpand()"
-              >
-                No
-              </ion-button>
-            </div>
-          </div>
-          <hr class="style1" />
-        </template>
-      </CardOptionsExpand>
+            <template #content>
+              <div style="display: flex; justify-content: space-evenly">
+                <div style="width: 100%">
+                  <ion-button
+                    fill="clear"
+                    expand="block"
+                    color="danger"
+                    @click="
+                      handleDeleteUser({
+                        email: userSelected.email!,
+                        id: userSelected.id!,
+                      })
+                    "
+                  >
+                    Si
+                  </ion-button>
+                </div>
+
+                <div style="width: 100%">
+                  <ion-button
+                    fill="clear"
+                    expand="block"
+                    color="primary"
+                    @click="cardOptionsDeleUserRef?.toggleExpand()"
+                  >
+                    No
+                  </ion-button>
+                </div>
+              </div>
+              <hr class="style1" />
+            </template>
+          </CardOptionsExpand>
+        </ion-col>
+      </ion-row>
     </ion-content>
   </ion-popover>
   <!-- end popovers -->
@@ -723,6 +782,18 @@ const signUpFormComponentRef = ref<InstanceType<
 const updateUserFormComponentRef = ref<InstanceType<
   typeof UserUpdateFormComponent
 > | null>(null);
+const enableUserProperties = reactive({
+  expanded: false,
+  hover: false,
+});
+const disableUserProperties = reactive({
+  expanded: false,
+  hover: false,
+});
+const deleteUserProperties = reactive({
+  expanded: false,
+  hover: false,
+});
 // end refs
 
 // mounted
@@ -818,7 +889,7 @@ async function handleUpdateUserStatus(params: { id: string; status: boolean }) {
     : cardOptionsEnableUserRef;
   const toastMessage = status ? "Usuario habilitado" : "Usuario deshabilitado";
 
-  cardOptionsRef.value?.toggleExpand();
+  // cardOptionsRef.value?.toggleExpand();
   // cardOptionsRef.value?.updateBorderProp({
   //   style: "animated",
   //   trigger: "none",
@@ -877,7 +948,7 @@ async function handleDeleteUser(params: AdminDeleteUserAccount) {
 
   const oldUser = { user: users[index], index };
 
-  cardOptionsDeleUserRef.value?.toggleExpand();
+  // cardOptionsDeleUserRef.value?.toggleExpand();
   // cardOptionsDeleUserRef.value?.updateBorderProp({
   //   style: "animated",
   //   trigger: "none",
@@ -1075,6 +1146,12 @@ async function updateUserAccount(params: {
       throw e;
     }
   }
+}
+
+function collapseUserOptions() {
+  enableUserProperties.expanded = false;
+  disableUserProperties.expanded = false;
+  deleteUserProperties.expanded = false;
 }
 </script>
 

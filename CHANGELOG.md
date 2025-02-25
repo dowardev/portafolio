@@ -1,5 +1,15 @@
 # Changelog
 
+## 9.0.10 - 2025-02-17
+
+### Fixed
+
+- Adapted to the new operation of CardOptionsExpand(0.9.4)
+
+### Chaged
+
+- Ionic extra components updated to version 0.9.4
+
 ## 9.0.9 - 2025-02-15
 
 ### Added
