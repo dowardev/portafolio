@@ -162,34 +162,47 @@ class AuthController extends Controller
 
   public function recoverPassword(Request $request)
   {
-    $email = $request->email;
+    $message_success = "If the email is registered, a reset code will be sent";
+    try {
+      $email = $request->email;
 
-    if ($email == "" || $email == "null") {
-      return response()->json(["error" => "Email is required"], 400);
-    }
-    $user = User::where("email", "=", $email)->get();
+      if (empty($email)) {
+        return response()->json(
+          [
+            "message" => $message_success,
+          ],
+          200
+        );
+      }
 
-    if (count($user)) {
-      $email = $user[0]->email;
-      $code = mt_rand(100000, 999999);
+      $user = User::where("email", $email)->first();
 
-      ResetCodePassword::where("email", $email)->delete();
+      if ($user) {
+        $code = mt_rand(100000, 999999);
 
-      $codeData = ResetCodePassword::create([
-        "code" => $code,
-        "email" => $email,
-      ]);
+        ResetCodePassword::where("email", $email)->delete();
 
-      Mail::send(
-        "emails.emailCodeResetPassword",
-        ["code" => $codeData->code, "email" => $request->email],
-        function ($message) use ($email) {
-          $message->to($email);
-          $message->subject("Email Verification Mail");
-        }
+        $codeData = ResetCodePassword::create([
+          "code" => $code,
+          "email" => $email,
+        ]);
+
+        Mail::send(
+          "emails.emailCodeResetPassword",
+          ["code" => $codeData->code, "email" => $request->email],
+          function ($message) use ($email) {
+            $message->to($email);
+            $message->subject("Email Verification Mail");
+          }
+        );
+      }
+
+      return response()->json(["message" => $message_success], 200);
+    } catch (\Exception $e) {
+      return response()->json(
+        ["error" => "An error occurred: " . $e->getMessage()],
+        500
       );
-    } else {
-      return response()->json("Email not found", 400);
     }
   }
 
