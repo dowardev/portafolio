@@ -13,7 +13,7 @@
           'ion-invalid': v$.form.email.$invalid && v$.form.email.$dirty,
           'ion-touched': v$.form.email.$dirty,
         }"
-        @ion-input="form.email = $event.detail.value || ''"
+        @ion-input="form.email = $event.detail.value!.toString()"
         @keydown.enter="($refs as any).inputPassword.$el.setFocus()"
         @click="v$.form.email.$touch()"
       >
@@ -37,7 +37,7 @@
           'ion-invalid': v$.form.password.$invalid && v$.form.password.$dirty,
           'ion-touched': v$.form.password.$dirty,
         }"
-        @ion-input="form.password = $event.detail.value || ''"
+        @ion-input="form.password = $event.detail.value!.toString()"
         @keydown.enter="emits('enterPressed')"
         @click="v$.form.password.$touch()"
       >

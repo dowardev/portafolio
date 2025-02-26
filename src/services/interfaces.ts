@@ -311,3 +311,8 @@ export interface FilterAdminPanelOptions {
   user: UserFilterOption;
   rol: UserRolFilterOption;
 }
+
+export interface CustomAxiosErrorInterface {
+  message: string;
+  statusCode: number;
+}

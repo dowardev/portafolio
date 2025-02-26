@@ -35,7 +35,7 @@ export default class SystemService {
     document.getElementsByTagName("body")[0].classList.add(theme.selected);
 
     const themeClass = document.querySelector<HTMLElement>(
-      `.${theme.selected}`
+      `.${theme.selected}`,
     );
     if (!theme.options || !theme.options.blur) {
       themeClass!.style.setProperty("--blur", "0px");
@@ -45,21 +45,21 @@ export default class SystemService {
       themeClass!.style.setProperty("--wallpaper-opacity", "1");
     } else {
       const blurValue = getComputedStyle(
-        document.documentElement
+        document.documentElement,
       ).getPropertyValue("--blur");
       const backgroundImage = getComputedStyle(
-        document.documentElement
+        document.documentElement,
       ).getPropertyValue("--wallpaper-main-content");
       const blurColorOpacity = getComputedStyle(
-        document.documentElement
+        document.documentElement,
       ).getPropertyValue("--blur-color-opacity");
       const wallpaperOpacity = getComputedStyle(
-        document.documentElement
+        document.documentElement,
       ).getPropertyValue("--wallpaper-opacity");
       themeClass!.style.setProperty("--blur", blurValue);
       themeClass!.style.setProperty(
         "--wallpaper-main-content",
-        backgroundImage
+        backgroundImage,
       );
       themeClass!.style.setProperty("--blur-color-opacity", blurColorOpacity);
       themeClass!.style.setProperty("--wallpaper-opacity", wallpaperOpacity);
@@ -157,6 +157,7 @@ export default class SystemService {
     return response.image;
   }
 
+  // TODO: REMOVE
   async presentToast(params: Toast) {
     const { message, color = "dark" } = params;
     const toast = await toastController.create({

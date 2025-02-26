@@ -13,8 +13,8 @@
         <ion-buttons slot="end">
           <!-- step 1 -->
           <ion-button
-            color="primary"
             v-if="step == 1"
+            color="primary"
             :disabled="mainLoad || v1$.email.$invalid"
             @click="handleStep1({ email })"
           >
@@ -46,7 +46,7 @@
         <section v-show="step === 1" v-if="step === 1">
           <ion-row>
             <ion-col size="12">
-              <ion-card class="primary-selected-border">
+              <ion-card class="shadow-1">
                 <div class="center ion-padding-top">
                   <img style="width: 90px" :src="mailImage" alt="" />
                 </div>
@@ -95,12 +95,18 @@
 
           <ion-row>
             <ion-col size="12">
-              <ion-card class="info-card-filled">
-                <ion-card-content>
+              <CardAlert color="success">
+                <template #icon>
+                  <ion-icon :icon="informationOutline"></ion-icon>
+                </template>
+
+                <template #title>Nota</template>
+
+                <template #content>
                   Recibirás un código en tu correo electrónico para restablecer
                   tu contraseña.
-                </ion-card-content>
-              </ion-card>
+                </template>
+              </CardAlert>
             </ion-col>
           </ion-row>
         </section>
@@ -109,9 +115,9 @@
           <ion-row>
             <ion-col>
               <ion-card
+                class="shadow-1"
                 :class="{
-                  'primary-selected-border': codeError == false,
-                  'danger-selected-border': codeError,
+                  'danger-border': codeError,
                 }"
               >
                 <div class="center ion-padding-top">
@@ -188,8 +194,8 @@
                             @click="v2$.password.$touch()"
                           >
                             <ion-input-password-toggle
-                              slot="end"
                               v-if="newPassword"
+                              slot="end"
                             >
                             </ion-input-password-toggle>
                           </ion-input>
@@ -233,23 +239,19 @@ import {
   IonCol,
   IonInput,
   IonButton,
-  IonSpinner,
   IonIcon,
   IonHeader,
   IonToolbar,
   IonButtons,
   modalController,
   isPlatform,
-  IonGrid,
 } from "@ionic/vue";
 import { ref } from "vue";
 import {
   chevronForwardOutline,
   closeOutline,
-  eye,
-  eyeOutline,
+  informationOutline,
   saveOutline,
-  sendOutline,
 } from "ionicons/icons";
 import {
   email as emailHelper,
@@ -259,6 +261,7 @@ import {
   numeric,
 } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
+import { CardAlert } from "ionic-extra-components";
 
 // controllers
 import SystemController from "@/controllers/systemController";
@@ -271,7 +274,7 @@ import mailImage from "@/assets/otros/mail.png";
 import keyImage from "@/assets/otros/key.png";
 
 // vars
-const email = ref("");
+const email = ref("admin@admin.com");
 const code = ref<number | undefined>(undefined);
 const newPassword = ref("");
 const step = ref(1);
@@ -295,36 +298,41 @@ const rules2 = {
     required: helpers.withMessage(messageError.required, required),
     minLength: helpers.withMessage(
       "La contraseña debe tener al menos 8 caracteres",
-      minLength(8)
+      minLength(8),
     ),
     regexLower: helpers.withMessage(
       "La contraseña debe contener al menos una letra minúscula",
-      helpers.regex(/[a-z]/)
+      helpers.regex(/[a-z]/),
     ),
     regexUpper: helpers.withMessage(
       "La contraseña debe contener al menos una letra mayúscula",
-      helpers.regex(/[A-Z]/)
+      helpers.regex(/[A-Z]/),
     ),
     regexNumber: helpers.withMessage(
       "La contraseña debe contener al menos un número",
-      helpers.regex(/[0-9]/)
+      helpers.regex(/[0-9]/),
     ),
     regexSpecial: helpers.withMessage(
       "La contraseña debe contener al menos un carácter especial",
-      helpers.regex(/[@$!%*?&]/)
+      helpers.regex(/[@$!%*?&]/),
     ),
   },
 };
 const v2$ = useVuelidate(rules2, { code, password: newPassword });
 const mainLoad = ref(false);
 const codeError = ref(false);
+// end vars
 
+// functions
 async function handleStep1(params: { email: string }) {
   const { email } = params;
   mainLoad.value = true;
 
   try {
     await sendEmail({ email });
+    await systemController.presentToast({
+      message: "Código enviado",
+    });
     step.value = 2;
   } catch (error) {
     console.error(error);
@@ -343,8 +351,12 @@ async function handleStep2(params: {
 
   try {
     await sendNewPassword({ email, code, password });
-  } catch (error: any) {
-    if (error.message == "Code invalid") codeError.value = true;
+    await modalController.dismiss();
+    await systemController.presentToast({
+      message: "Contraseña actualizada",
+    });
+  } catch (error) {
+    console.error(error);
   } finally {
     mainLoad.value = false;
   }
@@ -366,25 +378,16 @@ async function resendEmail(params: { email: string }) {
 // functions
 async function sendEmail(params: { email: string }) {
   const { email } = params;
-  mainLoad.value = true;
 
   try {
     await userController.recoverPassword({ email });
-
+  } catch (error: unknown) {
+    // const message = error instanceof Error ? error.message : "Ocurrió un error";
     await systemController.presentToast({
-      message: "Código enviado",
+      message: "Ocurrió un error",
+      color: "danger",
     });
-
-    step.value = 2;
-  } catch (error: any) {
-    if (error.message == "Email not found")
-      await systemController.presentToast({
-        message: "Correo electrónico no encontrado",
-        color: "danger",
-      });
-    else console.error(error);
-  } finally {
-    mainLoad.value = false;
+    throw error;
   }
 }
 
@@ -394,7 +397,6 @@ async function sendNewPassword(params: {
   password: string;
 }) {
   const { email, code, password } = params;
-  mainLoad.value = true;
 
   try {
     await userController.sendNewPassword({
@@ -402,21 +404,18 @@ async function sendNewPassword(params: {
       code,
       password,
     });
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error && error.message === "Code invalid"
+        ? "Código incorrecto"
+        : "Ocurrió un error";
 
-    await modalController.dismiss();
     await systemController.presentToast({
-      message: "Contraseña actualizada",
+      message,
+      color: "danger",
     });
-  } catch (error: any) {
-    if (error.message == "Code invalid") {
-      await systemController.presentToast({
-        message: "Código incorrecto",
-        color: "danger",
-      });
-      throw error;
-    } else console.error(error);
-  } finally {
-    mainLoad.value = false;
+
+    throw error;
   }
 }
 </script>

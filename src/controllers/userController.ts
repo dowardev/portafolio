@@ -11,12 +11,14 @@ import {
   User,
   UserRegister,
 } from "../services/interfaces";
+import ErrorController from "./errorController";
 
 // services
 import UserService from "../services/userService";
 import AdminService from "../services/adminService";
 import SessionService from "@/services/sessionService";
 import { useUserStore } from "@/store/userStore";
+import { AxiosError } from "axios";
 
 export default class UserController {
   private usersStore = useUsersStore();
@@ -24,6 +26,7 @@ export default class UserController {
   private adminService = new AdminService();
   private sessionService = new SessionService();
   private systemService = new SystemService();
+  private errorController = new ErrorController();
   private userStore = useUserStore();
   private userRefs = storeToRefs(this.userStore);
 
@@ -161,8 +164,8 @@ export default class UserController {
 
     try {
       await this.sessionService.recoverPassword({ email });
-    } catch (error: any) {
-      throw error;
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
     }
   }
 

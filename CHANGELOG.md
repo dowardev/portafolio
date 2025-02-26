@@ -1,5 +1,16 @@
 # Changelog
 
+## 9.0.11 - 2025-02-26
+
+### Changed
+
+- Improved login UI
+
+### Fixed
+
+- Fixed issue preventing login
+- Fixed problem with password reset
+
 ## 9.0.10 - 2025-02-17
 
 ### Fixed
