@@ -126,8 +126,16 @@ export default class SystemController {
   }
 
   async presentToast(params: Toast) {
-    const { message, duration, color } = params;
-    return await this.systemService.presentToast({ message, duration, color });
+    const { message, color = "dark" } = params;
+
+    (
+      await toastController.create({
+        message,
+        duration: 1500,
+        position: "bottom",
+        color,
+      })
+    ).present();
   }
 
   async createContactMessage(params: ContactMessage) {

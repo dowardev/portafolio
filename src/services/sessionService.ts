@@ -77,15 +77,7 @@ export default class SessionService {
 
   async recoverPassword(params: { email: string }) {
     const { email } = params;
-
-    try {
-      await apiConnector.post({ url: `recover-password`, data: { email } });
-    } catch (error: any) {
-      console.error(error);
-      if (error.response.data == "Email not found")
-        throw new Error("Email not found");
-      else throw error;
-    }
+    await apiConnector.post({ url: `recover-password`, data: { email } });
   }
 
   async sendNewPassword(params: {
@@ -95,18 +87,10 @@ export default class SessionService {
   }) {
     const { code, password, email } = params;
 
-    try {
-      await apiConnector.post({
-        url: `reset-password`,
-        data: { email, code, password },
-      });
-    } catch (error: any) {
-      if (error.response.data == "Code invalid")
-        throw new Error("Code invalid");
-      if (error.response.data.password)
-        throw new Error("The password does not meet the minimum requirements");
-      else throw error;
-    }
+    await apiConnector.post({
+      url: `reset-password`,
+      data: { email, code, password },
+    });
   }
 
   async updateUserPassword(params: UpdateUserPassword): Promise<void> {

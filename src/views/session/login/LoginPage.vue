@@ -23,7 +23,7 @@
         <section>
           <ion-row>
             <ion-col size="12">
-              <ion-card class="primary-selected-border">
+              <ion-card class="shadow-1">
                 <ion-card-content>
                   <div class="center ion-padding-bottom d">
                     <img
@@ -127,7 +127,6 @@ import {
   IonCard,
   IonLabel,
   IonButton,
-  IonPage,
   IonContent,
   IonModal,
   isPlatform,
@@ -136,7 +135,6 @@ import { ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
-import { closeOutline, server } from "ionicons/icons";
 
 // TODO: pending
 // import {  resendEmailConfirmation } from "../../../services/user";
