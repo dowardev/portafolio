@@ -57,8 +57,8 @@ importers:
         specifier: ^11.11.1
         version: 11.11.1
       ionic-extra-components:
-        specifier: ^0.10.5
-        version: 0.10.5(@ionic/vue@8.4.1)(ionicons@7.4.0)(vue@3.5.13(typescript@5.7.3))
+        specifier: ^0.12.3
+        version: 0.12.3(@ionic/vue@8.4.1)(ionicons@7.4.0)(vue@3.5.13(typescript@5.7.3))
       ionicons:
         specifier: ^7.4.0
         version: 7.4.0
@@ -2286,8 +2286,8 @@ packages:
     resolution: {integrity: sha512-4gd7VpWNQNB4UKKCFFVcp1AVv+FMOgs9NKzjHKusc8jTMhd5eL1NqQqOpE0KzMds804/yHlglp3uxgluOqAPLw==}
     engines: {node: '>= 0.4'}
 
-  ionic-extra-components@0.10.5:
-    resolution: {integrity: sha512-T8W3G3DfVaPBoPFcYbFwMFCMGTrPRNCz0wj3gpG3Tky0NU6k083JYlKwjuRD6yyrB0zQ1Gg/1FQrmzsBPNB64Q==}
+  ionic-extra-components@0.12.3:
+    resolution: {integrity: sha512-8qsrIJcoejwtbbUfW/wvd92cuTvNMrUq3L+T1YS/wbHvc3TaSMIJD+ef5k0xB+aqv6CT9jx4OKqnytru1Bybhw==}
     peerDependencies:
       '@ionic/vue': ^8.4.3
       ionicons: ^7.0.0
@@ -6176,7 +6176,7 @@ snapshots:
       hasown: 2.0.2
       side-channel: 1.1.0
 
-  ionic-extra-components@0.10.5(@ionic/vue@8.4.1)(ionicons@7.4.0)(vue@3.5.13(typescript@5.7.3)):
+  ionic-extra-components@0.12.3(@ionic/vue@8.4.1)(ionicons@7.4.0)(vue@3.5.13(typescript@5.7.3)):
     dependencies:
       '@ionic/vue': 8.4.1
       '@prettier/plugin-php': 0.22.4(prettier@3.5.2)
