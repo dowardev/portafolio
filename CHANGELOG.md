@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.0.13 - 2025-02-28
+
+### Removed
+
+- Removed unused CardAlert and CardCode components.
+
 ## 9.0.12 - 2025-02-28
 
 ### Added
