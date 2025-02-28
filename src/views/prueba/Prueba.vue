@@ -1,13 +1,13 @@
 <template>
-  <div v-for="(block, index) in contentBlocks" :key="index">
-    <component :is="block.type" v-bind="block.props" />
-  </div>
+  <!-- <div v-for="(block, index) in contentBlocks" :key="index"> -->
+  <!--   <component :is="block.type" v-bind="block.props" /> -->
+  <!-- </div> -->
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
-import CardCode from "@/components/cards/CardCode.vue";
-import CardsAlert from "@/components/cards/CardAlert.vue";
+// import CardCode from "@/components/cards/CardCode.vue";
+// import CardsAlert from "@/components/cards/CardAlert.vue";
 import { informationOutline } from "ionicons/icons";
 
 const props = defineProps({
@@ -27,7 +27,7 @@ const escapeHtml = (text: string): string => {
     (match) => {
       htmlElements.push(match);
       return `%%HTML${htmlElements.length - 1}%%`;
-    }
+    },
   );
 
   // Preserve individual img tags
@@ -42,7 +42,7 @@ const escapeHtml = (text: string): string => {
     (match) => {
       htmlElements.push(match);
       return `%%HTML${htmlElements.length - 1}%%`;
-    }
+    },
   );
 
   // Escape HTML characters
@@ -58,7 +58,7 @@ const escapeHtml = (text: string): string => {
   // Restore preserved HTML elements
   processedText = processedText.replace(
     /%%HTML(\d+)%%/g,
-    (_, index) => htmlElements[parseInt(index)]
+    (_, index) => htmlElements[parseInt(index)],
   );
 
   return processedText;
@@ -215,7 +215,7 @@ const contentBlocks = computed(() => {
               .replace(/\*(.+?)\*/g, "<i>$1</i>");
             textLine = textLine.replace(
               /\[(.*?)\]\((.*?)\)/g,
-              '<a href="$2">$1</a>'
+              '<a href="$2">$1</a>',
             );
 
             currentHtml += `<p>${textLine}</p>`;

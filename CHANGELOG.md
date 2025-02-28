@@ -1,5 +1,17 @@
 # Changelog
 
+## 9.0.13 - 2025-02-28
+
+### Removed
+
+- Removed unused CardAlert and CardCode components.
+
+## 9.0.12 - 2025-02-28
+
+### Added
+
+- Added CardAlert and CardCode to MarkdownViewer
+
 ## 9.0.11 - 2025-02-26
 
 ### Changed
