@@ -59,50 +59,42 @@
             style="display: flex"
           >
             <ion-card
-              class="no-shadow post-background"
-              style="
-                border-bottom: 1px solid var(--ion-background-color-step-150);
-                width: 76%;
-                cursor: pointer;
-              "
+              class="card-post no-shadow post-background"
               @mouseover="postHoverId = post.id"
               @mouseleave="postHoverId = -1"
               @touchstart="handleTouchStart({ postId: post.id, event: $event })"
               @touchend="handleTouchEnd"
             >
               <ion-card-content>
-                <div style="display: flex; justify-content: space-between">
+                <div style="display: flex" class="ion-justify-content-between">
                   <div
-                    style="display: flex; align-items: center"
+                    style="display: flex"
+                    class="ion-align-items-center"
                     @click="openPost({ id: post.id })"
                   >
                     <span>
-                      <!-- {{ post.title }} -->
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit
+                      {{ post.title }}
                     </span>
                   </div>
                 </div>
 
                 <div
                   v-if="userController.getUser()?.isAdmin"
-                  class="ion-padding-top"
-                  style="display: flex; justify-content: flex-end; height: 46px"
+                  class="ion-padding-top ion-justify-content-end"
+                  style="display: flex; height: 46px"
                 >
                   <ion-chip
-                    :color="
-                      post.status == 'active'
-                        ? 'success'
-                        : post.status == 'inactive'
-                          ? 'danger'
-                          : 'warning'
-                    "
+                    :color="getPostStatusColor({ status: post.status })"
                     @click="openPost({ id: post.id })"
                   >
                     {{ post.status }}
                   </ion-chip>
 
-                  <transition name="slide-fade">
-                    <div v-if="post.id == postHoverId" class="action-buttons">
+                  <transition name="slide-fade-post-action-buttons">
+                    <div
+                      v-if="post.id == postHoverId"
+                      class="action-post-buttons"
+                    >
                       <ion-button fill="clear">
                         <ion-icon :icon="createOutline"></ion-icon>
                       </ion-button>
@@ -345,7 +337,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonItem, loadingController, IonPage, isPlatform } from "@ionic/vue";
+import { IonItem, isPlatform } from "@ionic/vue";
 import { computed, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -357,7 +349,6 @@ import {
   closeOutline,
   createOutline,
   ellipsisVerticalOutline,
-  filterOutline,
   refreshOutline,
   searchOutline,
   trashOutline,
@@ -372,12 +363,8 @@ const postController = new PostController();
 const systemController = new SystemController();
 
 // components
-import DateSelectorComponent from "@/components/posts/DateSelectorComponent.vue";
 import { filterPostOptions } from "@/services/types";
 import { CardOptionsExpand } from "ionic-extra-components";
-
-// imgs
-import noCover from "@/assets/otros/No_cover.png";
 
 // vars
 const pageTitle = ref("Blog");
@@ -443,7 +430,9 @@ const filterPosts = computed(() => {
   );
   return result;
 });
+// end computed
 
+// watch
 watch(
   () => postController.getDates(),
   (newValue) => {
@@ -474,6 +463,7 @@ watch(
   },
   { immediate: true },
 );
+// end watch
 
 // functions
 async function addPost(): Promise<void> {
@@ -682,6 +672,17 @@ function handleTouchEnd() {
     touchTimer.value = null;
   }
 }
+
+function getPostStatusColor(params: { status: string }): string {
+  const { status } = params;
+
+  return status == "active"
+    ? "success"
+    : status == "inactive"
+      ? "danger"
+      : "warning";
+}
+// end functions
 </script>
 
 <style>
@@ -691,11 +692,18 @@ button.alert-button.alert-delete-post-button-confirm {
 </style>
 
 <style scoped>
-ion-card {
+.card-post {
   position: relative;
+  border-bottom: 1px solid var(--ion-background-color-step-150);
+  width: 76%;
+  cursor: pointer;
 }
 
-.action-buttons {
+.card-post:hover {
+  background-color: var(--ion-color-step-50, rgba(0, 0, 0, 0.04));
+}
+
+.action-post-buttons {
   display: inline-flex;
   position: absolute;
   bottom: 0px;
@@ -705,19 +713,15 @@ ion-card {
   background-color: var(--ion-background-color);
 }
 
-.slide-fade-enter-active {
+.slide-fade-post-action-buttons-enter-active {
   transition: all 0.3s ease;
 }
-.slide-fade-leave-active {
+.slide-fade-post-action-buttons-leave-active {
   transition: all 0.3s ease;
 }
-.slide-fade-enter-from,
-.slide-fade-leave-to {
+.slide-fade-post-action-buttons-enter-from,
+.slide-fade-post-action-buttons-leave-to {
   transform: translateX(20px);
   opacity: 0;
-}
-
-.post-background:hover {
-  background-color: var(--ion-color-step-50, rgba(0, 0, 0, 0.04));
 }
 </style>

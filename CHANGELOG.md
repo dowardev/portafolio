@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.1.1 - 2025-03-02
+
+### Changed
+
+- CSS code was changed to Ionic variables
+
 ## 9.1.0 - 2025-03-01
 
 ### Changed
