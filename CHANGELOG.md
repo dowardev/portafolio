@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.1.0 - 2025-03-01
+
+### Changed
+
+- Simplified posts page layout
+
 ## 9.0.13 - 2025-02-28
 
 ### Removed
