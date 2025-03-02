@@ -11,6 +11,8 @@ import {
   User,
   UserRegister,
 } from "../services/interfaces";
+
+// controllers
 import ErrorController from "./errorController";
 
 // services
@@ -32,7 +34,7 @@ export default class UserController {
 
   async loadUsers(
     params: SearchUsersParams,
-  ): Promise<SearchUsersServerResponse> {
+  ): Promise<SearchUsersServerResponse | void> {
     const { search, pagination, page, options } = params;
 
     try {
@@ -44,16 +46,18 @@ export default class UserController {
       });
 
       return response;
-    } catch (error: any) {
-      if (error.message == "Unauthorized") console.error("Unauthorized user");
-      // this.openToastError(error);
-      throw error;
+    } catch (error) {
+      return this.errorController.handleError({ error });
     }
   }
 
   updateUsers(params: { users: Array<User> }) {
-    const users = params.users;
-    this.usersStore.updateUsersProps({ users });
+    try {
+      const users = params.users;
+      this.usersStore.updateUsersProps({ users });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async deleteAccount(params: { password: string }) {
@@ -61,37 +65,47 @@ export default class UserController {
       await this.userService.deleteUserAccount({
         password: params.password,
       });
-    } catch (e: any) {
-      throw e;
+    } catch (error) {
+      return this.errorController.handleError({ error });
     }
   }
 
-  async createUserAccount(params: UserRegister): Promise<SignUpUserResponse> {
-    const { name, user, password, email } = params;
+  async createUserAccount(
+    params: UserRegister,
+  ): Promise<SignUpUserResponse | void> {
+    try {
+      const { name, user, password, email } = params;
 
-    return await this.sessionService.userRegister({
-      name,
-      user,
-      password,
-      email,
-    });
+      return await this.sessionService.userRegister({
+        name,
+        user,
+        password,
+        email,
+      });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async updateUserAccount(params: UpdateUserAccount): Promise<void> {
-    const { id, name, user, email } = params;
+    try {
+      const { id, name, user, email } = params;
 
-    await this.sessionService.updateUserAccount({
-      id,
-      name,
-      user,
-      email,
-    });
+      await this.sessionService.updateUserAccount({
+        id,
+        name,
+        user,
+        email,
+      });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async uploadImage(params: {
     image: File;
     type: string;
-  }): Promise<{ id: string; path: string; name: string }> {
+  }): Promise<{ id: string; path: string; name: string } | void> {
     const { image, type } = params;
     try {
       const { id, path, name } = await this.systemService.uploadImage({
@@ -99,8 +113,8 @@ export default class UserController {
         type,
       });
       return { id: id ?? "", path: path ?? "", name: name ?? "" };
-    } catch (error: any) {
-      throw new Error(error);
+    } catch (error) {
+      return this.errorController.handleError({ error });
     }
   }
 
@@ -110,27 +124,43 @@ export default class UserController {
     email: string;
     imageId: string;
   }): Promise<void> {
-    const { name, user, email, imageId } = params;
+    try {
+      const { name, user, email, imageId } = params;
 
-    await this.userService.saveUserData({ name, user, email, imageId });
+      await this.userService.saveUserData({ name, user, email, imageId });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async updateUserStatus(params: DisableUser): Promise<void> {
-    const { id, status } = params;
-    await this.adminService.updateUserStatus({ id, status });
+    try {
+      const { id, status } = params;
+      await this.adminService.updateUserStatus({ id, status });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async deleteUserAccount(params: AdminDeleteUserAccount): Promise<void> {
-    const { id, email } = params;
-    await this.adminService.deleteUserAccount({ id, email });
+    try {
+      const { id, email } = params;
+      await this.adminService.deleteUserAccount({ id, email });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async login(params: {
     user: string;
     password: string;
-  }): Promise<{ token: string }> {
-    const { user, password } = params;
-    return await this.sessionService.userLogin({ user, password });
+  }): Promise<{ token: string } | void> {
+    try {
+      const { user, password } = params;
+      return await this.sessionService.userLogin({ user, password });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async loadUser() {
@@ -139,24 +169,25 @@ export default class UserController {
 
       this.updateUserProps({ user });
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        if (
-          error.message != "Unauthorized" &&
-          error.message != "Request failed with status code 500" &&
-          error.message != "Server Error"
-        )
-          throw error;
-      }
+      return this.errorController.handleError({ error });
     }
   }
 
   updateUserProps(params: { user: User }) {
-    const { user } = params;
-    this.userStore.updateUserProps(user);
+    try {
+      const { user } = params;
+      this.userStore.updateUserProps(user);
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
-  getUser(): User | undefined {
-    return this.userRefs.user.value ?? undefined;
+  getUser(): User | void {
+    try {
+      return this.userRefs.user.value ?? undefined;
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async recoverPassword(params: { email: string }) {
@@ -178,12 +209,16 @@ export default class UserController {
 
     try {
       await this.sessionService.sendNewPassword({ code, password, email });
-    } catch (error: any) {
-      throw error;
+    } catch (error) {
+      return this.errorController.handleError({ error });
     }
   }
 
   getUsersLoaded() {
-    return this.usersStore.getUsers();
+    try {
+      return this.usersStore.getUsers();
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 }

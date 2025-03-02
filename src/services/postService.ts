@@ -49,7 +49,6 @@ export default class PostService {
 
   async deletePost(params: { id: string }): Promise<void> {
     const { id } = params;
-
     await apiConnector.post({ url: `delete-post`, data: { id } });
   }
 
@@ -69,7 +68,7 @@ export default class PostService {
         delete post.updated_at;
         post.cover = post.cover;
         return post;
-      })
+      }),
     );
     return posts;
   }
@@ -101,16 +100,10 @@ export default class PostService {
   }): Promise<Array<string>> {
     const { status } = params;
 
-    try {
-      const response = await apiConnector.get({
-        url: `post-dates`,
-        data: { status },
-      });
-
-      return response;
-    } catch (error: any) {
-      throw error;
-    }
+    return await apiConnector.get({
+      url: `post-dates`,
+      data: { status },
+    });
   }
 
   async searchPosts(params: {

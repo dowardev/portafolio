@@ -14,6 +14,9 @@ import { Storage } from "@ionic/storage";
 import { Theme as ThemeType } from "@/services/types";
 import { wb } from "@/main";
 
+// controllers
+import ErrorController from "./errorController";
+
 // services
 import SystemService from "@/services/systemService";
 import ContactService from "@/services/contactService";
@@ -24,6 +27,7 @@ export default class SystemController {
   systemService = new SystemService();
   contactService = new ContactService();
   feedbackService = new FeedbackService();
+  private errorController = new ErrorController();
 
   // TODO:remove
   systemStore = useSystemStore();
@@ -42,172 +46,266 @@ export default class SystemController {
   // }
 
   async openToastError(error: object) {
-    const toast = await toastController.create({
-      header: "Ocurrió un error",
-      message: "¿Quieres reportar el error?",
-      icon: alertCircleOutline,
-      position: "bottom",
-      color: "danger",
-      buttons: [
-        {
-          text: "Reportar",
-          handler: () => {
-            reportError({ error, type: "error" });
+    try {
+      const toast = await toastController.create({
+        header: "Ocurrió un error",
+        message: "¿Quieres reportar el error?",
+        icon: alertCircleOutline,
+        position: "bottom",
+        color: "danger",
+        buttons: [
+          {
+            text: "Reportar",
+            handler: () => {
+              reportError({ error, type: "error" });
+            },
           },
-        },
-        {
-          icon: closeOutline,
-          role: "cancel",
-          handler: () => {
-            // console.log("Cancel clicked");
+          {
+            icon: closeOutline,
+            role: "cancel",
+            handler: () => {
+              // console.log("Cancel clicked");
+            },
           },
-        },
-      ],
-    });
-    await toast.present();
+        ],
+      });
+      await toast.present();
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async loadThemeSelected(): Promise<void> {
-    const theme = (await this.systemService.getTheme()) ?? {
-      selected: "light",
-      options: { blur: false },
-    };
-    this.systemStore.updateThemeSelected({ theme });
+    try {
+      const theme = (await this.systemService.getTheme()) ?? {
+        selected: "light",
+        options: { blur: false },
+      };
+      this.systemStore.updateThemeSelected({ theme });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
-  getTheme(): Theme {
-    return this.systemStore.getThemeSelected();
+  getTheme(): Theme | void {
+    try {
+      return this.systemStore.getThemeSelected();
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   applyTheme(params: { newTheme: Theme; oldTheme: Theme }): void {
-    const { newTheme, oldTheme } = params;
-    this.systemService.applyTheme({
-      theme: newTheme,
-      currentTheme: oldTheme,
-    });
+    try {
+      const { newTheme, oldTheme } = params;
+      this.systemService.applyTheme({
+        theme: newTheme,
+        currentTheme: oldTheme,
+      });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async storeThemeSelected(params: { theme: Theme }): Promise<void> {
-    const theme = params.theme;
-    await this.systemService.storeThemeSelected({ theme });
+    try {
+      const theme = params.theme;
+      await this.systemService.storeThemeSelected({ theme });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   updateThemeSelected(params: { theme: Theme }): void {
-    const { theme } = params;
-    this.systemStore.updateThemeSelected({ theme });
+    try {
+      const { theme } = params;
+      this.systemStore.updateThemeSelected({ theme });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   toggleUpdateOption() {
-    this.systemStore.toggleUpdateOption();
+    try {
+      this.systemStore.toggleUpdateOption();
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   getUpdateStatus() {
-    return this.systemStore.update;
+    try {
+      return this.systemStore.update;
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
-  async getImageURL(params: { name: string }): Promise<{ url: string }> {
-    const { name } = params;
-    return await this.systemService.getImageURL({ name });
+  async getImageURL(params: { name: string }): Promise<{ url: string } | void> {
+    try {
+      const { name } = params;
+      return await this.systemService.getImageURL({ name });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async presentAlertConfirmation(params: {
     message: string;
-  }): Promise<boolean> {
-    const { message } = params;
-
-    return await this.systemService.presentAlertConfirmation({ message });
+  }): Promise<boolean | void> {
+    try {
+      const { message } = params;
+      return await this.systemService.presentAlertConfirmation({ message });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async presentLoading(params: {
     message: string;
-  }): Promise<HTMLIonLoadingElement> {
-    const { message } = params;
-    return await this.systemService.presentLoading({ message });
+  }): Promise<HTMLIonLoadingElement | void> {
+    try {
+      const { message } = params;
+      return await this.systemService.presentLoading({ message });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async presentToast(params: Toast) {
-    const { message, color = "dark" } = params;
-
-    (
-      await toastController.create({
-        message,
-        duration: 1500,
-        position: "bottom",
-        color,
-      })
-    ).present();
+    try {
+      const { message, color = "dark" } = params;
+      (
+        await toastController.create({
+          message,
+          duration: 1500,
+          position: "bottom",
+          color,
+        })
+      ).present();
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async createContactMessage(params: ContactMessage) {
-    const { name, subject, email, description } = params;
-    await this.contactService.createContactMessage({
-      name,
-      subject,
-      email,
-      description,
-    });
+    try {
+      const { name, subject, email, description } = params;
+      await this.contactService.createContactMessage({
+        name,
+        subject,
+        email,
+        description,
+      });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   getFirstCookie() {
-    return this.systemService.getFirstCookie();
+    try {
+      return this.systemService.getFirstCookie();
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   createFirstCookie() {
-    this.systemService.createFirstCookie();
+    try {
+      this.systemService.createFirstCookie();
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   updateApp() {
-    if (wb) {
-      wb.addEventListener("controlling", () => {
-        window.location.reload();
-      });
-      wb.messageSkipWaiting();
-    } else {
-      console.error("Workbox no está inicializado.");
+    try {
+      if (wb) {
+        wb.addEventListener("controlling", () => {
+          window.location.reload();
+        });
+        wb.messageSkipWaiting();
+      } else {
+        throw new Error("Workbox no está inicializado.");
+      }
+    } catch (error) {
+      return this.errorController.handleError({ error });
     }
   }
 
   async createFeedback(params: FeedbackParams): Promise<void> {
-    const { userId, name, email, description, contactMe, type } = params;
+    try {
+      const { userId, name, email, description, contactMe, type } = params;
 
-    await this.feedbackService.createFeedback({
-      userId,
-      name,
-      email,
-      description,
-      contactMe,
-      type,
-    });
+      await this.feedbackService.createFeedback({
+        userId,
+        name,
+        email,
+        description,
+        contactMe,
+        type,
+      });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   enableLoader(params: { color: string }) {
-    const { color } = params;
-    this.systemStore.updateLoader({ status: true, color });
+    try {
+      const { color } = params;
+      this.systemStore.updateLoader({ status: true, color });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   disableLoader() {
-    this.systemStore.updateLoader({ status: false });
+    try {
+      this.systemStore.updateLoader({ status: false });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   getLoader() {
-    return this.systemStore.loader;
+    try {
+      return this.systemStore.loader;
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   setDesignMode(params: { mode: DesignMode }) {
-    const { mode } = params;
-    this.systemStore.setDesignMode({ mode });
+    try {
+      const { mode } = params;
+      this.systemStore.setDesignMode({ mode });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
-  getdesignMode(): DesignMode {
-    return this.systemStore.getDesignMode();
+  getdesignMode(): DesignMode | void {
+    try {
+      return this.systemStore.getDesignMode();
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   getScreenSize() {
-    return this.systemStore.screenSize;
+    try {
+      return this.systemStore.screenSize;
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   updateScreenSize(params: { width: number; height: number; preset: string }) {
-    const { width, height, preset } = params;
-    this.systemStore.updateScreenSize({ width, height, preset });
+    try {
+      const { width, height, preset } = params;
+      this.systemStore.updateScreenSize({ width, height, preset });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 }

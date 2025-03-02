@@ -1,3 +1,6 @@
+// controllers
+import ErrorController from "./errorController";
+
 // services
 import SystemService from "../services/systemService";
 
@@ -5,20 +8,25 @@ export default class ServerConfig {
   private serverUrl: string = "";
   private userToken: string = "";
   private systemService = new SystemService();
+  private errorController = new ErrorController();
 
   public async storeUserToken(params: {
     serverUrl?: string;
     userToken?: string;
   }): Promise<void> {
-    const { serverUrl, userToken } = params;
-    if (serverUrl) {
-      await this.systemService.storeDataOnLocalStorage({
-        key: "serverUrl",
-        value: serverUrl,
-      });
-    }
-    if (userToken) {
-      this.systemService.storeCookie({ key: "userToken", value: userToken });
+    try {
+      const { serverUrl, userToken } = params;
+      if (serverUrl) {
+        await this.systemService.storeDataOnLocalStorage({
+          key: "serverUrl",
+          value: serverUrl,
+        });
+      }
+      if (userToken) {
+        this.systemService.storeCookie({ key: "userToken", value: userToken });
+      }
+    } catch (error) {
+      return this.errorController.handleError({ error });
     }
   }
 
@@ -32,16 +40,27 @@ export default class ServerConfig {
         return;
       }
       this.userToken = token;
-    } catch (error: any) {
-      throw error;
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
     }
   }
 
-  public async getConfig(): Promise<{ serverUrl: string; userToken: string }> {
-    return { serverUrl: this.serverUrl, userToken: this.userToken };
+  public async getConfig(): Promise<{
+    serverUrl: string;
+    userToken: string;
+  } | void> {
+    try {
+      return { serverUrl: this.serverUrl, userToken: this.userToken };
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   public clearData() {
-    this.systemService.removeCookie({ key: "userToken" });
+    try {
+      this.systemService.removeCookie({ key: "userToken" });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
   }
 }
