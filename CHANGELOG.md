@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.1.3 - 2025-03-02
+
+### Added
+
+- Added prettier format prop to postPage cardCode component
+
 ## 9.1.2 - 2025-03-02
 
 - Simplified post page layout

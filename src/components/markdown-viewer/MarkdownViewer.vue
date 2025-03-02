@@ -111,6 +111,7 @@ const contentBlocks = computed(() => {
             border: true,
             color: "primary",
             language: lang,
+            prettierFormat: true,
           },
         });
       }
