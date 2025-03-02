@@ -4,6 +4,9 @@ import { storeToRefs } from "pinia";
 import { Post, UpdatePost } from "../services/interfaces";
 import { filterPostOptions, PostFields } from "@/services/types";
 
+// controllers
+import ErrorController from "./errorController";
+
 // services
 import PostService from "../services/postService";
 
@@ -11,6 +14,7 @@ export default class PostController {
   private postStore = usePostStore();
   private postRefs = storeToRefs(this.postStore);
   private postService = new PostService();
+  private errorController = new ErrorController();
 
   async loadPosts(params: {
     date: string;
@@ -26,9 +30,8 @@ export default class PostController {
       });
 
       this.postStore.setPosts({ posts });
-    } catch (e: any) {
-      // this.openToastError(e);
-      throw e;
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
     }
   }
 
@@ -39,9 +42,8 @@ export default class PostController {
       const dates = await this.postService.getPostsDates({ status });
 
       this.postStore.updateDates({ dates });
-    } catch (e: any) {
-      // this.openToastError(e);
-      throw e;
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
     }
   }
 
@@ -54,22 +56,28 @@ export default class PostController {
         fields,
       });
       this.postStore.addPost({ post });
-    } catch (e: any) {
-      // this.openToastError(e);
-      throw e;
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
     }
   }
 
-  getPost(params: { id: number }): Post | undefined {
-    const id = params.id;
-    const post = this.postStore.getPost({ id });
-    console.log(post);
-    return post ? post : undefined;
+  getPost(params: { id: number }): void | Post {
+    try {
+      const id = params.id;
+      const post = this.postStore.getPost({ id });
+      return post ? post : undefined;
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
+    }
   }
 
-  getPosts(): Post[] | undefined {
-    const posts = this.postStore.getPosts();
-    return posts ? posts : undefined;
+  getPosts(): Post[] | void {
+    try {
+      const posts = this.postStore.getPosts();
+      return posts ? posts : undefined;
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   getDates(): Array<string> | undefined {
@@ -92,13 +100,13 @@ export default class PostController {
     try {
       await this.postService.deletePost({ id });
     } catch (error) {
-      throw error;
+      return this.errorController.handleError({ error });
     }
   }
 
   async searchPosts(params: {
     search: string;
-  }): Promise<Array<{ id: string; title: string }>> {
+  }): Promise<void | { id: string; title: string }[]> {
     const search = params.search;
 
     try {
@@ -107,9 +115,8 @@ export default class PostController {
       });
 
       return result;
-    } catch (e: any) {
-      // this.openToastError(e);
-      throw e;
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
     }
   }
 
@@ -140,20 +147,24 @@ export default class PostController {
       //   },
       //   status: "active",
       // });
-    } catch (error: any) {
-      throw new Error(error);
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
     }
   }
 
   async updateCover(params: {
     image: File;
-  }): Promise<{ id: string; path: string; name: string }> {
-    const { image } = params;
-    const { id, path, name } = await this.postService.uploadImage({
-      image,
-      type: "post",
-    });
-    return { id, path, name };
+  }): Promise<{ id: string; path: string; name: string } | void> {
+    try {
+      const { image } = params;
+      const { id, path, name } = await this.postService.uploadImage({
+        image,
+        type: "post",
+      });
+      return { id, path, name };
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
+    }
   }
 
   async createPost(params: CreatePost) {
@@ -167,12 +178,15 @@ export default class PostController {
         status,
       };
       await this.postService.createPost(post);
-    } catch (error: any) {
-      throw new Error(error);
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
     }
   }
 
-  async uploadImage(params: { image: File; type: string }): Promise<Image> {
+  async uploadImage(params: {
+    image: File;
+    type: string;
+  }): Promise<Image | void> {
     const { image, type } = params;
     try {
       const { id, url, name } = await this.postService.uploadImage({
@@ -180,8 +194,8 @@ export default class PostController {
         type,
       });
       return { id, url, name };
-    } catch (error: any) {
-      throw new Error(error);
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
     }
   }
 }

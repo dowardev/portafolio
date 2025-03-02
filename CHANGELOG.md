@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.2.0 - 2025-03-02
+
+### Added
+
+- Added handleError to missing controllers
+
 ## 9.1.3 - 2025-03-02
 
 ### Added
