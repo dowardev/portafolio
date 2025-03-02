@@ -66,12 +66,12 @@
               @touchend="handleTouchEnd"
             >
               <ion-card-content>
-                <div style="display: flex" class="ion-justify-content-between">
-                  <div
-                    style="display: flex"
-                    class="ion-align-items-center"
-                    @click="openPost({ id: post.id })"
-                  >
+                <div
+                  style="display: flex; cursor: pointer"
+                  class="ion-justify-content-between"
+                  @click="openPost({ id: post.id })"
+                >
+                  <div style="display: flex" class="ion-align-items-center">
                     <span>
                       {{ post.title }}
                     </span>
@@ -85,7 +85,6 @@
                 >
                   <ion-chip
                     :color="getPostStatusColor({ status: post.status })"
-                    @click="openPost({ id: post.id })"
                   >
                     {{ post.status }}
                   </ion-chip>
@@ -696,7 +695,6 @@ button.alert-button.alert-delete-post-button-confirm {
   position: relative;
   border-bottom: 1px solid var(--ion-background-color-step-150);
   width: 76%;
-  cursor: pointer;
 }
 
 .card-post:hover {

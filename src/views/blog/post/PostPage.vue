@@ -48,6 +48,16 @@
   >
     <ion-row class="ion-justify-content-center" style="display: flex">
       <ion-col size-md="8" size-xl="6">
+        <ion-row>
+          <ion-col style="display: flex" class="ion-justify-content-center">
+            <img
+              style="width: 500px"
+              :src="postController.getPost({ id: postId })?.cover?.url"
+              alt=""
+            />
+          </ion-col>
+        </ion-row>
+
         <ion-header collapse="condense" mode="ios">
           <ion-toolbar>
             <ion-title size="large">

@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.1.2 - 2025-03-02
+
+- Simplified post page layout
+
 ## 9.1.1 - 2025-03-02
 
 ### Changed
