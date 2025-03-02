@@ -1,5 +1,21 @@
 # Changelog
 
+## 9.1.2 - 2025-03-02
+
+- Simplified post page layout
+
+## 9.1.1 - 2025-03-02
+
+### Changed
+
+- CSS code was changed to Ionic variables
+
+## 9.1.0 - 2025-03-01
+
+### Changed
+
+- Simplified posts page layout
+
 ## 9.0.13 - 2025-02-28
 
 ### Removed

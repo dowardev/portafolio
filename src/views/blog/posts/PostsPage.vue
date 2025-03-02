@@ -49,112 +49,74 @@
 
   <ion-content>
     <!-- posts -->
-    <ion-row
-      v-if="postController.getPosts()!.length > 0"
-      class="ion-justify-content-center"
-      style="display: flex"
-    >
-      <ion-col size-xs="12" size-md="8" size-lg="6" style="height: 100%">
-        <ion-row>
-          <ion-col
-            v-for="(post, indexPost) in filterPosts"
+    <section v-if="postController.getPosts()!.length > 0">
+      <ion-row class="ion-justify-content-center" style="display: flex">
+        <ion-col size-xs="12" size-md="8" size-lg="4">
+          <div
+            v-for="post in filterPosts"
             :key="post.id"
-            size-xs="12"
-            size-md="6"
-            size-lg="6"
+            class="ion-justify-content-center"
+            style="display: flex"
           >
             <ion-card
-              class="post-card no-shadow"
-              :class="{
-                admin:
-                  userController.getUser()?.isAdmin && isPlatform('desktop'),
-                'primary-select-animated-active':
-                  postProgress.status == true &&
-                  postProgress.id == post.id &&
-                  postProgress.color == 'primary',
-                'danger-select-animated-active':
-                  postProgress.status == true &&
-                  postProgress.id == post.id &&
-                  postProgress.color == 'danger',
-                'card-up':
-                  popoverPostOptions.isOpen &&
-                  post.id == idPostSelected?.toString(),
-              }"
-              @touchstart="startPress({ event: $event, id: post.id })"
-              @touchend="endPress"
-              @contextmenu.prevent
+              class="card-post no-shadow post-background"
+              @mouseover="postHoverId = post.id"
+              @mouseleave="postHoverId = -1"
+              @touchstart="handleTouchStart({ postId: post.id, event: $event })"
+              @touchend="handleTouchEnd"
             >
-              <div style="position: relative; display: inline-block">
-                <img
-                  style="
-                    border-top-left-radius: 4px;
-                    border-bottom-left-radius: 4px;
-                    border-radius: 4px;
-                  "
-                  class="img-cover"
-                  :src="post.cover ? post.cover.url : noCover"
-                />
-
-                <!-- degraded -->
+              <ion-card-content>
                 <div
-                  class="degraded"
-                  style="border-radius: 4px; cursor: pointer"
+                  style="display: flex; cursor: pointer"
+                  class="ion-justify-content-between"
                   @click="openPost({ id: post.id })"
-                ></div>
-
-                <div class="card-post-content">
-                  <section id="post-title">
-                    <!-- title -->
-                    <ion-card-title
-                      mode="md"
-                      style="color: white; cursor: pointer"
-                      @click="openPost({ id: post.id })"
-                    >
+                >
+                  <div style="display: flex" class="ion-align-items-center">
+                    <span>
                       {{ post.title }}
-                    </ion-card-title>
-                  </section>
+                    </span>
+                  </div>
+                </div>
 
-                  <section
-                    v-if="userController.getUser()?.isAdmin"
-                    id="section-hide"
+                <div
+                  v-if="userController.getUser()?.isAdmin"
+                  class="ion-padding-top ion-justify-content-end"
+                  style="display: flex; height: 46px"
+                >
+                  <ion-chip
+                    :color="getPostStatusColor({ status: post.status })"
                   >
-                    <div>
-                      <!-- status -->
-                      <ion-chip
-                        v-if="userController.getUser()?.isAdmin"
-                        :color="
-                          post.status == 'active'
-                            ? 'success'
-                            : post.status == 'inactive'
-                              ? 'danger'
-                              : 'warning'
-                        "
-                        >{{ post.status }}</ion-chip
-                      >
-                    </div>
+                    {{ post.status }}
+                  </ion-chip>
 
-                    <!-- button -->
-                    <div>
+                  <transition name="slide-fade-post-action-buttons">
+                    <div
+                      v-if="post.id == postHoverId"
+                      class="action-post-buttons"
+                    >
+                      <ion-button fill="clear">
+                        <ion-icon :icon="createOutline"></ion-icon>
+                      </ion-button>
+
                       <ion-button
+                        color="danger"
                         fill="clear"
-                        :disabled="postProgress.status"
                         @click="
-                          idPostSelected = parseInt(post.id);
-                          popoverPostOptions.event = $event;
-                          popoverPostOptions.isOpen = true;
+                          idPostSelected = post.id;
+                          isAlertDeletePostOpen = true;
                         "
                       >
-                        <ion-icon :icon="ellipsisVerticalOutline"> </ion-icon>
+                        <ion-icon :icon="trashOutline"></ion-icon>
                       </ion-button>
                     </div>
-                  </section>
+                  </transition>
                 </div>
-              </div>
+              </ion-card-content>
             </ion-card>
-          </ion-col>
-        </ion-row>
-      </ion-col>
-    </ion-row>
+          </div>
+        </ion-col>
+      </ion-row>
+    </section>
 
     <!-- end posts -->
 
@@ -290,40 +252,91 @@
   <ion-popover
     :is-open="popoverPostOptions.isOpen"
     :event="popoverPostOptions.event"
-    :dismiss-on-select="true"
+    :dismiss-on-select="false"
     @did-dismiss="popoverPostOptions.isOpen = false"
   >
     <ion-content>
-      <!-- update post -->
-      <ion-item
-        button
-        lines="full"
-        class="transparent"
-        @click="updatePost({ id: idPostSelected!.toString() })"
-      >
-        <ion-icon slot="start" :icon="createOutline"> </ion-icon>
+      <ion-row>
+        <ion-col>
+          <CardOptionsExpand
+            :expanded="cardDeletePostOptions.expanded"
+            :border="{
+              active:
+                cardDeletePostOptions.expanded || cardDeletePostOptions.hover,
+              type: 'solid',
+              color: 'primary',
+            }"
+            class="no-shadow"
+            @mouseover="cardDeletePostOptions.hover = true"
+            @mouseleave="cardDeletePostOptions.hover = false"
+          >
+            <template #header>
+              <ion-item
+                :lines="cardDeletePostOptions.expanded ? 'full' : 'none'"
+                button
+                @click="
+                  cardDeletePostOptions.expanded =
+                    !cardDeletePostOptions.expanded
+                "
+              >
+                <ion-icon
+                  slot="start"
+                  :icon="trashOutline"
+                  color="danger"
+                ></ion-icon>
+                <ion-label color="danger">Borrar</ion-label>
+              </ion-item>
+            </template>
 
-        <ion-label>Editar</ion-label>
-      </ion-item>
+            <template #content>
+              <ion-item
+                button
+                @click="
+                  cardDeletePostOptions.expanded = false;
+                  popoverPostOptions.isOpen = false;
+                "
+              >
+                <ion-label>No</ion-label>
+              </ion-item>
 
-      <!-- delete post -->
-      <ion-item
-        v-if="userController.getUser()?.isAdmin"
-        button
-        lines="none"
-        class="transparent"
-        @click="deletePost({ id: idPostSelected!.toString() })"
-      >
-        <ion-icon slot="start" :icon="trashOutline" color="danger"></ion-icon>
+              <ion-item button @click="deletePost({ id: idPostSelected })">
+                <ion-label color="danger">Si</ion-label>
+              </ion-item>
+            </template>
+          </CardOptionsExpand>
+        </ion-col>
+      </ion-row>
 
-        <ion-label>Eliminar</ion-label>
-      </ion-item>
+      <ion-row>
+        <ion-col>
+          <!-- update post -->
+          <ion-item
+            button
+            lines="full"
+            class="transparent"
+            @click="updatePost({ id: idPostSelected!.toString() })"
+          >
+            <ion-icon slot="start" :icon="createOutline"> </ion-icon>
+
+            <ion-label>Editar</ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-row>
     </ion-content>
   </ion-popover>
+
+  <!-- alerts -->
+  <ion-alert
+    :is-open="isAlertDeletePostOpen"
+    header="Eliminar post"
+    message="Continuar?"
+    :buttons="alertDeletePostButtons"
+    @did-dismiss="isAlertDeletePostOpen = false"
+  ></ion-alert>
 </template>
 
 <script setup lang="ts">
-import { IonItem, loadingController, IonPage, isPlatform } from "@ionic/vue";
+import { IonItem, isPlatform } from "@ionic/vue";
 import { computed, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -335,7 +348,6 @@ import {
   closeOutline,
   createOutline,
   ellipsisVerticalOutline,
-  filterOutline,
   refreshOutline,
   searchOutline,
   trashOutline,
@@ -350,11 +362,8 @@ const postController = new PostController();
 const systemController = new SystemController();
 
 // components
-import DateSelectorComponent from "@/components/posts/DateSelectorComponent.vue";
 import { filterPostOptions } from "@/services/types";
-
-// imgs
-import noCover from "@/assets/otros/No_cover.png";
+import { CardOptionsExpand } from "ionic-extra-components";
 
 // vars
 const pageTitle = ref("Blog");
@@ -372,7 +381,10 @@ const currentPage = ref("");
 let dates = reactive([] as Array<string>);
 const index = ref();
 const currentPageIndex = ref(0);
-const popOverMainOPtions = ref({ isOpen: false, event: {} as MouseEvent });
+const popOverMainOPtions = ref({
+  isOpen: false,
+  event: undefined as Event | undefined,
+});
 const filter = reactive({
   selected: "active" as filterPostOptions,
   options: {
@@ -383,10 +395,31 @@ const filter = reactive({
   },
 });
 const popoverPostOptions = ref({ isOpen: false, event: {} as MouseEvent });
-const idPostSelected = ref<undefined | number>(undefined);
-const pressTimer = ref(0);
+const idPostSelected = ref(-1);
+const touchTimer = ref<ReturnType<typeof setTimeout> | null>(null);
 const designPlatform = isPlatform("ios") ? "ios" : "md";
 const postProgress = ref({ status: false, id: "", color: "" });
+const postHoverId = ref(-1);
+const isAlertDeletePostOpen = ref(false);
+const alertDeletePostButtons = [
+  {
+    text: "Cancelar",
+    role: "cancel",
+    handler: () => {
+      // console.log("Alert canceled");
+    },
+  },
+  {
+    text: "Confirmar",
+    role: "confirm",
+    cssClass: "alert-delete-post-button-confirm",
+    handler: async () => {
+      await deletePost({ id: idPostSelected.value });
+    },
+  },
+];
+const cardDeletePostOptions = reactive({ expanded: false, hover: false });
+// end vars
 
 // computed
 const filterPosts = computed(() => {
@@ -396,7 +429,9 @@ const filterPosts = computed(() => {
   );
   return result;
 });
+// end computed
 
+// watch
 watch(
   () => postController.getDates(),
   (newValue) => {
@@ -427,6 +462,7 @@ watch(
   },
   { immediate: true },
 );
+// end watch
 
 // functions
 async function addPost(): Promise<void> {
@@ -510,7 +546,7 @@ async function openPostSearch(params: { id: string }): Promise<void> {
   closeModalSearchPosts();
 }
 
-async function openPost(params: { id: string }) {
+async function openPost(params: { id: number }) {
   const { id } = params;
   openPostLoader({ id });
   await router.push({ name: "PostPage", params: { id } });
@@ -524,21 +560,12 @@ async function updatePost(params: { id: string }) {
   closePostLoader();
 }
 
-async function deletePost(params: { id: string }) {
+async function deletePost(params: { id: number }) {
   const id = params.id;
   openPostLoader({ id, color: "danger" });
 
-  const response = await systemController.presentAlertConfirmation({
-    message: "¿Desea eliminar el post?",
-  });
-
-  if (response == false) {
-    closePostLoader();
-    return;
-  }
-
   try {
-    // await postController.deletePost({ id });
+    await postController.deletePost({ id });
     loadContent({ status: filter.selected });
   } catch (error) {
     console.error(error);
@@ -615,20 +642,6 @@ function updatecurrentPage(): void {
   postController.updateCurrentPage({ currentPage: currentPage.value });
 }
 
-function startPress(params: { event: MouseEvent; id: string }) {
-  const { event, id } = params;
-  if (!userController.getUser()?.isAdmin) return;
-  pressTimer.value = setTimeout(() => {
-    idPostSelected.value = parseInt(id);
-    popoverPostOptions.value.event = event;
-    popoverPostOptions.value.isOpen = true;
-  }, 500);
-}
-
-function endPress() {
-  clearTimeout(pressTimer.value);
-}
-
 function openPostLoader(params: { id: string; color?: string }) {
   const { id, color = "primary" } = params;
   postProgress.value.status = true;
@@ -641,65 +654,72 @@ function closePostLoader() {
   postProgress.value.status = false;
   systemController.disableLoader();
 }
-</script>
 
-<style scoped>
-.truncate-text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+function handleTouchStart(params: { postId: number; event: MouseEvent }) {
+  const { event, postId } = params;
+
+  touchTimer.value = setTimeout(() => {
+    popoverPostOptions.value.event = event;
+    popoverPostOptions.value.isOpen = true;
+    idPostSelected.value = postId;
+  }, 500);
 }
 
-.img-cover {
-  width: 100dvw;
-  height: 200px;
-}
-
-@media (min-width: 1024px) {
-  .img-cover {
-    width: 100dvw;
-    height: 193px;
+function handleTouchEnd() {
+  if (touchTimer.value) {
+    clearTimeout(touchTimer.value);
+    touchTimer.value = null;
   }
 }
 
-.card-post-content {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  transition: all 0.54s ease;
-  width: 100%;
+function getPostStatusColor(params: { status: string }): string {
+  const { status } = params;
+
+  return status == "active"
+    ? "success"
+    : status == "inactive"
+      ? "danger"
+      : "warning";
+}
+// end functions
+</script>
+
+<style>
+button.alert-button.alert-delete-post-button-confirm {
+  color: var(--ion-color-danger);
+}
+</style>
+
+<style scoped>
+.card-post {
+  position: relative;
+  border-bottom: 1px solid var(--ion-background-color-step-150);
+  width: 76%;
 }
 
-.card-post-content > #section-hide {
-  margin-top: 10px;
+.card-post:hover {
+  background-color: var(--ion-color-step-50, rgba(0, 0, 0, 0.04));
+}
+
+.action-post-buttons {
+  display: inline-flex;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  align-items: flex-end;
+  z-index: 100;
+  background-color: var(--ion-background-color);
+}
+
+.slide-fade-post-action-buttons-enter-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-post-action-buttons-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-post-action-buttons-enter-from,
+.slide-fade-post-action-buttons-leave-to {
+  transform: translateX(20px);
   opacity: 0;
-  transition: opacity 0.4s ease;
-  display: flex;
-  justify-content: end;
-  position: absolute;
-  align-items: center;
-  width: 100%;
-}
-
-.card-post-content > #post-title {
-  width: 80%;
-}
-
-.admin:hover .card-post-content,
-.card-up .card-post-content {
-  transform: translateY(-60px);
-}
-
-.admin:hover .card-post-content > #section-hide {
-  opacity: 1;
-}
-
-.degraded {
-  position: absolute;
-  top: 0%;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), black);
 }
 </style>

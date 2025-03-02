@@ -63,6 +63,7 @@ export default class PostController {
   getPost(params: { id: number }): Post | undefined {
     const id = params.id;
     const post = this.postStore.getPost({ id });
+    console.log(post);
     return post ? post : undefined;
   }
 
