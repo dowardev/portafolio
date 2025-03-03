@@ -17,15 +17,12 @@ import ErrorController from "./errorController";
 
 // services
 import UserService from "../services/userService";
-import AdminService from "../services/adminService";
 import SessionService from "@/services/sessionService";
 import { useUserStore } from "@/store/userStore";
-import { AxiosError } from "axios";
 
 export default class UserController {
   private usersStore = useUsersStore();
   private userService = new UserService();
-  private adminService = new AdminService();
   private sessionService = new SessionService();
   private systemService = new SystemService();
   private errorController = new ErrorController();
@@ -38,7 +35,7 @@ export default class UserController {
     const { search, pagination, page, options } = params;
 
     try {
-      const response = await this.adminService.searchUsers({
+      const response = await this.userService.searchUsers({
         search,
         pagination,
         page,
@@ -136,7 +133,7 @@ export default class UserController {
   async updateUserStatus(params: DisableUser): Promise<void> {
     try {
       const { id, status } = params;
-      await this.adminService.updateUserStatus({ id, status });
+      await this.userService.updateUserStatus({ id, status });
     } catch (error) {
       return this.errorController.handleError({ error });
     }
@@ -145,7 +142,7 @@ export default class UserController {
   async deleteUserAccount(params: AdminDeleteUserAccount): Promise<void> {
     try {
       const { id, email } = params;
-      await this.adminService.deleteUserAccount({ id, email });
+      await this.userService.adminDeleteUserAccount({ id, email });
     } catch (error) {
       return this.errorController.handleError({ error });
     }

@@ -1,12 +1,9 @@
-import { UserToken } from "./interfaces";
-import { url } from "@vuelidate/validators";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 type ContentType = "application/json" | "multipart/form-data";
 
 export default class APIService {
   private serverUrl: string = "";
-  private url: string = "";
   private userToken: string = "";
 
   constructor(params: { serverUrl: string; userToken: string }) {
@@ -39,9 +36,9 @@ export default class APIService {
 
   public async post(params: {
     url: string;
-    data?: any;
+    data?: object;
     contentType?: ContentType;
-  }): Promise<any> {
+  }) {
     const { url, data = {}, contentType = "application/json" } = params;
 
     const response = await axios.request({

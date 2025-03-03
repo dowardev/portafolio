@@ -16,9 +16,6 @@ import {
   Theme,
 } from "./interfaces";
 
-import axios from "axios";
-import { url } from "@vuelidate/validators";
-
 export default class SystemService {
   async getTheme(): Promise<Theme> {
     const theme = await this.getDataFromLocalStorage({ key: "theme" });

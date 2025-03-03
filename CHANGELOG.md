@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.3.0 - 2025-03-02
+
+### Changed
+
+- The way errors are handled in controllers and services has been changed
+
 ## 9.2.0 - 2025-03-02
 
 ### Added

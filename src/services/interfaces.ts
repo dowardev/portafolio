@@ -74,6 +74,25 @@ export interface GetPostsDates {
   refetch?: boolean;
 }
 
+export interface PostServerResponse {
+  post: {
+    id: number;
+    title: string;
+    content: string;
+    created_at: string;
+    updated_at: string;
+    status: string;
+    cover: PostCoverServerResponse;
+  };
+}
+
+export interface PostCoverServerResponse {
+  id: number;
+  name: string;
+  url: string;
+}
+// end posts
+
 // image
 export interface GetImage {
   id?: Image["id"];
