@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ErrorReportController;
 use App\Http\Controllers\PostsController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\UserController;
@@ -20,6 +21,10 @@ Route::middleware(Cors::class)->group(function () {
   Route::post("contact", [SystemController::class, "createContactMessage"]);
   Route::post("feedback", [SystemController::class, "createFeedback"]);
   Route::get("get-image", [SystemController::class, "getImage"]);
+  Route::post("error-report", [
+    ErrorReportController::class,
+    "createErrorReport",
+  ]);
 
   // posts
   Route::get("posts/{date}/{filter}", [PostsController::class, "getPosts"]);
