@@ -131,6 +131,7 @@ export interface AlertConfirmation {
   message: string;
 }
 
+// TODO: refact
 export interface ReportError {
   error?: any;
   type: "feedback" | "error";

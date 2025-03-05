@@ -85,8 +85,10 @@ import { useRouter } from "vue-router";
 // controllers
 import SystemController from "@/controllers/systemController";
 import UserController from "@/controllers/userController";
+import ErrorController from "@/controllers/errorController";
 const systemController = new SystemController();
 const userController = new UserController();
+const errorController = new ErrorController();
 
 // components
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
@@ -148,7 +150,7 @@ async function register(params: {
       return;
     }
     console.error(e);
-    systemController.openToastError(e);
+    errorController.openToastError(e);
   }
 }
 

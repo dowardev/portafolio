@@ -12,14 +12,16 @@
       <ion-router-outlet id="main" :animated="!disableAnimation" />
 
       <!-- toasts -->
+      <!-- toast update -->
       <ion-toast
         message="Nueva actualización disponible, más detalles en la sección de novedades"
         :is-open="openToastUpdateApp"
-        :buttons="toastButtons"
+        :buttons="toastUpdateButtons"
         :duration="7000"
         @did-dismiss="updateApp($event)"
       ></ion-toast>
     </div>
+    <!-- end toasts -->
 
     <div class="landscape-warning">
       <p>Por favor, gira tu dispositivo para ver este sitio web.</p>
@@ -32,7 +34,6 @@ import {
   IonApp,
   IonRouterOutlet,
   IonMenu,
-  IonSplitPane,
   IonToast,
   toastController,
   isPlatform,
@@ -60,7 +61,7 @@ const route = useRoute();
 // vars
 const openToastUpdateApp = ref(false);
 const previousRoute = ref("");
-const toastButtons = [
+const toastUpdateButtons = [
   {
     text: "Actualizar",
     role: "update",

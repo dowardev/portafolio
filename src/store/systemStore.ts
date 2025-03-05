@@ -22,6 +22,12 @@ export const useSystemStore = defineStore("system", () => {
     height: window.innerHeight,
     preset: "",
   });
+  const errorReport = reactive({
+    message: "",
+    stack: "",
+    timestamp: "",
+    comments: "",
+  });
 
   watch(theme, async (newValue, oldValue) => {
     if (
@@ -87,5 +93,6 @@ export const useSystemStore = defineStore("system", () => {
     setDesignMode,
     screenSize,
     updateScreenSize,
+    errorReport,
   };
 });
