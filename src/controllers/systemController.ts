@@ -239,7 +239,7 @@ export default class SystemController {
     }
   }
 
-  getScreenSize() {
+  getScreenSize(): { width: number; height: number; preset: string } | void {
     try {
       return this.systemStore.screenSize;
     } catch (error) {

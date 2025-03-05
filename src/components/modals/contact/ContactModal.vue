@@ -13,8 +13,9 @@
         <ion-title>{{ pageTitle }}</ion-title>
 
         <ion-buttons slot="end">
-          <ButtonIconAnimationComponent
-            ref="buttonAnimation1"
+          <LoadButton
+            :fill="buttonSend.fill as any"
+            :status="buttonSend.status"
             color="primary"
             @click="handleSendMessage(contactForm?.getData()!)"
           >
@@ -23,7 +24,7 @@
             </template>
 
             <template #message>Enviando</template>
-          </ButtonIconAnimationComponent>
+          </LoadButton>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -44,13 +45,13 @@ import {
   modalController,
 } from "@ionic/vue";
 import { closeOutline, sendOutline } from "ionicons/icons";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
+import { LoadButton } from "ionic-extra-components";
 
 // interface
 import { ContactMessage } from "@/services/interfaces";
 
 // components
-import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
 import ContactForm from "@/forms/ContactForm.vue";
 
 // controllers
@@ -60,8 +61,7 @@ const systemController = new SystemController();
 // vars
 const pageTitle = "Formulario de contacto";
 const contactForm = ref<InstanceType<typeof ContactForm>>();
-const buttonAnimation1 =
-  ref<InstanceType<typeof ButtonIconAnimationComponent>>();
+const buttonSend = reactive({ status: false, fill: "clear" });
 
 // functions
 function closeModal() {
@@ -90,15 +90,16 @@ async function sendMessage(params: ContactMessage) {
 
 async function handleSendMessage(params: ContactMessage) {
   const { name, email, subject, description } = params;
-  buttonAnimation1.value?.updateConfig({ status: true, fill: "solid" });
+  buttonSend.status = true;
+  buttonSend.fill = "solid";
 
-  await new Promise((resolve) => setTimeout(resolve, 800));
   await sendMessage({ name, email, subject, description });
-  await new Promise((resolve) => setTimeout(resolve, 800));
+  await new Promise((resolve) => setTimeout(resolve, 200));
 
-  buttonAnimation1.value?.updateConfig({ status: false, fill: "default" });
+  buttonSend.status = false;
+  buttonSend.fill = "clear";
 
-  await new Promise((resolve) => setTimeout(resolve, 800));
+  await new Promise((resolve) => setTimeout(resolve, 200));
   closeModal();
 }
 </script>

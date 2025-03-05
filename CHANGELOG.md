@@ -1,12 +1,22 @@
 # Changelog
 
-## 9.4.0 - 2025-03-02
+## 9.4.1 - 2025-03-05
+
+### Changed
+
+- Changed ButtonIconAnimationComponent to LoadButton
+
+### Removed
+
+- Removed IonItemLoader Component
+
+## 9.4.0 - 2025-03-05
 
 ### Changed
 
 - Changed the way error reporting works
 
-## 9.3.0 - 2025-03-02
+## 9.3.0 - 2025-03-03
 
 ### Changed
 
