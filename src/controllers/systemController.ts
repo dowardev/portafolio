@@ -182,7 +182,7 @@ export default class SystemController {
 
   async createFeedback(params: FeedbackParams): Promise<void> {
     try {
-      const { userId, name, email, description, contactMe, type } = params;
+      const { userId, name, email, description, contactMe } = params;
 
       await this.feedbackService.createFeedback({
         userId,
@@ -190,7 +190,6 @@ export default class SystemController {
         email,
         description,
         contactMe,
-        type,
       });
     } catch (error) {
       return this.errorController.handleError({ error });

@@ -18,12 +18,10 @@ export interface Feedback {
 
 export interface FeedbackParams {
   userId?: Feedback["userId"];
-  name?: Feedback["name"];
-  email?: Feedback["email"];
+  name: Feedback["name"];
+  email: Feedback["email"];
   description: Feedback["description"];
   contactMe: Feedback["contactMe"];
-  error?: any;
-  type: Feedback["type"];
 }
 
 // posts
@@ -129,12 +127,6 @@ export interface Loading {
 
 export interface AlertConfirmation {
   message: string;
-}
-
-// TODO: refact
-export interface ReportError {
-  error?: any;
-  type: "feedback" | "error";
 }
 
 // user

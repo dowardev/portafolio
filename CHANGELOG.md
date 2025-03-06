@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.5.0 - 2025-03-05
+
+- Changed the way feedback reporting works
+
 ## 9.4.1 - 2025-03-05
 
 ### Changed

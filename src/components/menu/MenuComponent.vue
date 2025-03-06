@@ -358,8 +358,14 @@
       </ion-modal>
 
       <!-- modal comments -->
-      <ion-modal :is-open="modalComments.open">
-        <FeedbackPage :data="{ type: 'feedback' }" />
+      <ion-modal
+        :is-open="modalComments.open"
+        @will-dismiss="modalComments.open = false"
+      >
+        <FeedbackComponent
+          :data="{ type: 'feedback' }"
+          @dismiss="modalComments.open = false"
+        />
       </ion-modal>
     </ion-content>
   </ion-page>
@@ -399,7 +405,7 @@ import { useRouter } from "vue-router";
 
 // components
 import ThemeComponente from "@/components/theme/ThemeComponente.vue";
-import FeedbackPage from "../feedback/FeedbackPage.vue";
+import FeedbackComponent from "../feedback/FeedbackComponent.vue";
 
 // controllers
 import ServerConfig from "@/controllers/serverConfigController";
@@ -427,7 +433,7 @@ const windowSize = ref({
   width: window.innerWidth,
 });
 const modalContribute = ref({ open: false });
-const modalComments = ref({ open: false });
+const modalComments = ref({ open: true });
 
 // mounted
 onMounted(() => {

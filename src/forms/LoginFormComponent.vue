@@ -85,7 +85,6 @@ const v$ = useVuelidate(rules, { form });
 
 // watch
 watch(form.value, (newValue, oldValue) => {
-  console.log(!v$.value.$invalid);
   emits("formStatus", !v$.value.$invalid);
 });
 
