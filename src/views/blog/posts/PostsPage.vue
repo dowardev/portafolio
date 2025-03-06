@@ -357,9 +357,11 @@ import {
 import UserController from "@/controllers/userController";
 import PostController from "@/controllers/postController";
 import SystemController from "@/controllers/systemController";
+import ErrorController from "@/controllers/errorController";
 const userController = new UserController();
 const postController = new PostController();
 const systemController = new SystemController();
+const errorController = new ErrorController();
 
 // components
 import { filterPostOptions } from "@/services/types";
@@ -513,9 +515,9 @@ async function getPostsDates(params: {
 
   try {
     await postController.loadDates({ status });
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
-    systemController.openToastError(e);
+    errorController.openToastError({ error: e as Error });
     throw e;
   }
 }
@@ -594,9 +596,9 @@ async function nextDate(): Promise<void> {
     await postController.loadPosts({
       date: currentPage.value,
     });
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
-    systemController.openToastError(e);
+    errorController.openToastError({ error: e as Error });
     throw e;
   }
 }
@@ -615,9 +617,9 @@ async function previousDate(): Promise<void> {
     await postController.loadPosts({
       date: currentPage.value,
     });
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
-    systemController.openToastError(e);
+    errorController.openToastError({ error: e as Error });
     throw e;
   }
 }
@@ -631,9 +633,9 @@ async function selectDate(params: { date: string }): Promise<void> {
     await postController.loadPosts({
       date: currentPage.value,
     });
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
-    systemController.openToastError(e);
+    errorController.openToastError({ error: e as Error });
     throw e;
   }
 }

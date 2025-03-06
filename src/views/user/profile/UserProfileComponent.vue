@@ -223,9 +223,9 @@
 
     <ion-content class="ion-padding">
       <ion-card
-        class="success-base-content-card success-border-indicator success-border success-fill"
         v-for="item in information[0].basicCardInformation"
         :key="item.title"
+        class="success-base-content-card success-border-indicator success-border success-fill"
       >
         <ion-card-header>
           <ion-card-title>
@@ -390,8 +390,10 @@ import userAvatar from "../../../assets/otros/user.png";
 // controllers
 import SystemController from "@/controllers/systemController";
 import UserController from "@/controllers/userController";
+import ErrorController from "@/controllers/errorController";
 const systemController = new SystemController();
 const userController = new UserController();
+const errorController = new ErrorController();
 
 // vars
 const emits = defineEmits(["content-loaded"]);
@@ -453,7 +455,7 @@ const rules = {
       required: helpers.withMessage(messageError.required, required),
       alpha: helpers.withMessage(
         messageError.alpha,
-        helpers.regex(/^[a-zA-Z ]*$/)
+        helpers.regex(/^[a-zA-Z ]*$/),
       ),
     },
     user: {
@@ -461,7 +463,7 @@ const rules = {
       maxLength: helpers.withMessage("Máximo 32 caracteres", maxLength(32)),
       minLength: helpers.withMessage(
         "Mínimo 4 caracteres",
-        helpers.regex(/^.{4,}$/)
+        helpers.regex(/^.{4,}$/),
       ),
     },
     email: {
@@ -515,7 +517,7 @@ async function saveUserData() {
     await systemController.presentToast({
       message: "Datos actualizados",
     });
-  } catch (e: any) {
+  } catch (e) {
     if (e.message == "Email already selected") {
       await systemController.presentToast({
         message: "Correo ya en uso",
@@ -524,7 +526,7 @@ async function saveUserData() {
       return;
     }
     console.error(e);
-    systemController.openToastError(e);
+    errorController.openToastError({ error: e as Error });
   } finally {
     spinners.value.saveUserData = false;
   }
@@ -540,11 +542,11 @@ async function presentAlertEmail() {
   await alert.present();
 }
 
-async function getImageBase64(e: any) {
+async function getImageBase64(e) {
   return new Promise((resolve) => {
     const file = e.target.files[0];
     const reader = new FileReader();
-    reader.onload = async (e: any) => {
+    reader.onload = async (e) => {
       const fileData = e.target.result;
       resolve(fileData);
     };
@@ -552,7 +554,7 @@ async function getImageBase64(e: any) {
   });
 }
 
-async function uploadUserImage(e: any) {
+async function uploadUserImage(e) {
   if (!e.target.files[0]) return;
   spinners.value.uploadImage = true;
   const image = await getImageBase64(e);
@@ -634,7 +636,7 @@ async function deleteUserAccount() {
         message: "Hasta pronto",
       });
       location.reload();
-    } catch (e: any) {
+    } catch (e) {
       if (e.message == "Wrong password") {
         await systemController.presentToast({
           message: "Contraseña incorrecta",
@@ -642,7 +644,7 @@ async function deleteUserAccount() {
         });
       }
       console.error(e);
-      systemController.openToastError(e);
+      errorController.openToastError({ error: e as Error });
     } finally {
       spinners.value.deleteUserAccount = false;
     }
@@ -656,9 +658,9 @@ async function logout() {
       "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
     // setUserToken({ token });
     location.reload();
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
-    systemController.openToastError(e);
+    errorController.openToastError({ error: e as Error });
   }
 }
 </script>

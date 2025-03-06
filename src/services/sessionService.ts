@@ -1,6 +1,5 @@
 import {
   UserRegister,
-  ResetPassword,
   UpdateUserPassword,
   SignUpUserServerResponse,
   SignUpUserResponse,
@@ -8,48 +7,32 @@ import {
 } from "./interfaces";
 import { apiConnector } from "@/main";
 
-import axios, { AxiosError } from "axios";
-
 export default class SessionService {
   async userRegister(params: UserRegister): Promise<SignUpUserResponse> {
     const { name, user, password, email } = params;
 
-    try {
-      const response = (
-        await apiConnector.post({
-          url: `signup`,
-          data: { name, user, password, email },
-        })
-      ).data.user as SignUpUserServerResponse;
+    const response = (
+      await apiConnector.post({
+        url: `signup`,
+        data: { name, user, password, email },
+      })
+    ).data.user as SignUpUserServerResponse;
 
-      return {
-        id: response.id,
-        name: response.name,
-        user: response.user,
-        email: response.email,
-      };
-    } catch (e: unknown) {
-      if (e instanceof AxiosError && e.response) {
-        throw new Error(e.response.data.error);
-      }
-      throw e;
-    }
+    return {
+      id: response.id,
+      name: response.name,
+      user: response.user,
+      email: response.email,
+    };
   }
 
   async updateUserAccount(params: UpdateUserAccount): Promise<void> {
     const { id, name, user, email } = params;
 
-    try {
-      await apiConnector.post({
-        url: `admin/update-user-account`,
-        data: { id, name, user, email },
-      });
-    } catch (e: unknown) {
-      if (e instanceof AxiosError && e.response) {
-        throw new Error(e.response.data.error);
-      }
-      throw e;
-    }
+    await apiConnector.post({
+      url: `admin/update-user-account`,
+      data: { id, name, user, email },
+    });
   }
 
   async userLogin(params: {
@@ -58,17 +41,12 @@ export default class SessionService {
   }): Promise<{ token: string }> {
     const { user, password } = params;
 
-    try {
-      const response = await apiConnector.post({
-        url: `login`,
-        data: { email: user, password },
-      });
+    const response = await apiConnector.post({
+      url: `login`,
+      data: { email: user, password },
+    });
 
-      return { token: `Bearer ${response.data.access_token}` };
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    return { token: `Bearer ${response.data.access_token}` };
   }
 
   async logout(): Promise<void> {

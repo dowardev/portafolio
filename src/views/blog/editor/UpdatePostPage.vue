@@ -4,8 +4,8 @@
       <ion-buttons slot="start">
         <ion-button
           fill="clear"
-          @click="router.go(-1)"
           :disabled="systemController.getLoader().status"
+          @click="router.go(-1)"
         >
           <ion-icon :icon="chevronBackOutline"></ion-icon>
         </ion-button>
@@ -35,8 +35,8 @@
 
         <!-- settings -->
         <ion-button
-          @click="openEditorSettings()"
           v-if="!isVisibleEditorSettings"
+          @click="openEditorSettings()"
         >
           <ion-icon :icon="optionsOutline"></ion-icon>
         </ion-button>
@@ -51,8 +51,8 @@
       :title="post.title"
       :content="post.content"
       :cover="{ name: post.cover.name }"
-      :disableUI="systemController.getLoader().status"
-      :postStatus="post.status"
+      :disable-u-i="systemController.getLoader().status"
+      :post-status="post.status"
       @upload-image="uploadImage($event)"
       @update-data="
         setData2({
@@ -82,8 +82,10 @@ import {
 // controllers
 import PostController from "../../../controllers/postController";
 import SystemController from "../../../controllers/systemController";
+import ErrorController from "@/controllers/errorController";
 const postController = new PostController();
 const systemController = new SystemController();
+const errorController = new ErrorController();
 
 // components
 import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
@@ -92,7 +94,6 @@ import { StatusPost } from "@/services/types";
 // vars
 const router = useRouter();
 const route = useRoute();
-const openToastError = systemController.openToastError;
 const editorRef = ref<InstanceType<typeof EditorComponent>>();
 const contentLoaded = ref(false);
 const pageTitle = "Editor";
@@ -131,13 +132,13 @@ async function getPost(): Promise<void> {
     const coverName = postResponse.cover?.name ?? undefined;
     const status = postResponse.status;
 
-    if (post) {
+    if (post.value) {
       setData({ title, content, coverId: coverId!, coverName, status });
       contentLoaded.value = true;
     }
   } catch (e: any) {
     console.error(e);
-    openToastError(e);
+    errorController.openToastError(e);
   } finally {
     closeLoader();
   }
@@ -188,7 +189,7 @@ async function save(data: {
     await systemController.presentToast({ message: "Post actualizado" });
     await router.go(-1);
   } catch (e: any) {
-    openToastError(e);
+    errorController.openToastError(e);
   } finally {
     closeLoader();
   }
@@ -220,7 +221,7 @@ async function uploadImage(e: any) {
       '" style="width:80%"/></div>';
   } catch (e: any) {
     console.error(e);
-    openToastError(e);
+    errorController.openToastError(e);
   } finally {
     closeLoader();
   }
@@ -232,7 +233,7 @@ async function uploadCover(params: { image: File }): Promise<{ id: string }> {
     const { id } = await postController.updateCover({ image });
     return { id };
   } catch (e: any) {
-    openToastError(e);
+    errorController.openToastError(e);
     throw new Error(e);
   }
 }
@@ -305,9 +306,9 @@ async function setData2(params: {
     try {
       const response = await uploadCover({ image: coverData });
       post.value.cover.id = parseInt(response.id);
-    } catch (e: any) {
+    } catch (e) {
       console.error(e);
-      openToastError(e);
+      errorController.openToastError({ error: e as Error });
       return;
     } finally {
       closeLoader();

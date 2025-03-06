@@ -1,6 +1,15 @@
+import ModalErrorReporComponent from "@/components/error/ModalErrorReporComponent.vue";
+// import { ErrorReport, } from "@/services/interfaces";
+import { modalController, toastController } from "@ionic/vue";
 import { AxiosError } from "axios";
+import { alertCircleOutline, closeOutline } from "ionicons/icons";
+
+// services
+import errorService from "@/services/errorService";
 
 export default class ErrorController {
+  private errorService = new errorService();
+
   handleError(params: { error: unknown }) {
     const { error } = params;
 
@@ -26,14 +35,70 @@ export default class ErrorController {
         );
       }
     } else if (error instanceof Error) {
-      throw new CustomError(
-        `General Error: ${error.message}`,
-        undefined,
-        undefined,
-        error,
-      );
+      throw new CustomError(`${error.message}`, undefined, undefined, error);
     } else {
       throw new CustomError("An unknown error occurred", undefined, undefined);
+    }
+  }
+
+  async openToastError(params: { error: Error }) {
+    const error = params.error;
+
+    try {
+      const toast = await toastController.create({
+        header: "Ocurrió un error",
+        message: "¿Quieres reportar el error?",
+        icon: alertCircleOutline,
+        position: "bottom",
+        color: "danger",
+        buttons: [
+          {
+            text: "Reportar",
+            handler: () => {
+              this.openModalReportError({ error });
+            },
+          },
+          {
+            icon: closeOutline,
+            role: "cancel",
+            handler: () => {
+              // console.log("Cancel clicked");
+            },
+          },
+        ],
+      });
+      await toast.present();
+    } catch (error) {
+      return this.handleError({ error });
+    }
+  }
+
+  async openModalReportError(params: { error: Error }) {
+    const { error } = params;
+
+    const modal = await modalController.create({
+      component: ModalErrorReporComponent,
+      componentProps: {
+        error,
+      },
+    });
+    await modal.present();
+  }
+
+  async sendErrorReport(params: {
+    message: string;
+    stack: string;
+    comments: string;
+  }) {
+    const { message, stack, comments } = params;
+    try {
+      await this.errorService.sendError({
+        message,
+        stack,
+        comments,
+      });
+    } catch (error) {
+      return this.handleError({ error });
     }
   }
 }

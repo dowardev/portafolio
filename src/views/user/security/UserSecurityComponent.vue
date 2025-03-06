@@ -232,7 +232,9 @@ import {
 
 // controllers
 import SystemController from "@/controllers/systemController";
+import ErrorController from "@/controllers/errorController";
 const systemController = new SystemController();
+const errorController = new ErrorController();
 
 // vars
 const form = ref({
@@ -275,13 +277,13 @@ const rules = {
       required: helpers.withMessage(messageError.required, required),
       minLength: helpers.withMessage(
         "La contraseña debe tener al menos una mayúscula, un numero y tener un tamaño de 8",
-        helpers.regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
+        helpers.regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/),
       ),
     },
     newPasswordRepeat: {
       same: helpers.withMessage(
         "Las contraseñas no coinciden",
-        sameAs(form.value.newPassword)
+        sameAs(form.value.newPassword),
       ),
     },
   },
@@ -307,7 +309,7 @@ async function saveUserPassword() {
       return;
     }
     console.error(e);
-    systemController.openToastError(e);
+    errorController.openToastError({ error: e as Error });
   }
 }
 </script>

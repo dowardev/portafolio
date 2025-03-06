@@ -13,7 +13,7 @@ async function loadUser(controller: UserController): Promise<void> {
     await controller.loadUser();
   } catch (error: unknown) {
     if (error instanceof Error) {
-      throw new Error(error.message);
+      if (error.message != "Unauthenticated.") throw new Error(error.message);
     } else {
       throw new Error(String(error));
     }

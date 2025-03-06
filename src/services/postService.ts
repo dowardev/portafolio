@@ -1,9 +1,9 @@
 import {
   Post,
   CreatePost,
-  GetPost,
   GetPostsServer,
   ImageServer,
+  PostServerResponse,
 } from "./interfaces";
 import { apiConnector } from "@/main";
 
@@ -60,17 +60,13 @@ export default class PostService {
       data: { fields },
     });
 
-    const posts = await Promise.all(
-      response.posts.map(async (post: any) => {
-        post.createdAt = post.created_at;
-        delete post.created_at;
-        post.updatedAt = post.updated_at;
-        delete post.updated_at;
-        post.cover = post.cover;
-        return post;
+    const responseData = response as { posts: PostServerResponse[] };
+
+    return await Promise.all(
+      responseData.posts.map(async (post: PostServerResponse) => {
+        return this.formatPostResponse({ response: post });
       }),
     );
-    return posts;
   }
 
   async getPost(params: {
@@ -79,20 +75,14 @@ export default class PostService {
   }): Promise<Post> {
     const { id, fields } = params;
 
-    const response = await apiConnector.get({
+    const response = (await apiConnector.get({
       url: `post/${id}`,
       data: { fields },
-    });
+    })) as PostServerResponse;
 
     const post = response.post;
 
-    post.createdAt = post.created_at;
-    delete post.created_at;
-
-    post.updatedAt = post.updated_at;
-    delete post.updated_at;
-
-    return post;
+    return this.formatPostResponse({ response: post });
   }
 
   async getPostsDates(params: {
@@ -106,14 +96,15 @@ export default class PostService {
     });
   }
 
+  // TODO: Fix
   async searchPosts(params: {
     search: string;
   }): Promise<Array<{ id: string; title: string }>> {
     const { search } = params;
 
-    const response = await apiConnector.get({ url: `search-posts/${search}` });
-
-    return response.posts;
+    // const response = await apiConnector.get({ url: `search-posts/${search}` });
+    //
+    // return response.posts;
   }
 
   async uploadImage(params: {
@@ -136,6 +127,21 @@ export default class PostService {
       id: response.data.image.id,
       url: response.data.image.url,
       name: response.data.image.name,
+    };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  formatPostResponse(params: { response: any }): Post {
+    const { response } = params;
+
+    return {
+      id: response.id,
+      title: response.title,
+      content: response.content,
+      createdAt: response.created_at,
+      updatedAt: response.updated_at,
+      cover: response.cover,
+      status: response.status,
     };
   }
 }

@@ -173,9 +173,11 @@ import MarkdownViewer from "@/components/markdown-viewer/MarkdownViewer.vue";
 import SystemController from "@/controllers/systemController";
 import UserController from "@/controllers/userController";
 import PostController from "@/controllers/postController";
+import ErrorController from "@/controllers/errorController";
 const systemController = new SystemController();
 const userController = new UserController();
 const postController = new PostController();
+const errorController = new ErrorController();
 
 // const
 const route = useRoute();
@@ -274,8 +276,8 @@ async function deletePost(): Promise<void> {
     await postController.deletePost({ id: postId });
     spinners.value.buttonDelete = false;
     router.go(-1);
-  } catch (e: any) {
-    systemController.openToastError(e);
+  } catch (e) {
+    errorController.openToastError({ error: e as Error });
   } finally {
     disableLoader();
   }

@@ -143,9 +143,11 @@ import { useRouter } from "vue-router";
 import ServerConfig from "@/controllers/serverConfigController";
 import SystemController from "../../../controllers/systemController";
 import UserController from "@/controllers/userController";
+import ErrorController from "@/controllers/errorController";
 const serverConfig = new ServerConfig();
 const systemController = new SystemController();
 const userController = new UserController();
+const errorController = new ErrorController();
 
 // components
 import LoginFormComponent from "@/forms/LoginFormComponent.vue";
@@ -212,7 +214,7 @@ async function login(params: { email: string; password: string }) {
     spinners.value.buttonLogin = false;
     clearInputs();
     location.reload();
-  } catch (e: any) {
+  } catch (e) {
     spinners.value.buttonLogin = false;
     if (e.message == "Unauthorized" || e.message == "Not found") {
       presentToast("Usuario y/o contraseña incorrectos", "danger");
@@ -230,8 +232,7 @@ async function login(params: { email: string; password: string }) {
       return;
     }
 
-    systemController.openToastError(e);
-    console.error(e.message);
+    errorController.openToastError({ error: e as Error });
   }
 }
 

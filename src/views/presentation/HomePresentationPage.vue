@@ -324,7 +324,6 @@ import SkillsPage from "./skills/SkillsPage.vue";
 import ExperienceComponent from "./experience/ExperienceComponent.vue";
 import ProjectsComponent from "./projects/ProjectsComponent.vue";
 import CertificatesComponent from "./certificates/CertificatesComponent.vue";
-import ButtonIconAnimationComponent from "@/components/buttons/ButtonIconAnimationComponent.vue";
 import ContactModal from "../../components/modals/contact/ContactModal.vue";
 // end components
 
@@ -352,8 +351,8 @@ const menuOptions = ref({
 const buttonMenuMobileOptions = ref({ open: false, event: null });
 const designPlatform = isPlatform("ios") ? "ios" : "md";
 const selectedSegment = ref("contact");
-const designMode = ref<DesignMode>(systemController.getdesignMode());
-const screenSize = ref(systemController.getScreenSize());
+const designMode = ref<DesignMode>(systemController.getdesignMode()!);
+const screenSize = ref(systemController.getScreenSize()!);
 const reviews = ref([
   {
     platform: "upwork",
@@ -407,10 +406,6 @@ const reviews = ref([
   },
 ]);
 // end vars
-
-// component refs
-ref<InstanceType<typeof ButtonIconAnimationComponent>>();
-// end refs
 
 // life
 onMounted(() => {

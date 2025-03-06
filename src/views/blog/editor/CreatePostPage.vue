@@ -4,8 +4,8 @@
       <ion-buttons slot="start">
         <ion-button
           fill="clear"
-          @click="router.go(-1)"
           :disabled="systemController.getLoader().status"
+          @click="router.go(-1)"
         >
           <ion-icon :icon="chevronBackOutline"></ion-icon>
         </ion-button>
@@ -26,8 +26,8 @@
 
         <!-- settings -->
         <ion-button
-          @click="openEditorSettings()"
           v-if="!isVisibleEditorSettings"
+          @click="openEditorSettings()"
         >
           <ion-icon :icon="optionsOutline"></ion-icon>
         </ion-button>
@@ -39,7 +39,7 @@
     <EditorComponent
       ref="editorRef"
       :content="content"
-      :disableUI="systemController.getLoader().status"
+      :disable-u-i="systemController.getLoader().status"
       @upload-image="uploadImage($event)"
       @update-data="
         setData({
@@ -70,12 +70,13 @@ import {
 // controllers
 import PostController from "../../../controllers/postController";
 import SystemController from "../../../controllers/systemController";
+import ErrorController from "@/controllers/errorController";
 const postController = new PostController();
 const systemController = new SystemController();
+const errorController = new ErrorController();
 
 // vars
 const router = useRouter();
-const openToastError = systemController.openToastError;
 const content = ref("");
 const images = Array<string>();
 const editorRef = ref<InstanceType<typeof EditorComponent>>();
@@ -105,10 +106,10 @@ async function save(params: {
     });
     await systemController.presentToast({ message: "Post agregado" });
     router.go(-1);
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
     closeLoader();
-    openToastError(e);
+    errorController.openToastError({ error: e as Error });
   }
 }
 
@@ -127,8 +128,8 @@ async function createPost({
       images,
       status,
     });
-  } catch (e: any) {
-    throw new Error(e);
+  } catch (e) {
+    errorController.openToastError({ error: e as Error });
   }
 }
 
@@ -149,9 +150,9 @@ async function uploadImage(e: File): Promise<void> {
       '" style="width:80%"/></div>';
 
     if (idImage) images.push(idImage);
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
-    openToastError(e);
+    errorController.openToastError({ error: e as Error });
   } finally {
     closeLoader();
   }
@@ -162,8 +163,8 @@ async function uploadCover(params: { image: File }): Promise<{ id: string }> {
   try {
     const { id } = await postController.updateCover({ image });
     return { id };
-  } catch (e: any) {
-    openToastError(e);
+  } catch (e) {
+    errorController.openToastError(e);
     throw new Error(e);
   }
 }
@@ -204,9 +205,9 @@ async function setData(params: {
     try {
       const response = await uploadCover({ image: coverData });
       coverId.value = response.id;
-    } catch (e: any) {
+    } catch (e) {
       console.error(e);
-      openToastError(e);
+      errorController.openToastError({ error: e as Error });
       return;
     } finally {
       closeLoader();

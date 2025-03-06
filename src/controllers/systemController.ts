@@ -1,17 +1,7 @@
-import {
-  ContactMessage,
-  FeedbackParams,
-  System,
-  Toast,
-} from "@/services/interfaces";
-import { modalController, toastController } from "@ionic/vue";
-import { alertCircleOutline, closeOutline } from "ionicons/icons";
-import { storeToRefs } from "pinia";
-import FeedbackPage from "../components/feedback/FeedbackPage.vue";
-import { ReportError, Theme } from "../services/interfaces";
+import { ContactMessage, FeedbackParams, Toast } from "@/services/interfaces";
+import { toastController } from "@ionic/vue";
+import { Theme } from "../services/interfaces";
 import { useSystemStore } from "../store/systemStore";
-import { Storage } from "@ionic/storage";
-import { Theme as ThemeType } from "@/services/types";
 import { wb } from "@/main";
 
 // controllers
@@ -31,49 +21,6 @@ export default class SystemController {
 
   // TODO:remove
   systemStore = useSystemStore();
-
-  // async reportError(params: ReportError) {
-  //   const type = params.type;
-  //   const error = params.error;
-
-  //   const modal = await modalController.create({
-  //     component: FeedbackPage,
-  //     componentProps: {
-  //       dataProp: { type, error },
-  //     },
-  //   });
-  //   await modal.present();
-  // }
-
-  async openToastError(error: object) {
-    try {
-      const toast = await toastController.create({
-        header: "Ocurrió un error",
-        message: "¿Quieres reportar el error?",
-        icon: alertCircleOutline,
-        position: "bottom",
-        color: "danger",
-        buttons: [
-          {
-            text: "Reportar",
-            handler: () => {
-              reportError({ error, type: "error" });
-            },
-          },
-          {
-            icon: closeOutline,
-            role: "cancel",
-            handler: () => {
-              // console.log("Cancel clicked");
-            },
-          },
-        ],
-      });
-      await toast.present();
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
 
   async loadThemeSelected(): Promise<void> {
     try {
@@ -292,7 +239,7 @@ export default class SystemController {
     }
   }
 
-  getScreenSize() {
+  getScreenSize(): { width: number; height: number; preset: string } | void {
     try {
       return this.systemStore.screenSize;
     } catch (error) {
