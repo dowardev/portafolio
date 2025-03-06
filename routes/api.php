@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ErrorReportController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PostsController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\UserController;
@@ -19,7 +20,7 @@ Route::middleware(Cors::class)->group(function () {
   // others
   Route::post("upload-image", [SystemController::class, "uploadImage"]);
   Route::post("contact", [SystemController::class, "createContactMessage"]);
-  Route::post("feedback", [SystemController::class, "createFeedback"]);
+  Route::post("feedback", [FeedbackController::class, "createFeedback"]);
   Route::get("get-image", [SystemController::class, "getImage"]);
   Route::post("error-report", [
     ErrorReportController::class,
