@@ -433,7 +433,7 @@ const windowSize = ref({
   width: window.innerWidth,
 });
 const modalContribute = ref({ open: false });
-const modalComments = ref({ open: true });
+const modalComments = ref({ open: false });
 
 // mounted
 onMounted(() => {
