@@ -17,7 +17,7 @@ export default class ErrorController {
       if (error.response) {
         const status = error.response.status;
         const errorDetail =
-          error.response.data?.error || "No se especifica el error";
+          error.response.data?.message || "No se especifica el error";
         throw new CustomError("Server Error", status, errorDetail, error);
       } else if (error.request) {
         throw new CustomError(
@@ -99,6 +99,37 @@ export default class ErrorController {
       });
     } catch (error) {
       return this.handleError({ error });
+    }
+  }
+
+  getError(params: { error: unknown }): CustomError {
+    const { error } = params;
+
+    if (error instanceof AxiosError) {
+      if (error.response) {
+        const status = error.response.status;
+        const errorDetail =
+          error.response.data?.message || "No se especifica el error";
+        return new CustomError("Server Error", status, errorDetail, error);
+      } else if (error.request) {
+        return new CustomError(
+          "No response received from server",
+          undefined,
+          undefined,
+          error,
+        );
+      } else {
+        return new CustomError(
+          `Axios Error: ${error.message}`,
+          undefined,
+          undefined,
+          error,
+        );
+      }
+    } else if (error instanceof Error) {
+      return new CustomError(`${error.message}`, undefined, undefined, error);
+    } else {
+      return new CustomError("An unknown error occurred", undefined, undefined);
     }
   }
 }

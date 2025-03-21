@@ -223,7 +223,7 @@ const v$ = useVuelidate(rules, { form });
 // end vars
 
 onMounted(() => {
-  // generateRandomData();
+  generateRandomData();
 });
 watch(form.value, () => {
   emits("formStatus", !v$.value.$invalid);

@@ -17,12 +17,13 @@ import {
 } from "./interfaces";
 
 export default class UserService {
-  async getUser(): Promise<User> {
+  async getUser(): Promise<User | undefined> {
     const response = (await apiConnector.get({
       url: `user-auth`,
     })) as UserServerResponse;
 
-    return this.formatUserResponse({ response });
+    if (response) return this.formatUserResponse({ response });
+    else return undefined;
   }
 
   async setUserUploaded(option: boolean | null) {

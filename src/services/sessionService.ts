@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import {
   UserRegister,
   UpdateUserPassword,
@@ -8,22 +9,13 @@ import {
 import { apiConnector } from "@/main";
 
 export default class SessionService {
-  async userRegister(params: UserRegister): Promise<SignUpUserResponse> {
+  async userRegister(params: UserRegister): Promise<void> {
     const { name, user, password, email } = params;
 
-    const response = (
-      await apiConnector.post({
-        url: `signup`,
-        data: { name, user, password, email },
-      })
-    ).data.user as SignUpUserServerResponse;
-
-    return {
-      id: response.id,
-      name: response.name,
-      user: response.user,
-      email: response.email,
-    };
+    await apiConnector.post({
+      url: `signup`,
+      data: { name, user, password, email },
+    });
   }
 
   async updateUserAccount(params: UpdateUserAccount): Promise<void> {
@@ -38,7 +30,7 @@ export default class SessionService {
   async userLogin(params: {
     user: string;
     password: string;
-  }): Promise<{ token: string }> {
+  }): Promise<{ token: string; refreshToken: string }> {
     const { user, password } = params;
 
     const response = await apiConnector.post({
@@ -46,7 +38,10 @@ export default class SessionService {
       data: { email: user, password },
     });
 
-    return { token: `Bearer ${response.data.access_token}` };
+    return {
+      token: `Bearer ${response.data.access_token}`,
+      refreshToken: response.data.refresh_token,
+    };
   }
 
   async logout(): Promise<void> {
@@ -84,5 +79,21 @@ export default class SessionService {
     //     image,
     //   },
     // });
+  }
+
+  async refreshAuthToken(params: { refreshToken: string }): Promise<void> {
+    const { refreshToken } = params;
+
+    try {
+      await apiConnector.post({
+        url: `refresh-token`,
+        data: { refreshToken },
+      });
+    } catch (e: unknown) {
+      if (e instanceof AxiosError && e.response) {
+        throw new Error(e.response.data.error);
+      }
+      throw e;
+    }
   }
 }

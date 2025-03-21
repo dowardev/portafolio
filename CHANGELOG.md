@@ -1,5 +1,19 @@
 # Changelog
 
+## 10.0.0 - 2025-03-21
+
+### Added
+
+- Support for retrying GET and POST requests in APIService after token refresh.
+- Implemented the handleTokenRefresh method to wrap requests when the token expires.
+- Added refreshAccessToken method to automatically update the access and refresh tokens.
+
+### Changed
+
+- Updated APIService to obtain its configuration (baseUrl, accessToken, refreshToken, refreshTokenEndPoint) from the config service.
+- Adjusted authorization headers in the GET and POST methods of APIService.
+- Refactored error handling to detect token expiration and trigger a request retry.
+
 ## 9.5.0 - 2025-03-05
 
 - Changed the way feedback reporting works

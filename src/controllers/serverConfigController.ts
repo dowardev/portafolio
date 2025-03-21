@@ -1,66 +1,66 @@
 // controllers
-import ErrorController from "./errorController";
 
 // services
+import Cookies from "js-cookie";
 import SystemService from "../services/systemService";
 
 export default class ServerConfig {
-  private serverUrl: string = "";
-  private userToken: string = "";
-  private systemService = new SystemService();
-  private errorController = new ErrorController();
+  private baseUrl: string = "";
+  private accessToken: string = "";
+  private refreshToken: string = "";
+  private refreshTokenEndPoint: string = "";
 
-  public async storeUserToken(params: {
-    serverUrl?: string;
-    userToken?: string;
-  }): Promise<void> {
-    try {
-      const { serverUrl, userToken } = params;
-      if (serverUrl) {
-        await this.systemService.storeDataOnLocalStorage({
-          key: "serverUrl",
-          value: serverUrl,
-        });
-      }
-      if (userToken) {
-        this.systemService.storeCookie({ key: "userToken", value: userToken });
-      }
-    } catch (error) {
-      return this.errorController.handleError({ error });
+  constructor(params: {
+    baseUrl: string;
+    accessToken?: string;
+    refreshToken?: string;
+    refreshTokenEndPoint?: string;
+  }) {
+    if (!params) return;
+    this.baseUrl = params.baseUrl ?? "";
+    this.accessToken = params.accessToken ?? "";
+    this.refreshToken = params.refreshToken ?? "";
+    this.refreshTokenEndPoint = params.refreshTokenEndPoint ?? "";
+  }
+
+  setBaseUrl(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  setAuthTokens(params: { accessToken: string; refreshToken: string }) {
+    const { accessToken: accessTOken, refreshToken } = params;
+    if (accessTOken) {
+      this.accessToken = accessTOken;
+      Cookies.set("access-token", accessTOken, {
+        secure: true,
+        sameSite: "Strict",
+      });
+    }
+
+    if (refreshToken) {
+      this.refreshToken = refreshToken;
+      Cookies.set("refresh-token", refreshToken, {
+        secure: true,
+        sameSite: "Strict",
+      });
     }
   }
 
-  async load(): Promise<void> {
-    this.serverUrl = await this.systemService.getDataFromLocalStorage({
-      key: "serverUrl",
-    });
-    try {
-      const token = this.systemService.getCookie({ key: "userToken" });
-      if (!token) {
-        return;
-      }
-      this.userToken = token;
-    } catch (error: unknown) {
-      return this.errorController.handleError({ error });
-    }
+  setRefreshTokensEndPoint(params: { refreshTokenEndPoint: string }) {
+    this.refreshTokenEndPoint = params.refreshTokenEndPoint;
   }
 
-  public async getConfig(): Promise<{
-    serverUrl: string;
-    userToken: string;
-  } | void> {
-    try {
-      return { serverUrl: this.serverUrl, userToken: this.userToken };
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  public clearData() {
-    try {
-      this.systemService.removeCookie({ key: "userToken" });
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
+  public getConfig(): {
+    baseUrl: string;
+    accessToken: string;
+    refreshToken: string;
+    refreshTokenEndPoint: string;
+  } {
+    return {
+      baseUrl: this.baseUrl,
+      accessToken: this.accessToken,
+      refreshToken: this.refreshToken,
+      refreshTokenEndPoint: this.refreshTokenEndPoint,
+    };
   }
 }

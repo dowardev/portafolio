@@ -11,9 +11,11 @@ import {
   User,
   UserRegister,
 } from "../services/interfaces";
+import Cookies from "js-cookie";
 
 // controllers
 import ErrorController from "./errorController";
+// import { auth } from "@/main";
 
 // services
 import UserService from "../services/userService";
@@ -67,13 +69,11 @@ export default class UserController {
     }
   }
 
-  async createUserAccount(
-    params: UserRegister,
-  ): Promise<SignUpUserResponse | void> {
+  async createUserAccount(params: UserRegister): Promise<void> {
     try {
       const { name, user, password, email } = params;
 
-      return await this.sessionService.userRegister({
+      await this.sessionService.userRegister({
         name,
         user,
         password,
@@ -151,7 +151,7 @@ export default class UserController {
   async login(params: {
     user: string;
     password: string;
-  }): Promise<{ token: string } | void> {
+  }): Promise<{ token: string; refreshToken: string } | void> {
     try {
       const { user, password } = params;
       return await this.sessionService.userLogin({ user, password });
@@ -164,7 +164,7 @@ export default class UserController {
     try {
       const user = await this.userService.getUser();
 
-      this.updateUserProps({ user });
+      if (user) this.updateUserProps({ user });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -217,5 +217,30 @@ export default class UserController {
     } catch (error) {
       return this.errorController.handleError({ error });
     }
+  }
+
+  refreshUserToken(params: { refreshToken: string }) {
+    try {
+      const { refreshToken } = params;
+      this.sessionService.refreshAuthToken({ refreshToken });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
+  }
+
+  storeUserToken(params: { token: string }) {
+    const { token } = params;
+    Cookies.set("access-token", token, {
+      secure: true,
+      sameSite: "Strict",
+    });
+  }
+
+  storeRefreshToken(params: { refreshToken: string }) {
+    const { refreshToken } = params;
+    Cookies.set("refresh-token", refreshToken, {
+      secure: true,
+      sameSite: "Strict",
+    });
   }
 }

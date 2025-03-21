@@ -45,19 +45,35 @@ export const storageInstance = await initStorage();
 
 // server config
 import ServerConfig from "@/controllers/serverConfigController";
-const serverConfigController = new ServerConfig();
-await serverConfigController.storeUserToken({
-  serverUrl: import.meta.env.VITE_API_URL,
+const accessToken = Cookies.get("access-token");
+const refreshToken = Cookies.get("refresh-token")!;
+const serverConfigController = new ServerConfig({
+  baseUrl: import.meta.env.VITE_API_URL,
+  accessToken: accessToken ?? "",
+  refreshToken: refreshToken ?? "",
+  refreshTokenEndPoint: "refresh-token",
 });
-await serverConfigController.load();
 
 // api connector
 import APIService from "@/services/APIService";
-const api = new APIService(await serverConfigController.getConfig());
+const api = new APIService(serverConfigController);
 export const apiConnector = api;
+
+// user auth
+// import Cookies from "js-cookie";
+// import AuthController from "@/controllers/authController";
+// const token = Cookies.get("user-token");
+// const refreshToken = Cookies.get("user-refresh-token");
+// export const auth = new AuthController(
+//   token,
+//   refreshToken,
+//   import.meta.env.VITE_API_URL,
+//   api,
+// );
 
 // service worker
 import { Workbox } from "workbox-window";
+import Cookies from "js-cookie";
 let wb: Workbox | null = null;
 if ("serviceWorker" in navigator) {
   wb = new Workbox("/sw.js");

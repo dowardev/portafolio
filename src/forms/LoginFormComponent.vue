@@ -62,8 +62,8 @@ defineExpose({ getData });
 const emits = defineEmits(["formStatus", "enterPressed"]);
 const inputTypePassword = ref("password" as "text" | "password");
 const form = ref({
-  email: "",
-  password: "",
+  email: "Janelle71@hotmail.com",
+  password: "lLo4mbepPRKg8Lg1@",
 });
 
 const messageError = {

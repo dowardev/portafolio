@@ -117,6 +117,16 @@
     >
       <RecoverPasswordComponent />
     </ion-modal>
+
+    <!-- toast -->
+    <ion-toast
+      :is-open="toast.open"
+      :message="toast.message"
+      :duration="3000"
+      :color="toast.color"
+      :buttons="toast.buttons"
+      @did-dismiss="toast.open = false"
+    ></ion-toast>
   </ion-content>
 </template>
 
@@ -130,8 +140,9 @@ import {
   IonContent,
   IonModal,
   isPlatform,
+  IonToast,
 } from "@ionic/vue";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
@@ -152,6 +163,7 @@ const errorController = new ErrorController();
 // components
 import LoginFormComponent from "@/forms/LoginFormComponent.vue";
 import RecoverPasswordComponent from "@/components/auth/RecoverPasswordComponent.vue";
+import { ICustomError } from "@/services/interfaces";
 
 // vars
 const router = useRouter();
@@ -184,6 +196,21 @@ const loginFormComponentRef = ref(null);
 const formStatus = ref(false);
 const isOpenModalPasswordRecover = ref(false);
 const designPlatform = isPlatform("ios") ? "ios" : "md";
+const toast = reactive<{
+  open: boolean;
+  color: string;
+  message: string;
+  buttons: Array<{
+    text: string;
+    role?: string;
+    handler?: () => Promise<boolean | void>;
+  }>;
+}>({
+  open: false,
+  color: "",
+  message: "",
+  buttons: [],
+});
 
 // functions
 async function presentToast(message: string, color: string) {
@@ -208,60 +235,46 @@ async function login(params: { email: string; password: string }) {
       password,
     });
 
-    const token = response.token;
-    await serverConfig.storeUserToken({ userToken: token });
-
+    if (response) {
+      const token = response.token;
+      const refreshToken = response.refreshToken;
+      // await serverConfig.storeUserToken({ userToken: token });
+      userController.storeUserToken({ token });
+      userController.storeRefreshToken({ refreshToken: refreshToken });
+      spinners.value.buttonLogin = false;
+      clearInputs();
+      location.reload();
+    }
+  } catch (e: unknown) {
+    if (typeof e === "object" && e !== null && "errorDetail" in e) {
+      const customError = e as ICustomError;
+      if (customError.errorDetail == "Email address has not been verified") {
+        openToastEmailConfirm();
+      }
+      if (
+        customError.errorDetail == "Unauthorized" ||
+        customError.errorDetail == "Not found"
+      ) {
+        toast.message = "Usuario y/o contraseña incorrectos.";
+        toast.open = true;
+      }
+      if (customError.errorDetail == "Disabled user") {
+        toast.message =
+          "Cuenta de usuario deshabilitada, para mas información contacte a soporte.";
+        toast.open = true;
+      }
+    } else {
+      console.error("Unexpected error:", e);
+      errorController.openToastError({ error: e as Error });
+    }
+  } finally {
     spinners.value.buttonLogin = false;
-    clearInputs();
-    location.reload();
-  } catch (e) {
-    spinners.value.buttonLogin = false;
-    if (e.message == "Unauthorized" || e.message == "Not found") {
-      presentToast("Usuario y/o contraseña incorrectos", "danger");
-      return;
-    }
-    if (e.message == "Unverified email") {
-      alertConfirmationEmail();
-      return;
-    }
-    if (e.message == "Disabled user") {
-      presentToast(
-        "Cuenta de usuario deshabilitada, para mas información contacte a soporte.",
-        "danger",
-      );
-      return;
-    }
-
-    errorController.openToastError({ error: e as Error });
   }
 }
 
 function clearInputs() {
   form.value.password = "";
   form.value.email = "";
-}
-
-async function alertConfirmationEmail() {
-  const alert = await alertController.create({
-    cssClass: "my-custom-class",
-    header: "Alerta",
-
-    subHeader: "Confirmación",
-    message:
-      "Hemos enviado un correo electrónico a " +
-      form.value.email +
-      " con un enlace para verificar tu identidad.",
-    buttons: [
-      {
-        text: "Continuar",
-        handler: () => {
-          // resendEmailConfirmation({ email: form.value.email });
-        },
-      },
-    ],
-  });
-
-  await alert.present();
 }
 
 async function createAccount() {
@@ -309,6 +322,21 @@ async function presentAlertRestorePassword(): Promise<{
   const response = await alert.onDidDismiss();
   if (response.data == undefined) return { email: "", role: "cancel" };
   else return { email: response.data.values.email, role: response.role! };
+}
+
+function openToastEmailConfirm() {
+  toast.message = "Verifica tu correo electrónico para continuar.";
+  toast.buttons = [
+    {
+      text: "Reenviar correo",
+      role: "button",
+      handler: async () => {
+        // await resendEmailConfirmation();
+        toast.open = false;
+      },
+    },
+  ];
+  toast.open = true;
 }
 </script>
 

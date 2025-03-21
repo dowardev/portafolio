@@ -328,3 +328,9 @@ export interface CustomAxiosErrorInterface {
   message: string;
   statusCode: number;
 }
+
+export interface ICustomError {
+  status?: number;
+  errorDetail?: string;
+  cause?: Error;
+}
