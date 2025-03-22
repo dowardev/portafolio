@@ -89,7 +89,7 @@ watch(form.value, (newValue, oldValue) => {
 });
 
 // functions
-function getData() {
+function getData(): { email: string; password: string } | undefined {
   v$.value.$validate();
   if (!v$.value.$invalid) {
     return {

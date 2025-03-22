@@ -37,16 +37,14 @@
                   <LoginFormComponent
                     ref="loginFormComponentRef"
                     @form-status="formStatus = $event"
-                    @enter-pressed="
-                      login((loginFormComponentRef as any).getData())
-                    "
+                    @enter-pressed="login(loginFormComponentRef?.getData())"
                   />
 
                   <ion-button
                     fill="clear"
                     :disabled="formStatus == false || spinners.buttonLogin"
                     expand="full"
-                    @click="login((loginFormComponentRef as any).getData())"
+                    @click="login(loginFormComponentRef?.getData())"
                   >
                     <ion-label v-if="spinners.buttonLogin == false">
                       Iniciar sesión</ion-label
@@ -117,22 +115,11 @@
     >
       <RecoverPasswordComponent />
     </ion-modal>
-
-    <!-- toast -->
-    <ion-toast
-      :is-open="toast.open"
-      :message="toast.message"
-      :duration="3000"
-      :color="toast.color"
-      :buttons="toast.buttons"
-      @did-dismiss="toast.open = false"
-    ></ion-toast>
   </ion-content>
 </template>
 
 <script setup lang="ts">
 import {
-  toastController,
   alertController,
   IonCard,
   IonLabel,
@@ -140,30 +127,30 @@ import {
   IonContent,
   IonModal,
   isPlatform,
-  IonToast,
 } from "@ionic/vue";
 import { reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
 
-// TODO: pending
-// import {  resendEmailConfirmation } from "../../../services/user";
+// interface
+import { ICustomError } from "@/services/interfaces";
 
 //controllers
 import ServerConfig from "@/controllers/serverConfigController";
 import SystemController from "../../../controllers/systemController";
 import UserController from "@/controllers/userController";
 import ErrorController from "@/controllers/errorController";
+import { ToastController } from "@/controllers/toastController";
 const serverConfig = new ServerConfig();
 const systemController = new SystemController();
 const userController = new UserController();
 const errorController = new ErrorController();
+const toastController = new ToastController();
 
 // components
 import LoginFormComponent from "@/forms/LoginFormComponent.vue";
 import RecoverPasswordComponent from "@/components/auth/RecoverPasswordComponent.vue";
-import { ICustomError } from "@/services/interfaces";
 
 // vars
 const router = useRouter();
@@ -192,7 +179,7 @@ const rules = {
   },
 };
 const v$ = useVuelidate(rules, form);
-const loginFormComponentRef = ref(null);
+const loginFormComponentRef = ref<typeof LoginFormComponent | null>(null);
 const formStatus = ref(false);
 const isOpenModalPasswordRecover = ref(false);
 const designPlatform = isPlatform("ios") ? "ios" : "md";
@@ -205,24 +192,16 @@ const toast = reactive<{
     role?: string;
     handler?: () => Promise<boolean | void>;
   }>;
+  duration?: number;
 }>({
   open: false,
   color: "",
   message: "",
   buttons: [],
+  duration: 3000,
 });
 
 // functions
-async function presentToast(message: string, color: string) {
-  const toast = await toastController.create({
-    message,
-    duration: 3000,
-    mode: "ios",
-    color,
-  });
-  toast.present();
-}
-
 async function login(params: { email: string; password: string }) {
   const { email, password } = params;
   spinners.value.buttonLogin = true;
@@ -324,19 +303,49 @@ async function presentAlertRestorePassword(): Promise<{
   else return { email: response.data.values.email, role: response.role! };
 }
 
-function openToastEmailConfirm() {
-  toast.message = "Verifica tu correo electrónico para continuar.";
-  toast.buttons = [
-    {
-      text: "Reenviar correo",
-      role: "button",
-      handler: async () => {
-        // await resendEmailConfirmation();
-        toast.open = false;
+async function openToastEmailConfirm() {
+  const toast = await toastController.presentToast({
+    message: "Verifica tu correo electrónico para continuar.",
+    buttons: [
+      {
+        text: "Reenviar correo",
+        role: "button",
+        handler: async () => {
+          toast.dismiss();
+          await resendEmailVerification({
+            email: loginFormComponentRef.value?.getData().email,
+          });
+        },
       },
-    },
-  ];
-  toast.open = true;
+    ],
+  });
+  toast.present();
+  setTimeout(() => {
+    toast.dismiss();
+  }, 3000);
+}
+
+async function resendEmailVerification(params: { email: string }) {
+  const { email } = params;
+
+  try {
+    await userController.resendEmailVerification({ email });
+    const toast = await toastController.presentToast({
+      message: "Correo electrónico reenviado.",
+    });
+    toast.present();
+    setTimeout(() => {
+      toast.dismiss();
+    }, 3000);
+  } catch (e: unknown) {
+    if (typeof e === "object" && e !== null && "errorDetail" in e) {
+      const customError = e as ICustomError;
+      console.log(customError.errorDetail);
+    } else {
+      console.error("Unexpected error:", e);
+      errorController.openToastError({ error: e as Error });
+    }
+  }
 }
 </script>
 

@@ -411,6 +411,7 @@ import FeedbackComponent from "../feedback/FeedbackComponent.vue";
 import ServerConfig from "@/controllers/serverConfigController";
 import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
+import { ICustomError } from "@/services/interfaces";
 const serverConfig = new ServerConfig();
 const userController = new UserController();
 const systemController = new SystemController();
@@ -453,8 +454,15 @@ function openRoute(params: { route?: string; name?: string }) {
 
 async function getUser() {
   try {
-    userController.loadUser();
-  } catch (error) {}
+    await userController.loadUser();
+  } catch (e: unknown) {
+    if (typeof e === "object" && e !== null && "errorDetail" in e) {
+      const customError = e as ICustomError;
+      if (customError.errorDetail != "Unauthenticated.") return customError;
+    } else {
+      throw e;
+    }
+  }
 }
 
 async function login() {

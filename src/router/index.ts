@@ -7,15 +7,17 @@ import HomePage from "@/views/HomePage.vue";
 
 // controllers
 import UserController from "@/controllers/userController";
+import { ICustomError } from "@/services/interfaces";
 
 async function loadUser(controller: UserController): Promise<void> {
   try {
     await controller.loadUser();
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      if (error.message != "Unauthenticated.") throw new Error(error.message);
+  } catch (e: unknown) {
+    if (typeof e === "object" && e !== null && "errorDetail" in e) {
+      const customError = e as ICustomError;
+      if (customError.errorDetail != "Unauthenticated.") throw customError;
     } else {
-      throw new Error(String(error));
+      throw e;
     }
   }
 }

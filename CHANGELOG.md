@@ -1,5 +1,19 @@
 # Changelog
 
+## 10.1.0 - 2025-03-22
+
+### Added
+
+- Implemented email verification resend functionality
+- Added dedicated ToastController for consistent toast notifications
+- Added support for buttons in Toast interface
+
+### Changed
+
+- Improved error handling with ICustomError type checking
+- Refactored login form component with proper TypeScript types
+- Updated toast implementations to use centralized ToastController
+
 ## 10.0.0 - 2025-03-21
 
 ### Added

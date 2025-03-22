@@ -4,6 +4,7 @@ import { storeToRefs } from "pinia";
 import {
   AdminDeleteUserAccount,
   DisableUser,
+  ICustomError,
   SearchUsersParams,
   SearchUsersServerResponse,
   SignUpUserResponse,
@@ -12,6 +13,7 @@ import {
   UserRegister,
 } from "../services/interfaces";
 import Cookies from "js-cookie";
+import { apiConnector } from "@/main";
 
 // controllers
 import ErrorController from "./errorController";
@@ -155,8 +157,13 @@ export default class UserController {
     try {
       const { user, password } = params;
       return await this.sessionService.userLogin({ user, password });
-    } catch (error) {
-      return this.errorController.handleError({ error });
+    } catch (e: unknown) {
+      if (typeof e === "object" && e !== null && "errorDetail" in e) {
+        const customError = e as ICustomError;
+        if (customError.errorDetail != "Unauthenticated.") throw customError;
+      } else {
+        throw e;
+      }
     }
   }
 
@@ -165,8 +172,13 @@ export default class UserController {
       const user = await this.userService.getUser();
 
       if (user) this.updateUserProps({ user });
-    } catch (error: unknown) {
-      return this.errorController.handleError({ error });
+    } catch (e: unknown) {
+      if (typeof e === "object" && e !== null && "errorDetail" in e) {
+        const customError = e as ICustomError;
+        throw customError;
+      } else {
+        throw e;
+      }
     }
   }
 
@@ -242,5 +254,22 @@ export default class UserController {
       secure: true,
       sameSite: "Strict",
     });
+  }
+
+  async resendEmailVerification(params: { email: string }) {
+    const { email } = params;
+    try {
+      await apiConnector.post({
+        url: `resend-confirmation-email`,
+        data: { email },
+      });
+    } catch (e: unknown) {
+      if (typeof e === "object" && e !== null && "errorDetail" in e) {
+        const customError = e as ICustomError;
+        if (customError.errorDetail != "Unauthenticated.") throw customError;
+      } else {
+        throw e;
+      }
+    }
   }
 }
