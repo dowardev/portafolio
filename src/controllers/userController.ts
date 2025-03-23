@@ -21,13 +21,11 @@ import ErrorController from "./errorController";
 
 // services
 import UserService from "../services/userService";
-import SessionService from "@/services/sessionService";
 import { useUserStore } from "@/store/userStore";
 
 export default class UserController {
   private usersStore = useUsersStore();
   private userService = new UserService();
-  private sessionService = new SessionService();
   private systemService = new SystemService();
   private errorController = new ErrorController();
   private userStore = useUserStore();
@@ -75,11 +73,9 @@ export default class UserController {
     try {
       const { name, user, password, email } = params;
 
-      await this.sessionService.userRegister({
-        name,
-        user,
-        password,
-        email,
+      await apiConnector.post({
+        url: `signup`,
+        data: { name, user, password, email },
       });
     } catch (error) {
       return this.errorController.handleError({ error });
@@ -90,11 +86,9 @@ export default class UserController {
     try {
       const { id, name, user, email } = params;
 
-      await this.sessionService.updateUserAccount({
-        id,
-        name,
-        user,
-        email,
+      await apiConnector.post({
+        url: `admin/update-user-account`,
+        data: { id, name, user, email },
       });
     } catch (error) {
       return this.errorController.handleError({ error });
@@ -156,7 +150,14 @@ export default class UserController {
   }): Promise<{ token: string; refreshToken: string } | void> {
     try {
       const { user, password } = params;
-      return await this.sessionService.userLogin({ user, password });
+      const serverResponse = await apiConnector.post({
+        url: `login`,
+        data: { email: user, password },
+      });
+      const token = `Bearer ${serverResponse.data.access_token}`;
+      const refreshToken = serverResponse.data.refresh_token;
+
+      return { token, refreshToken };
     } catch (e: unknown) {
       if (typeof e === "object" && e !== null && "errorDetail" in e) {
         const customError = e as ICustomError;
@@ -203,7 +204,7 @@ export default class UserController {
     const { email } = params;
 
     try {
-      await this.sessionService.recoverPassword({ email });
+      await apiConnector.post({ url: `recover-password`, data: { email } });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -217,7 +218,10 @@ export default class UserController {
     const { code, password, email } = params;
 
     try {
-      await this.sessionService.sendNewPassword({ code, password, email });
+      await apiConnector.post({
+        url: `reset-password`,
+        data: { email, code, password },
+      });
     } catch (error) {
       return this.errorController.handleError({ error });
     }
@@ -231,10 +235,13 @@ export default class UserController {
     }
   }
 
-  refreshUserToken(params: { refreshToken: string }) {
+  async refreshUserToken(params: { refreshToken: string }) {
     try {
       const { refreshToken } = params;
-      this.sessionService.refreshAuthToken({ refreshToken });
+      await apiConnector.post({
+        url: `refresh-token`,
+        data: { refreshToken },
+      });
     } catch (error) {
       return this.errorController.handleError({ error });
     }

@@ -1,5 +1,14 @@
 # Changelog
 
+## 10.7.0 - 2025-03-23
+
+### Changed
+
+- Removed SessionService class in favor of direct API calls in UserController
+- Simplified user authentication operations by using apiConnector directly in controller
+- Refactored login, registration and password reset operations to remove service layer
+- Moved user-related API calls from SessionService to UserController
+
 ## 10.6.0 - 2025-03-23
 
 ### Changed
