@@ -1,19 +1,24 @@
-import { CreatePost, GetPost, Image } from "../utils/interfaces";
+import {
+  CreatePost,
+  GetPost,
+  Image,
+  PostServerResponse,
+} from "../utils/interfaces";
 import { usePostStore } from "../store/postStore";
 import { storeToRefs } from "pinia";
 import { Post, UpdatePost } from "../utils/interfaces";
 import { filterPostOptions, PostFields } from "@/services/types";
+import { apiConnector } from "@/main";
 
 // controllers
 import ErrorController from "./errorController";
 
 // services
-import PostService from "../services/postService";
+// import PostService from "../services/postService";
 
 export default class PostController {
   private postStore = usePostStore();
   private postRefs = storeToRefs(this.postStore);
-  private postService = new PostService();
   private errorController = new ErrorController();
 
   async loadPosts(params: {
@@ -23,11 +28,17 @@ export default class PostController {
   }) {
     const { date, filter, fields } = params;
     try {
-      const posts = await this.postService.getPostsServer({
-        date,
-        filter,
-        fields,
+      const serverResponse = await apiConnector.get({
+        url: `posts/${date}/${filter}`,
+        data: { fields },
       });
+      const responseData = serverResponse as { posts: PostServerResponse[] };
+
+      const posts = await Promise.all(
+        responseData.posts.map(async (post: PostServerResponse) => {
+          return this.formatPostResponse({ response: post });
+        }),
+      );
 
       this.postStore.setPosts({ posts });
     } catch (error: unknown) {
@@ -39,7 +50,10 @@ export default class PostController {
     const { status } = params;
 
     try {
-      const dates = await this.postService.getPostsDates({ status });
+      const dates = await apiConnector.get({
+        url: `post-dates`,
+        data: { status },
+      });
 
       this.postStore.updateDates({ dates });
     } catch (error: unknown) {
@@ -51,10 +65,12 @@ export default class PostController {
     const { id, fields } = params;
 
     try {
-      const post = await this.postService.getPost({
-        id,
-        fields,
-      });
+      const serverResponse = (await apiConnector.get({
+        url: `post/${id}`,
+        data: { fields },
+      })) as PostServerResponse;
+      const post = this.formatPostResponse({ response: serverResponse.post });
+
       this.postStore.addPost({ post });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
@@ -98,7 +114,7 @@ export default class PostController {
     const id = params.id;
 
     try {
-      await this.postService.deletePost({ id });
+      await apiConnector.post({ url: `delete-post`, data: { id } });
     } catch (error) {
       return this.errorController.handleError({ error });
     }
@@ -110,11 +126,12 @@ export default class PostController {
     const search = params.search;
 
     try {
-      const result = await this.postService.searchPosts({
-        search,
-      });
-
-      return result;
+      // const result = await this.postService.searchPosts({
+      //   search,
+      // });
+      //
+      // return result;
+      return [];
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -123,30 +140,20 @@ export default class PostController {
   async updatePost(params: { post: UpdatePost }): Promise<void> {
     const { id, title, content, coverId, images, imagesRemoved, status } =
       params.post;
-    const post = {
-      id: id!,
-      title,
-      content,
-      coverId: coverId!,
-      images: images,
-      imagesRemoved: imagesRemoved,
-      status,
-    };
 
     try {
-      await this.postService.updatePost({
-        post,
+      await apiConnector.post({
+        url: `update-post`,
+        data: {
+          images,
+          coverId,
+          content,
+          title,
+          id,
+          imagesRemoved,
+          status,
+        },
       });
-
-      // this.postStore.updatePost({
-      //   id,
-      //   title,
-      //   content,
-      //   cover: {
-      //     id: cover.newCoverId,
-      //   },
-      //   status: "active",
-      // });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -157,10 +164,20 @@ export default class PostController {
   }): Promise<{ id: string; path: string; name: string } | void> {
     try {
       const { image } = params;
-      const { id, path, name } = await this.postService.uploadImage({
-        image,
-        type: "post",
+      const formData = new FormData();
+      formData.append("file", image);
+      formData.append("type", "post");
+
+      const serverResponse = await apiConnector.post({
+        url: `upload-image`,
+        data: formData,
+        contentType: "multipart/form-data",
       });
+
+      const id = serverResponse.data.image.id;
+      const path = serverResponse.data.image.url;
+      const name = serverResponse.data.image.name;
+
       return { id, path, name };
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
@@ -170,14 +187,11 @@ export default class PostController {
   async createPost(params: CreatePost) {
     try {
       const { title, content, coverId, images, status } = params;
-      const post = {
-        title,
-        content,
-        coverId,
-        images,
-        status,
-      };
-      await this.postService.createPost(post);
+
+      await apiConnector.post({
+        url: `create-post`,
+        data: { title, content, coverId, images, status },
+      });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -189,13 +203,38 @@ export default class PostController {
   }): Promise<Image | void> {
     const { image, type } = params;
     try {
-      const { id, url, name } = await this.postService.uploadImage({
-        image,
-        type,
+      const formData = new FormData();
+      formData.append("file", image);
+      formData.append("type", type);
+
+      const serverResponse = await apiConnector.post({
+        url: `upload-image`,
+        data: formData,
+        contentType: "multipart/form-data",
       });
+
+      const id = serverResponse.data.image.id;
+      const url = serverResponse.data.image.url;
+      const name = serverResponse.data;
+
       return { id, url, name };
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  formatPostResponse(params: { response: any }): Post {
+    const { response } = params;
+
+    return {
+      id: response.id,
+      title: response.title,
+      content: response.content,
+      createdAt: response.created_at,
+      updatedAt: response.updated_at,
+      cover: response.cover,
+      status: response.status,
+    };
   }
 }

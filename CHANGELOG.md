@@ -1,5 +1,13 @@
 # Changelog
 
+## 10.6.0 - 2025-03-23
+
+### Changed
+
+- Removed PostService class in favor of direct API calls in PostController
+- Simplified post operations by using apiConnector directly in controller
+- Moved formatPostResponse helper method to PostController
+
 ## 10.5.0 - 2025-03-23
 
 ### Changed
