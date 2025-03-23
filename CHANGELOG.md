@@ -1,5 +1,13 @@
 # Changelog
 
+## 10.4.0 - 2025-03-23
+
+### Changed
+
+- Migrated feedback functionality from SystemController to dedicated FeedbackController
+- Removed FeedbackService and ErrorService in favor of direct API calls
+- Simplified error handling by using apiConnector directly in controllers
+
 ## 10.3.0 - 2025-03-23
 
 ### Changed

@@ -9,12 +9,10 @@ import ErrorController from "./errorController";
 
 // services
 import SystemService from "@/services/systemService";
-import FeedbackService from "@/services/feedbackService";
 import { DesignMode } from "@/utils/types";
 
 export default class SystemController {
   systemService = new SystemService();
-  feedbackService = new FeedbackService();
   private errorController = new ErrorController();
 
   // TODO:remove
@@ -159,22 +157,6 @@ export default class SystemController {
       } else {
         throw new Error("Workbox no está inicializado.");
       }
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  async createFeedback(params: FeedbackParams): Promise<void> {
-    try {
-      const { userId, name, email, description, contactMe } = params;
-
-      await this.feedbackService.createFeedback({
-        userId,
-        name,
-        email,
-        description,
-        contactMe,
-      });
     } catch (error) {
       return this.errorController.handleError({ error });
     }

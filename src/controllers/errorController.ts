@@ -3,13 +3,9 @@ import ModalErrorReporComponent from "@/components/error/ModalErrorReporComponen
 import { modalController, toastController } from "@ionic/vue";
 import { AxiosError } from "axios";
 import { alertCircleOutline, closeOutline } from "ionicons/icons";
-
-// services
-import errorService from "@/services/errorService";
+import { apiConnector } from "@/main";
 
 export default class ErrorController {
-  private errorService = new errorService();
-
   handleError(params: { error: unknown }) {
     const { error } = params;
 
@@ -92,10 +88,9 @@ export default class ErrorController {
   }) {
     const { message, stack, comments } = params;
     try {
-      await this.errorService.sendError({
-        message,
-        stack,
-        comments,
+      await apiConnector.post({
+        url: `error-report`,
+        data: { message, stack, comments },
       });
     } catch (error) {
       return this.handleError({ error });

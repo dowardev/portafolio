@@ -159,8 +159,10 @@ import { LoadButton } from "ionic-extra-components";
 import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
 import { FeedbackParams } from "@/services/interfaces";
+import FeedbackController from "@/controllers/feedbackController";
 const userController = new UserController();
 const systemController = new SystemController();
+const feedbackController = new FeedbackController();
 // end controllers
 
 // props
@@ -244,7 +246,7 @@ async function sendFeedback(params: FeedbackParams) {
   buttonSendProps.fill = "solid";
 
   try {
-    await systemController.createFeedback({
+    await feedbackController.createFeedback({
       userId,
       name,
       email,
