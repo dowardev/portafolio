@@ -1,5 +1,12 @@
 # Changelog
 
+## 10.2.0 - 2025-03-23
+
+### Changed
+
+- Moved APIService to controllers directory and renamed to APIController
+- Updated related imports across the application to use new APIController path
+
 ## 10.1.0 - 2025-03-22
 
 ### Added

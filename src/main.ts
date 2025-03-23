@@ -55,8 +55,8 @@ const serverConfigController = new ServerConfig({
 });
 
 // api connector
-import APIService from "@/services/APIService";
-const api = new APIService(serverConfigController);
+import APIController from "@/controllers/APIController";
+const api = new APIController(serverConfigController);
 export const apiConnector = api;
 
 // user auth

@@ -1,4 +1,4 @@
-import APIService from "@/services/APIService";
+import APIController from "@/controllers/APIController";
 import { User, UserServerResponse } from "@/services/interfaces";
 import ErrorController from "./errorController";
 
@@ -7,13 +7,13 @@ export default class AuthController {
   private refreshToken: string | null = null;
   private serverUrl: string = "http://localhost:8000";
   private errorController = new ErrorController();
-  private apiManager: APIService;
+  private apiManager: APIController;
 
   constructor(
     accessToken: string,
     refreshToken: string,
     serverUrl: string,
-    apiManager: APIService,
+    apiManager: APIController,
   ) {
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
