@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { User } from "../services/interfaces";
+import { User } from "../utils/interfaces";
 import userAvatar from "@/assets/otros/user.png";
 import { ref } from "vue";
 

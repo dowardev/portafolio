@@ -49,7 +49,7 @@ import { reactive, ref } from "vue";
 import { LoadButton } from "ionic-extra-components";
 
 // interface
-import { ContactMessage } from "@/services/interfaces";
+import { ContactMessage } from "@/utils/interfaces";
 
 // components
 import ContactForm from "@/forms/ContactForm.vue";

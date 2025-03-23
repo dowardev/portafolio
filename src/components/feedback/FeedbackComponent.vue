@@ -158,7 +158,7 @@ import { LoadButton } from "ionic-extra-components";
 // controllers
 import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
-import { FeedbackParams } from "@/services/interfaces";
+import { FeedbackParams } from "@/utils/interfaces";
 import FeedbackController from "@/controllers/feedbackController";
 const userController = new UserController();
 const systemController = new SystemController();

@@ -11,7 +11,7 @@ import {
   UpdateUserAccount,
   User,
   UserRegister,
-} from "../services/interfaces";
+} from "../utils/interfaces";
 import Cookies from "js-cookie";
 import { apiConnector } from "@/main";
 

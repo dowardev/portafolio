@@ -72,7 +72,7 @@
 import { IonPage, isPlatform, loadingController } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { UpdatePost } from "@/services/interfaces";
+import { UpdatePost } from "@/utils/interfaces";
 import {
   chevronBackOutline,
   optionsOutline,

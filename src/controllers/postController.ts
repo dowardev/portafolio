@@ -1,7 +1,7 @@
-import { CreatePost, GetPost, Image } from "./../services/interfaces";
+import { CreatePost, GetPost, Image } from "../utils/interfaces";
 import { usePostStore } from "../store/postStore";
 import { storeToRefs } from "pinia";
-import { Post, UpdatePost } from "../services/interfaces";
+import { Post, UpdatePost } from "../utils/interfaces";
 import { filterPostOptions, PostFields } from "@/services/types";
 
 // controllers

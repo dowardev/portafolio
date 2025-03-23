@@ -14,7 +14,7 @@ import {
   Toast,
   UploadImage,
   Theme,
-} from "./interfaces";
+} from "../utils/interfaces";
 
 export default class SystemService {
   async getTheme(): Promise<Theme> {

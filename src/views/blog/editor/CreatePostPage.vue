@@ -58,7 +58,7 @@
 import { IonPage } from "@ionic/vue";
 import { defineComponent, ref } from "vue";
 import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
-import { CreatePost } from "../../../services/interfaces";
+import { CreatePost } from "../../../utils/interfaces";
 import { useRouter } from "vue-router";
 import { StatusPost } from "@/services/types";
 import {

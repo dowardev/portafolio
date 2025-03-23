@@ -1,4 +1,4 @@
-import { Theme } from "@/services/interfaces";
+import { Theme } from "@/utils/interfaces";
 import { DesignMode } from "@/utils/types";
 import { defineStore } from "pinia";
 import { reactive, ref, watch } from "vue";

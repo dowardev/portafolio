@@ -4,7 +4,7 @@ import {
   GetPostsServer,
   ImageServer,
   PostServerResponse,
-} from "./interfaces";
+} from "../utils/interfaces";
 import { apiConnector } from "@/main";
 
 import { filterPostOptions, PostFields } from "./types";

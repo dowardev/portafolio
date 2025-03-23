@@ -1,4 +1,4 @@
-import { ContactMessage } from "../services/interfaces";
+import { ContactMessage } from "../utils/interfaces";
 import { apiConnector } from "@/main";
 
 // controllers

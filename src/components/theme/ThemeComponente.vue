@@ -51,7 +51,7 @@ import {
 } from "@ionic/vue";
 import { checkmarkOutline, chevronBackOutline } from "ionicons/icons";
 import { Theme as ThemeType } from "../../services/types";
-import { Theme } from "@/services/interfaces";
+import { Theme } from "@/utils/interfaces";
 
 const availableThemes: ThemeType[] = ["light", "nord", "gruvbox"];
 const pageTitle = "Selector de tema";
@@ -68,7 +68,7 @@ function closeModal(): void {
 async function applyTheme(params: { themeName: ThemeType }): Promise<void> {
   const { themeName } = params;
   const theme = JSON.parse(
-    JSON.stringify(systemController.getTheme())
+    JSON.stringify(systemController.getTheme()),
   ) as Theme;
   theme.selected = themeName;
   systemController.updateThemeSelected({ theme });
@@ -76,7 +76,7 @@ async function applyTheme(params: { themeName: ThemeType }): Promise<void> {
 
 async function setBlurEffect(): Promise<void> {
   const theme = JSON.parse(
-    JSON.stringify(systemController.getTheme())
+    JSON.stringify(systemController.getTheme()),
   ) as Theme;
   if (!theme.options) {
     theme.options = {};

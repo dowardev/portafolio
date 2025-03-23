@@ -1,5 +1,12 @@
 # Changelog
 
+## 10.5.0 - 2025-03-23
+
+### Changed
+
+- Moved interface definitions from services/interfaces.ts to utils/interfaces.ts
+- Updated all interface imports across the application to use new path
+
 ## 10.4.0 - 2025-03-23
 
 ### Changed

@@ -134,7 +134,7 @@ import { required, helpers } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
 
 // interface
-import { ICustomError } from "@/services/interfaces";
+import { ICustomError } from "@/utils/interfaces";
 
 //controllers
 import ServerConfig from "@/controllers/serverConfigController";

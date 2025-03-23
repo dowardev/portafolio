@@ -5,7 +5,7 @@ import {
   SignUpUserServerResponse,
   SignUpUserResponse,
   UpdateUserAccount,
-} from "./interfaces";
+} from "../utils/interfaces";
 import { apiConnector } from "@/main";
 
 export default class SessionService {

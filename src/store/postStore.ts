@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { Post } from "../services/interfaces";
+import { Post } from "../utils/interfaces";
 import { formatISO } from "date-fns/formatISO";
 import { ref } from "vue";
 
@@ -20,7 +20,7 @@ export const usePostStore = defineStore("post", () => {
       datesResult.push(
         formatISO(new Date(element), {
           representation: "date",
-        }).replaceAll("/", "-")
+        }).replaceAll("/", "-"),
       );
     });
     return datesResult;

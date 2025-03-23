@@ -411,7 +411,7 @@ import FeedbackComponent from "../feedback/FeedbackComponent.vue";
 import ServerConfig from "@/controllers/serverConfigController";
 import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
-import { ICustomError } from "@/services/interfaces";
+import { ICustomError } from "@/utils/interfaces";
 const serverConfig = new ServerConfig();
 const userController = new UserController();
 const systemController = new SystemController();

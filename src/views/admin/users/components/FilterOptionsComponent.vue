@@ -183,7 +183,7 @@ import {
   UserFilterOption,
   UserRolFilterOption,
 } from "@/utils/types";
-import { FilterAdminPanelOptions } from "@/services/interfaces";
+import { FilterAdminPanelOptions } from "@/utils/interfaces";
 interface OptionProperties {
   value: { name: string; label: string };
   values: { name: string; label: string }[];

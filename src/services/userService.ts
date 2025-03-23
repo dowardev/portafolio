@@ -14,7 +14,7 @@ import {
   SearchUsersParams,
   SearchUsersResponse,
   SearchUsersServerResponse,
-} from "./interfaces";
+} from "../utils/interfaces";
 
 export default class UserService {
   async getUser(): Promise<User | undefined> {
