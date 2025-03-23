@@ -56,7 +56,9 @@ import ContactForm from "@/forms/ContactForm.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
+import ContactController from "@/controllers/contactController";
 const systemController = new SystemController();
+const contactController = new ContactController();
 
 // vars
 const pageTitle = "Formulario de contacto";
@@ -72,7 +74,7 @@ async function sendMessage(params: ContactMessage) {
   const { name, email, subject, description } = params;
 
   try {
-    await systemController.createContactMessage({
+    await contactController.createContactMessage({
       name,
       email,
       subject,

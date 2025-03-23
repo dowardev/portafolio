@@ -1,4 +1,4 @@
-import { ContactMessage, FeedbackParams, Toast } from "@/services/interfaces";
+import { FeedbackParams, Toast } from "@/services/interfaces";
 import { toastController } from "@ionic/vue";
 import { Theme } from "../services/interfaces";
 import { useSystemStore } from "../store/systemStore";
@@ -9,13 +9,11 @@ import ErrorController from "./errorController";
 
 // services
 import SystemService from "@/services/systemService";
-import ContactService from "@/services/contactService";
 import FeedbackService from "@/services/feedbackService";
 import { DesignMode } from "@/utils/types";
 
 export default class SystemController {
   systemService = new SystemService();
-  contactService = new ContactService();
   feedbackService = new FeedbackService();
   private errorController = new ErrorController();
 
@@ -130,20 +128,6 @@ export default class SystemController {
           color,
         })
       ).present();
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  async createContactMessage(params: ContactMessage) {
-    try {
-      const { name, subject, email, description } = params;
-      await this.contactService.createContactMessage({
-        name,
-        subject,
-        email,
-        description,
-      });
     } catch (error) {
       return this.errorController.handleError({ error });
     }

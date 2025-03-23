@@ -1,5 +1,13 @@
 # Changelog
 
+## 10.3.0 - 2025-03-23
+
+### Changed
+
+- Moved contact message handling from SystemController to dedicated ContactController
+- Removed ContactService in favor of direct controller implementation
+- Updated ContactModal to use new ContactController
+
 ## 10.2.0 - 2025-03-23
 
 ### Changed
