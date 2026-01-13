@@ -1,0 +1,27 @@
+image: node:lts
+
+stages:
+  - deploy
+
+variables:
+  SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY
+
+.default_before_script:
+  before_script:
+    - apt-get update && apt-get install -y openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - eval $(ssh-agent -s)
+    - ssh-add ~/.ssh/id_rsa
+    - ssh-keyscan -p 65002 195.179.236.189 >> ~/.ssh/known_hosts
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+
+deploy_job:
+  stage: deploy
+  script:
+    - set +e
+    - ssh -p 65002 u902881280@195.179.236.189 "cd /home/u902881280/public_html/blog-backend && git pull && php artisan migrate"
+    - set -e
+  extends: .default_before_script
