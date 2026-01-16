@@ -2,7 +2,7 @@ import { Storage } from "@ionic/storage";
 const store = new Storage();
 store.create();
 import { AxiosError } from "axios";
-import { apiConnector } from "@/main";
+import { apiConnector, ssoApiConnector } from "@/main";
 
 import {
   SaveUserData,
@@ -18,7 +18,7 @@ import {
 
 export default class UserService {
   async getUser(): Promise<User | undefined> {
-    const response = (await apiConnector.get({
+    const response = (await ssoApiConnector.get({
       url: `user-auth`,
     })) as UserServerResponse;
 

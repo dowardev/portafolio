@@ -216,13 +216,10 @@ async function login(params: { email: string; password: string }) {
 
     if (response) {
       const token = response.token;
-      const refreshToken = response.refreshToken;
-      // await serverConfig.storeUserToken({ userToken: token });
       userController.storeUserToken({ token });
-      userController.storeRefreshToken({ refreshToken: refreshToken });
       spinners.value.buttonLogin = false;
       clearInputs();
-      location.reload();
+      await router.push("/");
     }
   } catch (e: unknown) {
     if (typeof e === "object" && e !== null && "errorDetail" in e) {

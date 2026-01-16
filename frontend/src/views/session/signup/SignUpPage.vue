@@ -23,6 +23,18 @@
             />
           </section>
 
+          <section v-if="!isProd">
+            <ion-button
+              fill="outline"
+              expand="block"
+              size="small"
+              @click="fillTestData()"
+            >
+              <ion-label>Llenar datos de prueba</ion-label>
+              <ion-icon slot="start" :icon="sparklesOutline"></ion-icon>
+            </ion-button>
+          </section>
+
           <!-- button send -->
           <section>
             <ion-button
@@ -78,9 +90,11 @@ import {
   IonCard,
   IonLabel,
   IonButton,
+  IonIcon,
 } from "@ionic/vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { sparklesOutline } from "ionicons/icons";
 
 // controllers
 import SystemController from "@/controllers/systemController";
@@ -94,13 +108,14 @@ const errorController = new ErrorController();
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
 
 const router = useRouter();
+const isProd = import.meta.env.PROD;
 
 const form = ref({
   user: "",
   name: "",
   email: "",
   password: "",
-  password2: "",
+  password_confirmation: "",
 });
 const spinners = ref({
   buttonSignup: false,
@@ -116,8 +131,9 @@ async function register(params: {
   user: string;
   email: string;
   password: string;
+  password_confirmation: string;
 }) {
-  const { name, user, password } = params;
+  const { name, user, password, password_confirmation } = params;
   let { email } = params;
   spinners.value.buttonSignup = true;
   email = email.trim();
@@ -128,6 +144,7 @@ async function register(params: {
       user,
       email,
       password,
+      password_confirmation,
     });
     spinners.value.buttonSignup = false;
     await alertConfirmaciónEmail({ email });
@@ -158,7 +175,7 @@ function clearInputs() {
   form.value.name = "";
   form.value.user = "";
   form.value.password = "";
-  form.value.password2 = "";
+  form.value.password_confirmation = "";
   form.value.email = "";
 }
 
@@ -188,6 +205,10 @@ async function login() {
   spinners.value.buttonLogin = true;
   await router.push("/login");
   spinners.value.buttonLogin = false;
+}
+
+function fillTestData() {
+  (signUpFormComponentRef.value as any).generateRandomData();
 }
 </script>
 

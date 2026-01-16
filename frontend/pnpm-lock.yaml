@@ -80,9 +80,6 @@ importers:
       vue-router:
         specifier: ^4.5.0
         version: 4.5.0(vue@3.5.13(typescript@5.7.3))
-      vue3-touch-events:
-        specifier: ^5.0.13
-        version: 5.0.13(vue@3.5.13(typescript@5.7.3))
       workbox-window:
         specifier: ^7.3.0
         version: 7.3.0
@@ -3137,6 +3134,7 @@ packages:
   source-map@0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
+    deprecated: The work that was done in this beta branch won't be included in future versions
 
   sourcemap-codec@1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
@@ -3547,11 +3545,6 @@ packages:
     hasBin: true
     peerDependencies:
       typescript: '>=5.0.0'
-
-  vue3-touch-events@5.0.13:
-    resolution: {integrity: sha512-VOprVhKsL5DaistDFU0+oLJz/LaFzVENeUzs4Hp3PeD0TVx1vNEgNgS/9WehUHlUIUuCdnmLm0TkmITjwVmUBQ==}
-    peerDependencies:
-      vue: ^3.0.0
 
   vue@3.5.13:
     resolution: {integrity: sha512-wmeiSMxkZCSc+PM2w2VRsOYAZC8GdipNFRTsLSfodVqI9mbejKeXEGr8SckuLnrQPGe3oJN5c3K0vpoU9q/wCQ==}
@@ -7462,10 +7455,6 @@ snapshots:
       '@volar/typescript': 2.4.11
       '@vue/language-core': 2.2.0(typescript@5.7.3)
       typescript: 5.7.3
-
-  vue3-touch-events@5.0.13(vue@3.5.13(typescript@5.7.3)):
-    dependencies:
-      vue: 3.5.13(typescript@5.7.3)
 
   vue@3.5.13(typescript@5.7.3):
     dependencies:

@@ -1,5 +1,26 @@
 # Changelog
 
+## 10.8.0 - 2026-01-16
+
+### Added
+
+- SSOAPIController for handling SSO (Single Sign-On) authentication operations
+- SSOServerConfigController for managing SSO server configuration
+
+### Changed
+
+- Updated APIController to support SSO authentication flow
+- Extended serverConfigController with SSO server configuration support
+- Enhanced userController to integrate SSO-based user authentication
+- Updated SignUpFormComponent with SSO signup options
+- Modified main.ts to initialize SSO authentication configuration
+- Refactored userService to handle SSO user operations
+- Updated userStore to manage SSO authentication state
+- Extended TypeScript interfaces in utils/interfaces.ts for SSO support
+- Updated LoginPage with SSO login functionality
+- Enhanced SignUpPage with SSO registration support
+- Modified MenuComponent to reflect SSO authentication status
+
 ## 10.7.0 - 2025-03-23
 
 ### Changed

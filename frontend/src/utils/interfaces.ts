@@ -180,6 +180,7 @@ export interface UserRegister {
   user: User["user"];
   email: User["email"];
   password: User["password"];
+  password_confirmation?: string;
 }
 
 export interface UpdateUserAccount {

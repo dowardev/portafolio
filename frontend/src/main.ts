@@ -43,21 +43,29 @@ import { Storage } from "@ionic/storage";
 const storage = new Storage();
 export const storageInstance = await initStorage();
 
-// server config
+// server config - API principal
 import ServerConfig from "@/controllers/serverConfigController";
-const accessToken = Cookies.get("access-token");
-const refreshToken = Cookies.get("refresh-token")!;
+const userToken = Cookies.get("user-token");
 const serverConfigController = new ServerConfig({
   baseUrl: import.meta.env.VITE_API_URL,
-  accessToken: accessToken ?? "",
-  refreshToken: refreshToken ?? "",
-  refreshTokenEndPoint: "refresh-token",
+  accessToken: userToken ?? "",
+});
+
+// server config - SSO
+import SSOServerConfig from "@/controllers/SSOServerConfigController";
+const ssoServerConfig = new SSOServerConfig({
+  baseUrl: import.meta.env.VITE_SSO_URL,
+  accessToken: userToken ?? "",
 });
 
 // api connector
 import APIController from "@/controllers/APIController";
 const api = new APIController(serverConfigController);
 export const apiConnector = api;
+
+import SSOAPIController from "@/controllers/SSOAPIController";
+const ssoApi = new SSOAPIController(ssoServerConfig);
+export const ssoApiConnector = ssoApi;
 
 // user auth
 // import Cookies from "js-cookie";

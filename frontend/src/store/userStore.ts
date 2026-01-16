@@ -25,12 +25,12 @@ export const useUserStore = defineStore("user", () => {
     user.value = userParam;
   }
 
-  function updateUserLoggedProp(isLogged: boolean) {
-    isLogged = isLogged;
+  function updateUserLoggedProp(isLoggedParam: boolean) {
+    isLogged.value = isLoggedParam;
   }
 
-  function updateTokenProp(token: string) {
-    token = token;
+  function updateTokenProp(tokenParam: string) {
+    token.value = tokenParam;
   }
 
   function logout() {

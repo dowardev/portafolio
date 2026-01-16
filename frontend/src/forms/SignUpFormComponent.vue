@@ -88,23 +88,23 @@
     </ion-col>
   </ion-row>
 
-  <!-- password2 -->
+  <!-- password_confirmation -->
   <ion-row>
     <ion-col>
       <ion-input
         label-placement="stacked"
         fill="outline"
         label="Repite contraseña"
-        :value="form.password2"
-        :error-text="v$.form.password2.$errors[0]?.$message.toString()"
+        :value="form.password_confirmation"
+        :error-text="v$.form.password_confirmation.$errors[0]?.$message.toString()"
         :type="inputTypePassword2"
         :class="{
-          'ion-invalid': v$.form.password2.$invalid && v$.form.password2.$dirty,
-          'ion-touched': v$.form.password2.$dirty,
+          'ion-invalid': v$.form.password_confirmation.$invalid && v$.form.password_confirmation.$dirty,
+          'ion-touched': v$.form.password_confirmation.$dirty,
         }"
         :clear-on-edit="false"
-        @ion-input="form.password2 = $event.detail.value!.toString()"
-        @click="v$.form.password2.$touch()"
+        @ion-input="form.password_confirmation = $event.detail.value!.toString()"
+        @click="v$.form.password_confirmation.$touch()"
         @keydown.enter="emits('enterPressed')"
       >
         <ion-icon slot="start" :icon="keyOutline"></ion-icon>
@@ -141,7 +141,7 @@ const props = withDefaults(
       name: string;
       email: string;
       password: string;
-      password2: string;
+       password_confirmation: string;
     };
   }>(),
   {
@@ -150,12 +150,12 @@ const props = withDefaults(
       name: "",
       email: "",
       password: "",
-      password2: "",
+      password_confirmation: "",
     }),
   },
 );
 const emits = defineEmits(["formStatus", "enterPressed"]);
-defineExpose({ getData, setFormData });
+defineExpose({ getData, setFormData, generateRandomData });
 // end componente props
 
 // vars
@@ -164,7 +164,7 @@ const inputTypePassword2 = ref("password" as "text" | "password");
 const form = ref(props.form);
 
 // validation
-const samePassword = () => form.value.password == form.value.password2;
+const samePassword = () => form.value.password == form.value.password_confirmation;
 const messageError = {
   required: "Campo requerido",
   alpha: "Solamente puede contener texto",
@@ -213,7 +213,7 @@ const rules = {
         helpers.regex(/[@$!%*?&]/),
       ),
     },
-    password2: {
+    password_confirmation: {
       required: helpers.withMessage(messageError.required, required),
       same: helpers.withMessage("Las contraseñas no coinciden", samePassword),
     },
@@ -238,7 +238,7 @@ watch(
 
 // functions
 function getData():
-  | { name: string; user: string; email: string; password: string }
+  | { name: string; user: string; email: string; password: string; password_confirmation: string }
   | undefined {
   v$.value.$validate();
   if (!v$.value.$invalid) {
@@ -247,6 +247,7 @@ function getData():
       user: form.value.user,
       email: form.value.email,
       password: form.value.password,
+      password_confirmation: form.value.password_confirmation,
     };
   } else return undefined;
 }
@@ -256,7 +257,7 @@ function generateRandomData() {
   form.value.name = faker.person.fullName();
   form.value.email = faker.internet.email();
   form.value.password = faker.internet.password() + "1@";
-  form.value.password2 = form.value.password;
+  form.value.password_confirmation = form.value.password;
 }
 
 function setFormData(data: {
@@ -269,7 +270,7 @@ function setFormData(data: {
   form.value.user = data.user;
   form.value.email = data.email;
   form.value.password = data.password;
-  form.value.password2 = data.password;
+  form.value.password_confirmation = data.password;
 }
 </script>
 

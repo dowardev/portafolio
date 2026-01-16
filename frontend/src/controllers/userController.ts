@@ -13,7 +13,7 @@ import {
   UserRegister,
 } from "../utils/interfaces";
 import Cookies from "js-cookie";
-import { apiConnector } from "@/main";
+import { apiConnector, ssoApiConnector } from "@/main";
 
 // controllers
 import ErrorController from "./errorController";
@@ -71,11 +71,11 @@ export default class UserController {
 
   async createUserAccount(params: UserRegister): Promise<void> {
     try {
-      const { name, user, password, email } = params;
+      const { name, user, password, email, password_confirmation } = params;
 
-      await apiConnector.post({
-        url: `signup`,
-        data: { name, user, password, email },
+      await ssoApiConnector.post({
+        url: `register`,
+        data: { name, user, password, email, password_confirmation },
       });
     } catch (error) {
       return this.errorController.handleError({ error });
@@ -147,17 +147,16 @@ export default class UserController {
   async login(params: {
     user: string;
     password: string;
-  }): Promise<{ token: string; refreshToken: string } | void> {
+  }): Promise<{ token: string } | void> {
     try {
       const { user, password } = params;
-      const serverResponse = await apiConnector.post({
+      const serverResponse = await ssoApiConnector.post<{ token: string }>({
         url: `login`,
         data: { email: user, password },
       });
-      const token = `Bearer ${serverResponse.data.access_token}`;
-      const refreshToken = serverResponse.data.refresh_token;
+      const token = `Bearer ${serverResponse.token}`;
 
-      return { token, refreshToken };
+      return { token };
     } catch (e: unknown) {
       if (typeof e === "object" && e !== null && "errorDetail" in e) {
         const customError = e as ICustomError;
@@ -171,14 +170,22 @@ export default class UserController {
   async loadUser() {
     try {
       const user = await this.userService.getUser();
-
       if (user) this.updateUserProps({ user });
     } catch (e: unknown) {
-      if (typeof e === "object" && e !== null && "errorDetail" in e) {
-        const customError = e as ICustomError;
+      const customError = this.errorController.getError({ error: e });
+      
+      const isAuthError = customError.errorDetail === "Unauthenticated.";
+      const isNetworkError = 
+        customError.message === "No response received from server" ||
+        customError.message.includes("Network Error") ||
+        !customError.status;
+
+      if (import.meta.env.DEV && isNetworkError) {
+        console.warn("[DEV] Backend no disponible - operando en modo offline");
+      }
+
+      if (!isAuthError && !isNetworkError) {
         throw customError;
-      } else {
-        throw e;
       }
     }
   }
@@ -204,7 +211,7 @@ export default class UserController {
     const { email } = params;
 
     try {
-      await apiConnector.post({ url: `recover-password`, data: { email } });
+      await ssoApiConnector.post({ url: `recover-password`, data: { email } });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -218,7 +225,7 @@ export default class UserController {
     const { code, password, email } = params;
 
     try {
-      await apiConnector.post({
+      await ssoApiConnector.post({
         url: `reset-password`,
         data: { email, code, password },
       });
@@ -238,7 +245,7 @@ export default class UserController {
   async refreshUserToken(params: { refreshToken: string }) {
     try {
       const { refreshToken } = params;
-      await apiConnector.post({
+      await ssoApiConnector.post({
         url: `refresh-token`,
         data: { refreshToken },
       });
@@ -249,7 +256,7 @@ export default class UserController {
 
   storeUserToken(params: { token: string }) {
     const { token } = params;
-    Cookies.set("access-token", token, {
+    Cookies.set("user-token", token, {
       secure: true,
       sameSite: "Strict",
     });
@@ -266,7 +273,7 @@ export default class UserController {
   async resendEmailVerification(params: { email: string }) {
     const { email } = params;
     try {
-      await apiConnector.post({
+      await ssoApiConnector.post({
         url: `resend-confirmation-email`,
         data: { email },
       });

@@ -6,9 +6,7 @@
           <ion-col>
             <!-- user logged -->
             <ion-item
-              v-if="
-                Object.keys(userController.getUser()?.user ?? {}).length > 0
-              "
+              v-if="userController.getUser()?.id"
               lines="none"
               class="transparent"
               @click="setOpenPopOverUserOptions(true, $event)"
@@ -28,9 +26,7 @@
 
             <!-- no logged -->
             <ion-item
-              v-if="
-                Object.keys(userController.getUser()?.user ?? {}).length == 0
-              "
+              v-if="!userController.getUser()?.id"
               class="transparent"
               lines="none"
             >
@@ -411,7 +407,7 @@ import FeedbackComponent from "../feedback/FeedbackComponent.vue";
 import ServerConfig from "@/controllers/serverConfigController";
 import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
-import { ICustomError } from "@/utils/interfaces";
+import { ssoApiConnector } from "@/main";
 const serverConfig = new ServerConfig();
 const userController = new UserController();
 const systemController = new SystemController();
@@ -437,12 +433,12 @@ const modalContribute = ref({ open: false });
 const modalComments = ref({ open: false });
 
 // mounted
-onMounted(() => {
-  getUser();
-  window.addEventListener("resize", () => {
-    windowSize.value.width = window.innerWidth;
+  onMounted(async () => {
+    await getUser();
+    window.addEventListener("resize", () => {
+      windowSize.value.width = window.innerWidth;
+    });
   });
-});
 
 // functions
 function openRoute(params: { route?: string; name?: string }) {
@@ -454,15 +450,8 @@ function openRoute(params: { route?: string; name?: string }) {
 
 async function getUser() {
   try {
-    await userController.loadUser();
-  } catch (e: unknown) {
-    if (typeof e === "object" && e !== null && "errorDetail" in e) {
-      const customError = e as ICustomError;
-      if (customError.errorDetail != "Unauthenticated.") return customError;
-    } else {
-      throw e;
-    }
-  }
+    userController.loadUser();
+  } catch (error) {}
 }
 
 async function login() {
@@ -482,6 +471,7 @@ async function signup() {
 async function logout() {
   try {
     spinners.value.buttonLogout = true;
+    await ssoApiConnector.post({ url: `logout` });
     await serverConfig.clearData();
     location.reload();
   } catch (error) {
