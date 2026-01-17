@@ -219,6 +219,7 @@ async function login(params: { email: string; password: string }) {
       userController.storeUserToken({ token });
       spinners.value.buttonLogin = false;
       clearInputs();
+      await userController.loadUser();
       await router.push("/");
     }
   } catch (e: unknown) {

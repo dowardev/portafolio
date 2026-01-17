@@ -450,7 +450,7 @@ function openRoute(params: { route?: string; name?: string }) {
 
 async function getUser() {
   try {
-    userController.loadUser();
+    await userController.loadUser();
   } catch (error) {}
 }
 

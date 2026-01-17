@@ -18,7 +18,7 @@ import {
 
 export default class UserService {
   async getUser(): Promise<User | undefined> {
-    const response = (await ssoApiConnector.get({
+    const response = (await apiConnector.get({
       url: `user-auth`,
     })) as UserServerResponse;
 
@@ -143,7 +143,7 @@ export default class UserService {
     const { response } = params;
 
     return {
-      id: response.id.toString(),
+      id: response.id?.toString(),
       name: response.name,
       user: response.user,
       email: response.email,

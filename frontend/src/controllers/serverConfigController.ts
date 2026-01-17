@@ -41,4 +41,10 @@ export default class ServerConfig {
       accessToken: this.accessToken,
     };
   }
+
+  clearData() {
+    Cookies.remove("user-token");
+    this.baseUrl = "";
+    this.accessToken = "";
+  }
 }

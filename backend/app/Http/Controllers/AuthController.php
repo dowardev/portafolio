@@ -105,6 +105,7 @@ class AuthController extends Controller
   public function user(Request $request)
   {
     $ssoUser = $request->get('sso_user');
+    $isAdmin = $request->get('is_admin', false);
     
     if ($ssoUser) {
       return response()->json([
@@ -112,7 +113,7 @@ class AuthController extends Controller
         'name' => $ssoUser['name'],
         'user' => $ssoUser['user'],
         'email' => $ssoUser['email'],
-        'is_admin' => $ssoUser['is_admin'] ?? false,
+        'is_admin' => $isAdmin,
         'is_email_verified' => $ssoUser['is_email_verified'] ?? false,
         'is_user_disabled' => $ssoUser['is_user_disabled'] ?? false,
       ]);

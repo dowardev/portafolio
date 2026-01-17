@@ -1,5 +1,26 @@
 # Changelog
 
+## 10.10.0 - 2026-01-17
+
+### Added
+
+- Admin mappings table setup SQL script for role-based access control
+- Migration to add sso_id column to users table for local user mapping
+- clearData() method to ServerConfig for logout/reset functionality
+
+### Changed
+
+- Enhanced SSOTokenAuth middleware to look up local user status (admin, email verified, disabled) from database
+- Updated AuthController to get is_admin from middleware-provided request attribute
+- Switched userService to use apiConnector instead of ssoApiConnector for user endpoint
+- Added optional chaining for user ID to prevent errors with missing data
+- Fixed MenuComponent to await user loading for consistent state
+- Fixed LoginPage to await user loading after successful authentication
+
+### Backend 8.6.0
+
+Same changes as frontend 10.10.0 for backend components
+
 ## 10.9.0 - 2026-01-17
 
 ### Added
