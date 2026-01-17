@@ -104,6 +104,20 @@ class AuthController extends Controller
 
   public function user(Request $request)
   {
+    $ssoUser = $request->get('sso_user');
+    
+    if ($ssoUser) {
+      return response()->json([
+        'id' => $ssoUser['id'],
+        'name' => $ssoUser['name'],
+        'user' => $ssoUser['user'],
+        'email' => $ssoUser['email'],
+        'is_admin' => $ssoUser['is_admin'] ?? false,
+        'is_email_verified' => $ssoUser['is_email_verified'] ?? false,
+        'is_user_disabled' => $ssoUser['is_user_disabled'] ?? false,
+      ]);
+    }
+    
     return response()->json($request->user());
   }
 

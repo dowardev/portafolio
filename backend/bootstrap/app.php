@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'sso.auth' => \App\Http\Middleware\SSOTokenAuth::class,
+            'cors' => \App\Http\Middleware\Cors::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

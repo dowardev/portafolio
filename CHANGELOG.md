@@ -1,5 +1,24 @@
 # Changelog
 
+## 10.9.0 - 2026-01-17
+
+### Added
+
+- SSO authentication middleware (SSOTokenAuth) for validating tokens with external SSO server
+- Production environment template files for backend and frontend deployment
+- Comprehensive deployment checklist with architecture diagrams and server configuration guides
+
+### Changed
+
+- Reorganized API routes to use SSO middleware for protected endpoints
+- Updated AuthController to return SSO user data with proper field mapping
+- Enhanced backend configuration with SSO_URL support
+- Improved documentation in backend and frontend README files with architecture diagrams and production setup guides
+
+### Backend 8.5.0
+
+Same changes as frontend 10.9.0 for backend components
+
 ## 10.8.0 - 2026-01-16
 
 ### Added
