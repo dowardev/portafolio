@@ -29,32 +29,30 @@
 
       <ion-row v-if="homeData.socials && homeData.socials.length > 0" class="center">
         <ion-col :class="{ center: screenSize.preset == 'xs' }">
-          <ion-button
-            v-for="(social, index) in homeData.socials"
-            :key="index"
-            :href="social.url"
-            target="_blank"
-            class="social-button"
-          >
-            <ion-icon
-              slot="icon-only"
-              :icon="getSocialIcon(social.platform)"
-            ></ion-icon>
-          </ion-button>
+          <div class="social-buttons">
+            <ion-button
+              v-for="social in homeData.socials"
+              :key="social.platform"
+              :href="social.url"
+              target="_blank"
+              fill=clear
+            >
+              <ion-icon slot="icon-only" :icon="getSocialIcon(social.iconName)"></ion-icon>
+            </ion-button>
 
-          <!-- form contact -->
-          <ion-button
-            class="social-button"
-            @mouseover="fillContactForm = '#ff5b29'"
-            @mouseleave="fillContactForm = defaultColorFill"
-            @click="openContactModal()"
-          >
-            <ion-icon
-              slot="icon-only"
-              :style="{ color: fillContactForm }"
-              :icon="chatbox"
-            ></ion-icon>
-          </ion-button>
+            <!-- form contact -->
+            <ion-button
+              @mouseover="fillContactForm = '#ff5b29'"
+              @mouseleave="fillContactForm = defaultColorFill"
+              @click="openContactModal()"
+            >
+              <ion-icon
+                slot="icon-only"
+                :style="{ color: fillContactForm }"
+                :icon="chatbox"
+              ></ion-icon>
+            </ion-button>
+          </div>
         </ion-col>
       </ion-row>
     </ion-col>
@@ -370,46 +368,45 @@ const fillContactForm = ref(defaultColorFill);
 const fillcalendly = ref(defaultColorFill);
 const screenSize = ref(systemController.getScreenSize());
 
-// Mapa de iconos por plataforma (objetos importados)
 const socialIconsMap: Record<string, any> = {
-  "facebook": logoFacebook,
-  "x": logoX,
-  "twitter": logoTwitter,
-  "instagram": logoInstagram,
-  "linkedin": logoLinkedin,
-  "youtube": logoYoutube,
-  "tiktok": logoTiktok,
-  "github": logoGithub,
-  "discord": logoDiscord,
-  "twitch": logoTwitch,
-  "pinterest": logoPinterest,
-  "snapchat": logoSnapchat,
-  "reddit": logoReddit,
-  "whatsapp": logoWhatsapp,
-  "wechat": logoWechat,
-  "skype": logoSkype,
-  "slack": logoSlack,
-  "dribbble": logoDribbble,
-  "behance": logoBehance,
-  "medium": logoMedium,
-  "wordpress": logoWordpress,
-  "vimeo": logoVimeo,
-  "soundcloud": logoSoundcloud,
-  "apple": logoApple,
-  "google": logoGoogle,
-  "amazon": logoAmazon,
-  "paypal": logoPaypal,
-  "bitcoin": logoBitcoin,
-  "stack overflow": logoStackoverflow,
-  "steam": logoSteam,
-  "xbox": logoXbox,
-  "playstation": logoPlaystation,
-  "tumblr": logoTumblr,
-  "vk": logoVk,
+  logoFacebook,
+  logoX,
+  logoTwitter,
+  logoInstagram,
+  logoLinkedin,
+  logoYoutube,
+  logoTiktok,
+  logoGithub,
+  logoDiscord,
+  logoTwitch,
+  logoPinterest,
+  logoSnapchat,
+  logoReddit,
+  logoWhatsapp,
+  logoWechat,
+  logoSkype,
+  logoSlack,
+  logoDribbble,
+  logoBehance,
+  logoMedium,
+  logoWordpress,
+  logoVimeo,
+  logoSoundcloud,
+  logoApple,
+  logoGoogle,
+  logoAmazon,
+  logoPaypal,
+  logoBitcoin,
+  logoStackoverflow,
+  logoSteam,
+  logoXbox,
+  logoPlaystation,
+  logoTumblr,
+  logoVk,
 };
 
-function getSocialIcon(platform: string): any {
-  return socialIconsMap[platform.toLowerCase()] || logoLinkedin;
+function getSocialIcon(iconName: string): any {
+  return socialIconsMap[iconName] || logoLinkedin;
 }
 
 // homepage data
@@ -446,8 +443,8 @@ onMounted(async () => {
       console.log("HomeData socials after load:", homeData.value.socials);
       if (homeData.value.socials && homeData.value.socials.length > 0) {
         homeData.value.socials.forEach((s: any, i: number) => {
-          const icon = getSocialIcon(s.platform);
-          console.log(`Social[${i}]: platform="${s.platform}", icon=`, icon);
+          const icon = getSocialIcon(s.iconName);
+          console.log(`Social[${i}]: platform="${s.platform}", iconName="${s.iconName}", icon=`, icon);
         });
       }
     }
@@ -512,6 +509,12 @@ async function openContactModal() {
 </script>
 
 <style scoped>
+.social-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .img-perfil {
   border-radius: 50%;
   width: 18vh;
@@ -525,10 +528,6 @@ async function openContactModal() {
   height: 10dvh;
 }
 
-.social-button {
-  --box-shadow: none;
-  --background: transparent;
-}
 
 .blur-effect {
   backdrop-filter: blur(10px);

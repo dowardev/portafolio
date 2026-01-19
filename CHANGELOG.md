@@ -1,6 +1,19 @@
 # Changelog
 
-## 10.11.0 / 8.7.0 - 2026-01-19
+## 10.11.1 / 8.7.1 - 2026-01-19
+
+### Changed
+
+- Refactored social media icons to store iconName (string) instead of icon object in database
+- Simplified InformationComponent template by removing 300+ lines of repetitive v-show buttons
+- Added getSocialIcon helper function to map icon names to ionicons objects
+- Updated HomeEditorComponent to save iconName field instead of icon object
+- Updated HomePageData interface to use iconName: string instead of icon: string
+
+### Fixed
+
+- Resolved issue where social icons were not displaying due to CSS .social-button class conflict
+- Fixed dynamic icon rendering by using iconMap lookup instead of dynamic imports
 
 ### Added
 

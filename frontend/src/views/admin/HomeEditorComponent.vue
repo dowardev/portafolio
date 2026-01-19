@@ -61,7 +61,7 @@
             button 
             @click="addSocial(social.name)"
           >
-            <ion-icon :icon="social.icon" slot="start"></ion-icon>
+            <ion-icon :icon="getIconByName(social.iconName)" slot="start"></ion-icon>
             <ion-label>{{ social.name }}</ion-label>
           </ion-item>
         </ion-list>
@@ -74,7 +74,7 @@
       class="social-row"
     >
       <ion-item>
-        <ion-icon v-if="social.icon" :icon="social.icon" slot="start"></ion-icon>
+        <ion-icon v-if="social.platform" :icon="getIconByName(social.platform)" slot="start"></ion-icon>
         <ion-input
           v-model="social.platform"
           placeholder="Plataforma"
@@ -176,6 +176,7 @@ import {
   saveOutline,
   trashOutline,
   logoFacebook,
+  logoX,
   logoTwitter,
   logoInstagram,
   logoLinkedin,
@@ -188,6 +189,7 @@ import {
   logoSnapchat,
   logoReddit,
   logoWhatsapp,
+  logoWechat,
   logoSkype,
   logoSlack,
   logoDribbble,
@@ -207,9 +209,8 @@ import {
   logoPlaystation,
   logoTumblr,
   logoVk,
-  logoWechat,
-  logoX,
 } from "ionicons/icons";
+import * as ionicons from "ionicons/icons";
 import homeApi, { HomePageData } from "@/services/homeApi";
 import { ToastController } from "@/controllers/toastController";
 
@@ -219,43 +220,48 @@ const saving = ref(false);
 const newTag = ref("");
 const isDev = import.meta.env.DEV;
 
-// Lista de redes sociales disponibles con sus iconos
+// Lista de redes sociales disponibles con sus nombres de iconos
 const availableSocials = [
-  { name: "Facebook", icon: logoFacebook },
-  { name: "X", icon: logoX },
-  { name: "Twitter", icon: logoTwitter },
-  { name: "Instagram", icon: logoInstagram },
-  { name: "LinkedIn", icon: logoLinkedin },
-  { name: "YouTube", icon: logoYoutube },
-  { name: "TikTok", icon: logoTiktok },
-  { name: "GitHub", icon: logoGithub },
-  { name: "Discord", icon: logoDiscord },
-  { name: "Twitch", icon: logoTwitch },
-  { name: "Pinterest", icon: logoPinterest },
-  { name: "Snapchat", icon: logoSnapchat },
-  { name: "Reddit", icon: logoReddit },
-  { name: "WhatsApp", icon: logoWhatsapp },
-  { name: "WeChat", icon: logoWechat },
-  { name: "Skype", icon: logoSkype },
-  { name: "Slack", icon: logoSlack },
-  { name: "Dribbble", icon: logoDribbble },
-  { name: "Behance", icon: logoBehance },
-  { name: "Medium", icon: logoMedium },
-  { name: "WordPress", icon: logoWordpress },
-  { name: "Vimeo", icon: logoVimeo },
-  { name: "SoundCloud", icon: logoSoundcloud },
-  { name: "Apple", icon: logoApple },
-  { name: "Google", icon: logoGoogle },
-  { name: "Amazon", icon: logoAmazon },
-  { name: "PayPal", icon: logoPaypal },
-  { name: "Bitcoin", icon: logoBitcoin },
-  { name: "Stack Overflow", icon: logoStackoverflow },
-  { name: "Steam", icon: logoSteam },
-  { name: "Xbox", icon: logoXbox },
-  { name: "PlayStation", icon: logoPlaystation },
-  { name: "Tumblr", icon: logoTumblr },
-  { name: "VK", icon: logoVk },
+  { name: "Facebook", iconName: "logoFacebook" },
+  { name: "X", iconName: "logoX" },
+  { name: "Twitter", iconName: "logoTwitter" },
+  { name: "Instagram", iconName: "logoInstagram" },
+  { name: "LinkedIn", iconName: "logoLinkedin" },
+  { name: "YouTube", iconName: "logoYoutube" },
+  { name: "TikTok", iconName: "logoTiktok" },
+  { name: "GitHub", iconName: "logoGithub" },
+  { name: "Discord", iconName: "logoDiscord" },
+  { name: "Twitch", iconName: "logoTwitch" },
+  { name: "Pinterest", iconName: "logoPinterest" },
+  { name: "Snapchat", iconName: "logoSnapchat" },
+  { name: "Reddit", iconName: "logoReddit" },
+  { name: "WhatsApp", iconName: "logoWhatsapp" },
+  { name: "WeChat", iconName: "logoWechat" },
+  { name: "Skype", iconName: "logoSkype" },
+  { name: "Slack", iconName: "logoSlack" },
+  { name: "Dribbble", iconName: "logoDribbble" },
+  { name: "Behance", iconName: "logoBehance" },
+  { name: "Medium", iconName: "logoMedium" },
+  { name: "WordPress", iconName: "logoWordpress" },
+  { name: "Vimeo", iconName: "logoVimeo" },
+  { name: "SoundCloud", iconName: "logoSoundcloud" },
+  { name: "Apple", iconName: "logoApple" },
+  { name: "Google", iconName: "logoGoogle" },
+  { name: "Amazon", iconName: "logoAmazon" },
+  { name: "PayPal", iconName: "logoPaypal" },
+  { name: "Bitcoin", iconName: "logoBitcoin" },
+  { name: "Stack Overflow", iconName: "logoStackoverflow" },
+  { name: "Steam", iconName: "logoSteam" },
+  { name: "Xbox", iconName: "logoXbox" },
+  { name: "PlayStation", iconName: "logoPlaystation" },
+  { name: "Tumblr", iconName: "logoTumblr" },
+  { name: "VK", iconName: "logoVk" },
 ];
+
+// Helper para obtener el objeto de icono por nombre
+function getIconByName(iconName: string) {
+  return ionicons[iconName as keyof typeof ionicons] || ionicons.logoLinkedin;
+}
 
 // Computed para filtrar redes ya seleccionadas
 const filteredSocials = computed(() => {
@@ -314,8 +320,8 @@ function removeTag(index: number) {
 
 function addSocial(platform: string) {
   const social = availableSocials.find((s) => s.name === platform);
-  const icon = social ? social.icon : "";
-  form.socials.push({ platform, url: "", icon });
+  const iconName = social ? social.iconName : "";
+  form.socials.push({ platform, url: "", iconName });
 }
 
 function removeSocial(index: number) {
@@ -337,9 +343,9 @@ function fillTestData() {
   form.tags = ["Desarrollador", "Full-Stack", "Vue.js", "Laravel"];
   form.description = "Desarrollador Full-Stack con más de 5 años de experiencia en el desarrollo de aplicaciones web y móviles. Especializado en Vue.js, Laravel y bases de datos relacionales.";
   form.socials = [
-    { platform: "LinkedIn", url: "https://linkedin.com/in/juanperez", icon: logoLinkedin },
-    { platform: "GitHub", url: "https://github.com/juanperez", icon: logoGithub },
-    { platform: "Twitter", url: "https://twitter.com/juanperez", icon: logoTwitter },
+    { platform: "LinkedIn", url: "https://linkedin.com/in/juanperez", iconName: "logoLinkedin" },
+    { platform: "GitHub", url: "https://github.com/juanperez", iconName: "logoGithub" },
+    { platform: "Twitter", url: "https://twitter.com/juanperez", iconName: "logoTwitter" },
   ];
 }
 

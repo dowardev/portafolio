@@ -6,7 +6,7 @@ export interface HomePageData {
   name: string;
   tags: string[];
   description: string;
-  socials: Array<{ platform: string; url: string; icon: string }>;
+  socials: Array<{ platform: string; url: string; iconName: string }>;
   logoUrl: string | null;
   photoUrl: string | null;
 }
