@@ -29,6 +29,10 @@
           <ion-segment-button value="users">
             <ion-label>Usuarios</ion-label>
           </ion-segment-button>
+
+          <ion-segment-button value="home">
+            <ion-label>Inicio</ion-label>
+          </ion-segment-button>
         </ion-segment>
 
         <!-- button options -->
@@ -49,6 +53,10 @@
   <ion-content class="container-page">
     <section v-if="mainSegment == 'users'">
       <UsersComponent />
+    </section>
+
+    <section v-if="mainSegment == 'home'">
+      <HomeEditorComponent />
     </section>
 
     <!-- popovers -->
@@ -84,6 +92,7 @@ import {
 } from "@ionic/vue";
 import { reactive, ref, watch } from "vue";
 import UsersComponent from "./users/UsersComponent.vue";
+import HomeEditorComponent from "./HomeEditorComponent.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
@@ -92,7 +101,7 @@ const systemController = new SystemController();
 
 // vars
 const pageTitle = "Panel Administrador";
-const mainSegment = ref("users");
+const mainSegment = ref("home");
 const designElements = isPlatform("ios") ? "ios" : "md";
 const screenSize = ref(systemController.getScreenSize());
 const popoverMainOptions = reactive({ open: false, event: Event });

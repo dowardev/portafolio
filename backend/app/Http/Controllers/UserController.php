@@ -15,8 +15,14 @@ class UserController extends Controller
     $pagination = $request->query("pagination", 10);
     $options = json_decode($request->query("options", "{}"), true);
     $options = $this->transformOptions($options);
-    Log::info("Options:", $options);
-    $loggedInUserId = auth()->user()->id;
+    
+    // Get user ID from SSO data (set by SSOTokenAuth middleware)
+    $ssoUser = $request->get('sso_user');
+    $loggedInUserId = $ssoUser['id'] ?? null;
+    
+    if (!$loggedInUserId) {
+      return response()->json(['error' => 'User not authenticated'], 401);
+    }
 
     $query = User::where("id", "!=", $loggedInUserId);
 

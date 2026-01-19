@@ -1,5 +1,27 @@
 # Changelog
 
+## 10.11.0 / 8.7.0 - 2026-01-19
+
+### Added
+
+- Dynamic homepage content management system with admin panel
+- Editable homepage name, tags, description, social links, logo, and cover photo
+- Support for 35+ social media platforms (Facebook, LinkedIn, GitHub, Twitter, Instagram, etc.)
+- Backend API endpoints for homepage CRUD operations (admin and public)
+- File upload handling for logo and photo uploads
+- HomeEditorComponent for managing homepage content in admin panel
+
+### Changed
+
+- Enhanced APIController with proper FormData support for multipart file uploads
+- Updated InformationComponent to load dynamic homepage content from API
+- Updated UserController to use SSO user data for authentication
+- Improved social icons mapping for consistent display across platforms
+
+### Backend 8.7.0
+
+Same changes as frontend 10.11.0 for backend components
+
 ## 10.10.0 - 2026-01-17
 
 ### Added

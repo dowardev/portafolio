@@ -3,74 +3,42 @@
     <ion-col class="info-sec" size-xs="12" size-md="6" size-xl="6">
       <ion-row>
         <ion-col :class="{ center: screenSize.preset == 'xs' }">
-          <h1>Gonzalo Ponce</h1>
+          <h1 v-if="homeData.name">{{ homeData.name }}</h1>
         </ion-col>
       </ion-row>
 
-      <ion-row>
+      <ion-row v-if="homeData.tags && homeData.tags.length > 0">
         <ion-col>
           <div :class="{ center: screenSize.preset == 'xs' }">
-            <ion-chip color="primary">Full-Stack Developer</ion-chip>
-            <ion-chip color="primary">Blogger</ion-chip>
+            <ion-chip v-for="(tag, index) in homeData.tags" :key="index" color="primary">{{ tag }}</ion-chip>
           </div>
         </ion-col>
       </ion-row>
 
-      <ion-row>
+      <ion-row v-if="homeData.description">
         <ion-col size-xs="12">
           <p
             :style="{
               textAlign: screenSize.preset == 'xs' ? 'center' : 'initial',
             }"
           >
-            Desarrollador Full-Stack con mas de 5 años de experiencia en el
-            desarrollo de aplicaciones multiplataforma.
+            {{ homeData.description }}
           </p>
         </ion-col>
       </ion-row>
 
-      <ion-row class="center">
+      <ion-row v-if="homeData.socials && homeData.socials.length > 0" class="center">
         <ion-col :class="{ center: screenSize.preset == 'xs' }">
-          <!-- LinkedIn -->
           <ion-button
-            id="click-trigger-bussiness-linkedin"
-            class="social-button"
-            @mouseover="fillLinkedIn = '#7373FF'"
-            @mouseleave="fillLinkedIn = defaultColorFill"
-          >
-            <ion-icon
-              slot="icon-only"
-              :style="{ color: fillLinkedIn }"
-              :icon="logoLinkedin"
-            ></ion-icon>
-          </ion-button>
-
-          <!-- email -->
-          <ion-button
-            id="click-trigger-bussiness-email"
-            class="social-button"
-            @mouseover="fillEmailContact = '#C87C5B'"
-            @mouseleave="fillEmailContact = defaultColorFill"
-          >
-            <ion-icon
-              slot="icon-only"
-              :style="{ color: fillEmailContact }"
-              :icon="mail"
-            ></ion-icon>
-          </ion-button>
-
-          <!-- calendly -->
-          <ion-button
-            href="https://calendly.com/dowardev"
+            v-for="(social, index) in homeData.socials"
+            :key="index"
+            :href="social.url"
             target="_blank"
             class="social-button"
-            @mouseover="fillcalendly = '#006dff'"
-            @mouseleave="fillcalendly = defaultColorFill"
           >
             <ion-icon
               slot="icon-only"
-              :style="{ color: fillcalendly }"
-              :icon="calendar"
+              :icon="getSocialIcon(social.platform)"
             ></ion-icon>
           </ion-button>
 
@@ -99,19 +67,19 @@
       style="display: flex"
     >
       <div>
-        <ion-row>
+        <ion-row v-if="homeData.photoUrl">
           <ion-col style="display: flex" class="ion-justify-content-center">
             <img
-              src="@/assets/portafolio/foto_perfil.jpg"
+              :src="homeData.photoUrl"
               alt=""
               class="img-perfil"
             />
           </ion-col>
         </ion-row>
 
-        <ion-row>
+        <ion-row v-if="homeData.logoUrl">
           <ion-col>
-            <img src="@/assets/portafolio/dowar.png" class="img-logo" />
+            <img :src="homeData.logoUrl" class="img-logo" />
           </ion-col>
         </ion-row>
       </div>
@@ -338,11 +306,44 @@ import {
 import { onMounted, ref } from "vue";
 import {
   mail,
-  logoLinkedin,
   copyOutline,
   openOutline,
   calendar,
   chatbox,
+  logoFacebook,
+  logoX,
+  logoTwitter,
+  logoInstagram,
+  logoLinkedin,
+  logoYoutube,
+  logoTiktok,
+  logoGithub,
+  logoDiscord,
+  logoTwitch,
+  logoPinterest,
+  logoSnapchat,
+  logoReddit,
+  logoWhatsapp,
+  logoWechat,
+  logoSkype,
+  logoSlack,
+  logoDribbble,
+  logoBehance,
+  logoMedium,
+  logoWordpress,
+  logoVimeo,
+  logoSoundcloud,
+  logoApple,
+  logoGoogle,
+  logoAmazon,
+  logoPaypal,
+  logoBitcoin,
+  logoStackoverflow,
+  logoSteam,
+  logoXbox,
+  logoPlaystation,
+  logoTumblr,
+  logoVk,
 } from "ionicons/icons";
 import { App } from "@capacitor/app";
 
@@ -354,7 +355,12 @@ import SystemController from "@/controllers/systemController";
 const systemController = new SystemController();
 // end controllser
 
+// services
+import homeApi, { HomePageData } from "@/services/homeApi";
+
 // images
+import defaultPhoto from "@/assets/portafolio/foto_perfil.jpg";
+import defaultLogo from "@/assets/portafolio/dowar.png";
 
 // vars
 const defaultColorFill = "#777777";
@@ -363,13 +369,91 @@ const fillLinkedIn = ref(defaultColorFill);
 const fillContactForm = ref(defaultColorFill);
 const fillcalendly = ref(defaultColorFill);
 const screenSize = ref(systemController.getScreenSize());
+
+// Mapa de iconos por plataforma (objetos importados)
+const socialIconsMap: Record<string, any> = {
+  "facebook": logoFacebook,
+  "x": logoX,
+  "twitter": logoTwitter,
+  "instagram": logoInstagram,
+  "linkedin": logoLinkedin,
+  "youtube": logoYoutube,
+  "tiktok": logoTiktok,
+  "github": logoGithub,
+  "discord": logoDiscord,
+  "twitch": logoTwitch,
+  "pinterest": logoPinterest,
+  "snapchat": logoSnapchat,
+  "reddit": logoReddit,
+  "whatsapp": logoWhatsapp,
+  "wechat": logoWechat,
+  "skype": logoSkype,
+  "slack": logoSlack,
+  "dribbble": logoDribbble,
+  "behance": logoBehance,
+  "medium": logoMedium,
+  "wordpress": logoWordpress,
+  "vimeo": logoVimeo,
+  "soundcloud": logoSoundcloud,
+  "apple": logoApple,
+  "google": logoGoogle,
+  "amazon": logoAmazon,
+  "paypal": logoPaypal,
+  "bitcoin": logoBitcoin,
+  "stack overflow": logoStackoverflow,
+  "steam": logoSteam,
+  "xbox": logoXbox,
+  "playstation": logoPlaystation,
+  "tumblr": logoTumblr,
+  "vk": logoVk,
+};
+
+function getSocialIcon(platform: string): any {
+  return socialIconsMap[platform.toLowerCase()] || logoLinkedin;
+}
+
+// homepage data
+const homeData = ref<HomePageData>({
+  name: "Gonzalo Ponce",
+  tags: ["Full-Stack Developer", "Blogger"],
+  description: "Desarrollador Full-Stack con mas de 5 años de experiencia en el desarrollo de aplicaciones multiplataforma.",
+  socials: [],
+  logoUrl: null,
+  photoUrl: null,
+});
 // end vars
 
 // mounted()
-onMounted(() => {
+onMounted(async () => {
   useBackButton(10, () => {
     alertExitApp();
   });
+
+  // cargar datos de homepage
+  try {
+    const data = await homeApi.getPublic();
+    console.log("Homepage data loaded:", data);
+    console.log("Socials data:", data.socials);
+    if (data) {
+      homeData.value = {
+        name: data.name || homeData.value.name,
+        tags: data.tags?.length ? data.tags : homeData.value.tags,
+        description: data.description || homeData.value.description,
+        socials: data.socials || [],
+        logoUrl: data.logoUrl,
+        photoUrl: data.photoUrl,
+      };
+      console.log("HomeData socials after load:", homeData.value.socials);
+      if (homeData.value.socials && homeData.value.socials.length > 0) {
+        homeData.value.socials.forEach((s: any, i: number) => {
+          const icon = getSocialIcon(s.platform);
+          console.log(`Social[${i}]: platform="${s.platform}", icon=`, icon);
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Error loading homepage data:", error);
+  }
 });
 
 // functions

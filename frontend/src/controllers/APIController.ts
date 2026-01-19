@@ -47,13 +47,19 @@ export default class APIController {
   }): Promise<T> {
     const { url, data = {}, contentType = "application/json" } = params;
 
+    const headers: Record<string, string> = {
+      Authorization: `${this.accessToken}`,
+    };
+
+    // Solo establecer Content-Type si no es FormData
+    if (!(data instanceof FormData)) {
+      headers["Content-Type"] = contentType;
+    }
+
     const response = await axios.request<T>({
       url: this.baseUrl + url,
       method: "POST",
-      headers: {
-        "Content-Type": contentType,
-        Authorization: `${this.accessToken}`,
-      },
+      headers,
       data,
     });
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PostsController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Admin\HomePageController;
 use App\Http\Middleware\Cors;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,10 @@ Route::middleware([Cors::class, 'sso.auth'])->group(function () {
     UserController::class,
     "adminUpdateUserAccount",
   ]);
+
+  // admin homepage
+  Route::get("admin/get-homepage-info", [HomePageController::class, "show"]);
+  Route::post("admin/update-homepage-info", [HomePageController::class, "update"]);
 });
 
 Route::middleware([Cors::class])->group(function () {
@@ -42,6 +47,7 @@ Route::middleware([Cors::class])->group(function () {
   Route::post("contact", [SystemController::class, "createContactMessage"]);
   Route::post("feedback", [FeedbackController::class, "createFeedback"]);
   Route::get("get-image", [SystemController::class, "getImage"]);
+  Route::get("get-homepage-info", [HomePageController::class, "show"]);
   Route::post("error-report", [
     ErrorReportController::class,
     "createErrorReport",
