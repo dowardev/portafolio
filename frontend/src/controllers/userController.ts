@@ -13,7 +13,7 @@ import {
   UserRegister,
 } from "../utils/interfaces";
 import Cookies from "js-cookie";
-import { apiConnector, ssoApiConnector } from "@/main";
+import { apiConnector, ssoApiConnector, serverConfigController } from "@/main";
 
 // controllers
 import ErrorController from "./errorController";
@@ -75,7 +75,7 @@ export default class UserController {
 
       await ssoApiConnector.post({
         url: `register`,
-        data: { name, user, password, email, password_confirmation },
+        data: { name, user, password, email, password_confirmation, client_id: "main-app" },
       });
     } catch (error) {
       return this.errorController.handleError({ error });
@@ -152,7 +152,7 @@ export default class UserController {
       const { user, password } = params;
       const serverResponse = await ssoApiConnector.post<{ token: string }>({
         url: `login`,
-        data: { email: user, password },
+        data: { email: user, password, client_id: "main-app" },
       });
       const token = `Bearer ${serverResponse.token}`;
 
@@ -256,10 +256,7 @@ export default class UserController {
 
   storeUserToken(params: { token: string }) {
     const { token } = params;
-    Cookies.set("user-token", token, {
-      secure: true,
-      sameSite: "Strict",
-    });
+    serverConfigController.setAuthTokens({ accessToken: token });
   }
 
   storeRefreshToken(params: { refreshToken: string }) {

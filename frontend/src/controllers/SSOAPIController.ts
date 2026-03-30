@@ -8,13 +8,11 @@ import ErrorController from "@/controllers/errorController";
 export default class SSOAPIController {
   private configService: SSOServerConfig;
   private baseUrl: string = "";
-  private accessToken: string = "";
   private errorController = new ErrorController();
 
   constructor(config: SSOServerConfig) {
     this.configService = config;
     this.baseUrl = config.getConfig().baseUrl;
-    this.accessToken = config.getConfig().accessToken;
   }
 
   public async get<T, P = Record<string, unknown>>(params: {
@@ -28,9 +26,9 @@ export default class SSOAPIController {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Authorization: `${this.accessToken}`,
-        },
-        params: data,
+            Authorization: `${this.configService.getConfig().accessToken}`,
+          },
+          params: data,
       });
       return response.data;
     } catch (e) {
@@ -52,7 +50,7 @@ export default class SSOAPIController {
         method: "POST",
         headers: {
           "Content-Type": contentType,
-          Authorization: `${this.accessToken}`,
+            Authorization: `${this.configService.getConfig().accessToken}`,
         },
         data,
       });

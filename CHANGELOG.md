@@ -1,5 +1,21 @@
 # Changelog
 
+## 10.11.2 - 2026-03-29
+
+### Added
+
+- Added `client_id: "main-app"` parameter to SSO registration and login requests for proper client identification
+
+### Changed
+
+- Refactored APIController and SSOAPIController to retrieve accessToken dynamically from configService instead of storing it as a class property
+- Exported serverConfigController and ssoServerConfig in main.ts for use across the application
+- Updated UserController to use serverConfigController.setAuthTokens() for proper token management
+
+### Fixed
+
+- Fixed token storage approach to use centralized config controller instead of directly setting cookies
+
 ## 10.11.1 / 8.7.1 - 2026-01-19
 
 ### Changed

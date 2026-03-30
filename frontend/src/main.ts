@@ -46,14 +46,14 @@ export const storageInstance = await initStorage();
 // server config - API principal
 import ServerConfig from "@/controllers/serverConfigController";
 const userToken = Cookies.get("user-token");
-const serverConfigController = new ServerConfig({
+export const serverConfigController = new ServerConfig({
   baseUrl: import.meta.env.VITE_API_URL,
   accessToken: userToken ?? "",
 });
 
 // server config - SSO
 import SSOServerConfig from "@/controllers/SSOServerConfigController";
-const ssoServerConfig = new SSOServerConfig({
+export const ssoServerConfig = new SSOServerConfig({
   baseUrl: import.meta.env.VITE_SSO_URL,
   accessToken: userToken ?? "",
 });

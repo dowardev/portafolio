@@ -9,13 +9,11 @@ import ErrorController from "@/controllers/errorController";
 export default class APIController {
   private configService: ServerConfig;
   private baseUrl: string = "";
-  private accessToken: string = "";
   private errorController = new ErrorController();
 
   constructor(config: ServerConfig) {
     this.configService = config;
     this.baseUrl = config.getConfig().baseUrl;
-    this.accessToken = config.getConfig().accessToken;
   }
 
   public async get<T, P = Record<string, unknown>>(params: {
@@ -29,7 +27,7 @@ export default class APIController {
         method: "GET",
         headers: {
           Accept: "application/json",
-          Authorization: `${this.accessToken}`,
+          Authorization: `${this.configService.getConfig().accessToken}`,
         },
         params: data,
       });
@@ -48,7 +46,7 @@ export default class APIController {
     const { url, data = {}, contentType = "application/json" } = params;
 
     const headers: Record<string, string> = {
-      Authorization: `${this.accessToken}`,
+      Authorization: `${this.configService.getConfig().accessToken}`,
     };
 
     // Solo establecer Content-Type si no es FormData

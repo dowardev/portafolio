@@ -181,6 +181,7 @@ export interface UserRegister {
   email: User["email"];
   password: User["password"];
   password_confirmation?: string;
+  client_id?: string;
 }
 
 export interface UpdateUserAccount {
