@@ -1,5 +1,19 @@
 # Changelog
 
+## 10.12.0 / 8.8.0 - 2026-03-29
+
+### Added
+
+- Role interface in TypeScript for type-safe role handling
+- Roles support in SSO authentication flow
+
+### Changed
+
+- Updated AuthController to return roles in SSO auth response
+- Enhanced SSOTokenAuth middleware to extract and pass roles from SSO user
+- Updated userService to map roles from server response
+- Extended User interface with optional roles array
+
 ## 10.11.2 - 2026-03-29
 
 ### Added

@@ -50,10 +50,13 @@ class SSOTokenAuth
             $isEmailVerified = $localUser && $localUser->is_email_verified == 1;
             $isUserDisabled = $localUser && $localUser->is_user_disabled == 1;
 
+            $roles = $ssoUser['roles'] ?? [];
+            
             $request->merge([
                 'is_admin' => $isAdmin,
                 'is_email_verified' => $isEmailVerified,
                 'is_user_disabled' => $isUserDisabled,
+                'roles' => $roles,
             ]);
 
         } catch (\Exception $e) {

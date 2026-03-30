@@ -134,6 +134,17 @@ export interface AlertConfirmation {
 }
 
 // user
+export interface Role {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  is_protected: boolean;
+  pivot?: {
+    sso_client_id: number | null;
+  };
+}
+
 export interface User {
   id?: string;
   name?: string;
@@ -141,7 +152,7 @@ export interface User {
   password?: string;
   email?: string;
   isAdmin?: boolean;
-  rol?: Array<any>;
+  roles?: Role[];
   isEmailVerified?: boolean;
   isDisabled?: boolean;
   imageProfile?: string;
@@ -160,6 +171,7 @@ export interface UserServerResponse {
   role: string | null;
   updated_at: string;
   user: string;
+  roles?: Role[];
 }
 
 // export interface GetUserResponse {
