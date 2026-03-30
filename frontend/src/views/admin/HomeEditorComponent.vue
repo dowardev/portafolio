@@ -209,6 +209,7 @@ import {
   logoPlaystation,
   logoTumblr,
   logoVk,
+  logoLink,
 } from "ionicons/icons";
 import * as ionicons from "ionicons/icons";
 import homeApi, { HomePageData } from "@/services/homeApi";
@@ -260,12 +261,29 @@ const availableSocials = [
 
 // Helper para obtener el objeto de icono por nombre
 function getIconByName(iconName: string) {
-  return ionicons[iconName as keyof typeof ionicons] || ionicons.logoLinkedin;
+  if (!iconName) return ionicons.logoLink;
+  
+  let icon = ionicons[iconName as keyof typeof ionicons];
+  if (icon) return icon;
+  
+  const logoIconName = `logo${iconName.charAt(0).toUpperCase() + iconName.slice(1).replace(/\s/g, '')}`;
+  icon = ionicons[logoIconName as keyof typeof ionicons];
+  if (icon) return icon;
+  
+  const social = availableSocials.find(s => s.name.toLowerCase() === iconName.toLowerCase());
+  if (social) {
+    icon = ionicons[social.iconName as keyof typeof ionicons];
+    if (icon) return icon;
+  }
+  
+  return ionicons.logoLink;
 }
 
 // Computed para filtrar redes ya seleccionadas
 const filteredSocials = computed(() => {
-  const selectedPlatforms = form.socials.map((s) => s.platform.toLowerCase());
+  const selectedPlatforms = form.socials
+    .filter((s) => s.platform)
+    .map((s) => s.platform.toLowerCase());
   return availableSocials.filter(
     (social) => !selectedPlatforms.includes(social.name.toLowerCase())
   );

@@ -1,5 +1,43 @@
 # Changelog
 
+## 11.0.0 / 9.0.0 - 2026-03-30
+
+### Breaking Changes
+
+- Removed local authentication system (signup, login, logout, password reset, email verification)
+- Removed local user management functionality (admin user panel, user status management, user CRUD operations)
+- Removed legacy authentication tables (users_verify, reset_code_passwords)
+- Removed local user permission fields from users table (is_admin, role, is_user_disabled, sso_id)
+- Frontend usersStore removed entirely
+- AuthController and UserController moved to SSO-only operations
+
+### Changed
+
+- Backend AuthController simplified to only return SSO user data via SSOTokenAuth middleware
+- SSOTokenAuth middleware now determines admin role from SSO user roles array instead of local database
+- Admin role check now uses roles array with 'slug' or 'name' fields (admin/administrador)
+- User identification now relies entirely on SSO server
+- Removed all local password-based authentication endpoints
+- Removed user search, status update, and admin delete endpoints from API routes
+- Frontend authController.ts removed, authentication handled through SSO
+- UserController refactored to remove all local user management methods
+- MenuComponent and router now check admin role from roles array
+- HomeEditorComponent improved icon handling for social links
+
+### Removed
+
+- Backend: UserController.php, UserVerify.php, ResetCodePassword.php models
+- Backend: Legacy authentication routes (login, signup, recover-password, reset-password)
+- Backend: User management routes (users, update-user-status, admin/delete-user, admin/update-user-account)
+- Frontend: authController.ts, usersStore.ts
+- Frontend: UserService methods for local user management
+
+### Migration Required
+
+- Applications must use external SSO server for authentication
+- All user management must be performed through SSO server
+- Admin role management moved to SSO system
+
 ## 10.12.0 / 8.8.0 - 2026-03-29
 
 ### Added

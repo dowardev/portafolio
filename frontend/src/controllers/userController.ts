@@ -1,99 +1,23 @@
 import SystemService from "@/services/systemService";
-import { useUsersStore } from "../store/usersStore";
 import { storeToRefs } from "pinia";
 import {
-  AdminDeleteUserAccount,
-  DisableUser,
   ICustomError,
-  SearchUsersParams,
-  SearchUsersServerResponse,
-  SignUpUserResponse,
-  UpdateUserAccount,
   User,
-  UserRegister,
 } from "../utils/interfaces";
 import Cookies from "js-cookie";
-import { apiConnector, ssoApiConnector, serverConfigController } from "@/main";
+import { ssoApiConnector, serverConfigController } from "@/main";
 
-// controllers
 import ErrorController from "./errorController";
-// import { auth } from "@/main";
 
-// services
 import UserService from "../services/userService";
 import { useUserStore } from "@/store/userStore";
 
 export default class UserController {
-  private usersStore = useUsersStore();
   private userService = new UserService();
   private systemService = new SystemService();
   private errorController = new ErrorController();
   private userStore = useUserStore();
   private userRefs = storeToRefs(this.userStore);
-
-  async loadUsers(
-    params: SearchUsersParams,
-  ): Promise<SearchUsersServerResponse | void> {
-    const { search, pagination, page, options } = params;
-
-    try {
-      const response = await this.userService.searchUsers({
-        search,
-        pagination,
-        page,
-        options,
-      });
-
-      return response;
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  updateUsers(params: { users: Array<User> }) {
-    try {
-      const users = params.users;
-      this.usersStore.updateUsersProps({ users });
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  async deleteAccount(params: { password: string }) {
-    try {
-      await this.userService.deleteUserAccount({
-        password: params.password,
-      });
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  async createUserAccount(params: UserRegister): Promise<void> {
-    try {
-      const { name, user, password, email, password_confirmation } = params;
-
-      await ssoApiConnector.post({
-        url: `register`,
-        data: { name, user, password, email, password_confirmation, client_id: "main-app" },
-      });
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  async updateUserAccount(params: UpdateUserAccount): Promise<void> {
-    try {
-      const { id, name, user, email } = params;
-
-      await apiConnector.post({
-        url: `admin/update-user-account`,
-        data: { id, name, user, email },
-      });
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
 
   async uploadImage(params: {
     image: File;
@@ -106,39 +30,6 @@ export default class UserController {
         type,
       });
       return { id: id ?? "", path: path ?? "", name: name ?? "" };
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  async saveUserData(params: {
-    name: string;
-    user: string;
-    email: string;
-    imageId: string;
-  }): Promise<void> {
-    try {
-      const { name, user, email, imageId } = params;
-
-      await this.userService.saveUserData({ name, user, email, imageId });
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  async updateUserStatus(params: DisableUser): Promise<void> {
-    try {
-      const { id, status } = params;
-      await this.userService.updateUserStatus({ id, status });
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  async deleteUserAccount(params: AdminDeleteUserAccount): Promise<void> {
-    try {
-      const { id, email } = params;
-      await this.userService.adminDeleteUserAccount({ id, email });
     } catch (error) {
       return this.errorController.handleError({ error });
     }
@@ -164,6 +55,24 @@ export default class UserController {
       } else {
         throw e;
       }
+    }
+  }
+
+  async createUserAccount(params: {
+    name: string;
+    user: string;
+    password: string;
+    email: string;
+  }): Promise<void> {
+    try {
+      const { name, user, password, email } = params;
+
+      await ssoApiConnector.post({
+        url: `register`,
+        data: { name, user, password, email, client_id: "main-app" },
+      });
+    } catch (error) {
+      return this.errorController.handleError({ error });
     }
   }
 
@@ -229,14 +138,6 @@ export default class UserController {
         url: `reset-password`,
         data: { email, code, password },
       });
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  getUsersLoaded() {
-    try {
-      return this.usersStore.getUsers();
     } catch (error) {
       return this.errorController.handleError({ error });
     }

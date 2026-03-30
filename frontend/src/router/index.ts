@@ -5,9 +5,9 @@ import Prueba from "@/views/prueba/Prueba.vue";
 
 import HomePage from "@/views/HomePage.vue";
 
-// controllers
 import UserController from "@/controllers/userController";
 import { ICustomError } from "@/services/interfaces";
+import { Role } from "@/utils/interfaces";
 
 async function loadUser(controller: UserController): Promise<void> {
   try {
@@ -20,6 +20,15 @@ async function loadUser(controller: UserController): Promise<void> {
       throw e;
     }
   }
+}
+
+function hasAdminRole(roles?: Role[]): boolean {
+  if (!roles || roles.length === 0) return false;
+  
+  return roles.some(role => 
+    role.slug === 'admin' || 
+    role.name.toLowerCase() === 'administrador'
+  );
 }
 
 const routes: Array<RouteRecordRaw> = [
@@ -126,7 +135,8 @@ router.beforeEach(async (to, from, next) => {
   const userController = new UserController();
   await loadUser(userController);
   const user = userController.getUser()?.user;
-  const isAdmin = userController.getUser()?.isAdmin;
+  const roles = userController.getUser()?.roles;
+  const isAdmin = hasAdminRole(roles);
 
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];

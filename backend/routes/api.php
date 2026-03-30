@@ -5,44 +5,20 @@ use App\Http\Controllers\ErrorReportController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PostsController;
 use App\Http\Controllers\SystemController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\HomePageController;
 use App\Http\Middleware\Cors;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware([Cors::class, 'sso.auth'])->group(function () {
-  // user
   Route::get("user-auth", [AuthController::class, "user"]);
 
-  // posts
   Route::post("new-post", [PostsController::class, "createPost"]);
 
-  // admin users
-  Route::get("users", [UserController::class, "getUsers"]);
-  Route::post("update-user-status", [
-    UserController::class,
-    "updateUserStatus",
-  ]);
-  Route::post("admin/delete-user", [UserController::class, "adminDeleteUser"]);
-  Route::post("admin/update-user-account", [
-    UserController::class,
-    "adminUpdateUserAccount",
-  ]);
-
-  // admin homepage
   Route::get("admin/get-homepage-info", [HomePageController::class, "show"]);
   Route::post("admin/update-homepage-info", [HomePageController::class, "update"]);
 });
 
 Route::middleware([Cors::class])->group(function () {
-  // auth (deprecated - usar SSO server)
-  Route::post("login", [AuthController::class, "login"]);
-  Route::post("signup", [AuthController::class, "signup"]);
-  Route::post("recover-password", [AuthController::class, "recoverPassword"]);
-  Route::post("reset-password", [AuthController::class, "resetPassword"]);
-
-  // others
   Route::post("upload-image", [SystemController::class, "uploadImage"]);
   Route::post("contact", [SystemController::class, "createContactMessage"]);
   Route::post("feedback", [FeedbackController::class, "createFeedback"]);
@@ -53,7 +29,6 @@ Route::middleware([Cors::class])->group(function () {
     "createErrorReport",
   ]);
 
-  // posts
   Route::get("posts/{date}/{filter}", [PostsController::class, "getPosts"]);
   Route::get("post-dates", [PostsController::class, "getPostsDates"]);
   Route::get("post/{id}", [PostsController::class, "getPost"]);

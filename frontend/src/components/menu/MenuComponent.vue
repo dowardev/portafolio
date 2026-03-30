@@ -268,7 +268,7 @@
         <ion-content>
           <!-- admin panel -->
           <ion-item
-            v-if="userController.getUser()?.isAdmin"
+            v-if="isAdmin"
             button
             :disabled="spinners.buttonAdminPanel"
             lines="none"
@@ -381,7 +381,7 @@ import {
   IonSpinner,
   IonModal,
 } from "@ionic/vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import {
   logOutOutline,
   thumbsUpOutline,
@@ -431,6 +431,15 @@ const windowSize = ref({
 });
 const modalContribute = ref({ open: false });
 const modalComments = ref({ open: false });
+
+const isAdmin = computed(() => {
+  const roles = userController.getUser()?.roles;
+  if (!roles || roles.length === 0) return false;
+  return roles.some(role => 
+    role.slug === 'admin' || 
+    role.name.toLowerCase() === 'administrador'
+  );
+});
 
 // mounted
   onMounted(async () => {

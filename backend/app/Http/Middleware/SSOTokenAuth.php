@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class SSOTokenAuth
@@ -42,20 +41,11 @@ class SSOTokenAuth
             $ssoUser = $response->json();
             $request->merge(['sso_user' => $ssoUser]);
 
-            $localUser = \DB::table('users')
-                ->where('sso_id', $ssoUser['id'])
-                ->first();
-
-            $isAdmin = $localUser && $localUser->is_admin == 1;
-            $isEmailVerified = $localUser && $localUser->is_email_verified == 1;
-            $isUserDisabled = $localUser && $localUser->is_user_disabled == 1;
-
+            $isAdmin = $this->checkIsAdmin($ssoUser['roles'] ?? []);
             $roles = $ssoUser['roles'] ?? [];
             
             $request->merge([
                 'is_admin' => $isAdmin,
-                'is_email_verified' => $isEmailVerified,
-                'is_user_disabled' => $isUserDisabled,
                 'roles' => $roles,
             ]);
 
@@ -66,5 +56,18 @@ class SSOTokenAuth
         }
 
         return $next($request);
+    }
+
+    private function checkIsAdmin(array $roles): bool
+    {
+        foreach ($roles as $role) {
+            if (isset($role['slug']) && $role['slug'] === 'admin') {
+                return true;
+            }
+            if (isset($role['name']) && strtolower($role['name']) === 'administrador') {
+                return true;
+            }
+        }
+        return false;
     }
 }
