@@ -18,10 +18,24 @@ class HomePage extends Model
         'socials',
         'logo_url',
         'photo_url',
+        'stack',
+        'skill_categories',
+        'experience',
+        'projects',
+        'certificates',
+        'freelance',
+        'show_contact_form',
     ];
 
     protected $casts = [
         'tags' => 'array',
         'socials' => 'array',
+        'stack' => 'array',
+        'skill_categories' => 'array',
+        'experience' => 'array',
+        'projects' => 'array',
+        'certificates' => 'array',
+        'freelance' => 'array',
+        'show_contact_form' => 'boolean',
     ];
 }

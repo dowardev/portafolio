@@ -165,36 +165,20 @@
             <ion-row>
               <ion-col style="display: flex" class="ion-justify-content-center">
                 <div
+                  v-for="platform in freelancePlatforms"
+                  :key="platform.name"
                   style="cursor: pointer"
                   class="ion-padding-start ion-padding-end"
                 >
                   <img
                     style="width: 40px"
-                    :src="UpworkLogo"
-                    alt=""
-                    @click="
-                      openUrl({
-                        url: 'https://www.upwork.com/freelancers/~0162303a78d7d448db?mp_source=share',
-                      })
-                    "
+                    :src="platform.image"
+                    :alt="platform.name"
+                    @click="openUrl({ url: platform.url })"
                   />
                 </div>
                 <div
-                  style="cursor: pointer"
-                  class="ion-padding-start ion-padding-end"
-                >
-                  <img
-                    style="width: 40px"
-                    :src="WorkanaLogo"
-                    alt=""
-                    @click="
-                      openUrl({
-                        url: 'https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c',
-                      })
-                    "
-                  />
-                </div>
-                <div
+                  v-if="showContactForm"
                   style="cursor: pointer"
                   class="ion-padding-start ion-padding-end"
                   @click="openContactModal()"
@@ -217,48 +201,46 @@
                   :pagination="{ clickable: true }"
                   :autoplay="{ delay: 3000, disableOnInteraction: false }"
                 >
-                  <SwiperSlide v-for="(review, index) in reviews" :key="index">
-                    <ion-card class="shadow-1">
-                      <ion-card-header>
-                        <div
-                          style="display: flex; justify-content: space-between"
-                        >
-                          <img
-                            :src="
-                              review.platform === 'upwork'
-                                ? UpworkLogo
-                                : WorkanaLogo
-                            "
-                            alt=""
-                            style="height: 45px"
-                          />
-                        </div>
-                        <ion-card-title>{{ review.title }}</ion-card-title>
-                        <ion-card-subtitle>
-                          <ion-icon
-                            v-for="n in review.rating"
-                            :key="n"
-                            :icon="star"
-                          ></ion-icon>
-                        </ion-card-subtitle>
-                      </ion-card-header>
-                      <ion-card-content v-if="review.comment">
-                        <p>
-                          <ion-text>
-                            <span
-                              v-for="(line, indexComment) in review.comment"
-                              :key="indexComment"
-                            >
-                              {{ line
-                              }}<br
-                                v-if="indexComment < review.comment.length - 1"
-                              />
-                            </span>
-                          </ion-text>
-                        </p>
-                      </ion-card-content>
-                    </ion-card>
-                  </SwiperSlide>
+                  <template v-for="platform in freelancePlatforms" :key="platform.name">
+                    <SwiperSlide v-for="(review, index) in platform.comments" :key="`${platform.name}-${index}`">
+                      <ion-card class="shadow-1">
+                        <ion-card-header>
+                          <div
+                            style="display: flex; justify-content: space-between"
+                          >
+                            <img
+                              :src="platform.image"
+                              :alt="platform.name"
+                              style="height: 45px"
+                            />
+                          </div>
+                          <ion-card-title>{{ review.title }}</ion-card-title>
+                          <ion-card-subtitle>
+                            <ion-icon
+                              v-for="n in review.rating"
+                              :key="n"
+                              :icon="star"
+                            ></ion-icon>
+                          </ion-card-subtitle>
+                        </ion-card-header>
+                        <ion-card-content v-if="review.comment && review.comment.length">
+                          <p>
+                            <ion-text>
+                              <span
+                                v-for="(line, indexComment) in review.comment"
+                                :key="indexComment"
+                              >
+                                {{ line
+                                }}<br
+                                  v-if="indexComment < review.comment.length - 1"
+                                />
+                              </span>
+                            </ion-text>
+                          </p>
+                        </ion-card-content>
+                      </ion-card>
+                    </SwiperSlide>
+                  </template>
                 </Swiper>
               </ion-col>
             </ion-row>
@@ -333,9 +315,10 @@ const systemController = new SystemController();
 // end controllers
 
 // media
-import UpworkLogo from "../../assets/otros/brand-upwork-svgrepo-com.svg";
-import WorkanaLogo from "../../assets/otros/Workana_ISOLOGO_W.png";
 import ContractLogo from "../../assets/otros/contract-svgrepo-com.svg";
+
+// services
+import homeApi, { type FreelanceItem } from "@/services/homeApi";
 
 // interface
 import { DesignMode } from "@/utils/types";
@@ -353,65 +336,23 @@ const designPlatform = isPlatform("ios") ? "ios" : "md";
 const selectedSegment = ref("contact");
 const designMode = ref<DesignMode>(systemController.getdesignMode()!);
 const screenSize = ref(systemController.getScreenSize()!);
-const reviews = ref([
-  {
-    platform: "upwork",
-    title: "SISTEMA DE INVENTARIO PARA CICLOPARTES AVILA",
-    rating: 5,
-    comment: [
-      "Excelente, es una persona muy dedicada en lo que hace",
-      "Muy atento y siempre tiene los trabajos a tiempo",
-      "Recomendadisimo",
-    ],
-  },
-  {
-    platform: "upwork",
-    title: "login laravel telegram",
-    rating: 5,
-    comment: [
-      "Excelente, es una persona muy dedicada en lo que hace",
-      "Muy atento y siempre tiene los trabajos a tiempo",
-      "Recomendadisimo",
-    ],
-  },
-  {
-    platform: "upwork",
-    title: "Modificación sistema y creación app web",
-    rating: 5,
-    comment: ["Good Worker"],
-  },
-  {
-    platform: "workana",
-    title: "Landing Page",
-    rating: 5,
-    comment: ["Excelente profesional y comunicación."],
-  },
-  {
-    platform: "workana",
-    title: "App iOS & Android Venta de productos para mascotas",
-    rating: 5,
-    comment: [],
-  },
-  {
-    platform: "workana",
-    title: "Agregar E-learning plugin y pasarela de pago local",
-    rating: 5,
-    comment: [],
-  },
-  {
-    platform: "workana",
-    title: "Pagina web Fcm",
-    rating: 5,
-    comment: ["Muy buena profesional y sabes lo que está haciendo."],
-  },
-]);
+const freelancePlatforms = ref<FreelanceItem[]>([]);
+const showContactForm = ref(false);
 // end vars
 
 // life
-onMounted(() => {
+onMounted(async () => {
   useBackButton(10, () => {
     alertExitApp();
   });
+
+  try {
+    const data = await homeApi.getPublic();
+    freelancePlatforms.value = data.freelance || [];
+    showContactForm.value = data.showContactForm || false;
+  } catch (error) {
+    console.error("Error loading freelance data:", error);
+  }
 
   const sections = document.querySelectorAll("section");
 

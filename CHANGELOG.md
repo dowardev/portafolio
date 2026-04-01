@@ -1,5 +1,31 @@
 # Changelog
 
+## 11.1.0 - 2026-04-01
+
+### Added
+
+- Homepage content editor with tabbed sections (Stack, Skills, Experience, Projects, Certificates, Freelance)
+- TechIconSelector component with searchable modal for technology icon selection (~50 icons)
+- Vuelidate validation on all homepage section editors to prevent incomplete items
+- `showContactForm` toggle in admin to control contact modal visibility
+- Backend `show_contact_form` field in homepage table with migration
+- ProjectDetailModal shared component for consistent project details display
+- File upload handling for stack, skills, experience, projects, certificates, and freelance images
+
+### Changed
+
+- All presentation components now load dynamic content from API instead of hardcoded data
+- SkillsPage, ExperiencePage, CertificatesPage, PortfolioPage updated to use API data
+- HomeEditorComponent refactored with section tabs and file upload handling
+- Skills section supports both images and ionicons with icon selector
+- TechnologiesEditor enhanced with icon selector and file upload support
+
+### Fixed
+
+- Stack images now display centered in SkillsPage
+- Project "Fuente/Cliente" information now visible in project detail modal
+- Experience and Certificates pages now show API data correctly
+
 ## 11.0.0 / 9.0.0 - 2026-03-30
 
 ### Breaking Changes

@@ -48,7 +48,7 @@
                     fontSize: tech.size,
                     color: getIconColorByName({ name: tech.name }),
                   }"
-                  :icon="tech.source"
+                  :icon="getIconSource(tech.source)"
                 ></ion-icon>
               </div>
             </ion-col>
@@ -58,8 +58,6 @@
     </ion-col>
   </ion-row>
 
-  <!-- modals -->
-  <!-- modal more experience information -->
   <ion-modal
     :is-open="modals.modalInfoExperience.open"
     @did-dismiss="modals.modalInfoExperience.open = false"
@@ -91,82 +89,38 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { IonModal } from "@ionic/vue";
 import {
   closeOutline,
-  logoFirebase,
-  logoIonic,
-  logoLaravel,
-  logoVue,
   openOutline,
 } from "ionicons/icons";
+import * as ionicons from "ionicons/icons";
+import homeApi, { type ExperienceItem } from "@/services/homeApi";
 
-// media
-import PengyiLabsLogo from "@/assets/otros/pengyilabs_logo.jpg";
-import NuxtImg from "@/assets/otros/nuxt-svgrepo-com.svg";
-import MysqlLogo from "@/assets/otros/mysql-6.svg";
-import UpworkLogo from "@/assets/otros/icons8-upwork-50.png";
-import WorkanaLogo from "@/assets/otros/Workana_ISOLOGO_W.png";
-
-// vars
-const experiences = [
-  {
-    img: PengyiLabsLogo,
-    title: "Pengyi Labs",
-    date: "Diciembre 2024 - Actualidad",
-    technologies: [
-      { source: NuxtImg, name: "Nuxt", size: "22px", type: "img" },
-      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
-    ],
-    details: {
-      description:
-        "Contratación por horas para la corrección y desarrollo de nuevas funciones en múltiples proyectos.",
-      website: "https://pengyilabs.com/",
-    },
-  },
-  {
-    img: UpworkLogo,
-    title: "Upwork",
-    date: "Marzo 2023 - Actualidad",
-    technologies: [
-      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
-      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
-      { source: logoLaravel, name: "Laravel", size: "18px", type: "icon" },
-      { source: MysqlLogo, name: "MySql", size: "16px", type: "img" },
-    ],
-    details: {
-      description:
-        "Contratación para la gestión y realización de proyectos como freelance para una variedad de clientes.",
-      website: "https://www.upwork.com/freelancers/~0162303a78d7d448db",
-    },
-  },
-  {
-    img: WorkanaLogo,
-    title: "Workana",
-    date: "Enero 2021 - Actualidad",
-    technologies: [
-      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
-      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
-      { source: logoLaravel, name: "Laravel", size: "18px", type: "icon" },
-      { source: logoFirebase, name: "Firebase", size: "18px", type: "icon" },
-    ],
-    details: {
-      description:
-        "Contratación para la gestión y realización de proyectos como freelance para una variedad de clientes.",
-      website:
-        "https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c",
-    },
-  },
-];
+const experiences = ref<ExperienceItem[]>([]);
 const modals = reactive({
   modalInfoExperience: { open: false, title: "", content: "", url: "" },
 });
 
-// functions
+onMounted(async () => {
+  try {
+    const data = await homeApi.getPublic();
+    experiences.value = data.experience || [];
+  } catch (error) {
+    console.error("Error loading experience data:", error);
+  }
+});
+
 function openUrl(params: { url: string }) {
   const { url } = params;
   window.open(url, "_blank");
+}
+
+function getIconSource(source: string) {
+  if (!source) return ionicons.linkOutline;
+  const icon = ionicons[source as keyof typeof ionicons];
+  return icon || ionicons.linkOutline;
 }
 
 function getIconColorByName(params: { name: string }) {

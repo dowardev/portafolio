@@ -26,13 +26,7 @@
             <ion-card
               class="shadow-1"
               style="cursor: pointer"
-              @click="
-                indexCertificateSeleted = indexCertificate;
-                modals.modalInfoExperience.open = true;
-                openUrl({
-                  url: certificate.url,
-                });
-              "
+              @click="openUrl(certificate.url)"
             >
               <ion-card-header>
                 <div style="display: flex; justify-content: space-between">
@@ -64,12 +58,12 @@
                       />
 
                       <ion-icon
-                        v-if="tech.type == 'icon'"
+                        v-if="tech.type === 'icon'"
                         :style="{
                           fontSize: tech.size,
-                          color: getIconColorByName({ name: tech.name }),
+                          color: getIconColorByName(tech.name),
                         }"
-                        :icon="tech.source"
+                        :icon="getIconByName(tech.source)"
                       ></ion-icon>
                     </div>
                   </ion-col>
@@ -80,76 +74,43 @@
         </ion-row>
       </ion-col>
     </ion-row>
-
-    <!-- modals -->
-    <!-- modal more experience information -->
-    <!-- end modals -->
-
-    <!-- popovers -->
-    <!-- end popovers -->
   </ion-content>
 </template>
 
 <script setup lang="ts">
-import { IonSelect, IonSelectOption } from "@ionic/vue";
-import { reactive, ref } from "vue";
-import { logoJavascript } from "ionicons/icons";
+import { reactive, ref, onMounted } from "vue";
+import * as ionicons from "ionicons/icons";
 
-// props component
-// end props component
-
-// interface
 import { DesignMode } from "@/utils/types";
-// end interface
-
-// media
-import SkilValueLogo from "@/assets/otros/skillvalue.svg";
-
-// componentes
 import SystemController from "@/controllers/systemController";
+import homeApi, { type CertificateItem } from "@/services/homeApi";
+
 const systemController = new SystemController();
-// end componentes
 
-// life
-// end life
-
-// vars
 const designMode = ref<DesignMode>(systemController.getdesignMode());
-const typeContent = ref<"all" | "personal" | "professional">("professional");
 const pageTitle = "Certificados";
-const screenSize = ref(systemController.getScreenSize());
-const certificates = [
-  {
-    img: SkilValueLogo,
-    title: "SkillValue",
-    url: "https://skillvalue.com/en/certificate/4xHm8KSctkDyB5V8SBWzvOBsCZXBKRAZL65rDKazVAV4EPs09nUUvtx9bHki",
-    aptitudes: [
-      {
-        source: logoJavascript,
-        name: "JavaScript",
-        type: "icon",
-        size: "18px",
-      },
-    ],
-  },
-];
-const modals = reactive({
-  modalInfoExperience: { open: false },
-});
-const indexCertificateSeleted = ref(-1);
-const popovers = reactive({
-  popoverModalProjectOptions: { open: false, event: null },
-});
-// end vars
+const certificates = ref<CertificateItem[]>([]);
 
-// functions
-function openUrl(params: { url: string }) {
-  const { url } = params;
+onMounted(async () => {
+  try {
+    const data = await homeApi.getPublic();
+    certificates.value = data.certificates || [];
+  } catch (error) {
+    console.error("Error loading certificates data:", error);
+  }
+});
+
+function openUrl(url: string) {
   window.open(url, "_blank");
 }
 
-function getIconColorByName(params: { name: string }) {
-  const { name } = params;
+function getIconByName(source: string) {
+  if (!source) return ionicons.helpCircleOutline;
+  const icon = ionicons[source as keyof typeof ionicons];
+  return icon || ionicons.helpCircleOutline;
+}
+
+function getIconColorByName(name: string) {
   const colors: { [key: string]: string } = {
     Ionic: "#3356c7",
     Vue: "#41b883",
@@ -169,7 +130,4 @@ function getIconColorByName(params: { name: string }) {
 </script>
 
 <style scoped>
-.container {
-  width: 60%;
-}
 </style>

@@ -1,7 +1,7 @@
 <template>
   <ion-row style="overflow: auto; max-height: calc(100% - 8dvh)">
     <ion-col
-      v-for="(certifcate, index) in certificates"
+      v-for="(certificate, index) in certificates"
       :key="index"
       size-xs="12"
       size-md="6"
@@ -12,17 +12,17 @@
         style="cursor: pointer"
         @click="
           openUrl({
-            url: certifcate.url,
+            url: certificate.url,
           })
         "
       >
         <ion-card-header>
           <div style="display: flex; justify-content: space-between">
-            <img :src="certifcate.img" alt="" style="height: 45px" />
+            <img :src="certificate.img" alt="" style="height: 45px" />
           </div>
 
           <ion-card-title>
-            {{ certifcate.title }}
+            {{ certificate.title }}
           </ion-card-title>
         </ion-card-header>
 
@@ -30,7 +30,7 @@
           <ion-row>
             <ion-col size="10" style="display: flex">
               <div
-                v-for="(tech, techIndex) in certifcate.aptitudes"
+                v-for="(tech, techIndex) in certificate.aptitudes"
                 :key="techIndex"
                 style="display: flex; align-items: center; margin-right: 10px"
               >
@@ -47,7 +47,7 @@
                     fontSize: tech.size,
                     color: getIconColorByName({ name: tech.name }),
                   }"
-                  :icon="tech.source"
+                  :icon="getIconSource(tech.source)"
                 ></ion-icon>
               </div>
             </ion-col>
@@ -59,33 +59,30 @@
 </template>
 
 <script lang="ts" setup>
-import { openOutline } from "ionicons/icons";
+import { ref, onMounted } from "vue";
+import * as ionicons from "ionicons/icons";
+import homeApi, { type CertificateItem } from "@/services/homeApi";
 
-// media
-import SkilValueLogo from "@/assets/otros/skillvalue.svg";
-import { logoJavascript } from "ionicons/icons";
+const certificates = ref<CertificateItem[]>([]);
 
-// vars
-const certificates = [
-  {
-    img: SkilValueLogo,
-    title: "SkillValue",
-    url: "https://skillvalue.com/en/certificate/4xHm8KSctkDyB5V8SBWzvOBsCZXBKRAZL65rDKazVAV4EPs09nUUvtx9bHki",
-    aptitudes: [
-      {
-        source: logoJavascript,
-        name: "JavaScript",
-        type: "icon",
-        size: "18px",
-      },
-    ],
-  },
-];
+onMounted(async () => {
+  try {
+    const data = await homeApi.getPublic();
+    certificates.value = data.certificates || [];
+  } catch (error) {
+    console.error("Error loading certificates data:", error);
+  }
+});
 
-// functions
 function openUrl(params: { url: string }) {
   const { url } = params;
   window.open(url, "_blank");
+}
+
+function getIconSource(source: string) {
+  if (!source) return ionicons.linkOutline;
+  const icon = ionicons[source as keyof typeof ionicons];
+  return icon || ionicons.linkOutline;
 }
 
 function getIconColorByName(params: { name: string }) {

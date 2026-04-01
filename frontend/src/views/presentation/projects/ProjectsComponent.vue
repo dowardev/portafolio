@@ -10,26 +10,19 @@
       <ion-card
         class="shadow-1"
         style="cursor: pointer"
-        @click="
-          modals.modalInfoExperience.title = project.title;
-          modals.modalInfoExperience.content = project.details!.description;
-          modals.modalInfoExperience.url = project.details!.website;
-          modals.modalInfoExperience.open = true;
-        "
+        @click="openProjectDetail(project)"
       >
         <ion-card-header>
           <div style="display: flex; justify-content: space-between">
             <img :src="project.img" alt="" style="height: 45px" />
           </div>
 
-          <ion-card-title>
-            {{ project.title }}
-          </ion-card-title>
+          <ion-card-title>{{ project.title }}</ion-card-title>
           <ion-card-subtitle>
             {{
-              project.status == "progress"
-                ? "En progeso"
-                : project.status == "indeterminate"
+              project.status === "progress"
+                ? "En progreso"
+                : project.status === "indeterminate"
                   ? "Indeterminado"
                   : "Terminado"
             }}
@@ -50,14 +43,13 @@
                   :alt="tech.name"
                   :style="{ width: tech.size }"
                 />
-
                 <ion-icon
-                  v-if="tech.type == 'icon'"
+                  v-if="tech.type === 'icon'"
                   :style="{
                     fontSize: tech.size,
-                    color: getIconColorByName({ name: tech.name }),
+                    color: getIconColorByName(tech.name),
                   }"
-                  :icon="tech.source"
+                  :icon="getIconByName(tech.source)"
                 ></ion-icon>
               </div>
             </ion-col>
@@ -67,157 +59,54 @@
     </ion-col>
   </ion-row>
 
-  <!-- modals -->
-  <!-- modal more experience information -->
-  <ion-modal
-    :is-open="modals.modalInfoExperience.open"
-    @did-dismiss="modals.modalInfoExperience.open = false"
-  >
-    <ion-header mode="ios">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button @click="modals.modalInfoExperience.open = false">
-            <ion-icon :icon="closeOutline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-
-        <ion-title>{{ modals.modalInfoExperience.title }}</ion-title>
-
-        <ion-buttons slot="end">
-          <ion-button @click="openUrl({ url: modals.modalInfoExperience.url })">
-            <ion-icon :icon="openOutline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content class="ion-padding">
-      <p>
-        {{ modals.modalInfoExperience.content }}
-      </p>
-    </ion-content>
-  </ion-modal>
+  <ProjectDetailModal
+    :isOpen="modalOpen"
+    :project="selectedProject"
+    @close="modalOpen = false"
+  />
 </template>
 
-<script lang="ts" setup>
-import { reactive } from "vue";
-import { IonModal } from "@ionic/vue";
+<script setup lang="ts">
 import {
-  closeOutline,
-  openOutline,
-  logoVue,
-  logoIonic,
-  logoLaravel,
-  logoFirebase,
-  logoNpm,
-} from "ionicons/icons";
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent,
+  IonIcon,
+} from "@ionic/vue";
+import { ref, onMounted } from "vue";
+import * as ionicons from "ionicons/icons";
+import homeApi, { type ProjectItem } from "@/services/homeApi";
+import ProjectDetailModal from "@/components/projects/ProjectDetailModal.vue";
 
-// media
-import PengyiLabsLogo from "@/assets/otros/pengyilabs_logo.jpg";
-import NuxtImg from "@/assets/otros/nuxt-svgrepo-com.svg";
-import MysqlLogo from "@/assets/otros/mysql-6.svg";
-import DowarLogo from "@/assets/portafolio/logo_dowar_2.1.png";
-import MoneyFlapLogo from "@/assets/otros/moneyflap-logo-white.svg";
-import LifelineLogo from "@/assets/otros/lifeline_v1.webp";
-import NoLogoImage from "@/assets/otros/no-logo.png";
+const projects = ref<ProjectItem[]>([]);
+const modalOpen = ref(false);
+const selectedProject = ref<ProjectItem | null>(null);
 
-// vars
-const projects = [
-  {
-    img: MoneyFlapLogo,
-    title: "Moneyflap",
-    status: "indeterminate",
-    technologies: [
-      { source: NuxtImg, name: "Nuxt", size: "22px", type: "img" },
-      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
-    ],
-    source: {
-      img: PengyiLabsLogo,
-      name: "PengyiLabs",
-      url: "https://www.pengyilabs.com/",
-    },
-    details: {
-      description:
-        "MoneyFlap es una plataforma financiera global que ofrece cuentas de ahorro, transferencias sin comisiones, tarjetas virtuales y cashback de hasta el 35%, facilitando la gestión financiera.",
-      website: "https://www.moneyflap.com/",
-    },
-  },
-  {
-    img: LifelineLogo,
-    title: "LifeLine",
-    status: "progress",
-    technologies: [
-      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
-      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
-      { source: logoLaravel, name: "Laravel", size: "18px", type: "icon" },
-      { source: MysqlLogo, name: "MySql", size: "16px", type: "img" },
-    ],
-    source: {
-      img: DowarLogo,
-      name: "DowarDev",
-      url: "https://www.dowar.xyz/",
-    },
-    details: {
-      description:
-        "Plataforma que ofrece una variedad de herramientas para la organizacion personal",
-      website: "https://www.upwork.com/freelancers/~0162303a78d7d448db",
-    },
-  },
-  {
-    img: NoLogoImage,
-    title: "Blog",
-    status: "progress",
-    technologies: [
-      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
-      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
-      { source: logoLaravel, name: "Laravel", size: "18px", type: "icon" },
-      { source: logoFirebase, name: "Firebase", size: "20px", type: "icon" },
-    ],
-    source: {
-      img: DowarLogo,
-      name: "DowarDev",
-      url: "https://www.dowar.xyz/",
-    },
-    details: {
-      description:
-        "Plataforma que permite compartir contenido en formato escrito con as herramientas necesarias para su gestion permite compartir contenido en formato escrito con as herramientas necesarias para su gestion.",
-      website:
-        "https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c",
-    },
-  },
-  {
-    img: NoLogoImage,
-    title: "Ionic extra components",
-    status: "progress",
-    technologies: [
-      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
-      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
-      { source: logoNpm, name: "Npm", size: "20px", type: "icon" },
-    ],
-    source: {
-      img: DowarLogo,
-      name: "DowarDev",
-      url: "https://www.dowar.xyz/",
-    },
-    details: {
-      description:
-        "Conjunto de componentes mejorados para proectos de Ionic Framework.",
-      website: "https://ionic-components.dowar.xyz/",
-    },
-  },
-];
-const modals = reactive({
-  modalInfoExperience: { open: false, title: "", content: "", url: "" },
+onMounted(async () => {
+  try {
+    const data = await homeApi.getPublic();
+    projects.value = data.projects || [];
+  } catch (error) {
+    console.error("Error loading projects data:", error);
+  }
 });
 
-// functions
-function openUrl(params: { url: string }) {
-  const { url } = params;
-  window.open(url, "_blank");
+function openProjectDetail(project: ProjectItem) {
+  selectedProject.value = project;
+  modalOpen.value = true;
 }
 
-function getIconColorByName(params: { name: string }) {
-  const { name } = params;
+function getIconByName(source: string) {
+  if (!source) return ionicons.linkOutline;
+  const icon = ionicons[source as keyof typeof ionicons];
+  return icon || ionicons.linkOutline;
+}
+
+function getIconColorByName(name: string) {
   const colors: { [key: string]: string } = {
     Ionic: "#3356c7",
     Vue: "#41b883",

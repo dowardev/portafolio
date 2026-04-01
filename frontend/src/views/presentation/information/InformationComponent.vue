@@ -42,6 +42,7 @@
 
             <!-- form contact -->
             <ion-button
+              v-if="homeData.showContactForm"
               @mouseover="fillContactForm = '#ff5b29'"
               @mouseleave="fillContactForm = defaultColorFill"
               @click="openContactModal()"
@@ -417,6 +418,13 @@ const homeData = ref<HomePageData>({
   socials: [],
   logoUrl: null,
   photoUrl: null,
+  stack: [],
+  skillCategories: [],
+  experience: [],
+  projects: [],
+  certificates: [],
+  freelance: [],
+  showContactForm: false,
 });
 // end vars
 
@@ -439,6 +447,13 @@ onMounted(async () => {
         socials: data.socials || [],
         logoUrl: data.logoUrl,
         photoUrl: data.photoUrl,
+        stack: data.stack || [],
+        skillCategories: data.skillCategories || [],
+        experience: data.experience || [],
+        projects: data.projects || [],
+        certificates: data.certificates || [],
+        freelance: data.freelance || [],
+        showContactForm: data.showContactForm || false,
       };
       console.log("HomeData socials after load:", homeData.value.socials);
       if (homeData.value.socials && homeData.value.socials.length > 0) {

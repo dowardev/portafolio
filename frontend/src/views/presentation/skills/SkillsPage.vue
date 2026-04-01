@@ -9,21 +9,15 @@
 
       <ion-row class="sec2">
         <ion-col style="display: flex" class="ion-justify-content-center">
-          <ion-row
-            style="display: flex; justify-content: space-between; width: 205px"
-          >
-            <ion-col size="4" class="center">
-              <img :src="vueLogo" alt="" />
-            </ion-col>
-
-            <ion-col size="4" class="center">
-              <img :src="laravelLogo" alt="" />
-            </ion-col>
-
-            <ion-col size="4" class="center">
-              <img :src="mysqlLogo" alt="" />
-            </ion-col>
-          </ion-row>
+          <div class="stack-container">
+            <div
+              v-for="(item, index) in stackItems"
+              :key="index"
+              class="stack-item"
+            >
+              <img :src="item.image" :alt="item.name" />
+            </div>
+          </div>
         </ion-col>
       </ion-row>
     </ion-col>
@@ -34,29 +28,38 @@
     class="sec-skill"
   >
     <ion-col
-      v-for="(skill, indexSkill) in skills[0].tipo"
-      :key="indexSkill"
+      v-for="(category, indexCat) in skillCategories"
+      :key="indexCat"
       size-xs="12"
       size-md="6"
       size-lg="6"
     >
       <ion-card class="shadow-1">
         <ion-card-header>
-          <ion-card-title>{{ skill.name }}</ion-card-title>
+          <ion-card-title>{{ category.name }}</ion-card-title>
         </ion-card-header>
 
         <ion-card-content>
           <ion-row style="text-align: center">
             <ion-col
-              v-for="(technology, index) in skill.technology"
+              v-for="(technology, index) in category.technologies"
               :key="index"
             >
               <img
-                :src="technology.image[0].path"
+                v-if="technology.type === 'img'"
+                :src="technology.image"
                 :style="{
-                  maxWidth: technology.image[0].size,
+                  maxWidth: technology.size || '24px',
                 }"
               />
+              <ion-icon
+                v-if="technology.type === 'icon'"
+                :icon="getIconByName(technology.iconName)"
+                :style="{
+                  fontSize: technology.size || '24px',
+                  color: getIconColorByName(technology.name),
+                }"
+              ></ion-icon>
               <p>{{ technology.name }}</p>
             </ion-col>
           </ion-row>
@@ -74,122 +77,71 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
+  IonIcon,
 } from "@ionic/vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import * as ionicons from "ionicons/icons";
+import homeApi, { type StackItem, type SkillCategory } from "@/services/homeApi";
 
-// multimedia
-// imgs
-import electronLogo from "@/assets/otros/electron-1.svg";
-import ionicLogo from "@/assets/otros/ionicframework-icon.svg";
-import vueLogo from "@/assets/otros/vue-js-1.svg";
-import laravelLogo from "@/assets/otros/laravel-2.svg";
-import firebaseLogo from "@/assets/otros/Firebase_Logo_Logomark.svg";
-import mysqlLogo from "@/assets/otros/mysql-6.svg";
-import tuxLogo from "@/assets/otros/linux-tux-2.svg";
-import piniaLogo from "@/assets/otros/pinia.svg";
+const stackItems = ref<StackItem[]>([]);
+const skillCategories = ref<SkillCategory[]>([]);
 
-const skills = ref([
-  {
-    tipo: [
-      {
-        name: "Desarrollo movil",
-        technology: [
-          {
-            name: "Ionic",
-            image: [
-              {
-                path: ionicLogo,
-                size: "24px",
-              },
-            ],
-          },
-          {
-            name: "Electon",
-            image: [
-              {
-                path: electronLogo,
-                size: "24px",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        name: "Frameworks",
-        technology: [
-          {
-            name: "Vue",
-            image: [
-              {
-                path: vueLogo,
-                size: "31px",
-              },
-            ],
-          },
-          {
-            name: "Laravel",
-            image: [
-              {
-                path: laravelLogo,
-                size: "26px",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        name: "Bases de datos",
-        technology: [
-          {
-            name: "Firebase",
-            image: [
-              {
-                path: firebaseLogo,
-                size: "22px",
-              },
-            ],
-          },
-          {
-            name: "Mysql",
-            image: [
-              {
-                path: mysqlLogo,
-                size: "29px",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        name: "Herramientas",
-        technology: [
-          {
-            name: "Linux",
-            image: [
-              {
-                path: tuxLogo,
-                size: "30px",
-              },
-            ],
-          },
-          {
-            name: "Pinia",
-            image: [
-              {
-                path: piniaLogo,
-                size: "20px",
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-]);
+onMounted(async () => {
+  try {
+    const data = await homeApi.getPublic();
+    stackItems.value = data.stack || [];
+    skillCategories.value = data.skillCategories || [];
+  } catch (error) {
+    console.error("Error loading skills data:", error);
+  }
+});
+
+function getIconByName(iconName: string) {
+  if (!iconName) return ionicons.helpCircleOutline;
+  const icon = ionicons[iconName as keyof typeof ionicons];
+  return icon || ionicons.helpCircleOutline;
+}
+
+function getIconColorByName(name: string) {
+  const colors: { [key: string]: string } = {
+    Ionic: "#3356c7",
+    Vue: "#41b883",
+    Laravel: "#ff2819",
+    Firebase: "#ffca28",
+    Capacitorjs: "#119eff",
+    Electronjs: "#47848f",
+    Web: "#3356c7",
+    Linux: "#000000",
+    PWA: "#5905c8",
+    Android: "#44ac5a",
+    Windows: "#0078d4",
+    JavaScript: "#f0db4f",
+    Nuxt: "#00dc82",
+  };
+  return colors[name] || "";
+}
 </script>
 
 <style scoped>
-/* .sec2 img { */
-/*   width: 10dvh; */
-/* } */
+.stack-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 8px;
+}
+
+.stack-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+}
+
+.stack-item img {
+  max-width: 100%;
+  max-height: 100%;
+}
 </style>

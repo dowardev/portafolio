@@ -62,12 +62,12 @@
                       />
 
                       <ion-icon
-                        v-if="tech.type == 'icon'"
+                        v-if="tech.type === 'icon'"
                         :style="{
                           fontSize: tech.size,
-                          color: getIconColorByName({ name: tech.name }),
+                          color: getIconColorByName(tech.name),
                         }"
-                        :icon="tech.source"
+                        :icon="getIconByName(tech.source)"
                       ></ion-icon>
                     </div>
                   </ion-col>
@@ -80,7 +80,6 @@
     </ion-row>
 
     <!-- modals -->
-    <!-- modal more experience information -->
     <ion-modal
       :style="{
         '--height':
@@ -99,16 +98,11 @@
             </ion-button>
           </ion-buttons>
 
-          <ion-title>{{ experiences[indexExperienceSeleted].title }}</ion-title>
+          <ion-title>{{ experiences[indexExperienceSeleted]?.title }}</ion-title>
 
-          <ion-buttons slot="end">
-            <ion-button
-              @click="
-                popovers.popoverModalProjectOptions.event = $event;
-                popovers.popoverModalProjectOptions.open = true;
-              "
-            >
-              <ion-icon :icon="ellipsisVerticalOutline"> </ion-icon>
+          <ion-buttons slot="end" v-if="experiences[indexExperienceSeleted]?.details?.website">
+            <ion-button @click="openUrl(experiences[indexExperienceSeleted].details.website)">
+              <ion-icon :icon="openOutline"></ion-icon>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
@@ -116,143 +110,62 @@
 
       <ion-content class="ion-padding">
         <p>
-          {{ experiences[indexExperienceSeleted].details.description }}
+          {{ experiences[indexExperienceSeleted]?.details?.description }}
         </p>
       </ion-content>
     </ion-modal>
-    <!-- end modals -->
-
-    <!-- popovers -->
-    <!-- end popovers -->
   </ion-content>
 </template>
 
 <script setup lang="ts">
-import { IonSelect, IonSelectOption, IonModal } from "@ionic/vue";
-import { computed, reactive, ref } from "vue";
+import { IonModal } from "@ionic/vue";
+import { computed, reactive, ref, onMounted } from "vue";
 import {
   closeOutline,
-  ellipsisVerticalOutline,
-  logoFirebase,
-  logoIonic,
-  logoLaravel,
-  logoVue,
+  openOutline,
 } from "ionicons/icons";
+import * as ionicons from "ionicons/icons";
 
-// props component
-// end props component
-
-// interface
 import { DesignMode } from "@/utils/types";
-// end interface
-
-// media
-import PengyiLabsLogo from "@/assets/otros/pengyilabs_logo.jpg";
-import NuxtImg from "@/assets/otros/nuxt-svgrepo-com.svg";
-import MysqlLogo from "@/assets/otros/mysql-6.svg";
-import UpworkLogo from "@/assets/otros/icons8-upwork-50.png";
-import WorkanaLogo from "@/assets/otros/Workana_ISOLOGO_W.png";
-
-// componentes
 import SystemController from "@/controllers/systemController";
+import homeApi, { type ExperienceItem } from "@/services/homeApi";
+
 const systemController = new SystemController();
-// end componentes
 
-// life
-const sortedExperiences = computed(() => {
-  const parseDate = (dateStr: string): number => {
-    const [month, year] = dateStr.split(" ");
-    const months: { [key: string]: number } = {
-      Enero: 0,
-      Febrero: 1,
-      Marzo: 2,
-      Abril: 3,
-      Mayo: 4,
-      Junio: 5,
-      Julio: 6,
-      Agosto: 7,
-      Septiembre: 8,
-      Octubre: 9,
-      Noviembre: 10,
-      Diciembre: 11,
-    };
-    return new Date(parseInt(year), months[month]).getTime();
-  };
-
-  return [...experiences].sort((a, b) => {
-    return (
-      parseDate(b.date.split(" - ")[0]) - parseDate(a.date.split(" - ")[0])
-    );
-  });
-});
-// end life
-
-// vars
 const designMode = ref<DesignMode>(systemController.getdesignMode());
-const typeContent = ref<"all" | "personal" | "professional">("professional");
 const pageTitle = "Experiencia";
 const screenSize = ref(systemController.getScreenSize());
-const experiences = [
-  {
-    img: PengyiLabsLogo,
-    title: "Pengyi Labs",
-    date: "Diciembre 2024 - Actualidad",
-    technologies: [
-      { source: NuxtImg, name: "Nuxt", size: "22px", type: "img" },
-      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
-    ],
-    details: {
-      description:
-        "Contratación por horas para la corrección y desarrollo de nuevas funciones en múltiples proyectos.",
-      website: "https://pengyilabs.com/",
-    },
-  },
-  {
-    img: UpworkLogo,
-    title: "Upwork",
-    date: "Marzo 2023 - Actualidad",
-    technologies: [
-      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
-      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
-      { source: logoLaravel, name: "Laravel", size: "18px", type: "icon" },
-      { source: MysqlLogo, name: "MySql", size: "16px", type: "img" },
-    ],
-    details: {
-      description:
-        "Contratación para la gestión y realización de proyectos como freelance para una variedad de clientes.",
-      website: "https://www.upwork.com/freelancers/~0162303a78d7d448db",
-    },
-  },
-  {
-    img: WorkanaLogo,
-    title: "Workana",
-    date: "Enero 2021 - Actualidad",
-    technologies: [
-      { source: logoVue, name: "Vue", size: "18px", type: "icon" },
-      { source: logoIonic, name: "Ionic", size: "18px", type: "icon" },
-      { source: logoLaravel, name: "Laravel", size: "18px", type: "icon" },
-      { source: logoFirebase, name: "Firebase", size: "18px", type: "icon" },
-    ],
-    details: {
-      description:
-        "Contratación para la gestión y realización de proyectos como freelance para una variedad de clientes.",
-      website:
-        "https://www.workana.com/freelancer/9d94c3955c99290d9311a2aef1da7f4c",
-    },
-  },
-];
+const experiences = ref<ExperienceItem[]>([]);
+
+const sortedExperiences = computed(() => {
+  return [...experiences.value];
+});
+
 const modals = reactive({
   modalInfoExperience: { open: false },
 });
 const indexExperienceSeleted = ref(-1);
-const popovers = reactive({
-  popoverModalProjectOptions: { open: false, event: null },
-});
-// end vars
 
-// functions
-function getIconColorByName(params: { name: string }) {
-  const { name } = params;
+onMounted(async () => {
+  try {
+    const data = await homeApi.getPublic();
+    experiences.value = data.experience || [];
+  } catch (error) {
+    console.error("Error loading experience data:", error);
+  }
+});
+
+function openUrl(url: string) {
+  window.open(url, "_blank");
+}
+
+function getIconByName(source: string) {
+  if (!source) return ionicons.helpCircleOutline;
+  const icon = ionicons[source as keyof typeof ionicons];
+  return icon || ionicons.helpCircleOutline;
+}
+
+function getIconColorByName(name: string) {
   const colors: { [key: string]: string } = {
     Ionic: "#3356c7",
     Vue: "#41b883",
@@ -271,7 +184,4 @@ function getIconColorByName(params: { name: string }) {
 </script>
 
 <style scoped>
-.container {
-  width: 60%;
-}
 </style>
