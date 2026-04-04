@@ -1,5 +1,15 @@
 # Changelog
 
+## 11.1.1 - 2026-04-03
+
+### Fixed
+
+- ESLint flat config restructured for proper Vue 3 + TypeScript compatibility
+- Separated `ignores` into dedicated config object per ESLint 9 flat config spec
+- Fixed ignore patterns to use proper glob syntax (`**` instead of `/`)
+- Corrected `@eslint/js` version from v10 to v9 to match ESLint v9 peer dependency
+- Added missing `@eslint/js` and `typescript-eslint` dev dependencies
+
 ## 11.1.0 - 2026-04-01
 
 ### Added

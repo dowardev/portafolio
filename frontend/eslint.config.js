@@ -4,33 +4,31 @@ import js from "@eslint/js";
 import ts from "typescript-eslint";
 
 export default [
-  js.configs.recommended,
-  ...ts.configs.recommended,
-  ...pluginVue.configs["flat/recommended"],
-  eslintConfigPrettier,
   {
-    files: ["*.vue", "**/*.vue"],
     ignores: [
-      ".DS_Store",
-      "node_modules",
-      "/coverage",
-      "/dist",
-      "/ios",
-      "/android",
+      "node_modules/**",
+      "dist/**",
+      "coverage/**",
+      "ios/**",
+      "android/**",
+      ".idea/**",
+      ".vscode/**",
       ".env.local",
       ".env.*.local",
-      "npm-debug.log*",
-      "yarn-debug.log*",
-      "yarn-error.log*",
-      "pnpm-debug.log*",
-      ".idea",
-      ".vscode",
+      "*.log",
       "*.suo",
       "*.ntvs*",
       "*.njsproj",
       "*.sln",
       "*.sw?",
     ],
+  },
+  js.configs.recommended,
+  ...ts.configs.recommended,
+  ...pluginVue.configs["flat/recommended"],
+  eslintConfigPrettier,
+  {
+    files: ["*.vue", "**/*.vue"],
     languageOptions: {
       parserOptions: {
         parser: "@typescript-eslint/parser",
