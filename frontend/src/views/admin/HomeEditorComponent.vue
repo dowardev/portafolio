@@ -1,28 +1,28 @@
 <template>
   <div>
-    <ion-segment :value="activeSection" @ion-change="activeSection = $event.detail.value?.toString() || 'info'">
-      <ion-segment-button value="info">
-        <ion-label>Info</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="stack">
-        <ion-label>Stack</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="skills">
-        <ion-label>Skills</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="experience">
-        <ion-label>Experiencia</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="projects">
-        <ion-label>Proyectos</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="certificates">
-        <ion-label>Certificados</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="freelance">
-        <ion-label>Freelance</ion-label>
-      </ion-segment-button>
-    </ion-segment>
+    <div class="nav-buttons">
+      <ion-button :color="activeSection === 'info' ? 'primary' : 'medium'" @click="navigateTo('info')">
+        Info
+      </ion-button>
+      <ion-button :color="activeSection === 'stack' ? 'primary' : 'medium'" @click="navigateTo('stack')">
+        Stack
+      </ion-button>
+      <ion-button :color="activeSection === 'skills' ? 'primary' : 'medium'" @click="navigateTo('skills')">
+        Skills
+      </ion-button>
+      <ion-button :color="activeSection === 'experience' ? 'primary' : 'medium'" @click="navigateTo('experience')">
+        Experiencia
+      </ion-button>
+      <ion-button :color="activeSection === 'projects' ? 'primary' : 'medium'" @click="navigateTo('projects')">
+        Proyectos
+      </ion-button>
+      <ion-button :color="activeSection === 'certificates' ? 'primary' : 'medium'" @click="navigateTo('certificates')">
+        Certificados
+      </ion-button>
+      <ion-button :color="activeSection === 'freelance' ? 'primary' : 'medium'" @click="navigateTo('freelance')">
+        Freelance
+      </ion-button>
+    </div>
 
     <form @submit.prevent="save">
       <!-- Sección Info -->
@@ -240,12 +240,11 @@ import {
   IonPopover,
   IonList,
   IonContent,
-  IonSegment,
-  IonSegmentButton,
   IonToggle,
   isPlatform,
 } from "@ionic/vue";
 import { ref, reactive, onMounted, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import {
   addOutline,
   closeOutline,
@@ -268,7 +267,23 @@ const toastController = new ToastController();
 const saving = ref(false);
 const newTag = ref("");
 const isDev = import.meta.env.DEV;
-const activeSection = ref("info");
+
+const router = useRouter();
+const route = useRoute();
+
+const validSections = ["info", "stack", "skills", "experience", "projects", "certificates", "freelance"];
+
+const activeSection = computed(() => {
+  const section = route.params.section as string;
+  if (section && validSections.includes(section)) {
+    return section;
+  }
+  return "info";
+});
+
+function navigateTo(section: string) {
+  router.push(`/admin-panel/${section}`);
+}
 
 const availableSocials = [
   { name: "Facebook", iconName: "logoFacebook" },
@@ -562,7 +577,15 @@ async function save() {
 input[type="file"] {
   margin-top: 8px;
 }
-ion-segment {
+.nav-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 16px;
+  padding: 8px;
+}
+.nav-buttons ion-button {
+  --margin-start: 0;
+  --margin-end: 0;
 }
 </style>

@@ -5,6 +5,7 @@ http://ionicframework.com/docs/theming/ */
 @import url("./light.css");
 /* @import url("./gruvbox.css");
 @import url("./nord.css"); */
+@import url("./styles/tippy-themes.css");
 @import url("./styles/scrollbar.css");
 
 /* others */
@@ -124,9 +125,16 @@ ul {
   --background: transparent;
 }
 
+/* ion-item */
 ion-item {
   border-radius: 4px;
 }
+
+ion-item.transparent,
+ion-item-divider.transparent {
+  --background: transparent;
+}
+/* end ion-item */
 
 ion-app,
 ion-menu {
@@ -147,7 +155,39 @@ ion-modal {
   --border-radius: 4px;
 }
 
-ion-list.border > div {
-  border: 1px solid var(--ion-background-color-step-50);
-  border-radius: 4px;
+/* ion-card */
+ion-card.shadow1 {
+  box-shadow:
+    var(--card-shadow-light) 0px 1px 3px 0px,
+    var(--card-shadow-heavy) 0px 0px 0px 1px;
+  background: var(--background-contrast) !important;
 }
+
+ion-card.shadow2 {
+  box-shadow: var(--card-shadow-subtle) 0px 0px 0px 1px;
+  background: var(--background-contrast) !important;
+}
+
+ion-card.no-shadow {
+  box-shadow: none;
+}
+/* end ion-card */
+
+/* ion list */
+ion-list.transparent {
+  background: transparent;
+}
+
+ion-list > div.list-content {
+  border: 1px solid var(--ion-background-color-step-300);
+  border-radius: 4px;
+  margin: 10px;
+  background: var(--background-contrast) ;
+}
+/* ion list */
+
+/* ion button */
+ion-button.no-shadow {
+  --box-shadow: none !important;
+}
+/* end ion button */

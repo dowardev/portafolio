@@ -50,13 +50,13 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="container-page">
+  <ion-content>
     <section v-if="mainSegment == 'users'">
       <UsersComponent />
     </section>
 
     <section v-if="mainSegment == 'home'">
-      <HomeEditorComponent />
+      <AdminHomeMenu />
     </section>
 
     <!-- popovers -->
@@ -92,7 +92,7 @@ import {
 } from "@ionic/vue";
 import { reactive, ref, watch } from "vue";
 import UsersComponent from "./users/UsersComponent.vue";
-import HomeEditorComponent from "./HomeEditorComponent.vue";
+import AdminHomeMenu from "./AdminHomeMenu.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";

@@ -1,5 +1,20 @@
 # Changelog
 
+## 11.2.0 - 2026-04-06
+
+### Added
+
+- Admin panel: new section-based admin views and Info editor components for homepage content management
+
+### Changed
+
+- Frontend structure: added tooltip directive and tippy.js themes/styles
+- Main app initialization updated: storage initialization, server config export, and service worker registration refined
+
+### Fixed
+
+- Various admin/editor integration fixes and styling updates (light/variables CSS and HomePage adjustments)
+
 ## 11.1.1 - 2026-04-03
 
 ### Fixed

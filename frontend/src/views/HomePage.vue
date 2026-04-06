@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO:remove all -->
   <ion-page class="page-container">
     <!-- progress bar -->
     <ion-progress-bar
@@ -21,6 +22,44 @@
     <PoliciesPage v-if="$route.name == 'PoliciesPage'" />
     <UserPanelPage v-if="$route.name == 'UserPanelPage'" />
     <PanelAdminPage v-if="$route.name == 'PanelAdminPage'" />
+    <AdminInfoPage
+      v-if="
+        $route.name == 'AdminEditorPage' && $route.params.section === 'info'
+      "
+    />
+    <AdminStackPage
+      v-if="
+        $route.name == 'AdminEditorPage' && $route.params.section === 'stack'
+      "
+    />
+    <AdminSkillsPage
+      v-if="
+        $route.name == 'AdminEditorPage' && $route.params.section === 'skills'
+      "
+    />
+    <AdminExperiencePage
+      v-if="
+        $route.name == 'AdminEditorPage' &&
+        $route.params.section === 'experience'
+      "
+    />
+    <AdminProjectsPage
+      v-if="
+        $route.name == 'AdminEditorPage' && $route.params.section === 'projects'
+      "
+    />
+    <AdminCertificatesPage
+      v-if="
+        $route.name == 'AdminEditorPage' &&
+        $route.params.section === 'certificates'
+      "
+    />
+    <AdminFreelancePage
+      v-if="
+        $route.name == 'AdminEditorPage' &&
+        $route.params.section === 'freelance'
+      "
+    />
     <PortfolioPage v-if="$route.name == 'PortfolioPage'" />
     <CertificatesPage v-if="$route.name == 'CertificatesPage'" />
     <ExperiencePage v-if="$route.name == 'ExperiencePage'" />
@@ -41,6 +80,13 @@ import SignUpPage from "./session/signup/SignUpPage.vue";
 import PoliciesPage from "./policies/PoliciesPage.vue";
 import UserPanelPage from "./user/UserPanelPage.vue";
 import PanelAdminPage from "./admin/PanelAdminPage.vue";
+import AdminInfoPage from "./admin/sections/AdminInfoPage.vue";
+import AdminStackPage from "./admin/sections/AdminStackPage.vue";
+import AdminSkillsPage from "./admin/sections/AdminSkillsPage.vue";
+import AdminExperiencePage from "./admin/sections/AdminExperiencePage.vue";
+import AdminProjectsPage from "./admin/sections/AdminProjectsPage.vue";
+import AdminCertificatesPage from "./admin/sections/AdminCertificatesPage.vue";
+import AdminFreelancePage from "./admin/sections/AdminFreelancePage.vue";
 import PortfolioPage from "./portfolio/PortfolioPage.vue";
 import CertificatesPage from "./certificates/CertificatesPage.vue";
 import ExperiencePage from "./experience/ExperiencePage.vue";
