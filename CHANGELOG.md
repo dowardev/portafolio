@@ -1,5 +1,23 @@
 # Changelog
 
+## 11.3.0 - 2026-04-07
+
+### Added
+
+- Admin: improved Stack editor UI with file name display and image preview modal
+- Admin: added sectional layout for Stack editor in AdminStackPage for better responsiveness
+
+### Changed
+
+- Frontend: updated StackEditor.vue to use IonCard layout, hidden file inputs, and improved validation error rendering
+- AdminStackPage.vue: moved save button to header with spinner and reorganized layout using ion-grid/ion-row/ion-col
+
+### Fixed
+
+- File upload handling: store pending file names for display and ensure cleanup when removing items
+
+---
+
 ## 11.2.0 - 2026-04-06
 
 ### Added

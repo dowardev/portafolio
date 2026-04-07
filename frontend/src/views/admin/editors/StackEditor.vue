@@ -1,63 +1,112 @@
 <template>
-  <div class="ion-padding">
-    <ion-item lines="none">
-      <ion-label>Stack Principal</ion-label>
-      <ion-button
-        slot="end"
-        size="small"
-        @click="addStackItem"
-        :disabled="!allValid"
-      >
-        <ion-icon :icon="addOutline" slot="start"></ion-icon>
+  <ion-list>
+    <ion-list-header>
+      <ion-label></ion-label>
+
+      <ion-button :disabled="!allValid" @click="addStackItem">
+        <ion-icon slot="start" :icon="addOutline"></ion-icon>
         Añadir
       </ion-button>
-    </ion-item>
+    </ion-list-header>
 
-    <div v-for="(item, index) in modelValue" :key="index" class="stack-item">
-      <ion-item>
-        <ion-label position="stacked">Nombre</ion-label>
+    <ion-card v-for="(item, index) in modelValue" :key="index" class="shadow1">
+      <ion-item lines="full">
         <ion-input
+          label="Nombre"
+          label-placement="floating"
           :value="item.name"
           placeholder="Ej: Vue.js"
           :class="{
-            'ion-invalid': v$.items.$each.$response.$errors[index]?.name?.length > 0 && touched[index]?.name,
+            'ion-invalid':
+              v$.items.$each.$response.$errors[index]?.name?.length > 0 &&
+              touched[index]?.name,
           }"
           @ion-input="updateStackItem(index, 'name', $event.detail.value!)"
           @ion-blur="touchField(index, 'name')"
         ></ion-input>
       </ion-item>
+
       <span
-        v-if="touched[index]?.name && v$.items.$each.$response.$errors[index]?.name?.length"
+        v-if="
+          touched[index]?.name &&
+          v$.items.$each.$response.$errors[index]?.name?.length
+        "
         class="error"
       >
         {{ v$.items.$each.$response.$errors[index].name[0].$message }}
       </span>
 
-      <div class="file-upload">
-        <ion-label class="upload-label">Imagen</ion-label>
-        <input
-          type="file"
-          accept="image/*"
-          @change="onFileChange($event, index)"
-        />
-      </div>
+      <ion-item lines="full" button @click="openFileDialog(index)">
+        <ion-label>Imagen</ion-label>
+
+        <ion-note v-if="fileNames[index]" slot="end">{{
+          fileNames[index]
+        }}</ion-note>
+        <ion-note v-else slot="end">Seleccionar</ion-note>
+
+        <ion-button
+          slot="end"
+          fill="clear"
+          :disabled="!item.image"
+          @click.stop="showPreview(index)"
+        >
+          <ion-icon :icon="eyeOutline"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <input
+        style="display: none"
+        type="file"
+        accept="image/*"
+        :data-index="index"
+        @change="onFileChange($event, index)"
+      />
+
       <span
-        v-if="touched[index]?.image && v$.items.$each.$response.$errors[index]?.image?.length"
+        v-if="
+          touched[index]?.image &&
+          v$.items.$each.$response.$errors[index]?.image?.length
+        "
         class="error"
       >
         {{ v$.items.$each.$response.$errors[index].image[0].$message }}
       </span>
 
-      <div class="preview-row" v-if="item.image">
-        <img :src="item.image" alt="preview" class="stack-preview" />
-      </div>
+      <ion-item lines="none">
+        <ion-button
+          slot="end"
+          fill="clear"
+          color="danger"
+          @click="removeStackItem(index)"
+        >
+          <ion-icon :icon="trashOutline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-card>
+  </ion-list>
 
-      <ion-button fill="clear" color="danger" @click="removeStackItem(index)">
-        <ion-icon :icon="trashOutline"></ion-icon>
-        Eliminar
-      </ion-button>
+  <ion-modal :is-open="isPreviewOpen" @ion-modal-did-dismiss="closePreview">
+    <ion-header class="ion-no-border" mode="ios">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button @click="closePreview">
+            <ion-icon :icon="closeOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+
+        <ion-title>Vista previa</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <div class="modal-content" style="padding: 16px; text-align: center">
+      <img
+        v-if="previewSrc"
+        :src="previewSrc"
+        alt="preview"
+        class="modal-image"
+      />
     </div>
-  </div>
+  </ion-modal>
 </template>
 
 <script setup lang="ts">
@@ -67,9 +116,15 @@ import {
   IonInput,
   IonButton,
   IonIcon,
+  IonNote,
+  IonModal,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
 } from "@ionic/vue";
-import { addOutline, trashOutline } from "ionicons/icons";
-import { computed, reactive, watch } from "vue";
+import { addOutline, closeOutline, eyeOutline, trashOutline } from "ionicons/icons";
+import { computed, reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import type { StackItem } from "@/services/homeApi";
@@ -86,6 +141,13 @@ const emit = defineEmits<{
 const pendingFiles: Record<number, File> = {};
 
 const touched = reactive<Record<number, Record<string, boolean>>>({});
+
+// store file names by index for display in the UI
+const fileNames = reactive<Record<number, string>>({});
+
+// modal preview state
+const isPreviewOpen = ref(false);
+const previewSrc = ref<string | null>(null);
 
 const rules = {
   items: {
@@ -127,6 +189,8 @@ function onFileChange(event: Event, index: number) {
   if (!input.files?.length) return;
   const file = input.files[0];
   pendingFiles[index] = file;
+  // store human-readable file name for the ion-item label
+  fileNames[index] = file.name;
   const objectUrl = URL.createObjectURL(file);
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], image: objectUrl };
@@ -135,13 +199,33 @@ function onFileChange(event: Event, index: number) {
   touchField(index, "image");
 }
 
+function openFileDialog(index: number) {
+  const selector = `input[data-index="${index}"]`;
+  const input = document.querySelector(selector) as HTMLInputElement | null;
+  if (input) input.click();
+}
+
+function showPreview(index: number) {
+  const src = props.modelValue[index]?.image ?? null;
+  if (src) {
+    previewSrc.value = src;
+    isPreviewOpen.value = true;
+  }
+}
+
+function closePreview() {
+  isPreviewOpen.value = false;
+  previewSrc.value = null;
+}
+
 function removeStackItem(index: number) {
   delete pendingFiles[index];
   delete touched[index];
+  delete fileNames[index];
   emit("update:files", { ...pendingFiles });
   emit(
     "update:modelValue",
-    props.modelValue.filter((_, i) => i !== index)
+    props.modelValue.filter((_, i) => i !== index),
   );
 }
 </script>
@@ -184,5 +268,11 @@ function removeStackItem(index: number) {
 
 .ion-invalid {
   --border-color: var(--ion-color-danger);
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
 }
 </style>
