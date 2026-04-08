@@ -1,5 +1,22 @@
 # Changelog
 
+## 11.3.1 - 2026-04-07
+
+### Added
+
+- Admin: Info editor (InfoEditor.vue) — add image preview modal for logo/photo and add tag input in an alert
+
+### Changed
+
+- Admin: refactor InfoEditor.vue layout to use IonCard sections, hidden file inputs, and improved form item lines
+- Admin: use reactive file name display and preview state for logo/photo
+
+### Fixed
+
+- Admin: fix tag addition flow by moving input to IonAlert and prevent duplicate empty tags
+
+---
+
 ## 11.3.0 - 2026-04-07
 
 ### Added

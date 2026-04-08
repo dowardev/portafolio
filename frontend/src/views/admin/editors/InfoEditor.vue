@@ -2,23 +2,42 @@
   <form @submit.prevent="homeEditorStore.save">
     <ion-list>
       <ion-list-header>
-        <ion-label>Informacion</ion-label>
+        <ion-label>Información</ion-label>
+      </ion-list-header>
+
+      <ion-card class="shadow1">
+        <ion-item lines="full">
+          <ion-label position="stacked">Nombre</ion-label>
+          <ion-input
+            v-model="homeEditorStore.form.name"
+            placeholder="Tu nombre o título"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Descripción</ion-label>
+          <ion-textarea
+            v-model="homeEditorStore.form.description"
+            :rows="4"
+            placeholder="Describe quién eres o qué haces"
+          ></ion-textarea>
+        </ion-item>
+      </ion-card>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Etiquetas</ion-label>
+
+        <ion-button @click="isAddTagAlertOpen = true">
+          <ion-icon slot="start" :icon="addOutline"></ion-icon>
+          Agregar
+        </ion-button>
       </ion-list-header>
 
       <ion-card class="shadow1">
         <ion-card-content>
-          <ion-item>
-            <ion-label position="stacked">Nombre</ion-label>
-            <ion-input
-              v-model="homeEditorStore.form.name"
-              placeholder="Tu nombre o título"
-              required
-            ></ion-input>
-          </ion-item>
-
-          <ion-item lines="none" class="ion-margin-top">
-            <ion-label position="stacked">Etiquetas</ion-label>
-          </ion-item>
           <div class="chips-container">
             <ion-chip
               v-for="(tag, index) in homeEditorStore.form.tags"
@@ -32,31 +51,50 @@
               ></ion-icon>
             </ion-chip>
           </div>
-          <ion-item>
+        </ion-card-content>
+      </ion-card>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Redes sociales</ion-label>
+
+        <ion-button id="social-popover-trigger">
+          <ion-icon slot="start" :icon="addOutline"></ion-icon>
+          Añadir
+        </ion-button>
+      </ion-list-header>
+
+      <ion-card class="shadow1">
+        <template
+          v-for="(social, index) in homeEditorStore.form.socials"
+          :key="index"
+        >
+          <ion-item lines="full">
+            <ion-icon
+              v-if="social.platform"
+              slot="start"
+              :icon="getIconByName(social.platform)"
+            ></ion-icon>
+            <ion-label>{{ social.platform || "Plataforma" }}</ion-label>
+
             <ion-input
-              v-model="newTag"
-              placeholder="Nueva etiqueta"
-              @keyup.enter="addTag"
+              slot="end"
+              v-model="social.url"
+              placeholder="https://..."
+              type="url"
             ></ion-input>
+
             <ion-button
               slot="end"
-              size="small"
-              :disabled="!newTag.trim()"
-              @click="addTag"
+              fill="clear"
+              color="danger"
+              @click="removeSocial(index)"
             >
-              Agregar
+              <ion-icon :icon="trashOutline"></ion-icon>
             </ion-button>
           </ion-item>
-
-          <ion-item class="ion-margin-top">
-            <ion-label position="stacked">Descripción</ion-label>
-            <ion-textarea
-              v-model="homeEditorStore.form.description"
-              :rows="4"
-              placeholder="Describe quién eres o qué haces"
-            ></ion-textarea>
-          </ion-item>
-        </ion-card-content>
+        </template>
       </ion-card>
     </ion-list>
 
@@ -66,80 +104,62 @@
       </ion-list-header>
 
       <ion-card class="shadow1">
-        <ion-card-content>
-          <ion-item lines="none" class="ion-margin-top">
-            <ion-label>Redes Sociales</ion-label>
-            <ion-button id="social-popover-trigger" slot="end" size="small">
-              <ion-icon slot="start" :icon="addOutline"></ion-icon>
-              Añadir
-            </ion-button>
-          </ion-item>
+        <section>
+          <ion-item lines="full" button @click="openFileDialog('logo')">
+            <ion-label>Logo</ion-label>
 
-          <div
-            v-for="(social, index) in homeEditorStore.form.socials"
-            :key="index"
-            class="social-row"
-          >
-            <ion-item>
-              <ion-icon
-                v-if="social.platform"
-                slot="start"
-                :icon="getIconByName(social.platform)"
-              ></ion-icon>
-              <ion-input
-                v-model="social.platform"
-                placeholder="Plataforma"
-                readonly
-              ></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input
-                v-model="social.url"
-                placeholder="https://..."
-                type="url"
-              ></ion-input>
-            </ion-item>
+            <ion-note v-if="fileNames.logo" slot="end">{{
+              fileNames.logo
+            }}</ion-note>
+            <ion-note v-else slot="end">Seleccionar</ion-note>
+
             <ion-button
+              slot="end"
               fill="clear"
-              color="danger"
-              @click="removeSocial(index)"
+              :disabled="!homeEditorStore.preview.logo"
+              @click.stop="showPreview('logo')"
             >
-              <ion-icon :icon="trashOutline"></ion-icon>
+              <ion-icon :icon="eyeOutline"></ion-icon>
             </ion-button>
-          </div>
-
-          <ion-item class="ion-margin-top">
-            <ion-label position="stacked">Logo</ion-label>
-            <input
-              type="file"
-              accept="image/*"
-              class="ion-margin-top"
-              @change="onFileChange($event, 'logo')"
-            />
-            <img
-              v-if="homeEditorStore.preview.logo"
-              :src="homeEditorStore.preview.logo"
-              alt="Logo preview"
-              class="image-preview"
-            />
           </ion-item>
 
-          <ion-item>
-            <ion-label position="stacked">Foto (Cover)</ion-label>
-            <input
-              type="file"
-              accept="image/*"
-              class="ion-margin-top"
-              @change="onFileChange($event, 'photo')"
-            />
-            <img
-              v-if="homeEditorStore.preview.photo"
-              :src="homeEditorStore.preview.photo"
-              alt="Foto preview"
-              class="image-preview"
-            />
+          <input
+            style="display: none"
+            data-type="logo"
+            type="file"
+            accept="image/*"
+            @change="onFileChange($event, 'logo')"
+          />
+        </section>
+
+        <section>
+          <ion-item lines="full" button @click="openFileDialog('photo')">
+            <ion-label>Foto (Cover)</ion-label>
+
+            <ion-note v-if="fileNames.photo" slot="end">{{
+              fileNames.photo
+            }}</ion-note>
+
+            <ion-note v-else slot="end">Seleccionar</ion-note>
+
+            <ion-button
+              slot="end"
+              fill="clear"
+              :disabled="!homeEditorStore.preview.photo"
+              @click.stop="showPreview('photo')"
+            >
+              <ion-icon :icon="eyeOutline"></ion-icon>
+            </ion-button>
           </ion-item>
-        </ion-card-content>
+
+          <input
+            style="display: none"
+            data-type="photo"
+            type="file"
+            accept="image/*"
+            @change="onFileChange($event, 'photo')"
+          />
+        </section>
       </ion-card>
     </ion-list>
 
@@ -149,17 +169,17 @@
       </ion-list-header>
 
       <ion-card class="shadow1">
-        <ion-card-content>
-          <ion-item class="ion-margin-top">
-            <ion-label>Mostrar formulario de contacto</ion-label>
-            <ion-toggle
-              :checked="homeEditorStore.form.showContactForm"
-              @ion-change="
-                homeEditorStore.form.showContactForm = $event.detail.checked
-              "
-            ></ion-toggle>
-          </ion-item>
-        </ion-card-content>
+        <ion-item>
+          <ion-label>Mostrar formulario de contacto</ion-label>
+
+          <ion-toggle
+            slot="end"
+            :checked="homeEditorStore.form.showContactForm"
+            @ion-change="
+              homeEditorStore.form.showContactForm = $event.detail.checked
+            "
+          ></ion-toggle>
+        </ion-item>
       </ion-card>
     </ion-list>
   </form>
@@ -184,6 +204,39 @@
     </ion-content>
   </ion-popover>
   <!-- end popovers -->
+
+  <ion-modal :is-open="isPreviewOpen" @ion-modal-did-dismiss="closePreview">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Vista previa</ion-title>
+        <ion-buttons slot="end">
+          <ion-button @click="closePreview">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <div style="padding: 16px; text-align: center">
+      <img
+        v-if="previewSrc"
+        :src="previewSrc"
+        alt="preview"
+        class="modal-image"
+      />
+    </div>
+  </ion-modal>
+
+  <!-- alerts -->
+  <ion-alert
+    :is-open="isAddTagAlertOpen"
+    header="Agregar etiqueta"
+    :inputs="alertInputs"
+    :buttons="alertButtons"
+    @did-dismiss="
+      () => {
+        isAddTagAlertOpen = false;
+      }
+    "
+  />
+  <!-- end alerts -->
 </template>
 
 <script setup lang="ts">
@@ -198,19 +251,61 @@ import {
   IonList,
   IonContent,
   IonToggle,
+  IonAlert,
+  IonButton,
+  IonNote,
+  IonModal,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
 } from "@ionic/vue";
-import { ref, computed } from "vue";
+import { ref, computed, reactive } from "vue";
 import {
   addOutline,
   closeOutline,
   trashOutline,
   linkOutline,
+  eyeOutline,
 } from "ionicons/icons";
 import * as ionicons from "ionicons/icons";
 import { useHomeEditorStore } from "@/store/homeEditorStore";
 
 const homeEditorStore = useHomeEditorStore();
-const newTag = ref("");
+const isAddTagAlertOpen = ref(false);
+
+// file name display for logo/photo
+const fileNames = reactive<Record<string, string>>({});
+
+// modal preview state
+const isPreviewOpen = ref(false);
+const previewSrc = ref<string | null>(null);
+
+const alertInputs = [
+  {
+    name: "tag",
+    type: "text",
+    placeholder: "Nueva etiqueta",
+  },
+];
+
+function handleAddTagFromAlert(data: Record<string, string> | undefined) {
+  const tag = data && data.tag ? String(data.tag).trim() : "";
+  if (!tag) return false; // keep alert open if empty
+  if (!homeEditorStore.form.tags.includes(tag)) {
+    homeEditorStore.form.tags.push(tag);
+  }
+  return true;
+}
+
+const alertButtons = [
+  { text: "Cancelar", role: "cancel" },
+  {
+    text: "Agregar",
+    handler: (data: Record<string, string> | undefined) =>
+      handleAddTagFromAlert(data),
+  },
+];
 
 const availableSocials = [
   { name: "Facebook", iconName: "logoFacebook" },
@@ -279,13 +374,7 @@ const filteredSocials = computed(() => {
   );
 });
 
-function addTag() {
-  if (!newTag.value.trim()) return;
-  if (!homeEditorStore.form.tags.includes(newTag.value.trim())) {
-    homeEditorStore.form.tags.push(newTag.value.trim());
-  }
-  newTag.value = "";
-}
+// addTag removed — input moved into IonAlert
 
 function removeTag(index: number) {
   homeEditorStore.form.tags.splice(index, 1);
@@ -307,6 +396,26 @@ function onFileChange(event: Event, type: "logo" | "photo") {
   const file = input.files[0];
   homeEditorStore.files[type] = file;
   homeEditorStore.preview[type] = URL.createObjectURL(file);
+  fileNames[type] = file.name;
+}
+
+function openFileDialog(type: "logo" | "photo") {
+  const selector = `input[data-type="${type}"]`;
+  const input = document.querySelector(selector) as HTMLInputElement | null;
+  if (input) input.click();
+}
+
+function showPreview(type: "logo" | "photo") {
+  const src = homeEditorStore.preview[type] ?? null;
+  if (src) {
+    previewSrc.value = src;
+    isPreviewOpen.value = true;
+  }
+}
+
+function closePreview() {
+  isPreviewOpen.value = false;
+  previewSrc.value = null;
 }
 
 function fillTestData() {
@@ -365,5 +474,11 @@ defineExpose({ fillTestData });
 }
 input[type="file"] {
   margin-top: 8px;
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
 }
 </style>
