@@ -1,5 +1,22 @@
 # Changelog
 
+## 11.3.2 - 2026-04-08
+
+### Added
+
+- Admin/Skills: Skills editor supports image preview modal and file input handling for technology images
+
+### Changed
+
+- Admin/Skills: TechIconSelector improved icon list and search behavior; mapping cleanup and label fixes
+- Admin/Skills: AdminSkillsPage layout updated to connect SkillsEditor with store save flow and file handling
+
+### Fixed
+
+- Admin/Skills: Fix validation and touched state handling for technology image fields and file change events
+
+---
+
 ## 11.3.1 - 2026-04-07
 
 ### Added
