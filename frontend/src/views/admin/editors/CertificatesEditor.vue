@@ -1,30 +1,21 @@
 <template>
-  <div class="ion-padding">
-    <ion-item lines="none">
+  <ion-list>
+    <ion-list-header>
       <ion-label>Certificados</ion-label>
-      <ion-button
-        slot="end"
-        size="small"
-        @click="addItem"
-        :disabled="!allValid"
-      >
-        <ion-icon :icon="addOutline" slot="start"></ion-icon>
+
+      <ion-button :disabled="!allValid" @click="addItem">
+        <ion-icon slot="start" :icon="addOutline"></ion-icon>
         Añadir certificado
       </ion-button>
-    </ion-item>
+    </ion-list-header>
+  </ion-list>
 
-    <div
-      v-for="(cert, index) in modelValue"
-      :key="index"
-      class="cert-item"
-    >
-      <ion-item-divider>
-        <ion-label>Certificado {{ index + 1 }}</ion-label>
-      </ion-item-divider>
-
-      <ion-item>
-        <ion-label position="stacked">Título</ion-label>
+  <ion-card class="shadow1">
+    <template v-for="(cert, index) in modelValue" :key="index">
+      <ion-item lines="full">
         <ion-input
+          label="Título"
+          label-placement="floating"
           :value="cert.title"
           placeholder="Ej: SkillValue JavaScript"
           :class="{ 'ion-invalid': hasError(index, 'title') }"
@@ -32,11 +23,14 @@
           @ion-blur="touchField(index, 'title')"
         ></ion-input>
       </ion-item>
-      <span v-if="hasError(index, 'title')" class="error">Título es requerido</span>
+      <span v-if="hasError(index, 'title')" class="error"
+        >Título es requerido</span
+      >
 
-      <ion-item>
-        <ion-label position="stacked">Link del certificado</ion-label>
+      <ion-item lines="full">
         <ion-input
+          label="Link del certificado"
+          label-placement="floating"
           :value="cert.url"
           placeholder="https://..."
           :class="{ 'ion-invalid': hasError(index, 'url') }"
@@ -46,40 +40,97 @@
       </ion-item>
       <span v-if="hasError(index, 'url')" class="error">Link es requerido</span>
 
-      <div class="file-upload">
-        <ion-label class="upload-label">Logo / Imagen</ion-label>
-        <input type="file" accept="image/*" @change="onImageChange($event, index)" />
-        <div class="preview-row" v-if="cert.img">
-          <img :src="cert.img" alt="preview" class="item-preview" />
-        </div>
-      </div>
-      <span v-if="hasError(index, 'img')" class="error">Imagen es requerida</span>
+      <ion-item lines="full" button @click="openFileDialog(index)">
+        <ion-label>Logo / Imagen</ion-label>
+
+        <ion-note v-if="fileNames[index]" slot="end">{{
+          fileNames[index]
+        }}</ion-note>
+
+        <ion-note v-else slot="end">Seleccionar</ion-note>
+
+        <ion-button
+          slot="end"
+          fill="clear"
+          :disabled="!props.modelValue[index]?.img"
+          @click.stop="showPreview(index)"
+        >
+          <ion-icon :icon="eyeOutline"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <input
+        style="display: none"
+        :data-type="`cert_${index}`"
+        type="file"
+        accept="image/*"
+        @change="onImageChange($event, index)"
+      />
+
+      <span v-if="hasError(index, 'img')" class="error"
+        >Imagen es requerida</span
+      >
 
       <TechnologiesEditor
-        :modelValue="cert.aptitudes"
-        @update:modelValue="updateAptitudes(index, $event)"
+        :model-value="cert.aptitudes"
+        @update:model-value="updateAptitudes(index, $event)"
         @update:files="(files) => updateAptFiles(index, files)"
       />
 
-      <ion-button fill="clear" color="danger" @click="removeItem(index)">
+      <ion-button
+        expand="block"
+        fill="clear"
+        color="danger"
+        @click="removeItem(index)"
+      >
         <ion-icon :icon="trashOutline"></ion-icon>
         Eliminar certificado
       </ion-button>
+    </template>
+  </ion-card>
+
+  <ion-modal :is-open="isPreviewOpen" @ion-modal-did-dismiss="closePreview">
+    <ion-header class="ion-no-border" mode="ios">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button @click="closePreview">
+            <ion-icon :icon="closeOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+
+        <ion-title>Vista previa</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <div style="padding: 16px; text-align: center">
+      <img
+        v-if="previewSrc"
+        :src="previewSrc"
+        alt="preview"
+        class="modal-image"
+      />
     </div>
-  </div>
+  </ion-modal>
 </template>
 
 <script setup lang="ts">
 import {
   IonItem,
-  IonItemDivider,
   IonLabel,
   IonInput,
   IonButton,
   IonIcon,
+  IonModal,
+  IonToolbar,
+  IonButtons,
+  IonTitle,
 } from "@ionic/vue";
-import { addOutline, trashOutline } from "ionicons/icons";
-import { computed, reactive } from "vue";
+import {
+  addOutline,
+  trashOutline,
+  eyeOutline,
+  closeOutline,
+} from "ionicons/icons";
+import { computed, reactive, ref } from "vue";
 import type { CertificateItem } from "@/services/homeApi";
 import TechnologiesEditor from "./TechnologiesEditor.vue";
 
@@ -95,6 +146,10 @@ const emit = defineEmits<{
 const pendingFiles: Record<string, File> = {};
 const touched = reactive<Record<string, boolean>>({});
 
+const fileNames = reactive<Record<number, string>>({});
+const isPreviewOpen = ref(false);
+const previewSrc = ref<string | null>(null);
+
 const allValid = computed(() => {
   if (props.modelValue.length === 0) return true;
   return props.modelValue.every((cert) => {
@@ -106,9 +161,9 @@ function hasError(index: number, field: string): boolean {
   const key = `${index}_${field}`;
   if (!touched[key]) return false;
   const cert = props.modelValue[index];
-  if (field === 'title') return !cert?.title?.trim();
-  if (field === 'url') return !cert?.url?.trim();
-  if (field === 'img') return !cert?.img;
+  if (field === "title") return !cert?.title?.trim();
+  if (field === "url") return !cert?.url?.trim();
+  if (field === "img") return !cert?.img;
   return false;
 }
 
@@ -138,7 +193,10 @@ function updateItem(index: number, field: string, value: string) {
   emit("update:modelValue", updated);
 }
 
-function updateAptitudes(index: number, aptitudes: CertificateItem["aptitudes"]) {
+function updateAptitudes(
+  index: number,
+  aptitudes: CertificateItem["aptitudes"],
+) {
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], aptitudes };
   emit("update:modelValue", updated);
@@ -151,11 +209,33 @@ function updateAptFiles(certIndex: number, files: Record<number, File>) {
   emitFiles();
 }
 
+function openFileDialog(index: number) {
+  const selector = `input[data-type="cert_${index}"]`;
+  const input = document.querySelector(selector) as HTMLInputElement | null;
+  if (input) input.click();
+}
+
+function showPreview(index: number) {
+  const cert = props.modelValue[index];
+  const src = cert?.img ?? null;
+  if (src) {
+    previewSrc.value = src;
+    isPreviewOpen.value = true;
+  }
+}
+
+function closePreview() {
+  isPreviewOpen.value = false;
+  previewSrc.value = null;
+}
+
 function onImageChange(event: Event, index: number) {
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
-  pendingFiles[`cert_image_${index}`] = input.files[0];
-  updateItem(index, "img", URL.createObjectURL(input.files[0]));
+  const file = input.files[0];
+  pendingFiles[`cert_image_${index}`] = file;
+  updateItem(index, "img", URL.createObjectURL(file));
+  fileNames[index] = file.name;
   emitFiles();
   touchField(index, "img");
 }
@@ -163,7 +243,10 @@ function onImageChange(event: Event, index: number) {
 function removeItem(index: number) {
   delete pendingFiles[`cert_image_${index}`];
   emitFiles();
-  emit("update:modelValue", props.modelValue.filter((_, i) => i !== index));
+  emit(
+    "update:modelValue",
+    props.modelValue.filter((_, i) => i !== index),
+  );
 }
 </script>
 
@@ -205,5 +288,11 @@ function removeItem(index: number) {
 
 .ion-invalid {
   --border-color: var(--ion-color-danger);
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
 }
 </style>

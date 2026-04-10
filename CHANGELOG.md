@@ -1,5 +1,20 @@
 # Changelog
 
+## 11.5.0 - 2026-04-10
+
+### Changed
+- Admin/Certificates: Refactored CertificatesEditor.vue layout to use IonList/IonCard structure with improved form layout and floating labels
+- Admin/Certificates: Added image preview modal functionality for certificate images
+- Admin/Certificates: Added file name display for uploaded certificate images
+- Admin/Certificates: Improved TechnologiesEditor integration with proper model-value binding
+- Admin/CertificatesPage: Moved save button to header with spinner and reorganized layout using ion-grid
+
+### Added
+- Admin/Certificates: Modal preview component for certificate images
+- Admin/Certificates: Click-to-upload file dialog with button triggers
+
+---
+
 ## 11.4.0 - 2026-04-09
 
 ### Changed
