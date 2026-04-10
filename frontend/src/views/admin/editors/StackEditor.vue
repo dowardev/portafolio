@@ -244,35 +244,6 @@ function removeStackItem(params: { index: number }) {
 </script>
 
 <style scoped>
-.stack-item {
-  border: 1px solid var(--ion-color-light);
-  border-radius: 8px;
-  padding: 8px;
-  margin-bottom: 12px;
-}
-
-.preview-row {
-  display: flex;
-  justify-content: center;
-  margin: 8px 0;
-}
-
-.stack-preview {
-  max-width: 60px;
-  max-height: 60px;
-}
-
-.file-upload {
-  padding: 8px 16px;
-}
-
-.upload-label {
-  display: block;
-  font-size: 12px;
-  color: var(--ion-color-medium);
-  margin-bottom: 4px;
-}
-
 .error {
   color: var(--ion-color-danger);
   font-size: 12px;

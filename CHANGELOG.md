@@ -1,18 +1,25 @@
 # Changelog
 
-## 11.5.2 - 2026-04-10
+## 11.5.3 - 2026-04-10
 
 ### Changed
 
-- Admin/Editors: Refactored all editor component functions from positional parameters to named object parameters (destructured params pattern) for improved readability and maintainability
-- Admin/Editors: Added section comments (imports, props/emits, vars/const, computed, functions) across all editor components for consistent code organization
-- Admin/Editors: Removed inline comments in favor of structured section markers
+- Admin/Editors: Removed unused CSS/inline style blocks across multiple editor components to clean up generated style artifacts and reduce bundle size
+- Admin/Editors: Continued refactor to named/destructured function parameters and consistent section comments (imports, props/emits, vars/const, computed, functions)
 
-### Affected Components
+### Affected Files
 
-- CertificatesEditor, ExperienceEditor, FreelanceEditor, InfoEditor, ProjectsEditor, SkillsEditor, StackEditor, TechIconSelector, TechnologiesEditor
+- frontend/src/views/admin/editors/CertificatesEditor.vue
+- frontend/src/views/admin/editors/FreelanceEditor.vue
+- frontend/src/views/admin/editors/InfoEditor.vue
+- frontend/src/views/admin/editors/ProjectsEditor.vue
+- frontend/src/views/admin/editors/SkillsEditor.vue
+- frontend/src/views/admin/editors/StackEditor.vue
+- frontend/src/views/admin/editors/TechnologiesEditor.vue
 
 ---
+
+## 11.5.2 - 2026-04-10
 
 ## 11.5.1 - 2026-04-10
 

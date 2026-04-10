@@ -471,15 +471,6 @@ defineExpose({ fillTestData });
   gap: 8px;
   margin-bottom: 8px;
 }
-.social-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-.social-row ion-item {
-  flex: 1;
-}
 .image-preview {
   max-width: 100%;
   max-height: 120px;

@@ -508,48 +508,6 @@ function onCommentFileChange(params: {
 </script>
 
 <style scoped>
-.platform-item {
-  border: 1px solid var(--ion-color-light);
-  border-radius: 8px;
-  padding: 8px;
-  margin-bottom: 16px;
-}
-
-.comment-item {
-  border: 1px solid var(--ion-color-medium-tint);
-  border-radius: 6px;
-  padding: 6px;
-  margin: 8px 0;
-}
-
-.preview-row {
-  display: flex;
-  justify-content: center;
-  margin: 8px 0;
-}
-
-.platform-preview {
-  max-width: 60px;
-  max-height: 40px;
-}
-
-.comment-preview {
-  max-width: 50px;
-  max-height: 50px;
-  border-radius: 50%;
-}
-
-.file-upload {
-  padding: 8px 16px;
-}
-
-.upload-label {
-  display: block;
-  font-size: 12px;
-  color: var(--ion-color-medium);
-  margin-bottom: 4px;
-}
-
 .error {
   color: var(--ion-color-danger);
   font-size: 12px;

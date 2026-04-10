@@ -273,35 +273,6 @@ function removeTech(params: { index: number }) {
 </script>
 
 <style scoped>
-.tech-item {
-  border: 1px solid var(--ion-color-medium-tint);
-  border-radius: 6px;
-  padding: 6px;
-  margin: 8px 0;
-}
-
-.file-upload {
-  padding: 8px 16px;
-}
-
-.upload-label {
-  display: block;
-  font-size: 12px;
-  color: var(--ion-color-medium);
-  margin-bottom: 4px;
-}
-
-.preview-row {
-  display: flex;
-  justify-content: center;
-  margin: 8px 0;
-}
-
-.tech-preview {
-  max-width: 40px;
-  max-height: 40px;
-}
-
 .file-trigger {
   display: inline-flex;
   align-items: center;

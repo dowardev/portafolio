@@ -270,35 +270,6 @@ function removeItem(params: { index: number }) {
 </script>
 
 <style scoped>
-.cert-item {
-  border: 1px solid var(--ion-color-light);
-  border-radius: 8px;
-  padding: 8px;
-  margin-bottom: 16px;
-}
-
-.file-upload {
-  padding: 8px 16px;
-}
-
-.upload-label {
-  display: block;
-  font-size: 12px;
-  color: var(--ion-color-medium);
-  margin-bottom: 4px;
-}
-
-.preview-row {
-  display: flex;
-  justify-content: center;
-  margin: 8px 0;
-}
-
-.item-preview {
-  max-width: 80px;
-  max-height: 45px;
-}
-
 .error {
   color: var(--ion-color-danger);
   font-size: 12px;
