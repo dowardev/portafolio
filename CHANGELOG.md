@@ -1,5 +1,19 @@
 # Changelog
 
+## 11.5.1 - 2026-04-10
+
+### Changed
+- Admin/Freelance: Refactored FreelanceEditor.vue layout to use IonList/IonCard structure with improved form layout and floating labels
+- Admin/Freelance: Added image preview modal functionality for platform logos and client images
+- Admin/Freelance: Added file name display for uploaded platform and client images
+- Admin/Freelance: Moved save button to header in AdminFreelancePage with spinner and reorganized layout using ion-grid
+
+### Added
+- Admin/Freelance: Modal preview component for platform logos and client images
+- Admin/Freelance: Click-to-upload file dialog with button triggers
+
+---
+
 ## 11.5.0 - 2026-04-10
 
 ### Changed
