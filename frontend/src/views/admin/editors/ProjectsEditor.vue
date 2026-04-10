@@ -17,12 +17,12 @@
             label-placement="floating"
             :value="project.title"
             placeholder="Ej: Moneyflap"
-            :class="{ 'ion-invalid': hasError(index, 'title') }"
-            @ion-input="updateItem(index, 'title', $event.detail.value!)"
-            @ion-blur="touchField(index, 'title')"
+:class="{ 'ion-invalid': hasError({ index, field: 'title' }) }"
+          @ion-input="updateItem({ index, field: 'title', value: $event.detail.value! })"
+          @ion-blur="touchField({ index, field: 'title' })"
           ></ion-input>
         </ion-item>
-        <span v-if="hasError(index, 'title')" class="error"
+        <span v-if="hasError({ index, field: 'title' })" class="error"
           >Nombre es requerido</span
         >
 
@@ -31,7 +31,7 @@
             label="Estado"
             label-placement="floating"
             :value="project.status"
-            @ion-change="updateItem(index, 'status', $event.detail.value)"
+            @ion-change="updateItem({ index, field: 'status', value: $event.detail.value })"
           >
             <ion-select-option value="progress">En progreso</ion-select-option>
 
@@ -42,7 +42,7 @@
           </ion-select>
         </ion-item>
 
-        <ion-item lines="full" button @click="openFileDialog(index)">
+        <ion-item lines="full" button @click="openFileDialog({ index })">
           <ion-label>Logo del proyecto</ion-label>
 
           <ion-note v-if="fileNames[index]" slot="end">{{
@@ -55,7 +55,7 @@
             slot="end"
             fill="clear"
             :disabled="!props.modelValue[index]?.img"
-            @click.stop="showPreview(index)"
+            @click.stop="showPreview({ index })"
           >
             <ion-icon :icon="eyeOutline"></ion-icon>
           </ion-button>
@@ -66,10 +66,10 @@
           :data-type="`project_${index}`"
           type="file"
           accept="image/*"
-          @change="onMainFileChange($event, index)"
+          @change="onMainFileChange({ event: $event, index })"
         />
 
-        <span v-if="hasError(index, 'img')" class="error"
+        <span v-if="hasError({ index, field: 'img' })" class="error"
           >Logo es requerido</span
         >
 
@@ -80,14 +80,12 @@
             :value="project.details.description"
             :rows="3"
             placeholder="Descripción del proyecto..."
-            :class="{ 'ion-invalid': hasError(index, 'description') }"
-            @ion-input="
-              updateDetail(index, 'description', $event.detail.value!)
-            "
-            @ion-blur="touchField(index, 'description')"
+            :class="{ 'ion-invalid': hasError({ index, field: 'description' }) }"
+            @ion-input="updateDetail({ index, field: 'description', value: $event.detail.value! })"
+            @ion-blur="touchField({ index, field: 'description' })"
           ></ion-textarea>
         </ion-item>
-        <span v-if="hasError(index, 'description')" class="error"
+        <span v-if="hasError({ index, field: 'description' })" class="error"
           >Descripción es requerida</span
         >
 
@@ -97,11 +95,11 @@
             label-placement="floating"
             :value="project.details.website"
             placeholder="https://..."
-            @ion-input="updateDetail(index, 'website', $event.detail.value!)"
+            @ion-input="updateDetail({ index, field: 'website', value: $event.detail.value! })"
           ></ion-input>
         </ion-item>
 
-        <ion-item lines="full" button @click="openSourceFileDialog(index)">
+        <ion-item lines="full" button @click="openSourceFileDialog({ index })">
           <ion-label>Imagen fuente</ion-label>
 
           <ion-note v-if="sourceFileNames[index]" slot="end">{{
@@ -114,7 +112,7 @@
             slot="end"
             fill="clear"
             :disabled="!props.modelValue[index]?.source?.img"
-            @click.stop="showSourcePreview(index)"
+            @click.stop="showSourcePreview({ index })"
           >
             <ion-icon :icon="eyeOutline"></ion-icon>
           </ion-button>
@@ -125,7 +123,7 @@
           :data-type="`project_source_${index}`"
           type="file"
           accept="image/*"
-          @change="onSourceFileChange($event, index)"
+          @change="onSourceFileChange({ event: $event, index })"
         />
 
         <ion-item>
@@ -134,7 +132,7 @@
             label-placement="floating"
             :value="project.source.name"
             placeholder="Ej: PengyiLabs"
-            @ion-input="updateSource(index, 'name', $event.detail.value!)"
+            @ion-input="updateSource({ index, field: 'name', value: $event.detail.value! })"
           ></ion-input>
         </ion-item>
 
@@ -144,21 +142,21 @@
             label-placement="floating"
             :value="project.source.url"
             placeholder="https://..."
-            @ion-input="updateSource(index, 'url', $event.detail.value!)"
+            @ion-input="updateSource({ index, field: 'url', value: $event.detail.value! })"
           ></ion-input>
         </ion-item>
 
         <TechnologiesEditor
           :model-value="project.technologies"
-          @update:model-value="updateTechnologies(index, $event)"
-          @update:files="(files) => updateTechFiles(index, files)"
+@update:model-value="updateTechnologies({ index, technologies: $event })"
+        @update:files="(files) => updateTechFiles({ projectIndex: index, files })"
         />
 
         <ion-button
           expand="block"
           fill="clear"
           color="danger"
-          @click="removeItem(index)"
+          @click="removeItem({ index })"
         >
           <ion-icon :icon="trashOutline"></ion-icon>
           Eliminar proyecto
@@ -191,6 +189,7 @@
 </template>
 
 <script setup lang="ts">
+// imports
 import {
   IonItem,
   IonLabel,
@@ -214,7 +213,9 @@ import {
 import { computed, reactive, ref } from "vue";
 import type { ProjectItem } from "@/services/homeApi";
 import TechnologiesEditor from "./TechnologiesEditor.vue";
+// end imports
 
+// props and emits
 const props = defineProps<{
   modelValue: ProjectItem[];
 }>();
@@ -223,7 +224,9 @@ const emit = defineEmits<{
   (e: "update:modelValue", value: ProjectItem[]): void;
   (e: "update:files", files: Record<string, File>): void;
 }>();
+// end props and emits
 
+// vars and const
 const pendingFiles: Record<string, File> = {};
 const touched = reactive<Record<string, boolean>>({});
 
@@ -232,7 +235,9 @@ const sourceFileNames = reactive<Record<number, string>>({});
 
 const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
+// end vars and const
 
+// computed
 const allValid = computed(() => {
   if (props.modelValue.length === 0) return true;
   return props.modelValue.every((project) => {
@@ -243,8 +248,11 @@ const allValid = computed(() => {
     );
   });
 });
+// end computed
 
-function hasError(index: number, field: string): boolean {
+// functions
+function hasError(params: { index: number; field: string }): boolean {
+  const { index, field } = params;
   const key = `${index}_${field}`;
   if (!touched[key]) return false;
   const project = props.modelValue[index];
@@ -254,7 +262,8 @@ function hasError(index: number, field: string): boolean {
   return false;
 }
 
-function touchField(index: number, field: string) {
+function touchField(params: { index: number; field: string }) {
+  const { index, field } = params;
   touched[`${index}_${field}`] = true;
 }
 
@@ -276,13 +285,15 @@ function addItem() {
   ]);
 }
 
-function updateItem(index: number, field: string, value: string) {
+function updateItem(params: { index: number; field: string; value: string }) {
+  const { index, field, value } = params;
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], [field]: value };
   emit("update:modelValue", updated);
 }
 
-function updateDetail(index: number, field: string, value: string) {
+function updateDetail(params: { index: number; field: string; value: string }) {
+  const { index, field, value } = params;
   const updated = [...props.modelValue];
   updated[index] = {
     ...updated[index],
@@ -291,7 +302,8 @@ function updateDetail(index: number, field: string, value: string) {
   emit("update:modelValue", updated);
 }
 
-function updateSource(index: number, field: string, value: string) {
+function updateSource(params: { index: number; field: string; value: string }) {
+  const { index, field, value } = params;
   const updated = [...props.modelValue];
   updated[index] = {
     ...updated[index],
@@ -301,28 +313,31 @@ function updateSource(index: number, field: string, value: string) {
 }
 
 function updateTechnologies(
-  index: number,
-  technologies: ProjectItem["technologies"],
+  params: { index: number; technologies: ProjectItem["technologies"] },
 ) {
+  const { index, technologies } = params;
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], technologies };
   emit("update:modelValue", updated);
 }
 
-function updateTechFiles(projectIndex: number, files: Record<number, File>) {
+function updateTechFiles(params: { projectIndex: number; files: Record<number, File> }) {
+  const { projectIndex, files } = params;
   for (const [techIndex, file] of Object.entries(files)) {
     pendingFiles[`project_tech_image_${projectIndex}_${techIndex}`] = file;
   }
   emitFiles();
 }
 
-function openFileDialog(index: number) {
+function openFileDialog(params: { index: number }) {
+  const { index } = params;
   const selector = `input[data-type="project_${index}"]`;
   const input = document.querySelector(selector) as HTMLInputElement | null;
   if (input) input.click();
 }
 
-function showPreview(index: number) {
+function showPreview(params: { index: number }) {
+  const { index } = params;
   const project = props.modelValue[index];
   const src = project?.img ?? null;
   if (src) {
@@ -336,25 +351,28 @@ function closePreview() {
   previewSrc.value = null;
 }
 
-function onMainFileChange(event: Event, index: number) {
+function onMainFileChange(params: { event: Event; index: number }) {
+  const { event, index } = params;
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
   pendingFiles[`project_image_${index}`] = file;
   const objectUrl = URL.createObjectURL(file);
-  updateItem(index, "img", objectUrl);
+  updateItem({ index, field: "img", value: objectUrl });
   fileNames[index] = file.name;
   emitFiles();
-  touchField(index, "img");
+  touchField({ index, field: "img" });
 }
 
-function openSourceFileDialog(index: number) {
+function openSourceFileDialog(params: { index: number }) {
+  const { index } = params;
   const selector = `input[data-type="project_source_${index}"]`;
   const input = document.querySelector(selector) as HTMLInputElement | null;
   if (input) input.click();
 }
 
-function showSourcePreview(index: number) {
+function showSourcePreview(params: { index: number }) {
+  const { index } = params;
   const project = props.modelValue[index];
   const src = project?.source?.img ?? null;
   if (src) {
@@ -363,18 +381,20 @@ function showSourcePreview(index: number) {
   }
 }
 
-function onSourceFileChange(event: Event, index: number) {
+function onSourceFileChange(params: { event: Event; index: number }) {
+  const { event, index } = params;
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
   pendingFiles[`project_source_image_${index}`] = file;
   const objectUrl = URL.createObjectURL(file);
-  updateSource(index, "img", objectUrl);
+  updateSource({ index, field: "img", value: objectUrl });
   sourceFileNames[index] = file.name;
   emitFiles();
 }
 
-function removeItem(index: number) {
+function removeItem(params: { index: number }) {
+  const { index } = params;
   delete pendingFiles[`project_image_${index}`];
   delete pendingFiles[`project_source_image_${index}`];
   emitFiles();
@@ -383,6 +403,7 @@ function removeItem(index: number) {
     props.modelValue.filter((_, i) => i !== index),
   );
 }
+// end functions
 </script>
 
 <style scoped>

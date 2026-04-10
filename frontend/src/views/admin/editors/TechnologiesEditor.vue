@@ -17,13 +17,13 @@
             label-placement="floating"
             :value="tech.name"
             placeholder="Ej: Vue"
-            :class="{ 'ion-invalid': hasError(index, 'name') }"
-            @ion-input="updateTech(index, 'name', $event.detail.value!)"
-            @ion-blur="touchField(index, 'name')"
+            :class="{ 'ion-invalid': hasError({ index, field: 'name' }) }"
+            @ion-input="updateTech({ index, field: 'name', value: $event.detail.value! })"
+            @ion-blur="touchField({ index, field: 'name' })"
           ></ion-input>
         </ion-item>
-        <span v-if="hasError(index, 'name')" class="error">
-          {{ getError(index, "name") }}
+        <span v-if="hasError({ index, field: 'name' })" class="error">
+          {{ getError({ index, field: "name" }) }}
         </span>
 
         <ion-item lines="full">
@@ -32,7 +32,7 @@
             label="Tipo"
             label-placement="floating"
             :value="tech.type"
-            @ion-change="updateTech(index, 'type', $event.detail.value)"
+            @ion-change="updateTech({ index, field: 'type', value: $event.detail.value })"
           >
             <ion-select-option value="img">Imagen</ion-select-option>
             <ion-select-option value="icon">Icono</ion-select-option>
@@ -43,7 +43,7 @@
             slot="end"
             :model-value="tech.source"
             label="Icono de tecnología"
-            @update:model-value="updateTech(index, 'source', $event)"
+            @update:model-value="updateTech({ index, field: 'source', value: $event })"
           />
 
           <label
@@ -70,10 +70,10 @@
           type="file"
           accept="image/*"
           hidden
-          @change="onFileChange($event, index)"
+          @change="onFileChange({ event: $event, index })"
         />
-        <span v-if="hasError(index, 'source')" class="error">
-          {{ getError(index, "source") }}
+        <span v-if="hasError({ index, field: 'source' })" class="error">
+          {{ getError({ index, field: "source" }) }}
         </span>
 
         <ion-item lines="full">
@@ -82,7 +82,7 @@
             label-placement="floating"
             :value="tech.size"
             placeholder="18px"
-            @ion-input="updateTech(index, 'size', $event.detail.value!)"
+            @ion-input="updateTech({ index, field: 'size', value: $event.detail.value! })"
           ></ion-input>
         </ion-item>
 
@@ -92,7 +92,7 @@
             fill="clear"
             color="danger"
             size="small"
-            @click="removeTech(index)"
+            @click="removeTech({ index })"
           >
             <ion-icon :icon="trashOutline"></ion-icon>
             Eliminar tecnología
@@ -124,6 +124,7 @@
 </template>
 
 <script setup lang="ts">
+// imports
 import {
   IonItem,
   IonLabel,
@@ -157,7 +158,9 @@ interface Technology {
   size: string;
   type: "img" | "icon";
 }
+// end imports
 
+// props and emits
 const props = defineProps<{
   modelValue: Technology[];
 }>();
@@ -166,17 +169,23 @@ const emit = defineEmits<{
   (e: "update:modelValue", value: Technology[]): void;
   (e: "update:files", files: Record<number, File>): void;
 }>();
+// end props and emits
 
+// vars and const
 const pendingFiles: Record<number, File> = {};
 const touched = reactive<Record<number, Record<string, boolean>>>({});
 const preview = reactive({ open: false, src: "", name: "" });
+// end vars and const
 
+// functions
 function openPreview(src: string, name: string) {
   preview.src = src;
   preview.name = name;
   preview.open = true;
 }
+// end functions
 
+// vuelidate
 const rules = {
   items: {
     $each: helpers.forEach({
@@ -199,18 +208,23 @@ const allValid = computed(() => {
   if (props.modelValue.length === 0) return true;
   return !v$.value.$invalid;
 });
+// end vuelidate
 
-function hasError(index: number, field: string): boolean {
+// functions
+function hasError(params: { index: number; field: string }): boolean {
+  const { index, field } = params;
   const errors = v$.value.items.$each.$response.$errors[index]?.[field];
   return touched[index]?.[field] === true && errors?.length > 0;
 }
 
-function getError(index: number, field: string): string {
+function getError(params: { index: number; field: string }): string {
+  const { index, field } = params;
   const errors = v$.value.items.$each.$response.$errors[index]?.[field];
   return errors?.[0]?.$message || "";
 }
 
-function touchField(index: number, field: string) {
+function touchField(params: { index: number; field: string }) {
+  const { index, field } = params;
   if (!touched[index]) touched[index] = {};
   touched[index][field] = true;
 }
@@ -226,24 +240,27 @@ function addTech() {
   ]);
 }
 
-function updateTech(index: number, field: string, value: string) {
+function updateTech(params: { index: number; field: string; value: string }) {
+  const { index, field, value } = params;
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], [field]: value };
   emit("update:modelValue", updated);
 }
 
-function onFileChange(event: Event, index: number) {
+function onFileChange(params: { event: Event; index: number }) {
+  const { event, index } = params;
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
   pendingFiles[index] = file;
   const objectUrl = URL.createObjectURL(file);
-  updateTech(index, "source", objectUrl);
+  updateTech({ index, field: "source", value: objectUrl });
   emitFiles();
-  touchField(index, "source");
+  touchField({ index, field: "source" });
 }
 
-function removeTech(index: number) {
+function removeTech(params: { index: number }) {
+  const { index } = params;
   delete pendingFiles[index];
   delete touched[index];
   emitFiles();
@@ -252,6 +269,7 @@ function removeTech(index: number) {
     props.modelValue.filter((_, i) => i !== index),
   );
 }
+// end functions
 </script>
 
 <style scoped>

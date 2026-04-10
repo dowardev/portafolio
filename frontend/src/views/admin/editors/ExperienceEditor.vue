@@ -18,12 +18,12 @@
           label-placement="floating"
           :value="exp.title"
           placeholder="Ej: Upwork"
-          :class="{ 'ion-invalid': hasError(index, 'title') }"
-          @ion-input="updateItem(index, 'title', $event.detail.value!)"
-          @ion-blur="touchField(index, 'title')"
+          :class="{ 'ion-invalid': hasError({ index, field: 'title' }) }"
+          @ion-input="updateItem({ index, field: 'title', value: $event.detail.value! })"
+          @ion-blur="touchField({ index, field: 'title' })"
         ></ion-input>
       </ion-item>
-      <span v-if="hasError(index, 'title')" class="error"
+      <span v-if="hasError({ index, field: 'title' })" class="error"
         >Nombre es requerido</span
       >
 
@@ -33,16 +33,16 @@
           placeholder="Ej: Marzo 2023 - Actualidad"
           label="Fecha"
           label-placement="floating"
-          :class="{ 'ion-invalid': hasError(index, 'date') }"
-          @ion-input="updateItem(index, 'date', $event.detail.value!)"
-          @ion-blur="touchField(index, 'date')"
+          :class="{ 'ion-invalid': hasError({ index, field: 'date' }) }"
+          @ion-input="updateItem({ index, field: 'date', value: $event.detail.value! })"
+          @ion-blur="touchField({ index, field: 'date' })"
         ></ion-input>
       </ion-item>
-      <span v-if="hasError(index, 'date')" class="error"
+      <span v-if="hasError({ index, field: 'date' })" class="error"
         >Fecha es requerida</span
       >
 
-      <ion-item lines="full" button @click="openFileDialog(index)">
+      <ion-item lines="full" button @click="openFileDialog({ index })">
         <ion-label>Logo de la empresa</ion-label>
 
         <ion-note v-if="fileNames[index]" slot="end">{{
@@ -55,7 +55,7 @@
           slot="end"
           fill="clear"
           :disabled="!props.modelValue[index]?.img"
-          @click.stop="showPreview(index)"
+          @click.stop="showPreview({ index })"
         >
           <ion-icon :icon="eyeOutline"></ion-icon>
         </ion-button>
@@ -66,10 +66,10 @@
         :data-type="`exp_${index}`"
         type="file"
         accept="image/*"
-        @change="onMainFileChange($event, index)"
+        @change="onMainFileChange({ event: $event, index })"
       />
 
-      <span v-if="hasError(index, 'img')" class="error">Logo es requerido</span>
+      <span v-if="hasError({ index, field: 'img' })" class="error">Logo es requerido</span>
 
       <ion-item lines="full">
         <ion-textarea
@@ -78,12 +78,12 @@
           :value="exp.details.description"
           :rows="3"
           placeholder="Descripción del trabajo..."
-          :class="{ 'ion-invalid': hasError(index, 'description') }"
-          @ion-input="updateDetail(index, 'description', $event.detail.value!)"
-          @ion-blur="touchField(index, 'description')"
+          :class="{ 'ion-invalid': hasError({ index, field: 'description' }) }"
+          @ion-input="updateDetail({ index, field: 'description', value: $event.detail.value! })"
+          @ion-blur="touchField({ index, field: 'description' })"
         ></ion-textarea>
       </ion-item>
-      <span v-if="hasError(index, 'description')" class="error"
+      <span v-if="hasError({ index, field: 'description' })" class="error"
         >Descripción es requerida</span
       >
 
@@ -93,21 +93,21 @@
           label-placement="floating"
           :value="exp.details.website"
           placeholder="https://..."
-          @ion-input="updateDetail(index, 'website', $event.detail.value!)"
+          @ion-input="updateDetail({ index, field: 'website', value: $event.detail.value! })"
         ></ion-input>
       </ion-item>
 
       <TechnologiesEditor
         :model-value="exp.technologies"
-        @update:model-value="updateTechnologies(index, $event)"
-        @update:files="(files) => updateTechFiles(index, files)"
+        @update:model-value="updateTechnologies({ index, technologies: $event })"
+        @update:files="(files) => updateTechFiles({ expIndex: index, files })"
       />
 
       <ion-button
         expand="block"
         fill="clear"
         color="danger"
-        @click="removeItem(index)"
+        @click="removeItem({ index })"
       >
         <ion-icon :icon="trashOutline"></ion-icon>
         Eliminar experiencia
@@ -142,6 +142,7 @@
 </template>
 
 <script setup lang="ts">
+// imports
 import {
   IonItem,
   IonLabel,
@@ -159,7 +160,9 @@ import {
 import { computed, reactive, ref } from "vue";
 import type { ExperienceItem } from "@/services/homeApi";
 import TechnologiesEditor from "./TechnologiesEditor.vue";
+// end imports
 
+// props and emits
 const props = defineProps<{
   modelValue: ExperienceItem[];
 }>();
@@ -168,17 +171,19 @@ const emit = defineEmits<{
   (e: "update:modelValue", value: ExperienceItem[]): void;
   (e: "update:files", files: Record<string, File>): void;
 }>();
+// end props and emits
 
+// vars and const
 const pendingFiles: Record<string, File> = {};
 const touched = reactive<Record<string, boolean>>({});
 
-// file name display for each experience's main image
 const fileNames = reactive<Record<number, string>>({});
 
-// modal preview state
 const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
+// end vars and const
 
+// computed
 const allValid = computed(() => {
   if (props.modelValue.length === 0) return true;
   return props.modelValue.every((exp) => {
@@ -190,8 +195,11 @@ const allValid = computed(() => {
     );
   });
 });
+// end computed
 
-function hasError(index: number, field: string): boolean {
+// functions
+function hasError(params: { index: number; field: string }): boolean {
+  const { index, field } = params;
   const key = `${index}_${field}`;
   if (!touched[key]) return false;
   const exp = props.modelValue[index];
@@ -202,7 +210,8 @@ function hasError(index: number, field: string): boolean {
   return false;
 }
 
-function touchField(index: number, field: string) {
+function touchField(params: { index: number; field: string }) {
+  const { index, field } = params;
   touched[`${index}_${field}`] = true;
 }
 
@@ -223,13 +232,15 @@ function addItem() {
   ]);
 }
 
-function updateItem(index: number, field: string, value: string) {
+function updateItem(params: { index: number; field: string; value: string }) {
+  const { index, field, value } = params;
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], [field]: value };
   emit("update:modelValue", updated);
 }
 
-function updateDetail(index: number, field: string, value: string) {
+function updateDetail(params: { index: number; field: string; value: string }) {
+  const { index, field, value } = params;
   const updated = [...props.modelValue];
   updated[index] = {
     ...updated[index],
@@ -239,41 +250,44 @@ function updateDetail(index: number, field: string, value: string) {
 }
 
 function updateTechnologies(
-  index: number,
-  technologies: ExperienceItem["technologies"],
+  params: { index: number; technologies: ExperienceItem["technologies"] },
 ) {
+  const { index, technologies } = params;
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], technologies };
   emit("update:modelValue", updated);
 }
 
-function updateTechFiles(expIndex: number, files: Record<number, File>) {
+function updateTechFiles(params: { expIndex: number; files: Record<number, File> }) {
+  const { expIndex, files } = params;
   for (const [techIndex, file] of Object.entries(files)) {
     pendingFiles[`exp_tech_image_${expIndex}_${techIndex}`] = file;
   }
   emitFiles();
 }
 
-function onMainFileChange(event: Event, index: number) {
+function onMainFileChange(params: { event: Event; index: number }) {
+  const { event, index } = params;
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
   pendingFiles[`exp_image_${index}`] = file;
   const objectUrl = URL.createObjectURL(file);
-  updateItem(index, "img", objectUrl);
-  // store filename for display
+  updateItem({ index, field: "img", value: objectUrl });
   fileNames[index] = file.name;
   emitFiles();
-  touchField(index, "img");
+  touchField({ index, field: "img" });
 }
 
-function openFileDialog(index: number) {
+function openFileDialog(params: { index: number }) {
+  const { index } = params;
   const selector = `input[data-type="exp_${index}"]`;
   const input = document.querySelector(selector) as HTMLInputElement | null;
   if (input) input.click();
 }
 
-function showPreview(index: number) {
+function showPreview(params: { index: number }) {
+  const { index } = params;
   const exp = props.modelValue[index];
   const src = exp?.img ?? null;
   if (src) {
@@ -287,7 +301,8 @@ function closePreview() {
   previewSrc.value = null;
 }
 
-function removeItem(index: number) {
+function removeItem(params: { index: number }) {
+  const { index } = params;
   delete pendingFiles[`exp_image_${index}`];
   emitFiles();
   emit(
@@ -295,6 +310,8 @@ function removeItem(index: number) {
     props.modelValue.filter((_, i) => i !== index),
   );
 }
+// end functions
+// end functions
 </script>
 
 <style scoped>

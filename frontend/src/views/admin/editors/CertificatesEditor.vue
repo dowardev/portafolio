@@ -18,12 +18,12 @@
           label-placement="floating"
           :value="cert.title"
           placeholder="Ej: SkillValue JavaScript"
-          :class="{ 'ion-invalid': hasError(index, 'title') }"
-          @ion-input="updateItem(index, 'title', $event.detail.value!)"
-          @ion-blur="touchField(index, 'title')"
+          :class="{ 'ion-invalid': hasError({ index, field: 'title' }) }"
+          @ion-input="updateItem({ index, field: 'title', value: $event.detail.value! })"
+          @ion-blur="touchField({ index, field: 'title' })"
         ></ion-input>
       </ion-item>
-      <span v-if="hasError(index, 'title')" class="error"
+      <span v-if="hasError({ index, field: 'title' })" class="error"
         >Título es requerido</span
       >
 
@@ -33,14 +33,14 @@
           label-placement="floating"
           :value="cert.url"
           placeholder="https://..."
-          :class="{ 'ion-invalid': hasError(index, 'url') }"
-          @ion-input="updateItem(index, 'url', $event.detail.value!)"
-          @ion-blur="touchField(index, 'url')"
+          :class="{ 'ion-invalid': hasError({ index, field: 'url' }) }"
+          @ion-input="updateItem({ index, field: 'url', value: $event.detail.value! })"
+          @ion-blur="touchField({ index, field: 'url' })"
         ></ion-input>
       </ion-item>
-      <span v-if="hasError(index, 'url')" class="error">Link es requerido</span>
+      <span v-if="hasError({ index, field: 'url' })" class="error">Link es requerido</span>
 
-      <ion-item lines="full" button @click="openFileDialog(index)">
+      <ion-item lines="full" button @click="openFileDialog({ index })">
         <ion-label>Logo / Imagen</ion-label>
 
         <ion-note v-if="fileNames[index]" slot="end">{{
@@ -53,7 +53,7 @@
           slot="end"
           fill="clear"
           :disabled="!props.modelValue[index]?.img"
-          @click.stop="showPreview(index)"
+          @click.stop="showPreview({ index })"
         >
           <ion-icon :icon="eyeOutline"></ion-icon>
         </ion-button>
@@ -64,24 +64,24 @@
         :data-type="`cert_${index}`"
         type="file"
         accept="image/*"
-        @change="onImageChange($event, index)"
+        @change="onImageChange({ event: $event, index })"
       />
 
-      <span v-if="hasError(index, 'img')" class="error"
+      <span v-if="hasError({ index, field: 'img' })" class="error"
         >Imagen es requerida</span
       >
 
       <TechnologiesEditor
         :model-value="cert.aptitudes"
-        @update:model-value="updateAptitudes(index, $event)"
-        @update:files="(files) => updateAptFiles(index, files)"
+        @update:model-value="updateAptitudes({ index, aptitudes: $event })"
+        @update:files="(files) => updateAptFiles({ certIndex: index, files })"
       />
 
       <ion-button
         expand="block"
         fill="clear"
         color="danger"
-        @click="removeItem(index)"
+        @click="removeItem({ index })"
       >
         <ion-icon :icon="trashOutline"></ion-icon>
         Eliminar certificado
@@ -113,6 +113,7 @@
 </template>
 
 <script setup lang="ts">
+// imports
 import {
   IonItem,
   IonLabel,
@@ -133,7 +134,9 @@ import {
 import { computed, reactive, ref } from "vue";
 import type { CertificateItem } from "@/services/homeApi";
 import TechnologiesEditor from "./TechnologiesEditor.vue";
+// end imports
 
+// props and emits
 const props = defineProps<{
   modelValue: CertificateItem[];
 }>();
@@ -142,22 +145,29 @@ const emit = defineEmits<{
   (e: "update:modelValue", value: CertificateItem[]): void;
   (e: "update:files", files: Record<string, File>): void;
 }>();
+// end props and emits
 
+// vars and const
 const pendingFiles: Record<string, File> = {};
 const touched = reactive<Record<string, boolean>>({});
 
 const fileNames = reactive<Record<number, string>>({});
 const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
+// end vars and const
 
+// computed
 const allValid = computed(() => {
   if (props.modelValue.length === 0) return true;
   return props.modelValue.every((cert) => {
     return cert.title?.trim() && cert.url?.trim() && cert.img;
   });
 });
+// end computed
 
-function hasError(index: number, field: string): boolean {
+// functions
+function hasError(params: { index: number; field: string }): boolean {
+  const { index, field } = params;
   const key = `${index}_${field}`;
   if (!touched[key]) return false;
   const cert = props.modelValue[index];
@@ -167,7 +177,8 @@ function hasError(index: number, field: string): boolean {
   return false;
 }
 
-function touchField(index: number, field: string) {
+function touchField(params: { index: number; field: string }) {
+  const { index, field } = params;
   touched[`${index}_${field}`] = true;
 }
 
@@ -187,35 +198,39 @@ function addItem() {
   ]);
 }
 
-function updateItem(index: number, field: string, value: string) {
+function updateItem(params: { index: number; field: string; value: string }) {
+  const { index, field, value } = params;
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], [field]: value };
   emit("update:modelValue", updated);
 }
 
 function updateAptitudes(
-  index: number,
-  aptitudes: CertificateItem["aptitudes"],
+  params: { index: number; aptitudes: CertificateItem["aptitudes"] },
 ) {
+  const { index, aptitudes } = params;
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], aptitudes };
   emit("update:modelValue", updated);
 }
 
-function updateAptFiles(certIndex: number, files: Record<number, File>) {
+function updateAptFiles(params: { certIndex: number; files: Record<number, File> }) {
+  const { certIndex, files } = params;
   for (const [aptIndex, file] of Object.entries(files)) {
     pendingFiles[`cert_apt_image_${certIndex}_${aptIndex}`] = file;
   }
   emitFiles();
 }
 
-function openFileDialog(index: number) {
+function openFileDialog(params: { index: number }) {
+  const { index } = params;
   const selector = `input[data-type="cert_${index}"]`;
   const input = document.querySelector(selector) as HTMLInputElement | null;
   if (input) input.click();
 }
 
-function showPreview(index: number) {
+function showPreview(params: { index: number }) {
+  const { index } = params;
   const cert = props.modelValue[index];
   const src = cert?.img ?? null;
   if (src) {
@@ -223,24 +238,27 @@ function showPreview(index: number) {
     isPreviewOpen.value = true;
   }
 }
+// end functions
 
 function closePreview() {
   isPreviewOpen.value = false;
   previewSrc.value = null;
 }
 
-function onImageChange(event: Event, index: number) {
+function onImageChange(params: { event: Event; index: number }) {
+  const { event, index } = params;
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
   pendingFiles[`cert_image_${index}`] = file;
-  updateItem(index, "img", URL.createObjectURL(file));
+  updateItem({ index, field: "img", value: URL.createObjectURL(file) });
   fileNames[index] = file.name;
   emitFiles();
-  touchField(index, "img");
+  touchField({ index, field: "img" });
 }
 
-function removeItem(index: number) {
+function removeItem(params: { index: number }) {
+  const { index } = params;
   delete pendingFiles[`cert_image_${index}`];
   emitFiles();
   emit(
@@ -248,6 +266,7 @@ function removeItem(index: number) {
     props.modelValue.filter((_, i) => i !== index),
   );
 }
+// end functions
 </script>
 
 <style scoped>

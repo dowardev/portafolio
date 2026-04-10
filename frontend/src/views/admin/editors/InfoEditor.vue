@@ -47,7 +47,7 @@
               <ion-label>{{ tag }}</ion-label>
               <ion-icon
                 :icon="closeOutline"
-                @click="removeTag(index)"
+                @click="removeTag({ index })"
               ></ion-icon>
             </ion-chip>
           </div>
@@ -89,7 +89,7 @@
               slot="end"
               fill="clear"
               color="danger"
-              @click="removeSocial(index)"
+              @click="removeSocial({ index })"
             >
               <ion-icon :icon="trashOutline"></ion-icon>
             </ion-button>
@@ -105,7 +105,7 @@
 
       <ion-card class="shadow1">
         <section>
-          <ion-item lines="full" button @click="openFileDialog('logo')">
+          <ion-item lines="full" button @click="openFileDialog({ type: 'logo' })">
             <ion-label>Logo</ion-label>
 
             <ion-note v-if="fileNames.logo" slot="end">{{
@@ -117,7 +117,7 @@
               slot="end"
               fill="clear"
               :disabled="!homeEditorStore.preview.logo"
-              @click.stop="showPreview('logo')"
+              @click.stop="showPreview({ type: 'logo' })"
             >
               <ion-icon :icon="eyeOutline"></ion-icon>
             </ion-button>
@@ -128,12 +128,12 @@
             data-type="logo"
             type="file"
             accept="image/*"
-            @change="onFileChange($event, 'logo')"
+            @change="onFileChange({ event: $event, type: 'logo' })"
           />
         </section>
 
         <section>
-          <ion-item lines="full" button @click="openFileDialog('photo')">
+          <ion-item lines="full" button @click="openFileDialog({ type: 'photo' })">
             <ion-label>Foto (Cover)</ion-label>
 
             <ion-note v-if="fileNames.photo" slot="end">{{
@@ -146,7 +146,7 @@
               slot="end"
               fill="clear"
               :disabled="!homeEditorStore.preview.photo"
-              @click.stop="showPreview('photo')"
+              @click.stop="showPreview({ type: 'photo' })"
             >
               <ion-icon :icon="eyeOutline"></ion-icon>
             </ion-button>
@@ -157,7 +157,7 @@
             data-type="photo"
             type="file"
             accept="image/*"
-            @change="onFileChange($event, 'photo')"
+            @change="onFileChange({ event: $event, type: 'photo' })"
           />
         </section>
       </ion-card>
@@ -192,7 +192,7 @@
           v-for="social in filteredSocials"
           :key="social.name"
           button
-          @click="addSocial(social.name)"
+          @click="addSocial({ platform: social.name })"
         >
           <ion-icon
             slot="start"
@@ -240,6 +240,7 @@
 </template>
 
 <script setup lang="ts">
+// imports
 import {
   IonItem,
   IonLabel,
@@ -270,17 +271,19 @@ import {
 } from "ionicons/icons";
 import * as ionicons from "ionicons/icons";
 import { useHomeEditorStore } from "@/store/homeEditorStore";
+// end imports
 
+// vars and const
 const homeEditorStore = useHomeEditorStore();
 const isAddTagAlertOpen = ref(false);
 
-// file name display for logo/photo
 const fileNames = reactive<Record<string, string>>({});
 
-// modal preview state
 const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
+// end vars and const
 
+// alert inputs
 const alertInputs = [
   {
     name: "tag",
@@ -291,7 +294,7 @@ const alertInputs = [
 
 function handleAddTagFromAlert(data: Record<string, string> | undefined) {
   const tag = data && data.tag ? String(data.tag).trim() : "";
-  if (!tag) return false; // keep alert open if empty
+  if (!tag) return false;
   if (!homeEditorStore.form.tags.includes(tag)) {
     homeEditorStore.form.tags.push(tag);
   }
@@ -306,7 +309,9 @@ const alertButtons = [
       handleAddTagFromAlert(data),
   },
 ];
+// end alert inputs
 
+// available socials
 const availableSocials = [
   { name: "Facebook", iconName: "logoFacebook" },
   { name: "X", iconName: "logoX" },
@@ -343,7 +348,20 @@ const availableSocials = [
   { name: "Tumblr", iconName: "logoTumblr" },
   { name: "VK", iconName: "logoVk" },
 ];
+// end available socials
 
+// computed
+const filteredSocials = computed(() => {
+  const selectedPlatforms = homeEditorStore.form.socials
+    .filter((s) => s.platform)
+    .map((s) => s.platform.toLowerCase());
+  return availableSocials.filter(
+    (social) => !selectedPlatforms.includes(social.name.toLowerCase()),
+  );
+});
+// end computed
+
+// functions
 function getIconByName(iconName: string) {
   if (!iconName) return linkOutline;
 
@@ -365,32 +383,25 @@ function getIconByName(iconName: string) {
   return linkOutline;
 }
 
-const filteredSocials = computed(() => {
-  const selectedPlatforms = homeEditorStore.form.socials
-    .filter((s) => s.platform)
-    .map((s) => s.platform.toLowerCase());
-  return availableSocials.filter(
-    (social) => !selectedPlatforms.includes(social.name.toLowerCase()),
-  );
-});
-
-// addTag removed — input moved into IonAlert
-
-function removeTag(index: number) {
+function removeTag(params: { index: number }) {
+  const { index } = params;
   homeEditorStore.form.tags.splice(index, 1);
 }
 
-function addSocial(platform: string) {
+function addSocial(params: { platform: string }) {
+  const { platform } = params;
   const social = availableSocials.find((s) => s.name === platform);
   const iconName = social ? social.iconName : "";
   homeEditorStore.form.socials.push({ platform, url: "", iconName });
 }
 
-function removeSocial(index: number) {
+function removeSocial(params: { index: number }) {
+  const { index } = params;
   homeEditorStore.form.socials.splice(index, 1);
 }
 
-function onFileChange(event: Event, type: "logo" | "photo") {
+function onFileChange(params: { event: Event; type: "logo" | "photo" }) {
+  const { event, type } = params;
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
@@ -399,13 +410,15 @@ function onFileChange(event: Event, type: "logo" | "photo") {
   fileNames[type] = file.name;
 }
 
-function openFileDialog(type: "logo" | "photo") {
+function openFileDialog(params: { type: "logo" | "photo" }) {
+  const { type } = params;
   const selector = `input[data-type="${type}"]`;
   const input = document.querySelector(selector) as HTMLInputElement | null;
   if (input) input.click();
 }
 
-function showPreview(type: "logo" | "photo") {
+function showPreview(params: { type: "logo" | "photo" }) {
+  const { type } = params;
   const src = homeEditorStore.preview[type] ?? null;
   if (src) {
     previewSrc.value = src;
@@ -448,6 +461,7 @@ function fillTestData() {
 }
 
 defineExpose({ fillTestData });
+// end functions
 </script>
 
 <style scoped>

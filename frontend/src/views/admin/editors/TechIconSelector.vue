@@ -57,6 +57,7 @@
 </template>
 
 <script setup lang="ts">
+// imports
 import {
   IonItem,
   IonLabel,
@@ -121,7 +122,9 @@ import {
   gitBranchOutline,
   hardwareChipOutline,
 } from "ionicons/icons";
+// end imports
 
+// props and emits
 defineProps<{
   modelValue: string;
   label?: string;
@@ -130,10 +133,14 @@ defineProps<{
 const emit = defineEmits<{
   (e: "update:modelValue", value: string): void;
 }>();
+// end props and emits
 
+// vars and const
 const openModal = ref(false);
 const searchText = ref("");
+// end vars and const
 
+// icon map
 const iconMap: Record<string, string> = {
   logoVue,
   logoReact,
@@ -222,7 +229,7 @@ const techIcons = [
   { name: "logoMicrosoft", label: "Microsoft", color: "#0078d4" },
   { name: "logoAmazon", label: "Amazon/AWS", color: "#ff9900" },
   { name: "logoCapacitor", label: "Capacitor", color: "#119eff" },
-  { name: "codeSlashOutline", label: "Código", color: "#666" },
+  { name: "codeSlashOutline", label: "Codigo", color: "#666" },
   { name: "serverOutline", label: "Servidor", color: "#666" },
   { name: "cloudOutline", label: "Cloud", color: "#666" },
   { name: "serverOutline", label: "Base de datos", color: "#666" },
@@ -233,7 +240,9 @@ const techIcons = [
   { name: "logoVue", label: "Nuxt", color: "#00dc82" },
   { name: "logoJavascript", label: "TypeScript", color: "#3178c6" },
 ];
+// end icon map
 
+// computed
 const filteredIcons = computed(() => {
   if (!searchText.value) return techIcons;
   const search = searchText.value.toLowerCase();
@@ -243,7 +252,9 @@ const filteredIcons = computed(() => {
       icon.name.toLowerCase().includes(search),
   );
 });
+// end computed
 
+// functions
 function getIcon(name: string) {
   return iconMap[name] || helpCircleOutline;
 }
@@ -262,6 +273,7 @@ function selectIcon(name: string) {
   emit("update:modelValue", name);
   openModal.value = false;
 }
+// end functions
 </script>
 
 <style scoped>

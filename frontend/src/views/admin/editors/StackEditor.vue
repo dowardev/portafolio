@@ -21,8 +21,8 @@
               v$.items.$each.$response.$errors[index]?.name?.length > 0 &&
               touched[index]?.name,
           }"
-          @ion-input="updateStackItem(index, 'name', $event.detail.value!)"
-          @ion-blur="touchField(index, 'name')"
+          @ion-input="updateStackItem({ index, field: 'name', value: $event.detail.value! })"
+          @ion-blur="touchField({ index, field: 'name' })"
         ></ion-input>
       </ion-item>
 
@@ -36,7 +36,7 @@
         {{ v$.items.$each.$response.$errors[index].name[0].$message }}
       </span>
 
-      <ion-item lines="full" button @click="openFileDialog(index)">
+      <ion-item lines="full" button @click="openFileDialog({ index })">
         <ion-label>Imagen</ion-label>
 
         <ion-note v-if="fileNames[index]" slot="end">{{
@@ -48,7 +48,7 @@
           slot="end"
           fill="clear"
           :disabled="!item.image"
-          @click.stop="showPreview(index)"
+          @click.stop="showPreview({ index })"
         >
           <ion-icon :icon="eyeOutline"></ion-icon>
         </ion-button>
@@ -59,7 +59,7 @@
         type="file"
         accept="image/*"
         :data-index="index"
-        @change="onFileChange($event, index)"
+        @change="onFileChange({ event: $event, index })"
       />
 
       <span
@@ -77,7 +77,7 @@
           slot="end"
           fill="clear"
           color="danger"
-          @click="removeStackItem(index)"
+          @click="removeStackItem({ index })"
         >
           <ion-icon :icon="trashOutline"></ion-icon>
         </ion-button>
@@ -110,6 +110,7 @@
 </template>
 
 <script setup lang="ts">
+// imports
 import {
   IonItem,
   IonLabel,
@@ -128,7 +129,9 @@ import { computed, reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import type { StackItem } from "@/services/homeApi";
+// end imports
 
+// props and emits
 const props = defineProps<{
   modelValue: StackItem[];
 }>();
@@ -137,18 +140,20 @@ const emit = defineEmits<{
   (e: "update:modelValue", value: StackItem[]): void;
   (e: "update:files", files: Record<number, File>): void;
 }>();
+// end props and emits
 
+// vars and const
 const pendingFiles: Record<number, File> = {};
 
 const touched = reactive<Record<number, Record<string, boolean>>>({});
 
-// store file names by index for display in the UI
 const fileNames = reactive<Record<number, string>>({});
 
-// modal preview state
 const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
+// end vars and const
 
+// vuelidate
 const rules = {
   items: {
     $each: helpers.forEach({
@@ -168,8 +173,11 @@ const allValid = computed(() => {
   if (props.modelValue.length === 0) return true;
   return !v$.value.$invalid;
 });
+// end vuelidate
 
-function touchField(index: number, field: string) {
+// functions
+function touchField(params: { index: number; field: string }) {
+  const { index, field } = params;
   if (!touched[index]) touched[index] = {};
   touched[index][field] = true;
 }
@@ -178,34 +186,37 @@ function addStackItem() {
   emit("update:modelValue", [...props.modelValue, { name: "", image: "" }]);
 }
 
-function updateStackItem(index: number, field: keyof StackItem, value: string) {
+function updateStackItem(params: { index: number; field: keyof StackItem; value: string }) {
+  const { index, field, value } = params;
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], [field]: value };
   emit("update:modelValue", updated);
 }
 
-function onFileChange(event: Event, index: number) {
+function onFileChange(params: { event: Event; index: number }) {
+  const { event, index } = params;
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
   pendingFiles[index] = file;
-  // store human-readable file name for the ion-item label
   fileNames[index] = file.name;
   const objectUrl = URL.createObjectURL(file);
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], image: objectUrl };
   emit("update:modelValue", updated);
   emit("update:files", { ...pendingFiles });
-  touchField(index, "image");
+  touchField({ index, field: "image" });
 }
 
-function openFileDialog(index: number) {
+function openFileDialog(params: { index: number }) {
+  const { index } = params;
   const selector = `input[data-index="${index}"]`;
   const input = document.querySelector(selector) as HTMLInputElement | null;
   if (input) input.click();
 }
 
-function showPreview(index: number) {
+function showPreview(params: { index: number }) {
+  const { index } = params;
   const src = props.modelValue[index]?.image ?? null;
   if (src) {
     previewSrc.value = src;
@@ -218,7 +229,8 @@ function closePreview() {
   previewSrc.value = null;
 }
 
-function removeStackItem(index: number) {
+function removeStackItem(params: { index: number }) {
+  const { index } = params;
   delete pendingFiles[index];
   delete touched[index];
   delete fileNames[index];
@@ -228,6 +240,7 @@ function removeStackItem(index: number) {
     props.modelValue.filter((_, i) => i !== index),
   );
 }
+// end functions
 </script>
 
 <style scoped>

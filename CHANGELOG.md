@@ -1,5 +1,19 @@
 # Changelog
 
+## 11.5.2 - 2026-04-10
+
+### Changed
+
+- Admin/Editors: Refactored all editor component functions from positional parameters to named object parameters (destructured params pattern) for improved readability and maintainability
+- Admin/Editors: Added section comments (imports, props/emits, vars/const, computed, functions) across all editor components for consistent code organization
+- Admin/Editors: Removed inline comments in favor of structured section markers
+
+### Affected Components
+
+- CertificatesEditor, ExperienceEditor, FreelanceEditor, InfoEditor, ProjectsEditor, SkillsEditor, StackEditor, TechIconSelector, TechnologiesEditor
+
+---
+
 ## 11.5.1 - 2026-04-10
 
 ### Changed
