@@ -1,5 +1,21 @@
 # Changelog
 
+## 11.4.0 - 2026-04-09
+
+### Changed
+- Admin/Projects: Refactored ProjectsEditor.vue layout to use IonList/IonCard structure with improved form layout and floating labels
+- Admin/Projects: Added image preview modal functionality for project logo and source images
+- Admin/Projects: Added file name display for uploaded project and source images
+- Admin/Projects: Improved TechnologiesEditor integration with proper model-value binding
+- Admin/ProjectsPage: Moved save button to header with spinner and reorganized layout using ion-grid
+
+### Added
+- Admin/Projects: Modal preview component for project images
+- Admin/Projects: File name display for uploaded project and source images
+- Admin/Projects: Click-to-upload file dialog with button triggers
+
+---
+
 ## 11.3.3 - 2026-04-09
 
 ### Changed
