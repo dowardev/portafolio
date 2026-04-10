@@ -97,6 +97,7 @@
                   <ion-select-option value="icon">Icono</ion-select-option>
                 </ion-select>
 
+                <!-- TODO: implmentar TechnologiesEditor -->
                 <TechIconSelector
                   v-if="tech.type === 'icon'"
                   slot="end"

@@ -1,81 +1,126 @@
 <template>
-  <div>
-    <ion-item lines="none">
+  <ion-list>
+    <ion-list-header>
       <ion-label>Tecnologías</ion-label>
-      <ion-button
-        slot="end"
-        size="small"
-        @click="addTech"
-        :disabled="!allValid"
-      >
-        <ion-icon :icon="addOutline" slot="start"></ion-icon>
+
+      <ion-button :disabled="!allValid" @click="addTech">
+        <ion-icon slot="start" :icon="addOutline"></ion-icon>
         Añadir
       </ion-button>
-    </ion-item>
+    </ion-list-header>
 
-    <div v-for="(tech, index) in modelValue" :key="index" class="tech-item">
-      <ion-item>
-        <ion-label position="stacked">Nombre</ion-label>
-        <ion-input
-          :value="tech.name"
-          placeholder="Ej: Vue"
-          :class="{ 'ion-invalid': hasError(index, 'name') }"
-          @ion-input="updateTech(index, 'name', $event.detail.value!)"
-          @ion-blur="touchField(index, 'name')"
-        ></ion-input>
-      </ion-item>
-      <span v-if="hasError(index, 'name')" class="error">
-        {{ getError(index, 'name') }}
-      </span>
+    <ion-card class="shadow1">
+      <template v-for="(tech, index) in modelValue" :key="index">
+        <ion-item lines="full">
+          <ion-input
+            label="Nombre de la tecnología"
+            label-placement="floating"
+            :value="tech.name"
+            placeholder="Ej: Vue"
+            :class="{ 'ion-invalid': hasError(index, 'name') }"
+            @ion-input="updateTech(index, 'name', $event.detail.value!)"
+            @ion-blur="touchField(index, 'name')"
+          ></ion-input>
+        </ion-item>
+        <span v-if="hasError(index, 'name')" class="error">
+          {{ getError(index, "name") }}
+        </span>
 
-      <ion-item>
-        <ion-label position="stacked">Tipo</ion-label>
-        <ion-select
-          :value="tech.type"
-          @ion-change="updateTech(index, 'type', $event.detail.value)"
-        >
-          <ion-select-option value="img">Imagen</ion-select-option>
-          <ion-select-option value="icon">Icono</ion-select-option>
-        </ion-select>
-      </ion-item>
+        <ion-item lines="full">
+          <ion-select
+            interface="popover"
+            label="Tipo"
+            label-placement="floating"
+            :value="tech.type"
+            @ion-change="updateTech(index, 'type', $event.detail.value)"
+          >
+            <ion-select-option value="img">Imagen</ion-select-option>
+            <ion-select-option value="icon">Icono</ion-select-option>
+          </ion-select>
 
-      <div v-if="tech.type === 'img'" class="file-upload">
-        <ion-label class="upload-label">Imagen</ion-label>
+          <TechIconSelector
+            v-if="tech.type === 'icon'"
+            slot="end"
+            :model-value="tech.source"
+            label="Icono de tecnología"
+            @update:model-value="updateTech(index, 'source', $event)"
+          />
+
+          <label
+            v-if="tech.type === 'img'"
+            slot="end"
+            :for="`tech-file-${index}`"
+            class="file-trigger"
+          >
+            <ion-icon :icon="imageOutline"></ion-icon>
+          </label>
+
+          <ion-button
+            v-if="tech.type === 'img' && tech.source"
+            slot="end"
+            fill="clear"
+            @click="openPreview(tech.source, tech.name)"
+          >
+            <ion-icon :icon="eyeOutline"></ion-icon>
+          </ion-button>
+        </ion-item>
+
         <input
+          :id="`tech-file-${index}`"
           type="file"
           accept="image/*"
+          hidden
           @change="onFileChange($event, index)"
         />
-        <div class="preview-row" v-if="tech.source">
-          <img :src="tech.source" alt="preview" class="tech-preview" />
+        <span v-if="hasError(index, 'source')" class="error">
+          {{ getError(index, "source") }}
+        </span>
+
+        <ion-item lines="full">
+          <ion-input
+            label="Tamaño"
+            label-placement="floating"
+            :value="tech.size"
+            placeholder="18px"
+            @ion-input="updateTech(index, 'size', $event.detail.value!)"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-button
+            slot="end"
+            fill="clear"
+            color="danger"
+            size="small"
+            @click="removeTech(index)"
+          >
+            <ion-icon :icon="trashOutline"></ion-icon>
+            Eliminar tecnología
+          </ion-button>
+        </ion-item>
+      </template>
+    </ion-card>
+
+    <!-- ion-modal -->
+    <ion-modal :is-open="preview.open" @did-dismiss="preview.open = false">
+      <ion-header mode="ios">
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button @click="preview.open = false">
+              <ion-icon :icon="closeOutline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title>{{ preview.name || "Preview" }}</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="preview-container">
+          <img :src="preview.src" :alt="preview.name" class="preview-image" />
         </div>
-      </div>
-      <span v-if="hasError(index, 'source')" class="error">
-        {{ getError(index, 'source') }}
-      </span>
-
-      <TechIconSelector
-        v-if="tech.type === 'icon'"
-        :modelValue="tech.source"
-        label="Icono de tecnología"
-        @update:modelValue="updateTech(index, 'source', $event)"
-      />
-
-      <ion-item>
-        <ion-label position="stacked">Tamaño</ion-label>
-        <ion-input
-          :value="tech.size"
-          placeholder="18px"
-          @ion-input="updateTech(index, 'size', $event.detail.value!)"
-        ></ion-input>
-      </ion-item>
-
-      <ion-button fill="clear" color="danger" size="small" @click="removeTech(index)">
-        <ion-icon :icon="trashOutline"></ion-icon>
-        Eliminar
-      </ion-button>
-    </div>
-  </div>
+      </ion-content>
+    </ion-modal>
+    <!-- ion-modals -->
+  </ion-list>
 </template>
 
 <script setup lang="ts">
@@ -87,8 +132,20 @@ import {
   IonIcon,
   IonSelect,
   IonSelectOption,
+  IonModal,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonTitle,
+  IonContent,
 } from "@ionic/vue";
-import { addOutline, trashOutline } from "ionicons/icons";
+import {
+  addOutline,
+  closeOutline,
+  eyeOutline,
+  imageOutline,
+  trashOutline,
+} from "ionicons/icons";
 import { computed, reactive } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
@@ -112,6 +169,13 @@ const emit = defineEmits<{
 
 const pendingFiles: Record<number, File> = {};
 const touched = reactive<Record<number, Record<string, boolean>>>({});
+const preview = reactive({ open: false, src: "", name: "" });
+
+function openPreview(src: string, name: string) {
+  preview.src = src;
+  preview.name = name;
+  preview.open = true;
+}
 
 const rules = {
   items: {
@@ -120,7 +184,10 @@ const rules = {
         required: helpers.withMessage("Nombre es requerido", required),
       },
       source: {
-        required: helpers.withMessage("Debe seleccionar una imagen o icono", required),
+        required: helpers.withMessage(
+          "Debe seleccionar una imagen o icono",
+          required,
+        ),
       },
     }),
   },
@@ -182,7 +249,7 @@ function removeTech(index: number) {
   emitFiles();
   emit(
     "update:modelValue",
-    props.modelValue.filter((_, i) => i !== index)
+    props.modelValue.filter((_, i) => i !== index),
   );
 }
 </script>
@@ -215,6 +282,29 @@ function removeTech(index: number) {
 .tech-preview {
   max-width: 40px;
   max-height: 40px;
+}
+
+.file-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--ion-color-primary);
+  font-size: 24px;
+}
+
+.preview-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
 }
 
 .error {

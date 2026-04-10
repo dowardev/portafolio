@@ -1,6 +1,23 @@
 # Changelog
 
-## 11.3.2 - 2026-04-08
+## 11.3.3 - 2026-04-09
+
+### Changed
+- Admin/Experience: Refactored ExperienceEditor.vue layout to use IonList/IonCard structure with improved form layout and floating labels
+- Admin/Experience: Added image preview modal functionality for company logos
+- Admin/Experience: Added file name display for uploaded experience images
+- Admin/Experience: Improved TechnologiesEditor integration with proper model-value binding
+- Admin/Technologies: Refactored TechnologiesEditor.vue layout to use IonList/IonCard structure with improved form layout
+- Admin/Technologies: Added image preview modal functionality for technology images
+- Admin/Technologies: Added file name display for uploaded technology images
+- Admin/Technologies: Improved TechIconSelector integration with proper model-value binding
+- Admin/ExperiencePage: Moved save button to header with spinner and reorganized layout using ion-grid
+
+### Added
+- Admin/Experience: Modal preview component for experience images
+- Admin/Technologies: Modal preview component for technology images
+- Admin/Experience: File name display for uploaded experience images
+- Admin/Technologies: File name display for uploaded technology images
 
 ### Added
 

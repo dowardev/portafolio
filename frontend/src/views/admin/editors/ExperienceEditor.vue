@@ -1,26 +1,21 @@
 <template>
-  <div class="ion-padding">
-    <ion-item lines="none">
+  <ion-list>
+    <ion-list-header>
       <ion-label>Experiencia</ion-label>
-      <ion-button
-        slot="end"
-        size="small"
-        @click="addItem"
-        :disabled="!allValid"
-      >
-        <ion-icon :icon="addOutline" slot="start"></ion-icon>
+
+      <ion-button :disabled="!allValid" @click="addItem">
+        <ion-icon slot="start" :icon="addOutline"></ion-icon>
         Añadir
       </ion-button>
-    </ion-item>
+    </ion-list-header>
+  </ion-list>
 
-    <div
-      v-for="(exp, index) in modelValue"
-      :key="index"
-      class="exp-item"
-    >
-      <ion-item>
-        <ion-label position="stacked">Nombre / Empresa</ion-label>
+  <ion-card class="shadow1">
+    <template v-for="(exp, index) in modelValue" :key="index">
+      <ion-item lines="full">
         <ion-input
+          label="Nombre / Empresa"
+          label-placement="floating"
           :value="exp.title"
           placeholder="Ej: Upwork"
           :class="{ 'ion-invalid': hasError(index, 'title') }"
@@ -28,36 +23,58 @@
           @ion-blur="touchField(index, 'title')"
         ></ion-input>
       </ion-item>
-      <span v-if="hasError(index, 'title')" class="error">Nombre es requerido</span>
+      <span v-if="hasError(index, 'title')" class="error"
+        >Nombre es requerido</span
+      >
 
-      <ion-item>
-        <ion-label position="stacked">Fecha</ion-label>
+      <ion-item lines="full">
         <ion-input
           :value="exp.date"
           placeholder="Ej: Marzo 2023 - Actualidad"
+          label="Fecha"
+          label-placement="floating"
           :class="{ 'ion-invalid': hasError(index, 'date') }"
           @ion-input="updateItem(index, 'date', $event.detail.value!)"
           @ion-blur="touchField(index, 'date')"
         ></ion-input>
       </ion-item>
-      <span v-if="hasError(index, 'date')" class="error">Fecha es requerida</span>
+      <span v-if="hasError(index, 'date')" class="error"
+        >Fecha es requerida</span
+      >
 
-      <div class="file-upload">
-        <ion-label class="upload-label">Logo de la empresa</ion-label>
-        <input
-          type="file"
-          accept="image/*"
-          @change="onMainFileChange($event, index)"
-        />
-        <div class="preview-row" v-if="exp.img">
-          <img :src="exp.img" alt="preview" class="exp-preview" />
-        </div>
-      </div>
+      <ion-item lines="full" button @click="openFileDialog(index)">
+        <ion-label>Logo de la empresa</ion-label>
+
+        <ion-note v-if="fileNames[index]" slot="end">{{
+          fileNames[index]
+        }}</ion-note>
+
+        <ion-note v-else slot="end">Seleccionar</ion-note>
+
+        <ion-button
+          slot="end"
+          fill="clear"
+          :disabled="!props.modelValue[index]?.img"
+          @click.stop="showPreview(index)"
+        >
+          <ion-icon :icon="eyeOutline"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <input
+        style="display: none"
+        :data-type="`exp_${index}`"
+        type="file"
+        accept="image/*"
+        @change="onMainFileChange($event, index)"
+      />
+
       <span v-if="hasError(index, 'img')" class="error">Logo es requerido</span>
 
-      <ion-item>
-        <ion-label position="stacked">Descripción</ion-label>
+      <ion-item lines="full">
         <ion-textarea
+          label="Descripción"
+          label-placement="floating"
           :value="exp.details.description"
           :rows="3"
           placeholder="Descripción del trabajo..."
@@ -66,11 +83,14 @@
           @ion-blur="touchField(index, 'description')"
         ></ion-textarea>
       </ion-item>
-      <span v-if="hasError(index, 'description')" class="error">Descripción es requerida</span>
+      <span v-if="hasError(index, 'description')" class="error"
+        >Descripción es requerida</span
+      >
 
-      <ion-item>
-        <ion-label position="stacked">Link (página de referencia)</ion-label>
+      <ion-item lines="full">
         <ion-input
+          label="Link"
+          label-placement="floating"
           :value="exp.details.website"
           placeholder="https://..."
           @ion-input="updateDetail(index, 'website', $event.detail.value!)"
@@ -78,17 +98,47 @@
       </ion-item>
 
       <TechnologiesEditor
-        :modelValue="exp.technologies"
-        @update:modelValue="updateTechnologies(index, $event)"
+        :model-value="exp.technologies"
+        @update:model-value="updateTechnologies(index, $event)"
         @update:files="(files) => updateTechFiles(index, files)"
       />
 
-      <ion-button fill="clear" color="danger" @click="removeItem(index)">
+      <ion-button
+        expand="block"
+        fill="clear"
+        color="danger"
+        @click="removeItem(index)"
+      >
         <ion-icon :icon="trashOutline"></ion-icon>
-        Eliminar
+        Eliminar experiencia
       </ion-button>
+    </template>
+  </ion-card>
+
+  <!-- modals -->
+  <!-- preview modal -->
+  <ion-modal :is-open="isPreviewOpen" @ion-modal-did-dismiss="closePreview">
+    <ion-header class="ion-no-border" mode="ios">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button @click="closePreview">
+            <ion-icon :icon="closeOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+
+        <ion-title>Vista previa</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <div style="padding: 16px; text-align: center">
+      <img
+        v-if="previewSrc"
+        :src="previewSrc"
+        alt="preview"
+        class="modal-image"
+      />
     </div>
-  </div>
+  </ion-modal>
+  <!-- modals -->
 </template>
 
 <script setup lang="ts">
@@ -100,8 +150,13 @@ import {
   IonButton,
   IonIcon,
 } from "@ionic/vue";
-import { addOutline, trashOutline } from "ionicons/icons";
-import { computed, reactive } from "vue";
+import {
+  addOutline,
+  trashOutline,
+  eyeOutline,
+  closeOutline,
+} from "ionicons/icons";
+import { computed, reactive, ref } from "vue";
 import type { ExperienceItem } from "@/services/homeApi";
 import TechnologiesEditor from "./TechnologiesEditor.vue";
 
@@ -117,10 +172,22 @@ const emit = defineEmits<{
 const pendingFiles: Record<string, File> = {};
 const touched = reactive<Record<string, boolean>>({});
 
+// file name display for each experience's main image
+const fileNames = reactive<Record<number, string>>({});
+
+// modal preview state
+const isPreviewOpen = ref(false);
+const previewSrc = ref<string | null>(null);
+
 const allValid = computed(() => {
   if (props.modelValue.length === 0) return true;
   return props.modelValue.every((exp) => {
-    return exp.title?.trim() && exp.date?.trim() && exp.img && exp.details?.description?.trim();
+    return (
+      exp.title?.trim() &&
+      exp.date?.trim() &&
+      exp.img &&
+      exp.details?.description?.trim()
+    );
   });
 });
 
@@ -128,10 +195,10 @@ function hasError(index: number, field: string): boolean {
   const key = `${index}_${field}`;
   if (!touched[key]) return false;
   const exp = props.modelValue[index];
-  if (field === 'title') return !exp?.title?.trim();
-  if (field === 'date') return !exp?.date?.trim();
-  if (field === 'img') return !exp?.img;
-  if (field === 'description') return !exp?.details?.description?.trim();
+  if (field === "title") return !exp?.title?.trim();
+  if (field === "date") return !exp?.date?.trim();
+  if (field === "img") return !exp?.img;
+  if (field === "description") return !exp?.details?.description?.trim();
   return false;
 }
 
@@ -173,7 +240,7 @@ function updateDetail(index: number, field: string, value: string) {
 
 function updateTechnologies(
   index: number,
-  technologies: ExperienceItem["technologies"]
+  technologies: ExperienceItem["technologies"],
 ) {
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], technologies };
@@ -194,8 +261,30 @@ function onMainFileChange(event: Event, index: number) {
   pendingFiles[`exp_image_${index}`] = file;
   const objectUrl = URL.createObjectURL(file);
   updateItem(index, "img", objectUrl);
+  // store filename for display
+  fileNames[index] = file.name;
   emitFiles();
   touchField(index, "img");
+}
+
+function openFileDialog(index: number) {
+  const selector = `input[data-type="exp_${index}"]`;
+  const input = document.querySelector(selector) as HTMLInputElement | null;
+  if (input) input.click();
+}
+
+function showPreview(index: number) {
+  const exp = props.modelValue[index];
+  const src = exp?.img ?? null;
+  if (src) {
+    previewSrc.value = src;
+    isPreviewOpen.value = true;
+  }
+}
+
+function closePreview() {
+  isPreviewOpen.value = false;
+  previewSrc.value = null;
 }
 
 function removeItem(index: number) {
@@ -203,7 +292,7 @@ function removeItem(index: number) {
   emitFiles();
   emit(
     "update:modelValue",
-    props.modelValue.filter((_, i) => i !== index)
+    props.modelValue.filter((_, i) => i !== index),
   );
 }
 </script>
@@ -246,5 +335,11 @@ function removeItem(index: number) {
 
 .ion-invalid {
   --border-color: var(--ion-color-danger);
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
 }
 </style>
