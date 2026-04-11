@@ -37,7 +37,7 @@
               target="_blank"
               fill=clear
             >
-              <ion-icon slot="icon-only" :icon="getSocialIcon(social.iconName)"></ion-icon>
+              <ion-icon slot="icon-only" :icon="getSocialIcon(social.iconName || social.platform)"></ion-icon>
             </ion-button>
 
             <!-- form contact -->
@@ -304,17 +304,18 @@ import {
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import {
-  mail,
-  copyOutline,
-  openOutline,
-  calendar,
-  chatbox,
-  logoFacebook,
-  logoX,
-  logoTwitter,
-  logoInstagram,
-  logoLinkedin,
-  logoYoutube,
+    mail,
+    copyOutline,
+    openOutline,
+    calendar,
+    chatbox,
+    logoFacebook,
+    logoX,
+    logoTwitter,
+    logoInstagram,
+    logoLinkedin,
+    logoGitlab,
+    logoYoutube,
   logoTiktok,
   logoGithub,
   logoDiscord,
@@ -376,6 +377,7 @@ const socialIconsMap: Record<string, any> = {
   logoInstagram,
   logoLinkedin,
   logoYoutube,
+  logoGitlab,
   logoTiktok,
   logoGithub,
   logoDiscord,
@@ -404,10 +406,28 @@ const socialIconsMap: Record<string, any> = {
   logoPlaystation,
   logoTumblr,
   logoVk,
+  chatbox,
 };
 
 function getSocialIcon(iconName: string): any {
-  return socialIconsMap[iconName] || logoLinkedin;
+  if (!iconName) return logoLinkedin;
+
+  // direct match
+  if (socialIconsMap[iconName]) return socialIconsMap[iconName];
+
+  const lower = iconName.toLowerCase();
+  if (socialIconsMap[lower]) return socialIconsMap[lower];
+
+  // try adding/removing 'logo' prefix in different casings
+  const withLogo = iconName.startsWith("logo") ? iconName : `logo${iconName.charAt(0).toUpperCase()}${iconName.slice(1)}`;
+  if (socialIconsMap[withLogo]) return socialIconsMap[withLogo];
+  if (socialIconsMap[withLogo.toLowerCase()]) return socialIconsMap[withLogo.toLowerCase()];
+
+  // try compacted name (remove spaces)
+  const compact = iconName.replace(/\s+/g, "").toLowerCase();
+  if (socialIconsMap[compact]) return socialIconsMap[compact];
+
+  return logoLinkedin;
 }
 
 // homepage data
@@ -528,6 +548,20 @@ async function openContactModal() {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* Force social icons to be monochromatic and use a single color.
+   Use --social-icon-color to override (defaults to a neutral grey). */
+.social-buttons ion-button ion-icon {
+  color: var(--social-icon-color, #777777);
+  /* ensure SVGs respect the color value */
+  fill: currentColor !important;
+  stroke: none !important;
+  transition: color 0.15s ease, transform 0.08s ease;
+}
+.social-buttons ion-button:hover ion-icon {
+  color: var(--social-icon-color-hover, #ff5b29);
+  transform: translateY(-2px);
 }
 
 .img-perfil {

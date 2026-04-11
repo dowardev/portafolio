@@ -1,21 +1,28 @@
 # Changelog
 
-## 11.5.3 - 2026-04-10
+## 11.6.0 - 2026-04-10
+
+### Added
+
+- Admin/InfoEditor: Social selector modal with search, platform additions (GitLab, Bitbucket, ChatBox)
 
 ### Changed
 
-- Admin/Editors: Removed unused CSS/inline style blocks across multiple editor components to clean up generated style artifacts and reduce bundle size
-- Admin/Editors: Continued refactor to named/destructured function parameters and consistent section comments (imports, props/emits, vars/const, computed, functions)
+- Admin/InfoEditor: Replace popover with modal for social selection; refactor item markup and button handlers
+- Admin/InfoEditor: Use reactive modal/search state and computed filtered/displayed social lists
+- Admin/SkillsEditor: Improve formatting of handlers and validations; expand function signatures to explicit typed params
+- Presentation/InformationComponent: Improve social icon resolution to handle missing iconName and map more icon variations
+- Presentation/InformationComponent: Add CSS to force monochromatic social icons and hover behavior
+
+### Fixed
+
+- Admin/SkillsEditor: Fix input event handler formatting and touched-state helpers to ensure correct validation
 
 ### Affected Files
 
-- frontend/src/views/admin/editors/CertificatesEditor.vue
-- frontend/src/views/admin/editors/FreelanceEditor.vue
 - frontend/src/views/admin/editors/InfoEditor.vue
-- frontend/src/views/admin/editors/ProjectsEditor.vue
 - frontend/src/views/admin/editors/SkillsEditor.vue
-- frontend/src/views/admin/editors/StackEditor.vue
-- frontend/src/views/admin/editors/TechnologiesEditor.vue
+- frontend/src/views/presentation/information/InformationComponent.vue
 
 ---
 

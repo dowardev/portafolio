@@ -59,7 +59,7 @@
       <ion-list-header>
         <ion-label>Redes sociales</ion-label>
 
-        <ion-button id="social-popover-trigger">
+        <ion-button @click="isSocialModalOpen = true">
           <ion-icon slot="start" :icon="addOutline"></ion-icon>
           Añadir
         </ion-button>
@@ -105,7 +105,11 @@
 
       <ion-card class="shadow1">
         <section>
-          <ion-item lines="full" button @click="openFileDialog({ type: 'logo' })">
+          <ion-item
+            lines="full"
+            button
+            @click="openFileDialog({ type: 'logo' })"
+          >
             <ion-label>Logo</ion-label>
 
             <ion-note v-if="fileNames.logo" slot="end">{{
@@ -133,7 +137,11 @@
         </section>
 
         <section>
-          <ion-item lines="full" button @click="openFileDialog({ type: 'photo' })">
+          <ion-item
+            lines="full"
+            button
+            @click="openFileDialog({ type: 'photo' })"
+          >
             <ion-label>Foto (Cover)</ion-label>
 
             <ion-note v-if="fileNames.photo" slot="end">{{
@@ -184,15 +192,41 @@
     </ion-list>
   </form>
 
-  <!-- popovers -->
-  <ion-popover trigger="social-popover-trigger" :dismiss-on-select="true">
+  <!-- modals -->
+  <!-- social selector modal -->
+  <ion-modal
+    :is-open="isSocialModalOpen"
+    @ion-modal-did-dismiss="closeSocialModal"
+  >
+    <ion-header class="ion-no-border" mode="ios">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button @click="closeSocialModal">
+            <ion-icon :icon="closeOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+
+        <ion-title>Agregar red social</ion-title>
+      </ion-toolbar>
+
+      <ion-toolbar>
+        <ion-searchbar
+          v-model="socialSearch"
+          mode="ios"
+          placeholder="Buscar plataforma"
+          :debounce="300"
+        ></ion-searchbar>
+      </ion-toolbar>
+    </ion-header>
+
     <ion-content>
       <ion-list>
         <ion-item
-          v-for="social in filteredSocials"
+          v-for="social in displayedSocials"
           :key="social.name"
           button
-          @click="addSocial({ platform: social.name })"
+          lines="full"
+          @click="selectSocial(social.name)"
         >
           <ion-icon
             slot="start"
@@ -202,8 +236,8 @@
         </ion-item>
       </ion-list>
     </ion-content>
-  </ion-popover>
-  <!-- end popovers -->
+  </ion-modal>
+  <!-- end social selector modal -->
 
   <ion-modal :is-open="isPreviewOpen" @ion-modal-did-dismiss="closePreview">
     <ion-header>
@@ -223,6 +257,7 @@
       />
     </div>
   </ion-modal>
+  <!-- modals -->
 
   <!-- alerts -->
   <ion-alert
@@ -248,7 +283,7 @@ import {
   IonTextarea,
   IonChip,
   IonIcon,
-  IonPopover,
+  IonSearchbar,
   IonList,
   IonContent,
   IonToggle,
@@ -276,6 +311,10 @@ import { useHomeEditorStore } from "@/store/homeEditorStore";
 // vars and const
 const homeEditorStore = useHomeEditorStore();
 const isAddTagAlertOpen = ref(false);
+
+// social modal state and search
+const isSocialModalOpen = ref(false);
+const socialSearch = ref("");
 
 const fileNames = reactive<Record<string, string>>({});
 
@@ -321,6 +360,8 @@ const availableSocials = [
   { name: "YouTube", iconName: "logoYoutube" },
   { name: "TikTok", iconName: "logoTiktok" },
   { name: "GitHub", iconName: "logoGithub" },
+  { name: "GitLab", iconName: "logoGitlab" },
+  { name: "Bitbucket", iconName: "logoBitbucket" },
   { name: "Discord", iconName: "logoDiscord" },
   { name: "Twitch", iconName: "logoTwitch" },
   { name: "Pinterest", iconName: "logoPinterest" },
@@ -347,6 +388,7 @@ const availableSocials = [
   { name: "PlayStation", iconName: "logoPlaystation" },
   { name: "Tumblr", iconName: "logoTumblr" },
   { name: "VK", iconName: "logoVk" },
+  { name: "ChatBox", iconName: "chatbox" },
 ];
 // end available socials
 
@@ -358,6 +400,14 @@ const filteredSocials = computed(() => {
   return availableSocials.filter(
     (social) => !selectedPlatforms.includes(social.name.toLowerCase()),
   );
+});
+
+const displayedSocials = computed(() => {
+  const q = String(socialSearch.value || "")
+    .trim()
+    .toLowerCase();
+  if (!q) return filteredSocials.value;
+  return filteredSocials.value.filter((s) => s.name.toLowerCase().includes(q));
 });
 // end computed
 
@@ -393,6 +443,16 @@ function addSocial(params: { platform: string }) {
   const social = availableSocials.find((s) => s.name === platform);
   const iconName = social ? social.iconName : "";
   homeEditorStore.form.socials.push({ platform, url: "", iconName });
+}
+
+function selectSocial(platform: string) {
+  addSocial({ platform });
+  closeSocialModal();
+}
+
+function closeSocialModal() {
+  isSocialModalOpen.value = false;
+  socialSearch.value = "";
 }
 
 function removeSocial(params: { index: number }) {

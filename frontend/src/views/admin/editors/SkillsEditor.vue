@@ -18,13 +18,24 @@
               label-placement="floating"
               :value="category.name"
               placeholder="Ej: Frameworks"
-              :class="{ 'ion-invalid': hasCategoryError({ catIndex, field: 'name' }) }"
-              @ion-input="updateCategory({ index: catIndex, field: 'name', value: $event.detail.value! })"
+              :class="{
+                'ion-invalid': hasCategoryError({ catIndex, field: 'name' }),
+              }"
+              @ion-input="
+                updateCategory({
+                  index: catIndex,
+                  field: 'name',
+                  value: $event.detail.value!,
+                })
+              "
               @ion-blur="touchCategoryField({ catIndex, field: 'name' })"
             ></ion-input>
           </ion-item>
 
-          <span v-if="hasCategoryError({ catIndex, field: 'name' })" class="error">
+          <span
+            v-if="hasCategoryError({ catIndex, field: 'name' })"
+            class="error"
+          >
             Nombre de categoría es requerido
           </span>
 
@@ -54,10 +65,23 @@
                   :value="tech.name"
                   placeholder="Ej: Vue"
                   :class="{
-                    'ion-invalid': hasTechError({ catIndex, techIndex, field: 'name' }),
+                    'ion-invalid': hasTechError({
+                      catIndex,
+                      techIndex,
+                      field: 'name',
+                    }),
                   }"
-                  @ion-input="updateTechnology({ catIndex, techIndex, field: 'name', value: $event.detail.value! })"
-                  @ion-blur="touchTechField({ catIndex, techIndex, field: 'name' })"
+                  @ion-input="
+                    updateTechnology({
+                      catIndex,
+                      techIndex,
+                      field: 'name',
+                      value: $event.detail.value!,
+                    })
+                  "
+                  @ion-blur="
+                    touchTechField({ catIndex, techIndex, field: 'name' })
+                  "
                 ></ion-input>
               </ion-item>
 
@@ -74,27 +98,42 @@
                   interface="popover"
                   label-placement="floating"
                   :value="tech.type"
-                  @ion-change="updateTechnology({ catIndex, techIndex, field: 'type', value: $event.detail.value })"
+                  @ion-change="
+                    updateTechnology({
+                      catIndex,
+                      techIndex,
+                      field: 'type',
+                      value: $event.detail.value,
+                    })
+                  "
                 >
                   <ion-select-option value="img">Imagen</ion-select-option>
 
                   <ion-select-option value="icon">Icono</ion-select-option>
                 </ion-select>
 
-                <!-- TODO: implmentar TechnologiesEditor -->
                 <TechIconSelector
                   v-if="tech.type === 'icon'"
                   slot="end"
                   :model-value="tech.iconName"
                   label="Icono de tecnología"
-                  @update:model-value="updateTechnology({ catIndex, techIndex, field: 'iconName', value: $event })"
+                  @update:model-value="
+                    updateTechnology({
+                      catIndex,
+                      techIndex,
+                      field: 'iconName',
+                      value: $event,
+                    })
+                  "
                 />
 
                 <ion-button
                   v-if="tech.type === 'img' && !tech.image"
                   slot="end"
                   fill="clear"
-                  @click="triggerFileInput({ event: $event, catIndex, techIndex })"
+                  @click="
+                    triggerFileInput({ event: $event, catIndex, techIndex })
+                  "
                 >
                   Seleccionar
                 </ion-button>
@@ -122,7 +161,14 @@
                   label-placement="floating"
                   :value="tech.size"
                   placeholder="24px"
-                  @ion-input="updateTechnology({ catIndex, techIndex, field: 'size', value: $event.detail.value! })"
+                  @ion-input="
+                    updateTechnology({
+                      catIndex,
+                      techIndex,
+                      field: 'size',
+                      value: $event.detail.value!,
+                    })
+                  "
                 ></ion-input>
               </ion-item>
 
@@ -238,7 +284,10 @@ const allValid = computed(() => {
 // end computed
 
 // functions
-function hasCategoryError(params: { catIndex: number; field: string }): boolean {
+function hasCategoryError(params: {
+  catIndex: number;
+  field: string;
+}): boolean {
   const { catIndex, field } = params;
   const key = `${catIndex}_${field}`;
   const cat = props.modelValue[catIndex];
@@ -261,7 +310,11 @@ function hasTechError(params: {
   return techTouched[key] && !tech?.[field as keyof typeof tech];
 }
 
-function touchTechField(params: { catIndex: number; techIndex: number; field: string }) {
+function touchTechField(params: {
+  catIndex: number;
+  techIndex: number;
+  field: string;
+}) {
   const { catIndex, techIndex, field } = params;
   techTouched[`${catIndex}_${techIndex}_${field}`] = true;
 }
@@ -290,7 +343,11 @@ function addCategory() {
   ]);
 }
 
-function updateCategory(params: { index: number; field: string; value: string }) {
+function updateCategory(params: {
+  index: number;
+  field: string;
+  value: string;
+}) {
   const { index, field, value } = params;
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], [field]: value };
@@ -318,9 +375,12 @@ function addTechnology(params: { catIndex: number }) {
   emit("update:modelValue", updated);
 }
 
-function updateTechnology(
-  params: { catIndex: number; techIndex: number; field: string; value: string },
-) {
+function updateTechnology(params: {
+  catIndex: number;
+  techIndex: number;
+  field: string;
+  value: string;
+}) {
   const { catIndex, techIndex, field, value } = params;
   const updated = [...props.modelValue];
   const techs = [...updated[catIndex].technologies];
@@ -329,7 +389,11 @@ function updateTechnology(
   emit("update:modelValue", updated);
 }
 
-function onFileChange(params: { event: Event; catIndex: number; techIndex: number }) {
+function onFileChange(params: {
+  event: Event;
+  catIndex: number;
+  techIndex: number;
+}) {
   const { event, catIndex, techIndex } = params;
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
@@ -357,7 +421,11 @@ function removeTechnology(params: { catIndex: number; techIndex: number }) {
   emit("update:modelValue", updated);
 }
 
-function triggerFileInput(params: { event: Event; catIndex: number; techIndex: number }) {
+function triggerFileInput(params: {
+  event: Event;
+  catIndex: number;
+  techIndex: number;
+}) {
   const { event, catIndex, techIndex } = params;
   event.preventDefault();
   const fileInput = document.querySelector(
