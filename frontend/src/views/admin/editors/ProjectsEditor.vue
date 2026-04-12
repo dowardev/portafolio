@@ -323,6 +323,17 @@ function updateTechnologies(
 
 function updateTechFiles(params: { projectIndex: number; files: Record<number, File> }) {
   const { projectIndex, files } = params;
+  const prefix = `project_tech_image_${projectIndex}_`;
+  
+  Object.keys(pendingFiles).forEach((key) => {
+    if (key.startsWith(prefix)) {
+      const techIndex = key.replace(prefix, "");
+      if (!(techIndex in files)) {
+        delete pendingFiles[key];
+      }
+    }
+  });
+  
   for (const [techIndex, file] of Object.entries(files)) {
     pendingFiles[`project_tech_image_${projectIndex}_${techIndex}`] = file;
   }

@@ -1,5 +1,31 @@
 # Changelog
 
+## 11.7.0 - 2026-04-11
+
+### Added
+
+- Backend: New `homepage:clean-images` artisan command to remove orphaned images from storage that are no longer in the database
+- Backend/HomePageController: Added automatic image cleanup when updating homepage content
+
+### Changed
+
+- Admin/SkillsEditor: Always show upload button for image-type technologies regardless of existing image state
+
+### Fixed
+
+- Admin/ExperienceEditor: Clean up pending tech files when technology items are removed
+- Admin/ProjectsEditor: Clean up pending tech files when technology items are removed
+
+### Affected Files
+
+- backend/app/Console/Commands/CleanHomepageImages.php
+- backend/app/Http/Controllers/Admin/HomePageController.php
+- frontend/src/views/admin/editors/ExperienceEditor.vue
+- frontend/src/views/admin/editors/ProjectsEditor.vue
+- frontend/src/views/admin/editors/SkillsEditor.vue
+
+---
+
 ## 11.6.0 - 2026-04-10
 
 ### Added

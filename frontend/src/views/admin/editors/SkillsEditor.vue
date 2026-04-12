@@ -128,7 +128,7 @@
                 />
 
                 <ion-button
-                  v-if="tech.type === 'img' && !tech.image"
+                  v-if="tech.type === 'img'"
                   slot="end"
                   fill="clear"
                   @click="

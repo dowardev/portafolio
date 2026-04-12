@@ -5,10 +5,134 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\HomePage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class HomePageController extends Controller
 {
+    private function getAllCurrentImageUrls(HomePage $homepage): array
+    {
+        $urls = [];
+
+        if ($homepage->logo_url) {
+            $urls[] = $this->pathFromUrl($homepage->logo_url);
+        }
+        if ($homepage->photo_url) {
+            $urls[] = $this->pathFromUrl($homepage->photo_url);
+        }
+
+        foreach ($homepage->stack ?? [] as $item) {
+            if (!empty($item['image'])) {
+                $urls[] = $this->pathFromUrl($item['image']);
+            }
+        }
+
+        foreach ($homepage->skill_categories ?? [] as $category) {
+            foreach ($category['technologies'] ?? [] as $tech) {
+                if (!empty($tech['image'])) {
+                    $urls[] = $this->pathFromUrl($tech['image']);
+                }
+            }
+        }
+
+        foreach ($homepage->experience ?? [] as $exp) {
+            if (!empty($exp['img'])) {
+                $urls[] = $this->pathFromUrl($exp['img']);
+            }
+            foreach ($exp['technologies'] ?? [] as $tech) {
+                if (!empty($tech['source'])) {
+                    $urls[] = $this->pathFromUrl($tech['source']);
+                }
+            }
+        }
+
+        foreach ($homepage->projects ?? [] as $project) {
+            if (!empty($project['img'])) {
+                $urls[] = $this->pathFromUrl($project['img']);
+            }
+            if (!empty($project['source']['img'])) {
+                $urls[] = $this->pathFromUrl($project['source']['img']);
+            }
+            foreach ($project['technologies'] ?? [] as $tech) {
+                if (!empty($tech['source'])) {
+                    $urls[] = $this->pathFromUrl($tech['source']);
+                }
+            }
+        }
+
+        foreach ($homepage->certificates ?? [] as $cert) {
+            if (!empty($cert['img'])) {
+                $urls[] = $this->pathFromUrl($cert['img']);
+            }
+            foreach ($cert['aptitudes'] ?? [] as $apt) {
+                if (!empty($apt['source'])) {
+                    $urls[] = $this->pathFromUrl($apt['source']);
+                }
+            }
+        }
+
+        foreach ($homepage->freelance ?? [] as $platform) {
+            if (!empty($platform['image'])) {
+                $urls[] = $this->pathFromUrl($platform['image']);
+            }
+            foreach ($platform['comments'] ?? [] as $comment) {
+                if (!empty($comment['image'])) {
+                    $urls[] = $this->pathFromUrl($comment['image']);
+                }
+            }
+        }
+
+        return array_filter($urls);
+    }
+
+    private function deleteOldImages(array $currentUrls, array $newUrls): void
+    {
+        $toDelete = array_diff($currentUrls, $newUrls);
+
+        foreach ($toDelete as $url) {
+            $path = $this->pathFromUrl($url);
+            if ($path) {
+                \Log::info("Attempting to delete image: " . $path);
+                \Log::info("Exists: " . (Storage::disk('public')->exists($path) ? 'yes' : 'no'));
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                    \Log::info("Deleted: " . $path);
+                }
+            }
+        }
+    }
+
+    private function pathFromUrl(string $url): string
+    {
+        // Handle URLs like "http://localhost:8000/storage/homepage/..." or "http://localhost/storage/homepage/..."
+        if (preg_match('#^https?://[^/]+/storage/(.+)$#', $url, $matches)) {
+            return $matches[1];
+        }
+        
+        // Handle URLs like "http://localhost:8000/storage/homepage/..." where asset('') returns "http://localhost:8000/"
+        $assetUrl = rtrim(asset(''), '/');
+        if ($assetUrl && str_starts_with($url, $assetUrl)) {
+            $path = ltrim(str_replace($assetUrl, '', $url), '/');
+            if (str_starts_with($path, 'storage/')) {
+                $path = substr($path, 8);
+            }
+            return $path;
+        }
+        
+        // Handle absolute URLs without scheme
+        if (preg_match('#^//[^/]+/storage/(.+)$#', $url, $matches)) {
+            return $matches[1];
+        }
+        
+        // Handle URLs already in relative form like "storage/homepage/..."
+        if (str_starts_with($url, 'storage/')) {
+            return substr($url, 8);
+        }
+        
+        // Handle clean relative paths like "homepage/..."
+        return ltrim(str_replace(asset(''), '', $url), '/');
+    }
+
     public function show()
     {
         $homepage = HomePage::firstOrCreate(
@@ -66,6 +190,8 @@ class HomePageController extends Controller
                 'show_contact_form' => false,
             ]
         );
+
+        $currentImageUrls = $this->getAllCurrentImageUrls($homepage);
 
         $payload = $request->input('payload');
         $payloadDecoded = json_decode($payload, true);
@@ -265,6 +391,9 @@ class HomePageController extends Controller
         }
 
         $homepage->save();
+
+        $newImageUrls = $this->getAllCurrentImageUrls($homepage);
+        $this->deleteOldImages($currentImageUrls, $newImageUrls);
 
         return response()->json([
             'name' => $homepage->name,
