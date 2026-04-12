@@ -4,12 +4,12 @@
     <ion-row>
       <ion-col>
         <!-- undo -->
-        <ion-button fill="clear" @click="undo" :disabled="!canUndo">
+        <ion-button fill="clear" :disabled="!canUndo" @click="undo">
           <ion-icon :icon="arrowUndoOutline"></ion-icon>
         </ion-button>
 
         <!-- redo -->
-        <ion-button fill="clear" @click="redo" :disabled="!canRedo">
+        <ion-button fill="clear" :disabled="!canRedo" @click="redo">
           <ion-icon :icon="arrowRedoOutline"></ion-icon>
         </ion-button>
 
@@ -45,7 +45,7 @@
     <!-- modals -->
     <ion-modal
       :is-open="isModalUploadImageOpen"
-      @ionModalDidDismiss="isModalUploadImageOpen = false"
+      @ion-modal-did-dismiss="isModalUploadImageOpen = false"
     >
       <ion-header mode="ios" class="ion-no-border">
         <ion-toolbar>
@@ -69,11 +69,11 @@
         <ion-row
           style="display: flex; height: 100%"
           class="ion-align-items-center"
+          :class="{ hover: isDragging }"
           @dragenter="handleDragEnter"
           @dragover="handleDragOver({ event: $event })"
           @dragleave="handleDragLeave()"
           @drop="handleDrop({ event: $event })"
-          :class="{ hover: isDragging }"
         >
           <ion-col size="12">
             <ion-row

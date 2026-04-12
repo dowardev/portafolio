@@ -10,7 +10,7 @@
 
         <ion-title>{{ project?.title }}</ion-title>
 
-        <ion-buttons slot="end" v-if="project?.details?.website">
+        <ion-buttons v-if="project?.details?.website" slot="end">
           <ion-button @click="openUrl(project.details.website)">
             <ion-icon :icon="openOutline"></ion-icon>
           </ion-button>
@@ -85,8 +85,8 @@
               <ion-label>Cliente / Fuente</ion-label>
             </ion-list-header>
             <ion-item
-              button
               v-if="project.source.url"
+              button
               @click="openUrl(project.source.url)"
             >
               <img
@@ -96,7 +96,7 @@
                 style="height: 30px; margin-right: 12px"
               />
               <ion-label>{{ project.source.name }}</ion-label>
-              <ion-icon :icon="openOutline" slot="end"></ion-icon>
+              <ion-icon slot="end" :icon="openOutline"></ion-icon>
             </ion-item>
             <ion-item v-else lines="none">
               <img

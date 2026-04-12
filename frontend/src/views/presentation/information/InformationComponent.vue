@@ -53,8 +53,8 @@
 
             <!-- form contact -->
             <ion-button
-              fill="clear"
               v-if="homeData.showContactForm?.socials"
+              fill="clear"
               @click="openContactModal()"
             >
               <ion-icon slot="icon-only" :icon="mail"></ion-icon>

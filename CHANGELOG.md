@@ -1,5 +1,56 @@
 # Changelog
 
+## 11.10.0 - 2026-04-12
+
+### Added
+
+- **Template System**: Added configurable template system for home presentation page
+  - New `HomeTemplate` component with scroll snap navigation and segment-based section switching
+  - New `SectionWrapper` component for reusable section rendering
+  - New `FinalSection` component extracted from homepage for freelance testimonials
+  - New `templates.ts` with predefined template configurations
+  - New TypeScript types in `homeTemplate.ts` for template data structures
+- **Template Options**: Added three template variants:
+  - `default`: Classic vertical scroll with snap sections
+  - `compact`: All sections in single view
+  - `skillsFirst`: Skills section displayed first
+
+### Changed
+
+- **HomePresentationPage**: Refactored to use new template system instead of inline template code
+- **Attribute Order**: Fixed Vue attribute order to comply with style guide (v-bind directives before static attributes):
+  - `MarkdownCreator.vue`: Reordered drag-and-drop class binding
+  - `ProjectDetailModal.vue`: Reordered ion-buttons attributes
+  - `ProjectsComponent.vue`: Fixed `isOpen` prop to kebab-case
+  - `EditorComponent.vue`: Reordered style and v-if attributes
+  - `ExperiencePage.vue`: Reordered ion-buttons slot attributes
+  - `HomeEditorComponent.vue`: Reordered button and input attributes
+  - `InformationComponent.vue`: Reordered v-if and fill attributes
+  - `HomePresentationPage.vue`: Full refactoring, attribute order N/A
+- **PostStore**: Fixed unused variable declaration (`let` to `const`)
+
+### Affected Files
+
+- New Files:
+  - `frontend/src/components/templates/home/HomeTemplate.vue`
+  - `frontend/src/components/templates/home/SectionWrapper.vue`
+  - `frontend/src/components/templates/home/templates.ts`
+  - `frontend/src/utils/types/homeTemplate.ts`
+  - `frontend/src/views/presentation/sections/FinalSection.vue`
+- Modified:
+  - `frontend/src/views/presentation/HomePresentationPage.vue`
+  - `frontend/src/components/markdown-creator/MarkdownCreator.vue`
+  - `frontend/src/components/projects/ProjectDetailModal.vue`
+  - `frontend/src/components/projects/ProjectsComponent.vue`
+  - `frontend/src/store/postStore.ts`
+  - `frontend/src/views/admin/HomeEditorComponent.vue`
+  - `frontend/src/views/blog/editor/EditorComponent.vue`
+  - `frontend/src/views/experience/ExperiencePage.vue`
+  - `frontend/src/views/presentation/information/InformationComponent.vue`
+  - `frontend/src/views/presentation/projects/ProjectsComponent.vue`
+
+---
+
 ## 11.9.0 - 2026-04-12
 
 ### Changed

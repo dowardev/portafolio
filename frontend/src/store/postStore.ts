@@ -32,7 +32,7 @@ export const usePostStore = defineStore("post", () => {
 
   function getPost(params: { id: string }): Post {
     const id = params.id;
-    let post = posts.value.filter((element) => {
+    const post = posts.value.filter((element) => {
       return (element as any).id == id;
     });
     return post[0];

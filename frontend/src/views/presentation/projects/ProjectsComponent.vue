@@ -60,7 +60,7 @@
   </ion-row>
 
   <ProjectDetailModal
-    :isOpen="modalOpen"
+    :is-open="modalOpen"
     :project="selectedProject"
     @close="modalOpen = false"
   />

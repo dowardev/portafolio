@@ -100,7 +100,7 @@
 
           <ion-title>{{ experiences[indexExperienceSeleted]?.title }}</ion-title>
 
-          <ion-buttons slot="end" v-if="experiences[indexExperienceSeleted]?.details?.website">
+          <ion-buttons v-if="experiences[indexExperienceSeleted]?.details?.website" slot="end">
             <ion-button @click="openUrl(experiences[indexExperienceSeleted].details.website)">
               <ion-icon :icon="openOutline"></ion-icon>
             </ion-button>

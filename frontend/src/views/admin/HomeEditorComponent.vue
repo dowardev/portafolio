@@ -54,8 +54,8 @@
           <ion-button
             slot="end"
             size="small"
-            @click="addTag"
             :disabled="!newTag.trim()"
+            @click="addTag"
           >
             Agregar
           </ion-button>
@@ -72,8 +72,8 @@
 
         <ion-item lines="none" class="ion-margin-top">
           <ion-label>Redes Sociales</ion-label>
-          <ion-button slot="end" size="small" id="social-popover-trigger">
-            <ion-icon :icon="addOutline" slot="start"></ion-icon>
+          <ion-button id="social-popover-trigger" slot="end" size="small">
+            <ion-icon slot="start" :icon="addOutline"></ion-icon>
             Añadir
           </ion-button>
         </ion-item>
@@ -87,7 +87,7 @@
                 button
                 @click="addSocial(social.name)"
               >
-                <ion-icon :icon="getIconByName(social.iconName)" slot="start"></ion-icon>
+                <ion-icon slot="start" :icon="getIconByName(social.iconName)"></ion-icon>
                 <ion-label>{{ social.name }}</ion-label>
               </ion-item>
             </ion-list>
@@ -100,7 +100,7 @@
           class="social-row"
         >
           <ion-item>
-            <ion-icon v-if="social.platform" :icon="getIconByName(social.platform)" slot="start"></ion-icon>
+            <ion-icon v-if="social.platform" slot="start" :icon="getIconByName(social.platform)"></ion-icon>
             <ion-input
               v-model="social.platform"
               placeholder="Plataforma"
@@ -124,8 +124,8 @@
           <input
             type="file"
             accept="image/*"
-            @change="onFileChange($event, 'logo')"
             class="ion-margin-top"
+            @change="onFileChange($event, 'logo')"
           />
           <img
             v-if="preview.logo"
@@ -140,8 +140,8 @@
           <input
             type="file"
             accept="image/*"
-            @change="onFileChange($event, 'photo')"
             class="ion-margin-top"
+            @change="onFileChange($event, 'photo')"
           />
           <img
             v-if="preview.photo"

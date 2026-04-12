@@ -52,12 +52,12 @@
                 >
                   <MarkdownCreator
                     :content="postContent"
+                    style="background: var(--ion-background-color-step-50)"
                     @image-upload="uploadImage({ file: $event })"
                     @update-content="
                       postContent = $event;
                       emitData();
                     "
-                    style="background: var(--ion-background-color-step-50)"
                   />
                 </ion-col>
               </ion-row>
@@ -80,9 +80,9 @@
 
       <transition name="slide">
         <ion-col
+          v-if="isPlatform('desktop') && settingsSectionVisible"
           size="3"
           class="settings-panel"
-          v-if="isPlatform('desktop') && settingsSectionVisible"
         >
           <ion-list>
             <ion-list-header>
@@ -99,7 +99,7 @@
             <ion-card>
               <OptionsEditorComponent
                 :cover="cover"
-                :disableUI="props.disableUI"
+                :disable-u-i="props.disableUI"
                 :post-status="props.postStatus"
                 @cover-change="(setCover({ file: $event }), emitData())"
                 @status-change="setPostStatus({ status: $event })"
@@ -180,7 +180,7 @@
       <ion-content>
         <OptionsEditorComponent
           :cover="cover"
-          :disableUI="props.disableUI"
+          :disable-u-i="props.disableUI"
           :post-status="props.postStatus"
           @cover-change="setCover({ file: $event })"
           @status-change="setPostStatus({ status: $event })"
@@ -262,7 +262,7 @@ const emits = defineEmits([
   "update-visible-editor-settings",
 ]);
 const modeDesignElements = isPlatform("ios") ? "ios" : ("md" as "md" | "ios");
-v$: useVuelidate();
+useVuelidate();
 modeDesignElements;
 
 const postTitle = ref(props.title);
