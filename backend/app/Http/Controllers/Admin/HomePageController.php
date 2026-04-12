@@ -166,7 +166,12 @@ class HomePageController extends Controller
             'projects' => $homepage->projects ?? [],
             'certificates' => $homepage->certificates ?? [],
             'freelance' => $homepage->freelance ?? [],
-            'showContactForm' => $homepage->show_contact_form ?? false,
+            'showContactForm' => is_array($homepage->show_contact_form) 
+                ? $homepage->show_contact_form 
+                : [
+                    'socials' => (bool) ($homepage->show_contact_form ?? false),
+                    'freelance' => (bool) ($homepage->show_contact_form ?? false),
+                  ],
         ]);
     }
 
@@ -408,7 +413,12 @@ class HomePageController extends Controller
             'projects' => $homepage->projects ?? [],
             'certificates' => $homepage->certificates ?? [],
             'freelance' => $homepage->freelance ?? [],
-            'showContactForm' => $homepage->show_contact_form ?? false,
+            'showContactForm' => is_array($homepage->show_contact_form) 
+                ? $homepage->show_contact_form 
+                : [
+                    'socials' => (bool) ($homepage->show_contact_form ?? false),
+                    'freelance' => (bool) ($homepage->show_contact_form ?? false),
+                  ],
         ]);
     }
 }

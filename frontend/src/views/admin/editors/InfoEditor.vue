@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="homeEditorStore.save">
+  <form @submit.prevent="handleSubmit">
     <ion-list>
       <ion-list-header>
         <ion-label>Información</ion-label>
@@ -9,18 +9,29 @@
         <ion-item lines="full">
           <ion-label position="stacked">Nombre</ion-label>
           <ion-input
-            v-model="homeEditorStore.form.name"
+            v-model="form.name"
             placeholder="Tu nombre o título"
-            required
+            :error-text="v$.form.name.$errors[0]?.$message.toString()"
+            :class="{
+              'ion-invalid': v$.form.name.$invalid && v$.form.name.$dirty,
+              'ion-touched': v$.form.name.$dirty,
+            }"
+            @ion-blur="v$.form.name.$touch()"
           ></ion-input>
         </ion-item>
 
         <ion-item lines="full">
           <ion-label position="stacked">Descripción</ion-label>
           <ion-textarea
-            v-model="homeEditorStore.form.description"
+            v-model="form.description"
             :rows="4"
             placeholder="Describe quién eres o qué haces"
+            :error-text="v$.form.description.$errors[0]?.$message.toString()"
+            :class="{
+              'ion-invalid': v$.form.description.$invalid && v$.form.description.$dirty,
+              'ion-touched': v$.form.description.$dirty,
+            }"
+            @ion-blur="v$.form.description.$touch()"
           ></ion-textarea>
         </ion-item>
       </ion-card>
@@ -67,7 +78,7 @@
 
       <ion-card class="shadow1">
         <template
-          v-for="(social, index) in homeEditorStore.form.socials"
+          v-for="(social, index) in form.socials"
           :key="index"
         >
           <ion-item lines="full">
@@ -83,6 +94,12 @@
               v-model="social.url"
               placeholder="https://..."
               type="url"
+              :error-text="v$.form.socials.$each.$response?.$errors[index]?.url?.[0]?.$message?.toString()"
+              :class="{
+                'ion-invalid': v$.form.socials.$each.$response?.$errors[index]?.url?.length,
+                'ion-touched': v$.form.socials.$dirty,
+              }"
+              @ion-blur="v$.form.socials.$touch()"
             ></ion-input>
 
             <ion-button
@@ -178,13 +195,27 @@
 
       <ion-card class="shadow1">
         <ion-item>
-          <ion-label>Mostrar formulario de contacto</ion-label>
+          <ion-label>Mostrar botón de contacto (sección info)</ion-label>
+          <ion-note slot="end">Junto a redes sociales</ion-note>
 
           <ion-toggle
             slot="end"
-            :checked="homeEditorStore.form.showContactForm"
+            :checked="homeEditorStore.form.showContactForm.socials"
             @ion-change="
-              homeEditorStore.form.showContactForm = $event.detail.checked
+              homeEditorStore.form.showContactForm.socials = $event.detail.checked
+            "
+          ></ion-toggle>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Mostrar botón de contacto (freelance)</ion-label>
+          <ion-note slot="end">En sección de plataformas</ion-note>
+
+          <ion-toggle
+            slot="end"
+            :checked="homeEditorStore.form.showContactForm.freelance"
+            @ion-change="
+              homeEditorStore.form.showContactForm.freelance = $event.detail.checked
             "
           ></ion-toggle>
         </ion-item>
@@ -296,7 +327,7 @@ import {
   IonTitle,
   IonButtons,
 } from "@ionic/vue";
-import { ref, computed, reactive } from "vue";
+import { ref, computed, reactive, watch } from "vue";
 import {
   addOutline,
   closeOutline,
@@ -306,6 +337,8 @@ import {
 } from "ionicons/icons";
 import * as ionicons from "ionicons/icons";
 import { useHomeEditorStore } from "@/store/homeEditorStore";
+import useVuelidate from "@vuelidate/core";
+import { required, minLength, maxLength, helpers, url as urlValidator } from "@vuelidate/validators";
 // end imports
 
 // vars and const
@@ -321,6 +354,76 @@ const fileNames = reactive<Record<string, string>>({});
 const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
 // end vars and const
+
+// validation
+const form = ref({
+  name: "",
+  description: "",
+  socials: [] as Array<{ platform: string; url: string; iconName: string }>,
+});
+
+// sync store → local form (when data loads from server)
+watch(
+  () => homeEditorStore.form.name,
+  (val) => { form.value.name = val; },
+  { immediate: true },
+);
+watch(
+  () => homeEditorStore.form.description,
+  (val) => { form.value.description = val; },
+  { immediate: true },
+);
+watch(
+  () => homeEditorStore.form.socials,
+  (val) => { form.value.socials = val; },
+  { immediate: true },
+);
+
+// sync local form → store (primitives only, on change)
+watch(
+  () => form.value.name,
+  (val) => { homeEditorStore.form.name = val; },
+);
+watch(
+  () => form.value.description,
+  (val) => { homeEditorStore.form.description = val; },
+);
+
+const alphaName = helpers.regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s-]+$/);
+
+const rules = {
+  form: {
+    name: {
+      required: helpers.withMessage("El nombre es requerido", required),
+      minLength: helpers.withMessage("El nombre debe tener al menos 2 caracteres", minLength(2)),
+      maxLength: helpers.withMessage("El nombre no puede exceder 50 caracteres", maxLength(50)),
+      alphaName: helpers.withMessage("El nombre solo puede contener letras, espacios y guiones", alphaName),
+    },
+    description: {
+      required: helpers.withMessage("La descripción es requerida", required),
+      minLength: helpers.withMessage("La descripción debe tener al menos 10 caracteres", minLength(10)),
+      maxLength: helpers.withMessage("La descripción no puede exceder 500 caracteres", maxLength(500)),
+    },
+    socials: {
+      $each: helpers.forEach({
+        url: {
+          required: helpers.withMessage("La URL es requerida", required),
+          url: helpers.withMessage("Debe ser una URL válida", urlValidator),
+        },
+      }),
+    },
+  },
+};
+
+const v$ = useVuelidate(rules, { form });
+
+async function handleSubmit() {
+  const isValid = await v$.value.$validate();
+  if (isValid) {
+    homeEditorStore.save();
+  }
+}
+// end validation
 
 // alert inputs
 const alertInputs = [
@@ -394,7 +497,7 @@ const availableSocials = [
 
 // computed
 const filteredSocials = computed(() => {
-  const selectedPlatforms = homeEditorStore.form.socials
+  const selectedPlatforms = form.value.socials
     .filter((s) => s.platform)
     .map((s) => s.platform.toLowerCase());
   return availableSocials.filter(
@@ -442,7 +545,7 @@ function addSocial(params: { platform: string }) {
   const { platform } = params;
   const social = availableSocials.find((s) => s.name === platform);
   const iconName = social ? social.iconName : "";
-  homeEditorStore.form.socials.push({ platform, url: "", iconName });
+  form.value.socials.push({ platform, url: "", iconName });
 }
 
 function selectSocial(platform: string) {
@@ -457,7 +560,7 @@ function closeSocialModal() {
 
 function removeSocial(params: { index: number }) {
   const { index } = params;
-  homeEditorStore.form.socials.splice(index, 1);
+  form.value.socials.splice(index, 1);
 }
 
 function onFileChange(params: { event: Event; type: "logo" | "photo" }) {
@@ -492,16 +595,16 @@ function closePreview() {
 }
 
 function fillTestData() {
-  homeEditorStore.form.name = "Juan Pérez";
+  form.value.name = "Juan Pérez";
   homeEditorStore.form.tags = [
     "Desarrollador",
     "Full-Stack",
     "Vue.js",
     "Laravel",
   ];
-  homeEditorStore.form.description =
+  form.value.description =
     "Desarrollador Full-Stack con más de 5 años de experiencia en el desarrollo de aplicaciones web y móviles. Especializado en Vue.js, Laravel y bases de datos relacionales.";
-  homeEditorStore.form.socials = [
+  form.value.socials = [
     {
       platform: "LinkedIn",
       url: "https://linkedin.com/in/juanperez",

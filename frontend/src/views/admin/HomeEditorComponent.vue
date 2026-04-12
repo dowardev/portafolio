@@ -152,10 +152,20 @@
         </ion-item>
 
         <ion-item class="ion-margin-top">
-          <ion-label>Mostrar formulario de contacto</ion-label>
+          <ion-label>Mostrar botón de contacto (sección info)</ion-label>
+          <ion-note slot="end">Junto a redes sociales</ion-note>
           <ion-toggle
-            :checked="form.showContactForm"
-            @ion-change="form.showContactForm = $event.detail.checked"
+            :checked="form.showContactForm.socials"
+            @ion-change="form.showContactForm.socials = $event.detail.checked"
+          ></ion-toggle>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Mostrar botón de contacto (freelance)</ion-label>
+          <ion-note slot="end">En sección de plataformas</ion-note>
+          <ion-toggle
+            :checked="form.showContactForm.freelance"
+            @ion-change="form.showContactForm.freelance = $event.detail.checked"
           ></ion-toggle>
         </ion-item>
       </div>
@@ -363,7 +373,10 @@ const form = reactive<HomePageData>({
   projects: [],
   certificates: [],
   freelance: [],
-  showContactForm: false,
+  showContactForm: {
+      socials: false,
+      freelance: false,
+    },
 });
 
 const preview = reactive({
@@ -400,7 +413,10 @@ onMounted(async () => {
     form.projects = data.projects || [];
     form.certificates = data.certificates || [];
     form.freelance = data.freelance || [];
-    form.showContactForm = data.showContactForm || false;
+    form.showContactForm = data.showContactForm || {
+      socials: false,
+      freelance: false,
+    };
     preview.logo = data.logoUrl || "";
     preview.photo = data.photoUrl || "";
   } catch (error) {

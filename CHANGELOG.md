@@ -1,5 +1,35 @@
 # Changelog
 
+## 11.8.0 - 2026-04-12
+
+### Added
+
+- Admin/HomeEditorComponent: Added separate toggle controls for contact form visibility (socials section vs freelance section)
+- Admin/InfoEditor: Added Vuelidate form validation with error messages for name, description, and socials URL fields
+- Frontend: Added mail icon for contact button in information section
+
+### Changed
+
+- Admin/InfoEditor: Refactored form to use local reactive state with two-way sync to store for proper validation handling
+- Presentation/InformationComponent: Updated contact button to use mail icon instead of chatbox
+
+### Breaking Changes
+
+- API type change: `showContactForm` field changed from `boolean` to object `{ socials: boolean, freelance: boolean }` for independent visibility control per section
+- Backend: `show_contact_form` column converted from boolean to JSON in homepage table
+
+### Affected Files
+
+- backend/app/Http/Controllers/Admin/HomePageController.php
+- backend/database/migrations/2026_04_11_000000_modify_show_contact_form_to_json.php
+- frontend/src/services/homeApi.ts
+- frontend/src/views/admin/HomeEditorComponent.vue
+- frontend/src/views/admin/editors/InfoEditor.vue
+- frontend/src/views/presentation/HomePresentationPage.vue
+- frontend/src/views/presentation/information/InformationComponent.vue
+
+---
+
 ## 11.7.0 - 2026-04-11
 
 ### Added

@@ -10,7 +10,12 @@
       <ion-row v-if="homeData.tags && homeData.tags.length > 0">
         <ion-col>
           <div :class="{ center: screenSize.preset == 'xs' }">
-            <ion-chip v-for="(tag, index) in homeData.tags" :key="index" color="primary">{{ tag }}</ion-chip>
+            <ion-chip
+              v-for="(tag, index) in homeData.tags"
+              :key="index"
+              color="primary"
+              >{{ tag }}</ion-chip
+            >
           </div>
         </ion-col>
       </ion-row>
@@ -27,7 +32,10 @@
         </ion-col>
       </ion-row>
 
-      <ion-row v-if="homeData.socials && homeData.socials.length > 0" class="center">
+      <ion-row
+        v-if="homeData.socials && homeData.socials.length > 0"
+        class="center"
+      >
         <ion-col :class="{ center: screenSize.preset == 'xs' }">
           <div class="social-buttons">
             <ion-button
@@ -35,23 +43,21 @@
               :key="social.platform"
               :href="social.url"
               target="_blank"
-              fill=clear
+              fill="clear"
             >
-              <ion-icon slot="icon-only" :icon="getSocialIcon(social.iconName || social.platform)"></ion-icon>
+              <ion-icon
+                slot="icon-only"
+                :icon="getSocialIcon(social.iconName || social.platform)"
+              ></ion-icon>
             </ion-button>
 
             <!-- form contact -->
             <ion-button
-              v-if="homeData.showContactForm"
-              @mouseover="fillContactForm = '#ff5b29'"
-              @mouseleave="fillContactForm = defaultColorFill"
+              fill="clear"
+              v-if="homeData.showContactForm?.socials"
               @click="openContactModal()"
             >
-              <ion-icon
-                slot="icon-only"
-                :style="{ color: fillContactForm }"
-                :icon="chatbox"
-              ></ion-icon>
+              <ion-icon slot="icon-only" :icon="mail"></ion-icon>
             </ion-button>
           </div>
         </ion-col>
@@ -68,11 +74,7 @@
       <div>
         <ion-row v-if="homeData.photoUrl">
           <ion-col style="display: flex" class="ion-justify-content-center">
-            <img
-              :src="homeData.photoUrl"
-              alt=""
-              class="img-perfil"
-            />
+            <img :src="homeData.photoUrl" alt="" class="img-perfil" />
           </ion-col>
         </ion-row>
 
@@ -304,18 +306,18 @@ import {
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import {
-    mail,
-    copyOutline,
-    openOutline,
-    calendar,
-    chatbox,
-    logoFacebook,
-    logoX,
-    logoTwitter,
-    logoInstagram,
-    logoLinkedin,
-    logoGitlab,
-    logoYoutube,
+  mail,
+  copyOutline,
+  openOutline,
+  calendar,
+  chatbox,
+  logoFacebook,
+  logoX,
+  logoTwitter,
+  logoInstagram,
+  logoLinkedin,
+  logoGitlab,
+  logoYoutube,
   logoTiktok,
   logoGithub,
   logoDiscord,
@@ -344,6 +346,7 @@ import {
   logoPlaystation,
   logoTumblr,
   logoVk,
+  mailOutline,
 } from "ionicons/icons";
 import { App } from "@capacitor/app";
 
@@ -419,9 +422,12 @@ function getSocialIcon(iconName: string): any {
   if (socialIconsMap[lower]) return socialIconsMap[lower];
 
   // try adding/removing 'logo' prefix in different casings
-  const withLogo = iconName.startsWith("logo") ? iconName : `logo${iconName.charAt(0).toUpperCase()}${iconName.slice(1)}`;
+  const withLogo = iconName.startsWith("logo")
+    ? iconName
+    : `logo${iconName.charAt(0).toUpperCase()}${iconName.slice(1)}`;
   if (socialIconsMap[withLogo]) return socialIconsMap[withLogo];
-  if (socialIconsMap[withLogo.toLowerCase()]) return socialIconsMap[withLogo.toLowerCase()];
+  if (socialIconsMap[withLogo.toLowerCase()])
+    return socialIconsMap[withLogo.toLowerCase()];
 
   // try compacted name (remove spaces)
   const compact = iconName.replace(/\s+/g, "").toLowerCase();
@@ -434,7 +440,8 @@ function getSocialIcon(iconName: string): any {
 const homeData = ref<HomePageData>({
   name: "Gonzalo Ponce",
   tags: ["Full-Stack Developer", "Blogger"],
-  description: "Desarrollador Full-Stack con mas de 5 años de experiencia en el desarrollo de aplicaciones multiplataforma.",
+  description:
+    "Desarrollador Full-Stack con mas de 5 años de experiencia en el desarrollo de aplicaciones multiplataforma.",
   socials: [],
   logoUrl: null,
   photoUrl: null,
@@ -444,7 +451,10 @@ const homeData = ref<HomePageData>({
   projects: [],
   certificates: [],
   freelance: [],
-  showContactForm: false,
+  showContactForm: {
+    socials: false,
+    freelance: false,
+  },
 });
 // end vars
 
@@ -473,13 +483,19 @@ onMounted(async () => {
         projects: data.projects || [],
         certificates: data.certificates || [],
         freelance: data.freelance || [],
-        showContactForm: data.showContactForm || false,
+        showContactForm: data.showContactForm || {
+        socials: false,
+        freelance: false,
+      },
       };
       console.log("HomeData socials after load:", homeData.value.socials);
       if (homeData.value.socials && homeData.value.socials.length > 0) {
         homeData.value.socials.forEach((s: any, i: number) => {
           const icon = getSocialIcon(s.iconName);
-          console.log(`Social[${i}]: platform="${s.platform}", iconName="${s.iconName}", icon=`, icon);
+          console.log(
+            `Social[${i}]: platform="${s.platform}", iconName="${s.iconName}", icon=`,
+            icon,
+          );
         });
       }
     }
@@ -557,7 +573,9 @@ async function openContactModal() {
   /* ensure SVGs respect the color value */
   fill: currentColor !important;
   stroke: none !important;
-  transition: color 0.15s ease, transform 0.08s ease;
+  transition:
+    color 0.15s ease,
+    transform 0.08s ease;
 }
 .social-buttons ion-button:hover ion-icon {
   color: var(--social-icon-color-hover, #ff5b29);
@@ -576,7 +594,6 @@ async function openContactModal() {
   width: 32dvh;
   height: 10dvh;
 }
-
 
 .blur-effect {
   backdrop-filter: blur(10px);

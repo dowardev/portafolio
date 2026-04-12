@@ -178,7 +178,7 @@
                   />
                 </div>
                 <div
-                  v-if="showContactForm"
+                  v-if="showContactForm.freelance"
                   style="cursor: pointer"
                   class="ion-padding-start ion-padding-end"
                   @click="openContactModal()"
@@ -206,7 +206,7 @@
                       <ion-card class="shadow-1">
                         <ion-card-header>
                           <div
-                            style="display: flex; justify-content: space-between"
+                            style="display: flex; justify-content: "
                           >
                             <img
                               :src="platform.image"
@@ -337,7 +337,10 @@ const selectedSegment = ref("contact");
 const designMode = ref<DesignMode>(systemController.getdesignMode()!);
 const screenSize = ref(systemController.getScreenSize()!);
 const freelancePlatforms = ref<FreelanceItem[]>([]);
-const showContactForm = ref(false);
+const showContactForm = ref({
+  socials: false,
+  freelance: false,
+});
 // end vars
 
 // life
@@ -349,7 +352,10 @@ onMounted(async () => {
   try {
     const data = await homeApi.getPublic();
     freelancePlatforms.value = data.freelance || [];
-    showContactForm.value = data.showContactForm || false;
+    showContactForm.value = data.showContactForm || {
+      socials: false,
+      freelance: false,
+    };
   } catch (error) {
     console.error("Error loading freelance data:", error);
   }

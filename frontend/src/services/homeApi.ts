@@ -15,7 +15,10 @@ export interface HomePageData {
   projects: ProjectItem[];
   certificates: CertificateItem[];
   freelance: FreelanceItem[];
-  showContactForm: boolean;
+  showContactForm: {
+    socials: boolean;
+    freelance: boolean;
+  };
 }
 
 export interface StackItem {
