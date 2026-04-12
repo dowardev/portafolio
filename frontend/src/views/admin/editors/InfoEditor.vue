@@ -51,14 +51,14 @@
       <ion-card-content>
         <div class="chips-container">
           <ion-chip
-            v-for="(tag, index) in homeEditorStore.form.tags"
+            v-for="(tag, index) in tags"
             :key="index"
             color="primary"
           >
             <ion-label>{{ tag }}</ion-label>
             <ion-icon
               :icon="closeOutline"
-              @click="removeTag({ index })"
+              @click="emit('remove-tag', index)"
             ></ion-icon>
           </ion-chip>
         </div>
@@ -131,15 +131,6 @@
             fileNames.logo
           }}</ion-note>
           <ion-note v-else slot="end">Seleccionar</ion-note>
-
-          <ion-button
-            slot="end"
-            fill="clear"
-            :disabled="!homeEditorStore.preview.logo"
-            @click.stop="showPreview({ type: 'logo' })"
-          >
-            <ion-icon :icon="eyeOutline"></ion-icon>
-          </ion-button>
         </ion-item>
 
         <input
@@ -164,15 +155,6 @@
           }}</ion-note>
 
           <ion-note v-else slot="end">Seleccionar</ion-note>
-
-          <ion-button
-            slot="end"
-            fill="clear"
-            :disabled="!homeEditorStore.preview.photo"
-            @click.stop="showPreview({ type: 'photo' })"
-          >
-            <ion-icon :icon="eyeOutline"></ion-icon>
-          </ion-button>
         </ion-item>
 
         <input
@@ -198,9 +180,12 @@
 
         <ion-toggle
           slot="end"
-          :checked="homeEditorStore.form.showContactForm.socials"
+          :checked="showContactForm.socials"
           @ion-change="
-            homeEditorStore.form.showContactForm.socials = $event.detail.checked
+            emit('update:showContactForm', {
+              ...showContactForm,
+              socials: $event.detail.checked,
+            })
           "
         ></ion-toggle>
       </ion-item>
@@ -211,10 +196,12 @@
 
         <ion-toggle
           slot="end"
-          :checked="homeEditorStore.form.showContactForm.freelance"
+          :checked="showContactForm.freelance"
           @ion-change="
-            homeEditorStore.form.showContactForm.freelance =
-              $event.detail.checked
+            emit('update:showContactForm', {
+              ...showContactForm,
+              freelance: $event.detail.checked,
+            })
           "
         ></ion-toggle>
       </ion-item>
@@ -231,29 +218,19 @@ import {
   IonTextarea,
   IonChip,
   IonIcon,
-  IonSearchbar,
   IonList,
-  IonContent,
   IonToggle,
-  IonAlert,
   IonButton,
   IonNote,
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
 } from "@ionic/vue";
-import { ref, computed, reactive, watch } from "vue";
+import { ref, reactive, watch } from "vue";
 import {
   addOutline,
   closeOutline,
   trashOutline,
   linkOutline,
-  eyeOutline,
 } from "ionicons/icons";
 import * as ionicons from "ionicons/icons";
-import { useHomeEditorStore } from "@/store/homeEditorStore";
 import useVuelidate from "@vuelidate/core";
 import {
   required,
@@ -264,62 +241,64 @@ import {
 } from "@vuelidate/validators";
 // end imports
 
+// props y emits
+interface SocialItem {
+  platform: string;
+  url: string;
+  iconName: string;
+}
+
+const props = defineProps<{
+  tags: string[];
+  initialData: {
+    name: string;
+    description: string;
+    socials: SocialItem[];
+  };
+  showContactForm: {
+    socials: boolean;
+    freelance: boolean;
+  };
+}>();
+
+const emit = defineEmits<{
+  "remove-tag": [index: number];
+  "file-change": [payload: { file: File; type: "logo" | "photo" }];
+  "update:showContactForm": [
+    value: { socials: boolean; freelance: boolean },
+  ];
+  save: [
+    payload: { name: string; description: string; socials: SocialItem[] },
+  ];
+}>();
+// end props y emits
+
 // vars and const
-const homeEditorStore = useHomeEditorStore();
 const isAddTagAlertOpen = ref(false);
-
-// social modal state and search
 const isSocialModalOpen = ref(false);
-const socialSearch = ref("");
-
 const fileNames = reactive<Record<string, string>>({});
-
-const isPreviewOpen = ref(false);
-const previewSrc = ref<string | null>(null);
 // end vars and const
 
 // validation
-const form = ref({
+const form = ref<{
+  name: string;
+  description: string;
+  socials: SocialItem[];
+}>({
   name: "",
   description: "",
-  socials: [] as Array<{ platform: string; url: string; iconName: string }>,
+  socials: [],
 });
 
-// sync store → local form (when data loads from server)
+// poblar form local cuando initialData cambia (datos del servidor)
 watch(
-  () => homeEditorStore.form.name,
-  (val) => {
-    form.value.name = val;
+  () => props.initialData,
+  (data) => {
+    form.value.name = data.name;
+    form.value.description = data.description;
+    form.value.socials = data.socials.map((s) => ({ ...s }));
   },
   { immediate: true },
-);
-watch(
-  () => homeEditorStore.form.description,
-  (val) => {
-    form.value.description = val;
-  },
-  { immediate: true },
-);
-watch(
-  () => homeEditorStore.form.socials,
-  (val) => {
-    form.value.socials = val;
-  },
-  { immediate: true },
-);
-
-// sync local form → store (primitives only, on change)
-watch(
-  () => form.value.name,
-  (val) => {
-    homeEditorStore.form.name = val;
-  },
-);
-watch(
-  () => form.value.description,
-  (val) => {
-    homeEditorStore.form.description = val;
-  },
 );
 
 const alphaName = helpers.regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s-]+$/);
@@ -368,38 +347,14 @@ const v$ = useVuelidate(rules, { form });
 async function handleSubmit() {
   const isValid = await v$.value.$validate();
   if (isValid) {
-    homeEditorStore.save();
+    emit("save", {
+      name: form.value.name,
+      description: form.value.description,
+      socials: form.value.socials,
+    });
   }
 }
 // end validation
-
-// alert inputs
-const alertInputs = [
-  {
-    name: "tag",
-    type: "text",
-    placeholder: "Nueva etiqueta",
-  },
-];
-
-function handleAddTagFromAlert(data: Record<string, string> | undefined) {
-  const tag = data && data.tag ? String(data.tag).trim() : "";
-  if (!tag) return false;
-  if (!homeEditorStore.form.tags.includes(tag)) {
-    homeEditorStore.form.tags.push(tag);
-  }
-  return true;
-}
-
-const alertButtons = [
-  { text: "Cancelar", role: "cancel" },
-  {
-    text: "Agregar",
-    handler: (data: Record<string, string> | undefined) =>
-      handleAddTagFromAlert(data),
-  },
-];
-// end alert inputs
 
 // available socials
 const availableSocials = [
@@ -443,25 +398,6 @@ const availableSocials = [
 ];
 // end available socials
 
-// computed
-const filteredSocials = computed(() => {
-  const selectedPlatforms = form.value.socials
-    .filter((s) => s.platform)
-    .map((s) => s.platform.toLowerCase());
-  return availableSocials.filter(
-    (social) => !selectedPlatforms.includes(social.name.toLowerCase()),
-  );
-});
-
-const displayedSocials = computed(() => {
-  const q = String(socialSearch.value || "")
-    .trim()
-    .toLowerCase();
-  if (!q) return filteredSocials.value;
-  return filteredSocials.value.filter((s) => s.name.toLowerCase().includes(q));
-});
-// end computed
-
 // functions
 function getIconByName(iconName: string) {
   if (!iconName) return linkOutline;
@@ -484,28 +420,6 @@ function getIconByName(iconName: string) {
   return linkOutline;
 }
 
-function removeTag(params: { index: number }) {
-  const { index } = params;
-  homeEditorStore.form.tags.splice(index, 1);
-}
-
-function addSocial(params: { platform: string }) {
-  const { platform } = params;
-  const social = availableSocials.find((s) => s.name === platform);
-  const iconName = social ? social.iconName : "";
-  form.value.socials.push({ platform, url: "", iconName });
-}
-
-function selectSocial(platform: string) {
-  addSocial({ platform });
-  closeSocialModal();
-}
-
-function closeSocialModal() {
-  isSocialModalOpen.value = false;
-  socialSearch.value = "";
-}
-
 function removeSocial(params: { index: number }) {
   const { index } = params;
   form.value.socials.splice(index, 1);
@@ -516,9 +430,8 @@ function onFileChange(params: { event: Event; type: "logo" | "photo" }) {
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
-  homeEditorStore.files[type] = file;
-  homeEditorStore.preview[type] = URL.createObjectURL(file);
   fileNames[type] = file.name;
+  emit("file-change", { file, type });
 }
 
 function openFileDialog(params: { type: "logo" | "photo" }) {
@@ -528,28 +441,8 @@ function openFileDialog(params: { type: "logo" | "photo" }) {
   if (input) input.click();
 }
 
-function showPreview(params: { type: "logo" | "photo" }) {
-  const { type } = params;
-  const src = homeEditorStore.preview[type] ?? null;
-  if (src) {
-    previewSrc.value = src;
-    isPreviewOpen.value = true;
-  }
-}
-
-function closePreview() {
-  isPreviewOpen.value = false;
-  previewSrc.value = null;
-}
-
 function fillTestData() {
   form.value.name = "Juan Pérez";
-  homeEditorStore.form.tags = [
-    "Desarrollador",
-    "Full-Stack",
-    "Vue.js",
-    "Laravel",
-  ];
   form.value.description =
     "Desarrollador Full-Stack con más de 5 años de experiencia en el desarrollo de aplicaciones web y móviles. Especializado en Vue.js, Laravel y bases de datos relacionales.";
   form.value.socials = [
@@ -571,7 +464,7 @@ function fillTestData() {
   ];
 }
 
-defineExpose({ fillTestData });
+defineExpose({ fillTestData, handleSubmit });
 // end functions
 </script>
 
@@ -582,19 +475,7 @@ defineExpose({ fillTestData });
   gap: 8px;
   margin-bottom: 8px;
 }
-.image-preview {
-  max-width: 100%;
-  max-height: 120px;
-  margin-top: 12px;
-  border-radius: 8px;
-}
 input[type="file"] {
   margin-top: 8px;
-}
-
-.modal-image {
-  max-width: 100%;
-  max-height: 75vh;
-  object-fit: contain;
 }
 </style>

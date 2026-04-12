@@ -24,7 +24,7 @@
         <ion-button
           v-tooltip="'Guardar cambios'"
           :disabled="homeEditorStore.saving"
-          @click="homeEditorStore.save()"
+          @click="infoEditorRef?.handleSubmit()"
         >
           <ion-spinner
             v-if="homeEditorStore.saving"
@@ -41,7 +41,16 @@
     <ion-grid>
       <ion-row class="ion-justify-content-center">
         <ion-col size="4">
-          <InfoEditor ref="infoEditorRef" />
+          <InfoEditor
+            ref="infoEditorRef"
+            :tags="homeEditorStore.form.tags"
+            :initial-data="initialData"
+            :show-contact-form="contactForm"
+            @remove-tag="handleRemoveTag"
+            @file-change="handleFileChange"
+            @update:show-contact-form="handleUpdateContactForm"
+            @save="handleSave"
+          />
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -64,7 +73,7 @@ import {
   IonButton,
   IonSpinner,
 } from "@ionic/vue";
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import InfoEditor from "../editors/InfoEditor.vue";
 import { useHomeEditorStore } from "@/store/homeEditorStore";
 import { bugOutline, saveOutline } from "ionicons/icons";
@@ -72,6 +81,50 @@ import { bugOutline, saveOutline } from "ionicons/icons";
 const homeEditorStore = useHomeEditorStore();
 const infoEditorRef = ref<InstanceType<typeof InfoEditor>>();
 const isDev = import.meta.env.DEV;
+
+// datos iniciales para el form del hijo (se actualiza cuando loadData termina)
+const initialData = computed(() => ({
+  name: homeEditorStore.form.name,
+  description: homeEditorStore.form.description,
+  socials: homeEditorStore.form.socials,
+}));
+
+// showContactForm como computed para manejar el tipo correcto
+const contactForm = computed(() => {
+  const val = homeEditorStore.form.showContactForm;
+  if (typeof val === "boolean") {
+    return { socials: val, freelance: val };
+  }
+  return val as { socials: boolean; freelance: boolean };
+});
+
+// handlers de emits
+function handleRemoveTag(index: number) {
+  homeEditorStore.form.tags.splice(index, 1);
+}
+
+function handleFileChange(payload: { file: File; type: "logo" | "photo" }) {
+  homeEditorStore.files[payload.type] = payload.file;
+  homeEditorStore.preview[payload.type] = URL.createObjectURL(payload.file);
+}
+
+function handleUpdateContactForm(value: {
+  socials: boolean;
+  freelance: boolean;
+}) {
+  (homeEditorStore.form.showContactForm as any) = value;
+}
+
+function handleSave(payload: {
+  name: string;
+  description: string;
+  socials: Array<{ platform: string; url: string; iconName: string }>;
+}) {
+  homeEditorStore.form.name = payload.name;
+  homeEditorStore.form.description = payload.description;
+  homeEditorStore.form.socials = payload.socials;
+  homeEditorStore.save();
+}
 
 onMounted(() => {
   homeEditorStore.loadData();

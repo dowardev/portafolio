@@ -1,5 +1,26 @@
 # Changelog
 
+## 11.8.2 - 2026-04-12
+
+### Changed
+
+- Admin/InfoEditor: Refactored to use props/emits pattern instead of direct store coupling for better reusability
+- Admin/InfoEditor: Removed store imports and replaced with reactive props and event emits
+- Admin/InfoEditor: Added proper TypeScript interface for props and emits
+- Admin/InfoEditor: Uses computed initialData synced from store via parent component
+- Admin/InfoEditor: Form state now managed locally with validation, emits save event to parent
+- Admin/InfoEditor: Removed preview modal and associated functionality (moved to parent)
+- Admin/InfoEditor: Removed tag alert functionality (tags now managed via parent)
+- Admin/AdminInfoPage: Added handlers for child component events, manages store synchronization
+- Admin/AdminInfoPage: Connected save button to child component's handleSubmit method
+
+### Affected Files
+
+- frontend/src/views/admin/editors/InfoEditor.vue
+- frontend/src/views/admin/sections/AdminInfoPage.vue
+
+---
+
 ## 11.8.1 - 2026-04-12
 
 ### Changed
