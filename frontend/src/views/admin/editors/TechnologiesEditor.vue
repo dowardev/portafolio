@@ -17,14 +17,15 @@
             label-placement="floating"
             :value="tech.name"
             placeholder="Ej: Vue"
-            :class="{ 'ion-invalid': hasError({ index, field: 'name' }) }"
+            :error-text="getError({ index, field: 'name' })"
+            :class="{
+              'ion-invalid': hasError({ index, field: 'name' }),
+              'ion-touched': touched[index]?.name,
+            }"
             @ion-input="updateTech({ index, field: 'name', value: $event.detail.value! })"
             @ion-blur="touchField({ index, field: 'name' })"
           ></ion-input>
         </ion-item>
-        <span v-if="hasError({ index, field: 'name' })" class="error">
-          {{ getError({ index, field: "name" }) }}
-        </span>
 
         <ion-item lines="full">
           <ion-select
@@ -300,9 +301,5 @@ function removeTech(params: { index: number }) {
   color: var(--ion-color-danger);
   font-size: 12px;
   padding: 0 16px;
-}
-
-.ion-invalid {
-  --border-color: var(--ion-color-danger);
 }
 </style>

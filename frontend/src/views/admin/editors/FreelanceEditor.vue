@@ -17,14 +17,15 @@
             label-placement="floating"
             :value="platform.name"
             placeholder="Ej: Upwork"
-            :class="{ 'ion-invalid': hasError({ index, field: 'name' }) }"
+            :error-text="getPlatformError({ index, field: 'name' })"
+            :class="{
+              'ion-invalid': hasPlatformError({ index, field: 'name' }),
+              'ion-touched': touched[index]?.name,
+            }"
             @ion-input="updateItem({ index, field: 'name', value: $event.detail.value! })"
             @ion-blur="touchField({ index, field: 'name' })"
           ></ion-input>
         </ion-item>
-        <span v-if="hasError({ index, field: 'name' })" class="error"
-          >Nombre es requerido</span
-        >
 
         <ion-item lines="full">
           <ion-input
@@ -32,14 +33,15 @@
             label-placement="floating"
             :value="platform.url"
             placeholder="https://..."
-            :class="{ 'ion-invalid': hasError({ index, field: 'url' }) }"
+            :error-text="getPlatformError({ index, field: 'url' })"
+            :class="{
+              'ion-invalid': hasPlatformError({ index, field: 'url' }),
+              'ion-touched': touched[index]?.url,
+            }"
             @ion-input="updateItem({ index, field: 'url', value: $event.detail.value! })"
             @ion-blur="touchField({ index, field: 'url' })"
           ></ion-input>
         </ion-item>
-        <span v-if="hasError({ index, field: 'url' })" class="error"
-          >Link es requerido</span
-        >
 
         <ion-item lines="full" button @click="openFileDialog({ index })">
           <ion-label>Logo de la plataforma</ion-label>
@@ -68,9 +70,12 @@
           @change="onMainFileChange({ event: $event, index })"
         />
 
-        <span v-if="hasError({ index, field: 'image' })" class="error"
-          >Logo es requerido</span
+        <span
+          v-if="hasPlatformError({ index, field: 'image' })"
+          class="error"
         >
+          {{ getPlatformError({ index, field: "image" }) }}
+        </span>
 
         <ion-list>
           <ion-list-header>
@@ -96,12 +101,18 @@
                   label-placement="floating"
                   :value="comment.title"
                   placeholder="Nombre del proyecto"
+                  :error-text="getCommentError({
+                    platformIndex: index,
+                    commentIndex,
+                    field: 'title',
+                  })"
                   :class="{
                     'ion-invalid': hasCommentError({
                       platformIndex: index,
                       commentIndex,
                       field: 'title',
                     }),
+                    'ion-touched': commentTouched[`${index}_${commentIndex}`]?.title,
                   }"
                   @ion-input="
                     updateComment({
@@ -114,12 +125,6 @@
                   @ion-blur="touchCommentField({ platformIndex: index, commentIndex, field: 'title' })"
                 ></ion-input>
               </ion-item>
-              <span
-                v-if="hasCommentError({ platformIndex: index, commentIndex, field: 'title' })"
-                class="error"
-              >
-                Título es requerido
-              </span>
 
               <ion-item lines="full">
                 <ion-input
@@ -129,6 +134,19 @@
                   :value="comment.rating"
                   min="1"
                   max="5"
+                  :error-text="getCommentError({
+                    platformIndex: index,
+                    commentIndex,
+                    field: 'rating',
+                  })"
+                  :class="{
+                    'ion-invalid': hasCommentError({
+                      platformIndex: index,
+                      commentIndex,
+                      field: 'rating',
+                    }),
+                    'ion-touched': commentTouched[`${index}_${commentIndex}`]?.rating,
+                  }"
                   @ion-input="
                     updateComment({
                       platformIndex: index,
@@ -137,6 +155,7 @@
                       value: parseInt($event.detail.value || '5')
                     })
                   "
+                  @ion-blur="touchCommentField({ platformIndex: index, commentIndex, field: 'rating' })"
                 ></ion-input>
               </ion-item>
 
@@ -257,6 +276,13 @@ import {
   closeOutline,
 } from "ionicons/icons";
 import { computed, reactive, ref } from "vue";
+import useVuelidate from "@vuelidate/core";
+import {
+  required,
+  url as urlValidator,
+  between,
+  helpers,
+} from "@vuelidate/validators";
 import type { FreelanceItem } from "@/services/homeApi";
 // end imports
 
@@ -273,8 +299,8 @@ const emit = defineEmits<{
 
 // vars and const
 const pendingFiles: Record<string, File> = {};
-const touched = reactive<Record<string, boolean>>({});
-const commentTouched = reactive<Record<string, boolean>>({});
+const touched = reactive<Record<number, Record<string, boolean>>>({});
+const commentTouched = reactive<Record<string, Record<string, boolean>>>({});
 
 const fileNames = reactive<Record<number, string>>({});
 const commentFileNames = reactive<Record<string, string>>({});
@@ -282,67 +308,93 @@ const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
 // end vars and const
 
-// computed
-const allValid = computed(() => {
-  if (props.modelValue.length === 0) return true;
-  return props.modelValue.every((platform, pIdx) => {
-    if (!platform.name?.trim() || !platform.url?.trim() || !platform.image)
-      return false;
-    return platform.comments.every((comment) => {
-      return comment.title?.trim();
+// vuelidate — platform level
+const platformRules = {
+  items: {
+    $each: helpers.forEach({
+      name: {
+        required: helpers.withMessage("Nombre es requerido", required),
+      },
+      url: {
+        required: helpers.withMessage("Link es requerido", required),
+        url: helpers.withMessage("Debe ser una URL válida", urlValidator),
+      },
+      image: {
+        required: helpers.withMessage("Logo es requerido", required),
+      },
+    }),
+  },
+};
+
+const v$ = useVuelidate(platformRules, {
+  items: computed(() => props.modelValue),
+});
+
+// vuelidate — comment level (flattened)
+interface FlatComment {
+  platformIndex: number;
+  commentIndex: number;
+  title: string;
+  rating: number;
+}
+
+const flatComments = computed<FlatComment[]>(() => {
+  const result: FlatComment[] = [];
+  props.modelValue.forEach((platform, pIdx) => {
+    platform.comments.forEach((comment, cIdx) => {
+      result.push({
+        platformIndex: pIdx,
+        commentIndex: cIdx,
+        title: comment.title,
+        rating: comment.rating,
+      });
     });
   });
+  return result;
 });
-// end computed
+
+const commentRules = {
+  comments: {
+    $each: helpers.forEach({
+      title: {
+        required: helpers.withMessage("Título es requerido", required),
+      },
+      rating: {
+        required: helpers.withMessage("Calificación es requerida", required),
+        between: helpers.withMessage(
+          "Calificación debe estar entre 1 y 5",
+          between(1, 5),
+        ),
+      },
+    }),
+  },
+};
+
+const vComments$ = useVuelidate(commentRules, { comments: flatComments });
+
+const allValid = computed(() => {
+  if (props.modelValue.length === 0) return true;
+  return !v$.value.$invalid && !vComments$.value.$invalid;
+});
+// end vuelidate
 
 // functions
-function hasError(params: { index: number; field: string }): boolean {
+function hasPlatformError(params: { index: number; field: string }): boolean {
   const { index, field } = params;
-  const key = `${index}_${field}`;
-  if (!touched[key]) return false;
-  const platform = props.modelValue[index];
-  if (field === "name") return !platform?.name?.trim();
-  if (field === "url") return !platform?.url?.trim();
-  if (field === "image") return !platform?.image;
-  return false;
+  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
+  return touched[index]?.[field] === true && errors?.length > 0;
 }
 
-function openFileDialog(params: { index: number }) {
-  const { index } = params;
-  const selector = `input[data-type="freelance_${index}"]`;
-  const input = document.querySelector(selector) as HTMLInputElement | null;
-  if (input) input.click();
-}
-
-function showPreview(params: { index: number }) {
-  const { index } = params;
-  const platform = props.modelValue[index];
-  const src = platform?.image ?? null;
-  if (src) {
-    previewSrc.value = src;
-    isPreviewOpen.value = true;
-  }
-}
-
-function closePreview() {
-  isPreviewOpen.value = false;
-  previewSrc.value = null;
+function getPlatformError(params: { index: number; field: string }): string {
+  const { index, field } = params;
+  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
+  return errors?.[0]?.$message || "";
 }
 
 function touchField(params: { index: number; field: string }) {
   const { index, field } = params;
-  touched[`${index}_${field}`] = true;
-}
-
-function hasCommentError(
-  params: { platformIndex: number; commentIndex: number; field: string },
-): boolean {
-  const { platformIndex, commentIndex, field } = params;
-  const key = `${platformIndex}_${commentIndex}_${field}`;
-  if (!commentTouched[key]) return false;
-  const comment = props.modelValue[platformIndex]?.comments[commentIndex];
-  if (field === "title") return !comment?.title?.trim();
-  return false;
+  if (!touched[index]) touched[index] = {};
+  touched[index][field] = true;
 }
 
 function touchCommentField(params: {
@@ -351,7 +403,47 @@ function touchCommentField(params: {
   field: string;
 }) {
   const { platformIndex, commentIndex, field } = params;
-  commentTouched[`${platformIndex}_${commentIndex}_${field}`] = true;
+  const key = `${platformIndex}_${commentIndex}`;
+  if (!commentTouched[key]) commentTouched[key] = {};
+  commentTouched[key][field] = true;
+}
+
+function getFlatCommentIndex(params: {
+  platformIndex: number;
+  commentIndex: number;
+}): number {
+  const { platformIndex, commentIndex } = params;
+  let flatIdx = 0;
+  for (let p = 0; p < platformIndex; p++) {
+    flatIdx += props.modelValue[p]?.comments?.length ?? 0;
+  }
+  return flatIdx + commentIndex;
+}
+
+function hasCommentError(params: {
+  platformIndex: number;
+  commentIndex: number;
+  field: string;
+}): boolean {
+  const { platformIndex, commentIndex, field } = params;
+  const key = `${platformIndex}_${commentIndex}`;
+  if (!commentTouched[key]?.[field]) return false;
+  const flatIdx = getFlatCommentIndex({ platformIndex, commentIndex });
+  const errors =
+    vComments$.value.comments.$each.$response.$errors[flatIdx]?.[field];
+  return errors?.length > 0;
+}
+
+function getCommentError(params: {
+  platformIndex: number;
+  commentIndex: number;
+  field: string;
+}): string {
+  const { platformIndex, commentIndex, field } = params;
+  const flatIdx = getFlatCommentIndex({ platformIndex, commentIndex });
+  const errors =
+    vComments$.value.comments.$each.$response.$errors[flatIdx]?.[field];
+  return errors?.[0]?.$message || "";
 }
 
 function isPlatformValid(params: { platformIndex: number }): boolean {
@@ -388,6 +480,8 @@ function updateItem(params: { index: number; field: string; value: string }) {
 function removeItem(params: { index: number }) {
   const { index } = params;
   delete pendingFiles[`freelance_image_${index}`];
+  delete touched[index];
+  delete fileNames[index];
   emitFiles();
   emit(
     "update:modelValue",
@@ -440,9 +534,10 @@ function updateCommentText(params: {
 
 function removeComment(params: { platformIndex: number; commentIndex: number }) {
   const { platformIndex, commentIndex } = params;
-  delete pendingFiles[
-    `freelance_comment_image_${platformIndex}_${commentIndex}`
-  ];
+  const key = `${platformIndex}_${commentIndex}`;
+  delete pendingFiles[`freelance_comment_image_${platformIndex}_${commentIndex}`];
+  delete commentTouched[key];
+  delete commentFileNames[key];
   emitFiles();
   const updated = [...props.modelValue];
   updated[platformIndex] = {
@@ -452,6 +547,28 @@ function removeComment(params: { platformIndex: number; commentIndex: number }) 
     ),
   };
   emit("update:modelValue", updated);
+}
+
+function openFileDialog(params: { index: number }) {
+  const { index } = params;
+  const selector = `input[data-type="freelance_${index}"]`;
+  const input = document.querySelector(selector) as HTMLInputElement | null;
+  if (input) input.click();
+}
+
+function showPreview(params: { index: number }) {
+  const { index } = params;
+  const platform = props.modelValue[index];
+  const src = platform?.image ?? null;
+  if (src) {
+    previewSrc.value = src;
+    isPreviewOpen.value = true;
+  }
+}
+
+function closePreview() {
+  isPreviewOpen.value = false;
+  previewSrc.value = null;
 }
 
 function onMainFileChange(params: { event: Event; index: number }) {
@@ -504,7 +621,6 @@ function onCommentFileChange(params: {
   emitFiles();
 }
 // end functions
-// end functions
 </script>
 
 <style scoped>
@@ -512,10 +628,6 @@ function onCommentFileChange(params: {
   color: var(--ion-color-danger);
   font-size: 12px;
   padding: 0 16px;
-}
-
-.ion-invalid {
-  --border-color: var(--ion-color-danger);
 }
 
 .modal-image {

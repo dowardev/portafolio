@@ -18,14 +18,15 @@
           label-placement="floating"
           :value="exp.title"
           placeholder="Ej: Upwork"
-          :class="{ 'ion-invalid': hasError({ index, field: 'title' }) }"
+          :error-text="getError({ index, field: 'title' })"
+          :class="{
+            'ion-invalid': hasError({ index, field: 'title' }),
+            'ion-touched': touched[index]?.title,
+          }"
           @ion-input="updateItem({ index, field: 'title', value: $event.detail.value! })"
           @ion-blur="touchField({ index, field: 'title' })"
         ></ion-input>
       </ion-item>
-      <span v-if="hasError({ index, field: 'title' })" class="error"
-        >Nombre es requerido</span
-      >
 
       <ion-item lines="full">
         <ion-input
@@ -33,14 +34,15 @@
           placeholder="Ej: Marzo 2023 - Actualidad"
           label="Fecha"
           label-placement="floating"
-          :class="{ 'ion-invalid': hasError({ index, field: 'date' }) }"
+          :error-text="getError({ index, field: 'date' })"
+          :class="{
+            'ion-invalid': hasError({ index, field: 'date' }),
+            'ion-touched': touched[index]?.date,
+          }"
           @ion-input="updateItem({ index, field: 'date', value: $event.detail.value! })"
           @ion-blur="touchField({ index, field: 'date' })"
         ></ion-input>
       </ion-item>
-      <span v-if="hasError({ index, field: 'date' })" class="error"
-        >Fecha es requerida</span
-      >
 
       <ion-item lines="full" button @click="openFileDialog({ index })">
         <ion-label>Logo de la empresa</ion-label>
@@ -69,7 +71,12 @@
         @change="onMainFileChange({ event: $event, index })"
       />
 
-      <span v-if="hasError({ index, field: 'img' })" class="error">Logo es requerido</span>
+      <span
+        v-if="hasError({ index, field: 'img' })"
+        class="error"
+      >
+        {{ getError({ index, field: "img" }) }}
+      </span>
 
       <ion-item lines="full">
         <ion-textarea
@@ -78,14 +85,15 @@
           :value="exp.details.description"
           :rows="3"
           placeholder="Descripción del trabajo..."
-          :class="{ 'ion-invalid': hasError({ index, field: 'description' }) }"
+          :error-text="getError({ index, field: 'description' })"
+          :class="{
+            'ion-invalid': hasError({ index, field: 'description' }),
+            'ion-touched': touched[index]?.description,
+          }"
           @ion-input="updateDetail({ index, field: 'description', value: $event.detail.value! })"
           @ion-blur="touchField({ index, field: 'description' })"
         ></ion-textarea>
       </ion-item>
-      <span v-if="hasError({ index, field: 'description' })" class="error"
-        >Descripción es requerida</span
-      >
 
       <ion-item lines="full">
         <ion-input
@@ -158,6 +166,8 @@ import {
   closeOutline,
 } from "ionicons/icons";
 import { computed, reactive, ref } from "vue";
+import useVuelidate from "@vuelidate/core";
+import { required, helpers } from "@vuelidate/validators";
 import type { ExperienceItem } from "@/services/homeApi";
 import TechnologiesEditor from "./TechnologiesEditor.vue";
 // end imports
@@ -175,7 +185,7 @@ const emit = defineEmits<{
 
 // vars and const
 const pendingFiles: Record<string, File> = {};
-const touched = reactive<Record<string, boolean>>({});
+const touched = reactive<Record<number, Record<string, boolean>>>({});
 
 const fileNames = reactive<Record<number, string>>({});
 
@@ -183,36 +193,66 @@ const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
 // end vars and const
 
-// computed
+// vuelidate
+const descriptionRequired = helpers.withMessage(
+  "Descripción es requerida",
+  (value: string, siblings: ExperienceItem) => {
+    return !!siblings?.details?.description?.trim();
+  },
+);
+
+const rules = {
+  items: {
+    $each: helpers.forEach({
+      title: {
+        required: helpers.withMessage("Nombre es requerido", required),
+      },
+      date: {
+        required: helpers.withMessage("Fecha es requerida", required),
+      },
+      img: {
+        required: helpers.withMessage("Logo es requerido", required),
+      },
+      description: {
+        required: descriptionRequired,
+      },
+    }),
+  },
+};
+
+// Flatten details.description into a virtual "description" field for forEach validation
+const flatItems = computed(() =>
+  props.modelValue.map((exp) => ({
+    ...exp,
+    description: exp.details?.description ?? "",
+  })),
+);
+
+const v$ = useVuelidate(rules, { items: flatItems });
+
 const allValid = computed(() => {
   if (props.modelValue.length === 0) return true;
-  return props.modelValue.every((exp) => {
-    return (
-      exp.title?.trim() &&
-      exp.date?.trim() &&
-      exp.img &&
-      exp.details?.description?.trim()
-    );
-  });
+  return !v$.value.$invalid;
 });
-// end computed
+// end vuelidate
 
 // functions
 function hasError(params: { index: number; field: string }): boolean {
   const { index, field } = params;
-  const key = `${index}_${field}`;
-  if (!touched[key]) return false;
-  const exp = props.modelValue[index];
-  if (field === "title") return !exp?.title?.trim();
-  if (field === "date") return !exp?.date?.trim();
-  if (field === "img") return !exp?.img;
-  if (field === "description") return !exp?.details?.description?.trim();
-  return false;
+  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
+  return touched[index]?.[field] === true && errors?.length > 0;
+}
+
+function getError(params: { index: number; field: string }): string {
+  const { index, field } = params;
+  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
+  return errors?.[0]?.$message || "";
 }
 
 function touchField(params: { index: number; field: string }) {
   const { index, field } = params;
-  touched[`${index}_${field}`] = true;
+  if (!touched[index]) touched[index] = {};
+  touched[index][field] = true;
 }
 
 function emitFiles() {
@@ -261,7 +301,7 @@ function updateTechnologies(
 function updateTechFiles(params: { expIndex: number; files: Record<number, File> }) {
   const { expIndex, files } = params;
   const prefix = `exp_tech_image_${expIndex}_`;
-  
+
   Object.keys(pendingFiles).forEach((key) => {
     if (key.startsWith(prefix)) {
       const techIndex = key.replace(prefix, "");
@@ -270,7 +310,7 @@ function updateTechFiles(params: { expIndex: number; files: Record<number, File>
       }
     }
   });
-  
+
   for (const [techIndex, file] of Object.entries(files)) {
     pendingFiles[`exp_tech_image_${expIndex}_${techIndex}`] = file;
   }
@@ -315,6 +355,8 @@ function closePreview() {
 function removeItem(params: { index: number }) {
   const { index } = params;
   delete pendingFiles[`exp_image_${index}`];
+  delete touched[index];
+  delete fileNames[index];
   emitFiles();
   emit(
     "update:modelValue",
@@ -322,47 +364,13 @@ function removeItem(params: { index: number }) {
   );
 }
 // end functions
-// end functions
 </script>
 
 <style scoped>
-.exp-item {
-  border: 1px solid var(--ion-color-light);
-  border-radius: 8px;
-  padding: 8px;
-  margin-bottom: 16px;
-}
-
-.preview-row {
-  display: flex;
-  justify-content: center;
-  margin: 8px 0;
-}
-
-.exp-preview {
-  max-width: 80px;
-  max-height: 45px;
-}
-
-.file-upload {
-  padding: 8px 16px;
-}
-
-.upload-label {
-  display: block;
-  font-size: 12px;
-  color: var(--ion-color-medium);
-  margin-bottom: 4px;
-}
-
 .error {
   color: var(--ion-color-danger);
   font-size: 12px;
   padding: 0 16px;
-}
-
-.ion-invalid {
-  --border-color: var(--ion-color-danger);
 }
 
 .modal-image {

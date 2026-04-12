@@ -18,8 +18,10 @@
               label-placement="floating"
               :value="category.name"
               placeholder="Ej: Frameworks"
+              :error-text="getCategoryError({ catIndex, field: 'name' })"
               :class="{
                 'ion-invalid': hasCategoryError({ catIndex, field: 'name' }),
+                'ion-touched': categoryTouched[catIndex]?.name,
               }"
               @ion-input="
                 updateCategory({
@@ -31,13 +33,6 @@
               @ion-blur="touchCategoryField({ catIndex, field: 'name' })"
             ></ion-input>
           </ion-item>
-
-          <span
-            v-if="hasCategoryError({ catIndex, field: 'name' })"
-            class="error"
-          >
-            Nombre de categoría es requerido
-          </span>
 
           <ion-list>
             <ion-list-header>
@@ -64,12 +59,14 @@
                   label-placement="floating"
                   :value="tech.name"
                   placeholder="Ej: Vue"
+                  :error-text="getTechError({ catIndex, techIndex, field: 'name' })"
                   :class="{
                     'ion-invalid': hasTechError({
                       catIndex,
                       techIndex,
                       field: 'name',
                     }),
+                    'ion-touched': techTouched[`${catIndex}_${techIndex}`]?.name,
                   }"
                   @ion-input="
                     updateTechnology({
@@ -84,13 +81,6 @@
                   "
                 ></ion-input>
               </ion-item>
-
-              <span
-                v-if="hasTechError({ catIndex, techIndex, field: 'name' })"
-                class="error"
-              >
-                Nombre es requerido
-              </span>
 
               <ion-item lines="full">
                 <ion-select
@@ -154,6 +144,13 @@
                 style="display: none"
                 @change="onFileChange({ event: $event, catIndex, techIndex })"
               />
+
+              <span
+                v-if="hasTechError({ catIndex, techIndex, field: 'source' })"
+                class="error"
+              >
+                {{ getTechError({ catIndex, techIndex, field: 'source' }) }}
+              </span>
 
               <ion-item lines="full">
                 <ion-input
@@ -245,6 +242,8 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { computed, reactive, ref } from "vue";
+import useVuelidate from "@vuelidate/core";
+import { required, helpers } from "@vuelidate/validators";
 import type { SkillCategory } from "@/services/homeApi";
 import TechIconSelector from "./TechIconSelector.vue";
 // end imports
@@ -262,52 +261,96 @@ const emit = defineEmits<{
 
 // vars and const
 const pendingFiles: Record<string, File> = {};
-const categoryTouched = reactive<Record<string, boolean>>({});
-const techTouched = reactive<Record<string, boolean>>({});
+const categoryTouched = reactive<Record<number, Record<string, boolean>>>({});
+const techTouched = reactive<Record<string, Record<string, boolean>>>({});
 const previewModalIsOpen = ref(false);
 const previewImageUrl = ref("");
 // end vars and const
 
-// computed
-const allValid = computed(() => {
-  if (props.modelValue.length === 0) return true;
-  return props.modelValue.every((cat) => {
-    if (!cat.name?.trim()) return false;
-    return cat.technologies.every((tech) => {
-      if (!tech.name?.trim()) return false;
-      if (tech.type === "img" && !tech.image) return false;
-      if (tech.type === "icon" && !tech.iconName) return false;
-      return true;
-    });
-  });
+// vuelidate — category level
+const categoryRules = {
+  categories: {
+    $each: helpers.forEach({
+      name: {
+        required: helpers.withMessage(
+          "Nombre de categoría es requerido",
+          required,
+        ),
+      },
+    }),
+  },
+};
+
+const vCat$ = useVuelidate(categoryRules, {
+  categories: computed(() => props.modelValue),
 });
-// end computed
 
-// functions
-function hasCategoryError(params: {
-  catIndex: number;
-  field: string;
-}): boolean {
-  const { catIndex, field } = params;
-  const key = `${catIndex}_${field}`;
-  const cat = props.modelValue[catIndex];
-  return categoryTouched[key] && !cat?.[field as keyof SkillCategory];
-}
-
-function touchCategoryField(params: { catIndex: number; field: string }) {
-  const { catIndex, field } = params;
-  categoryTouched[`${catIndex}_${field}`] = true;
-}
-
-function hasTechError(params: {
+// vuelidate — technology level (flattened)
+interface FlatTech {
   catIndex: number;
   techIndex: number;
-  field: string;
-}): boolean {
-  const { catIndex, techIndex, field } = params;
-  const key = `${catIndex}_${techIndex}_${field}`;
-  const tech = props.modelValue[catIndex]?.technologies[techIndex];
-  return techTouched[key] && !tech?.[field as keyof typeof tech];
+  name: string;
+  type: "img" | "icon";
+  source: string; // virtual: image or iconName depending on type
+}
+
+const flatTechs = computed<FlatTech[]>(() => {
+  const result: FlatTech[] = [];
+  props.modelValue.forEach((cat, cIdx) => {
+    cat.technologies.forEach((tech, tIdx) => {
+      result.push({
+        catIndex: cIdx,
+        techIndex: tIdx,
+        name: tech.name,
+        type: tech.type,
+        source: tech.type === "img" ? tech.image : tech.iconName,
+      });
+    });
+  });
+  return result;
+});
+
+const techRules = {
+  techs: {
+    $each: helpers.forEach({
+      name: {
+        required: helpers.withMessage("Nombre es requerido", required),
+      },
+      source: {
+        required: helpers.withMessage(
+          "Debe seleccionar una imagen o icono",
+          required,
+        ),
+      },
+    }),
+  },
+};
+
+const vTech$ = useVuelidate(techRules, { techs: flatTechs });
+
+const allValid = computed(() => {
+  if (props.modelValue.length === 0) return true;
+  return !vCat$.value.$invalid && !vTech$.value.$invalid;
+});
+// end vuelidate
+
+// functions
+function touchCategoryField(params: { catIndex: number; field: string }) {
+  const { catIndex, field } = params;
+  if (!categoryTouched[catIndex]) categoryTouched[catIndex] = {};
+  categoryTouched[catIndex][field] = true;
+}
+
+function hasCategoryError(params: { catIndex: number; field: string }): boolean {
+  const { catIndex, field } = params;
+  const errors = vCat$.value.categories.$each.$response.$errors[catIndex]?.[field];
+  return categoryTouched[catIndex]?.[field] === true && errors?.length > 0;
+}
+
+function getCategoryError(params: { catIndex: number; field: string }): string {
+  const { catIndex, field } = params;
+  const errors = vCat$.value.categories.$each.$response.$errors[catIndex]?.[field];
+  return errors?.[0]?.$message || "";
 }
 
 function touchTechField(params: {
@@ -316,7 +359,47 @@ function touchTechField(params: {
   field: string;
 }) {
   const { catIndex, techIndex, field } = params;
-  techTouched[`${catIndex}_${techIndex}_${field}`] = true;
+  const key = `${catIndex}_${techIndex}`;
+  if (!techTouched[key]) techTouched[key] = {};
+  techTouched[key][field] = true;
+}
+
+function getFlatTechIndex(params: {
+  catIndex: number;
+  techIndex: number;
+}): number {
+  const { catIndex, techIndex } = params;
+  let flatIdx = 0;
+  for (let c = 0; c < catIndex; c++) {
+    flatIdx += props.modelValue[c]?.technologies?.length ?? 0;
+  }
+  return flatIdx + techIndex;
+}
+
+function hasTechError(params: {
+  catIndex: number;
+  techIndex: number;
+  field: string;
+}): boolean {
+  const { catIndex, techIndex, field } = params;
+  const key = `${catIndex}_${techIndex}`;
+  if (!techTouched[key]?.[field]) return false;
+  const flatIdx = getFlatTechIndex({ catIndex, techIndex });
+  const errors =
+    vTech$.value.techs.$each.$response.$errors[flatIdx]?.[field];
+  return errors?.length > 0;
+}
+
+function getTechError(params: {
+  catIndex: number;
+  techIndex: number;
+  field: string;
+}): string {
+  const { catIndex, techIndex, field } = params;
+  const flatIdx = getFlatTechIndex({ catIndex, techIndex });
+  const errors =
+    vTech$.value.techs.$each.$response.$errors[flatIdx]?.[field];
+  return errors?.[0]?.$message || "";
 }
 
 function isCategoryValid(params: { catIndex: number }): boolean {
@@ -356,6 +439,7 @@ function updateCategory(params: {
 
 function removeCategory(params: { index: number }) {
   const { index } = params;
+  delete categoryTouched[index];
   emit(
     "update:modelValue",
     props.modelValue.filter((_, i) => i !== index),
@@ -403,13 +487,14 @@ function onFileChange(params: {
   const objectUrl = URL.createObjectURL(file);
   updateTechnology({ catIndex, techIndex, field: "image", value: objectUrl });
   emit("update:files", { ...pendingFiles });
-  techTouched[`${catIndex}_${techIndex}_image`] = true;
+  touchTechField({ catIndex, techIndex, field: "source" });
 }
 
 function removeTechnology(params: { catIndex: number; techIndex: number }) {
   const { catIndex, techIndex } = params;
   const key = `${catIndex}_${techIndex}`;
   delete pendingFiles[key];
+  delete techTouched[key];
   emit("update:files", { ...pendingFiles });
   const updated = [...props.modelValue];
   updated[catIndex] = {
@@ -452,9 +537,5 @@ function closePreviewModal() {
   color: var(--ion-color-danger);
   font-size: 12px;
   padding: 0 16px;
-}
-
-.ion-invalid {
-  --border-color: var(--ion-color-danger);
 }
 </style>

@@ -16,25 +16,15 @@
           label-placement="floating"
           :value="item.name"
           placeholder="Ej: Vue.js"
+          :error-text="getError({ index, field: 'name' })"
           :class="{
-            'ion-invalid':
-              v$.items.$each.$response.$errors[index]?.name?.length > 0 &&
-              touched[index]?.name,
+            'ion-invalid': hasError({ index, field: 'name' }),
+            'ion-touched': touched[index]?.name,
           }"
           @ion-input="updateStackItem({ index, field: 'name', value: $event.detail.value! })"
           @ion-blur="touchField({ index, field: 'name' })"
         ></ion-input>
       </ion-item>
-
-      <span
-        v-if="
-          touched[index]?.name &&
-          v$.items.$each.$response.$errors[index]?.name?.length
-        "
-        class="error"
-      >
-        {{ v$.items.$each.$response.$errors[index].name[0].$message }}
-      </span>
 
       <ion-item lines="full" button @click="openFileDialog({ index })">
         <ion-label>Imagen</ion-label>
@@ -63,13 +53,10 @@
       />
 
       <span
-        v-if="
-          touched[index]?.image &&
-          v$.items.$each.$response.$errors[index]?.image?.length
-        "
+        v-if="hasError({ index, field: 'image' })"
         class="error"
       >
-        {{ v$.items.$each.$response.$errors[index].image[0].$message }}
+        {{ getError({ index, field: "image" }) }}
       </span>
 
       <ion-item lines="none">
@@ -176,6 +163,18 @@ const allValid = computed(() => {
 // end vuelidate
 
 // functions
+function hasError(params: { index: number; field: string }): boolean {
+  const { index, field } = params;
+  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
+  return touched[index]?.[field] === true && errors?.length > 0;
+}
+
+function getError(params: { index: number; field: string }): string {
+  const { index, field } = params;
+  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
+  return errors?.[0]?.$message || "";
+}
+
 function touchField(params: { index: number; field: string }) {
   const { index, field } = params;
   if (!touched[index]) touched[index] = {};
@@ -248,10 +247,6 @@ function removeStackItem(params: { index: number }) {
   color: var(--ion-color-danger);
   font-size: 12px;
   padding: 0 16px;
-}
-
-.ion-invalid {
-  --border-color: var(--ion-color-danger);
 }
 
 .modal-image {

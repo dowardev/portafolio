@@ -17,14 +17,15 @@
             label-placement="floating"
             :value="project.title"
             placeholder="Ej: Moneyflap"
-:class="{ 'ion-invalid': hasError({ index, field: 'title' }) }"
-          @ion-input="updateItem({ index, field: 'title', value: $event.detail.value! })"
-          @ion-blur="touchField({ index, field: 'title' })"
+            :error-text="getError({ index, field: 'title' })"
+            :class="{
+              'ion-invalid': hasError({ index, field: 'title' }),
+              'ion-touched': touched[index]?.title,
+            }"
+            @ion-input="updateItem({ index, field: 'title', value: $event.detail.value! })"
+            @ion-blur="touchField({ index, field: 'title' })"
           ></ion-input>
         </ion-item>
-        <span v-if="hasError({ index, field: 'title' })" class="error"
-          >Nombre es requerido</span
-        >
 
         <ion-item lines="full">
           <ion-select
@@ -69,9 +70,12 @@
           @change="onMainFileChange({ event: $event, index })"
         />
 
-        <span v-if="hasError({ index, field: 'img' })" class="error"
-          >Logo es requerido</span
+        <span
+          v-if="hasError({ index, field: 'img' })"
+          class="error"
         >
+          {{ getError({ index, field: "img" }) }}
+        </span>
 
         <ion-item lines="full">
           <ion-textarea
@@ -80,14 +84,15 @@
             :value="project.details.description"
             :rows="3"
             placeholder="Descripción del proyecto..."
-            :class="{ 'ion-invalid': hasError({ index, field: 'description' }) }"
+            :error-text="getError({ index, field: 'description' })"
+            :class="{
+              'ion-invalid': hasError({ index, field: 'description' }),
+              'ion-touched': touched[index]?.description,
+            }"
             @ion-input="updateDetail({ index, field: 'description', value: $event.detail.value! })"
             @ion-blur="touchField({ index, field: 'description' })"
           ></ion-textarea>
         </ion-item>
-        <span v-if="hasError({ index, field: 'description' })" class="error"
-          >Descripción es requerida</span
-        >
 
         <ion-item lines="full">
           <ion-input
@@ -148,8 +153,8 @@
 
         <TechnologiesEditor
           :model-value="project.technologies"
-@update:model-value="updateTechnologies({ index, technologies: $event })"
-        @update:files="(files) => updateTechFiles({ projectIndex: index, files })"
+          @update:model-value="updateTechnologies({ index, technologies: $event })"
+          @update:files="(files) => updateTechFiles({ projectIndex: index, files })"
         />
 
         <ion-button
@@ -211,6 +216,8 @@ import {
   closeOutline,
 } from "ionicons/icons";
 import { computed, reactive, ref } from "vue";
+import useVuelidate from "@vuelidate/core";
+import { required, helpers } from "@vuelidate/validators";
 import type { ProjectItem } from "@/services/homeApi";
 import TechnologiesEditor from "./TechnologiesEditor.vue";
 // end imports
@@ -228,7 +235,7 @@ const emit = defineEmits<{
 
 // vars and const
 const pendingFiles: Record<string, File> = {};
-const touched = reactive<Record<string, boolean>>({});
+const touched = reactive<Record<number, Record<string, boolean>>>({});
 
 const fileNames = reactive<Record<number, string>>({});
 const sourceFileNames = reactive<Record<number, string>>({});
@@ -237,34 +244,63 @@ const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
 // end vars and const
 
-// computed
+// vuelidate
+const descriptionRequired = helpers.withMessage(
+  "Descripción es requerida",
+  (value: string, siblings: ProjectItem) => {
+    return !!siblings?.details?.description?.trim();
+  },
+);
+
+const rules = {
+  items: {
+    $each: helpers.forEach({
+      title: {
+        required: helpers.withMessage("Nombre es requerido", required),
+      },
+      img: {
+        required: helpers.withMessage("Logo es requerido", required),
+      },
+      description: {
+        required: descriptionRequired,
+      },
+    }),
+  },
+};
+
+// Flatten details.description into a virtual "description" field for forEach validation
+const flatItems = computed(() =>
+  props.modelValue.map((project) => ({
+    ...project,
+    description: project.details?.description ?? "",
+  })),
+);
+
+const v$ = useVuelidate(rules, { items: flatItems });
+
 const allValid = computed(() => {
   if (props.modelValue.length === 0) return true;
-  return props.modelValue.every((project) => {
-    return (
-      project.title?.trim() &&
-      project.img &&
-      project.details?.description?.trim()
-    );
-  });
+  return !v$.value.$invalid;
 });
-// end computed
+// end vuelidate
 
 // functions
 function hasError(params: { index: number; field: string }): boolean {
   const { index, field } = params;
-  const key = `${index}_${field}`;
-  if (!touched[key]) return false;
-  const project = props.modelValue[index];
-  if (field === "title") return !project?.title?.trim();
-  if (field === "img") return !project?.img;
-  if (field === "description") return !project?.details?.description?.trim();
-  return false;
+  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
+  return touched[index]?.[field] === true && errors?.length > 0;
+}
+
+function getError(params: { index: number; field: string }): string {
+  const { index, field } = params;
+  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
+  return errors?.[0]?.$message || "";
 }
 
 function touchField(params: { index: number; field: string }) {
   const { index, field } = params;
-  touched[`${index}_${field}`] = true;
+  if (!touched[index]) touched[index] = {};
+  touched[index][field] = true;
 }
 
 function emitFiles() {
@@ -324,7 +360,7 @@ function updateTechnologies(
 function updateTechFiles(params: { projectIndex: number; files: Record<number, File> }) {
   const { projectIndex, files } = params;
   const prefix = `project_tech_image_${projectIndex}_`;
-  
+
   Object.keys(pendingFiles).forEach((key) => {
     if (key.startsWith(prefix)) {
       const techIndex = key.replace(prefix, "");
@@ -333,7 +369,7 @@ function updateTechFiles(params: { projectIndex: number; files: Record<number, F
       }
     }
   });
-  
+
   for (const [techIndex, file] of Object.entries(files)) {
     pendingFiles[`project_tech_image_${projectIndex}_${techIndex}`] = file;
   }
@@ -408,6 +444,9 @@ function removeItem(params: { index: number }) {
   const { index } = params;
   delete pendingFiles[`project_image_${index}`];
   delete pendingFiles[`project_source_image_${index}`];
+  delete touched[index];
+  delete fileNames[index];
+  delete sourceFileNames[index];
   emitFiles();
   emit(
     "update:modelValue",
@@ -422,10 +461,6 @@ function removeItem(params: { index: number }) {
   color: var(--ion-color-danger);
   font-size: 12px;
   padding: 0 16px;
-}
-
-.ion-invalid {
-  --border-color: var(--ion-color-danger);
 }
 
 .modal-image {

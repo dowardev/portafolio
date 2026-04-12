@@ -18,14 +18,15 @@
           label-placement="floating"
           :value="cert.title"
           placeholder="Ej: SkillValue JavaScript"
-          :class="{ 'ion-invalid': hasError({ index, field: 'title' }) }"
+          :error-text="getError({ index, field: 'title' })"
+          :class="{
+            'ion-invalid': hasError({ index, field: 'title' }),
+            'ion-touched': touched[index]?.title,
+          }"
           @ion-input="updateItem({ index, field: 'title', value: $event.detail.value! })"
           @ion-blur="touchField({ index, field: 'title' })"
         ></ion-input>
       </ion-item>
-      <span v-if="hasError({ index, field: 'title' })" class="error"
-        >Título es requerido</span
-      >
 
       <ion-item lines="full">
         <ion-input
@@ -33,12 +34,15 @@
           label-placement="floating"
           :value="cert.url"
           placeholder="https://..."
-          :class="{ 'ion-invalid': hasError({ index, field: 'url' }) }"
+          :error-text="getError({ index, field: 'url' })"
+          :class="{
+            'ion-invalid': hasError({ index, field: 'url' }),
+            'ion-touched': touched[index]?.url,
+          }"
           @ion-input="updateItem({ index, field: 'url', value: $event.detail.value! })"
           @ion-blur="touchField({ index, field: 'url' })"
         ></ion-input>
       </ion-item>
-      <span v-if="hasError({ index, field: 'url' })" class="error">Link es requerido</span>
 
       <ion-item lines="full" button @click="openFileDialog({ index })">
         <ion-label>Logo / Imagen</ion-label>
@@ -67,9 +71,12 @@
         @change="onImageChange({ event: $event, index })"
       />
 
-      <span v-if="hasError({ index, field: 'img' })" class="error"
-        >Imagen es requerida</span
+      <span
+        v-if="hasError({ index, field: 'img' })"
+        class="error"
       >
+        {{ getError({ index, field: "img" }) }}
+      </span>
 
       <TechnologiesEditor
         :model-value="cert.aptitudes"
@@ -132,6 +139,8 @@ import {
   closeOutline,
 } from "ionicons/icons";
 import { computed, reactive, ref } from "vue";
+import useVuelidate from "@vuelidate/core";
+import { required, url as urlValidator, helpers } from "@vuelidate/validators";
 import type { CertificateItem } from "@/services/homeApi";
 import TechnologiesEditor from "./TechnologiesEditor.vue";
 // end imports
@@ -149,37 +158,56 @@ const emit = defineEmits<{
 
 // vars and const
 const pendingFiles: Record<string, File> = {};
-const touched = reactive<Record<string, boolean>>({});
+const touched = reactive<Record<number, Record<string, boolean>>>({});
 
 const fileNames = reactive<Record<number, string>>({});
 const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
 // end vars and const
 
-// computed
+// vuelidate
+const rules = {
+  items: {
+    $each: helpers.forEach({
+      title: {
+        required: helpers.withMessage("Título es requerido", required),
+      },
+      url: {
+        required: helpers.withMessage("Link es requerido", required),
+        url: helpers.withMessage("Debe ser una URL válida", urlValidator),
+      },
+      img: {
+        required: helpers.withMessage("Imagen es requerida", required),
+      },
+    }),
+  },
+};
+
+const v$ = useVuelidate(rules, { items: computed(() => props.modelValue) });
+
 const allValid = computed(() => {
   if (props.modelValue.length === 0) return true;
-  return props.modelValue.every((cert) => {
-    return cert.title?.trim() && cert.url?.trim() && cert.img;
-  });
+  return !v$.value.$invalid;
 });
-// end computed
+// end vuelidate
 
 // functions
 function hasError(params: { index: number; field: string }): boolean {
   const { index, field } = params;
-  const key = `${index}_${field}`;
-  if (!touched[key]) return false;
-  const cert = props.modelValue[index];
-  if (field === "title") return !cert?.title?.trim();
-  if (field === "url") return !cert?.url?.trim();
-  if (field === "img") return !cert?.img;
-  return false;
+  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
+  return touched[index]?.[field] === true && errors?.length > 0;
+}
+
+function getError(params: { index: number; field: string }): string {
+  const { index, field } = params;
+  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
+  return errors?.[0]?.$message || "";
 }
 
 function touchField(params: { index: number; field: string }) {
   const { index, field } = params;
-  touched[`${index}_${field}`] = true;
+  if (!touched[index]) touched[index] = {};
+  touched[index][field] = true;
 }
 
 function emitFiles() {
@@ -238,7 +266,6 @@ function showPreview(params: { index: number }) {
     isPreviewOpen.value = true;
   }
 }
-// end functions
 
 function closePreview() {
   isPreviewOpen.value = false;
@@ -260,6 +287,8 @@ function onImageChange(params: { event: Event; index: number }) {
 function removeItem(params: { index: number }) {
   const { index } = params;
   delete pendingFiles[`cert_image_${index}`];
+  delete touched[index];
+  delete fileNames[index];
   emitFiles();
   emit(
     "update:modelValue",
@@ -274,10 +303,6 @@ function removeItem(params: { index: number }) {
   color: var(--ion-color-danger);
   font-size: 12px;
   padding: 0 16px;
-}
-
-.ion-invalid {
-  --border-color: var(--ion-color-danger);
 }
 
 .modal-image {

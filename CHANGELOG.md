@@ -1,5 +1,30 @@
 # Changelog
 
+## 11.9.0 - 2026-04-12
+
+### Changed
+
+- Admin editors: Migrated form validation from manual error display to Vuelidate's built-in Ionic integration
+- Admin editors: Added `error-text` prop on form inputs to display validation errors inline
+- Admin editors: Added `ion-touched` class tracking to properly show errors only after field blur
+- Admin editors: Added dynamic `getError()` functions to retrieve localized error messages from Vuelidate
+- Admin editors: Refactored `touched` state to use nested object structure for better organization
+- Admin editors: Removed redundant manual error `<span>` elements, now handled by Ionic components
+- Admin editors: Removed deprecated `.ion-invalid` CSS rules (no longer needed with Ionic built-in styling)
+- Admin editors: Cleaned up unused CSS classes and styles
+
+### Affected Files
+
+- frontend/src/views/admin/editors/CertificatesEditor.vue
+- frontend/src/views/admin/editors/ExperienceEditor.vue
+- frontend/src/views/admin/editors/FreelanceEditor.vue
+- frontend/src/views/admin/editors/ProjectsEditor.vue
+- frontend/src/views/admin/editors/SkillsEditor.vue
+- frontend/src/views/admin/editors/StackEditor.vue
+- frontend/src/views/admin/editors/TechnologiesEditor.vue
+
+---
+
 ## 11.8.2 - 2026-04-12
 
 ### Changed
