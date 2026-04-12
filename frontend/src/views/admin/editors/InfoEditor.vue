@@ -1,308 +1,225 @@
 <template>
-  <form @submit.prevent="handleSubmit">
-    <ion-list>
-      <ion-list-header>
-        <ion-label>Información</ion-label>
-      </ion-list-header>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Información</ion-label>
+    </ion-list-header>
 
-      <ion-card class="shadow1">
-        <ion-item lines="full">
-          <ion-label position="stacked">Nombre</ion-label>
-          <ion-input
-            v-model="form.name"
-            placeholder="Tu nombre o título"
-            :error-text="v$.form.name.$errors[0]?.$message.toString()"
-            :class="{
-              'ion-invalid': v$.form.name.$invalid && v$.form.name.$dirty,
-              'ion-touched': v$.form.name.$dirty,
-            }"
-            @ion-blur="v$.form.name.$touch()"
-          ></ion-input>
-        </ion-item>
+    <ion-card class="shadow1">
+      <ion-item lines="full">
+        <ion-label position="stacked">Nombre</ion-label>
+        <ion-input
+          v-model="form.name"
+          placeholder="Tu nombre o título"
+          :error-text="v$.form.name.$errors[0]?.$message.toString()"
+          :class="{
+            'ion-invalid': v$.form.name.$invalid && v$.form.name.$dirty,
+            'ion-touched': v$.form.name.$dirty,
+          }"
+          @ion-blur="v$.form.name.$touch()"
+        ></ion-input>
+      </ion-item>
 
-        <ion-item lines="full">
-          <ion-label position="stacked">Descripción</ion-label>
-          <ion-textarea
-            v-model="form.description"
-            :rows="4"
-            placeholder="Describe quién eres o qué haces"
-            :error-text="v$.form.description.$errors[0]?.$message.toString()"
-            :class="{
-              'ion-invalid': v$.form.description.$invalid && v$.form.description.$dirty,
-              'ion-touched': v$.form.description.$dirty,
-            }"
-            @ion-blur="v$.form.description.$touch()"
-          ></ion-textarea>
-        </ion-item>
-      </ion-card>
-    </ion-list>
+      <ion-item lines="full">
+        <ion-label position="stacked">Descripción</ion-label>
+        <ion-textarea
+          v-model="form.description"
+          :rows="4"
+          placeholder="Describe quién eres o qué haces"
+          :error-text="v$.form.description.$errors[0]?.$message.toString()"
+          :class="{
+            'ion-invalid':
+              v$.form.description.$invalid && v$.form.description.$dirty,
+            'ion-touched': v$.form.description.$dirty,
+          }"
+          @ion-blur="v$.form.description.$touch()"
+        ></ion-textarea>
+      </ion-item>
+    </ion-card>
+  </ion-list>
 
-    <ion-list>
-      <ion-list-header>
-        <ion-label>Etiquetas</ion-label>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Etiquetas</ion-label>
 
-        <ion-button @click="isAddTagAlertOpen = true">
-          <ion-icon slot="start" :icon="addOutline"></ion-icon>
-          Agregar
-        </ion-button>
-      </ion-list-header>
+      <ion-button @click="isAddTagAlertOpen = true">
+        <ion-icon slot="start" :icon="addOutline"></ion-icon>
+        Agregar
+      </ion-button>
+    </ion-list-header>
 
-      <ion-card class="shadow1">
-        <ion-card-content>
-          <div class="chips-container">
-            <ion-chip
-              v-for="(tag, index) in homeEditorStore.form.tags"
-              :key="index"
-              color="primary"
-            >
-              <ion-label>{{ tag }}</ion-label>
-              <ion-icon
-                :icon="closeOutline"
-                @click="removeTag({ index })"
-              ></ion-icon>
-            </ion-chip>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    </ion-list>
-
-    <ion-list>
-      <ion-list-header>
-        <ion-label>Redes sociales</ion-label>
-
-        <ion-button @click="isSocialModalOpen = true">
-          <ion-icon slot="start" :icon="addOutline"></ion-icon>
-          Añadir
-        </ion-button>
-      </ion-list-header>
-
-      <ion-card class="shadow1">
-        <template
-          v-for="(social, index) in form.socials"
-          :key="index"
-        >
-          <ion-item lines="full">
+    <ion-card class="shadow1">
+      <ion-card-content>
+        <div class="chips-container">
+          <ion-chip
+            v-for="(tag, index) in homeEditorStore.form.tags"
+            :key="index"
+            color="primary"
+          >
+            <ion-label>{{ tag }}</ion-label>
             <ion-icon
-              v-if="social.platform"
-              slot="start"
-              :icon="getIconByName(social.platform)"
+              :icon="closeOutline"
+              @click="removeTag({ index })"
             ></ion-icon>
-            <ion-label>{{ social.platform || "Plataforma" }}</ion-label>
+          </ion-chip>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
 
-            <ion-input
-              slot="end"
-              v-model="social.url"
-              placeholder="https://..."
-              type="url"
-              :error-text="v$.form.socials.$each.$response?.$errors[index]?.url?.[0]?.$message?.toString()"
-              :class="{
-                'ion-invalid': v$.form.socials.$each.$response?.$errors[index]?.url?.length,
-                'ion-touched': v$.form.socials.$dirty,
-              }"
-              @ion-blur="v$.form.socials.$touch()"
-            ></ion-input>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Redes sociales</ion-label>
 
-            <ion-button
-              slot="end"
-              fill="clear"
-              color="danger"
-              @click="removeSocial({ index })"
-            >
-              <ion-icon :icon="trashOutline"></ion-icon>
-            </ion-button>
-          </ion-item>
-        </template>
-      </ion-card>
-    </ion-list>
+      <ion-button @click="isSocialModalOpen = true">
+        <ion-icon slot="start" :icon="addOutline"></ion-icon>
+        Añadir
+      </ion-button>
+    </ion-list-header>
 
-    <ion-list>
-      <ion-list-header>
-        <ion-label>Visual</ion-label>
-      </ion-list-header>
-
-      <ion-card class="shadow1">
-        <section>
-          <ion-item
-            lines="full"
-            button
-            @click="openFileDialog({ type: 'logo' })"
-          >
-            <ion-label>Logo</ion-label>
-
-            <ion-note v-if="fileNames.logo" slot="end">{{
-              fileNames.logo
-            }}</ion-note>
-            <ion-note v-else slot="end">Seleccionar</ion-note>
-
-            <ion-button
-              slot="end"
-              fill="clear"
-              :disabled="!homeEditorStore.preview.logo"
-              @click.stop="showPreview({ type: 'logo' })"
-            >
-              <ion-icon :icon="eyeOutline"></ion-icon>
-            </ion-button>
-          </ion-item>
-
-          <input
-            style="display: none"
-            data-type="logo"
-            type="file"
-            accept="image/*"
-            @change="onFileChange({ event: $event, type: 'logo' })"
-          />
-        </section>
-
-        <section>
-          <ion-item
-            lines="full"
-            button
-            @click="openFileDialog({ type: 'photo' })"
-          >
-            <ion-label>Foto (Cover)</ion-label>
-
-            <ion-note v-if="fileNames.photo" slot="end">{{
-              fileNames.photo
-            }}</ion-note>
-
-            <ion-note v-else slot="end">Seleccionar</ion-note>
-
-            <ion-button
-              slot="end"
-              fill="clear"
-              :disabled="!homeEditorStore.preview.photo"
-              @click.stop="showPreview({ type: 'photo' })"
-            >
-              <ion-icon :icon="eyeOutline"></ion-icon>
-            </ion-button>
-          </ion-item>
-
-          <input
-            style="display: none"
-            data-type="photo"
-            type="file"
-            accept="image/*"
-            @change="onFileChange({ event: $event, type: 'photo' })"
-          />
-        </section>
-      </ion-card>
-    </ion-list>
-
-    <ion-list>
-      <ion-list-header>
-        <ion-label>Otras opciones</ion-label>
-      </ion-list-header>
-
-      <ion-card class="shadow1">
-        <ion-item>
-          <ion-label>Mostrar botón de contacto (sección info)</ion-label>
-          <ion-note slot="end">Junto a redes sociales</ion-note>
-
-          <ion-toggle
-            slot="end"
-            :checked="homeEditorStore.form.showContactForm.socials"
-            @ion-change="
-              homeEditorStore.form.showContactForm.socials = $event.detail.checked
-            "
-          ></ion-toggle>
-        </ion-item>
-
-        <ion-item>
-          <ion-label>Mostrar botón de contacto (freelance)</ion-label>
-          <ion-note slot="end">En sección de plataformas</ion-note>
-
-          <ion-toggle
-            slot="end"
-            :checked="homeEditorStore.form.showContactForm.freelance"
-            @ion-change="
-              homeEditorStore.form.showContactForm.freelance = $event.detail.checked
-            "
-          ></ion-toggle>
-        </ion-item>
-      </ion-card>
-    </ion-list>
-  </form>
-
-  <!-- modals -->
-  <!-- social selector modal -->
-  <ion-modal
-    :is-open="isSocialModalOpen"
-    @ion-modal-did-dismiss="closeSocialModal"
-  >
-    <ion-header class="ion-no-border" mode="ios">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button @click="closeSocialModal">
-            <ion-icon :icon="closeOutline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-
-        <ion-title>Agregar red social</ion-title>
-      </ion-toolbar>
-
-      <ion-toolbar>
-        <ion-searchbar
-          v-model="socialSearch"
-          mode="ios"
-          placeholder="Buscar plataforma"
-          :debounce="300"
-        ></ion-searchbar>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content>
-      <ion-list>
-        <ion-item
-          v-for="social in displayedSocials"
-          :key="social.name"
-          button
-          lines="full"
-          @click="selectSocial(social.name)"
-        >
+    <ion-card class="shadow1">
+      <template v-for="(social, index) in form.socials" :key="index">
+        <ion-item lines="full">
           <ion-icon
+            v-if="social.platform"
             slot="start"
-            :icon="getIconByName(social.iconName)"
+            :icon="getIconByName(social.platform)"
           ></ion-icon>
-          <ion-label>{{ social.name }}</ion-label>
+          <ion-label>{{ social.platform || "Plataforma" }}</ion-label>
+
+          <ion-input
+            slot="end"
+            v-model="social.url"
+            placeholder="https://..."
+            type="url"
+            :error-text="
+              v$.form.socials.$each.$response?.$errors[
+                index
+              ]?.url?.[0]?.$message?.toString()
+            "
+            :class="{
+              'ion-invalid':
+                v$.form.socials.$each.$response?.$errors[index]?.url?.length,
+              'ion-touched': v$.form.socials.$dirty,
+            }"
+            @ion-blur="v$.form.socials.$touch()"
+          ></ion-input>
+
+          <ion-button
+            slot="end"
+            fill="clear"
+            color="danger"
+            @click="removeSocial({ index })"
+          >
+            <ion-icon :icon="trashOutline"></ion-icon>
+          </ion-button>
         </ion-item>
-      </ion-list>
-    </ion-content>
-  </ion-modal>
-  <!-- end social selector modal -->
+      </template>
+    </ion-card>
+  </ion-list>
 
-  <ion-modal :is-open="isPreviewOpen" @ion-modal-did-dismiss="closePreview">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Vista previa</ion-title>
-        <ion-buttons slot="end">
-          <ion-button @click="closePreview">Cerrar</ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <div style="padding: 16px; text-align: center">
-      <img
-        v-if="previewSrc"
-        :src="previewSrc"
-        alt="preview"
-        class="modal-image"
-      />
-    </div>
-  </ion-modal>
-  <!-- modals -->
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Visual</ion-label>
+    </ion-list-header>
 
-  <!-- alerts -->
-  <ion-alert
-    :is-open="isAddTagAlertOpen"
-    header="Agregar etiqueta"
-    :inputs="alertInputs"
-    :buttons="alertButtons"
-    @did-dismiss="
-      () => {
-        isAddTagAlertOpen = false;
-      }
-    "
-  />
-  <!-- end alerts -->
+    <ion-card class="shadow1">
+      <section>
+        <ion-item lines="full" button @click="openFileDialog({ type: 'logo' })">
+          <ion-label>Logo</ion-label>
+
+          <ion-note v-if="fileNames.logo" slot="end">{{
+            fileNames.logo
+          }}</ion-note>
+          <ion-note v-else slot="end">Seleccionar</ion-note>
+
+          <ion-button
+            slot="end"
+            fill="clear"
+            :disabled="!homeEditorStore.preview.logo"
+            @click.stop="showPreview({ type: 'logo' })"
+          >
+            <ion-icon :icon="eyeOutline"></ion-icon>
+          </ion-button>
+        </ion-item>
+
+        <input
+          style="display: none"
+          data-type="logo"
+          type="file"
+          accept="image/*"
+          @change="onFileChange({ event: $event, type: 'logo' })"
+        />
+      </section>
+
+      <section>
+        <ion-item
+          lines="full"
+          button
+          @click="openFileDialog({ type: 'photo' })"
+        >
+          <ion-label>Foto (Cover)</ion-label>
+
+          <ion-note v-if="fileNames.photo" slot="end">{{
+            fileNames.photo
+          }}</ion-note>
+
+          <ion-note v-else slot="end">Seleccionar</ion-note>
+
+          <ion-button
+            slot="end"
+            fill="clear"
+            :disabled="!homeEditorStore.preview.photo"
+            @click.stop="showPreview({ type: 'photo' })"
+          >
+            <ion-icon :icon="eyeOutline"></ion-icon>
+          </ion-button>
+        </ion-item>
+
+        <input
+          style="display: none"
+          data-type="photo"
+          type="file"
+          accept="image/*"
+          @change="onFileChange({ event: $event, type: 'photo' })"
+        />
+      </section>
+    </ion-card>
+  </ion-list>
+
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Otras opciones</ion-label>
+    </ion-list-header>
+
+    <ion-card class="shadow1">
+      <ion-item>
+        <ion-label>Mostrar botón de contacto (sección info)</ion-label>
+        <ion-note slot="end">Junto a redes sociales</ion-note>
+
+        <ion-toggle
+          slot="end"
+          :checked="homeEditorStore.form.showContactForm.socials"
+          @ion-change="
+            homeEditorStore.form.showContactForm.socials = $event.detail.checked
+          "
+        ></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Mostrar botón de contacto (freelance)</ion-label>
+        <ion-note slot="end">En sección de plataformas</ion-note>
+
+        <ion-toggle
+          slot="end"
+          :checked="homeEditorStore.form.showContactForm.freelance"
+          @ion-change="
+            homeEditorStore.form.showContactForm.freelance =
+              $event.detail.checked
+          "
+        ></ion-toggle>
+      </ion-item>
+    </ion-card>
+  </ion-list>
 </template>
 
 <script setup lang="ts">
@@ -338,7 +255,13 @@ import {
 import * as ionicons from "ionicons/icons";
 import { useHomeEditorStore } from "@/store/homeEditorStore";
 import useVuelidate from "@vuelidate/core";
-import { required, minLength, maxLength, helpers, url as urlValidator } from "@vuelidate/validators";
+import {
+  required,
+  minLength,
+  maxLength,
+  helpers,
+  url as urlValidator,
+} from "@vuelidate/validators";
 // end imports
 
 // vars and const
@@ -365,28 +288,38 @@ const form = ref({
 // sync store → local form (when data loads from server)
 watch(
   () => homeEditorStore.form.name,
-  (val) => { form.value.name = val; },
+  (val) => {
+    form.value.name = val;
+  },
   { immediate: true },
 );
 watch(
   () => homeEditorStore.form.description,
-  (val) => { form.value.description = val; },
+  (val) => {
+    form.value.description = val;
+  },
   { immediate: true },
 );
 watch(
   () => homeEditorStore.form.socials,
-  (val) => { form.value.socials = val; },
+  (val) => {
+    form.value.socials = val;
+  },
   { immediate: true },
 );
 
 // sync local form → store (primitives only, on change)
 watch(
   () => form.value.name,
-  (val) => { homeEditorStore.form.name = val; },
+  (val) => {
+    homeEditorStore.form.name = val;
+  },
 );
 watch(
   () => form.value.description,
-  (val) => { homeEditorStore.form.description = val; },
+  (val) => {
+    homeEditorStore.form.description = val;
+  },
 );
 
 const alphaName = helpers.regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s-]+$/);
@@ -395,14 +328,29 @@ const rules = {
   form: {
     name: {
       required: helpers.withMessage("El nombre es requerido", required),
-      minLength: helpers.withMessage("El nombre debe tener al menos 2 caracteres", minLength(2)),
-      maxLength: helpers.withMessage("El nombre no puede exceder 50 caracteres", maxLength(50)),
-      alphaName: helpers.withMessage("El nombre solo puede contener letras, espacios y guiones", alphaName),
+      minLength: helpers.withMessage(
+        "El nombre debe tener al menos 2 caracteres",
+        minLength(2),
+      ),
+      maxLength: helpers.withMessage(
+        "El nombre no puede exceder 50 caracteres",
+        maxLength(50),
+      ),
+      alphaName: helpers.withMessage(
+        "El nombre solo puede contener letras, espacios y guiones",
+        alphaName,
+      ),
     },
     description: {
       required: helpers.withMessage("La descripción es requerida", required),
-      minLength: helpers.withMessage("La descripción debe tener al menos 10 caracteres", minLength(10)),
-      maxLength: helpers.withMessage("La descripción no puede exceder 500 caracteres", maxLength(500)),
+      minLength: helpers.withMessage(
+        "La descripción debe tener al menos 10 caracteres",
+        minLength(10),
+      ),
+      maxLength: helpers.withMessage(
+        "La descripción no puede exceder 500 caracteres",
+        maxLength(500),
+      ),
     },
     socials: {
       $each: helpers.forEach({

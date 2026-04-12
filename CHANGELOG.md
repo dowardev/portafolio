@@ -1,5 +1,18 @@
 # Changelog
 
+## 11.8.1 - 2026-04-12
+
+### Changed
+
+- Admin/InfoEditor: Removed `<form>` wrapper and simplified template structure for cleaner layout
+- Admin/InfoEditor: Refactored form state management with improved local reactive state synchronizing to store
+
+### Affected Files
+
+- frontend/src/views/admin/editors/InfoEditor.vue
+
+---
+
 ## 11.8.0 - 2026-04-12
 
 ### Added
