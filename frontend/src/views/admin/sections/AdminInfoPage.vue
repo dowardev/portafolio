@@ -47,6 +47,8 @@
             :initial-data="initialData"
             :show-contact-form="contactForm"
             @remove-tag="handleRemoveTag"
+            @add-tag="handleAddTag"
+            @reorder-tags="handleReorderTags"
             @file-change="handleFileChange"
             @update:show-contact-form="handleUpdateContactForm"
             @save="handleSave"
@@ -101,6 +103,17 @@ const contactForm = computed(() => {
 // handlers de emits
 function handleRemoveTag(index: number) {
   homeEditorStore.form.tags.splice(index, 1);
+}
+
+function handleAddTag(tag: string) {
+  if (!homeEditorStore.form.tags.includes(tag)) {
+    homeEditorStore.form.tags.push(tag);
+  }
+}
+
+function handleReorderTags(tags: string[]) {
+  // replace with a shallow copy to ensure reactivity
+  homeEditorStore.form.tags = tags.slice();
 }
 
 function handleFileChange(payload: { file: File; type: "logo" | "photo" }) {

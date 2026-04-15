@@ -42,19 +42,33 @@
       <ion-label>Etiquetas</ion-label>
 
       <ion-button @click="isAddTagAlertOpen = true">
-        <ion-icon slot="start" :icon="addOutline"></ion-icon>
-        Agregar
+        <ion-icon slot="icon-only" :icon="addOutline"></ion-icon>
       </ion-button>
+
+      <ion-button @click="isReorderModalOpen = true">
+        <ion-icon slot="icon-only" :icon="reorderThreeOutline"></ion-icon>
+      </ion-button>
+
+      <ion-alert
+        :is-open="isAddTagAlertOpen"
+        header="Agregar etiqueta"
+        :inputs="[
+          { name: 'tag', type: 'text', placeholder: 'Etiqueta', value: newTag },
+        ]"
+        :buttons="addTagAlertButtons"
+        @did-dismiss="
+          () => {
+            isAddTagAlertOpen = false;
+            newTag = '';
+          }
+        "
+      ></ion-alert>
     </ion-list-header>
 
     <ion-card class="shadow1">
       <ion-card-content>
         <div class="chips-container">
-          <ion-chip
-            v-for="(tag, index) in tags"
-            :key="index"
-            color="primary"
-          >
+          <ion-chip v-for="(tag, index) in tags" :key="tag + '-' + index" color="primary">
             <ion-label>{{ tag }}</ion-label>
             <ion-icon
               :icon="closeOutline"
@@ -64,6 +78,29 @@
         </div>
       </ion-card-content>
     </ion-card>
+    <!-- Reorder Modal -->
+    <ion-modal :is-open="isReorderModalOpen" @did-dismiss="onReorderDismiss">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Reordenar etiquetas</ion-title>
+          <ion-buttons slot="end">
+            <ion-button fill="clear" @click="closeReorderModal">Cerrar</ion-button>
+            <ion-button color="primary" @click="saveReorder">Guardar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content>
+        <ion-list>
+          <ion-reorder-group :disabled="false" @ion-item-reorder="handleReorder">
+            <ion-item v-for="t in localTags" :key="t.id">
+              <ion-label>{{ t.label }}</ion-label>
+              <ion-reorder slot="end"></ion-reorder>
+            </ion-item>
+          </ion-reorder-group>
+        </ion-list>
+      </ion-content>
+    </ion-modal>
   </ion-list>
 
   <ion-list>
@@ -221,15 +258,28 @@ import {
   IonList,
   IonToggle,
   IonButton,
+  IonAlert,
   IonNote,
+  IonModal,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonButtons,
+  IonReorderGroup,
+  IonReorder,
 } from "@ionic/vue";
+// import types for reorder event
+import type { ItemReorderEventDetail } from '@ionic/core';
 import { ref, reactive, watch } from "vue";
 import {
   addOutline,
   closeOutline,
   trashOutline,
   linkOutline,
+  reorderThreeOutline,
 } from "ionicons/icons";
+// import all ionicons dynamically for lookup in getIconByName
 import * as ionicons from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import {
@@ -263,21 +313,56 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   "remove-tag": [index: number];
+  "add-tag": [value: string];
   "file-change": [payload: { file: File; type: "logo" | "photo" }];
-  "update:showContactForm": [
-    value: { socials: boolean; freelance: boolean },
-  ];
-  save: [
-    payload: { name: string; description: string; socials: SocialItem[] },
-  ];
+  "update:showContactForm": [value: { socials: boolean; freelance: boolean }];
+  save: [payload: { name: string; description: string; socials: SocialItem[] }];
+  "reorder-tags": [value: string[]];
 }>();
 // end props y emits
 
 // vars and const
 const isAddTagAlertOpen = ref(false);
 const isSocialModalOpen = ref(false);
+const isReorderModalOpen = ref(false);
 const fileNames = reactive<Record<string, string>>({});
+const newTag = ref("");
+// localTags holds objects with stable ids to avoid key collisions when labels repeat
+type LocalTag = { id: string; label: string };
+let _tagIdCounter = 0;
+function makeLocalTagsFromProps(): LocalTag[] {
+  return (props.tags || []).map((t) => ({ id: `tag_${Date.now()}_${_tagIdCounter++}`, label: t }));
+}
+const localTags = ref<LocalTag[]>(makeLocalTagsFromProps());
+
+const addTagAlertButtons = [
+  {
+    text: "Cancelar",
+    role: "cancel",
+  },
+  {
+    text: "Agregar",
+    role: "confirm",
+    handler: (data: { tag?: string } | undefined) => {
+      const value = data?.tag ?? newTag.value;
+      if (value && value.toString().trim()) {
+        const trimmed = value.toString().trim();
+        emit("add-tag", trimmed);
+        // update local copy so UI updates immediately even if parent doesn't
+        localTags.value.push({ id: `tag_${Date.now()}_${_tagIdCounter++}`, label: trimmed });
+      }
+      newTag.value = "";
+      isAddTagAlertOpen.value = false;
+    },
+  },
+];
 // end vars and const
+
+// keep localTags in sync with props.tags
+watch(() => props.tags, () => {
+  // recreate localTags from props.tags (keep simple mapping)
+  localTags.value = makeLocalTagsFromProps();
+});
 
 // validation
 const form = ref<{
@@ -356,6 +441,56 @@ async function handleSubmit() {
 }
 // end validation
 
+// reorder modal functions
+function closeReorderModal() {
+  isReorderModalOpen.value = false;
+  // rebuild localTags from props.tags to preserve LocalTag shape (id + label)
+  localTags.value = makeLocalTagsFromProps();
+}
+
+function onReorderDismiss() {
+  closeReorderModal();
+}
+
+function handleReorder(event: CustomEvent<ItemReorderEventDetail> | { detail: { from: number; to: number; complete: (data?: boolean | any[] | undefined) => any } }) {
+  // Ionic's ItemReorderEventDetail.complete has signature (data?: boolean | any[]) => any
+  // Accept either the typed CustomEvent or a compatible object and normalize.
+  const detail = (event as any).detail as ItemReorderEventDetail & { complete?: (data?: boolean | any[] | undefined) => any };
+  const { from, to, complete } = detail;
+  // Try to pass the array of objects (LocalTag[]) to Ionic's complete and normalize result.
+  try {
+    const result = complete(localTags.value as unknown);
+    if (Array.isArray(result)) {
+      // result may be array of strings (labels) or LocalTag objects; normalize
+      if (result.length && typeof result[0] === "string") {
+        const labelToExisting = new Map(localTags.value.map((l) => [l.label, l]));
+        localTags.value = (result as unknown as string[]).map((label) =>
+          labelToExisting.get(label) || { id: `tag_${Date.now()}_${_tagIdCounter++}`, label },
+        );
+      } else {
+        localTags.value = (result as unknown as LocalTag[]).slice();
+      }
+    }
+  } catch {
+    // fallback: manual reorder and tell ionic we handled the DOM
+    if (from !== to) {
+      const moved = localTags.value.splice(from, 1)[0];
+      localTags.value.splice(to, 0, moved);
+    }
+    try {
+      complete(false);
+    } catch {
+      // ignore
+    }
+  }
+}
+
+function saveReorder() {
+  // emit an array of labels (strings) so parent can update its tags
+  emit("reorder-tags", localTags.value.map((l) => l.label));
+  isReorderModalOpen.value = false;
+}
+
 // available socials
 const availableSocials = [
   { name: "Facebook", iconName: "logoFacebook" },
@@ -423,6 +558,12 @@ function getIconByName(iconName: string) {
 function removeSocial(params: { index: number }) {
   const { index } = params;
   form.value.socials.splice(index, 1);
+}
+
+function removeTag(index: number) {
+  // remove from local copy and notify parent
+  localTags.value.splice(index, 1);
+  emit("remove-tag", index);
 }
 
 function onFileChange(params: { event: Event; type: "logo" | "photo" }) {

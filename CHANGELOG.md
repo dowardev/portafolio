@@ -1,5 +1,28 @@
 # Changelog
 
+## 11.12.0 - 2026-04-15
+
+### Added
+
+- **Admin/InfoEditor**: Tag management UI enhancements
+  - Add button to open tag reorder modal and reorder UI using Ionic's reorder group
+  - Add IonAlert-based "Add tag" input to simplify tag creation
+  - Local tag objects with stable ids to avoid key collisions when labels repeat
+  - Reorder modal with save/close controls and immediate local preview of changes
+
+### Changed
+
+- **Admin/InfoEditor**: Improve tag chip keys and make tag addition immediate in UI
+- **Admin/AdminInfoPage**: Added handlers for `add-tag` and `reorder-tags` events from child editor and keep store in sync
+
+### Affected Files
+
+- Modified:
+  - `frontend/src/views/admin/editors/InfoEditor.vue`
+  - `frontend/src/views/admin/sections/AdminInfoPage.vue`
+
+---
+
 ## 11.10.1 - 2026-04-15
 
 ### Changed
