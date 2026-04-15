@@ -1,9 +1,13 @@
+<!-- Objective: use descriptive, meaningful variable names relevant to the user's domain instead of generic names (i, j, x, idx). -->
+<!-- Scope: applicable to functions, parameters, local variables, v-for keys, props, and state. -->
+<!-- Do not use any as type -->
+<!-- Make sure to correctly order the items in their respective sections -->
 <template>
   <ion-page>
     <ion-header class="ion-no-border" mode="ios">
-      <ion-toolvar>
+      <ion-toolbar>
         <ion-title>Template</ion-title>
-      </ion-toolvar>
+      </ion-toolbar>
     </ion-header>
 
     <ion-content>

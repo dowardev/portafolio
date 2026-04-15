@@ -48,94 +48,59 @@
       <ion-button @click="isReorderModalOpen = true">
         <ion-icon slot="icon-only" :icon="reorderThreeOutline"></ion-icon>
       </ion-button>
-
-      <ion-alert
-        :is-open="isAddTagAlertOpen"
-        header="Agregar etiqueta"
-        :inputs="[
-          { name: 'tag', type: 'text', placeholder: 'Etiqueta', value: newTag },
-        ]"
-        :buttons="addTagAlertButtons"
-        @did-dismiss="
-          () => {
-            isAddTagAlertOpen = false;
-            newTag = '';
-          }
-        "
-      ></ion-alert>
     </ion-list-header>
 
     <ion-card class="shadow1">
       <ion-card-content>
         <div class="chips-container">
-          <ion-chip v-for="(tag, index) in tags" :key="tag + '-' + index" color="primary">
-            <ion-label>{{ tag }}</ion-label>
+          <ion-chip
+            v-for="(tagItem, tagIndex) in tags"
+            :key="tagItem + '-' + tagIndex"
+            color="primary"
+          >
+            <ion-label>{{ tagItem }}</ion-label>
             <ion-icon
               :icon="closeOutline"
-              @click="emit('remove-tag', index)"
+              @click="emit('remove-tag', tagIndex)"
             ></ion-icon>
           </ion-chip>
         </div>
       </ion-card-content>
     </ion-card>
-    <!-- Reorder Modal -->
-    <ion-modal :is-open="isReorderModalOpen" @did-dismiss="onReorderDismiss">
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Reordenar etiquetas</ion-title>
-          <ion-buttons slot="end">
-            <ion-button fill="clear" @click="closeReorderModal">Cerrar</ion-button>
-            <ion-button color="primary" @click="saveReorder">Guardar</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content>
-        <ion-list>
-          <ion-reorder-group :disabled="false" @ion-item-reorder="handleReorder">
-            <ion-item v-for="t in localTags" :key="t.id">
-              <ion-label>{{ t.label }}</ion-label>
-              <ion-reorder slot="end"></ion-reorder>
-            </ion-item>
-          </ion-reorder-group>
-        </ion-list>
-      </ion-content>
-    </ion-modal>
   </ion-list>
 
   <ion-list>
     <ion-list-header>
       <ion-label>Redes sociales</ion-label>
-
-      <ion-button @click="isSocialModalOpen = true">
-        <ion-icon slot="start" :icon="addOutline"></ion-icon>
-        Añadir
-      </ion-button>
     </ion-list-header>
 
     <ion-card class="shadow1">
-      <template v-for="(social, index) in form.socials" :key="index">
+      <template
+        v-for="(socialItem, socialIndex) in form.socials"
+        :key="socialIndex"
+      >
         <ion-item lines="full">
           <ion-icon
-            v-if="social.platform"
+            v-if="socialItem.platform"
             slot="start"
-            :icon="getIconByName(social.platform)"
+            :icon="getIconByName({ iconName: socialItem.platform })"
           ></ion-icon>
-          <ion-label>{{ social.platform || "Plataforma" }}</ion-label>
+          <ion-label>{{ socialItem.platform || "Plataforma" }}</ion-label>
 
           <ion-input
             slot="end"
-            v-model="social.url"
+            v-model="socialItem.url"
             placeholder="https://..."
             type="url"
             :error-text="
               v$.form.socials.$each.$response?.$errors[
-                index
+                socialIndex
               ]?.url?.[0]?.$message?.toString()
             "
             :class="{
               'ion-invalid':
-                v$.form.socials.$each.$response?.$errors[index]?.url?.length,
+                v$.form.socials.$each.$response?.$errors[socialIndex]?.url
+                  ?.length,
               'ion-touched': v$.form.socials.$dirty,
             }"
             @ion-blur="v$.form.socials.$touch()"
@@ -145,7 +110,7 @@
             slot="end"
             fill="clear"
             color="danger"
-            @click="removeSocial({ index })"
+            @click="removeSocial({ socialIndex })"
           >
             <ion-icon :icon="trashOutline"></ion-icon>
           </ion-button>
@@ -161,7 +126,11 @@
 
     <ion-card class="shadow1">
       <section>
-        <ion-item lines="full" button @click="openFileDialog({ type: 'logo' })">
+        <ion-item
+          lines="full"
+          button
+          @click="openFileDialog({ targetType: 'logo' })"
+        >
           <ion-label>Logo</ion-label>
 
           <ion-note v-if="fileNames.logo" slot="end">{{
@@ -175,7 +144,7 @@
           data-type="logo"
           type="file"
           accept="image/*"
-          @change="onFileChange({ event: $event, type: 'logo' })"
+          @change="onFileChange({ fileEvent: $event, fileType: 'logo' })"
         />
       </section>
 
@@ -183,7 +152,7 @@
         <ion-item
           lines="full"
           button
-          @click="openFileDialog({ type: 'photo' })"
+          @click="openFileDialog({ targetType: 'photo' })"
         >
           <ion-label>Foto (Cover)</ion-label>
 
@@ -199,7 +168,7 @@
           data-type="photo"
           type="file"
           accept="image/*"
-          @change="onFileChange({ event: $event, type: 'photo' })"
+          @change="onFileChange({ fileEvent: $event, fileType: 'photo' })"
         />
       </section>
     </ion-card>
@@ -244,60 +213,163 @@
       </ion-item>
     </ion-card>
   </ion-list>
+
+  <!-- modals -->
+  <ion-modal
+    :is-open="isReorderModalOpen"
+    @did-dismiss="onReorderDismiss"
+  >
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Reordenar etiquetas</ion-title>
+        <ion-buttons slot="end">
+          <ion-button fill="clear" @click="closeReorderModal"
+            >Cerrar</ion-button
+          >
+          <ion-button color="primary" @click="saveReorder"
+            >Guardar</ion-button
+          >
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-list>
+        <ion-reorder-group
+          :disabled="false"
+          @ion-item-reorder="handleReorder"
+        >
+          <ion-item v-for="localTagItem in localTags" :key="localTagItem.id">
+            <ion-label>{{ localTagItem.label }}</ion-label>
+            <ion-reorder slot="end"></ion-reorder>
+          </ion-item>
+        </ion-reorder-group>
+      </ion-list>
+    </ion-content>
+  </ion-modal>
+  <!-- end modals -->
+
+  <!-- alerts -->
+  <ion-alert
+    :is-open="isAddTagAlertOpen"
+    header="Agregar etiqueta"
+    :inputs="[
+      { name: 'tag', type: 'text', placeholder: 'Etiqueta', value: newTag },
+    ]"
+    :buttons="addTagAlertButtons"
+    @did-dismiss="
+      () => {
+        isAddTagAlertOpen = false;
+        newTag = '';
+      }
+    "
+  ></ion-alert>
+  <!-- end alerts -->
 </template>
 
 <script setup lang="ts">
 // imports
 import {
+  IonAlert,
+  IonButton,
+  IonButtons,
+  IonCard,
+  IonCardContent,
+  IonChip,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
-  IonInput,
-  IonTextarea,
-  IonChip,
-  IonIcon,
   IonList,
-  IonToggle,
-  IonButton,
-  IonAlert,
-  IonNote,
+  IonListHeader,
   IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonButtons,
-  IonReorderGroup,
+  IonNote,
   IonReorder,
+  IonReorderGroup,
+  IonTextarea,
+  IonTitle,
+  IonToggle,
+  IonToolbar,
 } from "@ionic/vue";
-// import types for reorder event
-import type { ItemReorderEventDetail } from '@ionic/core';
-import { ref, reactive, watch } from "vue";
 import {
   addOutline,
   closeOutline,
-  trashOutline,
   linkOutline,
   reorderThreeOutline,
+  trashOutline,
+  logoAmazon,
+  logoApple,
+  logoBehance,
+  logoBitbucket,
+  chatbox,
+  logoDiscord,
+  logoDribbble,
+  logoFacebook,
+  logoGithub,
+  logoGitlab,
+  logoGoogle,
+  logoInstagram,
+  logoLinkedin,
+  logoMedium,
+  logoPaypal,
+  logoPinterest,
+  logoReddit,
+  logoSlack,
+  logoSnapchat,
+  logoSoundcloud,
+  logoStackoverflow,
+  logoSteam,
+  logoTwitch,
+  logoTwitter,
+  logoTiktok,
+  logoTumblr,
+  logoVk,
+  logoVimeo,
+  logoWechat,
+  logoWhatsapp,
+  logoWordpress,
+  logoX,
+  logoXbox,
+  logoYoutube,
+  logoPlaystation,
+  logoSkype,
+  logoBitcoin,
 } from "ionicons/icons";
-// import all ionicons dynamically for lookup in getIconByName
-import * as ionicons from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import {
-  required,
-  minLength,
-  maxLength,
   helpers,
+  maxLength,
+  minLength,
+  required,
   url as urlValidator,
 } from "@vuelidate/validators";
+import { reactive, ref, watch } from "vue";
 // end imports
 
-// props y emits
+// interface and types imports
 interface SocialItem {
   platform: string;
   url: string;
   iconName: string;
 }
 
+interface LocalTag {
+  id: string;
+  label: string;
+}
+
+type FileType = "logo" | "photo";
+
+interface ReorderEventDetail {
+  from: number;
+  to: number;
+  complete: (data?: boolean | LocalTag[]) => LocalTag[];
+}
+// end interface and types imports
+
+// main
 const props = defineProps<{
   tags: string[];
   initialData: {
@@ -312,28 +384,65 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  "remove-tag": [index: number];
-  "add-tag": [value: string];
-  "file-change": [payload: { file: File; type: "logo" | "photo" }];
+  "remove-tag": [tagIndex: number];
+  "add-tag": [tagValue: string];
+  "file-change": [payload: { file: File; type: FileType }];
   "update:showContactForm": [value: { socials: boolean; freelance: boolean }];
   save: [payload: { name: string; description: string; socials: SocialItem[] }];
-  "reorder-tags": [value: string[]];
+  "reorder-tags": [tags: string[]];
 }>();
-// end props y emits
+// end main
 
 // vars and const
 const isAddTagAlertOpen = ref(false);
-const isSocialModalOpen = ref(false);
 const isReorderModalOpen = ref(false);
 const fileNames = reactive<Record<string, string>>({});
 const newTag = ref("");
-// localTags holds objects with stable ids to avoid key collisions when labels repeat
-type LocalTag = { id: string; label: string };
-let _tagIdCounter = 0;
-function makeLocalTagsFromProps(): LocalTag[] {
-  return (props.tags || []).map((t) => ({ id: `tag_${Date.now()}_${_tagIdCounter++}`, label: t }));
-}
-const localTags = ref<LocalTag[]>(makeLocalTagsFromProps());
+
+let tagIdCounter = 0;
+
+const localTags = ref<LocalTag[]>([]);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const iconMap: Record<string, any> = {
+  logoAmazon,
+  logoApple,
+  logoBehance,
+  logoBitbucket,
+  chatbox,
+  logoDiscord,
+  logoDribbble,
+  logoFacebook,
+  logoGithub,
+  logoGitlab,
+  logoGoogle,
+  logoInstagram,
+  logoLinkedin,
+  logoMedium,
+  logoPaypal,
+  logoPinterest,
+  logoReddit,
+  logoSlack,
+  logoSnapchat,
+  logoSoundcloud,
+  logoStackoverflow,
+  logoSteam,
+  logoTwitch,
+  logoTwitter,
+  logoTiktok,
+  logoTumblr,
+  logoVk,
+  logoVimeo,
+  logoWechat,
+  logoWhatsapp,
+  logoWordpress,
+  logoX,
+  logoXbox,
+  logoYoutube,
+  logoPlaystation,
+  logoSkype,
+  logoBitcoin,
+};
 
 const addTagAlertButtons = [
   {
@@ -343,28 +452,62 @@ const addTagAlertButtons = [
   {
     text: "Agregar",
     role: "confirm",
-    handler: (data: { tag?: string } | undefined) => {
-      const value = data?.tag ?? newTag.value;
-      if (value && value.toString().trim()) {
-        const trimmed = value.toString().trim();
-        emit("add-tag", trimmed);
-        // update local copy so UI updates immediately even if parent doesn't
-        localTags.value.push({ id: `tag_${Date.now()}_${_tagIdCounter++}`, label: trimmed });
+    handler: (alertData: { tag?: string } | undefined) => {
+      const tagValue = alertData?.tag ?? newTag.value;
+      if (tagValue && tagValue.toString().trim()) {
+        const trimmedValue = tagValue.toString().trim();
+        emit("add-tag", trimmedValue);
+        localTags.value.push({
+          id: `tag_${Date.now()}_${tagIdCounter++}`,
+          label: trimmedValue,
+        });
       }
       newTag.value = "";
       isAddTagAlertOpen.value = false;
     },
   },
 ];
-// end vars and const
 
-// keep localTags in sync with props.tags
-watch(() => props.tags, () => {
-  // recreate localTags from props.tags (keep simple mapping)
-  localTags.value = makeLocalTagsFromProps();
-});
+const availableSocials = [
+  { name: "Amazon", iconName: "logoAmazon" },
+  { name: "Apple", iconName: "logoApple" },
+  { name: "Behance", iconName: "logoBehance" },
+  { name: "Bitbucket", iconName: "logoBitbucket" },
+  { name: "ChatBox", iconName: "chatbox" },
+  { name: "Discord", iconName: "logoDiscord" },
+  { name: "Dribbble", iconName: "logoDribbble" },
+  { name: "Facebook", iconName: "logoFacebook" },
+  { name: "GitHub", iconName: "logoGithub" },
+  { name: "GitLab", iconName: "logoGitlab" },
+  { name: "Google", iconName: "logoGoogle" },
+  { name: "Instagram", iconName: "logoInstagram" },
+  { name: "LinkedIn", iconName: "logoLinkedin" },
+  { name: "Medium", iconName: "logoMedium" },
+  { name: "PayPal", iconName: "logoPaypal" },
+  { name: "Pinterest", iconName: "logoPinterest" },
+  { name: "Reddit", iconName: "logoReddit" },
+  { name: "Slack", iconName: "logoSlack" },
+  { name: "Snapchat", iconName: "logoSnapchat" },
+  { name: "SoundCloud", iconName: "logoSoundcloud" },
+  { name: "Stack Overflow", iconName: "logoStackoverflow" },
+  { name: "Steam", iconName: "logoSteam" },
+  { name: "Twitch", iconName: "logoTwitch" },
+  { name: "Twitter", iconName: "logoTwitter" },
+  { name: "TikTok", iconName: "logoTiktok" },
+  { name: "Tumblr", iconName: "logoTumblr" },
+  { name: "VK", iconName: "logoVk" },
+  { name: "Vimeo", iconName: "logoVimeo" },
+  { name: "WeChat", iconName: "logoWechat" },
+  { name: "WhatsApp", iconName: "logoWhatsapp" },
+  { name: "WordPress", iconName: "logoWordpress" },
+  { name: "X", iconName: "logoX" },
+  { name: "Xbox", iconName: "logoXbox" },
+  { name: "YouTube", iconName: "logoYoutube" },
+  { name: "PlayStation", iconName: "logoPlaystation" },
+  { name: "Skype", iconName: "logoSkype" },
+  { name: "Bitcoin", iconName: "logoBitcoin" },
+];
 
-// validation
 const form = ref<{
   name: string;
   description: string;
@@ -374,17 +517,6 @@ const form = ref<{
   description: "",
   socials: [],
 });
-
-// poblar form local cuando initialData cambia (datos del servidor)
-watch(
-  () => props.initialData,
-  (data) => {
-    form.value.name = data.name;
-    form.value.description = data.description;
-    form.value.socials = data.socials.map((s) => ({ ...s }));
-  },
-  { immediate: true },
-);
 
 const alphaName = helpers.regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s-]+$/);
 
@@ -428,54 +560,118 @@ const rules = {
 };
 
 const v$ = useVuelidate(rules, { form });
+// end vars and const
 
-async function handleSubmit() {
-  const isValid = await v$.value.$validate();
-  if (isValid) {
-    emit("save", {
-      name: form.value.name,
-      description: form.value.description,
-      socials: form.value.socials,
-    });
-  }
+// watch
+watch(
+  () => props.tags,
+  () => {
+    localTags.value = createLocalTags();
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.initialData,
+  (initialDataValue) => {
+    form.value.name = initialDataValue.name;
+    form.value.description = initialDataValue.description;
+    form.value.socials = initialDataValue.socials.map((socialItem) => ({
+      ...socialItem,
+    }));
+  },
+  { immediate: true },
+);
+// end watch
+
+// functions
+function createLocalTags(): LocalTag[] {
+  return (props.tags || []).map((tagLabel) => ({
+    id: `tag_${Date.now()}_${tagIdCounter++}`,
+    label: tagLabel,
+  }));
 }
-// end validation
 
-// reorder modal functions
+function getIconByName(params: { iconName: string }) {
+  const { iconName } = params;
+  if (!iconName) return linkOutline;
+
+  let icon = iconMap[iconName];
+  if (icon) return icon;
+
+  const logoIconName = `logo${iconName.charAt(0).toUpperCase()}${iconName.slice(1).replace(/\s/g, "")}`;
+  icon = iconMap[logoIconName];
+  if (icon) return icon;
+
+  const matchedSocial = availableSocials.find(
+    (socialItem) => socialItem.name.toLowerCase() === iconName.toLowerCase(),
+  );
+  if (matchedSocial) {
+    icon = iconMap[matchedSocial.iconName];
+    if (icon) return icon;
+  }
+
+  return linkOutline;
+}
+
+function removeSocial(params: { socialIndex: number }) {
+  const { socialIndex } = params;
+  form.value.socials.splice(socialIndex, 1);
+}
+
+function onFileChange(params: { fileEvent: Event; fileType: FileType }) {
+  const { fileEvent, fileType } = params;
+  const inputElement = fileEvent.target as HTMLInputElement;
+  if (!inputElement.files?.length) return;
+  const selectedFile = inputElement.files[0];
+  fileNames[fileType] = selectedFile.name;
+  emit("file-change", { file: selectedFile, type: fileType });
+}
+
+function openFileDialog(params: { targetType: FileType }) {
+  const { targetType } = params;
+  const selector = `input[data-type="${targetType}"]`;
+  const inputElement = document.querySelector(
+    selector,
+  ) as HTMLInputElement | null;
+  if (inputElement) inputElement.click();
+}
+
 function closeReorderModal() {
   isReorderModalOpen.value = false;
-  // rebuild localTags from props.tags to preserve LocalTag shape (id + label)
-  localTags.value = makeLocalTagsFromProps();
+  localTags.value = createLocalTags();
 }
 
 function onReorderDismiss() {
   closeReorderModal();
 }
 
-function handleReorder(event: CustomEvent<ItemReorderEventDetail> | { detail: { from: number; to: number; complete: (data?: boolean | any[] | undefined) => any } }) {
-  // Ionic's ItemReorderEventDetail.complete has signature (data?: boolean | any[]) => any
-  // Accept either the typed CustomEvent or a compatible object and normalize.
-  const detail = (event as any).detail as ItemReorderEventDetail & { complete?: (data?: boolean | any[] | undefined) => any };
-  const { from, to, complete } = detail;
-  // Try to pass the array of objects (LocalTag[]) to Ionic's complete and normalize result.
+function handleReorder(reorderEvent: CustomEvent<ReorderEventDetail>) {
+  const detail = reorderEvent.detail as ReorderEventDetail;
+  const { from: originIndex, to: destinationIndex, complete } = detail;
+
   try {
-    const result = complete(localTags.value as unknown);
-    if (Array.isArray(result)) {
-      // result may be array of strings (labels) or LocalTag objects; normalize
-      if (result.length && typeof result[0] === "string") {
-        const labelToExisting = new Map(localTags.value.map((l) => [l.label, l]));
-        localTags.value = (result as unknown as string[]).map((label) =>
-          labelToExisting.get(label) || { id: `tag_${Date.now()}_${_tagIdCounter++}`, label },
+    const reorderResult = complete(localTags.value);
+    if (Array.isArray(reorderResult)) {
+      if (reorderResult.length && typeof reorderResult[0] === "string") {
+        const labelMapping = new Map(
+          localTags.value.map((localTag) => [localTag.label, localTag]),
+        );
+        localTags.value = (reorderResult as unknown as string[]).map(
+          (label) =>
+            labelMapping.get(label) || {
+              id: `tag_${Date.now()}_${tagIdCounter++}`,
+              label,
+            },
         );
       } else {
-        localTags.value = (result as unknown as LocalTag[]).slice();
+        localTags.value = (reorderResult as unknown as LocalTag[]).slice();
       }
     }
   } catch {
-    // fallback: manual reorder and tell ionic we handled the DOM
-    if (from !== to) {
-      const moved = localTags.value.splice(from, 1)[0];
-      localTags.value.splice(to, 0, moved);
+    if (originIndex !== destinationIndex) {
+      const movedTag = localTags.value.splice(originIndex, 1)[0];
+      localTags.value.splice(destinationIndex, 0, movedTag);
     }
     try {
       complete(false);
@@ -486,100 +682,20 @@ function handleReorder(event: CustomEvent<ItemReorderEventDetail> | { detail: { 
 }
 
 function saveReorder() {
-  // emit an array of labels (strings) so parent can update its tags
-  emit("reorder-tags", localTags.value.map((l) => l.label));
+  const reorderedLabels = localTags.value.map((localTag) => localTag.label);
+  emit("reorder-tags", reorderedLabels);
   isReorderModalOpen.value = false;
 }
 
-// available socials
-const availableSocials = [
-  { name: "Facebook", iconName: "logoFacebook" },
-  { name: "X", iconName: "logoX" },
-  { name: "Twitter", iconName: "logoTwitter" },
-  { name: "Instagram", iconName: "logoInstagram" },
-  { name: "LinkedIn", iconName: "logoLinkedin" },
-  { name: "YouTube", iconName: "logoYoutube" },
-  { name: "TikTok", iconName: "logoTiktok" },
-  { name: "GitHub", iconName: "logoGithub" },
-  { name: "GitLab", iconName: "logoGitlab" },
-  { name: "Bitbucket", iconName: "logoBitbucket" },
-  { name: "Discord", iconName: "logoDiscord" },
-  { name: "Twitch", iconName: "logoTwitch" },
-  { name: "Pinterest", iconName: "logoPinterest" },
-  { name: "Snapchat", iconName: "logoSnapchat" },
-  { name: "Reddit", iconName: "logoReddit" },
-  { name: "WhatsApp", iconName: "logoWhatsapp" },
-  { name: "WeChat", iconName: "logoWechat" },
-  { name: "Skype", iconName: "logoSkype" },
-  { name: "Slack", iconName: "logoSlack" },
-  { name: "Dribbble", iconName: "logoDribbble" },
-  { name: "Behance", iconName: "logoBehance" },
-  { name: "Medium", iconName: "logoMedium" },
-  { name: "WordPress", iconName: "logoWordpress" },
-  { name: "Vimeo", iconName: "logoVimeo" },
-  { name: "SoundCloud", iconName: "logoSoundcloud" },
-  { name: "Apple", iconName: "logoApple" },
-  { name: "Google", iconName: "logoGoogle" },
-  { name: "Amazon", iconName: "logoAmazon" },
-  { name: "PayPal", iconName: "logoPaypal" },
-  { name: "Bitcoin", iconName: "logoBitcoin" },
-  { name: "Stack Overflow", iconName: "logoStackoverflow" },
-  { name: "Steam", iconName: "logoSteam" },
-  { name: "Xbox", iconName: "logoXbox" },
-  { name: "PlayStation", iconName: "logoPlaystation" },
-  { name: "Tumblr", iconName: "logoTumblr" },
-  { name: "VK", iconName: "logoVk" },
-  { name: "ChatBox", iconName: "chatbox" },
-];
-// end available socials
-
-// functions
-function getIconByName(iconName: string) {
-  if (!iconName) return linkOutline;
-
-  let icon = ionicons[iconName as keyof typeof ionicons];
-  if (icon) return icon;
-
-  const logoIconName = `logo${iconName.charAt(0).toUpperCase() + iconName.slice(1).replace(/\s/g, "")}`;
-  icon = ionicons[logoIconName as keyof typeof ionicons];
-  if (icon) return icon;
-
-  const social = availableSocials.find(
-    (s) => s.name.toLowerCase() === iconName.toLowerCase(),
-  );
-  if (social) {
-    icon = ionicons[social.iconName as keyof typeof ionicons];
-    if (icon) return icon;
+async function handleSubmit() {
+  const isValid = await v$.value.$validate();
+  if (isValid) {
+    emit("save", {
+      name: form.value.name,
+      description: form.value.description,
+      socials: form.value.socials,
+    });
   }
-
-  return linkOutline;
-}
-
-function removeSocial(params: { index: number }) {
-  const { index } = params;
-  form.value.socials.splice(index, 1);
-}
-
-function removeTag(index: number) {
-  // remove from local copy and notify parent
-  localTags.value.splice(index, 1);
-  emit("remove-tag", index);
-}
-
-function onFileChange(params: { event: Event; type: "logo" | "photo" }) {
-  const { event, type } = params;
-  const input = event.target as HTMLInputElement;
-  if (!input.files?.length) return;
-  const file = input.files[0];
-  fileNames[type] = file.name;
-  emit("file-change", { file, type });
-}
-
-function openFileDialog(params: { type: "logo" | "photo" }) {
-  const { type } = params;
-  const selector = `input[data-type="${type}"]`;
-  const input = document.querySelector(selector) as HTMLInputElement | null;
-  if (input) input.click();
 }
 
 function fillTestData() {

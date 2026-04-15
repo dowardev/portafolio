@@ -1,5 +1,30 @@
 # Changelog
 
+## 11.13.0 - 2026-04-15
+
+### Changed
+
+- **Admin/InfoEditor**: Improve variable naming for better code clarity
+  - Renamed index variables to descriptive names (index -> tagIndex/socialIndex, i -> tagIndex/socialIndex)
+  - Renamed item variables to descriptive names (tag -> tagItem, social -> socialItem)
+  - Renamed function parameters to descriptive names (type -> targetType/fileType, event -> fileEvent)
+  - Renamed loop variables in v-for directives to follow naming conventions
+- **Admin/InfoEditor**: Expand social platform list to include all available ionicons platforms (30+ platforms)
+  - Added explicit iconMap with all ionicons imports for better icon resolution
+  - Improved getIconByName function to handle more icon name variations
+
+### Fixed
+
+- **TemplatePage**: Fixed typo in ion-toolbar component (was ion-toolvar)
+
+### Affected Files
+
+- Modified:
+  - `frontend/src/views/TemplatePage.vue`
+  - `frontend/src/views/admin/editors/InfoEditor.vue`
+
+---
+
 ## 11.12.0 - 2026-04-15
 
 ### Added
