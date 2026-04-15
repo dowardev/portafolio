@@ -1,37 +1,30 @@
 <template>
-  <HomeTemplate :template="currentTemplate" :data="templateData" />
+  <!-- Elegir uno de los dos: -->
+
+  <!-- Template 1: Scroll vertical -->
+  <!-- <HomeTemplate1 v-bind="templateData" /> -->
+
+  <!-- Template 2: Grid (descomentar para usar) -->
+  <HomeTemplate2 v-bind="templateData" />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
-import HomeTemplate from "@/components/templates/home/HomeTemplate.vue";
-import { getTemplate } from "@/components/templates/home/templates";
-import { type HomeTemplateData } from "@/utils/types/homeTemplate";
+import { reactive, onMounted } from "vue";
+import HomeTemplate1 from "@/templates/HomeTemplate1.vue";
+import HomeTemplate2 from "@/templates/HomeTemplate2.vue";
 
 import homeApi from "@/services/homeApi";
+import type { HomePageData } from "@/services/homeApi";
 
-const currentTemplate = ref(getTemplate("default"));
-
-const templateData = ref<HomeTemplateData>({});
+const templateData = reactive<Partial<HomePageData>>({});
 
 onMounted(async () => {
   try {
     const data = await homeApi.getPublic();
-    templateData.value = {
-      stack: data.stack || [],
-      skillCategories: data.skillCategories || [],
-      experience: data.experience || [],
-      projects: data.projects || [],
-      certificates: data.certificates || [],
-      freelance: data.freelance || [],
-      showContactForm: data.showContactForm || {
-        socials: false,
-        freelance: false,
-      },
-    };
+    // templateData is a reactive object; merge API result into it
+    Object.assign(templateData, data);
   } catch (error) {
     console.error("Error loading template data:", error);
   }
 });
 </script>
-

@@ -5,31 +5,37 @@
     </ion-col>
   </ion-row>
 
-  <ion-row>
-    <ion-col style="display: flex" class="ion-justify-content-center">
-      <div
-        v-for="platform in freelance"
-        :key="platform.name"
-        style="cursor: pointer"
-        class="ion-padding-start ion-padding-end"
+  <ion-grid>
+    <ion-row>
+      <ion-col
+        class="ion-justify-content-center ion-align-items-center"
+        style="display: flex"
       >
-        <img
-          style="width: 40px"
-          :src="platform.image"
-          :alt="platform.name"
-          @click="openUrl(platform.url)"
-        />
-      </div>
-      <div
-        v-if="showContactForm?.freelance"
-        style="cursor: pointer"
-        class="ion-padding-start ion-padding-end"
-        @click="openContactModal()"
-      >
-        <img style="width: 40px" :src="ContractLogo" alt="" />
-      </div>
-    </ion-col>
-  </ion-row>
+        <div
+          v-for="platform in freelance"
+          :key="platform.name"
+          style="cursor: pointer"
+          class="ion-padding-start ion-padding-end"
+        >
+          <img
+            style="width: 40px"
+            :src="platform.image"
+            :alt="platform.name"
+            @click="openUrl(platform.url)"
+          />
+        </div>
+
+        <ion-button
+          v-if="showContactForm?.freelance"
+          size="large"
+          fill="clear"
+          @click="openContactModal()"
+        >
+          <ion-icon :icon="mail"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
   <ion-row>
     <ion-col>
@@ -48,11 +54,19 @@
             <ion-card class="shadow-1">
               <ion-card-header>
                 <div style="display: flex; justify-content:">
-                  <img :src="platform.image" :alt="platform.name" style="height: 45px" />
+                  <img
+                    :src="platform.image"
+                    :alt="platform.name"
+                    style="height: 45px"
+                  />
                 </div>
                 <ion-card-title>{{ review.title }}</ion-card-title>
                 <ion-card-subtitle>
-                  <ion-icon v-for="n in review.rating" :key="n" :icon="starIcon"></ion-icon>
+                  <ion-icon
+                    v-for="n in review.rating"
+                    :key="n"
+                    :icon="starIcon"
+                  ></ion-icon>
                 </ion-card-subtitle>
               </ion-card-header>
               <ion-card-content v-if="review.comment && review.comment.length">
@@ -63,9 +77,7 @@
                       :key="indexComment"
                     >
                       {{ line
-                      }}<br
-                        v-if="indexComment < review.comment.length - 1"
-                    />
+                      }}<br v-if="indexComment < review.comment.length - 1" />
                     </span>
                   </ion-text>
                 </p>
@@ -86,6 +98,7 @@ import {
   IonCard,
   IonCardHeader,
   IonCardTitle,
+  IonGrid,
   IonCardSubtitle,
   IonCardContent,
   IonText,
@@ -99,7 +112,7 @@ import "swiper/css/navigation";
 
 import { type FreelanceItem } from "@/services/homeApi";
 import { type ScreenSize } from "@/utils/types/homeTemplate";
-import { star as starIcon } from "ionicons/icons";
+import { mail, star as starIcon } from "ionicons/icons";
 
 import ContractLogo from "@/assets/otros/contract-svgrepo-com.svg";
 

@@ -1,5 +1,35 @@
 # Changelog
 
+## 11.10.1 - 2026-04-15
+
+### Changed
+
+- **Template System**: Refactored template structure for improved organization
+  - Moved template components from `components/templates/home` to `templates` directory
+  - Replaced old `HomeTemplate` component with new `HomeTemplate1` and `HomeTemplate2` variants
+  - Removed legacy `SectionWrapper` and `templates.ts` files
+  - Added new `TechCloudBackground` component for visual effects
+- **TemplatePage**: Updated to use new template structure
+- **HomePresentationPage**: Updated to use new template components
+- **FinalSection**: Removed unused `ContractLogo` import
+
+### Affected Files
+
+- Deleted:
+  - `frontend/src/components/templates/home/HomeTemplate.vue`
+  - `frontend/src/components/templates/home/SectionWrapper.vue`
+  - `frontend/src/components/templates/home/templates.ts`
+- New:
+  - `frontend/src/components/common/TechCloudBackground.vue`
+  - `frontend/src/templates/HomeTemplate1.vue`
+  - `frontend/src/templates/HomeTemplate2.vue`
+- Modified:
+  - `frontend/src/views/TemplatePage.vue`
+  - `frontend/src/views/presentation/HomePresentationPage.vue`
+  - `frontend/src/views/presentation/sections/FinalSection.vue`
+
+---
+
 ## 11.10.0 - 2026-04-12
 
 ### Added
