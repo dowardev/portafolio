@@ -262,6 +262,7 @@ import {
   linkOutline,
 } from "ionicons/icons";
 import * as ionicons from "ionicons/icons";
+import { faker } from "@faker-js/faker";
 import homeApi, { type HomePageData } from "@/services/homeApi";
 import { ToastController } from "@/controllers/toastController";
 
@@ -487,6 +488,32 @@ function fillTestData() {
     { platform: "GitHub", url: "https://github.com/juanperez", iconName: "logoGithub" },
     { platform: "Twitter", url: "https://twitter.com/juanperez", iconName: "logoTwitter" },
   ];
+  const techOptions = ["Vue.js", "React", "Angular", "Node.js", "Python", "TypeScript", "Laravel", "Django", "Go", "Rust"];
+  form.projects = Array.from({ length: 3 }, () => {
+    const numTechs = faker.number.int({ min: 2, max: 5 });
+    const selectedTechs = faker.helpers.arrayElements(techOptions, numTechs).map(name => ({
+      name,
+      type: "icon" as const,
+      source: "",
+      size: "small" as const,
+    }));
+    
+    return {
+      img: "",
+      title: faker.company.name(),
+      status: faker.helpers.arrayElement(["progress", "indeterminate", "finished"]),
+      technologies: selectedTechs,
+      source: {
+        img: "",
+        name: faker.company.name(),
+        url: faker.internet.url(),
+      },
+      details: {
+        description: faker.lorem.paragraph(),
+        website: faker.internet.url(),
+      },
+    };
+  });
 }
 
 async function save() {

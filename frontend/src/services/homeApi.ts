@@ -56,6 +56,7 @@ export interface ExperienceItem {
 export interface ProjectItem {
   img: string;
   title: string;
+  date?: string;
   status: "progress" | "indeterminate" | "finished";
   technologies: Array<{
     source: string;

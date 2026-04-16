@@ -9,164 +9,187 @@
       </ion-button>
     </ion-list-header>
 
-    <ion-card class="shadow1">
-      <template v-for="(project, index) in modelValue" :key="index">
-        <ion-item lines="full">
-          <ion-input
-            label="Nombre del proyecto"
-            label-placement="floating"
-            :value="project.title"
-            placeholder="Ej: Moneyflap"
-            :error-text="getError({ index, field: 'title' })"
-            :class="{
-              'ion-invalid': hasError({ index, field: 'title' }),
-              'ion-touched': touched[index]?.title,
-            }"
-            @ion-input="updateItem({ index, field: 'title', value: $event.detail.value! })"
-            @ion-blur="touchField({ index, field: 'title' })"
-          ></ion-input>
-        </ion-item>
+    <ion-card
+      v-for="(project, index) in modelValue"
+      :key="index"
+      class="shadow1"
+    >
+      <ion-item lines="full">
+        <ion-input
+          label="Nombre del proyecto"
+          label-placement="floating"
+          :value="project.title"
+          placeholder="Ej: Moneyflap"
+          :error-text="getError({ index, field: 'title' })"
+          :class="{
+            'ion-invalid': hasError({ index, field: 'title' }),
+            'ion-touched': touched[index]?.title,
+          }"
+          @ion-input="
+            updateItem({ index, field: 'title', value: $event.detail.value! })
+          "
+          @ion-blur="touchField({ index, field: 'title' })"
+        ></ion-input>
+      </ion-item>
 
-        <ion-item lines="full">
-          <ion-select
-            label="Estado"
-            label-placement="floating"
-            :value="project.status"
-            @ion-change="updateItem({ index, field: 'status', value: $event.detail.value })"
-          >
-            <ion-select-option value="progress">En progreso</ion-select-option>
-
-            <ion-select-option value="indeterminate"
-              >Indeterminado</ion-select-option
-            >
-            <ion-select-option value="finished">Terminado</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item lines="full" button @click="openFileDialog({ index })">
-          <ion-label>Logo del proyecto</ion-label>
-
-          <ion-note v-if="fileNames[index]" slot="end">{{
-            fileNames[index]
-          }}</ion-note>
-
-          <ion-note v-else slot="end">Seleccionar</ion-note>
-
-          <ion-button
-            slot="end"
-            fill="clear"
-            :disabled="!props.modelValue[index]?.img"
-            @click.stop="showPreview({ index })"
-          >
-            <ion-icon :icon="eyeOutline"></ion-icon>
-          </ion-button>
-        </ion-item>
-
-        <input
-          style="display: none"
-          :data-type="`project_${index}`"
-          type="file"
-          accept="image/*"
-          @change="onMainFileChange({ event: $event, index })"
-        />
-
-        <span
-          v-if="hasError({ index, field: 'img' })"
-          class="error"
+      <ion-item lines="full">
+        <ion-select
+          label="Estado"
+          label-placement="floating"
+          :value="project.status"
+          @ion-change="
+            updateItem({ index, field: 'status', value: $event.detail.value })
+          "
         >
-          {{ getError({ index, field: "img" }) }}
-        </span>
+          <ion-select-option value="progress">En progreso</ion-select-option>
 
-        <ion-item lines="full">
-          <ion-textarea
-            label="Descripción"
-            label-placement="floating"
-            :value="project.details.description"
-            :rows="3"
-            placeholder="Descripción del proyecto..."
-            :error-text="getError({ index, field: 'description' })"
-            :class="{
-              'ion-invalid': hasError({ index, field: 'description' }),
-              'ion-touched': touched[index]?.description,
-            }"
-            @ion-input="updateDetail({ index, field: 'description', value: $event.detail.value! })"
-            @ion-blur="touchField({ index, field: 'description' })"
-          ></ion-textarea>
-        </ion-item>
-
-        <ion-item lines="full">
-          <ion-input
-            label="Link del proyecto"
-            label-placement="floating"
-            :value="project.details.website"
-            placeholder="https://..."
-            @ion-input="updateDetail({ index, field: 'website', value: $event.detail.value! })"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item lines="full" button @click="openSourceFileDialog({ index })">
-          <ion-label>Imagen fuente</ion-label>
-
-          <ion-note v-if="sourceFileNames[index]" slot="end">{{
-            sourceFileNames[index]
-          }}</ion-note>
-
-          <ion-note v-else slot="end">Seleccionar</ion-note>
-
-          <ion-button
-            slot="end"
-            fill="clear"
-            :disabled="!props.modelValue[index]?.source?.img"
-            @click.stop="showSourcePreview({ index })"
+          <ion-select-option value="indeterminate"
+            >Indeterminado</ion-select-option
           >
-            <ion-icon :icon="eyeOutline"></ion-icon>
-          </ion-button>
-        </ion-item>
+          <ion-select-option value="finished">Terminado</ion-select-option>
+        </ion-select>
+      </ion-item>
 
-        <input
-          style="display: none"
-          :data-type="`project_source_${index}`"
-          type="file"
-          accept="image/*"
-          @change="onSourceFileChange({ event: $event, index })"
-        />
+      <ion-item lines="full" button @click="openFileDialog({ index })">
+        <ion-label>Logo del proyecto</ion-label>
 
-        <ion-item>
-          <ion-input
-            label="Nombre fuente"
-            label-placement="floating"
-            :value="project.source.name"
-            placeholder="Ej: PengyiLabs"
-            @ion-input="updateSource({ index, field: 'name', value: $event.detail.value! })"
-          ></ion-input>
-        </ion-item>
+        <ion-note v-if="fileNames[index]" slot="end">{{
+          fileNames[index]
+        }}</ion-note>
 
-        <ion-item>
-          <ion-input
-            label="URL fuente"
-            label-placement="floating"
-            :value="project.source.url"
-            placeholder="https://..."
-            @ion-input="updateSource({ index, field: 'url', value: $event.detail.value! })"
-          ></ion-input>
-        </ion-item>
-
-        <TechnologiesEditor
-          :model-value="project.technologies"
-          @update:model-value="updateTechnologies({ index, technologies: $event })"
-          @update:files="(files) => updateTechFiles({ projectIndex: index, files })"
-        />
+        <ion-note v-else slot="end">Seleccionar</ion-note>
 
         <ion-button
-          expand="block"
+          slot="end"
           fill="clear"
-          color="danger"
-          @click="removeItem({ index })"
+          :disabled="!props.modelValue[index]?.img"
+          @click.stop="showPreview({ index })"
         >
-          <ion-icon :icon="trashOutline"></ion-icon>
-          Eliminar proyecto
+          <ion-icon :icon="eyeOutline"></ion-icon>
         </ion-button>
-      </template>
+      </ion-item>
+
+      <input
+        style="display: none"
+        :data-type="`project_${index}`"
+        type="file"
+        accept="image/*"
+        @change="onMainFileChange({ event: $event, index })"
+      />
+
+      <span v-if="hasError({ index, field: 'img' })" class="error">
+        {{ getError({ index, field: "img" }) }}
+      </span>
+
+      <ion-item lines="full">
+        <ion-textarea
+          label="Descripción"
+          label-placement="floating"
+          :value="project.details.description"
+          :rows="3"
+          placeholder="Descripción del proyecto..."
+          :error-text="getError({ index, field: 'description' })"
+          :class="{
+            'ion-invalid': hasError({ index, field: 'description' }),
+            'ion-touched': touched[index]?.description,
+          }"
+          @ion-input="
+            updateDetail({
+              index,
+              field: 'description',
+              value: $event.detail.value!,
+            })
+          "
+          @ion-blur="touchField({ index, field: 'description' })"
+        ></ion-textarea>
+      </ion-item>
+
+      <ion-item lines="full">
+        <ion-input
+          label="Link del proyecto"
+          label-placement="floating"
+          :value="project.details.website"
+          placeholder="https://..."
+          @ion-input="
+            updateDetail({
+              index,
+              field: 'website',
+              value: $event.detail.value!,
+            })
+          "
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="full" button @click="openSourceFileDialog({ index })">
+        <ion-label>Imagen fuente</ion-label>
+
+        <ion-note v-if="sourceFileNames[index]" slot="end">{{
+          sourceFileNames[index]
+        }}</ion-note>
+
+        <ion-note v-else slot="end">Seleccionar</ion-note>
+
+        <ion-button
+          slot="end"
+          fill="clear"
+          :disabled="!props.modelValue[index]?.source?.img"
+          @click.stop="showSourcePreview({ index })"
+        >
+          <ion-icon :icon="eyeOutline"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <input
+        style="display: none"
+        :data-type="`project_source_${index}`"
+        type="file"
+        accept="image/*"
+        @change="onSourceFileChange({ event: $event, index })"
+      />
+
+      <ion-item>
+        <ion-input
+          label="Nombre fuente"
+          label-placement="floating"
+          :value="project.source.name"
+          placeholder="Ej: PengyiLabs"
+          @ion-input="
+            updateSource({ index, field: 'name', value: $event.detail.value! })
+          "
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="URL fuente"
+          label-placement="floating"
+          :value="project.source.url"
+          placeholder="https://..."
+          @ion-input="
+            updateSource({ index, field: 'url', value: $event.detail.value! })
+          "
+        ></ion-input>
+      </ion-item>
+
+      <TechnologiesEditor
+        :model-value="project.technologies"
+        @update:model-value="
+          updateTechnologies({ index, technologies: $event })
+        "
+        @update:files="
+          (files) => updateTechFiles({ projectIndex: index, files })
+        "
+      />
+
+      <ion-button
+        expand="block"
+        fill="clear"
+        color="danger"
+        @click="removeItem({ index })"
+      >
+        <ion-icon :icon="trashOutline"></ion-icon>
+        Eliminar proyecto
+      </ion-button>
     </ion-card>
   </ion-list>
 
@@ -348,16 +371,20 @@ function updateSource(params: { index: number; field: string; value: string }) {
   emit("update:modelValue", updated);
 }
 
-function updateTechnologies(
-  params: { index: number; technologies: ProjectItem["technologies"] },
-) {
+function updateTechnologies(params: {
+  index: number;
+  technologies: ProjectItem["technologies"];
+}) {
   const { index, technologies } = params;
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], technologies };
   emit("update:modelValue", updated);
 }
 
-function updateTechFiles(params: { projectIndex: number; files: Record<number, File> }) {
+function updateTechFiles(params: {
+  projectIndex: number;
+  files: Record<number, File>;
+}) {
   const { projectIndex, files } = params;
   const prefix = `project_tech_image_${projectIndex}_`;
 

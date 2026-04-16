@@ -2,6 +2,7 @@
 <!-- Scope: applicable to functions, parameters, local variables, v-for keys, props, and state. -->
 <!-- Do not use any as type -->
 <!-- Make sure to correctly order the items in their respective sections -->
+<!-- Import missing ionic components -->
 <template>
   <ion-page>
     <ion-header class="ion-no-border" mode="ios">

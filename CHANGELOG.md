@@ -1,5 +1,50 @@
 # Changelog
 
+## 11.14.0 - 2026-04-16
+
+### Added
+
+- **ProjectCard**: New flip card component for interactive project display
+  - Displays project front with image, status chip, title, date, source, and technologies
+  - Back side shows description and project links with flip animation
+  - Added tooltip for technology names on hover
+  - Supports flipped prop for external control
+- **Test Data Generation**: Added faker-based test data generation for projects
+  - AdminProjectsPage: Added "Add test data" button to populate 3 random projects
+  - HomeEditorComponent: Added fillTestData function with random project generation
+
+### Changed
+
+- **ProjectsComponent**: Replaced inline card design with ProjectCard component
+  - Removed ProjectDetailModal - project details now shown via flip card interaction
+  - Simplified template using ProjectCard for each project
+- **HomeTemplate2**: Updated to use dynamic template content
+  - Added name, description, tags from props for personalization
+  - Projects now rendered using ProjectCard component
+  - Added router navigation to portfolio page
+- **PortfolioPage**: Simplified layout
+  - Removed filter selector (temporarily disabled)
+  - Cleaned up unused imports
+- **ProjectsEditor**: Refactored template structure
+  - Each project now wrapped in individual ion-card (moved v-for to ion-card)
+  - Improved form field organization and spacing
+
+### Affected Files
+
+- New:
+  - `frontend/src/components/projects/ProjectCard.vue`
+- Modified:
+  - `frontend/src/components/projects/ProjectsComponent.vue`
+  - `frontend/src/services/homeApi.ts`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/TemplatePage.vue`
+  - `frontend/src/views/admin/HomeEditorComponent.vue`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+  - `frontend/src/views/admin/sections/AdminProjectsPage.vue`
+  - `frontend/src/views/portfolio/PortfolioPage.vue`
+
+---
+
 ## 11.13.0 - 2026-04-15
 
 ### Changed

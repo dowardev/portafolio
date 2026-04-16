@@ -28,19 +28,19 @@
     <ion-grid>
       <ion-row class="ion-justify-content-center">
         <ion-col size="4">
-          <h2 style="text-align: center">Hi, I'm Vijay Verma.</h2>
+          <h2 style="text-align: center">Hola, Soy {{ name }}.</h2>
 
           <p style="text-align: center">
-            Right now, I'm focusing on making my own game. I love both design
-            and code. Alongside that, I spend time doing contract work,
-            illustrating, and building tools and plugins.
+            {{ description }}
           </p>
 
           <div
             style="display: flex; flex-direction: column; align-items: center"
           >
-            <div>
-              <ion-note>CEO QuantumLabs</ion-note>
+            <div style="display: flex">
+              <ion-chip v-for="tag in tags" :key="tag" color="primary">{{
+                tag
+              }}</ion-chip>
             </div>
 
             <div>
@@ -88,57 +88,19 @@
             <ion-list-header>
               <ion-label>Proyectos</ion-label>
 
-              <ion-button>Todos</ion-button>
+              <ion-button @click="$router.push('/home/portfolio')"
+                >Todos</ion-button
+              >
             </ion-list-header>
 
             <ion-grid>
               <ion-row>
-                <ion-col size="4">
-                  <ion-card class="shadow1">
-                    <img src="../assets/otros/light-wallpaper1.png" />
-
-                    <ion-item lines="none">
-                      <ion-label>Poyecto1</ion-label>
-
-                      <ion-label slot="end">2026</ion-label>
-                    </ion-item>
-
-                    <div class="ion-padding-start ion-padding-bottom">
-                      <ion-note>QuantumStudios</ion-note>
-                    </div>
-                  </ion-card>
-                </ion-col>
-
-                <ion-col size="4">
-                  <ion-card class="shadow1">
-                    <img src="../assets/otros/light-wallpaper1.png" />
-
-                    <ion-item lines="none">
-                      <ion-label>Poyecto1</ion-label>
-
-                      <ion-label slot="end">2026</ion-label>
-                    </ion-item>
-
-                    <div class="ion-padding-start ion-padding-bottom">
-                      <ion-note>QuantumStudios</ion-note>
-                    </div>
-                  </ion-card>
-                </ion-col>
-
-                <ion-col size="4">
-                  <ion-card class="shadow1">
-                    <img src="../assets/otros/light-wallpaper1.png" />
-
-                    <ion-item lines="none">
-                      <ion-label>Poyecto1</ion-label>
-
-                      <ion-label slot="end">2026</ion-label>
-                    </ion-item>
-
-                    <div class="ion-padding-start ion-padding-bottom">
-                      <ion-note>QuantumStudios</ion-note>
-                    </div>
-                  </ion-card>
+                <ion-col
+                  v-for="project in props.projects?.slice(0, 3)"
+                  :key="project.title"
+                  size="4"
+                >
+                  <ProjectCard :project="project" />
                 </ion-col>
               </ion-row>
             </ion-grid>
@@ -311,10 +273,15 @@ import {
   IonList,
   IonListHeader,
   IonLabel,
+  IonIcon,
 } from "@ionic/vue";
+import { useRouter } from "vue-router";
+
+const $router = useRouter();
 
 import TechCloudBackground from "@/components/common/TechCloudBackground.vue";
 import FinalSection from "@/views/presentation/sections/FinalSection.vue";
+import ProjectCard from "@/components/projects/ProjectCard.vue";
 import type { HomePageData } from "@/services/homeApi";
 
 // declare component props so $props contains the passed template data
@@ -371,6 +338,10 @@ import laravelIcon from "@/assets/otros/laravel-2.svg";
   line-height: 0; /* prevent extra inline spacing */
   margin: 0;
   padding: 0;
+}
+
+.tech-icon {
+  margin: 2px;
 }
 
 .wave.invert {
