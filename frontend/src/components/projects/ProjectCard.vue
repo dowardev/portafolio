@@ -28,7 +28,13 @@
 
         <ion-item lines="none">
           <ion-label>{{ project.title }}</ion-label>
-          <ion-label slot="end">{{ project.date }}</ion-label>
+          <ion-label slot="end">
+            {{
+              project.startDate
+                ? formatDateRange(project.startDate, project.endDate)
+                : ""
+            }}
+          </ion-label>
         </ion-item>
 
         <div class="ion-padding-start ion-padding-bottom">
@@ -159,6 +165,15 @@ function getIconColorByName(name: string) {
     Windows: "#0078d4",
   };
   return colors[name] || "";
+}
+
+function formatDateRange(start: string, end?: string): string {
+  const formatMonth = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("es-ES", { month: "short", year: "numeric" });
+  };
+  if (!end) return `${formatMonth(start)} - Actual`;
+  return `${formatMonth(start)} - ${formatMonth(end)}`;
 }
 </script>
 

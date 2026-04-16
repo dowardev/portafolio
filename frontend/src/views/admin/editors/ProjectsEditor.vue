@@ -9,167 +9,262 @@
       </ion-button>
     </ion-list-header>
 
-    <ion-card
-      v-for="(project, index) in modelValue"
-      :key="index"
-      class="shadow1"
-    >
-      <ion-item lines="full">
-        <ion-input
-          label="Nombre del proyecto"
-          label-placement="floating"
-          :value="project.title"
-          placeholder="Ej: Moneyflap"
-          :error-text="getError({ index, field: 'title' })"
-          :class="{
-            'ion-invalid': hasError({ index, field: 'title' }),
-            'ion-touched': touched[index]?.title,
-          }"
-          @ion-input="
-            updateItem({ index, field: 'title', value: $event.detail.value! })
-          "
-          @ion-blur="touchField({ index, field: 'title' })"
-        ></ion-input>
-      </ion-item>
+    <template v-for="(project, index) in modelValue" :key="index">
+      <ion-item-divider sticky>
+        <ion-label>{{ project.title }} </ion-label>
 
-      <ion-item lines="full">
-        <ion-select
-          label="Estado"
-          label-placement="floating"
-          :value="project.status"
-          @ion-change="
-            updateItem({ index, field: 'status', value: $event.detail.value })
-          "
+        <ion-button
+          slot="end"
+          expand="block"
+          fill="clear"
+          color="danger"
+          @click="removeItem({ index })"
         >
-          <ion-select-option value="progress">En progreso</ion-select-option>
+          <ion-icon :icon="trashOutline"></ion-icon>
+          Eliminar proyecto
+        </ion-button>
+      </ion-item-divider>
 
-          <ion-select-option value="indeterminate"
-            >Indeterminado</ion-select-option
+      <ion-list>
+        <ion-list-header>
+          <ion-label> Básico </ion-label>
+        </ion-list-header>
+
+        <ion-card class="shadow1">
+          <ion-item lines="full">
+            <ion-input
+              label="Nombre del proyecto"
+              label-placement="floating"
+              :value="project.title"
+              placeholder="Ej: Moneyflap"
+              :error-text="getError({ index, field: 'title' })"
+              :class="{
+                'ion-invalid': hasError({ index, field: 'title' }),
+                'ion-touched': touched[index]?.title,
+              }"
+              @ion-input="
+                updateItem({
+                  index,
+                  field: 'title',
+                  value: $event.detail.value!,
+                })
+              "
+              @ion-blur="touchField({ index, field: 'title' })"
+            ></ion-input>
+          </ion-item>
+
+          <!-- fecha -->
+
+          <ion-item
+            lines="full"
+            button
+            @click="openStartDatePopover(index)"
           >
-          <ion-select-option value="finished">Terminado</ion-select-option>
-        </ion-select>
-      </ion-item>
+            <ion-label>Inicio</ion-label>
+            <ion-note slot="end">{{
+              formatDate(project.startDate ?? "")
+            }}</ion-note>
+          </ion-item>
 
-      <ion-item lines="full" button @click="openFileDialog({ index })">
-        <ion-label>Logo del proyecto</ion-label>
+          <ion-popover
+            :is-open="startDatePopoverOpen[index]"
+            @ion-popover-dismiss="closeStartDatePopover"
+          >
+            <ion-datetime
+              presentation="month-year"
+              :value="project.startDate ?? undefined"
+              @ion-change="onStartDateChange(index, $event)"
+            ></ion-datetime>
+          </ion-popover>
 
-        <ion-note v-if="fileNames[index]" slot="end">{{
-          fileNames[index]
-        }}</ion-note>
+          <ion-item
+            lines="full"
+            button
+            @click="openEndDatePopover(index)"
+          >
+            <ion-label>Fin</ion-label>
+            <ion-note slot="end">{{
+              formatDate(project.endDate ?? "")
+            }}</ion-note>
+          </ion-item>
 
-        <ion-note v-else slot="end">Seleccionar</ion-note>
+          <ion-popover
+            :is-open="endDatePopoverOpen[index]"
+            @ion-popover-dismiss="closeEndDatePopover"
+          >
+            <ion-datetime
+              presentation="month-year"
+              :value="project.endDate ?? undefined"
+              @ion-change="onEndDateChange(index, $event)"
+            ></ion-datetime>
+          </ion-popover>
 
-        <ion-button
-          slot="end"
-          fill="clear"
-          :disabled="!props.modelValue[index]?.img"
-          @click.stop="showPreview({ index })"
-        >
-          <ion-icon :icon="eyeOutline"></ion-icon>
-        </ion-button>
-      </ion-item>
+          <ion-item lines="full">
+            <ion-select
+              label="Estado"
+              label-placement="floating"
+              :value="project.status"
+              @ion-change="
+                updateItem({
+                  index,
+                  field: 'status',
+                  value: $event.detail.value,
+                })
+              "
+            >
+              <ion-select-option value="progress"
+                >En progreso</ion-select-option
+              >
 
-      <input
-        style="display: none"
-        :data-type="`project_${index}`"
-        type="file"
-        accept="image/*"
-        @change="onMainFileChange({ event: $event, index })"
-      />
+              <ion-select-option value="indeterminate"
+                >Indeterminado</ion-select-option
+              >
+              <ion-select-option value="finished">Terminado</ion-select-option>
+            </ion-select>
+          </ion-item>
 
-      <span v-if="hasError({ index, field: 'img' })" class="error">
-        {{ getError({ index, field: "img" }) }}
-      </span>
+          <ion-item lines="full" button @click="openFileDialog({ index })">
+            <ion-label>Logo del proyecto</ion-label>
 
-      <ion-item lines="full">
-        <ion-textarea
-          label="Descripción"
-          label-placement="floating"
-          :value="project.details.description"
-          :rows="3"
-          placeholder="Descripción del proyecto..."
-          :error-text="getError({ index, field: 'description' })"
-          :class="{
-            'ion-invalid': hasError({ index, field: 'description' }),
-            'ion-touched': touched[index]?.description,
-          }"
-          @ion-input="
-            updateDetail({
-              index,
-              field: 'description',
-              value: $event.detail.value!,
-            })
-          "
-          @ion-blur="touchField({ index, field: 'description' })"
-        ></ion-textarea>
-      </ion-item>
+            <ion-note v-if="fileNames[index]" slot="end">{{
+              fileNames[index]
+            }}</ion-note>
 
-      <ion-item lines="full">
-        <ion-input
-          label="Link del proyecto"
-          label-placement="floating"
-          :value="project.details.website"
-          placeholder="https://..."
-          @ion-input="
-            updateDetail({
-              index,
-              field: 'website',
-              value: $event.detail.value!,
-            })
-          "
-        ></ion-input>
-      </ion-item>
+            <ion-note v-else slot="end">Seleccionar</ion-note>
 
-      <ion-item lines="full" button @click="openSourceFileDialog({ index })">
-        <ion-label>Imagen fuente</ion-label>
+            <ion-button
+              slot="end"
+              fill="clear"
+              :disabled="!props.modelValue[index]?.img"
+              @click.stop="showPreview({ index })"
+            >
+              <ion-icon :icon="eyeOutline"></ion-icon>
+            </ion-button>
+          </ion-item>
 
-        <ion-note v-if="sourceFileNames[index]" slot="end">{{
-          sourceFileNames[index]
-        }}</ion-note>
+          <input
+            style="display: none"
+            :data-type="`project_${index}`"
+            type="file"
+            accept="image/*"
+            @change="onMainFileChange({ event: $event, index })"
+          />
 
-        <ion-note v-else slot="end">Seleccionar</ion-note>
+          <span v-if="hasError({ index, field: 'img' })" class="error">
+            {{ getError({ index, field: "img" }) }}
+          </span>
 
-        <ion-button
-          slot="end"
-          fill="clear"
-          :disabled="!props.modelValue[index]?.source?.img"
-          @click.stop="showSourcePreview({ index })"
-        >
-          <ion-icon :icon="eyeOutline"></ion-icon>
-        </ion-button>
-      </ion-item>
+          <ion-item lines="full">
+            <ion-input
+              label="Link del proyecto"
+              label-placement="floating"
+              :value="project.details.website"
+              placeholder="https://..."
+              @ion-input="
+                updateDetail({
+                  index,
+                  field: 'website',
+                  value: $event.detail.value!,
+                })
+              "
+            ></ion-input>
+          </ion-item>
 
-      <input
-        style="display: none"
-        :data-type="`project_source_${index}`"
-        type="file"
-        accept="image/*"
-        @change="onSourceFileChange({ event: $event, index })"
-      />
+          <ion-item lines="full">
+            <ion-textarea
+              label="Descripción"
+              label-placement="floating"
+              :value="project.details.description"
+              :rows="3"
+              placeholder="Descripción del proyecto..."
+              :error-text="getError({ index, field: 'description' })"
+              :class="{
+                'ion-invalid': hasError({ index, field: 'description' }),
+                'ion-touched': touched[index]?.description,
+              }"
+              @ion-input="
+                updateDetail({
+                  index,
+                  field: 'description',
+                  value: $event.detail.value!,
+                })
+              "
+              @ion-blur="touchField({ index, field: 'description' })"
+            ></ion-textarea>
+          </ion-item>
+        </ion-card>
+      </ion-list>
 
-      <ion-item>
-        <ion-input
-          label="Nombre fuente"
-          label-placement="floating"
-          :value="project.source.name"
-          placeholder="Ej: PengyiLabs"
-          @ion-input="
-            updateSource({ index, field: 'name', value: $event.detail.value! })
-          "
-        ></ion-input>
-      </ion-item>
+      <ion-list>
+        <ion-list-header>
+          <ion-label>Fuente</ion-label>
+        </ion-list-header>
 
-      <ion-item>
-        <ion-input
-          label="URL fuente"
-          label-placement="floating"
-          :value="project.source.url"
-          placeholder="https://..."
-          @ion-input="
-            updateSource({ index, field: 'url', value: $event.detail.value! })
-          "
-        ></ion-input>
-      </ion-item>
+        <ion-card class="shadow1">
+          <ion-item
+            lines="full"
+            button
+            @click="openSourceFileDialog({ index })"
+          >
+            <ion-label>Imagen fuente</ion-label>
+
+            <ion-note v-if="sourceFileNames[index]" slot="end">{{
+              sourceFileNames[index]
+            }}</ion-note>
+
+            <ion-note v-else slot="end">Seleccionar</ion-note>
+
+            <ion-button
+              slot="end"
+              fill="clear"
+              :disabled="!props.modelValue[index]?.source?.img"
+              @click.stop="showSourcePreview({ index })"
+            >
+              <ion-icon :icon="eyeOutline"></ion-icon>
+            </ion-button>
+          </ion-item>
+
+          <input
+            style="display: none"
+            :data-type="`project_source_${index}`"
+            type="file"
+            accept="image/*"
+            @change="onSourceFileChange({ event: $event, index })"
+          />
+
+          <ion-item>
+            <ion-input
+              label="Nombre fuente"
+              label-placement="floating"
+              :value="project.source.name"
+              placeholder="Ej: PengyiLabs"
+              @ion-input="
+                updateSource({
+                  index,
+                  field: 'name',
+                  value: $event.detail.value!,
+                })
+              "
+            ></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              label="URL fuente"
+              label-placement="floating"
+              :value="project.source.url"
+              placeholder="https://..."
+              @ion-input="
+                updateSource({
+                  index,
+                  field: 'url',
+                  value: $event.detail.value!,
+                })
+              "
+            ></ion-input>
+          </ion-item>
+        </ion-card>
+      </ion-list>
 
       <TechnologiesEditor
         :model-value="project.technologies"
@@ -180,17 +275,7 @@
           (files) => updateTechFiles({ projectIndex: index, files })
         "
       />
-
-      <ion-button
-        expand="block"
-        fill="clear"
-        color="danger"
-        @click="removeItem({ index })"
-      >
-        <ion-icon :icon="trashOutline"></ion-icon>
-        Eliminar proyecto
-      </ion-button>
-    </ion-card>
+    </template>
   </ion-list>
 
   <ion-modal :is-open="isPreviewOpen" @ion-modal-did-dismiss="closePreview">
@@ -231,6 +316,8 @@ import {
   IonToolbar,
   IonButtons,
   IonTitle,
+  IonDatetime,
+  IonPopover,
 } from "@ionic/vue";
 import {
   addOutline,
@@ -265,6 +352,9 @@ const sourceFileNames = reactive<Record<number, string>>({});
 
 const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
+
+const startDatePopoverOpen = reactive<Record<number, boolean>>({});
+const endDatePopoverOpen = reactive<Record<number, boolean>>({});
 // end vars and const
 
 // vuelidate
@@ -337,6 +427,8 @@ function addItem() {
       img: "",
       title: "",
       status: "progress",
+      startDate: "",
+      endDate: "",
       technologies: [],
       source: { img: "", name: "", url: "" },
       details: { description: "", website: "" },
@@ -474,11 +566,57 @@ function removeItem(params: { index: number }) {
   delete touched[index];
   delete fileNames[index];
   delete sourceFileNames[index];
+  delete startDatePopoverOpen[index];
+  delete endDatePopoverOpen[index];
   emitFiles();
   emit(
     "update:modelValue",
     props.modelValue.filter((_, i) => i !== index),
   );
+}
+
+function formatDate(dateStr: string): string {
+  if (!dateStr) return "Seleccionar";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("es-ES", { month: "short", year: "numeric" });
+}
+
+function openStartDatePopover(index: number) {
+  startDatePopoverOpen[index] = true;
+}
+
+function closeStartDatePopover() {
+  const keys = Object.keys(startDatePopoverOpen);
+  for (const key of keys) {
+    startDatePopoverOpen[Number(key)] = false;
+  }
+}
+
+function onStartDateChange(index: number, event: CustomEvent) {
+  const value = event.detail.value;
+  if (value) {
+    updateItem({ index, field: "startDate", value });
+  }
+  closeStartDatePopover();
+}
+
+function openEndDatePopover(index: number) {
+  endDatePopoverOpen[index] = true;
+}
+
+function closeEndDatePopover() {
+  const keys = Object.keys(endDatePopoverOpen);
+  for (const key of keys) {
+    endDatePopoverOpen[Number(key)] = false;
+  }
+}
+
+function onEndDateChange(index: number, event: CustomEvent) {
+  const value = event.detail.value;
+  if (value) {
+    updateItem({ index, field: "endDate", value });
+  }
+  closeEndDatePopover();
 }
 // end functions
 </script>

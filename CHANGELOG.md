@@ -1,5 +1,30 @@
 # Changelog
 
+## 11.15.0 - 2026-04-16
+
+### Added
+
+- **Projects**: Added date range fields (startDate, endDate) to project data model
+  - ProjectsEditor now includes date picker popovers for selecting project start and end dates
+  - ProjectCard displays formatted date range (e.g., "ene 2026 - Actual") instead of single date
+  - New `formatDateRange` function handles date formatting with "Actual" for ongoing projects
+
+### Changed
+
+- **ProjectsEditor**: Refactored project form layout with collapsible sections
+  - Each project now uses ion-item-divider with sticky header showing project title
+  - Delete button moved to project header for easier access
+  - Form fields reorganized into "Básico" and "Fuente" sections with ion-list grouping
+
+### Affected Files
+
+- Modified:
+  - `frontend/src/components/projects/ProjectCard.vue`
+  - `frontend/src/services/homeApi.ts`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+
+---
+
 ## 11.14.0 - 2026-04-16
 
 ### Added
