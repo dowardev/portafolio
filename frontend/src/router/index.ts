@@ -3,7 +3,22 @@ import { RouteRecordRaw } from "vue-router";
 import NoFoundPage from "../views/404/404Page.vue";
 import Prueba from "@/views/prueba/Prueba.vue";
 
-import HomePage from "@/views/HomePage.vue";
+import HomePresentationPage from "@/views/presentation/HomePresentationPage.vue";
+import SkillsPage from "@/views/presentation/skills/SkillsPage.vue";
+import HistoryPage from "@/views/history/HistoryPage.vue";
+import PortfolioPage from "@/views/portfolio/PortfolioPage.vue";
+import CertificatesPage from "@/views/certificates/CertificatesPage.vue";
+import ExperiencePage from "@/views/experience/ExperiencePage.vue";
+import CreatePostPage from "@/views/blog/editor/CreatePostPage.vue";
+import UpdatePostPage from "@/views/blog/editor/UpdatePostPage.vue";
+import PostsPage from "@/views/blog/posts/PostsPage.vue";
+import PostPage from "@/views/blog/post/PostPage.vue";
+import LoginPage from "@/views/session/login/LoginPage.vue";
+import SignUpPage from "@/views/session/signup/SignUpPage.vue";
+import PoliciesPage from "@/views/policies/PoliciesPage.vue";
+import UserPanelPage from "@/views/user/UserPanelPage.vue";
+import PanelAdminPage from "@/views/admin/PanelAdminPage.vue";
+import AdminEditorPage from "@/views/admin/AdminEditorPage.vue";
 
 import UserController from "@/controllers/userController";
 import { ICustomError } from "@/services/interfaces";
@@ -46,88 +61,82 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/home/presentation",
     name: "PresentationPage",
-    component: HomePage,
+    component: HomePresentationPage,
   },
   {
     path: "/home/skills",
     name: "SkillsPage",
-    component: HomePage,
+    component: SkillsPage,
   },
   {
     path: "/home/history",
     name: "HistoryPage",
-    component: HomePage,
+    component: HistoryPage,
   },
   {
     path: "/home/portfolio",
     name: "PortfolioPage",
-    component: HomePage,
+    component: PortfolioPage,
   },
   {
-    path: "/home/certifcates",
+    path: "/home/certificates",
     name: "CertificatesPage",
-    component: HomePage,
+    component: CertificatesPage,
   },
   {
     path: "/home/experience",
     name: "ExperiencePage",
-    component: HomePage,
+    component: ExperiencePage,
   },
   {
     path: "/blog/editor/create",
     name: "CreatePostPage",
-    component: HomePage,
+    component: CreatePostPage,
   },
   {
     path: "/blog/editor/update/:id",
     name: "UpdatePostPage",
-    component: HomePage,
+    component: UpdatePostPage,
   },
   {
     path: "/blog",
     name: "PostsPage",
-    component: HomePage,
-    children: [
-      {
-        path: ":date",
-        component: HomePage,
-      },
-    ],
+    component: PostsPage,
   },
   {
     path: "/blog/post/:id",
     name: "PostPage",
-    component: HomePage,
+    component: PostPage,
   },
   {
     path: "/login",
     name: "LoginPage",
-    component: HomePage,
+    component: LoginPage,
   },
   {
     path: "/signup",
     name: "SignUpPage",
-    component: HomePage,
+    component: SignUpPage,
   },
   {
     path: "/policies",
     name: "PoliciesPage",
-    component: HomePage,
+    component: PoliciesPage,
   },
   {
     path: "/user",
     name: "UserPanelPage",
-    component: HomePage,
+    component: UserPanelPage,
   },
   {
     path: "/admin-panel",
     name: "PanelAdminPage",
-    component: HomePage,
+    component: PanelAdminPage,
   },
   {
     path: "/admin-panel/:section",
     name: "AdminEditorPage",
-    component: HomePage,
+    component: AdminEditorPage,
   },
 ];
 

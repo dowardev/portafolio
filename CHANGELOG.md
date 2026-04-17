@@ -1,5 +1,44 @@
 # Changelog
 
+## 11.16.0 - 2026-04-16
+
+### Changed
+
+- **Router**: Refactored routing to use direct page component imports instead of HomePage placeholder
+  - All routes now reference their dedicated page components directly
+  - Fixed typo: `/home/certifcates` corrected to `/home/certificates`
+  - Improved code organization and maintainability
+
+- **HomeTemplate2**: Restructured component with proper Ionic page structure
+  - Added `ion-page` wrapper for correct Ionic navigation handling
+  - Added `ion-toolbar` in header for proper toolbar integration
+  - Changed `$router` to `router` variable for consistency
+
+- **HomePage.vue**: Removed legacy placeholder component
+  - Functionality distributed to individual page components
+  - Cleaner component architecture
+
+- **AdminEditorPage.vue**: New dedicated page component for admin section routing
+  - Handles routing to Info, Stack, Skills, Experience, Projects, Certificates, and Freelance admin sections
+  - Replaces conditional rendering logic previously in HomePage
+
+- **PortfolioPage.vue**: Added proper Ionic page wrapper
+  - Wrapped content in `ion-page` for consistent navigation behavior
+  - Added necessary Ionic component imports
+
+### Affected Files
+
+- Modified:
+  - `frontend/src/router/index.ts`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/portfolio/PortfolioPage.vue`
+- Deleted:
+  - `frontend/src/views/HomePage.vue`
+- New:
+  - `frontend/src/views/admin/AdminEditorPage.vue`
+
+---
+
 ## 11.15.0 - 2026-04-16
 
 ### Added
