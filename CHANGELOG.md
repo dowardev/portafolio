@@ -1,5 +1,79 @@
 # Changelog
 
+## 11.17.0 - 2026-04-17
+
+### Added
+
+- **ProjectsController**: New controller class for managing projects with centralized business logic
+  - Handles loading, saving, adding, updating, and deleting projects
+  - Integrates with ProjectsStore and ToastController for state management and notifications
+
+- **ProjectsStore**: New Pinia store for centralized projects state management
+  - Manages projects data, loading/saving states, and loaded flag
+  - Provides methods for loading, saving, adding, updating, and deleting projects
+  - Implements caching to avoid redundant API calls
+
+- **ProjectsListPage**: New dedicated admin page for viewing and managing projects list
+  - Displays all projects with edit/delete actions
+  - Navigation to create new project or edit existing
+
+- **ProjectsEditor**: Refactored as standalone page with create/edit/delete functionality
+  - Supports both embedded mode (within home editor) and standalone mode
+  - Added save button in header for standalone mode
+  - Added delete confirmation dialog with alert controller
+
+- **Routes**: New routes for projects management
+  - `/admin-panel/projects` - ProjectsListPage
+  - `/admin-panel/projects/new` - Create new project
+  - `/admin-panel/projects/edit/:index` - Edit existing project
+
+### Changed
+
+- **ProjectsComponent**: Refactored to use ProjectsController instead of direct API calls
+  - Cleaner component with controller-based data management
+  - Uses computed property for reactive project data
+
+- **AdminEditorPage**: Removed projects section reference
+  - Projects now managed through dedicated standalone pages
+  - Cleaner admin editor structure
+
+- **PanelAdminPage**: Wrapped content in ion-page for proper Ionic navigation
+  - Added IonPage wrapper for consistent navigation behavior
+  - Improved component structure
+
+- **homeEditorStore**: Removed projects from form and sectionFiles
+  - Projects now managed independently by ProjectsStore
+  - Cleaner separation of concerns
+
+- **ProjectsEditor**: Refactored to support standalone and embedded modes
+  - Added standalone/computed properties for mode detection
+  - Uses localProjects for standalone editing
+  - Unified save handler for both modes
+
+### Breaking Changes
+
+- Projects are no longer managed through homeEditorStore
+- Projects now have dedicated store (ProjectsStore) and controller (ProjectsController)
+- Admin projects management moved to dedicated pages instead of main editor section
+
+### Affected Files
+
+- New:
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/store/projectsStore.ts`
+  - `frontend/src/views/admin/sections/ProjectsListPage.vue`
+- Modified:
+  - `frontend/src/components/projects/ProjectsComponent.vue`
+  - `frontend/src/router/index.ts`
+  - `frontend/src/store/homeEditorStore.ts`
+  - `frontend/src/views/admin/AdminEditorPage.vue`
+  - `frontend/src/views/admin/PanelAdminPage.vue`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+- Deleted:
+  - `frontend/src/views/admin/sections/AdminProjectsPage.vue`
+
+---
+
 ## 11.16.0 - 2026-04-16
 
 ### Changed

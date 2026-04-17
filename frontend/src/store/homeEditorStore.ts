@@ -8,7 +8,7 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
   const saving = ref(false);
   const loading = ref(false);
 
-  const form = reactive<HomePageData>({
+  const form = reactive<Omit<HomePageData, "projects">>({
     name: "",
     tags: [],
     description: "",
@@ -18,7 +18,6 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
     stack: [],
     skillCategories: [],
     experience: [],
-    projects: [],
     certificates: [],
     freelance: [],
     showContactForm: false,
@@ -38,7 +37,6 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
     stack: {} as Record<number, File>,
     skills: {} as Record<string, File>,
     experience: {} as Record<string, File>,
-    projects: {} as Record<string, File>,
     certificates: {} as Record<string, File>,
     freelance: {} as Record<string, File>,
   });
@@ -56,7 +54,6 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
       form.stack = data.stack || [];
       form.skillCategories = data.skillCategories || [];
       form.experience = data.experience || [];
-      form.projects = data.projects || [];
       form.certificates = data.certificates || [];
       form.freelance = data.freelance || [];
       form.showContactForm = data.showContactForm || false;
@@ -83,7 +80,6 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
           stack: form.stack,
           skillCategories: form.skillCategories,
           experience: form.experience,
-          projects: form.projects,
           certificates: form.certificates,
           freelance: form.freelance,
           showContactForm: form.showContactForm,
@@ -106,10 +102,6 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
       }
 
       for (const [key, file] of Object.entries(sectionFiles.experience)) {
-        formData.append(key, file);
-      }
-
-      for (const [key, file] of Object.entries(sectionFiles.projects)) {
         formData.append(key, file);
       }
 
@@ -151,7 +143,6 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
     form.stack = [];
     form.skillCategories = [];
     form.experience = [];
-    form.projects = [];
     form.certificates = [];
     form.freelance = [];
     form.showContactForm = false;
@@ -162,7 +153,6 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
     Object.keys(sectionFiles.stack).forEach((key) => delete sectionFiles.stack[Number(key)]);
     Object.keys(sectionFiles.skills).forEach((key) => delete sectionFiles.skills[key]);
     Object.keys(sectionFiles.experience).forEach((key) => delete sectionFiles.experience[key]);
-    Object.keys(sectionFiles.projects).forEach((key) => delete sectionFiles.projects[key]);
     Object.keys(sectionFiles.certificates).forEach((key) => delete sectionFiles.certificates[key]);
     Object.keys(sectionFiles.freelance).forEach((key) => delete sectionFiles.freelance[key]);
   }

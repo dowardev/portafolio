@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { IonRow, IonCol } from "@ionic/vue";
-import { computed, ref, onMounted } from "vue";
-import homeApi, { type ProjectItem } from "@/services/homeApi";
+import { computed } from "vue";
+import ProjectsController from "@/controllers/projectsController";
 import ProjectCard from "./ProjectCard.vue";
 
 withDefaults(
@@ -27,19 +27,11 @@ withDefaults(
   },
 );
 
-const projects = ref<ProjectItem[]>([]);
+const projectsController = new ProjectsController();
+projectsController.loadProjects();
 
 const filteredProjects = computed(() => {
-  return projects.value;
-});
-
-onMounted(async () => {
-  try {
-    const data = await homeApi.getPublic();
-    projects.value = data.projects || [];
-  } catch (error) {
-    console.error("Error loading projects data:", error);
-  }
+  return projectsController.getProjects();
 });
 </script>
 

@@ -14,14 +14,17 @@ import HomeTemplate1 from "@/templates/HomeTemplate1.vue";
 import HomeTemplate2 from "@/templates/HomeTemplate2.vue";
 
 import homeApi from "@/services/homeApi";
+import ProjectsController from "@/controllers/projectsController";
 import type { HomePageData } from "@/services/homeApi";
 
 const templateData = reactive<Partial<HomePageData>>({});
+const projectsController = new ProjectsController();
 
 onMounted(async () => {
   try {
     const data = await homeApi.getPublic();
-    // templateData is a reactive object; merge API result into it
+    await projectsController.loadProjects();
+    data.projects = projectsController.getProjects();
     Object.assign(templateData, data);
   } catch (error) {
     console.error("Error loading template data:", error);

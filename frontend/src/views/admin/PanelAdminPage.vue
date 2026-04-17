@@ -1,86 +1,89 @@
 <template>
-  <ion-header class="ion-no-border" mode="ios">
-    <ion-toolbar class="container-page">
-      <ion-buttons slot="start">
-        <ion-menu-button
-          menu="mainMenu"
-          :mode="designElements"
-        ></ion-menu-button>
-      </ion-buttons>
+  <ion-page>
+    <ion-header class="ion-no-border" mode="ios">
+      <ion-toolbar class="container-page">
+        <ion-buttons slot="start">
+          <ion-menu-button
+            menu="mainMenu"
+            :mode="designElements"
+          ></ion-menu-button>
+        </ion-buttons>
 
-      <ion-title>{{ pageTitle }}</ion-title>
+        <ion-title>{{ pageTitle }}</ion-title>
 
-      <ion-buttons slot="end">
-        <ion-segment
-          v-if="
-            screenSize.preset == 'md' ||
-            screenSize.preset == 'lg' ||
-            screenSize.preset == 'xxl'
-          "
-          :value="mainSegment"
-          :mode="designElements"
-          scrollable
-          @ion-change="mainSegment = $event.detail.value?.toString() || ''"
-        >
-          <ion-segment-button value="posts">
+        <ion-buttons slot="end">
+          <ion-segment
+            v-if="
+              screenSize.preset == 'md' ||
+              screenSize.preset == 'lg' ||
+              screenSize.preset == 'xxl'
+            "
+            :value="mainSegment"
+            :mode="designElements"
+            scrollable
+            @ion-change="mainSegment = $event.detail.value?.toString() || ''"
+          >
+            <ion-segment-button value="posts">
+              <ion-label>Posts</ion-label>
+            </ion-segment-button>
+
+            <ion-segment-button value="users">
+              <ion-label>Usuarios</ion-label>
+            </ion-segment-button>
+
+            <ion-segment-button value="home">
+              <ion-label>Inicio</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+
+          <!-- button options -->
+          <ion-button
+            v-else
+            :mode="designElements"
+            @click="
+              popoverMainOptions.event = $event;
+              popoverMainOptions.open = true;
+            "
+          >
+            <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <section v-if="mainSegment == 'users'">
+        <UsersComponent />
+      </section>
+
+      <section v-if="mainSegment == 'home'">
+        <AdminHomeMenu />
+      </section>
+
+      <!-- popovers -->
+      <!-- popover main options -->
+      <ion-popover
+        :is-open="popoverMainOptions.open"
+        :event="popoverMainOptions.event"
+        @did-dismiss="popoverMainOptions.open = false"
+      >
+        <ion-content>
+          <ion-item button @click="mainSegment = 'users'">
             <ion-label>Posts</ion-label>
-          </ion-segment-button>
+          </ion-item>
 
-          <ion-segment-button value="users">
+          <ion-item button @click="mainSegment = 'users'">
             <ion-label>Usuarios</ion-label>
-          </ion-segment-button>
-
-          <ion-segment-button value="home">
-            <ion-label>Inicio</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-
-        <!-- button options -->
-        <ion-button
-          v-else
-          :mode="designElements"
-          @click="
-            popoverMainOptions.event = $event;
-            popoverMainOptions.open = true;
-          "
-        >
-          <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content>
-    <section v-if="mainSegment == 'users'">
-      <UsersComponent />
-    </section>
-
-    <section v-if="mainSegment == 'home'">
-      <AdminHomeMenu />
-    </section>
-
-    <!-- popovers -->
-    <!-- popover main options -->
-    <ion-popover
-      :is-open="popoverMainOptions.open"
-      :event="popoverMainOptions.event"
-      @did-dismiss="popoverMainOptions.open = false"
-    >
-      <ion-content>
-        <ion-item button @click="mainSegment = 'users'">
-          <ion-label>Posts</ion-label>
-        </ion-item>
-
-        <ion-item button @click="mainSegment = 'users'">
-          <ion-label>Usuarios</ion-label>
-        </ion-item>
-      </ion-content>
-    </ion-popover>
-  </ion-content>
+          </ion-item>
+        </ion-content>
+      </ion-popover>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
 import {
+  IonPage,
   IonContent,
   IonHeader,
   IonTitle,
