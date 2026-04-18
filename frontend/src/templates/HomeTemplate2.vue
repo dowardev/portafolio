@@ -182,55 +182,28 @@
               <ion-list-header>
                 <ion-label>Experiencia</ion-label>
 
-                <ion-button>Todos</ion-button>
+                <ion-button @click="router.push('/home/experience')">Todos</ion-button>
               </ion-list-header>
 
               <ion-grid>
                 <ion-row>
-                  <ion-col size="4">
+                  <ion-col
+                    v-for="(exp, index) in props.experience?.slice(0, 3)"
+                    :key="index"
+                    size="4"
+                  >
                     <ion-card class="shadow1">
-                      <img src="../assets/otros/light-wallpaper1.png" />
+                      <img v-if="exp.img" :src="exp.img" />
+                      <img v-else src="../assets/otros/light-wallpaper1.png" />
 
                       <ion-item lines="none">
-                        <ion-label>Poyecto1</ion-label>
+                        <ion-label>{{ exp.title || 'Sin título' }}</ion-label>
 
-                        <ion-label slot="end">2026</ion-label>
+                        <ion-label slot="end">{{ exp.date || '' }}</ion-label>
                       </ion-item>
 
                       <div class="ion-padding-start ion-padding-bottom">
-                        <ion-note>QuantumStudios</ion-note>
-                      </div>
-                    </ion-card>
-                  </ion-col>
-
-                  <ion-col size="4">
-                    <ion-card class="shadow1">
-                      <img src="../assets/otros/light-wallpaper1.png" />
-
-                      <ion-item lines="none">
-                        <ion-label>Poyecto1</ion-label>
-
-                        <ion-label slot="end">2026</ion-label>
-                      </ion-item>
-
-                      <div class="ion-padding-start ion-padding-bottom">
-                        <ion-note>QuantumStudios</ion-note>
-                      </div>
-                    </ion-card>
-                  </ion-col>
-
-                  <ion-col size="4">
-                    <ion-card class="shadow1">
-                      <img src="../assets/otros/light-wallpaper1.png" />
-
-                      <ion-item lines="none">
-                        <ion-label>Poyecto1</ion-label>
-
-                        <ion-label slot="end">2026</ion-label>
-                      </ion-item>
-
-                      <div class="ion-padding-start ion-padding-bottom">
-                        <ion-note>QuantumStudios</ion-note>
+                        <ion-note>Click para ver más</ion-note>
                       </div>
                     </ion-card>
                   </ion-col>

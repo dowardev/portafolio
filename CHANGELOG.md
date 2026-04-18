@@ -1,5 +1,78 @@
 # Changelog
 
+## 11.18.0 - 2026-04-17
+
+### Added
+
+- **ExperienceController**: New controller class for managing experiences with centralized business logic
+  - Handles loading, saving, adding, updating, and deleting experiences
+  - Integrates with ExperienceStore and ToastController for state management and notifications
+
+- **ExperienceStore**: New Pinia store for centralized experiences state management
+  - Manages experiences data, loading/saving states, and loaded flag
+  - Provides methods for loading, saving, adding, updating, and deleting experiences
+  - Implements caching to avoid redundant API calls
+
+- **ExperienceListPage**: New dedicated admin page for viewing and managing experiences list
+  - Displays all experiences with edit/delete actions
+  - Navigation to create new experience or edit existing
+
+- **ExperienceEditor**: Refactored as standalone page with create/edit/delete functionality
+  - Supports both embedded mode (within home editor) and standalone mode
+  - Added save button in header for standalone mode
+  - Added delete confirmation dialog with alert controller
+
+- **Routes**: New routes for experiences management
+  - `/admin-panel/experience` - ExperienceListPage
+  - `/admin-panel/experience/new` - Create new experience
+  - `/admin-panel/experience/edit/:index` - Edit existing experience
+
+### Changed
+
+- **HomeTemplate2**: Updated to use dynamic experience data from props
+  - Experience cards now display actual data instead of hardcoded placeholder content
+  - Navigation link to view all experiences
+
+- **AdminEditorPage**: Removed experience section reference
+  - Experiences now managed through dedicated standalone pages
+  - Cleaner admin editor structure
+
+- **HomeEditorComponent**: Changed to navigate to dedicated experience and projects pages
+  - Removed embedded ExperienceEditor and ProjectsEditor components
+  - Added dedicated navigation functions for experience and projects
+
+- **ProjectsEditor**: Refactored to consistently use ExperienceStore pattern
+  - Removed standalone/computed properties, now always uses store directly
+  - Simplified template with single project editing
+
+- **HomePresentationPage**: Added route to experience page
+  - Navigation from experience section to full experience listing
+
+### Breaking Changes
+
+- Experiences are no longer managed through homeEditorStore
+- Experiences now have dedicated store (ExperienceStore) and controller (ExperienceController)
+- Admin experiences management moved to dedicated pages instead of main editor section
+
+### Affected Files
+
+- New:
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/store/experienceStore.ts`
+  - `frontend/src/views/admin/sections/ExperienceListPage.vue`
+- Modified:
+  - `frontend/src/router/index.ts`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/admin/AdminEditorPage.vue`
+  - `frontend/src/views/admin/HomeEditorComponent.vue`
+  - `frontend/src/views/admin/editors/ExperienceEditor.vue`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+  - `frontend/src/views/presentation/HomePresentationPage.vue`
+- Deleted:
+  - `frontend/src/views/admin/sections/AdminExperiencePage.vue`
+
+---
+
 ## 11.17.0 - 2026-04-17
 
 ### Added

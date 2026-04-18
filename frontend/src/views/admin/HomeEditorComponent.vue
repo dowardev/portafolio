@@ -10,10 +10,10 @@
       <ion-button :color="activeSection === 'skills' ? 'primary' : 'medium'" @click="navigateTo('skills')">
         Skills
       </ion-button>
-      <ion-button :color="activeSection === 'experience' ? 'primary' : 'medium'" @click="navigateTo('experience')">
+      <ion-button :color="activeSection === 'experience' ? 'primary' : 'medium'" @click="navigateToExperience">
         Experiencia
       </ion-button>
-      <ion-button :color="activeSection === 'projects' ? 'primary' : 'medium'" @click="navigateTo('projects')">
+      <ion-button :color="activeSection === 'projects' ? 'primary' : 'medium'" @click="navigateToProjects">
         Proyectos
       </ion-button>
       <ion-button :color="activeSection === 'certificates' ? 'primary' : 'medium'" @click="navigateTo('certificates')">
@@ -184,20 +184,6 @@
         @update:files="updateSkillFiles"
       />
 
-      <!-- Sección Experiencia -->
-      <ExperienceEditor
-        v-if="activeSection === 'experience'"
-        v-model="form.experience"
-        @update:files="updateExpFiles"
-      />
-
-      <!-- Sección Proyectos -->
-      <ProjectsEditor
-        v-if="activeSection === 'projects'"
-        v-model="form.projects"
-        @update:files="updateProjectFiles"
-      />
-
       <!-- Sección Certificados -->
       <CertificatesEditor
         v-if="activeSection === 'certificates'"
@@ -251,7 +237,6 @@ import {
   IonList,
   IonContent,
   IonToggle,
-  isPlatform,
 } from "@ionic/vue";
 import { ref, reactive, onMounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
@@ -268,12 +253,9 @@ import { ToastController } from "@/controllers/toastController";
 
 import StackEditor from "./editors/StackEditor.vue";
 import SkillsEditor from "./editors/SkillsEditor.vue";
-import ExperienceEditor from "./editors/ExperienceEditor.vue";
-import ProjectsEditor from "./editors/ProjectsEditor.vue";
 import CertificatesEditor from "./editors/CertificatesEditor.vue";
 import FreelanceEditor from "./editors/FreelanceEditor.vue";
 
-const designElements = isPlatform("ios") ? "ios" : "md";
 const toastController = new ToastController();
 const saving = ref(false);
 const newTag = ref("");
@@ -294,6 +276,14 @@ const activeSection = computed(() => {
 
 function navigateTo(section: string) {
   router.push(`/admin-panel/${section}`);
+}
+
+function navigateToExperience() {
+  router.push("/admin-panel/experience");
+}
+
+function navigateToProjects() {
+  router.push("/admin-panel/projects");
 }
 
 const availableSocials = [
