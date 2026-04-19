@@ -40,7 +40,8 @@ export interface SkillCategory {
 export interface ExperienceItem {
   img: string;
   title: string;
-  date: string;
+  startDate: string;
+  endDate: string | undefined;
   technologies: Array<{
     source: string;
     name: string;

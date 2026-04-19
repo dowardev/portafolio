@@ -24,7 +24,7 @@
           <ion-card-title>
             {{ experience.title }}
           </ion-card-title>
-          <ion-card-subtitle>{{ experience.date }}</ion-card-subtitle>
+          <ion-card-subtitle>{{ formatExperienceDate(experience.startDate, experience.endDate) }}</ion-card-subtitle>
         </ion-card-header>
 
         <ion-card-content>
@@ -46,7 +46,7 @@
                   v-if="tech.type == 'icon'"
                   :style="{
                     fontSize: tech.size,
-                    color: getIconColorByName({ name: tech.name }),
+                    color: getIconColor(tech.source),
                   }"
                   :icon="getIconSource(tech.source)"
                 ></ion-icon>
@@ -97,6 +97,11 @@ import {
 } from "ionicons/icons";
 import * as ionicons from "ionicons/icons";
 import homeApi, { type ExperienceItem } from "@/services/homeApi";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { useIconColors } from "@/composables/useIconColors";
+
+const { getIconColor } = useIconColors();
 
 const experiences = ref<ExperienceItem[]>([]);
 const modals = reactive({
@@ -123,21 +128,19 @@ function getIconSource(source: string) {
   return icon || ionicons.linkOutline;
 }
 
-function getIconColorByName(params: { name: string }) {
-  const { name } = params;
-  const colors: { [key: string]: string } = {
-    Ionic: "#3356c7",
-    Vue: "#41b883",
-    Laravel: "#ff2819",
-    Firebase: "#ffca28",
-    Capacitorjs: "#119eff",
-    Electronjs: "#47848f",
-    Web: "#3356c7",
-    Linux: "#000000",
-    PWA: "#5905c8",
-    Android: "#44ac5a",
-    Windows: "#0078d4",
-  };
-  return colors[name] || "";
+function formatExperienceDate(start: string, end: string | undefined): string {
+  if (!start) return "";
+  try {
+    const startDate = new Date(start);
+    if (isNaN(startDate.getTime())) return start;
+    const startFormatted = format(startDate, "dd/MM/yyyy", { locale: es });
+    if (!end) return `${startFormatted} - Actual`;
+    const endDate = new Date(end);
+    if (isNaN(endDate.getTime())) return end;
+    const endFormatted = format(endDate, "dd/MM/yyyy", { locale: es });
+    return `${startFormatted} - ${endFormatted}`;
+  } catch {
+    return start;
+  }
 }
 </script>

@@ -53,9 +53,9 @@
                 <ion-card class="shadow1">
                   <ion-item lines="full">
                     <ion-input
+                      v-model="localExperience.title"
                       label="Nombre / Empresa"
                       label-placement="floating"
-                      v-model="localExperience.title"
                       placeholder="Ej: Upwork"
                       :error-text="titleError"
                       :class="{
@@ -66,20 +66,41 @@
                     ></ion-input>
                   </ion-item>
 
-                  <ion-item lines="full">
-                    <ion-input
-                      v-model="localExperience.date"
-                      placeholder="Ej: Marzo 2023 - Actualidad"
-                      label="Fecha"
-                      label-placement="floating"
-                      :error-text="dateError"
-                      :class="{
-                        'ion-invalid': dateTouched && !!dateError,
-                        'ion-touched': dateTouched,
-                      }"
-                      @ion-blur="dateTouched = true"
-                    ></ion-input>
+                  <ion-item lines="full" button @click="openStartDatePopover">
+                    <ion-label>Inicio</ion-label>
+                    <ion-note slot="end">{{ formattedStartDate }}</ion-note>
                   </ion-item>
+
+                  <ion-popover
+                    :is-open="startDatePopoverOpen"
+                    @ion-popover-dismiss="closeStartDatePopover"
+                  >
+                    <ion-datetime
+                      presentation="month-year"
+                      locale="es-ES"
+                      :value="localExperience.startDate ?? undefined"
+                      :max="localExperience.endDate || undefined"
+                      @ion-change="onStartDateChange"
+                    ></ion-datetime>
+                  </ion-popover>
+
+                  <ion-item lines="full" button @click="openEndDatePopover">
+                    <ion-label>Fin</ion-label>
+                    <ion-note slot="end">{{ formattedEndDate }}</ion-note>
+                  </ion-item>
+
+                  <ion-popover
+                    :is-open="endDatePopoverOpen"
+                    @ion-popover-dismiss="closeEndDatePopover"
+                  >
+                    <ion-datetime
+                      presentation="month-year"
+                      locale="es-ES"
+                      :value="localExperience.endDate ?? undefined"
+                      :min="localExperience.startDate || undefined"
+                      @ion-change="onEndDateChange"
+                    ></ion-datetime>
+                  </ion-popover>
 
                   <ion-item lines="full" button @click="openFileDialog">
                     <ion-label>Logo de la empresa</ion-label>
@@ -114,9 +135,9 @@
 
                   <ion-item lines="full">
                     <ion-textarea
+                      v-model="localExperience.details.description"
                       label="Descripción"
                       label-placement="floating"
-                      v-model="localExperience.details.description"
                       :rows="3"
                       placeholder="Descripción del trabajo..."
                       :error-text="descriptionError"
@@ -130,9 +151,9 @@
 
                   <ion-item lines="full">
                     <ion-input
+                      v-model="localExperience.details.website"
                       label="Link"
                       label-placement="floating"
-                      v-model="localExperience.details.website"
                       placeholder="https://..."
                     ></ion-input>
                   </ion-item>
@@ -198,6 +219,9 @@ import {
   IonBackButton,
   IonSpinner,
   alertController,
+  IonDatetime,
+  IonModal,
+  IonPopover,
 } from "@ionic/vue";
 import {
   trashOutline,
@@ -231,7 +255,8 @@ const isNew = computed(() => route.name === "ExperienceNewPage");
 const localExperience = ref<ExperienceItem>({
   img: "",
   title: "",
-  date: "",
+  startDate: "",
+  endDate: undefined,
   technologies: [],
   details: { description: "", website: "" },
 });
@@ -242,7 +267,8 @@ onMounted(async () => {
     localExperience.value = {
       img: "",
       title: "",
-      date: "",
+      startDate: "",
+      endDate: undefined,
       technologies: [],
       details: { description: "", website: "" },
     };
@@ -307,10 +333,22 @@ const previewSrc = ref<string | null>(null);
 
 // validation state
 const titleTouched = ref(false);
-const dateTouched = ref(false);
 const imgTouched = ref(false);
 const descriptionTouched = ref(false);
 // end vars and const
+
+// formatted dates for UI (inline to avoid referencing helper in template)
+const formattedStartDate = computed(() => {
+  const d = localExperience.value.startDate;
+  if (!d) return "Seleccionar";
+  return new Date(d).toLocaleDateString("es-ES", { month: "short", year: "numeric" });
+});
+
+const formattedEndDate = computed(() => {
+  const d = localExperience.value.endDate;
+  if (!d) return "Seleccionar";
+  return new Date(d).toLocaleDateString("es-ES", { month: "short", year: "numeric" });
+});
 
 // validation computed
 const titleError = computed(() => {
@@ -318,10 +356,7 @@ const titleError = computed(() => {
   return "";
 });
 
-const dateError = computed(() => {
-  if (!localExperience.value.date?.trim()) return "Fecha es requerida";
-  return "";
-});
+// startDate validation intentionally omitted here (not used in template)
 
 const imgError = computed(() => {
   if (!localExperience.value.img) return "Logo es requerido";
@@ -372,6 +407,42 @@ function showPreview() {
 function closePreview() {
   isPreviewOpen.value = false;
   previewSrc.value = null;
+}
+// date popover state
+const startDatePopoverOpen = ref(false);
+const endDatePopoverOpen = ref(false);
+
+
+function openStartDatePopover() {
+  startDatePopoverOpen.value = true;
+}
+
+function closeStartDatePopover() {
+  startDatePopoverOpen.value = false;
+}
+
+function onStartDateChange(event: CustomEvent) {
+  const value = event.detail.value;
+  if (value) {
+    localExperience.value.startDate = value;
+  }
+  closeStartDatePopover();
+}
+
+function openEndDatePopover() {
+  endDatePopoverOpen.value = true;
+}
+
+function closeEndDatePopover() {
+  endDatePopoverOpen.value = false;
+}
+
+function onEndDateChange(event: CustomEvent) {
+  const value = event.detail.value;
+  if (value) {
+    localExperience.value.endDate = value;
+  }
+  closeEndDatePopover();
 }
 // end functions
 </script>

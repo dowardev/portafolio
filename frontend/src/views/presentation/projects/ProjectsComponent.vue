@@ -47,7 +47,7 @@
                   v-if="tech.type === 'icon'"
                   :style="{
                     fontSize: tech.size,
-                    color: getIconColorByName(tech.name),
+                    color: getIconColor(tech.source),
                   }"
                   :icon="getIconByName(tech.source)"
                 ></ion-icon>
@@ -81,6 +81,9 @@ import { ref, onMounted } from "vue";
 import * as ionicons from "ionicons/icons";
 import homeApi, { type ProjectItem } from "@/services/homeApi";
 import ProjectDetailModal from "@/components/projects/ProjectDetailModal.vue";
+import { useIconColors } from "@/composables/useIconColors";
+
+const { getIconColor } = useIconColors();
 
 const projects = ref<ProjectItem[]>([]);
 const modalOpen = ref(false);
@@ -104,22 +107,5 @@ function getIconByName(source: string) {
   if (!source) return ionicons.linkOutline;
   const icon = ionicons[source as keyof typeof ionicons];
   return icon || ionicons.linkOutline;
-}
-
-function getIconColorByName(name: string) {
-  const colors: { [key: string]: string } = {
-    Ionic: "#3356c7",
-    Vue: "#41b883",
-    Laravel: "#ff2819",
-    Firebase: "#ffca28",
-    Capacitorjs: "#119eff",
-    Electronjs: "#47848f",
-    Web: "#3356c7",
-    Linux: "#000000",
-    PWA: "#5905c8",
-    Android: "#44ac5a",
-    Windows: "#0078d4",
-  };
-  return colors[name] || "";
 }
 </script>

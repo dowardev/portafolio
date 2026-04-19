@@ -57,7 +57,7 @@
                 :icon="getIconByName(technology.iconName)"
                 :style="{
                   fontSize: technology.size || '24px',
-                  color: getIconColorByName(technology.name),
+                  color: getIconColor(technology.iconName),
                 }"
               ></ion-icon>
               <p>{{ technology.name }}</p>
@@ -82,6 +82,9 @@ import {
 import { ref, onMounted } from "vue";
 import * as ionicons from "ionicons/icons";
 import homeApi, { type StackItem, type SkillCategory } from "@/services/homeApi";
+import { useIconColors } from "@/composables/useIconColors";
+
+const { getIconColor } = useIconColors();
 
 const stackItems = ref<StackItem[]>([]);
 const skillCategories = ref<SkillCategory[]>([]);
@@ -100,25 +103,6 @@ function getIconByName(iconName: string) {
   if (!iconName) return ionicons.helpCircleOutline;
   const icon = ionicons[iconName as keyof typeof ionicons];
   return icon || ionicons.helpCircleOutline;
-}
-
-function getIconColorByName(name: string) {
-  const colors: { [key: string]: string } = {
-    Ionic: "#3356c7",
-    Vue: "#41b883",
-    Laravel: "#ff2819",
-    Firebase: "#ffca28",
-    Capacitorjs: "#119eff",
-    Electronjs: "#47848f",
-    Web: "#3356c7",
-    Linux: "#000000",
-    PWA: "#5905c8",
-    Android: "#44ac5a",
-    Windows: "#0078d4",
-    JavaScript: "#f0db4f",
-    Nuxt: "#00dc82",
-  };
-  return colors[name] || "";
 }
 </script>
 

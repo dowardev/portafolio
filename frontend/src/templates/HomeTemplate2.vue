@@ -188,24 +188,11 @@
               <ion-grid>
                 <ion-row>
                   <ion-col
-                    v-for="(exp, index) in props.experience?.slice(0, 3)"
-                    :key="index"
+                    v-for="exp in props.experience?.slice(0, 3)"
+                    :key="exp.title"
                     size="4"
                   >
-                    <ion-card class="shadow1">
-                      <img v-if="exp.img" :src="exp.img" />
-                      <img v-else src="../assets/otros/light-wallpaper1.png" />
-
-                      <ion-item lines="none">
-                        <ion-label>{{ exp.title || 'Sin título' }}</ion-label>
-
-                        <ion-label slot="end">{{ exp.date || '' }}</ion-label>
-                      </ion-item>
-
-                      <div class="ion-padding-start ion-padding-bottom">
-                        <ion-note>Click para ver más</ion-note>
-                      </div>
-                    </ion-card>
+                    <ExperienceCard :experience="exp" />
                   </ion-col>
                 </ion-row>
               </ion-grid>
@@ -260,6 +247,7 @@ const router = useRouter();
 import TechCloudBackground from "@/components/common/TechCloudBackground.vue";
 import FinalSection from "@/views/presentation/sections/FinalSection.vue";
 import ProjectCard from "@/components/projects/ProjectCard.vue";
+import ExperienceCard from "@/components/experience/ExperienceCard.vue";
 import type { HomePageData } from "@/services/homeApi";
 
 // declare component props so $props contains the passed template data

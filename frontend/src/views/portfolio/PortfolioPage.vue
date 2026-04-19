@@ -16,7 +16,7 @@
         style="display: flex; overflow: auto; max-height: calc(100% - 8dvh)"
       >
         <ion-col size-xs="12" size-sm="8" size-lg="6">
-          <ProjectsComponent :filter="typeContent" />
+          <ProjectCard v-if="project" :project="project" />
         </ion-col>
       </ion-row>
     </ion-content>
@@ -34,11 +34,20 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
-import ProjectsComponent from "@/components/projects/ProjectsComponent.vue";
+import ProjectCard from "@/components/projects/ProjectCard.vue";
+import ProjectsController from "@/controllers/projectsController";
+import type { ProjectItem } from "@/services/homeApi";
 
-const typeContent = ref<"all" | "personal" | "professional">("professional");
+const projectsController = new ProjectsController();
+const project = ref<ProjectItem | null>(null);
+
+onMounted(async () => {
+  await projectsController.loadProjects();
+  project.value = projectsController.getProject(0) ?? null;
+});
+
 const pageTitle = "Proyectos";
 </script>
 
@@ -47,4 +56,3 @@ const pageTitle = "Proyectos";
   width: 60%;
 }
 </style>
-

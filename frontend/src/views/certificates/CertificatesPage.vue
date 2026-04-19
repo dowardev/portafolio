@@ -61,7 +61,7 @@
                         v-if="tech.type === 'icon'"
                         :style="{
                           fontSize: tech.size,
-                          color: getIconColorByName(tech.name),
+                          color: getIconColor(tech.source),
                         }"
                         :icon="getIconByName(tech.source)"
                       ></ion-icon>
@@ -84,6 +84,9 @@ import * as ionicons from "ionicons/icons";
 import { DesignMode } from "@/utils/types";
 import SystemController from "@/controllers/systemController";
 import homeApi, { type CertificateItem } from "@/services/homeApi";
+import { useIconColors } from "@/composables/useIconColors";
+
+const { getIconColor } = useIconColors();
 
 const systemController = new SystemController();
 
@@ -108,24 +111,6 @@ function getIconByName(source: string) {
   if (!source) return ionicons.helpCircleOutline;
   const icon = ionicons[source as keyof typeof ionicons];
   return icon || ionicons.helpCircleOutline;
-}
-
-function getIconColorByName(name: string) {
-  const colors: { [key: string]: string } = {
-    Ionic: "#3356c7",
-    Vue: "#41b883",
-    Laravel: "#ff2819",
-    Firebase: "#ffca28",
-    Capacitorjs: "#119eff",
-    Electronjs: "#47848f",
-    Web: "#3356c7",
-    Linux: "#000000",
-    PWA: "#5905c8",
-    Android: "#44ac5a",
-    Windows: "#0078d4",
-    JavaScript: "#f0db4f",
-  };
-  return colors[name] || "";
 }
 </script>
 

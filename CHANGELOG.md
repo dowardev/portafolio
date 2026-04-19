@@ -1,75 +1,45 @@
 # Changelog
 
-## 11.18.0 - 2026-04-17
+## 12.0.0 - 2026-04-19
+
+### Summary
+
+This release refactors the experiences and projects presentation and admin flows, introduces a reusable icon color composable, and replaces several inline implementations with dedicated components. It contains multiple new components, composables, and UI improvements across the frontend.
 
 ### Added
 
-- **ExperienceController**: New controller class for managing experiences with centralized business logic
-  - Handles loading, saving, adding, updating, and deleting experiences
-  - Integrates with ExperienceStore and ToastController for state management and notifications
-
-- **ExperienceStore**: New Pinia store for centralized experiences state management
-  - Manages experiences data, loading/saving states, and loaded flag
-  - Provides methods for loading, saving, adding, updating, and deleting experiences
-  - Implements caching to avoid redundant API calls
-
-- **ExperienceListPage**: New dedicated admin page for viewing and managing experiences list
-  - Displays all experiences with edit/delete actions
-  - Navigation to create new experience or edit existing
-
-- **ExperienceEditor**: Refactored as standalone page with create/edit/delete functionality
-  - Supports both embedded mode (within home editor) and standalone mode
-  - Added save button in header for standalone mode
-  - Added delete confirmation dialog with alert controller
-
-- **Routes**: New routes for experiences management
-  - `/admin-panel/experience` - ExperienceListPage
-  - `/admin-panel/experience/new` - Create new experience
-  - `/admin-panel/experience/edit/:index` - Edit existing experience
+- `frontend/src/components/experience/ExperienceCard.vue`: New flip-card component for experiences with front/back views and tooltips
+- `frontend/src/composables/useIconColors.ts`: Composable providing icon color mapping for consistent icon theming
 
 ### Changed
 
-- **HomeTemplate2**: Updated to use dynamic experience data from props
-  - Experience cards now display actual data instead of hardcoded placeholder content
-  - Navigation link to view all experiences
+- Replaced multiple inline icon color functions with `useIconColors` and updated components to use `getIconColor(source)`
+- Replaced older date `date` field with `startDate`/`endDate` where applicable in experience data model and components
+- Prefactored experience and project list templates to use `ExperienceCard` and `ProjectCard` components respectively
+- Converted several pages to use `ion-page` wrapper for proper Ionic navigation (ExperiencePage, PortfolioPage, HomeTemplate2)
+- Multiple components updated to use standardized v-tooltip triggers (`mouseenter` + `touch: 'hold'`) instead of `click`
 
-- **AdminEditorPage**: Removed experience section reference
-  - Experiences now managed through dedicated standalone pages
-  - Cleaner admin editor structure
+### Fixed
 
-- **HomeEditorComponent**: Changed to navigate to dedicated experience and projects pages
-  - Removed embedded ExperienceEditor and ProjectsEditor components
-  - Added dedicated navigation functions for experience and projects
-
-- **ProjectsEditor**: Refactored to consistently use ExperienceStore pattern
-  - Removed standalone/computed properties, now always uses store directly
-  - Simplified template with single project editing
-
-- **HomePresentationPage**: Added route to experience page
-  - Navigation from experience section to full experience listing
-
-### Breaking Changes
-
-- Experiences are no longer managed through homeEditorStore
-- Experiences now have dedicated store (ExperienceStore) and controller (ExperienceController)
-- Admin experiences management moved to dedicated pages instead of main editor section
+- Various UI and keying fixes: replaced index-based v-for keys with stable keys (title) where appropriate
 
 ### Affected Files
 
 - New:
-  - `frontend/src/controllers/experienceController.ts`
-  - `frontend/src/store/experienceStore.ts`
-  - `frontend/src/views/admin/sections/ExperienceListPage.vue`
-- Modified:
-  - `frontend/src/router/index.ts`
+  - `frontend/src/components/experience/ExperienceCard.vue`
+  - `frontend/src/composables/useIconColors.ts`
+- Modified (selected):
+  - `frontend/src/components/projects/ProjectCard.vue`
+  - `frontend/src/components/projects/ProjectDetailModal.vue`
+  - `frontend/src/components/projects/ProjectCard.vue`
+  - `frontend/src/services/homeApi.ts`
   - `frontend/src/templates/HomeTemplate2.vue`
-  - `frontend/src/views/admin/AdminEditorPage.vue`
-  - `frontend/src/views/admin/HomeEditorComponent.vue`
   - `frontend/src/views/admin/editors/ExperienceEditor.vue`
-  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
-  - `frontend/src/views/presentation/HomePresentationPage.vue`
-- Deleted:
-  - `frontend/src/views/admin/sections/AdminExperiencePage.vue`
+  - `frontend/src/views/admin/sections/ExperienceListPage.vue`
+  - `frontend/src/views/certificates/CertificatesPage.vue`
+  - `frontend/src/views/experience/ExperiencePage.vue`
+  - `frontend/src/views/portfolio/PortfolioPage.vue`
+  - `frontend/src/views/presentation/*` (multiple components)
 
 ---
 

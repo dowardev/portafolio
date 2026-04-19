@@ -50,18 +50,18 @@
             >
               <img
                 v-if="tech.type === 'img'"
-                v-tooltip="{ content: tech.name, trigger: 'click' }"
+                v-tooltip="{ content: tech.name, trigger: 'mouseenter', touch: 'hold' }"
                 :src="tech.source"
                 :alt="tech.name"
                 :style="{ width: tech.size }"
               />
               <ion-icon
                 v-if="tech.type === 'icon'"
-                v-tooltip="{ content: tech.name, trigger: 'click' }"
+                v-tooltip="{ content: tech.name, trigger: 'mouseenter', touch: 'hold' }"
                 :icon="getIconByName(tech.source)"
                 :style="{
                   fontSize: tech.size,
-                  color: getIconColorByName(tech.name),
+                  color: getIconColor(tech.source),
                 }"
               ></ion-icon>
             </div>
@@ -127,6 +127,9 @@ import { ref } from "vue";
 import * as ionicons from "ionicons/icons";
 import type { ProjectItem } from "@/services/homeApi";
 import { vTooltip } from "@/directives/tooltip";
+import { useIconColors } from "@/composables/useIconColors";
+
+const { getIconColor } = useIconColors();
 
 const props = withDefaults(
   defineProps<{
@@ -148,23 +151,6 @@ function getIconByName(source: string) {
   if (!source) return ionicons.helpCircleOutline;
   const icon = ionicons[source as keyof typeof ionicons];
   return icon || ionicons.helpCircleOutline;
-}
-
-function getIconColorByName(name: string) {
-  const colors: { [key: string]: string } = {
-    Ionic: "#3356c7",
-    Vue: "#41b883",
-    Laravel: "#ff2819",
-    Firebase: "#ffca28",
-    Capacitorjs: "#119eff",
-    Electronjs: "#47848f",
-    Web: "#3356c7",
-    Linux: "#000000",
-    PWA: "#5905c8",
-    Android: "#44ac5a",
-    Windows: "#0078d4",
-  };
-  return colors[name] || "";
 }
 
 function formatDateRange(start: string, end?: string): string {

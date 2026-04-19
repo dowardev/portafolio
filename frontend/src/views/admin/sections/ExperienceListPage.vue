@@ -62,7 +62,7 @@
                     <ion-label>
                       <h2>{{ experience.title || "Sin título" }}</h2>
                       <p style="font-size: 12px; color: var(--ion-color-medium)">
-                        {{ experience.date || "Sin fecha" }}
+                        {{ formatExperienceDate(experience.startDate, experience.endDate) }}
                       </p>
                     </ion-label>
 
@@ -125,6 +125,8 @@ import {
   bugOutline,
 } from "ionicons/icons";
 import { faker } from "@faker-js/faker";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import ExperienceController from "@/controllers/experienceController";
 
 const router = useRouter();
@@ -171,6 +173,22 @@ async function deleteExperience(index: number) {
   await experienceController.deleteExperience(index);
 }
 
+function formatExperienceDate(start: string, end: string | undefined): string {
+  if (!start) return "Sin fecha";
+  try {
+    const startDate = new Date(start);
+    if (isNaN(startDate.getTime())) return start;
+    const startFormatted = format(startDate, "dd/MM/yyyy", { locale: es });
+    if (!end) return `${startFormatted} - Actual`;
+    const endDate = new Date(end);
+    if (isNaN(endDate.getTime())) return end;
+    const endFormatted = format(endDate, "dd/MM/yyyy", { locale: es });
+    return `${startFormatted} - ${endFormatted}`;
+  } catch {
+    return start;
+  }
+}
+
 async function generateTestExperiences() {
   const techs = ["React", "Vue", "Node", "Python", "TypeScript", "Go", "Rust"];
 
@@ -179,7 +197,8 @@ async function generateTestExperiences() {
     return {
       img: faker.image.url({ width: 100, height: 100 }),
       title: faker.company.name(),
-      date: `${faker.date.past({ years: 2 }).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })} - ${faker.date.recent({ days: 100 }).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}`,
+      startDate: faker.date.past({ years: 2 }).toISOString(),
+      endDate: faker.date.recent({ days: 100 }).toISOString(),
       technologies: techNames.map((name) => ({
         source: `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${name.toLowerCase()}/${name.toLowerCase()}-original.svg`,
         name,

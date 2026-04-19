@@ -45,7 +45,7 @@
                   v-if="tech.type == 'icon'"
                   :style="{
                     fontSize: tech.size,
-                    color: getIconColorByName({ name: tech.name }),
+                    color: getIconColor(tech.source),
                   }"
                   :icon="getIconSource(tech.source)"
                 ></ion-icon>
@@ -62,6 +62,9 @@
 import { ref, onMounted } from "vue";
 import * as ionicons from "ionicons/icons";
 import homeApi, { type CertificateItem } from "@/services/homeApi";
+import { useIconColors } from "@/composables/useIconColors";
+
+const { getIconColor } = useIconColors();
 
 const certificates = ref<CertificateItem[]>([]);
 
@@ -83,24 +86,5 @@ function getIconSource(source: string) {
   if (!source) return ionicons.linkOutline;
   const icon = ionicons[source as keyof typeof ionicons];
   return icon || ionicons.linkOutline;
-}
-
-function getIconColorByName(params: { name: string }) {
-  const { name } = params;
-  const colors: { [key: string]: string } = {
-    Ionic: "#3356c7",
-    Vue: "#41b883",
-    Laravel: "#ff2819",
-    Firebase: "#ffca28",
-    Capacitorjs: "#119eff",
-    Electronjs: "#47848f",
-    Web: "#3356c7",
-    Linux: "#000000",
-    PWA: "#5905c8",
-    Android: "#44ac5a",
-    Windows: "#0078d4",
-    JavaScript: "#f0db4f",
-  };
-  return colors[name] || "";
 }
 </script>
