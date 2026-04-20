@@ -78,9 +78,11 @@ import {
 import { ref, computed, onMounted } from "vue";
 import InfoEditor from "../editors/InfoEditor.vue";
 import { useHomeEditorStore } from "@/store/homeEditorStore";
+import HomeEditorController from "@/controllers/homeEditorController";
 import { bugOutline, saveOutline } from "ionicons/icons";
 
 const homeEditorStore = useHomeEditorStore();
+const homeEditorController = new HomeEditorController();
 const infoEditorRef = ref<InstanceType<typeof InfoEditor>>();
 const isDev = import.meta.env.DEV;
 
@@ -128,7 +130,7 @@ function handleUpdateContactForm(value: {
   (homeEditorStore.form.showContactForm as any) = value;
 }
 
-function handleSave(payload: {
+async function handleSave(payload: {
   name: string;
   description: string;
   socials: Array<{ platform: string; url: string; iconName: string }>;
@@ -136,10 +138,21 @@ function handleSave(payload: {
   homeEditorStore.form.name = payload.name;
   homeEditorStore.form.description = payload.description;
   homeEditorStore.form.socials = payload.socials;
-  homeEditorStore.save();
+  homeEditorStore.setSaving(true);
+  try {
+    await homeEditorController.save(homeEditorStore.getFormData());
+  } finally {
+    homeEditorStore.setSaving(false);
+  }
 }
 
-onMounted(() => {
-  homeEditorStore.loadData();
+onMounted(async () => {
+  homeEditorStore.setLoading(true);
+  try {
+    const data = await homeEditorController.loadData();
+    homeEditorStore.setData(data);
+  } finally {
+    homeEditorStore.setLoading(false);
+  }
 });
 </script>

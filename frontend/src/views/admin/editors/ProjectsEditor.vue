@@ -286,7 +286,7 @@ import {
 } from "ionicons/icons";
 import { computed, reactive, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import type { ProjectItem } from "@/services/homeApi";
+import type { ProjectItem } from "@/services/types";
 import TechnologiesEditor from "./TechnologiesEditor.vue";
 import ProjectsController from "@/controllers/projectsController";
 import { useProjectsStore } from "@/store/projectsStore";

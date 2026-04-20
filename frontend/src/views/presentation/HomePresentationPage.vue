@@ -13,20 +13,21 @@ import { reactive, onMounted } from "vue";
 import HomeTemplate1 from "@/templates/HomeTemplate1.vue";
 import HomeTemplate2 from "@/templates/HomeTemplate2.vue";
 
-import homeApi from "@/services/homeApi";
+import HomeEditorController from "@/controllers/homeEditorController";
 import ProjectsController from "@/controllers/projectsController";
 import ExperienceController from "@/controllers/experienceController";
-import type { HomePageData } from "@/services/homeApi";
+import type { HomePageData } from "@/services/types";
 
 const templateData = reactive<Partial<HomePageData>>({});
+const homeEditorController = new HomeEditorController();
 const projectsController = new ProjectsController();
 const experienceController = new ExperienceController();
 
 onMounted(async () => {
   try {
-    const data = await homeApi.getPublic();
-    await projectsController.loadProjects();
-    await experienceController.loadExperiences();
+    const data = await homeEditorController.loadPublicData();
+    await projectsController.loadPublicProjects();
+    await experienceController.loadPublicExperiences();
     data.projects = projectsController.getProjects();
     data.experience = experienceController.getExperiences();
     Object.assign(templateData, data);

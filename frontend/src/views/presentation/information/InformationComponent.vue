@@ -355,11 +355,13 @@ import ContactModal from "../../../components/modals/contact/ContactModal.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
+import HomeEditorController from "@/controllers/homeEditorController";
 const systemController = new SystemController();
+const homeEditorController = new HomeEditorController();
 // end controllser
 
 // services
-import homeApi, { HomePageData } from "@/services/homeApi";
+import type { HomePageData } from "@/services/types";
 
 // images
 import defaultPhoto from "@/assets/portafolio/foto_perfil.jpg";
@@ -466,7 +468,7 @@ onMounted(async () => {
 
   // cargar datos de homepage
   try {
-    const data = await homeApi.getPublic();
+    const data = await homeEditorController.loadPublicData();
     console.log("Homepage data loaded:", data);
     console.log("Socials data:", data.socials);
     if (data) {

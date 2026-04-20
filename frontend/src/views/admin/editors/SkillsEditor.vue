@@ -244,7 +244,7 @@ import {
 import { computed, reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import type { SkillCategory } from "@/services/homeApi";
+import type { SkillCategory } from "@/services/types";
 import TechIconSelector from "./TechIconSelector.vue";
 // end imports
 

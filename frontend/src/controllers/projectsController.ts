@@ -1,19 +1,43 @@
 import { useProjectsStore } from "@/store/projectsStore";
-import type { ProjectItem } from "@/services/homeApi";
+import type { ProjectItem } from "@/services/types";
 import { ToastController } from "./toastController";
+import APIController from "./APIController";
+import ServerConfig from "./serverConfigController";
+import Cookies from "js-cookie";
+
+const userToken = Cookies.get("user-token");
+const config = new ServerConfig({
+  baseUrl: import.meta.env.VITE_API_URL,
+  accessToken: userToken ?? "",
+});
+const api = new APIController(config);
+
+interface ProjectsResponse {
+  projects: ProjectItem[];
+}
 
 export default class ProjectsController {
   private projectsStore = useProjectsStore();
   private toastController = new ToastController();
 
-  async loadProjects() {
-    if (!this.projectsStore.loaded || this.projectsStore.projects.length === 0) {
-      await this.projectsStore.loadProjects();
+  async loadPublicProjects(): Promise<void> {
+    if (this.projectsStore.loaded && this.projectsStore.projects.length > 0) {
+      return;
+    }
+    this.projectsStore.setLoading(true);
+    try {
+      const data = await api.get<ProjectsResponse>({ url: "get-homepage-info" });
+      this.projectsStore.setProjects(data.projects || []);
+    } catch (error) {
+      console.error("Error loading projects:", error);
+      this.projectsStore.setProjects([]);
+    } finally {
+      this.projectsStore.setLoading(false);
     }
   }
 
-  async loadPublicProjects() {
-    await this.loadProjects();
+  async loadProjects(): Promise<void> {
+    await this.loadPublicProjects();
   }
 
   getProjects(): ProjectItem[] {
@@ -31,7 +55,17 @@ export default class ProjectsController {
       } else {
         this.projectsStore.addProject(project);
       }
-      await this.projectsStore.saveProjects();
+
+      const formData = new FormData();
+      formData.append(
+        "payload",
+        JSON.stringify({ projects: this.projectsStore.projects })
+      );
+      await api.post<ProjectsResponse>({
+        url: "admin/update-homepage-info",
+        data: formData,
+        contentType: "multipart/form-data",
+      });
       return true;
     } catch (error) {
       console.error("Error saving project:", error);
@@ -48,7 +82,17 @@ export default class ProjectsController {
   async deleteProject(index: number): Promise<boolean> {
     try {
       this.projectsStore.deleteProject(index);
-      await this.projectsStore.saveProjects();
+
+      const formData = new FormData();
+      formData.append(
+        "payload",
+        JSON.stringify({ projects: this.projectsStore.projects })
+      );
+      await api.post<ProjectsResponse>({
+        url: "admin/update-homepage-info",
+        data: formData,
+        contentType: "multipart/form-data",
+      });
       return true;
     } catch (error) {
       console.error("Error deleting project:", error);

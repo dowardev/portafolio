@@ -248,8 +248,9 @@ import {
 } from "ionicons/icons";
 import * as ionicons from "ionicons/icons";
 import { faker } from "@faker-js/faker";
-import homeApi, { type HomePageData } from "@/services/homeApi";
+import type { HomePageData } from "@/services/types";
 import { ToastController } from "@/controllers/toastController";
+import HomeEditorController from "@/controllers/homeEditorController";
 
 import StackEditor from "./editors/StackEditor.vue";
 import SkillsEditor from "./editors/SkillsEditor.vue";
@@ -257,6 +258,7 @@ import CertificatesEditor from "./editors/CertificatesEditor.vue";
 import FreelanceEditor from "./editors/FreelanceEditor.vue";
 
 const toastController = new ToastController();
+const homeEditorController = new HomeEditorController();
 const saving = ref(false);
 const newTag = ref("");
 const isDev = import.meta.env.DEV;
@@ -391,7 +393,7 @@ const sectionFiles = reactive({
 
 onMounted(async () => {
   try {
-    const data = await homeApi.get();
+    const data = await homeEditorController.loadData();
     form.name = data.name || "";
     form.tags = data.tags || [];
     form.description = data.description || "";
@@ -564,7 +566,7 @@ async function save() {
       formData.append(key, file);
     }
 
-    await homeApi.update(formData);
+    await homeEditorController.save(formData);
     const toast = await toastController.presentToast({
       message: "Guardado correctamente",
       duration: 2000,

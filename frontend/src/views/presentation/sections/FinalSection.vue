@@ -110,7 +110,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-import { type FreelanceItem } from "@/services/homeApi";
+import { type FreelanceItem } from "@/services/types";
 import { type ScreenSize } from "@/utils/types/homeTemplate";
 import { mail, star as starIcon } from "ionicons/icons";
 

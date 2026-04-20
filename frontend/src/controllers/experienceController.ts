@@ -1,19 +1,43 @@
 import { useExperienceStore } from "@/store/experienceStore";
-import type { ExperienceItem } from "@/services/homeApi";
+import type { ExperienceItem } from "@/services/types";
 import { ToastController } from "./toastController";
+import APIController from "./APIController";
+import ServerConfig from "./serverConfigController";
+import Cookies from "js-cookie";
+
+const userToken = Cookies.get("user-token");
+const config = new ServerConfig({
+  baseUrl: import.meta.env.VITE_API_URL,
+  accessToken: userToken ?? "",
+});
+const api = new APIController(config);
+
+interface ExperienceResponse {
+  experience: ExperienceItem[];
+}
 
 export default class ExperienceController {
   private experienceStore = useExperienceStore();
   private toastController = new ToastController();
 
-  async loadExperiences() {
-    if (!this.experienceStore.loaded || this.experienceStore.experiences.length === 0) {
-      await this.experienceStore.loadExperiences();
+  async loadPublicExperiences(): Promise<void> {
+    if (this.experienceStore.loaded && this.experienceStore.experiences.length > 0) {
+      return;
+    }
+    this.experienceStore.setLoading(true);
+    try {
+      const data = await api.get<ExperienceResponse>({ url: "get-homepage-info" });
+      this.experienceStore.setExperiences(data.experience || []);
+    } catch (error) {
+      console.error("Error loading experiences:", error);
+      this.experienceStore.setExperiences([]);
+    } finally {
+      this.experienceStore.setLoading(false);
     }
   }
 
-  async loadPublicExperiences() {
-    await this.loadExperiences();
+  async loadExperiences(): Promise<void> {
+    await this.loadPublicExperiences();
   }
 
   getExperiences(): ExperienceItem[] {
@@ -31,7 +55,17 @@ export default class ExperienceController {
       } else {
         this.experienceStore.addExperience(experience);
       }
-      await this.experienceStore.saveExperiences();
+
+      const formData = new FormData();
+      formData.append(
+        "payload",
+        JSON.stringify({ experience: this.experienceStore.experiences })
+      );
+      await api.post<ExperienceResponse>({
+        url: "admin/update-homepage-info",
+        data: formData,
+        contentType: "multipart/form-data",
+      });
       return true;
     } catch (error) {
       console.error("Error saving experience:", error);
@@ -48,7 +82,17 @@ export default class ExperienceController {
   async deleteExperience(index: number): Promise<boolean> {
     try {
       this.experienceStore.deleteExperience(index);
-      await this.experienceStore.saveExperiences();
+
+      const formData = new FormData();
+      formData.append(
+        "payload",
+        JSON.stringify({ experience: this.experienceStore.experiences })
+      );
+      await api.post<ExperienceResponse>({
+        url: "admin/update-homepage-info",
+        data: formData,
+        contentType: "multipart/form-data",
+      });
       return true;
     } catch (error) {
       console.error("Error deleting experience:", error);

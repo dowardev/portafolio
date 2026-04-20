@@ -283,7 +283,7 @@ import {
   between,
   helpers,
 } from "@vuelidate/validators";
-import type { FreelanceItem } from "@/services/homeApi";
+import type { FreelanceItem } from "@/services/types";
 // end imports
 
 // props and emits

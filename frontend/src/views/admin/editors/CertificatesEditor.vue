@@ -141,7 +141,7 @@ import {
 import { computed, reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, url as urlValidator, helpers } from "@vuelidate/validators";
-import type { CertificateItem } from "@/services/homeApi";
+import type { CertificateItem } from "@/services/types";
 import TechnologiesEditor from "./TechnologiesEditor.vue";
 // end imports
 

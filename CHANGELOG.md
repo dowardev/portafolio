@@ -1,5 +1,70 @@
 # Changelog
 
+## 12.3.0 - 2026-04-20
+
+### Summary
+
+This release refactors the data layer by extracting types to a dedicated file and introducing a centralized HomeEditorController for better separation of concerns. Stores now delegate API calls to controllers instead of directly calling the API.
+
+### Added
+
+- Added HomeEditorController for centralized homepage data loading and saving operations
+- Added setLoading and setSaving methods to homeEditorStore for external loading state management
+
+### Changed
+
+- Extracted all data types (HomePageData, StackItem, SkillCategory, ExperienceItem, ProjectItem, CertificateItem, FreelanceItem) from homeApi.ts to types.ts
+- Migrated experienceController and projectsController to use API endpoints instead of store-based local storage
+- Refactored stores to use setter methods (setExperiences, setProjects, setLoading, setData) instead of direct data manipulation
+- Updated all imports across components to use types.ts instead of homeApi.ts for type definitions
+
+### Removed
+
+- Removed homeApi.ts service file (functionality moved to HomeEditorController)
+
+### Affected Files
+
+- Added:
+  - `frontend/src/controllers/homeEditorController.ts`
+- Modified:
+  - `frontend/src/components/experience/ExperienceCard.vue`
+  - `frontend/src/components/projects/ProjectCard.vue`
+  - `frontend/src/components/projects/ProjectDetailModal.vue`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/store/experienceStore.ts`
+  - `frontend/src/store/homeEditorStore.ts`
+  - `frontend/src/store/projectsStore.ts`
+  - `frontend/src/templates/HomeTemplate1.vue`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/admin/HomeEditorComponent.vue`
+  - `frontend/src/views/admin/editors/CertificatesEditor.vue`
+  - `frontend/src/views/admin/editors/ExperienceEditor.vue`
+  - `frontend/src/views/admin/editors/FreelanceEditor.vue`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `frontend/src/views/admin/editors/StackEditor.vue`
+  - `frontend/src/views/admin/sections/AdminCertificatesPage.vue`
+  - `frontend/src/views/admin/sections/AdminFreelancePage.vue`
+  - `frontend/src/views/admin/sections/AdminInfoPage.vue`
+  - `frontend/src/views/admin/sections/AdminSkillsPage.vue`
+  - `frontend/src/views/admin/sections/AdminStackPage.vue`
+  - `frontend/src/views/certificates/CertificatesPage.vue`
+  - `frontend/src/views/experience/ExperiencePage.vue`
+  - `frontend/src/views/portfolio/PortfolioPage.vue`
+  - `frontend/src/views/presentation/HomePresentationPage.vue`
+  - `frontend/src/views/presentation/certificates/CertificatesComponent.vue`
+  - `frontend/src/views/presentation/experience/ExperienceComponent.vue`
+  - `frontend/src/views/presentation/information/InformationComponent.vue`
+  - `frontend/src/views/presentation/projects/ProjectsComponent.vue`
+  - `frontend/src/views/presentation/sections/FinalSection.vue`
+  - `frontend/src/views/presentation/skills/SkillsPage.vue`
+- Deleted:
+  - `frontend/src/services/homeApi.ts`
+
+---
+
 ## 12.2.0 - 2026-04-19
 
 ### Summary

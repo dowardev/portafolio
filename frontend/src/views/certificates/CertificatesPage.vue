@@ -83,10 +83,12 @@ import * as ionicons from "ionicons/icons";
 
 import { DesignMode } from "@/utils/types";
 import SystemController from "@/controllers/systemController";
-import homeApi, { type CertificateItem } from "@/services/homeApi";
+import type { CertificateItem } from "@/services/types";
+import HomeEditorController from "@/controllers/homeEditorController";
 import { useIconColors } from "@/composables/useIconColors";
 
 const { getIconColor } = useIconColors();
+const homeEditorController = new HomeEditorController();
 
 const systemController = new SystemController();
 
@@ -96,7 +98,7 @@ const certificates = ref<CertificateItem[]>([]);
 
 onMounted(async () => {
   try {
-    const data = await homeApi.getPublic();
+    const data = await homeEditorController.loadPublicData();
     certificates.value = data.certificates || [];
   } catch (error) {
     console.error("Error loading certificates data:", error);

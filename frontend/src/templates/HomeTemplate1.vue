@@ -140,7 +140,7 @@ import {
   IonButton,
 } from "@ionic/vue";
 import { isPlatform } from "@ionic/vue";
-import type { HomePageData } from "@/services/homeApi";
+import type { HomePageData } from "@/services/types";
 
 // declare component props so $props contains the passed template data
 const props = defineProps<Partial<HomePageData>>();

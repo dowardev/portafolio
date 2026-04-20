@@ -231,7 +231,7 @@ import {
 } from "ionicons/icons";
 import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import type { ExperienceItem } from "@/services/homeApi";
+import type { ExperienceItem } from "@/services/types";
 import TechnologiesEditor from "./TechnologiesEditor.vue";
 import ExperienceController from "@/controllers/experienceController";
 import { useExperienceStore } from "@/store/experienceStore";

@@ -114,7 +114,7 @@ import {
 } from "@ionic/vue";
 import { ref } from "vue";
 import * as ionicons from "ionicons/icons";
-import type { ExperienceItem } from "@/services/homeApi";
+import type { ExperienceItem } from "@/services/types";
 import { vTooltip } from "@/directives/tooltip";
 import { format, parseISO, isValid } from "date-fns";
 import { es } from "date-fns/locale";

@@ -115,7 +115,7 @@ import { addOutline, closeOutline, eyeOutline, trashOutline } from "ionicons/ico
 import { computed, reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import type { StackItem } from "@/services/homeApi";
+import type { StackItem } from "@/services/types";
 // end imports
 
 // props and emits

@@ -1,42 +1,19 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { ProjectItem } from "@/services/homeApi";
-import homeApi from "@/services/homeApi";
+import type { ProjectItem } from "@/services/types";
 
 export const useProjectsStore = defineStore("projects", () => {
   const projects = ref<ProjectItem[]>([]);
   const loading = ref(false);
-  const saving = ref(false);
   const loaded = ref(false);
 
-  async function loadProjects(): Promise<void> {
-    if (loaded.value && projects.value.length > 0) return;
-
-    loading.value = true;
-    try {
-      const data = await homeApi.getPublic();
-      projects.value = data.projects || [];
-      loaded.value = true;
-    } catch (error) {
-      console.error("Error loading projects:", error);
-      projects.value = [];
-    } finally {
-      loading.value = false;
-    }
+  function setProjects(data: ProjectItem[]): void {
+    projects.value = data;
+    loaded.value = true;
   }
 
-  async function saveProjects(): Promise<void> {
-    saving.value = true;
-    try {
-      const formData = new FormData();
-      formData.append("payload", JSON.stringify({ projects: projects.value }));
-      await homeApi.update(formData);
-    } catch (error) {
-      console.error("Error saving projects:", error);
-      throw error;
-    } finally {
-      saving.value = false;
-    }
+  function setLoading(value: boolean): void {
+    loading.value = value;
   }
 
   function getProject(index: number): ProjectItem | undefined {
@@ -67,10 +44,9 @@ export const useProjectsStore = defineStore("projects", () => {
   return {
     projects,
     loading,
-    saving,
     loaded,
-    loadProjects,
-    saveProjects,
+    setProjects,
+    setLoading,
     getProject,
     addProject,
     updateProject,

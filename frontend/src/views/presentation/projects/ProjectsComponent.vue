@@ -79,11 +79,13 @@ import {
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import * as ionicons from "ionicons/icons";
-import homeApi, { type ProjectItem } from "@/services/homeApi";
+import type { ProjectItem } from "@/services/types";
+import ProjectsController from "@/controllers/projectsController";
 import ProjectDetailModal from "@/components/projects/ProjectDetailModal.vue";
 import { useIconColors } from "@/composables/useIconColors";
 
 const { getIconColor } = useIconColors();
+const projectsController = new ProjectsController();
 
 const projects = ref<ProjectItem[]>([]);
 const modalOpen = ref(false);
@@ -91,8 +93,8 @@ const selectedProject = ref<ProjectItem | null>(null);
 
 onMounted(async () => {
   try {
-    const data = await homeApi.getPublic();
-    projects.value = data.projects || [];
+    await projectsController.loadPublicProjects();
+    projects.value = projectsController.getProjects();
   } catch (error) {
     console.error("Error loading projects data:", error);
   }

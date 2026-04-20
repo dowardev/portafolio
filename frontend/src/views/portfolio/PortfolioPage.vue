@@ -45,7 +45,7 @@ import { ref, onMounted } from "vue";
 
 import ProjectCard from "@/components/projects/ProjectCard.vue";
 import ProjectsController from "@/controllers/projectsController";
-import type { ProjectItem } from "@/services/homeApi";
+import type { ProjectItem } from "@/services/types";
 
 const projectsController = new ProjectsController();
 const projects = ref<ProjectItem[]>([]);

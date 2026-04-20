@@ -248,7 +248,7 @@ import TechCloudBackground from "@/components/common/TechCloudBackground.vue";
 import FinalSection from "@/views/presentation/sections/FinalSection.vue";
 import ProjectCard from "@/components/projects/ProjectCard.vue";
 import ExperienceCard from "@/components/experience/ExperienceCard.vue";
-import type { HomePageData } from "@/services/homeApi";
+import type { HomePageData } from "@/services/types";
 
 // declare component props so $props contains the passed template data
 const props = defineProps<Partial<HomePageData>>();

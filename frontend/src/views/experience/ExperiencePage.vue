@@ -34,10 +34,12 @@ import { computed, ref, onMounted } from "vue";
 
 import { DesignMode } from "@/utils/types";
 import SystemController from "@/controllers/systemController";
-import homeApi, { type ExperienceItem } from "@/services/homeApi";
+import type { ExperienceItem } from "@/services/types";
+import ExperienceController from "@/controllers/experienceController";
 import ExperienceCard from "@/components/experience/ExperienceCard.vue";
 
 const systemController = new SystemController();
+const experienceController = new ExperienceController();
 
 const designMode = ref<DesignMode>(systemController.getdesignMode());
 const pageTitle = "Experiencia";
@@ -49,8 +51,8 @@ const sortedExperiences = computed(() => {
 
 onMounted(async () => {
   try {
-    const data = await homeApi.getPublic();
-    experiences.value = data.experience || [];
+    await experienceController.loadPublicExperiences();
+    experiences.value = experienceController.getExperiences();
   } catch (error) {
     console.error("Error loading experience data:", error);
   }

@@ -139,7 +139,7 @@ import {
   IonButton,
 } from "@ionic/vue";
 import { ref } from "vue";
-import type { ProjectItem } from "@/services/homeApi";
+import type { ProjectItem } from "@/services/types";
 import { vTooltip } from "@/directives/tooltip";
 import { useIconColors } from "@/composables/useIconColors";
 import * as ionicons from "ionicons/icons";

@@ -137,7 +137,7 @@ import {
 import { computed } from "vue";
 import { closeOutline, openOutline, hourglassOutline } from "ionicons/icons";
 import * as ionicons from "ionicons/icons";
-import type { ProjectItem } from "@/services/homeApi";
+import type { ProjectItem } from "@/services/types";
 import { useIconColors } from "@/composables/useIconColors";
 
 const { getIconColor } = useIconColors();

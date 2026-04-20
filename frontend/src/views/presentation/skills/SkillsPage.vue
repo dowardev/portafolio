@@ -81,17 +81,20 @@ import {
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import * as ionicons from "ionicons/icons";
-import homeApi, { type StackItem, type SkillCategory } from "@/services/homeApi";
+import { useHomeEditorStore } from "@/store/homeEditorStore";
 import { useIconColors } from "@/composables/useIconColors";
+import type { StackItem, SkillCategory } from "@/services/types";
+import HomeEditorController from "@/controllers/homeEditorController";
 
 const { getIconColor } = useIconColors();
+const homeEditorController = new HomeEditorController();
 
 const stackItems = ref<StackItem[]>([]);
 const skillCategories = ref<SkillCategory[]>([]);
 
 onMounted(async () => {
   try {
-    const data = await homeApi.getPublic();
+    const data = await homeEditorController.loadPublicData();
     stackItems.value = data.stack || [];
     skillCategories.value = data.skillCategories || [];
   } catch (error) {

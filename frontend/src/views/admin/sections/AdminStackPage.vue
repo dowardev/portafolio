@@ -49,12 +49,20 @@ import {
 import { onMounted } from "vue";
 import StackEditor from "../editors/StackEditor.vue";
 import { useHomeEditorStore } from "@/store/homeEditorStore";
+import HomeEditorController from "@/controllers/homeEditorController";
 import { saveOutline } from "ionicons/icons";
 
 const homeEditorStore = useHomeEditorStore();
+const homeEditorController = new HomeEditorController();
 
-onMounted(() => {
-  homeEditorStore.loadData();
+onMounted(async () => {
+  homeEditorStore.setLoading(true);
+  try {
+    const data = await homeEditorController.loadData();
+    homeEditorStore.setData(data);
+  } finally {
+    homeEditorStore.setLoading(false);
+  }
 });
 
 function updateStackFiles(fileMap: Record<number, File>) {

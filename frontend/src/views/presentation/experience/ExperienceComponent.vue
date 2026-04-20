@@ -96,12 +96,14 @@ import {
   openOutline,
 } from "ionicons/icons";
 import * as ionicons from "ionicons/icons";
-import homeApi, { type ExperienceItem } from "@/services/homeApi";
+import type { ExperienceItem } from "@/services/types";
+import ExperienceController from "@/controllers/experienceController";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useIconColors } from "@/composables/useIconColors";
 
 const { getIconColor } = useIconColors();
+const experienceController = new ExperienceController();
 
 const experiences = ref<ExperienceItem[]>([]);
 const modals = reactive({
@@ -110,8 +112,8 @@ const modals = reactive({
 
 onMounted(async () => {
   try {
-    const data = await homeApi.getPublic();
-    experiences.value = data.experience || [];
+    await experienceController.loadPublicExperiences();
+    experiences.value = experienceController.getExperiences();
   } catch (error) {
     console.error("Error loading experience data:", error);
   }

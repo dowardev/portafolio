@@ -1,10 +1,8 @@
 import { defineStore } from "pinia";
 import { ref, reactive } from "vue";
-import homeApi, { type HomePageData } from "@/services/homeApi";
-import { ToastController } from "@/controllers/toastController";
+import type { HomePageData } from "@/services/types";
 
 export const useHomeEditorStore = defineStore("homeEditor", () => {
-  const toastController = new ToastController();
   const saving = ref(false);
   const loading = ref(false);
 
@@ -41,96 +39,72 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
     freelance: {} as Record<string, File>,
   });
 
-  async function loadData() {
-    loading.value = true;
-    try {
-      const data = await homeApi.get();
-      form.name = data.name || "";
-      form.tags = data.tags || [];
-      form.description = data.description || "";
-      form.socials = data.socials || [];
-      form.logoUrl = data.logoUrl;
-      form.photoUrl = data.photoUrl;
-      form.stack = data.stack || [];
-      form.skillCategories = data.skillCategories || [];
-      form.experience = data.experience || [];
-      form.certificates = data.certificates || [];
-      form.freelance = data.freelance || [];
-      form.showContactForm = data.showContactForm || false;
-      preview.logo = data.logoUrl || "";
-      preview.photo = data.photoUrl || "";
-    } catch (error) {
-      console.error("Error loading homepage data:", error);
-    } finally {
-      loading.value = false;
-    }
+  function setData(data: HomePageData) {
+    form.name = data.name || "";
+    form.tags = data.tags || [];
+    form.description = data.description || "";
+    form.socials = data.socials || [];
+    form.logoUrl = data.logoUrl;
+    form.photoUrl = data.photoUrl;
+    form.stack = data.stack || [];
+    form.skillCategories = data.skillCategories || [];
+    form.experience = data.experience || [];
+    form.certificates = data.certificates || [];
+    form.freelance = data.freelance || [];
+    form.showContactForm = data.showContactForm || {
+      socials: false,
+      freelance: false,
+    };
+    preview.logo = data.logoUrl || "";
+    preview.photo = data.photoUrl || "";
   }
 
-  async function save() {
-    saving.value = true;
-    try {
-      const formData = new FormData();
-      formData.append(
-        "payload",
-        JSON.stringify({
-          name: form.name,
-          tags: form.tags,
-          description: form.description,
-          socials: form.socials,
-          stack: form.stack,
-          skillCategories: form.skillCategories,
-          experience: form.experience,
-          certificates: form.certificates,
-          freelance: form.freelance,
-          showContactForm: form.showContactForm,
-        }),
-      );
+  function getFormData(): FormData {
+    const formData = new FormData();
+    formData.append(
+      "payload",
+      JSON.stringify({
+        name: form.name,
+        tags: form.tags,
+        description: form.description,
+        socials: form.socials,
+        stack: form.stack,
+        skillCategories: form.skillCategories,
+        experience: form.experience,
+        certificates: form.certificates,
+        freelance: form.freelance,
+        showContactForm: form.showContactForm,
+      }),
+    );
 
-      if (files.logo) {
-        formData.append("logo", files.logo);
-      }
-      if (files.photo) {
-        formData.append("photo", files.photo);
-      }
-
-      for (const [index, file] of Object.entries(sectionFiles.stack)) {
-        formData.append(`stack_image_${index}`, file);
-      }
-
-      for (const [key, file] of Object.entries(sectionFiles.skills)) {
-        formData.append(`skill_image_${key}`, file);
-      }
-
-      for (const [key, file] of Object.entries(sectionFiles.experience)) {
-        formData.append(key, file);
-      }
-
-      for (const [key, file] of Object.entries(sectionFiles.certificates)) {
-        formData.append(key, file);
-      }
-
-      for (const [key, file] of Object.entries(sectionFiles.freelance)) {
-        formData.append(key, file);
-      }
-
-      await homeApi.update(formData);
-      const toast = await toastController.presentToast({
-        message: "Guardado correctamente",
-        duration: 2000,
-        color: "success",
-      });
-      await toast.present();
-    } catch (error) {
-      console.error("Error saving:", error);
-      const toast = await toastController.presentToast({
-        message: "Error al guardar",
-        duration: 2000,
-        color: "danger",
-      });
-      await toast.present();
-    } finally {
-      saving.value = false;
+    if (files.logo) {
+      formData.append("logo", files.logo);
     }
+    if (files.photo) {
+      formData.append("photo", files.photo);
+    }
+
+    for (const [index, file] of Object.entries(sectionFiles.stack)) {
+      formData.append(`stack_image_${index}`, file);
+    }
+
+    for (const [key, file] of Object.entries(sectionFiles.skills)) {
+      formData.append(`skill_image_${key}`, file);
+    }
+
+    for (const [key, file] of Object.entries(sectionFiles.experience)) {
+      formData.append(key, file);
+    }
+
+    for (const [key, file] of Object.entries(sectionFiles.certificates)) {
+      formData.append(key, file);
+    }
+
+    for (const [key, file] of Object.entries(sectionFiles.freelance)) {
+      formData.append(key, file);
+    }
+
+    return formData;
   }
 
   function resetState() {
@@ -157,6 +131,14 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
     Object.keys(sectionFiles.freelance).forEach((key) => delete sectionFiles.freelance[key]);
   }
 
+  function setLoading(value: boolean) {
+    loading.value = value;
+  }
+
+  function setSaving(value: boolean) {
+    saving.value = value;
+  }
+
   return {
     form,
     files,
@@ -164,8 +146,10 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
     sectionFiles,
     saving,
     loading,
-    loadData,
-    save,
+    setData,
+    getFormData,
     resetState,
+    setLoading,
+    setSaving,
   };
 });
