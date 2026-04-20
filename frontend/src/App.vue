@@ -1,27 +1,25 @@
 <template>
   <ion-app>
-    <div class="content">
+    <ion-split-pane when="lg" content-id="main">
       <ion-menu
         content-id="main"
         menu-id="mainMenu"
-        style="--side-max-width: 300px; border-right-width: 0px"
+        style="--side-max-width: 300px"
       >
         <MenuComponent></MenuComponent>
       </ion-menu>
 
       <ion-router-outlet id="main" :animated="!disableAnimation" />
+    </ion-split-pane>
 
-      <!-- toasts -->
-      <!-- toast update -->
-      <ion-toast
-        message="Nueva actualización disponible, más detalles en la sección de novedades"
-        :is-open="openToastUpdateApp"
-        :buttons="toastUpdateButtons"
-        :duration="7000"
-        @did-dismiss="updateApp($event)"
-      ></ion-toast>
-    </div>
-    <!-- end toasts -->
+    <!-- toast update -->
+    <ion-toast
+      message="Nueva actualización disponible, más detalles en la sección de novedades"
+      :is-open="openToastUpdateApp"
+      :buttons="toastUpdateButtons"
+      :duration="7000"
+      @did-dismiss="updateApp($event)"
+    ></ion-toast>
 
     <div class="landscape-warning">
       <p>Por favor, gira tu dispositivo para ver este sitio web.</p>
@@ -34,6 +32,7 @@ import {
   IonApp,
   IonRouterOutlet,
   IonMenu,
+  IonSplitPane,
   IonToast,
   toastController,
   isPlatform,

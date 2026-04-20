@@ -19,6 +19,8 @@
           </ion-item>
 
           <ion-item lines="full">
+            <ion-icon slot="start" :icon="calendarOutline"></ion-icon>
+
             <ion-label>{{
               formatDate(experience.startDate, experience.endDate)
             }}</ion-label>
@@ -29,36 +31,38 @@
               <ion-col
                 class="ion-padding-start ion-padding-top ion-padding-bottom tech-col"
               >
-                <template
-                  v-for="(tech, techIndex) in experience.technologies"
-                  :key="techIndex"
-                >
-                  <img
-                    v-if="tech.type === 'img'"
-                    v-tooltip="{
-                      content: tech.name,
-                      trigger: 'mouseenter',
-                      touch: 'hold',
-                    }"
-                    :src="tech.source"
-                    :alt="tech.name"
-                    :style="{ width: tech.size }"
-                  />
+                <div style="display: flex; gap: 6px">
+                  <template
+                    v-for="(tech, techIndex) in experience.technologies"
+                    :key="techIndex"
+                  >
+                    <img
+                      v-if="tech.type === 'img'"
+                      v-tooltip="{
+                        content: tech.name,
+                        trigger: 'mouseenter',
+                        touch: 'hold',
+                      }"
+                      :src="tech.source"
+                      :alt="tech.name"
+                      :style="{ width: tech.size }"
+                    />
 
-                  <ion-icon
-                    v-if="tech.type === 'icon'"
-                    v-tooltip="{
-                      content: tech.name,
-                      trigger: 'mouseenter',
-                      touch: 'hold',
-                    }"
-                    :icon="getIconByName(tech.source)"
-                    :style="{
-                      fontSize: tech.size,
-                      color: getIconColor(tech.source),
-                    }"
-                  ></ion-icon>
-                </template>
+                    <ion-icon
+                      v-if="tech.type === 'icon'"
+                      v-tooltip="{
+                        content: tech.name,
+                        trigger: 'mouseenter',
+                        touch: 'hold',
+                      }"
+                      :icon="getIconByName(tech.source)"
+                      :style="{
+                        color: getIconColor(tech.source),
+                      }"
+                      style="font-size: 18px"
+                    ></ion-icon>
+                  </template>
+                </div>
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -66,10 +70,7 @@
 
         <div class="card-footer">
           <ion-button expand="block" @click="toggleFlip">
-            <ion-icon
-              slot="start"
-              :icon="ionicons.informationCircleOutline"
-            ></ion-icon>
+            <ion-icon slot="start" :icon="informationCircleOutline"></ion-icon>
             Detalles
           </ion-button>
         </div>
@@ -92,7 +93,7 @@
 
         <div class="card-footer">
           <ion-button expand="block" @click="toggleFlip">
-            <ion-icon :icon="ionicons.arrowBackOutline"></ion-icon>
+            <ion-icon :icon="arrowBackOutline"></ion-icon>
             Volver
           </ion-button>
         </div>
@@ -118,6 +119,11 @@ import { vTooltip } from "@/directives/tooltip";
 import { format, parseISO, isValid } from "date-fns";
 import { es } from "date-fns/locale";
 import { useIconColors } from "@/composables/useIconColors";
+import {
+  arrowBackOutline,
+  calendarOutline,
+  informationCircleOutline,
+} from "ionicons/icons";
 
 const { getIconColor } = useIconColors();
 
