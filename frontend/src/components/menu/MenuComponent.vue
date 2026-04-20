@@ -7,19 +7,8 @@
           v-if="userController.getUser()?.id"
           lines="none"
           class="transparent"
-          @click="setOpenPopOverUserOptions(true, $event)"
         >
           <ion-label>{{ userController.getUser()?.name }}</ion-label>
-          <ion-button
-            slot="end"
-            fill="clear"
-            @click="
-              eventPopOverUserOptions = $event;
-              isOpenRefPopOverUserOptions = true;
-            "
-          >
-            <ion-icon :icon="ellipsisVerticalOutline"></ion-icon>
-          </ion-button>
         </ion-item>
 
         <!-- no logged -->
@@ -44,77 +33,108 @@
       <div style="display: flex; flex-direction: column; height: 100%">
         <div>
           <ion-item-group>
-            <ion-item-divider>
-              <ion-label> Usuario </ion-label>
-            </ion-item-divider>
+            <section v-if="userController.getUser()?.id">
+              <ion-item-divider>
+                <ion-label> Usuario </ion-label>
+              </ion-item-divider>
 
-            <div class="ion-padding-bottom">
-              <!-- admin panel -->
-              <div
-                :class="{
-                  'menu-option-selected': $route.name == 'PanelAdminPage',
-                }"
-              >
-                <ion-item
-                  v-if="isAdmin"
-                  button
-                  :disabled="spinners.buttonAdminPanel"
-                  lines="none"
-                  class="transparent"
-                  @click="goToAdminPanel()"
+              <div class="ion-padding-bottom">
+                <!-- admin panel -->
+                <div
+                  v-if="userController.getUser()?.id"
+                  :class="{
+                    'menu-option-selected':
+                      $route.name == 'PanelAdminPage' ||
+                      $route.name == 'ProjectsListPage' ||
+                      $route.name == 'ProjectNewPage' ||
+                      $route.name == 'ProjectEditPage' ||
+                      $route.name == 'ExperienceListPage' ||
+                      $route.name == 'ExperienceNewPage' ||
+                      $route.name == 'ExperienceEditPage' ||
+                      $route.name == 'AdminEditorPage' ||
+                      $route.name == 'HomeEditorPage' ||
+                      $route.name == 'CreatePostPage' ||
+                      $route.name == 'UpdatePostPage',
+                  }"
                 >
-                  <ion-icon
-                    v-if="spinners.buttonAdminPanel == false"
-                    slot="start"
-                    color="primary"
-                    :icon="$route.name != 'PanelAdminPage' ? cogOutline : cog"
-                  ></ion-icon>
-
-                  <ion-spinner
-                    v-if="spinners.buttonAdminPanel"
-                    slot="start"
-                    color="primary"
-                    name="crescent"
+                  <ion-item
+                    v-if="isAdmin"
+                    button
+                    :disabled="spinners.buttonAdminPanel"
+                    lines="none"
+                    class="transparent"
+                    @click="goToAdminPanel()"
                   >
-                  </ion-spinner>
+                    <ion-icon
+                      v-if="spinners.buttonAdminPanel == false"
+                      slot="start"
+                      color="primary"
+                      :icon="
+                        ![
+                          'PanelAdminPage',
+                          'ProjectsListPage',
+                          'ProjectNewPage',
+                          'ProjectEditPage',
+                          'ExperienceListPage',
+                          'ExperienceNewPage',
+                          'ExperienceEditPage',
+                          'AdminEditorPage',
+                          'HomeEditorPage',
+                          'CreatePostPage',
+                          'UpdatePostPage',
+                        ].includes($route.name as string)
+                          ? cogOutline
+                          : cog
+                      "
+                    ></ion-icon>
 
-                  <ion-label>Panel administrador</ion-label>
-                </ion-item>
-              </div>
+                    <ion-spinner
+                      v-if="spinners.buttonAdminPanel"
+                      slot="start"
+                      color="primary"
+                      name="crescent"
+                    >
+                    </ion-spinner>
 
-              <!-- user panel -->
-              <div
-                :class="{
-                  'menu-option-selected': $route.name == 'UserPanelPage',
-                }"
-              >
-                <ion-item
-                  :disabled="spinners.buttonUserPanel"
-                  button
-                  lines="none"
-                  class="transparent"
-                  @click="goToUserPanel()"
+                    <ion-label>Panel administrador</ion-label>
+                  </ion-item>
+                </div>
+
+                <!-- user panel -->
+                <div
+                  v-if="userController.getUser()?.id"
+                  :class="{
+                    'menu-option-selected': $route.name == 'UserPanelPage',
+                  }"
                 >
-                  <ion-icon
-                    v-if="spinners.buttonUserPanel == false"
-                    slot="start"
-                    color="primary"
-                    :icon="
-                      $route.name != 'UserPanelPage' ? personOutline : person
-                    "
-                  ></ion-icon>
-
-                  <ion-spinner
-                    v-if="spinners.buttonUserPanel"
-                    slot="start"
-                    color="primary"
-                    name="crescent"
+                  <ion-item
+                    :disabled="spinners.buttonUserPanel"
+                    button
+                    lines="none"
+                    class="transparent"
+                    @click="goToUserPanel()"
                   >
-                  </ion-spinner>
-                  <ion-label>Panel usuario</ion-label>
-                </ion-item>
+                    <ion-icon
+                      v-if="spinners.buttonUserPanel == false"
+                      slot="start"
+                      color="primary"
+                      :icon="
+                        $route.name != 'UserPanelPage' ? personOutline : person
+                      "
+                    ></ion-icon>
+
+                    <ion-spinner
+                      v-if="spinners.buttonUserPanel"
+                      slot="start"
+                      color="primary"
+                      name="crescent"
+                    >
+                    </ion-spinner>
+                    <ion-label>Panel usuario</ion-label>
+                  </ion-item>
+                </div>
               </div>
-            </div>
+            </section>
 
             <ion-item-divider>
               <ion-label> Navegación </ion-label>
@@ -128,7 +148,9 @@
                     $route.name == 'PresentationPage' ||
                     $route.name == 'SkillsPage' ||
                     $route.name == 'HistoryPage' ||
-                    $route.name == 'PortfolioPage',
+                    $route.name == 'PortfolioPage' ||
+                    $route.name == 'CertificatesPage' ||
+                    $route.name == 'ExperiencePage',
                 }"
               >
                 <ion-item
@@ -140,7 +162,16 @@
                     slot="start"
                     color="primary"
                     :icon="
-                      $route.name != 'PresentationPage' ? homeOutline : home
+                      ![
+                        'PresentationPage',
+                        'SkillsPage',
+                        'HistoryPage',
+                        'PortfolioPage',
+                        'CertificatesPage',
+                        'ExperiencePage',
+                      ].includes($route.name as string)
+                        ? homeOutline
+                        : home
                     "
                   ></ion-icon>
                   <ion-label> Presentación </ion-label>
@@ -459,10 +490,6 @@ const systemController = new SystemController();
 const router = useRouter();
 const isOpenRefPopOverUserOptions = ref(false);
 const eventPopOverUserOptions = ref();
-const setOpenPopOverUserOptions = (state: boolean, ev?: Event): void => {
-  eventPopOverUserOptions.value = ev;
-  isOpenRefPopOverUserOptions.value = state;
-};
 const spinners = ref({
   buttonLogin: false,
   buttonSignup: false,

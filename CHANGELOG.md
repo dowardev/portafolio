@@ -1,5 +1,30 @@
 # Changelog
 
+## 12.3.1 - 2026-04-20
+
+### Summary
+
+This release improves the menu component with better conditional rendering for user sections and adds a footer with source code license information to the HomeTemplate2.
+
+### Added
+
+- Added footer to HomeTemplate2 with source code link and GPL-3.0 license information
+
+### Changed
+
+- Wrapped user menu sections (admin panel, user panel) in conditional v-if to only show when user is logged in
+- Removed ellipsisVerticalOutline button from user menu item
+- Enhanced route checking in menu to support multiple route names using array includes for active state
+- Simplified menu option classes with array-based route name checks
+
+### Affected Files
+
+- Modified:
+  - `frontend/src/components/menu/MenuComponent.vue`
+  - `frontend/src/templates/HomeTemplate2.vue`
+
+---
+
 ## 12.3.0 - 2026-04-20
 
 ### Summary

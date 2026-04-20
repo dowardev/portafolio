@@ -182,7 +182,9 @@
               <ion-list-header>
                 <ion-label>Experiencia</ion-label>
 
-                <ion-button @click="router.push('/home/experience')">Todos</ion-button>
+                <ion-button @click="router.push('/home/experience')"
+                  >Todos</ion-button
+                >
               </ion-list-header>
 
               <ion-grid>
@@ -224,6 +226,17 @@
         </ion-row>
       </ion-grid>
     </ion-content>
+
+    <ion-footer>
+      <div class="ion-padding-start">
+        <p>
+          <a href="https://gitlab.com/dowardev/portafolio" target="_blank"
+            >Código fuente</a
+          >
+          bajo la licencia gpl-3.0.
+        </p>
+      </div>
+    </ion-footer>
   </ion-page>
 </template>
 
