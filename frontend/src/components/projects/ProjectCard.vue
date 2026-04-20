@@ -1,111 +1,126 @@
 <template>
   <div class="flip-card" :class="{ 'is-flipped': isFlipped }">
     <div class="flip-card-face flip-card-front">
-      <ion-card class="shadow1 project-card">
-        <img class="project-header-img" :src="project.img" alt="" />
+      <ion-card class="shadow1 experience-card">
+        <div>
+          <ion-item lines="full">
+            <ion-thumbnail slot="start">
+              <img v-if="project.img" :src="project.img" alt="" />
 
-        <div style="display: flex; justify-content: center">
-          <ion-chip
-            :color="
-              project.status === 'finished'
-                ? 'success'
-                : project.status === 'indeterminate'
-                  ? 'warning'
-                  : project.status === 'progress'
-                    ? 'primary'
-                    : ''
-            "
-          >
-            {{
-              project.status === "progress"
-                ? "En progreso"
-                : project.status === "indeterminate"
-                  ? "Indeterminado"
-                  : "Terminado"
-            }}
-          </ion-chip>
-        </div>
-
-        <ion-item lines="none">
-          <ion-label>{{ project.title }}</ion-label>
-          <ion-label slot="end">
-            {{
-              project.startDate
-                ? formatDateRange(project.startDate, project.endDate)
-                : ""
-            }}
-          </ion-label>
-        </ion-item>
-
-        <div class="ion-padding-start ion-padding-bottom">
-          <ion-note>{{ project.source.name }}</ion-note>
-        </div>
-
-        <ion-row>
-          <ion-col size="10" style="display: flex">
-            <div
-              v-for="(tech, techIndex) in project.technologies"
-              :key="techIndex"
-              style="display: flex; align-items: center; margin-right: 10px"
-            >
               <img
-                v-if="tech.type === 'img'"
-                v-tooltip="{ content: tech.name, trigger: 'mouseenter', touch: 'hold' }"
-                :src="tech.source"
-                :alt="tech.name"
-                :style="{ width: tech.size }"
+                v-else
+                src="../assets/otros/light-wallpaper1.png"
+                class="project-header-img"
+                alt=""
               />
-              <ion-icon
-                v-if="tech.type === 'icon'"
-                v-tooltip="{ content: tech.name, trigger: 'mouseenter', touch: 'hold' }"
-                :icon="getIconByName(tech.source)"
-                :style="{
-                  fontSize: tech.size,
-                  color: getIconColor(tech.source),
-                }"
-              ></ion-icon>
-            </div>
-          </ion-col>
-        </ion-row>
+            </ion-thumbnail>
 
-        <div class="flip-btn-container">
-          <button class="flip-btn" @click="toggleFlip">
-            <ion-icon :icon="ionicons.informationCircleOutline"></ion-icon>
+            <ion-label>
+              <h2>{{ project.title }}</h2>
+
+              <ion-text :color="getStatusColor(project.status)">
+                {{ getStatusText(project.status) }}
+              </ion-text>
+            </ion-label>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-icon slot="start" :icon="briefcaseOutline"></ion-icon>
+
+            <ion-label
+              v-tooltip="{
+                content: project.source.name,
+                trigger: 'mouseenter',
+                touch: 'hold',
+              }"
+              class="truncate-source-name"
+            >
+              {{ project.source.name }}
+            </ion-label>
+          </ion-item>
+
+          <ion-grid>
+            <ion-row>
+              <ion-col
+                class="ion-padding-start ion-padding-top ion-padding-bottom tech-col"
+              >
+                <div style="display: flex; gap: 6px">
+                  <template
+                    v-for="(tech, techIndex) in project.technologies"
+                    :key="techIndex"
+                  >
+                    <img
+                      v-if="tech.type === 'img'"
+                      v-tooltip="{
+                        content: tech.name,
+                        trigger: 'mouseenter',
+                        touch: 'hold',
+                      }"
+                      :src="tech.source"
+                      :alt="tech.name"
+                      :style="{ width: tech.size }"
+                    />
+
+                    <ion-icon
+                      v-if="tech.type === 'icon'"
+                      v-tooltip="{
+                        content: tech.name,
+                        trigger: 'mouseenter',
+                        touch: 'hold',
+                      }"
+                      :icon="getIconByName(tech.source)"
+                      :style="{
+                        color: getIconColor(tech.source),
+                      }"
+                      style="font-size: 18px"
+                    ></ion-icon>
+                  </template>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+
+        <div class="card-footer">
+          <ion-button expand="block" @click="toggleFlip">
+            <ion-icon slot="start" :icon="informationCircleOutline"></ion-icon>
             Detalles
-          </button>
+          </ion-button>
         </div>
       </ion-card>
     </div>
 
     <div class="flip-card-face flip-card-back">
-      <ion-card class="shadow1 flip-card-card-back">
-        <h2 class="back-title">{{ project.title }}</h2>
-        <p class="project-description">{{ project.details.description }}</p>
+      <ion-card class="shadow1 experience-card">
+        <ion-card-content>
+          <h2 class="back-title">{{ project.title }}</h2>
 
-        <div class="back-buttons">
-          <a
+          <div class="back-description">
+            <p>
+              {{ project.details.description }}
+            </p>
+          </div>
+        </ion-card-content>
+
+        <div class="card-footer">
+          <ion-button
+            fill="outline"
+            class="btn-footer-left"
+            @click="toggleFlip"
+          >
+            <ion-icon slot="start" :icon="arrowBackOutline"></ion-icon>
+            Volver
+          </ion-button>
+
+          <ion-button
             v-if="project.details.website"
+            class="btn-footer-right"
             :href="project.details.website"
             target="_blank"
-            class="project-link-btn"
-            @click.stop
           >
-            <ion-icon :icon="ionicons.openOutline"></ion-icon>
+            <ion-icon slot="start" :icon="openOutline"></ion-icon>
             Ver Proyecto
-          </a>
-          <button
-            v-else
-            class="project-link-btn project-link-btn-disabled"
-            disabled
-          >
-            <ion-icon :icon="ionicons.openOutline"></ion-icon>
-            Ver Proyecto
-          </button>
-
-          <button class="flip-btn" @click="toggleFlip">
-            <ion-icon :icon="ionicons.arrowBackOutline"></ion-icon>
-            Volver
-          </button>
+          </ion-button>
         </div>
       </ion-card>
     </div>
@@ -118,16 +133,22 @@ import {
   IonRow,
   IonCol,
   IonLabel,
-  IonNote,
-  IonChip,
   IonItem,
   IonIcon,
+  IonText,
+  IonButton,
 } from "@ionic/vue";
 import { ref } from "vue";
-import * as ionicons from "ionicons/icons";
 import type { ProjectItem } from "@/services/homeApi";
 import { vTooltip } from "@/directives/tooltip";
 import { useIconColors } from "@/composables/useIconColors";
+import * as ionicons from "ionicons/icons";
+import {
+  arrowBackOutline,
+  briefcaseOutline,
+  informationCircleOutline,
+  openOutline,
+} from "ionicons/icons";
 
 const { getIconColor } = useIconColors();
 
@@ -153,26 +174,32 @@ function getIconByName(source: string) {
   return icon || ionicons.helpCircleOutline;
 }
 
-function formatDateRange(start: string, end?: string): string {
-  const formatMonth = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("es-ES", { month: "short", year: "numeric" });
-  };
-  if (!end) return `${formatMonth(start)} - Actual`;
-  return `${formatMonth(start)} - ${formatMonth(end)}`;
+function getStatusText(status: string) {
+  if (status === "progress") return "En progreso";
+  if (status === "indeterminate") return "Indeterminado";
+  return "Terminado";
+}
+
+function getStatusColor(status: string) {
+  if (status === "finished") return "success";
+  if (status === "indeterminate") return "warning";
+  if (status === "progress") return "primary";
+  return "medium";
 }
 </script>
 
 <style scoped>
 .flip-card {
   width: 100%;
-  height: 420px;
+  height: 259px;
   perspective: 1000px;
   margin-bottom: 16px;
   position: relative;
 }
 
 .flip-card-face {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   top: 0;
   left: 0;
@@ -185,15 +212,14 @@ function formatDateRange(start: string, end?: string): string {
   transition: transform 0.6s ease;
 }
 
-.project-card {
-  height: 100%;
-  margin: 0;
-  box-sizing: border-box;
+.flip-card-face > ion-card,
+.flip-card-face > .experience-card {
+  flex: 1 1 auto;
 }
 
 .project-header-img {
   width: 100%;
-  max-height: 180px;
+  max-height: 140px;
   object-fit: contain;
   display: block;
 }
@@ -226,29 +252,33 @@ function formatDateRange(start: string, end?: string): string {
   transform: rotateY(0deg);
 }
 
-.flip-btn-container {
+.card-footer {
+  margin-top: auto;
+}
+
+.flip-card-back .card-footer {
   display: flex;
-  justify-content: center;
-  padding: 8px;
 }
 
-.flip-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid var(--ion-color-primary, #3880ff);
-  background: transparent;
-  color: var(--ion-color-primary, #3880ff);
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
+.card-footer ion-button {
+  --border-radius: 0;
+  margin: 0;
 }
 
-.flip-btn:hover {
-  background: var(--ion-color-primary, #3880ff);
-  color: #fff;
+.truncate-source-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  display: block;
+}
+
+.btn-footer-left {
+  flex: 0 0 auto;
+}
+
+.btn-footer-right {
+  flex: 1;
 }
 
 .back-title {
@@ -258,45 +288,38 @@ function formatDateRange(start: string, end?: string): string {
   color: var(--ion-text-color, #000);
 }
 
-.project-description {
-  color: var(--ion-text-color, #333);
-  text-align: center;
-  margin-bottom: 24px;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 6;
-  -webkit-box-orient: vertical;
-  line-clamp: 6;
-  overflow: hidden;
-}
-
-.back-buttons {
+.experience-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  align-items: center;
 }
 
-.project-link-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  background: var(--ion-color-primary, #3880ff);
-  color: #fff;
-  text-decoration: none;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: opacity 0.2s;
+.flip-card-back ion-card-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-.project-link-btn:hover {
-  opacity: 0.85;
+.flip-card-back ion-card-content > div {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-.project-link-btn-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.back-description {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 8px;
+}
+
+.btn-footer-left {
+  flex: 0 0 auto;
+}
+
+.btn-footer-right {
+  flex: 1;
 }
 </style>

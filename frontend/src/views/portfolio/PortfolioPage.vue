@@ -11,14 +11,21 @@
     </ion-header>
 
     <ion-content>
-      <ion-row
-        class="ion-justify-content-center"
-        style="display: flex; overflow: auto; max-height: calc(100% - 8dvh)"
-      >
-        <ion-col size-xs="12" size-sm="8" size-lg="6">
-          <ProjectCard v-if="project" :project="project" />
-        </ion-col>
-      </ion-row>
+      <ion-grid>
+        <ion-row class="ion-justify-content-center">
+          <ion-col size-xs="12" size-sm="8" size-lg="6">
+            <ion-row>
+              <ion-col
+                v-for="(project, index) in projects"
+                :key="index"
+                size="4"
+              >
+                <ProjectCard :project="project" />
+              </ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-content>
   </ion-page>
 </template>
@@ -41,11 +48,11 @@ import ProjectsController from "@/controllers/projectsController";
 import type { ProjectItem } from "@/services/homeApi";
 
 const projectsController = new ProjectsController();
-const project = ref<ProjectItem | null>(null);
+const projects = ref<ProjectItem[]>([]);
 
 onMounted(async () => {
   await projectsController.loadProjects();
-  project.value = projectsController.getProject(0) ?? null;
+  projects.value = projectsController.getProjects();
 });
 
 const pageTitle = "Proyectos";

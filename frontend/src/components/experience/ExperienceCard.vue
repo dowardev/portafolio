@@ -66,7 +66,10 @@
 
         <div class="card-footer">
           <ion-button expand="block" @click="toggleFlip">
-            <ion-icon :icon="ionicons.informationCircleOutline"></ion-icon>
+            <ion-icon
+              slot="start"
+              :icon="ionicons.informationCircleOutline"
+            ></ion-icon>
             Detalles
           </ion-button>
         </div>
@@ -82,22 +85,6 @@
             <div class="back-description">
               <p>
                 {{ experience.details?.description }}
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias
-                excepturi, quo libero consequuntur voluptatem quod, facilis,
-                quam laborum nulla officiis perferendis minus sapiente repellat
-                labore optio fuga assumenda laudantium. Laboriosam! Lorem ipsum
-                dolor, sit amet consectetur adipisicing elit. Alias excepturi,
-                quo libero consequuntur voluptatem quod, facilis, quam laborum
-                nulla officiis perferendis minus sapiente repellat labore optio
-                fuga assumenda laudantium. Laboriosam! Lorem ipsum dolor, sit
-                amet consectetur adipisicing elit. Alias excepturi, quo libero
-                consequuntur voluptatem quod, facilis, quam laborum nulla
-                officiis perferendis minus sapiente repellat labore optio fuga
-                assumenda laudantium. Laboriosam! Lorem ipsum dolor, sit amet
-                consectetur adipisicing elit. Alias excepturi, quo libero
-                consequuntur voluptatem quod, facilis, quam laborum nulla
-                officiis perferendis minus sapiente repellat labore optio fuga
-                assumenda laudantium. Laboriosam!
               </p>
             </div>
           </div>

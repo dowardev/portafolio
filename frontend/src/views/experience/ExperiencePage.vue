@@ -11,10 +11,7 @@
     </ion-header>
 
     <ion-content>
-      <ion-row
-        class="ion-justify-content-center"
-        style="display: flex; overflow: auto; max-height: calc(100% - 8dvh)"
-      >
+      <ion-row class="ion-justify-content-center">
         <ion-col size-xs="12" size-sm="8" size-lg="6">
           <ion-row>
             <ion-col
