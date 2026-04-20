@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header class="ion-no-border" mode="ios">
-      <ion-toolbar>
+      <ion-toolbar style="--background: var(--ion-background-color)">
         <!-- user logged -->
         <ion-item
           v-if="userController.getUser()?.id"

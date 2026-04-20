@@ -52,26 +52,35 @@
             :key="`${platform.name}-${index}`"
           >
             <ion-card class="shadow-1">
-              <ion-card-header>
-                <div style="display: flex; justify-content:">
+              <ion-item lines="full">
+                <ion-thumbnail slot="start">
                   <img
                     :src="platform.image"
                     :alt="platform.name"
                     style="height: 45px"
                   />
-                </div>
-                <ion-card-title>{{ review.title }}</ion-card-title>
-                <ion-card-subtitle>
-                  <ion-icon
-                    v-for="n in review.rating"
-                    :key="n"
-                    :icon="starIcon"
-                  ></ion-icon>
-                </ion-card-subtitle>
-              </ion-card-header>
-              <ion-card-content v-if="review.comment && review.comment.length">
-                <p>
-                  <ion-text>
+                </ion-thumbnail>
+
+                <ion-label>
+                  <h2>{{ review.title }}</h2>
+
+                  <div>
+                    <ion-icon
+                      v-for="n in review.rating"
+                      :key="n"
+                      :icon="starIcon"
+                      style="color: gold; font-size: 16px"
+                    ></ion-icon>
+                  </div>
+                </ion-label>
+              </ion-item>
+
+              <div class="ion-padding-start">
+                <div
+                  v-if="review.comment && review.comment.length"
+                  style="max-height: 200px; overflow: auto"
+                >
+                  <p>
                     <span
                       v-for="(line, indexComment) in review.comment"
                       :key="indexComment"
@@ -79,9 +88,9 @@
                       {{ line
                       }}<br v-if="indexComment < review.comment.length - 1" />
                     </span>
-                  </ion-text>
-                </p>
-              </ion-card-content>
+                  </p>
+                </div>
+              </div>
             </ion-card>
           </SwiperSlide>
         </template>

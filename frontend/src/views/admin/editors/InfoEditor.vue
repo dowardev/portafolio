@@ -69,55 +69,7 @@
     </ion-card>
   </ion-list>
 
-  <ion-list>
-    <ion-list-header>
-      <ion-label>Redes sociales</ion-label>
-    </ion-list-header>
-
-    <ion-card class="shadow1">
-      <template
-        v-for="(socialItem, socialIndex) in form.socials"
-        :key="socialIndex"
-      >
-        <ion-item lines="full">
-          <ion-icon
-            v-if="socialItem.platform"
-            slot="start"
-            :icon="getIconByName({ iconName: socialItem.platform })"
-          ></ion-icon>
-          <ion-label>{{ socialItem.platform || "Plataforma" }}</ion-label>
-
-          <ion-input
-            slot="end"
-            v-model="socialItem.url"
-            placeholder="https://..."
-            type="url"
-            :error-text="
-              v$.form.socials.$each.$response?.$errors[
-                socialIndex
-              ]?.url?.[0]?.$message?.toString()
-            "
-            :class="{
-              'ion-invalid':
-                v$.form.socials.$each.$response?.$errors[socialIndex]?.url
-                  ?.length,
-              'ion-touched': v$.form.socials.$dirty,
-            }"
-            @ion-blur="v$.form.socials.$touch()"
-          ></ion-input>
-
-          <ion-button
-            slot="end"
-            fill="clear"
-            color="danger"
-            @click="removeSocial({ socialIndex })"
-          >
-            <ion-icon :icon="trashOutline"></ion-icon>
-          </ion-button>
-        </ion-item>
-      </template>
-    </ion-card>
-  </ion-list>
+  <SocialsEditor v-model="form.socials" />
 
   <ion-list>
     <ion-list-header>
@@ -215,10 +167,7 @@
   </ion-list>
 
   <!-- modals -->
-  <ion-modal
-    :is-open="isReorderModalOpen"
-    @did-dismiss="onReorderDismiss"
-  >
+  <ion-modal :is-open="isReorderModalOpen" @did-dismiss="onReorderDismiss">
     <ion-header>
       <ion-toolbar>
         <ion-title>Reordenar etiquetas</ion-title>
@@ -226,19 +175,14 @@
           <ion-button fill="clear" @click="closeReorderModal"
             >Cerrar</ion-button
           >
-          <ion-button color="primary" @click="saveReorder"
-            >Guardar</ion-button
-          >
+          <ion-button color="primary" @click="saveReorder">Guardar</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
       <ion-list>
-        <ion-reorder-group
-          :disabled="false"
-          @ion-item-reorder="handleReorder"
-        >
+        <ion-reorder-group :disabled="false" @ion-item-reorder="handleReorder">
           <ion-item v-for="localTagItem in localTags" :key="localTagItem.id">
             <ion-label>{{ localTagItem.label }}</ion-label>
             <ion-reorder slot="end"></ion-reorder>
@@ -293,59 +237,11 @@ import {
   IonToggle,
   IonToolbar,
 } from "@ionic/vue";
-import {
-  addOutline,
-  closeOutline,
-  linkOutline,
-  reorderThreeOutline,
-  trashOutline,
-  logoAmazon,
-  logoApple,
-  logoBehance,
-  logoBitbucket,
-  chatbox,
-  logoDiscord,
-  logoDribbble,
-  logoFacebook,
-  logoGithub,
-  logoGitlab,
-  logoGoogle,
-  logoInstagram,
-  logoLinkedin,
-  logoMedium,
-  logoPaypal,
-  logoPinterest,
-  logoReddit,
-  logoSlack,
-  logoSnapchat,
-  logoSoundcloud,
-  logoStackoverflow,
-  logoSteam,
-  logoTwitch,
-  logoTwitter,
-  logoTiktok,
-  logoTumblr,
-  logoVk,
-  logoVimeo,
-  logoWechat,
-  logoWhatsapp,
-  logoWordpress,
-  logoX,
-  logoXbox,
-  logoYoutube,
-  logoPlaystation,
-  logoSkype,
-  logoBitcoin,
-} from "ionicons/icons";
+import { addOutline, closeOutline, reorderThreeOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
-import {
-  helpers,
-  maxLength,
-  minLength,
-  required,
-  url as urlValidator,
-} from "@vuelidate/validators";
+import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import { reactive, ref, watch } from "vue";
+import SocialsEditor from "./SocialsEditor.vue";
 // end imports
 
 // interface and types imports
@@ -403,47 +299,6 @@ let tagIdCounter = 0;
 
 const localTags = ref<LocalTag[]>([]);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const iconMap: Record<string, any> = {
-  logoAmazon,
-  logoApple,
-  logoBehance,
-  logoBitbucket,
-  chatbox,
-  logoDiscord,
-  logoDribbble,
-  logoFacebook,
-  logoGithub,
-  logoGitlab,
-  logoGoogle,
-  logoInstagram,
-  logoLinkedin,
-  logoMedium,
-  logoPaypal,
-  logoPinterest,
-  logoReddit,
-  logoSlack,
-  logoSnapchat,
-  logoSoundcloud,
-  logoStackoverflow,
-  logoSteam,
-  logoTwitch,
-  logoTwitter,
-  logoTiktok,
-  logoTumblr,
-  logoVk,
-  logoVimeo,
-  logoWechat,
-  logoWhatsapp,
-  logoWordpress,
-  logoX,
-  logoXbox,
-  logoYoutube,
-  logoPlaystation,
-  logoSkype,
-  logoBitcoin,
-};
-
 const addTagAlertButtons = [
   {
     text: "Cancelar",
@@ -466,46 +321,6 @@ const addTagAlertButtons = [
       isAddTagAlertOpen.value = false;
     },
   },
-];
-
-const availableSocials = [
-  { name: "Amazon", iconName: "logoAmazon" },
-  { name: "Apple", iconName: "logoApple" },
-  { name: "Behance", iconName: "logoBehance" },
-  { name: "Bitbucket", iconName: "logoBitbucket" },
-  { name: "ChatBox", iconName: "chatbox" },
-  { name: "Discord", iconName: "logoDiscord" },
-  { name: "Dribbble", iconName: "logoDribbble" },
-  { name: "Facebook", iconName: "logoFacebook" },
-  { name: "GitHub", iconName: "logoGithub" },
-  { name: "GitLab", iconName: "logoGitlab" },
-  { name: "Google", iconName: "logoGoogle" },
-  { name: "Instagram", iconName: "logoInstagram" },
-  { name: "LinkedIn", iconName: "logoLinkedin" },
-  { name: "Medium", iconName: "logoMedium" },
-  { name: "PayPal", iconName: "logoPaypal" },
-  { name: "Pinterest", iconName: "logoPinterest" },
-  { name: "Reddit", iconName: "logoReddit" },
-  { name: "Slack", iconName: "logoSlack" },
-  { name: "Snapchat", iconName: "logoSnapchat" },
-  { name: "SoundCloud", iconName: "logoSoundcloud" },
-  { name: "Stack Overflow", iconName: "logoStackoverflow" },
-  { name: "Steam", iconName: "logoSteam" },
-  { name: "Twitch", iconName: "logoTwitch" },
-  { name: "Twitter", iconName: "logoTwitter" },
-  { name: "TikTok", iconName: "logoTiktok" },
-  { name: "Tumblr", iconName: "logoTumblr" },
-  { name: "VK", iconName: "logoVk" },
-  { name: "Vimeo", iconName: "logoVimeo" },
-  { name: "WeChat", iconName: "logoWechat" },
-  { name: "WhatsApp", iconName: "logoWhatsapp" },
-  { name: "WordPress", iconName: "logoWordpress" },
-  { name: "X", iconName: "logoX" },
-  { name: "Xbox", iconName: "logoXbox" },
-  { name: "YouTube", iconName: "logoYoutube" },
-  { name: "PlayStation", iconName: "logoPlaystation" },
-  { name: "Skype", iconName: "logoSkype" },
-  { name: "Bitcoin", iconName: "logoBitcoin" },
 ];
 
 const form = ref<{
@@ -548,14 +363,6 @@ const rules = {
         maxLength(500),
       ),
     },
-    socials: {
-      $each: helpers.forEach({
-        url: {
-          required: helpers.withMessage("La URL es requerida", required),
-          url: helpers.withMessage("Debe ser una URL válida", urlValidator),
-        },
-      }),
-    },
   },
 };
 
@@ -590,33 +397,6 @@ function createLocalTags(): LocalTag[] {
     id: `tag_${Date.now()}_${tagIdCounter++}`,
     label: tagLabel,
   }));
-}
-
-function getIconByName(params: { iconName: string }) {
-  const { iconName } = params;
-  if (!iconName) return linkOutline;
-
-  let icon = iconMap[iconName];
-  if (icon) return icon;
-
-  const logoIconName = `logo${iconName.charAt(0).toUpperCase()}${iconName.slice(1).replace(/\s/g, "")}`;
-  icon = iconMap[logoIconName];
-  if (icon) return icon;
-
-  const matchedSocial = availableSocials.find(
-    (socialItem) => socialItem.name.toLowerCase() === iconName.toLowerCase(),
-  );
-  if (matchedSocial) {
-    icon = iconMap[matchedSocial.iconName];
-    if (icon) return icon;
-  }
-
-  return linkOutline;
-}
-
-function removeSocial(params: { socialIndex: number }) {
-  const { socialIndex } = params;
-  form.value.socials.splice(socialIndex, 1);
 }
 
 function onFileChange(params: { fileEvent: Event; fileType: FileType }) {

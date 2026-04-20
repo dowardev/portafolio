@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header class="ion-no-border" mode="ios">
-      <ion-toolbar class="container-page">
+      <ion-toolbar style="--background: var(--ion-background-color)">
         <ion-buttons slot="start">
           <ion-menu-button
             menu="mainMenu"

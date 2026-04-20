@@ -1,5 +1,32 @@
 # Changelog
 
+## 12.4.0 - 2026-04-20
+
+### Summary
+This release refactors the socials editor into a standalone component, improves UI consistency with updated toolbar styling, and enhances the final section review cards layout.
+
+### Added
+- Added SocialsEditor.vue component for managing social media links
+- Added breadcrumbs navigation to AdminInfoPage
+
+### Changed
+- Refactored socials management from InfoEditor to dedicated SocialsEditor component
+- Updated toolbar styling to use CSS variables for background color in multiple components
+- Improved FinalSection review cards layout using ion-item instead of ion-card for better presentation
+- Simplified InfoEditor by removing embedded socials list
+
+### Affected Files
+- Added:
+  - `frontend/src/views/admin/editors/SocialsEditor.vue`
+- Modified:
+  - `frontend/src/components/menu/MenuComponent.vue`
+  - `frontend/src/views/admin/PanelAdminPage.vue`
+  - `frontend/src/views/admin/editors/InfoEditor.vue`
+  - `frontend/src/views/admin/sections/AdminInfoPage.vue`
+  - `frontend/src/views/presentation/sections/FinalSection.vue`
+
+---
+
 ## 12.3.1 - 2026-04-20
 
 ### Summary
