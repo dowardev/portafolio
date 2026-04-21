@@ -1,10 +1,11 @@
 <template>
   <ion-page>
     <ion-header class="ion-no-border" mode="ios">
-      <ion-toolbar>
+      <ion-toolbar style="--background: var(--ion-background-color)">
         <ion-buttons slot="start">
           <ion-back-button
-            default-href="/admin-panel/experience"
+            text=""
+            default-href="/admin-panel/skills"
           ></ion-back-button>
         </ion-buttons>
 
@@ -160,9 +161,9 @@
                 </ion-card>
               </ion-list>
 
-              <TechnologiesEditor
-                v-model="localExperience.technologies"
-                @update:files="updateTechFiles"
+              <TechSkillsEditor
+                :model-value="technologies"
+                @update:model-value="technologies = $event"
               />
             </ion-col>
           </ion-row>
@@ -232,7 +233,7 @@ import {
 import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type { ExperienceItem } from "@/services/types";
-import TechnologiesEditor from "./TechnologiesEditor.vue";
+import TechSkillsEditor from "./TechSkillsEditor.vue";
 import ExperienceController from "@/controllers/experienceController";
 import { useExperienceStore } from "@/store/experienceStore";
 // end imports
@@ -251,6 +252,13 @@ const experienceIndex = computed(() => {
 });
 
 const isNew = computed(() => route.name === "ExperienceNewPage");
+
+const technologies = computed({
+  get: () => localExperience.value.technologies,
+  set: (value) => {
+    localExperience.value.technologies = value;
+  },
+});
 
 const localExperience = ref<ExperienceItem>({
   img: "",
@@ -341,13 +349,19 @@ const descriptionTouched = ref(false);
 const formattedStartDate = computed(() => {
   const d = localExperience.value.startDate;
   if (!d) return "Seleccionar";
-  return new Date(d).toLocaleDateString("es-ES", { month: "short", year: "numeric" });
+  return new Date(d).toLocaleDateString("es-ES", {
+    month: "short",
+    year: "numeric",
+  });
 });
 
 const formattedEndDate = computed(() => {
   const d = localExperience.value.endDate;
   if (!d) return "Seleccionar";
-  return new Date(d).toLocaleDateString("es-ES", { month: "short", year: "numeric" });
+  return new Date(d).toLocaleDateString("es-ES", {
+    month: "short",
+    year: "numeric",
+  });
 });
 
 // validation computed
@@ -370,18 +384,6 @@ const descriptionError = computed(() => {
 });
 
 // functions
-function updateTechFiles(files: Record<number, File>) {
-  Object.keys(pendingFiles).forEach((key) => {
-    if (!key.startsWith("exp_tech_image_0_")) {
-      delete pendingFiles[key];
-    }
-  });
-
-  for (const [techIndex, file] of Object.entries(files)) {
-    pendingFiles[`exp_tech_image_0_${techIndex}`] = file;
-  }
-}
-
 function onFileChange(event: Event) {
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
@@ -411,7 +413,6 @@ function closePreview() {
 // date popover state
 const startDatePopoverOpen = ref(false);
 const endDatePopoverOpen = ref(false);
-
 
 function openStartDatePopover() {
   startDatePopoverOpen.value = true;

@@ -50,6 +50,7 @@ export default class ExperienceController {
 
   async saveExperience(experience: ExperienceItem, index?: number): Promise<boolean> {
     try {
+      this.experienceStore.setSaving(true);
       if (index !== undefined) {
         this.experienceStore.updateExperience(index, experience);
       } else {
@@ -66,8 +67,10 @@ export default class ExperienceController {
         data: formData,
         contentType: "multipart/form-data",
       });
+      this.experienceStore.setSaving(false);
       return true;
     } catch (error) {
+      this.experienceStore.setSaving(false);
       console.error("Error saving experience:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al guardar la experiencia",

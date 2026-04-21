@@ -31,10 +31,7 @@ export interface ExperienceItem {
   startDate: string;
   endDate: string | undefined;
   technologies: Array<{
-    source: string;
-    name: string;
-    size: string;
-    type: "img" | "icon";
+    iconName: string;
   }>;
   details: {
     description: string;

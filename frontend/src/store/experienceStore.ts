@@ -6,6 +6,7 @@ export const useExperienceStore = defineStore("experience", () => {
   const experiences = ref<ExperienceItem[]>([]);
   const loading = ref(false);
   const loaded = ref(false);
+  const saving = ref(false);
 
   function setExperiences(data: ExperienceItem[]): void {
     experiences.value = data;
@@ -41,12 +42,18 @@ export const useExperienceStore = defineStore("experience", () => {
     loaded.value = false;
   }
 
+  function setSaving(value: boolean): void {
+    saving.value = value;
+  }
+
   return {
     experiences,
     loading,
     loaded,
+    saving,
     setExperiences,
     setLoading,
+    setSaving,
     getExperience,
     addExperience,
     updateExperience,

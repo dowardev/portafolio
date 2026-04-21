@@ -1,5 +1,33 @@
 # Changelog
 
+## 12.8.0 - 2026-04-21
+
+### Summary
+This release applies the same technology simplification pattern from projects to experience management, adds saving state feedback, and improves admin panel navigation with breadcrumbs.
+
+### Added
+- Added `getTechLabel()` function to display human-readable labels for technology icons in ExperienceCard
+- Added saving state management (`setSaving`, `saving` ref) to experienceStore for loading feedback during experience saves
+- Added breadcrumbs navigation in ExperienceListPage
+
+### Changed
+- Simplified technology interface in ExperienceItem type - replaced `{source, name, size, type}` with simple `{iconName}`
+- Updated ExperienceCard, ExperienceComponent, and ExperienceEditor to use iconName instead of type-based rendering
+- Replaced back button with menu button in ExperienceListPage for consistent navigation
+- Replaced TechnologiesEditor with TechSkillsEditor component in ExperienceEditor
+
+### Affected Files
+- Modified:
+  - `frontend/src/components/experience/ExperienceCard.vue`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/store/experienceStore.ts`
+  - `frontend/src/views/admin/editors/ExperienceEditor.vue`
+  - `frontend/src/views/admin/sections/ExperienceListPage.vue`
+  - `frontend/src/views/presentation/experience/ExperienceComponent.vue`
+
+---
+
 ## 12.7.0 - 2026-04-21
 
 ### Summary

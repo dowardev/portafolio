@@ -36,28 +36,15 @@
                     v-for="(tech, techIndex) in experience.technologies"
                     :key="techIndex"
                   >
-                    <img
-                      v-if="tech.type === 'img'"
-                      v-tooltip="{
-                        content: tech.name,
-                        trigger: 'mouseenter',
-                        touch: 'hold',
-                      }"
-                      :src="tech.source"
-                      :alt="tech.name"
-                      :style="{ width: tech.size }"
-                    />
-
                     <ion-icon
-                      v-if="tech.type === 'icon'"
                       v-tooltip="{
-                        content: tech.name,
+                        content: getTechLabel(tech.iconName),
                         trigger: 'mouseenter',
                         touch: 'hold',
                       }"
-                      :icon="getIconByName(tech.source)"
+                      :icon="getIconByName(tech.iconName)"
                       :style="{
-                        color: getIconColor(tech.source),
+                        color: getIconColor(tech.iconName),
                       }"
                       style="font-size: 18px"
                     ></ion-icon>
@@ -147,6 +134,57 @@ function getIconByName(source: string) {
   if (!source) return ionicons.helpCircleOutline;
   const icon = ionicons[source as keyof typeof ionicons];
   return icon || ionicons.helpCircleOutline;
+}
+
+function getTechLabel(iconName: string): string {
+  const labels: Record<string, string> = {
+    logoVue: "Vue.js",
+    logoReact: "React",
+    logoAngular: "Angular",
+    logoNodejs: "Node.js",
+    logoPython: "Python",
+    logoJavascript: "JavaScript",
+    logoHtml5: "HTML5",
+    logoCss3: "CSS3",
+    logoSass: "Sass",
+    logoLaravel: "Laravel",
+    logoIonic: "Ionic",
+    logoFirebase: "Firebase",
+    logoGithub: "GitHub",
+    logoGitlab: "GitLab",
+    logoNpm: "NPM",
+    logoDocker: "Docker",
+    logoAndroid: "Android",
+    logoApple: "Apple",
+    logoWindows: "Windows",
+    logoTux: "Linux",
+    logoGoogle: "Google",
+    logoLinkedin: "LinkedIn",
+    logoTwitter: "Twitter",
+    logoFacebook: "Facebook",
+    logoInstagram: "Instagram",
+    logoYoutube: "YouTube",
+    logoTiktok: "TikTok",
+    logoDiscord: "Discord",
+    logoSlack: "Slack",
+    logoWordpress: "WordPress",
+    logoStackoverflow: "Stack Overflow",
+    logoChrome: "Chrome",
+    logoFirefox: "Firefox",
+    logoEdge: "Edge",
+    compassOutline: "Safari",
+    logoMicrosoft: "Microsoft",
+    logoAmazon: "AWS",
+    logoCapacitor: "Capacitor",
+    logoElectron: "Electron",
+    codeSlashOutline: "PHP",
+    terminalOutline: "Terminal",
+    gitBranchOutline: "Git",
+    serverOutline: "Servidor",
+    cloudOutline: "Cloud",
+    hardwareChipOutline: "Hardware",
+  };
+  return labels[iconName] || iconName;
 }
 
 function formatDate(start: string, end?: string): string {

@@ -35,20 +35,12 @@
                 :key="techIndex"
                 style="display: flex; align-items: center; margin-right: 10px"
               >
-                <img
-                  v-if="tech.type === 'img'"
-                  :src="tech.source"
-                  :alt="tech.name"
-                  :style="{ width: tech.size }"
-                />
-
                 <ion-icon
-                  v-if="tech.type == 'icon'"
                   :style="{
-                    fontSize: tech.size,
-                    color: getIconColor(tech.source),
+                    fontSize: '24px',
+                    color: getIconColor(tech.iconName),
                   }"
-                  :icon="getIconSource(tech.source)"
+                  :icon="getIconSource(tech.iconName)"
                 ></ion-icon>
               </div>
             </ion-col>
