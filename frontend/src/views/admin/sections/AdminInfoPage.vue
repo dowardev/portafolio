@@ -2,7 +2,7 @@
   <ion-header class="ion-no-border" mode="ios">
     <ion-toolbar style="--background: var(--ion-background-color)">
       <ion-buttons slot="start">
-        <ion-back-button default-href="/admin-panel"></ion-back-button>
+        <ion-menu-button></ion-menu-button>
       </ion-buttons>
 
       <ion-title>Info</ion-title>

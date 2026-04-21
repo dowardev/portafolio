@@ -1,5 +1,17 @@
 # Changelog
 
+## 12.5.0 - 2026-04-20
+
+### Summary
+This release improves admin panel navigation by replacing back buttons with menu buttons and adds breadcrumbs navigation for better user orientation.
+
+### Changed
+- Replaced back buttons with menu buttons in AdminInfoPage, AdminSkillsPage, and AdminStackPage
+- Added breadcrumbs navigation to AdminSkillsPage and AdminStackPage for better navigation context
+- Applied background color styling to toolbars in AdminInfoPage and AdminStackPage
+
+---
+
 ## 12.4.0 - 2026-04-20
 
 ### Summary

@@ -2,7 +2,7 @@
   <ion-header class="ion-no-border" mode="ios">
     <ion-toolbar>
       <ion-buttons slot="start">
-        <ion-back-button default-href="/admin-panel"></ion-back-button>
+        <ion-menu-button></ion-menu-button>
       </ion-buttons>
 
       <ion-title>Skills</ion-title>
@@ -24,6 +24,20 @@
   </ion-header>
 
   <ion-content class="ion-padding">
+    <ion-grid>
+      <ion-row class="ion-justify-content-center">
+        <ion-col size="4">
+          <ion-breadcrumbs>
+            <ion-breadcrumb>
+              <RouterLink :to="{ name: 'PanelAdminPage' }">Panel</RouterLink>
+            </ion-breadcrumb>
+
+            <ion-breadcrumb>Skills editor</ion-breadcrumb>
+          </ion-breadcrumbs>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
     <ion-grid>
       <ion-row class="ion-justify-content-center">
         <ion-col size="4">

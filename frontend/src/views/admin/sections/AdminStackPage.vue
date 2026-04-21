@@ -1,8 +1,8 @@
 <template>
   <ion-header class="ion-no-border" mode="ios">
-    <ion-toolbar>
+    <ion-toolbar style="--background: var(--ion-background-color)">
       <ion-buttons slot="start">
-        <ion-back-button default-href="/admin-panel"></ion-back-button>
+        <ion-menu-button></ion-menu-button>
       </ion-buttons>
 
       <ion-title>Stack</ion-title>
@@ -22,6 +22,20 @@
   </ion-header>
 
   <ion-content class="ion-padding">
+    <ion-grid>
+      <ion-row class="ion-justify-content-center">
+        <ion-col size="4">
+          <ion-breadcrumbs>
+            <ion-breadcrumb>
+              <RouterLink :to="{ name: 'PanelAdminPage' }">Panel</RouterLink>
+            </ion-breadcrumb>
+
+            <ion-breadcrumb>Stack editor</ion-breadcrumb>
+          </ion-breadcrumbs>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
     <ion-grid>
       <ion-row class="ion-justify-content-center">
         <ion-col size="4">
