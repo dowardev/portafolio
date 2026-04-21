@@ -1,5 +1,44 @@
 # Changelog
 
+## 12.9.0 - 2026-04-21
+
+### Summary
+This release applies the same technology simplification pattern from projects and experience to certificates management, adds dedicated CRUD pages with individual certificate editing, and improves admin panel navigation with breadcrumbs.
+
+### Added
+- Added `getTechLabel()` function to display human-readable labels for technology icons in CertificatesPage
+- Added saving state management (`setSaving`, `saving` ref) to certificatesStore for loading feedback during certificate saves
+- Added breadcrumbs navigation in CertificatesListPage
+- Added certificatesController.ts - new controller for certificates data operations
+- Added certificatesStore.ts - new Pinia store for certificates state management
+- Added CertificatesListPage.vue - new list view for managing certificates in admin panel
+- Added CertificatesEditor.vue - standalone editor page for creating/editing certificates
+
+### Changed
+- Simplified technology interface in CertificateItem type - replaced `{source, name, size, type}` with simple `{iconName}`
+- Updated CertificatesEditor to use iconName instead of type-based rendering
+- Refactored certificates management from inline editor to dedicated pages with full CRUD
+- Replaced back button with menu button in CertificatesListPage for consistent navigation
+- Replaced TechnologiesEditor with TechSkillsEditor component in CertificatesEditor
+
+### Removed
+- Removed AdminCertificatesPage.vue - old inline certificates editor (replaced by new pages)
+
+### Affected Files
+- Added:
+  - `frontend/src/controllers/certificatesController.ts`
+  - `frontend/src/store/certificatesStore.ts`
+  - `frontend/src/views/admin/sections/CertificatesListPage.vue`
+- Modified:
+  - `frontend/src/router/index.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/views/admin/AdminEditorPage.vue`
+  - `frontend/src/views/admin/editors/CertificatesEditor.vue`
+- Deleted:
+  - `frontend/src/views/admin/sections/AdminCertificatesPage.vue`
+
+---
+
 ## 12.8.0 - 2026-04-21
 
 ### Summary

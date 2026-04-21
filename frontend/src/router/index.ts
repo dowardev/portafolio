@@ -25,6 +25,8 @@ import ExperienceListPage from "@/views/admin/sections/ExperienceListPage.vue";
 import ExperienceEditor from "@/views/admin/editors/ExperienceEditor.vue";
 import SkillsListPage from "@/views/admin/sections/SkillsListPage.vue";
 import SkillsEditor from "@/views/admin/editors/SkillsEditor.vue";
+import CertificatesListPage from "@/views/admin/sections/CertificatesListPage.vue";
+import CertificatesEditor from "@/views/admin/editors/CertificatesEditor.vue";
 
 import UserController from "@/controllers/userController";
 import { ICustomError } from "@/services/interfaces";
@@ -185,6 +187,21 @@ const routes: Array<RouteRecordRaw> = [
     component: SkillsEditor,
   },
   {
+    path: "/admin-panel/certificates",
+    name: "CertificatesListPage",
+    component: CertificatesListPage,
+  },
+  {
+    path: "/admin-panel/certificates/new",
+    name: "CertificateNewPage",
+    component: CertificatesEditor,
+  },
+  {
+    path: "/admin-panel/certificates/edit/:index",
+    name: "CertificateEditPage",
+    component: CertificatesEditor,
+  },
+  {
     path: "/admin-panel/:section",
     name: "AdminEditorPage",
     component: AdminEditorPage,
@@ -206,7 +223,7 @@ router.beforeEach(async (to, from, next) => {
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];
   const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
-  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage"];
+  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage"];
   const noGuardRequired = [
     "RestorePasswordPage",
     "PresentationPage",

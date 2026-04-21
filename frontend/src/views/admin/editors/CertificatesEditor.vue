@@ -1,127 +1,159 @@
 <template>
-  <ion-list>
-    <ion-list-header>
-      <ion-label>Certificados</ion-label>
-
-      <ion-button :disabled="!allValid" @click="addItem">
-        <ion-icon slot="start" :icon="addOutline"></ion-icon>
-        Añadir certificado
-      </ion-button>
-    </ion-list-header>
-  </ion-list>
-
-  <ion-card class="shadow1">
-    <template v-for="(cert, index) in modelValue" :key="index">
-      <ion-item lines="full">
-        <ion-input
-          label="Título"
-          label-placement="floating"
-          :value="cert.title"
-          placeholder="Ej: SkillValue JavaScript"
-          :error-text="getError({ index, field: 'title' })"
-          :class="{
-            'ion-invalid': hasError({ index, field: 'title' }),
-            'ion-touched': touched[index]?.title,
-          }"
-          @ion-input="updateItem({ index, field: 'title', value: $event.detail.value! })"
-          @ion-blur="touchField({ index, field: 'title' })"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item lines="full">
-        <ion-input
-          label="Link del certificado"
-          label-placement="floating"
-          :value="cert.url"
-          placeholder="https://..."
-          :error-text="getError({ index, field: 'url' })"
-          :class="{
-            'ion-invalid': hasError({ index, field: 'url' }),
-            'ion-touched': touched[index]?.url,
-          }"
-          @ion-input="updateItem({ index, field: 'url', value: $event.detail.value! })"
-          @ion-blur="touchField({ index, field: 'url' })"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item lines="full" button @click="openFileDialog({ index })">
-        <ion-label>Logo / Imagen</ion-label>
-
-        <ion-note v-if="fileNames[index]" slot="end">{{
-          fileNames[index]
-        }}</ion-note>
-
-        <ion-note v-else slot="end">Seleccionar</ion-note>
-
-        <ion-button
-          slot="end"
-          fill="clear"
-          :disabled="!props.modelValue[index]?.img"
-          @click.stop="showPreview({ index })"
-        >
-          <ion-icon :icon="eyeOutline"></ion-icon>
-        </ion-button>
-      </ion-item>
-
-      <input
-        style="display: none"
-        :data-type="`cert_${index}`"
-        type="file"
-        accept="image/*"
-        @change="onImageChange({ event: $event, index })"
-      />
-
-      <span
-        v-if="hasError({ index, field: 'img' })"
-        class="error"
-      >
-        {{ getError({ index, field: "img" }) }}
-      </span>
-
-      <TechnologiesEditor
-        :model-value="cert.aptitudes"
-        @update:model-value="updateAptitudes({ index, aptitudes: $event })"
-        @update:files="(files) => updateAptFiles({ certIndex: index, files })"
-      />
-
-      <ion-button
-        expand="block"
-        fill="clear"
-        color="danger"
-        @click="removeItem({ index })"
-      >
-        <ion-icon :icon="trashOutline"></ion-icon>
-        Eliminar certificado
-      </ion-button>
-    </template>
-  </ion-card>
-
-  <ion-modal :is-open="isPreviewOpen" @ion-modal-did-dismiss="closePreview">
+  <ion-page>
     <ion-header class="ion-no-border" mode="ios">
-      <ion-toolbar>
+      <ion-toolbar style="--background: var(--ion-background-color)">
         <ion-buttons slot="start">
-          <ion-button @click="closePreview">
-            <ion-icon :icon="closeOutline"></ion-icon>
-          </ion-button>
+          <ion-back-button
+            text=""
+            default-href="/admin-panel/certificates"
+          ></ion-back-button>
         </ion-buttons>
 
-        <ion-title>Vista previa</ion-title>
+        <ion-title>{{
+          isNew ? "Nuevo Certificado" : "Editar Certificado"
+        }}</ion-title>
+
+        <ion-buttons slot="end">
+          <ion-button
+            v-if="!isNew && certificateIndex !== undefined"
+            color="danger"
+            fill="clear"
+            @click="confirmDelete"
+          >
+            <ion-icon :icon="trashOutline"></ion-icon>
+          </ion-button>
+
+          <ion-button :disabled="certificatesStore.saving" @click="handleSave">
+            <ion-spinner
+              v-if="certificatesStore.saving"
+              slot="start"
+            ></ion-spinner>
+            <ion-icon :icon="saveOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <div style="padding: 16px; text-align: center">
-      <img
-        v-if="previewSrc"
-        :src="previewSrc"
-        alt="preview"
-        class="modal-image"
-      />
-    </div>
-  </ion-modal>
+
+    <ion-content>
+      <div
+        v-if="certificatesStore.loading || !certificatesStore.loaded"
+        class="ion-text-center ion-padding"
+      >
+        <ion-spinner name="lines"></ion-spinner>
+      </div>
+
+      <template v-else-if="localCertificate">
+        <ion-grid>
+          <ion-row class="ion-justify-content-center">
+            <ion-col size="4">
+              <ion-list>
+                <ion-list-header>
+                  <ion-label>Certificado</ion-label>
+                </ion-list-header>
+
+                <ion-card class="shadow1">
+                  <ion-item lines="full">
+                    <ion-input
+                      v-model="localCertificate.title"
+                      label="Título"
+                      label-placement="floating"
+                      placeholder="Ej: AWS Certified Developer"
+                      :error-text="titleError"
+                      :class="{
+                        'ion-invalid': titleTouched && !!titleError,
+                        'ion-touched': titleTouched,
+                      }"
+                      @ion-blur="titleTouched = true"
+                    ></ion-input>
+                  </ion-item>
+
+                  <ion-item lines="full">
+                    <ion-input
+                      v-model="localCertificate.url"
+                      label="Link del certificado"
+                      label-placement="floating"
+                      placeholder="https://..."
+                      :error-text="urlError"
+                      :class="{
+                        'ion-invalid': urlTouched && !!urlError,
+                        'ion-touched': urlTouched,
+                      }"
+                      @ion-blur="urlTouched = true"
+                    ></ion-input>
+                  </ion-item>
+
+                  <ion-item lines="full" button @click="openFileDialog">
+                    <ion-label>Logo / Imagen</ion-label>
+
+                    <ion-note v-if="fileName" slot="end">{{
+                      fileName
+                    }}</ion-note>
+
+                    <ion-note v-else slot="end">Seleccionar</ion-note>
+
+                    <ion-button
+                      slot="end"
+                      fill="clear"
+                      :disabled="!localCertificate.img"
+                      @click.stop="showPreview"
+                    >
+                      <ion-icon :icon="eyeOutline"></ion-icon>
+                    </ion-button>
+                  </ion-item>
+
+                  <input
+                    ref="fileInput"
+                    style="display: none"
+                    type="file"
+                    accept="image/*"
+                    @change="onImageChange"
+                  />
+
+                  <span v-if="imgTouched && imgError" class="error">{{
+                    imgError
+                  }}</span>
+                </ion-card>
+
+                <TechSkillsEditor
+                  v-model="aptitudes"
+                  @update:model-value="aptitudes = $event"
+                />
+              </ion-list>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </template>
+    </ion-content>
+
+    <ion-modal :is-open="isPreviewOpen" @ion-modal-did-dismiss="closePreview">
+      <ion-header class="ion-no-border" mode="ios">
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button @click="closePreview">
+              <ion-icon :icon="closeOutline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+
+          <ion-title>Vista previa</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <div style="padding: 16px; text-align: center">
+        <img
+          v-if="previewSrc"
+          :src="previewSrc"
+          alt="preview"
+          class="modal-image"
+        />
+      </div>
+    </ion-modal>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
-// imports
 import {
+  IonPage,
+  IonHeader,
+  IonContent,
   IonItem,
   IonLabel,
   IonInput,
@@ -131,136 +163,177 @@ import {
   IonToolbar,
   IonButtons,
   IonTitle,
+  IonList,
+  IonListHeader,
+  IonCard,
+  IonNote,
+  IonBackButton,
+  IonSpinner,
+  alertController,
 } from "@ionic/vue";
 import {
-  addOutline,
   trashOutline,
   eyeOutline,
   closeOutline,
+  saveOutline,
 } from "ionicons/icons";
-import { computed, reactive, ref } from "vue";
-import useVuelidate from "@vuelidate/core";
-import { required, url as urlValidator, helpers } from "@vuelidate/validators";
+import { computed, ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import type { CertificateItem } from "@/services/types";
-import TechnologiesEditor from "./TechnologiesEditor.vue";
-// end imports
+import TechSkillsEditor from "./TechSkillsEditor.vue";
+import CertificatesController from "@/controllers/certificatesController";
+import { useCertificatesStore } from "@/store/certificatesStore";
 
-// props and emits
-const props = defineProps<{
-  modelValue: CertificateItem[];
-}>();
+const route = useRoute();
+const router = useRouter();
+const certificatesController = new CertificatesController();
+const certificatesStore = useCertificatesStore();
 
-const emit = defineEmits<{
-  (e: "update:modelValue", value: CertificateItem[]): void;
-  (e: "update:files", files: Record<string, File>): void;
-}>();
-// end props and emits
-
-// vars and const
-const pendingFiles: Record<string, File> = {};
-const touched = reactive<Record<number, Record<string, boolean>>>({});
-
-const fileNames = reactive<Record<number, string>>({});
-const isPreviewOpen = ref(false);
-const previewSrc = ref<string | null>(null);
-// end vars and const
-
-// vuelidate
-const rules = {
-  items: {
-    $each: helpers.forEach({
-      title: {
-        required: helpers.withMessage("Título es requerido", required),
-      },
-      url: {
-        required: helpers.withMessage("Link es requerido", required),
-        url: helpers.withMessage("Debe ser una URL válida", urlValidator),
-      },
-      img: {
-        required: helpers.withMessage("Imagen es requerida", required),
-      },
-    }),
-  },
-};
-
-const v$ = useVuelidate(rules, { items: computed(() => props.modelValue) });
-
-const allValid = computed(() => {
-  if (props.modelValue.length === 0) return true;
-  return !v$.value.$invalid;
+const certificateIndex = computed(() => {
+  const index = route.params.index;
+  if (typeof index === "string") {
+    return parseInt(index, 10);
+  }
+  return undefined;
 });
-// end vuelidate
 
-// functions
-function hasError(params: { index: number; field: string }): boolean {
-  const { index, field } = params;
-  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
-  return touched[index]?.[field] === true && errors?.length > 0;
+const isNew = computed(() => route.name === "CertificateNewPage");
+
+interface AptitudeTechItem {
+  iconName: string;
 }
 
-function getError(params: { index: number; field: string }): string {
-  const { index, field } = params;
-  const errors = v$.value.items.$each.$response.$errors[index]?.[field];
-  return errors?.[0]?.$message || "";
-}
+const aptitudes = computed({
+  get: (): AptitudeTechItem[] => {
+    const certAptitudes = localCertificate.value?.aptitudes || [];
+    return certAptitudes.map(apt => ({
+      iconName: apt.type === 'icon' ? apt.source : '',
+    }));
+  },
+  set: (value: AptitudeTechItem[]) => {
+    if (localCertificate.value) {
+      localCertificate.value.aptitudes = value.map(item => ({
+        source: item.iconName,
+        name: item.iconName,
+        type: item.iconName ? 'icon' as const : 'img' as const,
+        size: '24px',
+      }));
+    }
+  },
+});
 
-function touchField(params: { index: number; field: string }) {
-  const { index, field } = params;
-  if (!touched[index]) touched[index] = {};
-  touched[index][field] = true;
-}
+const localCertificate = ref<CertificateItem | null>(null);
 
-function emitFiles() {
-  emit("update:files", { ...pendingFiles });
-}
-
-function addItem() {
-  emit("update:modelValue", [
-    ...props.modelValue,
-    {
+onMounted(async () => {
+  await certificatesController.loadCertificates();
+  if (isNew.value) {
+    localCertificate.value = {
       img: "",
       title: "",
       url: "",
       aptitudes: [],
-    },
-  ]);
-}
-
-function updateItem(params: { index: number; field: string; value: string }) {
-  const { index, field, value } = params;
-  const updated = [...props.modelValue];
-  updated[index] = { ...updated[index], [field]: value };
-  emit("update:modelValue", updated);
-}
-
-function updateAptitudes(
-  params: { index: number; aptitudes: CertificateItem["aptitudes"] },
-) {
-  const { index, aptitudes } = params;
-  const updated = [...props.modelValue];
-  updated[index] = { ...updated[index], aptitudes };
-  emit("update:modelValue", updated);
-}
-
-function updateAptFiles(params: { certIndex: number; files: Record<number, File> }) {
-  const { certIndex, files } = params;
-  for (const [aptIndex, file] of Object.entries(files)) {
-    pendingFiles[`cert_apt_image_${certIndex}_${aptIndex}`] = file;
+    };
+  } else if (certificateIndex.value !== undefined) {
+    const cert = certificatesController.getCertificate(certificateIndex.value);
+    if (cert) {
+      localCertificate.value = { ...cert };
+    }
   }
-  emitFiles();
+});
+
+async function handleSave() {
+  if (!localCertificate.value) return;
+  try {
+    const success = await certificatesController.saveCertificate(
+      localCertificate.value,
+      isNew.value ? undefined : certificateIndex.value,
+    );
+    if (success) {
+      router.push("/admin-panel/certificates");
+    }
+  } catch (error) {
+    console.error("Error saving certificate:", error);
+  }
 }
 
-function openFileDialog(params: { index: number }) {
-  const { index } = params;
-  const selector = `input[data-type="cert_${index}"]`;
-  const input = document.querySelector(selector) as HTMLInputElement | null;
-  if (input) input.click();
+async function confirmDelete() {
+  const alert = await alertController.create({
+    header: "Eliminar certificado",
+    message: "¿Estás seguro de eliminar este certificado?",
+    buttons: [
+      {
+        text: "Cancelar",
+        role: "cancel",
+      },
+      {
+        text: "Eliminar",
+        role: "destructive",
+        handler: () => deleteCertificate(),
+      },
+    ],
+  });
+  await alert.present();
 }
 
-function showPreview(params: { index: number }) {
-  const { index } = params;
-  const cert = props.modelValue[index];
-  const src = cert?.img ?? null;
+async function deleteCertificate() {
+  if (certificateIndex.value === undefined) return;
+  const success = await certificatesController.deleteCertificate(
+    certificateIndex.value,
+  );
+  if (success) {
+    router.push("/admin-panel/certificates");
+  }
+}
+
+const pendingFiles: Record<string, File> = {};
+const fileName = ref("");
+const fileInput = ref<HTMLInputElement | null>(null);
+
+const isPreviewOpen = ref(false);
+const previewSrc = ref<string | null>(null);
+
+const titleTouched = ref(false);
+const urlTouched = ref(false);
+const imgTouched = ref(false);
+
+const titleError = computed(() => {
+  if (!localCertificate.value?.title?.trim()) return "Título es requerido";
+  return "";
+});
+
+const urlError = computed(() => {
+  if (!localCertificate.value?.url?.trim()) return "Link es requerido";
+  try {
+    new URL(localCertificate.value.url);
+  } catch {
+    return "Debe ser una URL válida";
+  }
+  return "";
+});
+
+const imgError = computed(() => {
+  if (!localCertificate.value?.img) return "Imagen es requerida";
+  return "";
+});
+
+function openFileDialog() {
+  fileInput.value?.click();
+}
+
+function onImageChange(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
+  const file = input.files[0];
+  pendingFiles["cert_image_0"] = file;
+  if (localCertificate.value) {
+    localCertificate.value.img = URL.createObjectURL(file);
+  }
+  fileName.value = file.name;
+  imgTouched.value = true;
+}
+
+function showPreview() {
+  const src = localCertificate.value?.img;
   if (src) {
     previewSrc.value = src;
     isPreviewOpen.value = true;
@@ -271,31 +344,6 @@ function closePreview() {
   isPreviewOpen.value = false;
   previewSrc.value = null;
 }
-
-function onImageChange(params: { event: Event; index: number }) {
-  const { event, index } = params;
-  const input = event.target as HTMLInputElement;
-  if (!input.files?.length) return;
-  const file = input.files[0];
-  pendingFiles[`cert_image_${index}`] = file;
-  updateItem({ index, field: "img", value: URL.createObjectURL(file) });
-  fileNames[index] = file.name;
-  emitFiles();
-  touchField({ index, field: "img" });
-}
-
-function removeItem(params: { index: number }) {
-  const { index } = params;
-  delete pendingFiles[`cert_image_${index}`];
-  delete touched[index];
-  delete fileNames[index];
-  emitFiles();
-  emit(
-    "update:modelValue",
-    props.modelValue.filter((_, i) => i !== index),
-  );
-}
-// end functions
 </script>
 
 <style scoped>
@@ -311,3 +359,4 @@ function removeItem(params: { index: number }) {
   object-fit: contain;
 }
 </style>
+
