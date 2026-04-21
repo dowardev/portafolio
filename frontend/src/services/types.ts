@@ -76,12 +76,11 @@ export interface FreelanceItem {
   name: string;
   image: string;
   url: string;
-  comments: Array<{
-    image: string;
+  comment: {
     title: string;
-    comment: string[];
+    text: string;
     rating: number;
-  }>;
+  } | null;
 }
 
 export interface HomePageData {

@@ -27,6 +27,8 @@ import SkillsListPage from "@/views/admin/sections/SkillsListPage.vue";
 import SkillsEditor from "@/views/admin/editors/SkillsEditor.vue";
 import CertificatesListPage from "@/views/admin/sections/CertificatesListPage.vue";
 import CertificatesEditor from "@/views/admin/editors/CertificatesEditor.vue";
+import FreelanceListPage from "@/views/admin/sections/FreelanceListPage.vue";
+import FreelanceEditor from "@/views/admin/editors/FreelanceEditor.vue";
 
 import UserController from "@/controllers/userController";
 import { ICustomError } from "@/services/interfaces";
@@ -202,6 +204,21 @@ const routes: Array<RouteRecordRaw> = [
     component: CertificatesEditor,
   },
   {
+    path: "/admin-panel/freelance",
+    name: "FreelanceListPage",
+    component: FreelanceListPage,
+  },
+  {
+    path: "/admin-panel/freelance/new",
+    name: "FreelanceNewPage",
+    component: FreelanceEditor,
+  },
+  {
+    path: "/admin-panel/freelance/edit/:index",
+    name: "FreelanceEditPage",
+    component: FreelanceEditor,
+  },
+  {
     path: "/admin-panel/:section",
     name: "AdminEditorPage",
     component: AdminEditorPage,
@@ -223,7 +240,7 @@ router.beforeEach(async (to, from, next) => {
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];
   const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
-  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage"];
+  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage", "FreelanceListPage", "FreelanceEditPage", "FreelanceNewPage"];
   const noGuardRequired = [
     "RestorePasswordPage",
     "PresentationPage",

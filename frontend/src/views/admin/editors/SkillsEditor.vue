@@ -80,17 +80,14 @@ import {
   IonSpinner,
   IonIcon,
   IonInput,
-  IonList,
-  IonListHeader,
   IonItem,
-  IonLabel,
   IonCard,
   IonGrid,
   IonRow,
   IonCol,
   alertController,
 } from "@ionic/vue";
-import { ref, reactive, onMounted, computed } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { saveOutline, trashOutline } from "ionicons/icons";
 import SkillsController from "@/controllers/skillsController";

@@ -16,6 +16,7 @@ Route::middleware([Cors::class, 'sso.auth'])->group(function () {
 
   Route::get("admin/get-homepage-info", [HomePageController::class, "show"]);
   Route::post("admin/update-homepage-info", [HomePageController::class, "update"]);
+  Route::post("admin/update-freelance-items", [HomePageController::class, "updateFreelanceItems"]);
 });
 
 Route::middleware([Cors::class])->group(function () {

@@ -387,4 +387,51 @@ class HomePageController extends Controller
                   ],
         ]);
     }
+
+    public function updateFreelanceItems(Request $request)
+    {
+        $homepage = HomePage::first();
+        if (!$homepage) {
+            $homepage = new HomePage();
+        }
+
+        $currentFreelance = $homepage->freelance ?? [];
+
+        $currentImageUrls = [];
+        foreach ($currentFreelance as $item) {
+            if (!empty($item['image'])) {
+                $currentImageUrls[] = $this->pathFromUrl($item['image']);
+            }
+        }
+
+        $freelanceJson = $request->input('freelance');
+        $freelance = $freelanceJson ? json_decode($freelanceJson, true) : [];
+
+        foreach ($freelance as $index => &$platform) {
+            // Platform image
+            $fileKey = "freelance_image_{$index}";
+            if ($request->hasFile($fileKey)) {
+                $file = $request->file($fileKey);
+                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                Storage::disk('public')->put('homepage/freelance/' . $fileName, file_get_contents($file));
+                $platform['image'] = asset('storage/homepage/freelance/' . $fileName);
+            }
+        }
+
+        $homepage->freelance = $freelance;
+        $homepage->save();
+
+        // Clean old images
+        $newImageUrls = [];
+        foreach ($freelance as $item) {
+            if (!empty($item['image'])) {
+                $newImageUrls[] = $this->pathFromUrl($item['image']);
+            }
+        }
+        $this->deleteOldImages($currentImageUrls, $newImageUrls);
+
+        return response()->json([
+            'freelance' => $homepage->freelance ?? [],
+        ]);
+    }
 }

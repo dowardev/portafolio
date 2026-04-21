@@ -1,5 +1,47 @@
 # Changelog
 
+## 12.10.0 - 2026-04-21
+
+### Summary
+This release applies the technology simplification pattern to freelance platform management, adds dedicated CRUD pages with individual platform editing, and removes unused imports from SkillsEditor.
+
+### Added
+- Added FreelanceListPage.vue - new list view for managing freelance platforms in admin panel
+- Added FreelanceEditor.vue - standalone editor page for creating/editing freelance platforms
+- Added freelanceController.ts - new controller for freelance data operations
+- Added freelanceStore.ts - new Pinia store for freelance state management
+- Added backend endpoint `updateFreelanceItems` in HomePageController for saving freelance platforms
+- Added new admin routes: /admin-panel/freelance (list), /admin-panel/freelance/new, /admin-panel/freelance/edit/:index
+
+### Changed
+- Simplified FreelanceItem type - replaced array of comments with single optional comment object `{title, text, rating}`
+- Refactored freelance management from inline editor to dedicated pages with full CRUD
+- Updated FinalSection to use new simplified comment structure
+- Removed unused imports (IonList, IonListHeader, IonLabel, reactive) from SkillsEditor
+- Removed AdminFreelancePage from AdminEditorPage (replaced by new pages)
+
+### Removed
+- Removed AdminFreelancePage.vue - old inline freelance editor (replaced by new pages)
+
+### Affected Files
+- Added:
+  - `frontend/src/controllers/freelanceController.ts`
+  - `frontend/src/store/freelanceStore.ts`
+  - `frontend/src/views/admin/sections/FreelanceListPage.vue`
+- Modified:
+  - `backend/app/Http/Controllers/Admin/HomePageController.php`
+  - `backend/routes/api.php`
+  - `frontend/src/router/index.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/views/admin/AdminEditorPage.vue`
+  - `frontend/src/views/admin/editors/FreelanceEditor.vue`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `frontend/src/views/presentation/sections/FinalSection.vue`
+- Deleted:
+  - `frontend/src/views/admin/sections/AdminFreelancePage.vue`
+
+---
+
 ## 12.9.0 - 2026-04-21
 
 ### Summary

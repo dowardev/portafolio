@@ -48,8 +48,8 @@
       >
         <template v-for="platform in freelance" :key="platform.name">
           <SwiperSlide
-            v-for="(review, index) in platform.comments"
-            :key="`${platform.name}-${index}`"
+            v-if="platform.comment"
+            :key="`${platform.name}-comment`"
           >
             <ion-card class="shadow-1">
               <ion-item lines="full">
@@ -62,11 +62,11 @@
                 </ion-thumbnail>
 
                 <ion-label>
-                  <h2>{{ review.title }}</h2>
+                  <h2>{{ platform.comment.title }}</h2>
 
                   <div>
                     <ion-icon
-                      v-for="n in review.rating"
+                      v-for="n in platform.comment.rating"
                       :key="n"
                       :icon="starIcon"
                       style="color: gold; font-size: 16px"
@@ -77,18 +77,10 @@
 
               <div class="ion-padding-start">
                 <div
-                  v-if="review.comment && review.comment.length"
+                  v-if="platform.comment.text"
                   style="max-height: 200px; overflow: auto"
                 >
-                  <p>
-                    <span
-                      v-for="(line, indexComment) in review.comment"
-                      :key="indexComment"
-                    >
-                      {{ line
-                      }}<br v-if="indexComment < review.comment.length - 1" />
-                    </span>
-                  </p>
+                  <p>{{ platform.comment.text }}</p>
                 </div>
               </div>
             </ion-card>
