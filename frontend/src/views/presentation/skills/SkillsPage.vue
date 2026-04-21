@@ -45,22 +45,13 @@
               v-for="(technology, index) in category.technologies"
               :key="index"
             >
-              <img
-                v-if="technology.type === 'img'"
-                :src="technology.image"
-                :style="{
-                  maxWidth: technology.size || '24px',
-                }"
-              />
               <ion-icon
-                v-if="technology.type === 'icon'"
                 :icon="getIconByName(technology.iconName)"
                 :style="{
-                  fontSize: technology.size || '24px',
+                  fontSize: '24px',
                   color: getIconColor(technology.iconName),
                 }"
               ></ion-icon>
-              <p>{{ technology.name }}</p>
             </ion-col>
           </ion-row>
         </ion-card-content>

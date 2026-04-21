@@ -1,5 +1,45 @@
 # Changelog
 
+## 12.6.0 - 2026-04-21
+
+### Summary
+This release introduces a new skills management system with dedicated pages, a simplified tech stack, and improved UI. Skills now have their own CRUD interface replacing the inline editor.
+
+### Added
+- Added SkillsListPage.vue - new list view for managing skill categories in admin panel
+- Added SkillsEditor.vue - standalone editor page for creating/editing skills
+- Added TechSkillsEditor.vue - new technology selector component with icon picker modal
+- Added skillsController.ts - new controller for skills data operations
+- Added skillsStore.ts - new Pinia store for skills state management
+- Added new admin routes: /admin-panel/skills (list), /admin-panel/skills/new, /admin-panel/skills/edit/:index
+
+### Changed
+- Refactored skills management from inline editor to dedicated pages with full CRUD
+- Simplified SkillCategory type - technologies now only use iconName (removed name, image, size, type fields)
+- Updated StackEditor with improved button styling including icon and text labels
+- Updated SkillsPage presentation to display only icons without text labels
+
+### Removed
+- Removed AdminSkillsPage.vue - old inline skills editor (replaced by new pages)
+
+### Affected Files
+- Added:
+  - `frontend/src/controllers/skillsController.ts`
+  - `frontend/src/store/skillsStore.ts`
+  - `frontend/src/views/admin/editors/TechSkillsEditor.vue`
+  - `frontend/src/views/admin/sections/SkillsListPage.vue`
+- Modified:
+  - `frontend/src/router/index.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/views/admin/AdminEditorPage.vue`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `frontend/src/views/admin/editors/StackEditor.vue`
+  - `frontend/src/views/presentation/skills/SkillsPage.vue`
+- Deleted:
+  - `frontend/src/views/admin/sections/AdminSkillsPage.vue`
+
+---
+
 ## 12.5.0 - 2026-04-20
 
 ### Summary

@@ -27,14 +27,6 @@ class HomePageController extends Controller
             }
         }
 
-        foreach ($homepage->skill_categories ?? [] as $category) {
-            foreach ($category['technologies'] ?? [] as $tech) {
-                if (!empty($tech['image'])) {
-                    $urls[] = $this->pathFromUrl($tech['image']);
-                }
-            }
-        }
-
         foreach ($homepage->experience ?? [] as $exp) {
             if (!empty($exp['img'])) {
                 $urls[] = $this->pathFromUrl($exp['img']);
@@ -248,25 +240,9 @@ class HomePageController extends Controller
             $homepage->stack = $stack;
         }
 
-        // Skill categories images
+        // Skill categories
         if (isset($payloadDecoded['skillCategories'])) {
-            $skillCategories = $payloadDecoded['skillCategories'];
-            foreach ($skillCategories as $catIndex => &$category) {
-                if (isset($category['technologies'])) {
-                    foreach ($category['technologies'] as $techIndex => &$tech) {
-                        if ($tech['type'] === 'img') {
-                            $fileKey = "skill_image_{$catIndex}_{$techIndex}";
-                            if ($request->hasFile($fileKey)) {
-                                $file = $request->file($fileKey);
-                                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                                Storage::disk('public')->put('homepage/skills/' . $fileName, file_get_contents($file));
-                                $tech['image'] = asset('storage/homepage/skills/' . $fileName);
-                            }
-                        }
-                    }
-                }
-            }
-            $homepage->skill_categories = $skillCategories;
+            $homepage->skill_categories = $payloadDecoded['skillCategories'];
         }
 
         // Experience images

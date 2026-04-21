@@ -1,8 +1,6 @@
 <template>
   <ion-list>
     <ion-list-header>
-      <ion-label></ion-label>
-
       <ion-button :disabled="!allValid" @click="addStackItem">
         <ion-icon slot="start" :icon="addOutline"></ion-icon>
         Añadir
@@ -21,7 +19,13 @@
             'ion-invalid': hasError({ index, field: 'name' }),
             'ion-touched': touched[index]?.name,
           }"
-          @ion-input="updateStackItem({ index, field: 'name', value: $event.detail.value! })"
+          @ion-input="
+            updateStackItem({
+              index,
+              field: 'name',
+              value: $event.detail.value!,
+            })
+          "
           @ion-blur="touchField({ index, field: 'name' })"
         ></ion-input>
       </ion-item>
@@ -52,10 +56,7 @@
         @change="onFileChange({ event: $event, index })"
       />
 
-      <span
-        v-if="hasError({ index, field: 'image' })"
-        class="error"
-      >
+      <span v-if="hasError({ index, field: 'image' })" class="error">
         {{ getError({ index, field: "image" }) }}
       </span>
 
@@ -66,7 +67,8 @@
           color="danger"
           @click="removeStackItem({ index })"
         >
-          <ion-icon :icon="trashOutline"></ion-icon>
+          <ion-icon slot="start" :icon="trashOutline"></ion-icon>
+          Eliminar
         </ion-button>
       </ion-item>
     </ion-card>
@@ -111,7 +113,12 @@ import {
   IonTitle,
   IonButtons,
 } from "@ionic/vue";
-import { addOutline, closeOutline, eyeOutline, trashOutline } from "ionicons/icons";
+import {
+  addOutline,
+  closeOutline,
+  eyeOutline,
+  trashOutline,
+} from "ionicons/icons";
 import { computed, reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
@@ -185,7 +192,11 @@ function addStackItem() {
   emit("update:modelValue", [...props.modelValue, { name: "", image: "" }]);
 }
 
-function updateStackItem(params: { index: number; field: keyof StackItem; value: string }) {
+function updateStackItem(params: {
+  index: number;
+  field: keyof StackItem;
+  value: string;
+}) {
   const { index, field, value } = params;
   const updated = [...props.modelValue];
   updated[index] = { ...updated[index], [field]: value };

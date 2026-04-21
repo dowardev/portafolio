@@ -1,541 +1,199 @@
 <template>
-  <div class="ion-padding">
-    <template v-for="(category, catIndex) in modelValue" :key="catIndex">
-      <ion-list>
-        <ion-list-header>
-          <ion-label>Categorías de Skills</ion-label>
+  <ion-page>
+    <ion-header class="ion-no-border" mode="ios">
+      <ion-toolbar style="--background: var(--ion-background-color)">
+        <ion-buttons slot="start">
+          <ion-back-button default-href="/admin-panel/skills"></ion-back-button>
+        </ion-buttons>
 
-          <ion-button :disabled="!allValid" @click="addCategory">
-            <ion-icon slot="start" :icon="addOutline"></ion-icon>
-            Añadir categoría
-          </ion-button>
-        </ion-list-header>
+        <ion-title>{{ isEditing ? "Editar" : "Nueva" }} Skill</ion-title>
 
-        <ion-card class="shadow1">
-          <ion-item lines="full">
-            <ion-input
-              label="Nombre de categoría"
-              label-placement="floating"
-              :value="category.name"
-              placeholder="Ej: Frameworks"
-              :error-text="getCategoryError({ catIndex, field: 'name' })"
-              :class="{
-                'ion-invalid': hasCategoryError({ catIndex, field: 'name' }),
-                'ion-touched': categoryTouched[catIndex]?.name,
-              }"
-              @ion-input="
-                updateCategory({
-                  index: catIndex,
-                  field: 'name',
-                  value: $event.detail.value!,
-                })
-              "
-              @ion-blur="touchCategoryField({ catIndex, field: 'name' })"
-            ></ion-input>
-          </ion-item>
-
-          <ion-list>
-            <ion-list-header>
-              <ion-label>Tecnologías</ion-label>
-
-              <ion-button
-                :disabled="!isCategoryValid({ catIndex })"
-                @click="addTechnology({ catIndex })"
-              >
-                <ion-icon slot="start" :icon="addOutline"></ion-icon>
-                Añadir
-              </ion-button>
-            </ion-list-header>
-          </ion-list>
-
-          <ion-card class="shadow2">
-            <template
-              v-for="(tech, techIndex) in category.technologies"
-              :key="techIndex"
-            >
-              <ion-item lines="full">
-                <ion-input
-                  label="Nombre"
-                  label-placement="floating"
-                  :value="tech.name"
-                  placeholder="Ej: Vue"
-                  :error-text="getTechError({ catIndex, techIndex, field: 'name' })"
-                  :class="{
-                    'ion-invalid': hasTechError({
-                      catIndex,
-                      techIndex,
-                      field: 'name',
-                    }),
-                    'ion-touched': techTouched[`${catIndex}_${techIndex}`]?.name,
-                  }"
-                  @ion-input="
-                    updateTechnology({
-                      catIndex,
-                      techIndex,
-                      field: 'name',
-                      value: $event.detail.value!,
-                    })
-                  "
-                  @ion-blur="
-                    touchTechField({ catIndex, techIndex, field: 'name' })
-                  "
-                ></ion-input>
-              </ion-item>
-
-              <ion-item lines="full">
-                <ion-select
-                  label="Tipo"
-                  interface="popover"
-                  label-placement="floating"
-                  :value="tech.type"
-                  @ion-change="
-                    updateTechnology({
-                      catIndex,
-                      techIndex,
-                      field: 'type',
-                      value: $event.detail.value,
-                    })
-                  "
-                >
-                  <ion-select-option value="img">Imagen</ion-select-option>
-
-                  <ion-select-option value="icon">Icono</ion-select-option>
-                </ion-select>
-
-                <TechIconSelector
-                  v-if="tech.type === 'icon'"
-                  slot="end"
-                  :model-value="tech.iconName"
-                  label="Icono de tecnología"
-                  @update:model-value="
-                    updateTechnology({
-                      catIndex,
-                      techIndex,
-                      field: 'iconName',
-                      value: $event,
-                    })
-                  "
-                />
-
-                <ion-button
-                  v-if="tech.type === 'img'"
-                  slot="end"
-                  fill="clear"
-                  @click="
-                    triggerFileInput({ event: $event, catIndex, techIndex })
-                  "
-                >
-                  Seleccionar
-                </ion-button>
-                <ion-button
-                  v-if="tech.type === 'img' && tech.image"
-                  slot="end"
-                  fill="clear"
-                  @click="previewImage({ imageUrl: tech.image })"
-                >
-                  <ion-icon :icon="eyeOutline"></ion-icon>
-                </ion-button>
-              </ion-item>
-
-              <input
-                :id="`fileInput-${catIndex}-${techIndex}`"
-                type="file"
-                accept="image/*"
-                style="display: none"
-                @change="onFileChange({ event: $event, catIndex, techIndex })"
-              />
-
-              <span
-                v-if="hasTechError({ catIndex, techIndex, field: 'source' })"
-                class="error"
-              >
-                {{ getTechError({ catIndex, techIndex, field: 'source' }) }}
-              </span>
-
-              <ion-item lines="full">
-                <ion-input
-                  label="Tamaño"
-                  label-placement="floating"
-                  :value="tech.size"
-                  placeholder="24px"
-                  @ion-input="
-                    updateTechnology({
-                      catIndex,
-                      techIndex,
-                      field: 'size',
-                      value: $event.detail.value!,
-                    })
-                  "
-                ></ion-input>
-              </ion-item>
-
-              <ion-item lines="none">
-                <ion-button
-                  slot="end"
-                  fill="clear"
-                  color="danger"
-                  size="small"
-                  @click="removeTechnology({ catIndex, techIndex })"
-                >
-                  <ion-icon :icon="trashOutline"></ion-icon>
-                  Eliminar tecnología
-                </ion-button>
-              </ion-item>
-            </template>
-
-            <ion-modal :is-open="previewModalIsOpen">
-              <ion-header class="ion-no-border" mode="ios">
-                <ion-toolbar>
-                  <ion-buttons>
-                    <ion-button @click="closePreviewModal">
-                      <ion-icon :icon="closeOutline"></ion-icon>
-                    </ion-button>
-                  </ion-buttons>
-
-                  <ion-title>Previsualización</ion-title>
-                </ion-toolbar>
-              </ion-header>
-
-              <ion-content class="ion-padding">
-                <div class="ion-text-center">
-                  <img
-                    :src="previewImageUrl"
-                    alt="Previsualización"
-                    class="preview-image"
-                  />
-                </div>
-              </ion-content>
-            </ion-modal>
-          </ion-card>
-
+        <ion-buttons slot="end">
           <ion-button
-            fill="clear"
+            v-if="isEditing && categoryIndex !== undefined"
             color="danger"
-            expand="block"
-            @click="removeCategory({ index: catIndex })"
+            fill="clear"
+            @click="confirmDelete"
           >
             <ion-icon :icon="trashOutline"></ion-icon>
-            Eliminar categoría
           </ion-button>
-        </ion-card>
-      </ion-list>
-    </template>
-  </div>
+
+          <ion-button :disabled="saving" color="primary" @click="saveCategory">
+            <ion-spinner v-if="saving" slot="start"></ion-spinner>
+            <ion-icon v-else slot="start" :icon="saveOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <div v-if="loading" class="ion-text-center ion-padding">
+        <ion-spinner name="lines"></ion-spinner>
+      </div>
+
+      <template v-else>
+        <ion-grid>
+          <ion-row class="ion-justify-content-center">
+            <ion-col size="4">
+              <ion-card class="shadow1">
+                <ion-item lines="none">
+                  <ion-input
+                    v-model="categoryName"
+                    label="Nombre de skill"
+                    label-placement="floating"
+                    placeholder="Ej: Frameworks"
+                    :error-text="nameError"
+                    :class="{
+                      'ion-invalid': nameTouched && !!nameError,
+                      'ion-touched': nameTouched,
+                    }"
+                    @ion-blur="nameTouched = true"
+                  ></ion-input>
+                </ion-item>
+              </ion-card>
+
+              <TechSkillsEditor
+                :model-value="technologies"
+                @update:model-value="technologies = $event"
+              />
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </template>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
-// imports
 import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonBackButton,
+  IonContent,
+  IonButton,
+  IonSpinner,
+  IonIcon,
+  IonInput,
+  IonList,
+  IonListHeader,
   IonItem,
   IonLabel,
-  IonInput,
-  IonButton,
-  IonIcon,
-  IonSelect,
-  IonSelectOption,
-  IonModal,
+  IonCard,
+  IonGrid,
+  IonRow,
+  IonCol,
+  alertController,
 } from "@ionic/vue";
-import {
-  addOutline,
-  closeOutline,
-  eyeOutline,
-  trashOutline,
-} from "ionicons/icons";
-import { computed, reactive, ref } from "vue";
-import useVuelidate from "@vuelidate/core";
-import { required, helpers } from "@vuelidate/validators";
-import type { SkillCategory } from "@/services/types";
-import TechIconSelector from "./TechIconSelector.vue";
-// end imports
+import { ref, reactive, onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { saveOutline, trashOutline } from "ionicons/icons";
+import SkillsController from "@/controllers/skillsController";
+import TechSkillsEditor from "./TechSkillsEditor.vue";
 
-// props and emits
-const props = defineProps<{
-  modelValue: SkillCategory[];
-}>();
+interface TechItem {
+  iconName: string;
+}
 
-const emit = defineEmits<{
-  (e: "update:modelValue", value: SkillCategory[]): void;
-  (e: "update:files", files: Record<string, File>): void;
-}>();
-// end props and emits
+const route = useRoute();
+const router = useRouter();
+const skillsController = new SkillsController();
 
-// vars and const
-const pendingFiles: Record<string, File> = {};
-const categoryTouched = reactive<Record<number, Record<string, boolean>>>({});
-const techTouched = reactive<Record<string, Record<string, boolean>>>({});
-const previewModalIsOpen = ref(false);
-const previewImageUrl = ref("");
-// end vars and const
-
-// vuelidate — category level
-const categoryRules = {
-  categories: {
-    $each: helpers.forEach({
-      name: {
-        required: helpers.withMessage(
-          "Nombre de categoría es requerido",
-          required,
-        ),
-      },
-    }),
-  },
-};
-
-const vCat$ = useVuelidate(categoryRules, {
-  categories: computed(() => props.modelValue),
+const isEditing = computed(() => route.path.includes("/edit/"));
+const categoryIndex = computed(() => {
+  const idx = route.params.index;
+  return idx ? parseInt(idx as string, 10) : undefined;
 });
 
-// vuelidate — technology level (flattened)
-interface FlatTech {
-  catIndex: number;
-  techIndex: number;
-  name: string;
-  type: "img" | "icon";
-  source: string; // virtual: image or iconName depending on type
-}
+const loading = ref(true);
+const saving = ref(false);
+const nameTouched = ref(false);
 
-const flatTechs = computed<FlatTech[]>(() => {
-  const result: FlatTech[] = [];
-  props.modelValue.forEach((cat, cIdx) => {
-    cat.technologies.forEach((tech, tIdx) => {
-      result.push({
-        catIndex: cIdx,
-        techIndex: tIdx,
-        name: tech.name,
-        type: tech.type,
-        source: tech.type === "img" ? tech.image : tech.iconName,
-      });
-    });
-  });
-  return result;
+const categoryName = ref("");
+const technologies = ref<TechItem[]>([]);
+
+const nameError = computed(() => {
+  if (!nameTouched.value || !categoryName.value) return "";
+  return categoryName.value.trim() ? "" : "Nombre de skill es requerido";
 });
 
-const techRules = {
-  techs: {
-    $each: helpers.forEach({
-      name: {
-        required: helpers.withMessage("Nombre es requerido", required),
-      },
-      source: {
-        required: helpers.withMessage(
-          "Debe seleccionar una imagen o icono",
-          required,
-        ),
-      },
-    }),
-  },
-};
+onMounted(async () => {
+  await skillsController.loadSkills();
 
-const vTech$ = useVuelidate(techRules, { techs: flatTechs });
-
-const allValid = computed(() => {
-  if (props.modelValue.length === 0) return true;
-  return !vCat$.value.$invalid && !vTech$.value.$invalid;
-});
-// end vuelidate
-
-// functions
-function touchCategoryField(params: { catIndex: number; field: string }) {
-  const { catIndex, field } = params;
-  if (!categoryTouched[catIndex]) categoryTouched[catIndex] = {};
-  categoryTouched[catIndex][field] = true;
-}
-
-function hasCategoryError(params: { catIndex: number; field: string }): boolean {
-  const { catIndex, field } = params;
-  const errors = vCat$.value.categories.$each.$response.$errors[catIndex]?.[field];
-  return categoryTouched[catIndex]?.[field] === true && errors?.length > 0;
-}
-
-function getCategoryError(params: { catIndex: number; field: string }): string {
-  const { catIndex, field } = params;
-  const errors = vCat$.value.categories.$each.$response.$errors[catIndex]?.[field];
-  return errors?.[0]?.$message || "";
-}
-
-function touchTechField(params: {
-  catIndex: number;
-  techIndex: number;
-  field: string;
-}) {
-  const { catIndex, techIndex, field } = params;
-  const key = `${catIndex}_${techIndex}`;
-  if (!techTouched[key]) techTouched[key] = {};
-  techTouched[key][field] = true;
-}
-
-function getFlatTechIndex(params: {
-  catIndex: number;
-  techIndex: number;
-}): number {
-  const { catIndex, techIndex } = params;
-  let flatIdx = 0;
-  for (let c = 0; c < catIndex; c++) {
-    flatIdx += props.modelValue[c]?.technologies?.length ?? 0;
+  if (isEditing.value && categoryIndex.value !== undefined) {
+    const category = skillsController.getSkillCategory(categoryIndex.value);
+    if (category) {
+      categoryName.value = category.name;
+      technologies.value.splice(
+        0,
+        technologies.value.length,
+        ...category.technologies,
+      );
+    }
   }
-  return flatIdx + techIndex;
-}
 
-function hasTechError(params: {
-  catIndex: number;
-  techIndex: number;
-  field: string;
-}): boolean {
-  const { catIndex, techIndex, field } = params;
-  const key = `${catIndex}_${techIndex}`;
-  if (!techTouched[key]?.[field]) return false;
-  const flatIdx = getFlatTechIndex({ catIndex, techIndex });
-  const errors =
-    vTech$.value.techs.$each.$response.$errors[flatIdx]?.[field];
-  return errors?.length > 0;
-}
+  loading.value = false;
+});
 
-function getTechError(params: {
-  catIndex: number;
-  techIndex: number;
-  field: string;
-}): string {
-  const { catIndex, techIndex, field } = params;
-  const flatIdx = getFlatTechIndex({ catIndex, techIndex });
-  const errors =
-    vTech$.value.techs.$each.$response.$errors[flatIdx]?.[field];
-  return errors?.[0]?.$message || "";
-}
-
-function isCategoryValid(params: { catIndex: number }): boolean {
-  const { catIndex } = params;
-  const cat = props.modelValue[catIndex];
-  if (!cat?.name?.trim()) return false;
-  return cat.technologies.every((tech) => {
-    if (!tech.name?.trim()) return false;
-    if (tech.type === "img" && !tech.image) return false;
-    if (tech.type === "icon" && !tech.iconName) return false;
-    return true;
-  });
-}
-
-function addCategory() {
-  emit("update:modelValue", [
-    ...props.modelValue,
-    {
-      name: "",
-      technologies: [
-        { name: "", image: "", iconName: "", size: "24px", type: "icon" },
-      ],
-    },
-  ]);
-}
-
-function updateCategory(params: {
-  index: number;
-  field: string;
-  value: string;
-}) {
-  const { index, field, value } = params;
-  const updated = [...props.modelValue];
-  updated[index] = { ...updated[index], [field]: value };
-  emit("update:modelValue", updated);
-}
-
-function removeCategory(params: { index: number }) {
-  const { index } = params;
-  delete categoryTouched[index];
-  emit(
-    "update:modelValue",
-    props.modelValue.filter((_, i) => i !== index),
-  );
-}
-
-function addTechnology(params: { catIndex: number }) {
-  const { catIndex } = params;
-  const updated = [...props.modelValue];
-  updated[catIndex] = {
-    ...updated[catIndex],
-    technologies: [
-      ...updated[catIndex].technologies,
-      { name: "", image: "", iconName: "", size: "24px", type: "icon" },
+async function confirmDelete() {
+  const alert = await alertController.create({
+    header: "Eliminar skill",
+    message: `¿Estás seguro de eliminar "${categoryName.value || "esta skill"}"?`,
+    buttons: [
+      {
+        text: "Cancelar",
+        role: "cancel",
+      },
+      {
+        text: "Eliminar",
+        role: "destructive",
+        handler: () => {
+          deleteCategory();
+        },
+      },
     ],
+  });
+  await alert.present();
+}
+
+async function deleteCategory() {
+  if (categoryIndex.value !== undefined) {
+    await skillsController.deleteSkillCategory(categoryIndex.value);
+    router.push("/admin-panel/skills");
+  }
+}
+
+async function saveCategory() {
+  nameTouched.value = true;
+
+  if (!categoryName.value.trim()) return;
+
+  const category = {
+    name: categoryName.value.trim(),
+    technologies: technologies.value.filter((t) => t.iconName?.trim()),
   };
-  emit("update:modelValue", updated);
-}
 
-function updateTechnology(params: {
-  catIndex: number;
-  techIndex: number;
-  field: string;
-  value: string;
-}) {
-  const { catIndex, techIndex, field, value } = params;
-  const updated = [...props.modelValue];
-  const techs = [...updated[catIndex].technologies];
-  techs[techIndex] = { ...techs[techIndex], [field]: value };
-  updated[catIndex] = { ...updated[catIndex], technologies: techs };
-  emit("update:modelValue", updated);
+  saving.value = true;
+  try {
+    const success = await skillsController.saveSkillCategory(
+      category,
+      categoryIndex.value,
+    );
+    if (success) {
+      router.push("/admin-panel/skills");
+    }
+  } finally {
+    saving.value = false;
+  }
 }
-
-function onFileChange(params: {
-  event: Event;
-  catIndex: number;
-  techIndex: number;
-}) {
-  const { event, catIndex, techIndex } = params;
-  const input = event.target as HTMLInputElement;
-  if (!input.files?.length) return;
-  const file = input.files[0];
-  const key = `${catIndex}_${techIndex}`;
-  pendingFiles[key] = file;
-  const objectUrl = URL.createObjectURL(file);
-  updateTechnology({ catIndex, techIndex, field: "image", value: objectUrl });
-  emit("update:files", { ...pendingFiles });
-  touchTechField({ catIndex, techIndex, field: "source" });
-}
-
-function removeTechnology(params: { catIndex: number; techIndex: number }) {
-  const { catIndex, techIndex } = params;
-  const key = `${catIndex}_${techIndex}`;
-  delete pendingFiles[key];
-  delete techTouched[key];
-  emit("update:files", { ...pendingFiles });
-  const updated = [...props.modelValue];
-  updated[catIndex] = {
-    ...updated[catIndex],
-    technologies: updated[catIndex].technologies.filter(
-      (_, i) => i !== techIndex,
-    ),
-  };
-  emit("update:modelValue", updated);
-}
-
-function triggerFileInput(params: {
-  event: Event;
-  catIndex: number;
-  techIndex: number;
-}) {
-  const { event, catIndex, techIndex } = params;
-  event.preventDefault();
-  const fileInput = document.querySelector(
-    `#fileInput-${catIndex}-${techIndex}`,
-  ) as HTMLInputElement;
-  fileInput.click();
-}
-
-function previewImage(params: { imageUrl: string }) {
-  const { imageUrl } = params;
-  previewImageUrl.value = imageUrl;
-  previewModalIsOpen.value = true;
-}
-
-function closePreviewModal() {
-  previewModalIsOpen.value = false;
-  previewImageUrl.value = "";
-}
-// end functions
 </script>
 
 <style scoped>
-.error {
-  color: var(--ion-color-danger);
-  font-size: 12px;
-  padding: 0 16px;
+.preview-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
 }
 </style>

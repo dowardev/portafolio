@@ -23,6 +23,8 @@ import ProjectsListPage from "@/views/admin/sections/ProjectsListPage.vue";
 import ProjectsEditor from "@/views/admin/editors/ProjectsEditor.vue";
 import ExperienceListPage from "@/views/admin/sections/ExperienceListPage.vue";
 import ExperienceEditor from "@/views/admin/editors/ExperienceEditor.vue";
+import SkillsListPage from "@/views/admin/sections/SkillsListPage.vue";
+import SkillsEditor from "@/views/admin/editors/SkillsEditor.vue";
 
 import UserController from "@/controllers/userController";
 import { ICustomError } from "@/services/interfaces";
@@ -168,6 +170,21 @@ const routes: Array<RouteRecordRaw> = [
     component: ExperienceEditor,
   },
   {
+    path: "/admin-panel/skills",
+    name: "SkillsListPage",
+    component: SkillsListPage,
+  },
+  {
+    path: "/admin-panel/skills/new",
+    name: "SkillsNewPage",
+    component: SkillsEditor,
+  },
+  {
+    path: "/admin-panel/skills/edit/:index",
+    name: "SkillsEditPage",
+    component: SkillsEditor,
+  },
+  {
     path: "/admin-panel/:section",
     name: "AdminEditorPage",
     component: AdminEditorPage,
@@ -189,7 +206,7 @@ router.beforeEach(async (to, from, next) => {
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];
   const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
-  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage"];
+  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage"];
   const noGuardRequired = [
     "RestorePasswordPage",
     "PresentationPage",

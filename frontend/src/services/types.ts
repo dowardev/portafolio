@@ -21,11 +21,7 @@ export interface StackItem {
 export interface SkillCategory {
   name: string;
   technologies: Array<{
-    name: string;
-    image: string;
     iconName: string;
-    size: string;
-    type: "img" | "icon";
   }>;
 }
 
