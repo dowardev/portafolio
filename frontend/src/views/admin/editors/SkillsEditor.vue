@@ -3,7 +3,10 @@
     <ion-header class="ion-no-border" mode="ios">
       <ion-toolbar style="--background: var(--ion-background-color)">
         <ion-buttons slot="start">
-          <ion-back-button default-href="/admin-panel/skills"></ion-back-button>
+          <ion-back-button
+            text=""
+            default-href="/admin-panel/skills"
+          ></ion-back-button>
         </ion-buttons>
 
         <ion-title>{{ isEditing ? "Editar" : "Nueva" }} Skill</ion-title>

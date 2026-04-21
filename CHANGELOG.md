@@ -1,5 +1,37 @@
 # Changelog
 
+## 12.7.0 - 2026-04-21
+
+### Summary
+This release simplifies technology management by using icon names instead of image uploads, adds saving state feedback for better UX, and improves admin panel navigation with breadcrumbs.
+
+### Added
+- Added `getTechLabel()` function to display human-readable labels for technology icons in ProjectCard, ProjectDetailModal, and ProjectsComponent
+- Added saving state management (`setSaving`, `saving` ref) to projectsStore for loading feedback during project saves
+
+### Changed
+- Simplified technology interface in types.ts - replaced `{source, name, size, type}` with simple `{iconName}`
+- Refactored backend HomePageController to only process iconName (removed image upload logic for technologies)
+- Updated ProjectCard, ProjectDetailModal, and ProjectsComponent to use iconName instead of type-based rendering
+- Replaced back button with menu button in ProjectsListPage for consistent navigation
+- Updated ProjectsEditor back button default-href to /admin-panel/skills
+
+### Affected Files
+- Modified:
+  - `backend/app/Http/Controllers/Admin/HomePageController.php`
+  - `frontend/src/components/projects/ProjectCard.vue`
+  - `frontend/src/components/projects/ProjectDetailModal.vue`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/store/projectsStore.ts`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `frontend/src/views/admin/sections/ProjectsListPage.vue`
+  - `frontend/src/views/admin/sections/SkillsListPage.vue`
+  - `frontend/src/views/presentation/projects/ProjectsComponent.vue`
+
+---
+
 ## 12.6.0 - 2026-04-21
 
 ### Summary

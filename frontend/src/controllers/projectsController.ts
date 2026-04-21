@@ -50,6 +50,7 @@ export default class ProjectsController {
 
   async saveProject(project: ProjectItem, index?: number): Promise<boolean> {
     try {
+      this.projectsStore.setSaving(true);
       if (index !== undefined) {
         this.projectsStore.updateProject(index, project);
       } else {
@@ -66,8 +67,10 @@ export default class ProjectsController {
         data: formData,
         contentType: "multipart/form-data",
       });
+      this.projectsStore.setSaving(false);
       return true;
     } catch (error) {
+      this.projectsStore.setSaving(false);
       console.error("Error saving project:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al guardar el proyecto",

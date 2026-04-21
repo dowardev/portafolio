@@ -1,10 +1,11 @@
 <template>
   <ion-page>
     <ion-header class="ion-no-border" mode="ios">
-      <ion-toolbar>
+      <ion-toolbar style="--background: var(--ion-background-color)">
         <ion-buttons slot="start">
           <ion-back-button
-            default-href="/admin-panel/projects"
+            text=""
+            default-href="/admin-panel/skills"
           ></ion-back-button>
         </ion-buttons>
 
@@ -50,9 +51,9 @@
                 <ion-card class="shadow1">
                   <ion-item lines="full">
                     <ion-input
+                      v-model="localProject.title"
                       label="Nombre del proyecto"
                       label-placement="floating"
-                      v-model="localProject.title"
                       placeholder="Ej: Moneyflap"
                       :error-text="titleError"
                       :class="{
@@ -65,7 +66,9 @@
 
                   <ion-item lines="full" button @click="openStartDatePopover">
                     <ion-label>Inicio</ion-label>
-                    <ion-note slot="end">{{ formatDate(localProject.startDate ?? "") }}</ion-note>
+                    <ion-note slot="end">{{
+                      formatDate(localProject.startDate ?? "")
+                    }}</ion-note>
                   </ion-item>
 
                   <ion-popover
@@ -81,7 +84,9 @@
 
                   <ion-item lines="full" button @click="openEndDatePopover">
                     <ion-label>Fin</ion-label>
-                    <ion-note slot="end">{{ formatDate(localProject.endDate ?? "") }}</ion-note>
+                    <ion-note slot="end">{{
+                      formatDate(localProject.endDate ?? "")
+                    }}</ion-note>
                   </ion-item>
 
                   <ion-popover
@@ -97,9 +102,9 @@
 
                   <ion-item lines="full">
                     <ion-select
+                      v-model="localProject.status"
                       label="Estado"
                       label-placement="floating"
-                      v-model="localProject.status"
                     >
                       <ion-select-option value="progress"
                         >En progreso</ion-select-option
@@ -116,7 +121,9 @@
                   <ion-item lines="full" button @click="openFileDialog">
                     <ion-label>Logo del proyecto</ion-label>
 
-                    <ion-note v-if="fileName" slot="end">{{ fileName }}</ion-note>
+                    <ion-note v-if="fileName" slot="end">{{
+                      fileName
+                    }}</ion-note>
 
                     <ion-note v-else slot="end">Seleccionar</ion-note>
 
@@ -138,22 +145,24 @@
                     @change="onMainFileChange"
                   />
 
-                  <span v-if="imgTouched && imgError" class="error">{{ imgError }}</span>
+                  <span v-if="imgTouched && imgError" class="error">{{
+                    imgError
+                  }}</span>
 
                   <ion-item lines="full">
                     <ion-input
+                      v-model="localProject.details.website"
                       label="Link del proyecto"
                       label-placement="floating"
-                      v-model="localProject.details.website"
                       placeholder="https://..."
                     ></ion-input>
                   </ion-item>
 
                   <ion-item lines="none">
                     <ion-textarea
+                      v-model="localProject.details.description"
                       label="Descripción"
                       label-placement="floating"
-                      v-model="localProject.details.description"
                       :rows="3"
                       placeholder="Descripción del proyecto..."
                       :error-text="descriptionError"
@@ -174,7 +183,9 @@
                   <ion-item lines="full" button @click="openSourceFileDialog">
                     <ion-label>Imagen fuente</ion-label>
 
-                    <ion-note v-if="sourceFileName" slot="end">{{ sourceFileName }}</ion-note>
+                    <ion-note v-if="sourceFileName" slot="end">{{
+                      sourceFileName
+                    }}</ion-note>
 
                     <ion-note v-else slot="end">Seleccionar</ion-note>
 
@@ -198,18 +209,18 @@
 
                   <ion-item>
                     <ion-input
+                      v-model="localProject.source.name"
                       label="Nombre fuente"
                       label-placement="floating"
-                      v-model="localProject.source.name"
                       placeholder="Ej: PengyiLabs"
                     ></ion-input>
                   </ion-item>
 
                   <ion-item lines="none">
                     <ion-input
+                      v-model="localProject.source.url"
                       label="URL fuente"
                       label-placement="floating"
-                      v-model="localProject.source.url"
                       placeholder="https://..."
                     ></ion-input>
                   </ion-item>
@@ -284,10 +295,10 @@ import {
   closeOutline,
   saveOutline,
 } from "ionicons/icons";
-import { computed, reactive, ref, onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type { ProjectItem } from "@/services/types";
-import TechnologiesEditor from "./TechnologiesEditor.vue";
+import TechnologiesEditor from "./TechSkillsEditor.vue";
 import ProjectsController from "@/controllers/projectsController";
 import { useProjectsStore } from "@/store/projectsStore";
 // end imports
@@ -526,3 +537,4 @@ function onEndDateChange(event: CustomEvent) {
   object-fit: contain;
 }
 </style>
+

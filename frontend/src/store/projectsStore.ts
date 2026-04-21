@@ -6,6 +6,7 @@ export const useProjectsStore = defineStore("projects", () => {
   const projects = ref<ProjectItem[]>([]);
   const loading = ref(false);
   const loaded = ref(false);
+  const saving = ref(false);
 
   function setProjects(data: ProjectItem[]): void {
     projects.value = data;
@@ -41,12 +42,18 @@ export const useProjectsStore = defineStore("projects", () => {
     loaded.value = false;
   }
 
+  function setSaving(value: boolean): void {
+    saving.value = value;
+  }
+
   return {
     projects,
     loading,
     loaded,
+    saving,
     setProjects,
     setLoading,
+    setSaving,
     getProject,
     addProject,
     updateProject,

@@ -257,17 +257,12 @@ class HomePageController extends Controller
                     Storage::disk('public')->put('homepage/experience/' . $fileName, file_get_contents($file));
                     $exp['img'] = asset('storage/homepage/experience/' . $fileName);
                 }
-                // Tech images
+                // Tech images (now only iconName)
                 if (isset($exp['technologies'])) {
                     foreach ($exp['technologies'] as $techIndex => &$tech) {
-                        if ($tech['type'] === 'img') {
-                            $techFileKey = "exp_tech_image_{$index}_{$techIndex}";
-                            if ($request->hasFile($techFileKey)) {
-                                $file = $request->file($techFileKey);
-                                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                                Storage::disk('public')->put('homepage/experience/tech/' . $fileName, file_get_contents($file));
-                                $tech['source'] = asset('storage/homepage/experience/tech/' . $fileName);
-                            }
+                        // Only process if iconName exists (new format)
+                        if (isset($tech['iconName'])) {
+                            // iconName is sent directly, no image upload needed
                         }
                     }
                 }
@@ -295,17 +290,12 @@ class HomePageController extends Controller
                     Storage::disk('public')->put('homepage/projects/source/' . $fileName, file_get_contents($file));
                     $project['source']['img'] = asset('storage/homepage/projects/source/' . $fileName);
                 }
-                // Tech images
+                // Tech images (now only iconName)
                 if (isset($project['technologies'])) {
                     foreach ($project['technologies'] as $techIndex => &$tech) {
-                        if ($tech['type'] === 'img') {
-                            $techFileKey = "project_tech_image_{$index}_{$techIndex}";
-                            if ($request->hasFile($techFileKey)) {
-                                $file = $request->file($techFileKey);
-                                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                                Storage::disk('public')->put('homepage/projects/tech/' . $fileName, file_get_contents($file));
-                                $tech['source'] = asset('storage/homepage/projects/tech/' . $fileName);
-                            }
+                        // Only process if iconName exists (new format)
+                        if (isset($tech['iconName'])) {
+                            // iconName is sent directly, no image upload needed
                         }
                     }
                 }

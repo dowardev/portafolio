@@ -50,10 +50,7 @@ export interface ProjectItem {
   endDate?: string;
   status: "progress" | "indeterminate" | "finished";
   technologies: Array<{
-    source: string;
-    name: string;
-    size: string;
-    type: "img" | "icon";
+    iconName: string;
   }>;
   source: {
     img: string;

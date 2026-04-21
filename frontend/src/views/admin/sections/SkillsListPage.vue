@@ -42,7 +42,7 @@
                 <RouterLink :to="{ name: 'PanelAdminPage' }">Panel</RouterLink>
               </ion-breadcrumb>
 
-              <ion-breadcrumb>Skills editor</ion-breadcrumb>
+              <ion-breadcrumb>Skills</ion-breadcrumb>
             </ion-breadcrumbs>
           </ion-col>
         </ion-row>
@@ -220,4 +220,3 @@ async function generateTestSkills() {
   color: var(--ion-color-medium);
 }
 </style>
-
