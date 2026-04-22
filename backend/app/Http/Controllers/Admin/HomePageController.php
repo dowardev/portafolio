@@ -404,8 +404,44 @@ class HomePageController extends Controller
             }
         }
 
+        // Handle new separated format (freelancePlatforms + freelanceComments)
+        $platformsJson = $request->input('freelancePlatforms');
+        $commentsJson = $request->input('freelanceComments');
+        
+        $platforms = $platformsJson ? json_decode($platformsJson, true) : [];
+        $comments = $commentsJson ? json_decode($commentsJson, true) : [];
+        
+        // Convert separated format back to legacy format
+        $freelance = [];
+        
+        foreach ($platforms as $index => $platform) {
+            $platformItem = [
+                'name' => $platform['name'] ?? '',
+                'image' => $platform['image'] ?? '',
+                'url' => $platform['url'] ?? '',
+                'comment' => null,
+            ];
+            
+            // Find matching comment for this platform
+            foreach ($comments as $comment) {
+                if (($comment['platformName'] ?? '') === $platform['name']) {
+                    $platformItem['comment'] = [
+                        'title' => $comment['title'] ?? '',
+                        'text' => $comment['text'] ?? '',
+                        'rating' => $comment['rating'] ?? 5,
+                    ];
+                    break;
+                }
+            }
+            
+            $freelance[] = $platformItem;
+        }
+        
+        // Handle legacy format (direct freelance array)
         $freelanceJson = $request->input('freelance');
-        $freelance = $freelanceJson ? json_decode($freelanceJson, true) : [];
+        if ($freelanceJson) {
+            $freelance = json_decode($freelanceJson, true) ?: [];
+        }
 
         foreach ($freelance as $index => &$platform) {
             // Platform image

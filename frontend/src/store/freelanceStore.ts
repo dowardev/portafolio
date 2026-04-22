@@ -1,15 +1,21 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { FreelanceItem } from "@/services/types";
+import type { FreelancePlatform, FreelanceComment } from "@/services/types";
 
 export const useFreelanceStore = defineStore("freelance", () => {
-  const freelance = ref<FreelanceItem[]>([]);
+  const platforms = ref<FreelancePlatform[]>([]);
+  const comments = ref<FreelanceComment[]>([]);
   const loading = ref(false);
   const loaded = ref(false);
   const saving = ref(false);
 
-  function setFreelance(data: FreelanceItem[]): void {
-    freelance.value = data;
+  function setPlatforms(data: FreelancePlatform[]): void {
+    platforms.value = data;
+    loaded.value = true;
+  }
+
+  function setComments(data: FreelanceComment[]): void {
+    comments.value = data;
     loaded.value = true;
   }
 
@@ -17,28 +23,49 @@ export const useFreelanceStore = defineStore("freelance", () => {
     loading.value = value;
   }
 
-  function getFreelanceItem(index: number): FreelanceItem | undefined {
-    return freelance.value[index];
+  function getPlatform(index: number): FreelancePlatform | undefined {
+    return platforms.value[index];
   }
 
-  function addFreelanceItem(item: FreelanceItem): void {
-    freelance.value.push(item);
+  function addPlatform(item: FreelancePlatform): void {
+    platforms.value.push(item);
   }
 
-  function updateFreelanceItem(index: number, item: FreelanceItem): void {
-    if (index >= 0 && index < freelance.value.length) {
-      freelance.value[index] = item;
+  function updatePlatform(index: number, item: FreelancePlatform): void {
+    if (index >= 0 && index < platforms.value.length) {
+      platforms.value[index] = item;
     }
   }
 
-  function deleteFreelanceItem(index: number): void {
-    if (index >= 0 && index < freelance.value.length) {
-      freelance.value.splice(index, 1);
+  function deletePlatform(index: number): void {
+    if (index >= 0 && index < platforms.value.length) {
+      platforms.value.splice(index, 1);
+    }
+  }
+
+  function getComment(index: number): FreelanceComment | undefined {
+    return comments.value[index];
+  }
+
+  function addComment(item: FreelanceComment): void {
+    comments.value.push(item);
+  }
+
+  function updateComment(index: number, item: FreelanceComment): void {
+    if (index >= 0 && index < comments.value.length) {
+      comments.value[index] = item;
+    }
+  }
+
+  function deleteComment(index: number): void {
+    if (index >= 0 && index < comments.value.length) {
+      comments.value.splice(index, 1);
     }
   }
 
   function resetFreelance(): void {
-    freelance.value = [];
+    platforms.value = [];
+    comments.value = [];
     loaded.value = false;
   }
 
@@ -47,17 +74,23 @@ export const useFreelanceStore = defineStore("freelance", () => {
   }
 
   return {
-    freelance,
+    platforms,
+    comments,
     loading,
     loaded,
     saving,
-    setFreelance,
+    setPlatforms,
+    setComments,
     setLoading,
     setSaving,
-    getFreelanceItem,
-    addFreelanceItem,
-    updateFreelanceItem,
-    deleteFreelanceItem,
+    getPlatform,
+    addPlatform,
+    updatePlatform,
+    deletePlatform,
+    getComment,
+    addComment,
+    updateComment,
+    deleteComment,
     resetFreelance,
   };
 });

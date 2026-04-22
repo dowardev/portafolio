@@ -453,6 +453,8 @@ const homeData = ref<HomePageData>({
   projects: [],
   certificates: [],
   freelance: [],
+  freelancePlatforms: [],
+  freelanceComments: [],
   showContactForm: {
     socials: false,
     freelance: false,
@@ -485,6 +487,8 @@ onMounted(async () => {
         projects: data.projects || [],
         certificates: data.certificates || [],
         freelance: data.freelance || [],
+        freelancePlatforms: this.convertToPlatforms(data.freelance || []),
+        freelanceComments: this.convertToComments(data.freelance || []),
         showContactForm: data.showContactForm || {
         socials: false,
         freelance: false,
@@ -558,6 +562,29 @@ async function openContactModal() {
   });
 
   modal.present();
+}
+
+function convertToPlatforms(freelance: any[]) {
+  return freelance.map(item => ({
+    name: item.name,
+    image: item.image,
+    url: item.url,
+  }));
+}
+
+function convertToComments(freelance: any[]) {
+  const comments: any[] = [];
+  for (const item of freelance) {
+    if (item.comment) {
+      comments.push({
+        platformName: item.name,
+        title: item.comment.title,
+        text: item.comment.text,
+        rating: item.comment.rating,
+      });
+    }
+  }
+  return comments;
 }
 </script>
 

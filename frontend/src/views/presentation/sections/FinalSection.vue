@@ -13,7 +13,7 @@
           style="display: flex"
         >
           <div
-            v-for="platform in freelance"
+            v-for="platform in freelancePlatforms"
             :key="platform.name"
             style="cursor: pointer"
             class="ion-padding-start ion-padding-end"
@@ -50,46 +50,50 @@
           :autoplay="{ delay: 3000, disableOnInteraction: false }"
           class="swiper-container"
         >
-          <template v-for="platform in freelance" :key="platform.name">
-            <SwiperSlide
-              v-if="platform.comment"
-              :key="`${platform.name}-comment`"
-            >
-              <ion-card class="shadow-1">
-                <ion-item lines="full">
-                  <ion-thumbnail slot="start">
-                    <img
-                      :src="platform.image"
-                      :alt="platform.name"
-                      style="height: 45px"
-                    />
-                  </ion-thumbnail>
+          <SwiperSlide
+            v-for="(comment, index) in freelanceComments"
+            :key="index"
+          >
+            <ion-card class="shadow-1">
+              <ion-item lines="full">
+                <ion-thumbnail slot="start">
+                  <img
+                    v-if="getPlatformImage(comment.platformName)"
+                    :src="getPlatformImage(comment.platformName)"
+                    :alt="comment.platformName"
+                    style="height: 45px"
+                  />
+                  <ion-icon
+                    v-else
+                    :icon="chatbubblesOutline"
+                    style="font-size: 24px"
+                  />
+                </ion-thumbnail>
 
-                  <ion-label>
-                    <h2>{{ platform.comment.title }}</h2>
+                <ion-label>
+                  <h2>{{ comment.title }}</h2>
 
-                    <div>
-                      <ion-icon
-                        v-for="n in platform.comment.rating"
-                        :key="n"
-                        :icon="starIcon"
-                        style="color: gold; font-size: 16px"
-                      ></ion-icon>
-                    </div>
-                  </ion-label>
-                </ion-item>
-
-                <div class="ion-padding-start">
-                  <div
-                    v-if="platform.comment.text"
-                    style="max-height: 200px; overflow: auto"
-                  >
-                    <p>{{ platform.comment.text }}</p>
+                  <div>
+                    <ion-icon
+                      v-for="n in comment.rating"
+                      :key="n"
+                      :icon="starIcon"
+                      style="color: gold; font-size: 16px"
+                    ></ion-icon>
                   </div>
+                </ion-label>
+              </ion-item>
+
+              <div class="ion-padding-start">
+                <div
+                  v-if="comment.text"
+                  style="max-height: 200px; overflow: auto"
+                >
+                  <p>{{ comment.text }}</p>
                 </div>
-              </ion-card>
-            </SwiperSlide>
-          </template>
+              </div>
+            </ion-card>
+          </SwiperSlide>
         </Swiper>
       </ion-col>
     </ion-row>
@@ -97,18 +101,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import {
   IonRow,
   IonCol,
   IonCard,
-  IonCardHeader,
-  IonCardTitle,
   IonGrid,
-  IonCardSubtitle,
-  IonCardContent,
-  IonText,
   IonIcon,
+  IonThumbnail,
 } from "@ionic/vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
@@ -116,14 +115,13 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-import { type FreelanceItem } from "@/services/types";
+import { type FreelancePlatform, type FreelanceComment } from "@/services/types";
 import { type ScreenSize } from "@/utils/types/homeTemplate";
-import { mail, star as starIcon } from "ionicons/icons";
-
-import ContractLogo from "@/assets/otros/contract-svgrepo-com.svg";
+import { mail, star as starIcon, chatbubblesOutline } from "ionicons/icons";
 
 interface Props {
-  freelance?: FreelanceItem[];
+  freelancePlatforms?: FreelancePlatform[];
+  freelanceComments?: FreelanceComment[];
   showContactForm?: {
     socials?: boolean;
     freelance?: boolean;
@@ -133,13 +131,12 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const slidesPerView = computed(() => {
-  const preset = props.screenSize?.preset;
-  return preset === "xs" || preset === "md" ? 1 : 2;
-});
-
 function openUrl(url: string) {
   window.open(url, "_blank");
+}
+
+function getPlatformImage(platformName: string): string | undefined {
+  return props.freelancePlatforms?.find(p => p.name === platformName)?.image;
 }
 
 async function openContactModal() {

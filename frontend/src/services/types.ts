@@ -83,6 +83,19 @@ export interface FreelanceItem {
   } | null;
 }
 
+export interface FreelancePlatform {
+  name: string;
+  image: string;
+  url: string;
+}
+
+export interface FreelanceComment {
+  platformName: string;
+  title: string;
+  text: string;
+  rating: number;
+}
+
 export interface HomePageData {
   name: string;
   tags: string[];
@@ -96,6 +109,8 @@ export interface HomePageData {
   projects: ProjectItem[];
   certificates: CertificateItem[];
   freelance: FreelanceItem[];
+  freelancePlatforms?: FreelancePlatform[];
+  freelanceComments?: FreelanceComment[];
   showContactForm: {
     socials: boolean;
     freelance: boolean;

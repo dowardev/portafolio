@@ -209,12 +209,12 @@ const routes: Array<RouteRecordRaw> = [
     component: FreelanceListPage,
   },
   {
-    path: "/admin-panel/freelance/new",
+    path: "/admin-panel/freelance/:type(new|platform|comment)/new",
     name: "FreelanceNewPage",
     component: FreelanceEditor,
   },
   {
-    path: "/admin-panel/freelance/edit/:index",
+    path: "/admin-panel/freelance/:type(platform|comment)/edit/:index",
     name: "FreelanceEditPage",
     component: FreelanceEditor,
   },
@@ -222,6 +222,16 @@ const routes: Array<RouteRecordRaw> = [
     path: "/admin-panel/:section",
     name: "AdminEditorPage",
     component: AdminEditorPage,
+  },
+  {
+    path: "/admin-panel/freelance/edit/:index",
+    name: "FreelanceEditPageOld",
+    component: FreelanceEditor,
+  },
+  {
+    path: "/admin-panel/freelance/new",
+    name: "FreelanceNewPageOld",
+    component: FreelanceEditor,
   },
 ];
 
@@ -240,7 +250,7 @@ router.beforeEach(async (to, from, next) => {
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];
   const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
-  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage", "FreelanceListPage", "FreelanceEditPage", "FreelanceNewPage"];
+  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage", "FreelanceListPage", "FreelanceEditPage", "FreelanceEditPageOld", "FreelanceNewPage", "FreelanceNewPageOld"];
   const noGuardRequired = [
     "RestorePasswordPage",
     "PresentationPage",

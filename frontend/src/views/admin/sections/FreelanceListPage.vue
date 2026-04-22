@@ -26,9 +26,35 @@
             ></ion-icon>
           </ion-button>
 
-          <ion-button color="primary" @click="createNewFreelance">
+          <ion-button id="add-freelance-popover" color="primary">
             <ion-icon slot="start" :icon="addOutline"></ion-icon>
           </ion-button>
+
+          <ion-popover
+            trigger="add-freelance-popover"
+            trigger-action="click"
+            :dismiss-on-select="true"
+          >
+            <ion-content>
+              <ion-list>
+                <ion-item
+                  button
+                  @click="createNewFreelance('platform')"
+                >
+                  <ion-icon slot="start" :icon="briefcaseOutline" />
+                  <ion-label>Nueva Plataforma</ion-label>
+                </ion-item>
+
+                <ion-item
+                  button
+                  @click="createNewFreelance('comment')"
+                >
+                  <ion-icon slot="start" :icon="chatbubblesOutline" />
+                  <ion-label>Nuevo Comentario</ion-label>
+                </ion-item>
+              </ion-list>
+            </ion-content>
+          </ion-popover>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -48,18 +74,22 @@
         </ion-row>
       </ion-grid>
 
-      <template v-if="freelanceItems.length > 0">
-        <ion-grid>
-          <ion-row class="ion-justify-content-center">
-            <ion-col size="4">
+      <ion-grid>
+        <ion-row>
+          <ion-col size-md="6">
+            <div class="section-header">
+              <h3>Plataformas</h3>
+            </div>
+
+            <template v-if="platforms.length > 0">
               <ion-list>
                 <ion-card class="shadow1">
                   <ion-item
-                    v-for="(item, index) in freelanceItems"
+                    v-for="(item, index) in platforms"
                     :key="index"
                     button
                     lines="full"
-                    @click="editFreelance(index)"
+                    @click="editFreelance('platform', index)"
                   >
                     <ion-thumbnail v-if="item.image" slot="start">
                       <ion-img :src="item.image" />
@@ -75,28 +105,13 @@
 
                     <ion-label>
                       <h2>{{ item.name || "Sin nombre" }}</h2>
-
-                      <p
-                        v-if="item.comment"
-                        style="font-size: 12px"
-                        class="comment-indicator"
-                      >
-                        <ion-icon :icon="chatbubblesOutline" size="small" />
-                        {{ item.comment.title || "Sin comentario" }}
-                      </p>
-                      <p
-                        v-else
-                        style="font-size: 12px; color: var(--ion-color-medium)"
-                      >
-                        Sin comentario
-                      </p>
                     </ion-label>
 
                     <ion-buttons slot="end">
                       <ion-button
                         color="danger"
                         fill="clear"
-                        @click.stop="confirmDelete(index)"
+                        @click.stop="confirmDelete('platform', index)"
                       >
                         <ion-icon :icon="trashOutline" />
                       </ion-button>
@@ -104,21 +119,77 @@
                   </ion-item>
                 </ion-card>
               </ion-list>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </template>
+            </template>
 
-      <div v-else class="empty-state">
-        <ion-icon :icon="briefcaseOutline" size="large" />
+            <div v-else class="empty-state">
+              <ion-icon :icon="briefcaseOutline" size="large" />
+              <p>No hay plataformas aún</p>
+              <ion-button @click="createNewFreelance('platform')">
+                <ion-icon slot="start" :icon="addOutline"></ion-icon>
+                Crear plataforma
+              </ion-button>
+            </div>
+          </ion-col>
 
-        <p>No hay plataformas freelance aún</p>
+          <ion-col size-md="6">
+            <div class="section-header">
+              <h3>Comentarios</h3>
+            </div>
 
-        <ion-button @click="createNewFreelance">
-          <ion-icon slot="start" :icon="addOutline"></ion-icon>
-          Crear primera plataforma
-        </ion-button>
-      </div>
+            <template v-if="comments.length > 0">
+              <ion-list>
+                <ion-card class="shadow1">
+                  <ion-item
+                    v-for="(item, index) in comments"
+                    :key="index"
+                    button
+                    lines="full"
+                    @click="editFreelance('comment', index)"
+                  >
+                    <ion-thumbnail slot="start">
+                      <ion-icon :icon="chatbubblesOutline" />
+                    </ion-thumbnail>
+
+                    <ion-label>
+                      <h2>{{ item.title || "Sin título" }}</h2>
+                      <p style="font-size: 12px; color: var(--ion-color-medium)">
+                        {{ item.platformName || "Sin plataforma" }}
+                      </p>
+                      <div v-if="item.rating" class="rating-stars">
+                        <ion-icon
+                          v-for="n in item.rating"
+                          :key="n"
+                          :icon="starOutline"
+                          style="color: gold; font-size: 14px"
+                        />
+                      </div>
+                    </ion-label>
+
+                    <ion-buttons slot="end">
+                      <ion-button
+                        color="danger"
+                        fill="clear"
+                        @click.stop="confirmDelete('comment', index)"
+                      >
+                        <ion-icon :icon="trashOutline" />
+                      </ion-button>
+                    </ion-buttons>
+                  </ion-item>
+                </ion-card>
+              </ion-list>
+            </template>
+
+            <div v-else class="empty-state">
+              <ion-icon :icon="chatbubblesOutline" size="large" />
+              <p>No hay comentarios aún</p>
+              <ion-button @click="createNewFreelance('comment')">
+                <ion-icon slot="start" :icon="addOutline"></ion-icon>
+                Crear comentario
+              </ion-button>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-content>
   </ion-page>
 </template>
@@ -131,6 +202,9 @@ import {
   IonTitle,
   IonButtons,
   IonContent,
+  IonGrid,
+  IonRow,
+  IonCol,
   IonButton,
   IonIcon,
   IonList,
@@ -138,6 +212,8 @@ import {
   IonLabel,
   IonThumbnail,
   IonImg,
+  IonPopover,
+  IonCard,
   alertController,
 } from "@ionic/vue";
 import { onMounted, computed } from "vue";
@@ -148,6 +224,7 @@ import {
   briefcaseOutline,
   trashOutline,
   chatbubblesOutline,
+  starOutline,
 } from "ionicons/icons";
 import { faker } from "@faker-js/faker";
 import { useFreelanceStore } from "@/store/freelanceStore";
@@ -159,30 +236,40 @@ const freelanceController = new FreelanceController();
 
 const isDev = import.meta.env.DEV;
 
-const freelanceItems = computed(() => freelanceStore.freelance);
+const platforms = computed(() => freelanceStore.platforms);
+const comments = computed(() => freelanceStore.comments);
 
 onMounted(async () => {
   freelanceStore.setLoading(true);
   try {
     const data = await freelanceController.loadFreelance();
-    freelanceStore.setFreelance(data);
+    freelanceStore.setPlatforms(data.freelancePlatforms);
+    freelanceStore.setComments(data.freelanceComments);
   } finally {
     freelanceStore.setLoading(false);
   }
 });
 
-function editFreelance(index: number) {
-  router.push(`/admin-panel/freelance/edit/${index}`);
+function editFreelance(type: "platform" | "comment", index: number) {
+  router.push(`/admin-panel/freelance/${type}/edit/${index}`);
 }
 
-function createNewFreelance() {
-  router.push("/admin-panel/freelance/new");
+function createNewFreelance(type: "platform" | "comment") {
+  router.push(`/admin-panel/freelance/${type}/new`);
 }
 
-async function confirmDelete(index: number) {
+async function confirmDelete(type: "platform" | "comment", index: number) {
+  const itemType = type === "platform" ? "plataforma" : "comentario";
+  const item = type === "platform"
+    ? platforms.value[index]
+    : comments.value[index];
+  const itemName = type === "platform"
+    ? (item as any).name || "esta plataforma"
+    : (item as any).title || "este comentario";
+
   const alert = await alertController.create({
-    header: "Eliminar plataforma",
-    message: `¿Estás seguro de eliminar "${freelanceItems.value[index].name || "esta plataforma"}"?`,
+    header: `Eliminar ${itemType}`,
+    message: `¿Estás seguro de eliminar "${itemName}"?`,
     buttons: [
       {
         text: "Cancelar",
@@ -192,7 +279,7 @@ async function confirmDelete(index: number) {
         text: "Eliminar",
         role: "destructive",
         handler: () => {
-          deleteFreelance(index);
+          deleteFreelance(type, index);
         },
       },
     ],
@@ -200,37 +287,66 @@ async function confirmDelete(index: number) {
   await alert.present();
 }
 
-async function deleteFreelance(index: number) {
-  freelanceStore.deleteFreelanceItem(index);
-  await freelanceController.saveFreelance(freelanceStore.freelance);
+async function deleteFreelance(type: "platform" | "comment", index: number) {
+  if (type === "platform") {
+    freelanceStore.deletePlatform(index);
+  } else {
+    freelanceStore.deleteComment(index);
+  }
+  await freelanceController.saveFreelance(
+    freelanceStore.platforms,
+    freelanceStore.comments,
+  );
 }
 
 async function generateTestFreelance() {
-  const platforms = ["Upwork", "Fiverr", "Toptal", "Freelancer.com"];
+  const platformNames = ["Upwork", "Fiverr", "Toptal", "Freelancer.com"];
 
-  const testItems = Array.from({ length: 3 }, () => {
-    const platformName = faker.helpers.arrayElement(platforms);
+  const testPlatforms = Array.from({ length: 3 }, () => {
+    const platformName = faker.helpers.arrayElement(platformNames);
     return {
       name: platformName,
       image: faker.image.url({ width: 100, height: 100 }),
       url: faker.internet.url(),
-      comment: {
-        title: faker.person.fullName(),
-        text: faker.lorem.paragraph(),
-        rating: faker.number.int({ min: 3, max: 5 }),
-      },
     };
   });
 
-  for (const item of testItems) {
-    freelanceStore.addFreelanceItem(item);
+  for (const platform of testPlatforms) {
+    freelanceStore.addPlatform(platform);
   }
 
-  await freelanceController.saveFreelance(freelanceStore.freelance);
+  const testComments = Array.from({ length: 3 }, () => {
+    const platformName = faker.helpers.arrayElement(platformNames);
+    return {
+      platformName,
+      title: faker.person.fullName(),
+      text: faker.lorem.paragraph(),
+      rating: faker.number.int({ min: 3, max: 5 }),
+    };
+  });
+
+  for (const comment of testComments) {
+    freelanceStore.addComment(comment);
+  }
+
+  await freelanceController.saveFreelance(
+    freelanceStore.platforms,
+    freelanceStore.comments,
+  );
 }
 </script>
 
 <style scoped>
+.section-header {
+  padding: 16px 0;
+  text-align: center;
+}
+
+.section-header h3 {
+  margin: 0;
+  color: var(--ion-color-primary);
+}
+
 .placeholder-thumb {
   display: flex;
   align-items: center;
@@ -239,11 +355,9 @@ async function generateTestFreelance() {
   color: var(--ion-color-medium);
 }
 
-.comment-indicator {
+.rating-stars {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--ion-color-primary);
+  gap: 2px;
 }
 
 .empty-state {

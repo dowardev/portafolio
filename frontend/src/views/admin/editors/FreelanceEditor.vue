@@ -10,10 +10,29 @@
         </ion-buttons>
 
         <ion-title>{{
-          isNew ? "Nueva Plataforma" : "Editar Plataforma"
+          isNew
+            ? (freelanceType === "platform" ? "Nueva Plataforma" : "Nuevo Comentario")
+            : (freelanceType === "platform" ? "Editar Plataforma" : "Editar Comentario")
         }}</ion-title>
 
         <ion-buttons slot="end">
+          <ion-button
+            v-if="isDev && isNew"
+            v-tooltip="{
+              content: 'Datos de prueba',
+              delay: [500, 0],
+              touch: 'hold',
+            }"
+            color="tertiary"
+            @click="generateTestData"
+          >
+            <ion-icon
+              slot="start"
+              :icon="bugOutline"
+              color="warning"
+            ></ion-icon>
+          </ion-button>
+
           <ion-button
             v-if="!isNew && freelanceIndex !== undefined"
             color="danger"
@@ -47,109 +66,129 @@
           <ion-row class="ion-justify-content-center">
             <ion-col size="4">
               <ion-list>
-                <ion-list-header>
-                  <ion-label>Plataforma</ion-label>
-                </ion-list-header>
+                <template v-if="freelanceType === 'platform'">
+                  <ion-list-header>
+                    <ion-label>Plataforma</ion-label>
+                  </ion-list-header>
 
-                <ion-card class="shadow1">
-                  <ion-item lines="full">
-                    <ion-input
-                      v-model="localItem.name"
-                      label="Nombre de la plataforma"
-                      label-placement="floating"
-                      placeholder="Ej: Upwork"
-                      :error-text="nameError"
-                      :class="{
-                        'ion-invalid': nameTouched && !!nameError,
-                        'ion-touched': nameTouched,
-                      }"
-                      @ion-blur="nameTouched = true"
-                    ></ion-input>
-                  </ion-item>
+                  <ion-card class="shadow1">
+                    <ion-item lines="full">
+                      <ion-input
+                        v-model="(localItem as FreelancePlatform).name"
+                        label="Nombre de la plataforma"
+                        label-placement="floating"
+                        placeholder="Ej: Upwork"
+                        :error-text="nameError"
+                        :class="{
+                          'ion-invalid': nameTouched && !!nameError,
+                          'ion-touched': nameTouched,
+                        }"
+                        @ion-blur="nameTouched = true"
+                      ></ion-input>
+                    </ion-item>
 
-                  <ion-item lines="full">
-                    <ion-input
-                      v-model="localItem.url"
-                      label="Link de la plataforma"
-                      label-placement="floating"
-                      placeholder="https://..."
-                      :error-text="urlError"
-                      :class="{
-                        'ion-invalid': urlTouched && !!urlError,
-                        'ion-touched': urlTouched,
-                      }"
-                      @ion-blur="urlTouched = true"
-                    ></ion-input>
-                  </ion-item>
+                    <ion-item lines="full">
+                      <ion-input
+                        v-model="(localItem as FreelancePlatform).url"
+                        label="Link de la plataforma"
+                        label-placement="floating"
+                        placeholder="https://..."
+                        :error-text="urlError"
+                        :class="{
+                          'ion-invalid': urlTouched && !!urlError,
+                          'ion-touched': urlTouched,
+                        }"
+                        @ion-blur="urlTouched = true"
+                      ></ion-input>
+                    </ion-item>
 
-                  <ion-item lines="full" button @click="openFileDialog">
-                    <ion-label>Logo de la plataforma</ion-label>
+                    <ion-item lines="full" button @click="openFileDialog">
+                      <ion-label>Logo de la plataforma</ion-label>
 
-                    <ion-note v-if="fileName" slot="end">{{
-                      fileName
-                    }}</ion-note>
+                      <ion-note v-if="fileName" slot="end">{{
+                        fileName
+                      }}</ion-note>
 
-                    <ion-note v-else slot="end">Seleccionar</ion-note>
+                      <ion-note v-else slot="end">Seleccionar</ion-note>
 
-                    <ion-button
-                      slot="end"
-                      fill="clear"
-                      :disabled="!localItem.image"
-                      @click.stop="showPreview"
-                    >
-                      <ion-icon :icon="eyeOutline"></ion-icon>
-                    </ion-button>
-                  </ion-item>
+                      <ion-button
+                        slot="end"
+                        fill="clear"
+                        :disabled="!(localItem as FreelancePlatform).image"
+                        @click.stop="showPreview"
+                      >
+                        <ion-icon :icon="eyeOutline"></ion-icon>
+                      </ion-button>
+                    </ion-item>
 
-                  <input
-                    ref="fileInput"
-                    style="display: none"
-                    type="file"
-                    accept="image/*"
-                    @change="onImageChange"
-                  />
+                    <input
+                      ref="fileInput"
+                      style="display: none"
+                      type="file"
+                      accept="image/*"
+                      @change="onImageChange"
+                    />
 
-                  <span v-if="imageTouched && imageError" class="error">{{
-                    imageError
-                  }}</span>
-                </ion-card>
+                    <span v-if="imageTouched && imageError" class="error">{{
+                      imageError
+                    }}</span>
+                  </ion-card>
+                </template>
 
-                <ion-list-header>
-                  <ion-label>Comentario</ion-label>
-                </ion-list-header>
+                <template v-else-if="freelanceType === 'comment'">
+                  <ion-list-header>
+                    <ion-label>Comentario</ion-label>
+                  </ion-list-header>
 
-                <ion-card v-if="localItem.comment" class="shadow1">
-                  <ion-item lines="full">
-                    <ion-input
-                      v-model="localItem.comment.title"
-                      label="Nombre del cliente"
-                      label-placement="floating"
-                      placeholder="Nombre del cliente"
-                    ></ion-input>
-                  </ion-item>
+                  <ion-card class="shadow1">
+                    <ion-item lines="full">
+                      <ion-select
+                        v-model="(localItem as FreelanceComment).platformName"
+                        label="Plataforma"
+                        label-placement="floating"
+                        :interface-popover="true"
+                      >
+                        <ion-select-option
+                          v-for="(platform, idx) in platforms"
+                          :key="idx"
+                          :value="platform.name"
+                        >
+                          {{ platform.name }}
+                        </ion-select-option>
+                      </ion-select>
+                    </ion-item>
 
-                  <ion-item lines="full">
-                    <ion-input
-                      v-model="localItem.comment.rating"
-                      label="Calificación (1-5)"
-                      label-placement="floating"
-                      type="number"
-                      min="1"
-                      max="5"
-                    ></ion-input>
-                  </ion-item>
+                    <ion-item lines="full">
+                      <ion-input
+                        v-model="(localItem as FreelanceComment).title"
+                        label="Nombre del cliente"
+                        label-placement="floating"
+                        placeholder="Nombre del cliente"
+                      ></ion-input>
+                    </ion-item>
 
-                  <ion-item lines="full">
-                    <ion-textarea
-                      v-model="localItem.comment.text"
-                      label="Comentario"
-                      label-placement="floating"
-                      :rows="4"
-                      placeholder="Escribe el comentario..."
-                    ></ion-textarea>
-                  </ion-item>
+                    <ion-item lines="full">
+                      <ion-input
+                        v-model="(localItem as FreelanceComment).rating"
+                        label="Calificación (1-5)"
+                        label-placement="floating"
+                        type="number"
+                        min="1"
+                        max="5"
+                      ></ion-input>
+                    </ion-item>
 
-                </ion-card>
+                    <ion-item lines="full">
+                      <ion-textarea
+                        v-model="(localItem as FreelanceComment).text"
+                        label="Comentario"
+                        label-placement="floating"
+                        :rows="4"
+                        placeholder="Escribe el comentario..."
+                      ></ion-textarea>
+                    </ion-item>
+                  </ion-card>
+                </template>
               </ion-list>
             </ion-col>
           </ion-row>
@@ -202,6 +241,8 @@ import {
   IonNote,
   IonBackButton,
   IonSpinner,
+  IonSelect,
+  IonSelectOption,
   alertController,
 } from "@ionic/vue";
 import {
@@ -209,17 +250,27 @@ import {
   eyeOutline,
   closeOutline,
   saveOutline,
+  bugOutline,
 } from "ionicons/icons";
 import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import type { FreelanceItem } from "@/services/types";
+import type { FreelancePlatform, FreelanceComment } from "@/services/types";
 import FreelanceController from "@/controllers/freelanceController";
 import { useFreelanceStore } from "@/store/freelanceStore";
+import { faker } from "@faker-js/faker";
 
 const route = useRoute();
 const router = useRouter();
 const freelanceController = new FreelanceController();
 const freelanceStore = useFreelanceStore();
+
+const freelanceType = computed(() => {
+  const type = route.params.type;
+  if (typeof type === "string" && (type === "platform" || type === "comment")) {
+    return type;
+  }
+  return "platform";
+});
 
 const freelanceIndex = computed(() => {
   const index = route.params.index;
@@ -229,40 +280,51 @@ const freelanceIndex = computed(() => {
   return undefined;
 });
 
-const isNew = computed(() => route.name === "FreelanceNewPage");
+const isNew = computed(() => route.name === "FreelanceNewPage" || route.name === "FreelanceNewPageOld");
 
 const loading = ref(true);
 const saving = ref(false);
 
-const localItem = ref<FreelanceItem | null>(null);
+const platforms = computed(() => freelanceStore.platforms);
+const isDev = import.meta.env.DEV;
+const comments = computed(() => freelanceStore.comments);
+
+const localItem = ref<FreelancePlatform | FreelanceComment | null>(null);
 
 onMounted(async () => {
   try {
-    if (freelanceStore.freelance.length === 0) {
+    if (freelanceStore.platforms.length === 0 || freelanceStore.comments.length === 0) {
       const data = await freelanceController.loadFreelance();
-      freelanceStore.setFreelance(data);
+      freelanceStore.setPlatforms(data.freelancePlatforms);
+      freelanceStore.setComments(data.freelanceComments);
     }
 
     if (isNew.value) {
-      localItem.value = {
-        name: "",
-        image: "",
-        url: "",
-        comment: {
+      if (freelanceType.value === "platform") {
+        localItem.value = {
+          name: "",
+          image: "",
+          url: "",
+        } as FreelancePlatform;
+      } else {
+        localItem.value = {
+          platformName: platforms.value[0]?.name || "",
           title: "",
           text: "",
           rating: 5,
-        },
-      };
+        } as FreelanceComment;
+      }
     } else if (freelanceIndex.value !== undefined) {
-      const item = freelanceStore.getFreelanceItem(freelanceIndex.value);
-      if (item) {
-        localItem.value = {
-          ...item,
-          comment: item.comment
-            ? { ...item.comment }
-            : { title: "", text: "", rating: 5 },
-        };
+      if (freelanceType.value === "platform") {
+        const item = freelanceStore.getPlatform(freelanceIndex.value);
+        if (item) {
+          localItem.value = { ...item };
+        }
+      } else {
+        const item = freelanceStore.getComment(freelanceIndex.value);
+        if (item) {
+          localItem.value = { ...item };
+        }
       }
     }
   } finally {
@@ -273,38 +335,62 @@ onMounted(async () => {
 async function handleSave() {
   if (!localItem.value) return;
 
-  nameTouched.value = true;
-  urlTouched.value = true;
-  imageTouched.value = true;
+  if (freelanceType.value === "platform") {
+    nameTouched.value = true;
+    urlTouched.value = true;
+    imageTouched.value = true;
 
-  if (nameError.value || urlError.value || imageError.value) {
-    return;
-  }
-
-  saving.value = true;
-  try {
-    if (isNew.value) {
-      freelanceStore.addFreelanceItem(localItem.value);
-    } else if (freelanceIndex.value !== undefined) {
-      freelanceStore.updateFreelanceItem(freelanceIndex.value, localItem.value);
+    if (nameError.value || urlError.value || imageError.value) {
+      return;
     }
 
-    await freelanceController.saveFreelance(
-      freelanceStore.freelance,
-      pendingFiles,
-    );
-    router.push("/admin-panel/freelance");
-  } catch (error) {
-    console.error("Error saving freelance:", error);
-  } finally {
-    saving.value = false;
+    saving.value = true;
+    try {
+      if (isNew.value) {
+        freelanceStore.addPlatform(localItem.value as FreelancePlatform);
+      } else if (freelanceIndex.value !== undefined) {
+        freelanceStore.updatePlatform(freelanceIndex.value, localItem.value as FreelancePlatform);
+      }
+
+      await freelanceController.saveFreelance(
+        freelanceStore.platforms,
+        freelanceStore.comments,
+        pendingFiles,
+      );
+      router.push("/admin-panel/freelance");
+    } catch (error) {
+      console.error("Error saving freelance:", error);
+    } finally {
+      saving.value = false;
+    }
+  } else {
+    nameTouched.value = true;
+
+    saving.value = true;
+    try {
+      if (isNew.value) {
+        freelanceStore.addComment(localItem.value as FreelanceComment);
+      } else if (freelanceIndex.value !== undefined) {
+        freelanceStore.updateComment(freelanceIndex.value, localItem.value as FreelanceComment);
+      }
+
+      await freelanceController.saveFreelance(
+        freelanceStore.platforms,
+        freelanceStore.comments,
+      );
+      router.push("/admin-panel/freelance");
+    } catch (error) {
+      console.error("Error saving freelance:", error);
+    } finally {
+      saving.value = false;
+    }
   }
 }
 
 async function confirmDelete() {
   const alert = await alertController.create({
-    header: "Eliminar plataforma",
-    message: "¿Estás seguro de eliminar esta plataforma?",
+    header: `Eliminar ${freelanceType.value === "platform" ? "plataforma" : "comentario"}`,
+    message: "¿Estás seguro de eliminar este elemento?",
     buttons: [
       {
         text: "Cancelar",
@@ -322,9 +408,37 @@ async function confirmDelete() {
 
 async function deleteFreelance() {
   if (freelanceIndex.value === undefined) return;
-  freelanceStore.deleteFreelanceItem(freelanceIndex.value);
-  await freelanceController.saveFreelance(freelanceStore.freelance);
+
+  if (freelanceType.value === "platform") {
+    freelanceStore.deletePlatform(freelanceIndex.value);
+  } else {
+    freelanceStore.deleteComment(freelanceIndex.value);
+  }
+
+  await freelanceController.saveFreelance(
+    freelanceStore.platforms,
+    freelanceStore.comments,
+  );
   router.push("/admin-panel/freelance");
+}
+
+function generateTestData() {
+  if (freelanceType.value === "platform") {
+    const platformName = faker.helpers.arrayElement(["Upwork", "Fiverr", "Toptal", "Freelancer.com"]);
+    localItem.value = {
+      name: platformName,
+      image: `https://ui-avatars.com/api/?name=${encodeURIComponent(platformName)}&background=random&size=100`,
+      url: faker.internet.url(),
+    } as FreelancePlatform;
+  } else {
+    const availablePlatforms = platforms.value;
+    localItem.value = {
+      platformName: availablePlatforms[0]?.name || "Upwork",
+      title: faker.person.fullName(),
+      text: faker.lorem.paragraph(),
+      rating: faker.number.int({ min: 3, max: 5 }),
+    } as FreelanceComment;
+  }
 }
 
 const pendingFiles: Record<string, File> = {};
@@ -340,14 +454,18 @@ const urlTouched = ref(false);
 const imageTouched = ref(false);
 
 const nameError = computed(() => {
-  if (!localItem.value?.name?.trim()) return "Nombre es requerido";
+  if (!localItem.value || freelanceType.value !== "platform") return "";
+  const item = localItem.value as FreelancePlatform;
+  if (!item.name?.trim()) return "Nombre es requerido";
   return "";
 });
 
 const urlError = computed(() => {
-  if (!localItem.value?.url?.trim()) return "Link es requerido";
+  if (!localItem.value || freelanceType.value !== "platform") return "";
+  const item = localItem.value as FreelancePlatform;
+  if (!item.url?.trim()) return "Link es requerido";
   try {
-    new URL(localItem.value.url);
+    new URL(item.url);
   } catch {
     return "Debe ser una URL válida";
   }
@@ -355,7 +473,9 @@ const urlError = computed(() => {
 });
 
 const imageError = computed(() => {
-  if (!localItem.value?.image) return "Logo es requerido";
+  if (!localItem.value || freelanceType.value !== "platform") return "";
+  const item = localItem.value as FreelancePlatform;
+  if (!item.image) return "Logo es requerido";
   return "";
 });
 
@@ -368,15 +488,16 @@ function onImageChange(event: Event) {
   if (!input.files?.length) return;
   const file = input.files[0];
   pendingFiles["freelance_image"] = file;
-  if (localItem.value) {
-    localItem.value.image = URL.createObjectURL(file);
+  if (localItem.value && freelanceType.value === "platform") {
+    (localItem.value as FreelancePlatform).image = URL.createObjectURL(file);
   }
   fileName.value = file.name;
   imageTouched.value = true;
 }
 
 function showPreview() {
-  const src = localItem.value?.image;
+  if (freelanceType.value !== "platform" || !localItem.value) return;
+  const src = (localItem.value as FreelancePlatform).image;
   if (src) {
     previewSrc.value = src;
     isPreviewOpen.value = true;

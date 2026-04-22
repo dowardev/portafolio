@@ -1,7 +1,7 @@
 import APIController from "@/controllers/APIController";
 import ServerConfig from "@/controllers/serverConfigController";
 import Cookies from "js-cookie";
-import type { FreelanceItem } from "@/services/types";
+import type { FreelancePlatform, FreelanceComment, FreelanceItem } from "@/services/types";
 
 const userToken = Cookies.get("user-token");
 const config = new ServerConfig({
@@ -10,20 +10,59 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
+interface FreelanceData {
+  freelancePlatforms: FreelancePlatform[];
+  freelanceComments: FreelanceComment[];
+}
+
 export default class FreelanceController {
-  async loadFreelance(): Promise<FreelanceItem[]> {
+  async loadFreelance(): Promise<FreelanceData> {
     const data = await api.get<{ freelance: FreelanceItem[] }>({
       url: "admin/get-homepage-info",
     });
-    return data.freelance || [];
+
+    const freelanceItems = data.freelance || [];
+
+    return this.convertToSeparatedData(freelanceItems);
+  }
+
+  private convertToSeparatedData(
+    items: FreelanceItem[],
+  ): FreelanceData {
+    const platforms: FreelancePlatform[] = [];
+    const comments: FreelanceComment[] = [];
+
+    for (const item of items) {
+      platforms.push({
+        name: item.name,
+        image: item.image,
+        url: item.url,
+      });
+
+      if (item.comment) {
+        comments.push({
+          platformName: item.name,
+          title: item.comment.title,
+          text: item.comment.text,
+          rating: item.comment.rating,
+        });
+      }
+    }
+
+    return {
+      freelancePlatforms: platforms,
+      freelanceComments: comments,
+    };
   }
 
   async saveFreelance(
-    items: FreelanceItem[],
+    platforms: FreelancePlatform[],
+    comments: FreelanceComment[],
     files?: Record<string, File>,
   ): Promise<void> {
     const formData = new FormData();
-    formData.append("freelance", JSON.stringify(items));
+    formData.append("freelancePlatforms", JSON.stringify(platforms));
+    formData.append("freelanceComments", JSON.stringify(comments));
 
     if (files) {
       Object.entries(files).forEach(([key, file]) => {
@@ -38,10 +77,13 @@ export default class FreelanceController {
     });
   }
 
-  async deleteFreelance(index: number): Promise<void> {
+  async deleteFreelanceItem(
+    type: "platform" | "comment",
+    index: number,
+  ): Promise<void> {
     await api.post({
       url: "admin/delete-freelance-item",
-      data: { index },
+      data: { type, index },
     });
   }
 }

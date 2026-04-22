@@ -1,5 +1,44 @@
 # Changelog
 
+## 12.15.0 - 2026-04-22
+
+### Summary
+This release separates freelance data into distinct platform and comment structures, enabling independent management of each type. The admin panel now uses a two-column layout with separate CRUD operations for platforms and comments.
+
+### Added
+- New `FreelancePlatform` interface with `name`, `image`, and `url` fields for independent platform data
+- New `FreelanceComment` interface with `platformName`, `title`, `text`, and `rating` fields for independent comment data
+- `convertToSeparatedData()` method in freelanceController to split freelance items into separate data structures
+- `freelancePlatforms` and `freelanceComments` properties in HomePageData type
+- Backward-compatible legacy routes (FreelanceEditPageOld, FreelanceNewPageOld) for migration support
+- `getPlatformImage()` helper function in FinalSection for mapping comments to their platform images
+
+### Changed
+- Refactored `loadFreelance()` in freelanceController to return `{freelancePlatforms, freelanceComments}` object
+- Refactored `saveFreelance()` in freelanceController to accept separate platforms and comments arrays
+- Refactored `deleteFreelanceItem()` to accept `type` parameter ("platform" | "comment")
+- Refactored freelanceStore: split single `freelance` array into `platforms` and `comments` with dedicated CRUD methods
+- Refactored FreelanceEditor.vue: conditionally renders platform form or comment form based on route type parameter
+- Refactored FreelanceListPage.vue: displays two-column layout with separate platform and comment sections
+- Updated routes to include type parameter: `/admin-panel/freelance/:type(platform|comment)/new` and `/edit/:index`
+- Updated FinalSection to iterate over `freelancePlatforms` and `freelanceComments` separately
+- Updated InformationComponent and HomePresentationPage to use separated data structures
+
+### Affected Files
+- Modified:
+  - `backend/app/Http/Controllers/Admin/HomePageController.php`
+  - `frontend/src/controllers/freelanceController.ts`
+  - `frontend/src/router/index.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/store/freelanceStore.ts`
+  - `frontend/src/views/admin/editors/FreelanceEditor.vue`
+  - `frontend/src/views/admin/sections/FreelanceListPage.vue`
+  - `frontend/src/views/presentation/HomePresentationPage.vue`
+  - `frontend/src/views/presentation/information/InformationComponent.vue`
+  - `frontend/src/views/presentation/sections/FinalSection.vue`
+
+---
+
 ## 12.14.1 - 2026-04-22
 
 ### Summary
