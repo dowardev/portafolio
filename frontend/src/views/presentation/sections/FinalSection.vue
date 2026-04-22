@@ -1,94 +1,99 @@
 <template>
-  <ion-row>
-    <ion-col style="display: flex" class="ion-justify-content-center">
-      <h2>Trabajemos juntos</h2>
-    </ion-col>
-  </ion-row>
-
-  <ion-grid>
+  <div>
     <ion-row>
-      <ion-col
-        class="ion-justify-content-center ion-align-items-center"
-        style="display: flex"
-      >
-        <div
-          v-for="platform in freelance"
-          :key="platform.name"
-          style="cursor: pointer"
-          class="ion-padding-start ion-padding-end"
-        >
-          <img
-            style="width: 40px"
-            :src="platform.image"
-            :alt="platform.name"
-            @click="openUrl(platform.url)"
-          />
-        </div>
-
-        <ion-button
-          v-if="showContactForm?.freelance"
-          size="large"
-          fill="clear"
-          @click="openContactModal()"
-        >
-          <ion-icon :icon="mail"></ion-icon>
-        </ion-button>
+      <ion-col style="display: flex" class="ion-justify-content-center">
+        <h2>Trabajemos juntos</h2>
       </ion-col>
     </ion-row>
-  </ion-grid>
 
-  <ion-row>
-    <ion-col>
-      <Swiper
-        :modules="[Pagination, Navigation, Autoplay]"
-        :slides-per-view="slidesPerView"
-        :loop="true"
-        :pagination="{ clickable: true }"
-        :autoplay="{ delay: 3000, disableOnInteraction: false }"
-      >
-        <template v-for="platform in freelance" :key="platform.name">
-          <SwiperSlide
-            v-if="platform.comment"
-            :key="`${platform.name}-comment`"
+    <ion-grid>
+      <ion-row>
+        <ion-col
+          class="ion-justify-content-center ion-align-items-center"
+          style="display: flex"
+        >
+          <div
+            v-for="platform in freelance"
+            :key="platform.name"
+            style="cursor: pointer"
+            class="ion-padding-start ion-padding-end"
           >
-            <ion-card class="shadow-1">
-              <ion-item lines="full">
-                <ion-thumbnail slot="start">
-                  <img
-                    :src="platform.image"
-                    :alt="platform.name"
-                    style="height: 45px"
-                  />
-                </ion-thumbnail>
+            <img
+              style="width: 40px"
+              :src="platform.image"
+              :alt="platform.name"
+              @click="openUrl(platform.url)"
+            />
+          </div>
 
-                <ion-label>
-                  <h2>{{ platform.comment.title }}</h2>
+          <ion-button
+            v-if="showContactForm?.freelance"
+            size="large"
+            fill="clear"
+            @click="openContactModal()"
+          >
+            <ion-icon :icon="mail"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
 
-                  <div>
-                    <ion-icon
-                      v-for="n in platform.comment.rating"
-                      :key="n"
-                      :icon="starIcon"
-                      style="color: gold; font-size: 16px"
-                    ></ion-icon>
+    <ion-row>
+      <ion-col size="12">
+        <Swiper
+          :modules="[Pagination, Navigation, Autoplay]"
+          :slides-per-view="1"
+          :space-between="0"
+          :loop="true"
+          :centered-slides="true"
+          :pagination="{ clickable: true }"
+          :autoplay="{ delay: 3000, disableOnInteraction: false }"
+          class="swiper-container"
+        >
+          <template v-for="platform in freelance" :key="platform.name">
+            <SwiperSlide
+              v-if="platform.comment"
+              :key="`${platform.name}-comment`"
+            >
+              <ion-card class="shadow-1">
+                <ion-item lines="full">
+                  <ion-thumbnail slot="start">
+                    <img
+                      :src="platform.image"
+                      :alt="platform.name"
+                      style="height: 45px"
+                    />
+                  </ion-thumbnail>
+
+                  <ion-label>
+                    <h2>{{ platform.comment.title }}</h2>
+
+                    <div>
+                      <ion-icon
+                        v-for="n in platform.comment.rating"
+                        :key="n"
+                        :icon="starIcon"
+                        style="color: gold; font-size: 16px"
+                      ></ion-icon>
+                    </div>
+                  </ion-label>
+                </ion-item>
+
+                <div class="ion-padding-start">
+                  <div
+                    v-if="platform.comment.text"
+                    style="max-height: 200px; overflow: auto"
+                  >
+                    <p>{{ platform.comment.text }}</p>
                   </div>
-                </ion-label>
-              </ion-item>
-
-              <div class="ion-padding-start">
-                <div
-                  v-if="platform.comment.text"
-                  style="max-height: 200px; overflow: auto"
-                >
-                  <p>{{ platform.comment.text }}</p>
                 </div>
-              </div>
-            </ion-card>
-          </SwiperSlide>
-        </template>
-      </Swiper>
-    </ion-col>
-  </ion-row>
+              </ion-card>
+            </SwiperSlide>
+          </template>
+        </Swiper>
+      </ion-col>
+    </ion-row>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -148,3 +153,11 @@ async function openContactModal() {
   modal.present();
 }
 </script>
+
+<style scoped>
+.swiper-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+</style>

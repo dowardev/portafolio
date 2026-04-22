@@ -286,12 +286,11 @@
       </svg>
 
       <ion-grid id="section-colaboracion">
-        <ion-row style="height: 80dvh" class="ion-justify-content-center">
-          <ion-col
-            class="ion-justify-content-center"
-            size="5"
-            style="display: flex; flex-direction: column"
-          >
+        <ion-row
+          style="height: 80dvh; align-items: center"
+          class="ion-justify-content-center"
+        >
+          <ion-col size="12" size-lg="8">
             <FinalSection v-bind="$props" />
           </ion-col>
         </ion-row>

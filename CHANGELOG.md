@@ -1,5 +1,23 @@
 # Changelog
 
+## 12.14.1 - 2026-04-22
+
+### Summary
+This release improves the collaboration section layout with better centering, simplified column structure, and enhanced swiper configuration for better testimonial display.
+
+### Changed
+- Restructured FinalSection layout with improved centering using align-items: center
+- Simplified column sizes: size="12" size-lg="8" for better mobile-first responsive layout
+- Updated swiper configuration: slides-per-view="1", centered-slides, max-width 600px container
+- Refactored template structure with div wrapper for cleaner layout hierarchy
+
+### Affected Files
+- Modified:
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/presentation/sections/FinalSection.vue`
+
+---
+
 ## 12.14.0 - 2026-04-22
 
 ### Summary
