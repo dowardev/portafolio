@@ -1,5 +1,34 @@
 # Changelog
 
+## 12.14.0 - 2026-04-22
+
+### Summary
+This release adds responsive design improvements for mobile devices with adaptive layouts, dynamic height adjustments, and device-specific styling for the tech cloud and homepage components.
+
+### Added
+- Added mobile responsive styles in TechCloudBackground with media query for max-width: 576px
+- Added window resize listener with onResize() function for tracking viewport changes
+- Added isMobile computed property to detect mobile devices (window width <= 576px)
+- Added filteredBackgroundTechs computed property for dynamic tech cloud filtering
+- Added skills-grid responsive padding in HomeTemplate2 for mobile devices
+
+### Changed
+- Updated skills section column sizes: size="12" size-lg="8" for mobile-first responsive layout
+- Changed tech cloud height: 350px mobile, 600px desktop based on isMobile computed property
+- Changed icon size: 36px mobile, 50px desktop for better mobile readability
+- Reorganized imports in HomeTemplate2.vue (moved import statements to top-level)
+- Updated background-techs prop to use filteredBackgroundTechs computed property
+
+### TechCloudBackground.vue Changes
+- Added responsive styles: skills-section height (280px), main-icons gap (20px), section-title font-size (14px), floating-label font-size (9px)
+
+### Affected Files
+- Modified:
+  - `frontend/src/components/common/TechCloudBackground.vue`
+  - `frontend/src/templates/HomeTemplate2.vue`
+
+---
+
 ## 12.13.0 - 2026-04-22
 
 ### Summary

@@ -214,6 +214,25 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+@media (max-width: 576px) {
+  .skills-section {
+    height: 280px !important;
+  }
+
+  .main-icons {
+    gap: 20px !important;
+  }
+
+  .section-title {
+    font-size: 14px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .floating-label {
+    font-size: 9px !important;
+  }
+}
+
 .skills-section {
   position: relative;
   width: 100%;

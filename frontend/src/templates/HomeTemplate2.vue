@@ -189,26 +189,19 @@
       <!-- skills -->
       <ion-grid id="section-skills" class="skills-grid">
         <ion-row class="ion-justify-content-center">
-          <ion-col size="8">
+          <ion-col size="12" size-lg="8">
             <!-- TODO:implement project filter by technology -->
             <TechCloudBackground
               title="My Skillsets"
-              :height="600"
+              :height="isMobile ? 350 : 600"
               :main-icons="[
                 { name: 'Vue', svg: vueIcon },
                 { name: 'Ionic', svg: ionicIcon },
                 { name: 'Laravel', svg: laravelIcon },
                 { name: 'MariaDb', svg: mariadbIcon },
               ]"
-              :icon-size="50"
-              :background-techs="[
-                { name: 'capacitor' },
-                { name: 'javascript' },
-                { name: 'CSS' },
-                { name: 'TypeScript' },
-                { name: 'Linux' },
-                { name: 'Pinia' },
-              ]"
+              :icon-size="isMobile ? 36 : 50"
+              :background-techs="filteredBackgroundTechs"
               bg-color="#ffffff"
               title-color="#000000"
               label-color="var(--ion-text-color-step-400)"
@@ -332,12 +325,42 @@ import {
   IonPage,
 } from "@ionic/vue";
 import { useRouter } from "vue-router";
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
+
+import TechCloudBackground from "@/components/common/TechCloudBackground.vue";
+import FinalSection from "@/views/presentation/sections/FinalSection.vue";
+import ProjectCard from "@/components/projects/ProjectCard.vue";
+import ExperienceCard from "@/components/experience/ExperienceCard.vue";
+import type { HomePageData } from "@/services/types";
+import {
+  chatbox,
+  logoGitlab,
+  logoLinkedin,
+  logoMastodon,
+} from "ionicons/icons";
+import vueIcon from "@/assets/otros/vue-js-1.svg";
+import mariadbIcon from "@/assets/otros/mariadb-icon.svg";
+import ionicIcon from "@/assets/otros/ionicframework-icon.svg";
+import laravelIcon from "@/assets/otros/laravel-2.svg";
 
 const router = useRouter();
+const props = defineProps<Partial<HomePageData>>();
 
 const contentRef = ref();
 const activeSection = ref("section-yo");
+const windowWidth = ref(window.innerWidth);
+const isMobile = computed(() => windowWidth.value <= 576);
+
+const backgroundTechs = [
+  { name: "capacitor" },
+  { name: "javascript" },
+  { name: "CSS" },
+  { name: "TypeScript" },
+  { name: "Linux" },
+  { name: "Pinia" },
+];
+
+const filteredBackgroundTechs = computed(() => backgroundTechs);
 
 const sections = [
   { id: "section-yo" },
@@ -389,32 +412,19 @@ const setupIntersectionObserver = () => {
   });
 };
 
+const onResize = () => {
+  windowWidth.value = window.innerWidth;
+};
+
 onMounted(() => {
+  window.addEventListener("resize", onResize);
   setTimeout(setupIntersectionObserver, 100);
 });
 
 onUnmounted(() => {
   observer?.disconnect();
+  window.removeEventListener("resize", onResize);
 });
-
-import TechCloudBackground from "@/components/common/TechCloudBackground.vue";
-import FinalSection from "@/views/presentation/sections/FinalSection.vue";
-import ProjectCard from "@/components/projects/ProjectCard.vue";
-import ExperienceCard from "@/components/experience/ExperienceCard.vue";
-import type { HomePageData } from "@/services/types";
-
-// declare component props so $props contains the passed template data
-const props = defineProps<Partial<HomePageData>>();
-import {
-  chatbox,
-  logoGitlab,
-  logoLinkedin,
-  logoMastodon,
-} from "ionicons/icons";
-import vueIcon from "@/assets/otros/vue-js-1.svg";
-import mariadbIcon from "@/assets/otros/mariadb-icon.svg";
-import ionicIcon from "@/assets/otros/ionicframework-icon.svg";
-import laravelIcon from "@/assets/otros/laravel-2.svg";
 </script>
 
 <style scoped>
@@ -502,6 +512,12 @@ import laravelIcon from "@/assets/otros/laravel-2.svg";
   .projects-row,
   .experience-row {
     height: 64dvh;
+  }
+}
+
+@media (max-width: 576px) {
+  .skills-grid {
+    padding: 0 8px;
   }
 }
 
