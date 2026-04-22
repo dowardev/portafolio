@@ -13,12 +13,13 @@
     <ion-content>
       <ion-grid>
         <ion-row class="ion-justify-content-center">
-          <ion-col size-xs="12" size-sm="8" size-lg="6">
+          <ion-col size="12">
             <ion-row>
               <ion-col
                 v-for="(project, index) in projects"
                 :key="index"
-                size="4"
+                size="12"
+                size-lg="4"
               >
                 <ProjectCard :project="project" />
               </ion-col>

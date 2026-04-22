@@ -12,12 +12,13 @@
 
     <ion-content>
       <ion-row class="ion-justify-content-center">
-        <ion-col size-xs="12" size-sm="8" size-lg="6">
+        <ion-col size="12">
           <ion-row>
             <ion-col
               v-for="experience in sortedExperiences"
               :key="experience.title"
-              size="4"
+              size="12"
+              size-lg="4"
             >
               <ExperienceCard :experience="experience" />
             </ion-col>

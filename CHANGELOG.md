@@ -1,5 +1,23 @@
 # Changelog
 
+## 12.15.1 - 2026-04-22
+
+### Summary
+This release improves the responsive layout for experience and portfolio pages by simplifying column sizing and using a more consistent mobile-first approach.
+
+### Changed
+- Updated ExperiencePage.vue: simplified outer ion-col to size="12" for full-width mobile layout
+- Updated ExperiencePage.vue: changed inner ion-col to size="12" size-lg="4" for stacked mobile and grid desktop
+- Updated PortfolioPage.vue: simplified outer ion-col to size="12" for full-width mobile layout
+- Updated PortfolioPage.vue: changed inner ion-col to size="12" size-lg="4" for stacked mobile and grid desktop
+
+### Affected Files
+- Modified:
+  - `frontend/src/views/experience/ExperiencePage.vue`
+  - `frontend/src/views/portfolio/PortfolioPage.vue`
+
+---
+
 ## 12.15.0 - 2026-04-22
 
 ### Summary
