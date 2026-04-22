@@ -13,13 +13,50 @@
                   />
                 </ion-avatar>
 
-                <ion-button fill="clear">Yo</ion-button>
+                <ion-button
+                  fill="clear"
+                  class="nav-btn"
+                  :class="{ active: activeSection === 'section-yo' }"
+                  @click="scrollToSection('section-yo')"
+                >
+                  Yo
+                </ion-button>
 
-                <ion-button fill="clear">Experiencia</ion-button>
+                <ion-button
+                  fill="clear"
+                  class="nav-btn"
+                  :class="{ active: activeSection === 'section-proyectos' }"
+                  @click="scrollToSection('section-proyectos')"
+                >
+                  Proyectos
+                </ion-button>
 
-                <ion-button fill="clear">Proyectos</ion-button>
+                <ion-button
+                  fill="clear"
+                  class="nav-btn"
+                  :class="{ active: activeSection === 'section-skills' }"
+                  @click="scrollToSection('section-skills')"
+                >
+                  Skills
+                </ion-button>
 
-                <ion-button fill="clear">Colaboración</ion-button>
+                <ion-button
+                  fill="clear"
+                  class="nav-btn"
+                  :class="{ active: activeSection === 'section-experiencia' }"
+                  @click="scrollToSection('section-experiencia')"
+                >
+                  Experiencia
+                </ion-button>
+
+                <ion-button
+                  fill="clear"
+                  class="nav-btn"
+                  :class="{ active: activeSection === 'section-colaboracion' }"
+                  @click="scrollToSection('section-colaboracion')"
+                >
+                  Colaboración
+                </ion-button>
               </div>
             </ion-col>
           </ion-row>
@@ -27,10 +64,14 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content>
-      <ion-grid>
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="4">
+    <ion-content ref="contentRef">
+      <ion-grid id="section-yo">
+        <ion-row style="height: 80dvh" class="ion-justify-content-center">
+          <ion-col
+            class="ion-justify-content-center"
+            size="4"
+            style="display: flex; flex-direction: column"
+          >
             <h2 style="text-align: center">Hola, Soy {{ name }}.</h2>
 
             <p style="text-align: center">
@@ -84,9 +125,22 @@
         ></path>
       </svg>
 
-      <ion-grid style="background: #0099ff">
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="6">
+      <!-- projects -->
+      <ion-grid id="section-proyectos" style="background: #0099ff">
+        <ion-row style="height: 64dvh" class="ion-justify-content-center">
+          <ion-col
+            class="ion-justify-content-center"
+            size="6"
+            style="display: flex; flex-direction: column"
+          >
+            <div
+              class="ion-padding-bottom"
+              style="display: flex; justify-content: center"
+            >
+              <h2 style="font-size: 34px; color: var(--ion-color-light)">
+                Proyectos mas recientes
+              </h2>
+            </div>
             <ion-list>
               <ion-list-header>
                 <ion-label>Proyectos</ion-label>
@@ -128,7 +182,7 @@
       </svg>
 
       <!-- skills -->
-      <ion-grid class="skills-grid">
+      <ion-grid id="section-skills" class="skills-grid">
         <ion-row class="ion-justify-content-center">
           <ion-col size="8">
             <!-- TODO:implement project filter by technology -->
@@ -175,9 +229,13 @@
       </svg>
 
       <!-- experience -->
-      <ion-grid style="background: #0099ff">
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="6">
+      <ion-grid id="section-experiencia" style="background: #0099ff">
+        <ion-row style="height: 64dvh" class="ion-justify-content-center">
+          <ion-col
+            class="ion-justify-content-center"
+            size="6"
+            style="display: flex; flex-direction: column"
+          >
             <ion-list>
               <ion-list-header>
                 <ion-label>Experiencia</ion-label>
@@ -218,25 +276,29 @@
         ></path>
       </svg>
 
-      <ion-grid>
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="5">
+      <ion-grid id="section-colaboracion">
+        <ion-row style="height: 80dvh" class="ion-justify-content-center">
+          <ion-col
+            class="ion-justify-content-center"
+            size="5"
+            style="display: flex; flex-direction: column"
+          >
             <FinalSection v-bind="$props" />
           </ion-col>
         </ion-row>
       </ion-grid>
     </ion-content>
 
-    <ion-footer>
-      <div class="ion-padding-start">
-        <p>
-          <a href="https://gitlab.com/dowardev/portafolio" target="_blank"
-            >Código fuente</a
-          >
-          bajo la licencia gpl-3.0.
-        </p>
-      </div>
-    </ion-footer>
+    <!-- <ion-footer> -->
+    <!--   <div class="ion-padding-start"> -->
+    <!--     <p> -->
+    <!--       <a href="https://gitlab.com/dowardev/portafolio" target="_blank" -->
+    <!--         >Código fuente</a -->
+    <!--       > -->
+    <!--       bajo la licencia gpl-3.0. -->
+    <!--     </p> -->
+    <!--   </div> -->
+    <!-- </ion-footer> -->
   </ion-page>
 </template>
 
@@ -254,8 +316,70 @@ import {
   IonPage,
 } from "@ionic/vue";
 import { useRouter } from "vue-router";
+import { ref, onMounted, onUnmounted } from "vue";
 
 const router = useRouter();
+
+const contentRef = ref();
+const activeSection = ref("section-yo");
+
+const sections = [
+  { id: "section-yo" },
+  { id: "section-proyectos" },
+  { id: "section-skills" },
+  { id: "section-experiencia" },
+  { id: "section-colaboracion" },
+];
+
+let observer: IntersectionObserver | null = null;
+
+const scrollToSection = async (sectionId: string) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    activeSection.value = sectionId;
+  }
+};
+
+const setupIntersectionObserver = () => {
+  observer = new IntersectionObserver(
+    (entries) => {
+      let topSection: IntersectionObserverEntry | null = null;
+      let minTop = Infinity;
+
+      for (const entry of entries) {
+        const rect = (entry.target as HTMLElement).getBoundingClientRect();
+        const sectionTop = rect.top;
+
+        if (sectionTop >= 0 && sectionTop < minTop) {
+          minTop = sectionTop;
+          topSection = entry;
+        }
+      }
+
+      if (topSection) {
+        activeSection.value = topSection.target.id;
+      }
+    },
+    {
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+      rootMargin: "-10% 0px -50% 0px",
+    },
+  );
+
+  sections.forEach(({ id }) => {
+    const el = document.getElementById(id);
+    if (el) observer?.observe(el);
+  });
+};
+
+onMounted(() => {
+  setTimeout(setupIntersectionObserver, 100);
+});
+
+onUnmounted(() => {
+  observer?.disconnect();
+});
 
 import TechCloudBackground from "@/components/common/TechCloudBackground.vue";
 import FinalSection from "@/views/presentation/sections/FinalSection.vue";
@@ -283,6 +407,27 @@ import laravelIcon from "@/assets/otros/laravel-2.svg";
   align-items: center;
   justify-content: center;
   gap: 16px;
+}
+
+.nav-btn {
+  position: relative;
+}
+
+.nav-btn::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 100%;
+  height: 2px;
+  background: var(--ion-color-primary, #0099ff);
+  border-radius: 2px;
+  transition: transform 0.3s ease;
+}
+
+.nav-btn.active::after {
+  transform: translateX(-50%) scaleX(1);
 }
 
 .tech-cloud-bg {

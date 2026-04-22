@@ -1,5 +1,28 @@
 # Changelog
 
+## 12.11.0 - 2026-04-21
+
+### Summary
+This release adds smooth scroll navigation to the homepage with section tracking and active state indicators for better user experience.
+
+### Added
+- Added scrollToSection() function for smooth navigation to page sections
+- Added IntersectionObserver for tracking visible sections and updating active state
+- Added activeSection ref state for managing currently visible section
+- Added nav-btn styles with animated underline for active navigation buttons
+
+### Changed
+- Added section IDs to all page sections (section-yo, section-proyectos, section-skills, section-experiencia, section-colaboracion)
+- Updated navigation buttons with click handlers to scroll to corresponding sections
+- Added active class binding to navigation buttons based on current section
+- Updated footer to be commented out (temporary removal)
+
+### Affected Files
+- Modified:
+  - `frontend/src/templates/HomeTemplate2.vue`
+
+---
+
 ## 12.10.0 - 2026-04-21
 
 ### Summary
