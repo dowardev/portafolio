@@ -65,11 +65,13 @@
     </ion-header>
 
     <ion-content ref="contentRef">
+      <!-- profile -->
       <ion-grid id="section-yo">
         <ion-row style="height: 80dvh" class="ion-justify-content-center">
           <ion-col
             class="ion-justify-content-center"
-            size="4"
+            size="12"
+            size-lg="4"
             style="display: flex; flex-direction: column"
           >
             <h2 style="text-align: center">Hola, Soy {{ name }}.</h2>
@@ -127,10 +129,11 @@
 
       <!-- projects -->
       <ion-grid id="section-proyectos" style="background: #0099ff">
-        <ion-row style="height: 64dvh" class="ion-justify-content-center">
+        <ion-row class="projects-row ion-justify-content-center">
           <ion-col
             class="ion-justify-content-center"
-            size="6"
+            size="12"
+            size-lg="8"
             style="display: flex; flex-direction: column"
           >
             <div
@@ -141,6 +144,7 @@
                 Proyectos mas recientes
               </h2>
             </div>
+
             <ion-list>
               <ion-list-header>
                 <ion-label>Proyectos</ion-label>
@@ -155,7 +159,8 @@
                   <ion-col
                     v-for="project in props.projects?.slice(0, 3)"
                     :key="project.title"
-                    size="4"
+                    size="12"
+                    size-lg="4"
                   >
                     <ProjectCard :project="project" />
                   </ion-col>
@@ -230,12 +235,22 @@
 
       <!-- experience -->
       <ion-grid id="section-experiencia" style="background: #0099ff">
-        <ion-row style="height: 64dvh" class="ion-justify-content-center">
+        <ion-row class="experience-row ion-justify-content-center">
           <ion-col
             class="ion-justify-content-center"
-            size="6"
+            size="12"
+            size-lg="8"
             style="display: flex; flex-direction: column"
           >
+            <div
+              class="ion-padding-bottom"
+              style="display: flex; justify-content: center"
+            >
+              <h2 style="font-size: 34px; color: var(--ion-color-light)">
+                Experiencias
+              </h2>
+            </div>
+
             <ion-list>
               <ion-list-header>
                 <ion-label>Experiencia</ion-label>
@@ -250,7 +265,8 @@
                   <ion-col
                     v-for="exp in props.experience?.slice(0, 3)"
                     :key="exp.title"
-                    size="4"
+                    size="12"
+                    size-lg="4"
                   >
                     <ExperienceCard :experience="exp" />
                   </ion-col>
@@ -475,6 +491,18 @@ import laravelIcon from "@/assets/otros/laravel-2.svg";
 /* Pull the skills section up to sit closer to the lower wave */
 .skills-grid {
   margin-top: -8px; /* adjust -4px..-12px if you want it closer/further */
+}
+
+.projects-row,
+.experience-row {
+  height: 124dvh;
+}
+
+@media (min-width: 992px) {
+  .projects-row,
+  .experience-row {
+    height: 64dvh;
+  }
 }
 
 /* ion-content { */

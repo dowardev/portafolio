@@ -28,8 +28,8 @@
                 {{ project.title }}
               </h2>
 
-              <ion-text :color="getStatusColor(project.status)">
-                {{ getStatusText(project.status) }}
+              <ion-text :color="getStatusColor({ status: project.status })">
+                {{ getStatusText({ status: project.status }) }}
               </ion-text>
             </ion-label>
           </ion-item>
@@ -38,7 +38,7 @@
             <ion-icon slot="start" :icon="briefcaseOutline"></ion-icon>
 
             <ion-label
-              :ref="(el: any) => sourceLabel = el?.$el ?? el"
+              :ref="(el: unknown) => sourceLabel = (el as { $el?: HTMLElement })?.$el ?? el as HTMLElement"
               v-tooltip="{
                 content: isTruncated ? project.source.name : undefined,
                 trigger: 'mouseenter',
@@ -57,18 +57,18 @@
               >
                 <div style="display: flex; gap: 6px">
                   <template
-                    v-for="(tech, techIndex) in project.technologies"
-                    :key="techIndex"
+                    v-for="(technology, technologyIndex) in project.technologies"
+                    :key="technologyIndex"
                   >
                     <ion-icon
                       v-tooltip="{
-                        content: getTechLabel(tech.iconName),
+                        content: getTechLabel({ iconName: technology.iconName }),
                         trigger: 'mouseenter',
                         touch: 'hold',
                       }"
-                      :icon="getIconByName(tech.iconName)"
+                      :icon="getIconByName({ source: technology.iconName })"
                       :style="{
-                        color: getIconColor(tech.iconName),
+                        color: getIconColor(technology.iconName),
                       }"
                       style="font-size: 18px"
                     ></ion-icon>
@@ -126,6 +126,7 @@
 </template>
 
 <script setup lang="ts">
+// imports
 import {
   IonCard,
   IonRow,
@@ -135,11 +136,9 @@ import {
   IonIcon,
   IonText,
   IonButton,
+  IonCardContent,
 } from "@ionic/vue";
 import { ref, nextTick, onMounted, onUnmounted, watch } from "vue";
-import type { ProjectItem } from "@/services/types";
-import { vTooltip } from "@/directives/tooltip";
-import { useIconColors } from "@/composables/useIconColors";
 import * as ionicons from "ionicons/icons";
 import {
   arrowBackOutline,
@@ -147,18 +146,24 @@ import {
   informationCircleOutline,
   openOutline,
 } from "ionicons/icons";
+import type { ProjectItem } from "@/services/types";
+import { vTooltip } from "@/directives/tooltip";
+import { useIconColors } from "@/composables/useIconColors";
+// end imports
+
+// interface and types imports
+interface Props {
+  project: ProjectItem;
+  flipped?: boolean;
+}
+// end interface and types imports
 
 const { getIconColor } = useIconColors();
 
-const props = withDefaults(
-  defineProps<{
-    project: ProjectItem;
-    flipped?: boolean;
-  }>(),
-  {
-    flipped: false,
-  },
-);
+// main
+const props = withDefaults(defineProps<Props>(), {
+  flipped: false,
+});
 
 const isFlipped = ref(props.flipped);
 let sourceLabel: HTMLElement | null = null;
@@ -167,16 +172,20 @@ const isTruncated = ref(false);
 const isTitleTruncated = ref(false);
 
 let resizeObserver: ResizeObserver | null = null;
+// end main
 
-function checkTruncation() {
-  if (sourceLabel) {
-    isTruncated.value = sourceLabel.scrollWidth > sourceLabel.clientWidth;
-  }
-  if (titleRef.value) {
-    isTitleTruncated.value = titleRef.value.scrollWidth > titleRef.value.clientWidth;
-  }
-}
+// watch
+watch(
+  () => props.project,
+  () => {
+    nextTick(() => {
+      setTimeout(checkTruncation, 100);
+    });
+  },
+);
+// end watch
 
+// onmounted
 onMounted(async () => {
   await nextTick();
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -189,28 +198,36 @@ onMounted(async () => {
   if (sourceLabel) resizeObserver.observe(sourceLabel);
   if (titleRef.value) resizeObserver.observe(titleRef.value);
 });
+// end onmounted
 
+// onUnmounted
 onUnmounted(() => {
   resizeObserver?.disconnect();
 });
+// end onUnmounted
 
-watch(() => props.project, () => {
-  nextTick(() => {
-    setTimeout(checkTruncation, 100);
-  });
-});
-
+// functions
 function toggleFlip() {
   isFlipped.value = !isFlipped.value;
 }
 
-function getIconByName(source: string) {
+function checkTruncation() {
+  if (sourceLabel) {
+    isTruncated.value = sourceLabel.scrollWidth > sourceLabel.clientWidth;
+  }
+  if (titleRef.value) {
+    isTitleTruncated.value = titleRef.value.scrollWidth > titleRef.value.clientWidth;
+  }
+}
+
+function getIconByName({ source }: { source: string }) {
   if (!source) return ionicons.helpCircleOutline;
   const icon = ionicons[source as keyof typeof ionicons];
   return icon || ionicons.helpCircleOutline;
 }
 
-function getTechLabel(iconName: string): string {
+function getTechLabel({ iconName }: { iconName: string }) {
+  const { iconName: name } = { iconName };
   const labels: Record<string, string> = {
     logoVue: "Vue.js",
     logoReact: "React",
@@ -258,21 +275,22 @@ function getTechLabel(iconName: string): string {
     cloudOutline: "Cloud",
     hardwareChipOutline: "Hardware",
   };
-  return labels[iconName] || iconName;
+  return labels[name] || name;
 }
 
-function getStatusText(status: string) {
+function getStatusText({ status }: { status: string }) {
   if (status === "progress") return "En progreso";
   if (status === "indeterminate") return "Indeterminado";
   return "Terminado";
 }
 
-function getStatusColor(status: string) {
+function getStatusColor({ status }: { status: string }) {
   if (status === "finished") return "success";
   if (status === "indeterminate") return "warning";
   if (status === "progress") return "primary";
   return "medium";
 }
+// end functions
 </script>
 
 <style scoped>

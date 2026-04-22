@@ -1,5 +1,30 @@
 # Changelog
 
+## 12.13.0 - 2026-04-22
+
+### Summary
+This release introduces responsive design improvements for mobile devices and refactors the ProjectCard component with improved TypeScript typing and function parameter patterns.
+
+### Added
+- Added responsive column sizes for mobile devices (size="12" size-lg="X")
+- Added projects-row and experience-row CSS classes with responsive heights
+- Added explicit title for experience section
+
+### Changed
+- Updated column layouts: profile section (12/4), projects (12/8), project cards (12/4)
+- Changed row heights: 124dvh mobile, 64dvh desktop
+- Converted function parameters to object destructuring pattern (getStatusColor, getStatusText, getIconByName, getTechLabel)
+- Improved TypeScript typing in ref declarations and Props interface
+- Added missing IonCardContent import
+- Reorganized imports with structured comments
+
+### Affected Files
+- Modified:
+  - `frontend/src/components/projects/ProjectCard.vue`
+  - `frontend/src/templates/HomeTemplate2.vue`
+
+---
+
 ## 12.12.0 - 2026-04-22
 
 ### Summary
