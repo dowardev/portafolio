@@ -16,7 +16,17 @@
             </ion-thumbnail>
 
             <ion-label>
-              <h2>{{ project.title }}</h2>
+              <h2
+                ref="titleRef"
+                v-tooltip="{
+                  content: isTitleTruncated ? project.title : undefined,
+                  trigger: 'mouseenter',
+                  touch: 'hold',
+                }"
+                class="truncate-title"
+              >
+                {{ project.title }}
+              </h2>
 
               <ion-text :color="getStatusColor(project.status)">
                 {{ getStatusText(project.status) }}
@@ -28,8 +38,9 @@
             <ion-icon slot="start" :icon="briefcaseOutline"></ion-icon>
 
             <ion-label
+              :ref="(el: any) => sourceLabel = el?.$el ?? el"
               v-tooltip="{
-                content: project.source.name,
+                content: isTruncated ? project.source.name : undefined,
                 trigger: 'mouseenter',
                 touch: 'hold',
               }"
@@ -125,7 +136,7 @@ import {
   IonText,
   IonButton,
 } from "@ionic/vue";
-import { ref } from "vue";
+import { ref, nextTick, onMounted, onUnmounted, watch } from "vue";
 import type { ProjectItem } from "@/services/types";
 import { vTooltip } from "@/directives/tooltip";
 import { useIconColors } from "@/composables/useIconColors";
@@ -150,6 +161,44 @@ const props = withDefaults(
 );
 
 const isFlipped = ref(props.flipped);
+let sourceLabel: HTMLElement | null = null;
+const titleRef = ref<HTMLElement | null>(null);
+const isTruncated = ref(false);
+const isTitleTruncated = ref(false);
+
+let resizeObserver: ResizeObserver | null = null;
+
+function checkTruncation() {
+  if (sourceLabel) {
+    isTruncated.value = sourceLabel.scrollWidth > sourceLabel.clientWidth;
+  }
+  if (titleRef.value) {
+    isTitleTruncated.value = titleRef.value.scrollWidth > titleRef.value.clientWidth;
+  }
+}
+
+onMounted(async () => {
+  await nextTick();
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  checkTruncation();
+
+  resizeObserver = new ResizeObserver(() => {
+    checkTruncation();
+  });
+
+  if (sourceLabel) resizeObserver.observe(sourceLabel);
+  if (titleRef.value) resizeObserver.observe(titleRef.value);
+});
+
+onUnmounted(() => {
+  resizeObserver?.disconnect();
+});
+
+watch(() => props.project, () => {
+  nextTick(() => {
+    setTimeout(checkTruncation, 100);
+  });
+});
 
 function toggleFlip() {
   isFlipped.value = !isFlipped.value;
@@ -309,6 +358,13 @@ function getStatusColor(status: string) {
   white-space: nowrap;
   width: 100%;
   display: block;
+}
+
+.truncate-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
 }
 
 .btn-footer-left {

@@ -69,7 +69,7 @@ export const vTooltip: Directive<HTMLElement, string | TooltipProps> = {
       const content =
         typeof binding.value === "string"
           ? binding.value
-          : binding.value?.content || "";
+          : binding.value?.content;
       const props: TooltipProps =
         typeof binding.value === "object" ? { ...binding.value } : {};
 
@@ -85,21 +85,30 @@ export const vTooltip: Directive<HTMLElement, string | TooltipProps> = {
       delete props.color;
       delete props.textColor;
 
-      tippy(el, {
-        content,
+      const tooltip = tippy(el, {
+        content: content || "",
         placement: "top",
         ...props,
       });
+
+      if (content === undefined || content === null || content === "") {
+        tooltip.disable();
+      }
     });
   },
   updated(el: HTMLElement, binding: DirectiveBinding<string | TooltipProps>) {
     const content =
       typeof binding.value === "string"
         ? binding.value
-        : binding.value?.content || "";
+        : binding.value?.content;
     const instance = (el as HTMLElement & { _tippy?: Instance<Props> })._tippy;
     if (instance) {
-      instance.setContent(content);
+      if (content === undefined || content === null || content === "") {
+        instance.disable();
+      } else {
+        instance.enable();
+        instance.setContent(content);
+      }
     }
   },
   unmounted(el: HTMLElement) {

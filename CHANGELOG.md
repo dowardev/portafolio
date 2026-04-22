@@ -1,5 +1,28 @@
 # Changelog
 
+## 12.12.0 - 2026-04-22
+
+### Summary
+This release adds smart tooltips that only appear when text is truncated in project cards, improving user experience by avoiding unnecessary tooltip displays.
+
+### Added
+- Added tooltip for project titles with ResizeObserver to detect when titles are truncated
+- Added isTitleTruncated and isTruncated refs for tracking text overflow
+- Added checkTruncation() function that compares scrollWidth vs clientWidth
+- Added truncate-title CSS class with ellipsis styling for title overflow
+
+### Changed
+- Updated vTooltip directive to enable/disable tooltips based on content presence
+- Modified tooltip.ts to disable tooltip instance when content is undefined, null, or empty string
+- Only show tooltips when text is actually truncated (scrollWidth > clientWidth)
+
+### Affected Files
+- Modified:
+  - `frontend/src/components/projects/ProjectCard.vue`
+  - `frontend/src/directives/tooltip.ts`
+
+---
+
 ## 12.11.0 - 2026-04-21
 
 ### Summary
