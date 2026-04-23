@@ -18,7 +18,7 @@ interface FreelanceData {
 export default class FreelanceController {
   async loadFreelance(): Promise<FreelanceData> {
     const data = await api.get<{ freelance: FreelanceItem[] }>({
-      url: "admin/get-homepage-info",
+      url: "get-freelance",
     });
 
     const freelanceItems = data.freelance || [];
@@ -61,8 +61,14 @@ export default class FreelanceController {
     files?: Record<string, File>,
   ): Promise<void> {
     const formData = new FormData();
-    formData.append("freelancePlatforms", JSON.stringify(platforms));
-    formData.append("freelanceComments", JSON.stringify(comments));
+    formData.append("freelance", JSON.stringify(
+      platforms.map((platform, index) => ({
+        name: platform.name,
+        image: platform.image,
+        url: platform.url,
+        comment: comments.find(c => c.platformName === platform.name) || null,
+      }))
+    ));
 
     if (files) {
       Object.entries(files).forEach(([key, file]) => {
@@ -71,7 +77,7 @@ export default class FreelanceController {
     }
 
     await api.post({
-      url: "admin/update-freelance-items",
+      url: "admin/update-freelance",
       data: formData,
       contentType: "multipart/form-data",
     });

@@ -1,24 +1,19 @@
 import { defineStore } from "pinia";
 import { ref, reactive } from "vue";
-import type { HomePageData } from "@/services/types";
 
-export const useHomeEditorStore = defineStore("homeEditor", () => {
+export const useIntroStore = defineStore("intro", () => {
   const saving = ref(false);
   const loading = ref(false);
 
-  const form = reactive<Omit<HomePageData, "projects">>({
+  const form = reactive({
     name: "",
-    tags: [],
+    tags: [] as string[],
     description: "",
-    socials: [],
-    logoUrl: null,
-    photoUrl: null,
-    stack: [],
-    skillCategories: [],
-    experience: [],
-    certificates: [],
-    freelance: [],
-    showContactForm: false,
+    socials: [] as Array<{ platform: string; url: string; iconName: string }>,
+    logoUrl: null as string | null,
+    photoUrl: null as string | null,
+    stack: [] as Array<{ name: string; image: string }>,
+    showContactForm: { socials: false, freelance: false },
   });
 
   const files = reactive({
@@ -33,13 +28,18 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
 
   const sectionFiles = reactive({
     stack: {} as Record<number, File>,
-    skills: {} as Record<string, File>,
-    experience: {} as Record<string, File>,
-    certificates: {} as Record<string, File>,
-    freelance: {} as Record<string, File>,
   });
 
-  function setData(data: HomePageData) {
+  function setData(data: {
+    name: string | null;
+    tags: string[];
+    description: string | null;
+    socials: Array<{ platform: string; url: string; iconName: string }>;
+    logoUrl: string | null;
+    photoUrl: string | null;
+    stack: Array<{ name: string; image: string }>;
+    showContactForm: { socials: boolean; freelance: boolean };
+  }) {
     form.name = data.name || "";
     form.tags = data.tags || [];
     form.description = data.description || "";
@@ -47,14 +47,7 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
     form.logoUrl = data.logoUrl;
     form.photoUrl = data.photoUrl;
     form.stack = data.stack || [];
-    form.skillCategories = data.skillCategories || [];
-    form.experience = data.experience || [];
-    form.certificates = data.certificates || [];
-    form.freelance = data.freelance || [];
-    form.showContactForm = data.showContactForm || {
-      socials: false,
-      freelance: false,
-    };
+    form.showContactForm = data.showContactForm || { socials: false, freelance: false };
     preview.logo = data.logoUrl || "";
     preview.photo = data.photoUrl || "";
   }
@@ -62,17 +55,13 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
   function getFormData(): FormData {
     const formData = new FormData();
     formData.append(
-      "payload",
+      "intro",
       JSON.stringify({
         name: form.name,
         tags: form.tags,
         description: form.description,
         socials: form.socials,
         stack: form.stack,
-        skillCategories: form.skillCategories,
-        experience: form.experience,
-        certificates: form.certificates,
-        freelance: form.freelance,
         showContactForm: form.showContactForm,
       }),
     );
@@ -88,22 +77,6 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
       formData.append(`stack_image_${index}`, file);
     }
 
-    for (const [key, file] of Object.entries(sectionFiles.skills)) {
-      formData.append(`skill_image_${key}`, file);
-    }
-
-    for (const [key, file] of Object.entries(sectionFiles.experience)) {
-      formData.append(key, file);
-    }
-
-    for (const [key, file] of Object.entries(sectionFiles.certificates)) {
-      formData.append(key, file);
-    }
-
-    for (const [key, file] of Object.entries(sectionFiles.freelance)) {
-      formData.append(key, file);
-    }
-
     return formData;
   }
 
@@ -115,20 +88,12 @@ export const useHomeEditorStore = defineStore("homeEditor", () => {
     form.logoUrl = null;
     form.photoUrl = null;
     form.stack = [];
-    form.skillCategories = [];
-    form.experience = [];
-    form.certificates = [];
-    form.freelance = [];
-    form.showContactForm = false;
+    form.showContactForm = { socials: false, freelance: false };
     files.logo = null;
     files.photo = null;
     preview.logo = "";
     preview.photo = "";
     Object.keys(sectionFiles.stack).forEach((key) => delete sectionFiles.stack[Number(key)]);
-    Object.keys(sectionFiles.skills).forEach((key) => delete sectionFiles.skills[key]);
-    Object.keys(sectionFiles.experience).forEach((key) => delete sectionFiles.experience[key]);
-    Object.keys(sectionFiles.certificates).forEach((key) => delete sectionFiles.certificates[key]);
-    Object.keys(sectionFiles.freelance).forEach((key) => delete sectionFiles.freelance[key]);
   }
 
   function setLoading(value: boolean) {

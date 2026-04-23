@@ -1,5 +1,55 @@
 # Changelog
 
+## 12.16.0 - 2026-04-22
+
+### Summary
+This release refactors the homepage data management from a monolithic structure into modular endpoints, allowing independent CRUD operations for each section. It also fixes a TypeScript type issue where `getdesignMode()` could return `void`.
+
+### Added
+- New `introController.ts` for intro section data loading and saving operations
+- New `introStore.ts` (renamed from homeEditorStore) for intro section state management
+- Separate backend API endpoints: `get-intro`, `get-projects`, `get-experiences`, `get-freelance`, `get-skills`, `get-certificates`
+- Separate admin API endpoints: `admin/update-intro`, `admin/update-projects`, `admin/update-experiences`, `admin/update-freelance`, `admin/update-skills`, `admin/update-certificates`
+
+### Changed
+- Split monolithic `HomePageController` into dedicated methods: `getIntro`, `getProjects`, `getExperiences`, `getFreelance`, `getSkills`, `getCertificates`
+- Renamed `homeEditorStore.ts` to `introStore.ts` for clearer scope
+- Updated all controllers to use granular endpoints instead of single `get-homepage-info`
+- Made auth token optional in APIController for public endpoints (no Authorization header when token is undefined)
+- Updated HomePresentationPage to load data in parallel using Promise.all
+
+### Fixed
+- TypeScript error in systemController.ts where `getdesignMode()` return type was `void | DesignMode` instead of `DesignMode`
+
+### Affected Files
+- Modified:
+  - `backend/app/Http/Controllers/Admin/HomePageController.php`
+  - `backend/routes/api.php`
+  - `frontend/src/controllers/APIController.ts`
+  - `frontend/src/controllers/certificatesController.ts`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/controllers/freelanceController.ts`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/controllers/skillsController.ts`
+  - `frontend/src/controllers/systemController.ts`
+- Added:
+  - `frontend/src/controllers/introController.ts`
+  - `frontend/src/store/introStore.ts`
+- Deleted:
+  - `frontend/src/controllers/homeEditorController.ts`
+  - `frontend/src/store/homeEditorStore.ts`
+- Modified:
+  - `frontend/src/views/admin/sections/AdminFreelancePage.vue`
+  - `frontend/src/views/admin/sections/AdminInfoPage.vue`
+  - `frontend/src/views/admin/sections/AdminStackPage.vue`
+  - `frontend/src/views/certificates/CertificatesPage.vue`
+  - `frontend/src/views/presentation/HomePresentationPage.vue`
+  - `frontend/src/views/presentation/certificates/CertificatesComponent.vue`
+  - `frontend/src/views/presentation/information/InformationComponent.vue`
+  - `frontend/src/views/presentation/skills/SkillsPage.vue`
+
+---
+
 ## 12.15.1 - 2026-04-22
 
 ### Summary

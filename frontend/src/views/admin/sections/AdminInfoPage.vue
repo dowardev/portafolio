@@ -23,11 +23,11 @@
 
         <ion-button
           v-tooltip="'Guardar cambios'"
-          :disabled="homeEditorStore.saving"
+          :disabled="introStore.saving"
           @click="infoEditorRef?.handleSubmit()"
         >
           <ion-spinner
-            v-if="homeEditorStore.saving"
+            v-if="introStore.saving"
             slot="start"
             name="crescent"
           ></ion-spinner>
@@ -57,7 +57,7 @@
         <ion-col size="4">
           <InfoEditor
             ref="infoEditorRef"
-            :tags="homeEditorStore.form.tags"
+            :tags="introStore.form.tags"
             :initial-data="initialData"
             :show-contact-form="contactForm"
             @remove-tag="handleRemoveTag"
@@ -91,25 +91,25 @@ import {
 } from "@ionic/vue";
 import { ref, computed, onMounted } from "vue";
 import InfoEditor from "../editors/InfoEditor.vue";
-import { useHomeEditorStore } from "@/store/homeEditorStore";
-import HomeEditorController from "@/controllers/homeEditorController";
+import { useIntroStore } from "@/store/introStore";
+import IntroController from "@/controllers/introController";
 import { bugOutline, saveOutline } from "ionicons/icons";
 
-const homeEditorStore = useHomeEditorStore();
-const homeEditorController = new HomeEditorController();
+const introStore = useIntroStore();
+const introController = new IntroController();
 const infoEditorRef = ref<InstanceType<typeof InfoEditor>>();
 const isDev = import.meta.env.DEV;
 
-// datos iniciales para el form del hijo (se actualiza cuando loadData termina)
+// datos iniciales para el form del hijo (se actualiza cuando loadIntro termina)
 const initialData = computed(() => ({
-  name: homeEditorStore.form.name,
-  description: homeEditorStore.form.description,
-  socials: homeEditorStore.form.socials,
+  name: introStore.form.name,
+  description: introStore.form.description,
+  socials: introStore.form.socials,
 }));
 
 // showContactForm como computed para manejar el tipo correcto
 const contactForm = computed(() => {
-  const val = homeEditorStore.form.showContactForm;
+  const val = introStore.form.showContactForm;
   if (typeof val === "boolean") {
     return { socials: val, freelance: val };
   }
@@ -118,30 +118,29 @@ const contactForm = computed(() => {
 
 // handlers de emits
 function handleRemoveTag(index: number) {
-  homeEditorStore.form.tags.splice(index, 1);
+  introStore.form.tags.splice(index, 1);
 }
 
 function handleAddTag(tag: string) {
-  if (!homeEditorStore.form.tags.includes(tag)) {
-    homeEditorStore.form.tags.push(tag);
+  if (!introStore.form.tags.includes(tag)) {
+    introStore.form.tags.push(tag);
   }
 }
 
 function handleReorderTags(tags: string[]) {
-  // replace with a shallow copy to ensure reactivity
-  homeEditorStore.form.tags = tags.slice();
+  introStore.form.tags = tags.slice();
 }
 
 function handleFileChange(payload: { file: File; type: "logo" | "photo" }) {
-  homeEditorStore.files[payload.type] = payload.file;
-  homeEditorStore.preview[payload.type] = URL.createObjectURL(payload.file);
+  introStore.files[payload.type] = payload.file;
+  introStore.preview[payload.type] = URL.createObjectURL(payload.file);
 }
 
 function handleUpdateContactForm(value: {
   socials: boolean;
   freelance: boolean;
 }) {
-  (homeEditorStore.form.showContactForm as any) = value;
+  (introStore.form.showContactForm as any) = value;
 }
 
 async function handleSave(payload: {
@@ -149,24 +148,30 @@ async function handleSave(payload: {
   description: string;
   socials: Array<{ platform: string; url: string; iconName: string }>;
 }) {
-  homeEditorStore.form.name = payload.name;
-  homeEditorStore.form.description = payload.description;
-  homeEditorStore.form.socials = payload.socials;
-  homeEditorStore.setSaving(true);
+  introStore.form.name = payload.name;
+  introStore.form.description = payload.description;
+  introStore.form.socials = payload.socials;
+  introStore.setSaving(true);
   try {
-    await homeEditorController.save(homeEditorStore.getFormData());
+    await introController.saveIntro(introStore.form, {
+      logo: introStore.files.logo || undefined,
+      photo: introStore.files.photo || undefined,
+      ...Object.fromEntries(
+        Object.entries(introStore.sectionFiles.stack).map(([k, v]) => [`stack_image_${k}`, v])
+      ),
+    });
   } finally {
-    homeEditorStore.setSaving(false);
+    introStore.setSaving(false);
   }
 }
 
 onMounted(async () => {
-  homeEditorStore.setLoading(true);
+  introStore.setLoading(true);
   try {
-    const data = await homeEditorController.loadData();
-    homeEditorStore.setData(data);
+    const data = await introController.loadIntro();
+    introStore.setData(data);
   } finally {
-    homeEditorStore.setLoading(false);
+    introStore.setLoading(false);
   }
 });
 </script>

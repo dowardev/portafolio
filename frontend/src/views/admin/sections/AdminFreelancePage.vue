@@ -10,12 +10,12 @@
       <ion-buttons slot="end">
         <ion-button
           expand="block"
-          :disabled="homeEditorStore.saving.value"
+          :disabled="saving"
           class="ion-margin-top"
-          @click="homeEditorStore.save"
+          @click="handleSave"
         >
           <ion-spinner
-            v-if="homeEditorStore.saving.value"
+            v-if="saving"
             slot="start"
           ></ion-spinner>
           <ion-icon :icon="saveOutline"></ion-icon>
@@ -29,7 +29,7 @@
       <ion-row class="ion-justify-content-center">
         <ion-col size="4">
           <FreelanceEditor
-            v-model="homeEditorStore.form.freelance"
+            v-model="freelanceData"
             @update:files="updateFreelanceFiles"
           />
         </ion-col>
@@ -49,26 +49,50 @@ import {
   IonButton,
   IonSpinner,
 } from "@ionic/vue";
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import FreelanceEditor from "../editors/FreelanceEditor.vue";
-import { useHomeEditorStore } from "@/store/homeEditorStore";
-import HomeEditorController from "@/controllers/homeEditorController";
+import FreelanceController from "@/controllers/freelanceController";
 import { saveOutline } from "ionicons/icons";
 
-const homeEditorStore = useHomeEditorStore();
-const homeEditorController = new HomeEditorController();
+const freelanceController = new FreelanceController();
+const freelanceData = ref<any[]>([]);
+const saving = ref(false);
+const freelanceFiles = ref<Record<string, File>>({});
 
 onMounted(async () => {
-  homeEditorStore.setLoading(true);
   try {
-    const data = await homeEditorController.loadData();
-    homeEditorStore.setData(data);
-  } finally {
-    homeEditorStore.setLoading(false);
+    const data = await freelanceController.loadFreelance();
+    freelanceData.value = data.freelance || [];
+  } catch (error) {
+    console.error("Error loading freelance:", error);
   }
 });
 
 function updateFreelanceFiles(fileMap: Record<string, File>) {
-  Object.assign(homeEditorStore.sectionFiles.freelance, fileMap);
+  Object.assign(freelanceFiles.value, fileMap);
+}
+
+async function handleSave() {
+  saving.value = true;
+  try {
+    const platforms = freelanceData.value.map(item => ({
+      name: item.name,
+      image: item.image,
+      url: item.url,
+    }));
+    const comments = freelanceData.value
+      .filter(item => item.comment)
+      .map(item => ({
+        platformName: item.name,
+        title: item.comment.title,
+        text: item.comment.text,
+        rating: item.comment.rating,
+      }));
+    await freelanceController.saveFreelance(platforms, comments, freelanceFiles.value);
+  } catch (error) {
+    console.error("Error saving freelance:", error);
+  } finally {
+    saving.value = false;
+  }
 }
 </script>

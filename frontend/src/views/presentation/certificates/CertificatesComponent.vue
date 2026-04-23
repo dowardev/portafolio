@@ -63,17 +63,17 @@ import { ref, onMounted } from "vue";
 import * as ionicons from "ionicons/icons";
 import type { CertificateItem } from "@/services/types";
 import { useIconColors } from "@/composables/useIconColors";
-import HomeEditorController from "@/controllers/homeEditorController";
+import CertificatesController from "@/controllers/certificatesController";
 
 const { getIconColor } = useIconColors();
-const homeEditorController = new HomeEditorController();
+const certificatesController = new CertificatesController();
 
 const certificates = ref<CertificateItem[]>([]);
 
 onMounted(async () => {
   try {
-    const data = await homeEditorController.loadPublicData();
-    certificates.value = data.certificates || [];
+    await certificatesController.loadPublicCertificates();
+    certificates.value = certificatesController.getCertificates();
   } catch (error) {
     console.error("Error loading certificates data:", error);
   }

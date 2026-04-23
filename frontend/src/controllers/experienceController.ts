@@ -20,17 +20,19 @@ export default class ExperienceController {
   private experienceStore = useExperienceStore();
   private toastController = new ToastController();
 
-  async loadPublicExperiences(): Promise<void> {
+  async loadPublicExperiences(): Promise<ExperienceItem[]> {
     if (this.experienceStore.loaded && this.experienceStore.experiences.length > 0) {
-      return;
+      return this.experienceStore.experiences;
     }
     this.experienceStore.setLoading(true);
     try {
-      const data = await api.get<ExperienceResponse>({ url: "get-homepage-info" });
+      const data = await api.get<ExperienceResponse>({ url: "get-experiences" });
       this.experienceStore.setExperiences(data.experience || []);
+      return data.experience || [];
     } catch (error) {
       console.error("Error loading experiences:", error);
       this.experienceStore.setExperiences([]);
+      return [];
     } finally {
       this.experienceStore.setLoading(false);
     }
@@ -58,12 +60,10 @@ export default class ExperienceController {
       }
 
       const formData = new FormData();
-      formData.append(
-        "payload",
-        JSON.stringify({ experience: this.experienceStore.experiences })
-      );
+      formData.append("experience", JSON.stringify(this.experienceStore.experiences));
+
       await api.post<ExperienceResponse>({
-        url: "admin/update-homepage-info",
+        url: "admin/update-experiences",
         data: formData,
         contentType: "multipart/form-data",
       });
@@ -87,12 +87,10 @@ export default class ExperienceController {
       this.experienceStore.deleteExperience(index);
 
       const formData = new FormData();
-      formData.append(
-        "payload",
-        JSON.stringify({ experience: this.experienceStore.experiences })
-      );
+      formData.append("experience", JSON.stringify(this.experienceStore.experiences));
+
       await api.post<ExperienceResponse>({
-        url: "admin/update-homepage-info",
+        url: "admin/update-experiences",
         data: formData,
         contentType: "multipart/form-data",
       });

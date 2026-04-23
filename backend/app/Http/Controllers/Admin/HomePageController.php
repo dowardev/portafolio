@@ -125,25 +125,243 @@ class HomePageController extends Controller
         return ltrim(str_replace(asset(''), '', $url), '/');
     }
 
-    public function show()
+public function getProjects()
     {
-        $homepage = HomePage::firstOrCreate(
-            ['id' => 1],
-            [
-                'name' => null,
-                'tags' => [],
-                'description' => null,
-                'socials' => [],
-                'logo_url' => null,
-                'photo_url' => null,
-                'stack' => [],
-                'skill_categories' => [],
-                'experience' => [],
-                'projects' => [],
-                'certificates' => [],
-                'freelance' => [],
-            ]
-        );
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['projects' => []]);
+        return response()->json(['projects' => $homepage->projects ?? []]);
+    }
+
+    public function getExperiences()
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['experience' => []]);
+        return response()->json(['experience' => $homepage->experience ?? []]);
+    }
+
+    public function getFreelance()
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['freelance' => []]);
+        return response()->json(['freelance' => $homepage->freelance ?? []]);
+    }
+
+    public function updateProjects(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['projects' => []]);
+
+        $currentImageUrls = [];
+        foreach ($homepage->projects ?? [] as $project) {
+            if (!empty($project['img'])) {
+                $currentImageUrls[] = $this->pathFromUrl($project['img']);
+            }
+        }
+
+        $projects = $request->input('projects', []);
+        if (is_string($projects)) {
+            $projects = json_decode($projects, true) ?? [];
+        }
+
+        foreach ($projects as $index => &$project) {
+            $fileKey = "project_image_{$index}";
+            if ($request->hasFile($fileKey)) {
+                $file = $request->file($fileKey);
+                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                Storage::disk('public')->put('homepage/projects/' . $fileName, file_get_contents($file));
+                $project['img'] = asset('storage/homepage/projects/' . $fileName);
+            }
+            $sourceFileKey = "project_source_image_{$index}";
+            if ($request->hasFile($sourceFileKey)) {
+                $file = $request->file($sourceFileKey);
+                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                Storage::disk('public')->put('homepage/projects/source/' . $fileName, file_get_contents($file));
+                $project['source']['img'] = asset('storage/homepage/projects/source/' . $fileName);
+            }
+        }
+
+        $homepage->projects = $projects;
+        $homepage->save();
+
+        $newImageUrls = [];
+        foreach ($projects as $project) {
+            if (!empty($project['img'])) {
+                $newImageUrls[] = $this->pathFromUrl($project['img']);
+            }
+        }
+        $this->deleteOldImages($currentImageUrls, $newImageUrls);
+
+        return response()->json(['projects' => $homepage->projects]);
+    }
+
+    public function updateExperiences(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['experience' => []]);
+
+        $currentImageUrls = [];
+        foreach ($homepage->experience ?? [] as $exp) {
+            if (!empty($exp['img'])) {
+                $currentImageUrls[] = $this->pathFromUrl($exp['img']);
+            }
+        }
+
+        $experience = $request->input('experience', []);
+        if (is_string($experience)) {
+            $experience = json_decode($experience, true) ?? [];
+        }
+
+        foreach ($experience as $index => &$exp) {
+            $fileKey = "exp_image_{$index}";
+            if ($request->hasFile($fileKey)) {
+                $file = $request->file($fileKey);
+                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                Storage::disk('public')->put('homepage/experience/' . $fileName, file_get_contents($file));
+                $exp['img'] = asset('storage/homepage/experience/' . $fileName);
+            }
+        }
+
+        $homepage->experience = $experience;
+        $homepage->save();
+
+        $newImageUrls = [];
+        foreach ($experience as $exp) {
+            if (!empty($exp['img'])) {
+                $newImageUrls[] = $this->pathFromUrl($exp['img']);
+            }
+        }
+        $this->deleteOldImages($currentImageUrls, $newImageUrls);
+
+        return response()->json(['experience' => $homepage->experience]);
+    }
+
+    public function updateFreelance(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['freelance' => []]);
+
+        $currentImageUrls = [];
+        foreach ($homepage->freelance ?? [] as $item) {
+            if (!empty($item['image'])) {
+                $currentImageUrls[] = $this->pathFromUrl($item['image']);
+            }
+        }
+
+        $freelance = $request->input('freelance', []);
+        if (is_string($freelance)) {
+            $freelance = json_decode($freelance, true) ?? [];
+        }
+
+        foreach ($freelance as $index => &$item) {
+            $fileKey = "freelance_image_{$index}";
+            if ($request->hasFile($fileKey)) {
+                $file = $request->file($fileKey);
+                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                Storage::disk('public')->put('homepage/freelance/' . $fileName, file_get_contents($file));
+                $item['image'] = asset('storage/homepage/freelance/' . $fileName);
+            }
+        }
+
+        $homepage->freelance = $freelance;
+        $homepage->save();
+
+        $newImageUrls = [];
+        foreach ($freelance as $item) {
+            if (!empty($item['image'])) {
+                $newImageUrls[] = $this->pathFromUrl($item['image']);
+            }
+        }
+        $this->deleteOldImages($currentImageUrls, $newImageUrls);
+
+        return response()->json(['freelance' => $homepage->freelance]);
+    }
+
+    public function getSkills()
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['skill_categories' => []]);
+        return response()->json(['skillCategories' => $homepage->skill_categories ?? []]);
+    }
+
+    public function getCertificates()
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['certificates' => []]);
+        return response()->json(['certificates' => $homepage->certificates ?? []]);
+    }
+
+    public function updateSkills(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['skill_categories' => []]);
+
+        $skillCategories = $request->input('skillCategories', []);
+        if (is_string($skillCategories)) {
+            $skillCategories = json_decode($skillCategories, true) ?? [];
+        }
+
+        $homepage->skill_categories = $skillCategories;
+        $homepage->save();
+
+        return response()->json(['skillCategories' => $homepage->skill_categories]);
+    }
+
+    public function updateCertificates(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['certificates' => []]);
+
+        $currentImageUrls = [];
+        foreach ($homepage->certificates ?? [] as $cert) {
+            if (!empty($cert['img'])) {
+                $currentImageUrls[] = $this->pathFromUrl($cert['img']);
+            }
+        }
+
+        $certificates = $request->input('certificates', []);
+        if (is_string($certificates)) {
+            $certificates = json_decode($certificates, true) ?? [];
+        }
+
+        foreach ($certificates as $index => &$cert) {
+            $fileKey = "cert_image_{$index}";
+            if ($request->hasFile($fileKey)) {
+                $file = $request->file($fileKey);
+                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                Storage::disk('public')->put('homepage/certificates/' . $fileName, file_get_contents($file));
+                $cert['img'] = asset('storage/homepage/certificates/' . $fileName);
+            }
+            if (isset($cert['aptitudes'])) {
+                foreach ($cert['aptitudes'] as $aptIndex => &$apt) {
+                    if ($apt['type'] === 'img') {
+                        $aptFileKey = "cert_apt_image_{$index}_{$aptIndex}";
+                        if ($request->hasFile($aptFileKey)) {
+                            $file = $request->file($aptFileKey);
+                            $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                            Storage::disk('public')->put('homepage/certificates/apt/' . $fileName, file_get_contents($file));
+                            $apt['source'] = asset('storage/homepage/certificates/apt/' . $fileName);
+                        }
+                    }
+                }
+            }
+        }
+
+        $homepage->certificates = $certificates;
+        $homepage->save();
+
+        $newImageUrls = [];
+        foreach ($certificates as $cert) {
+            if (!empty($cert['img'])) {
+                $newImageUrls[] = $this->pathFromUrl($cert['img']);
+            }
+        }
+        $this->deleteOldImages($currentImageUrls, $newImageUrls);
+
+        return response()->json(['certificates' => $homepage->certificates]);
+    }
+
+    public function getIntro()
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], [
+            'name' => null,
+            'tags' => [],
+            'description' => null,
+            'socials' => [],
+            'logo_url' => null,
+            'photo_url' => null,
+            'stack' => [],
+            'show_contact_form' => false,
+        ]);
 
         return response()->json([
             'name' => $homepage->name,
@@ -153,13 +371,8 @@ class HomePageController extends Controller
             'logoUrl' => $homepage->logo_url ? asset($homepage->logo_url) : null,
             'photoUrl' => $homepage->photo_url ? asset($homepage->photo_url) : null,
             'stack' => $homepage->stack ?? [],
-            'skillCategories' => $homepage->skill_categories ?? [],
-            'experience' => $homepage->experience ?? [],
-            'projects' => $homepage->projects ?? [],
-            'certificates' => $homepage->certificates ?? [],
-            'freelance' => $homepage->freelance ?? [],
-            'showContactForm' => is_array($homepage->show_contact_form) 
-                ? $homepage->show_contact_form 
+            'showContactForm' => is_array($homepage->show_contact_form)
+                ? $homepage->show_contact_form
                 : [
                     'socials' => (bool) ($homepage->show_contact_form ?? false),
                     'freelance' => (bool) ($homepage->show_contact_form ?? false),
@@ -167,67 +380,63 @@ class HomePageController extends Controller
         ]);
     }
 
-    public function update(Request $request)
+    public function updateIntro(Request $request)
     {
-        $homepage = HomePage::firstOrCreate(
-            ['id' => 1],
-            [
-                'name' => null,
-                'tags' => [],
-                'description' => null,
-                'socials' => [],
-                'logo_url' => null,
-                'photo_url' => null,
-                'stack' => [],
-                'skill_categories' => [],
-                'experience' => [],
-                'projects' => [],
-                'certificates' => [],
-                'freelance' => [],
-                'show_contact_form' => false,
-            ]
-        );
+        $homepage = HomePage::firstOrCreate(['id' => 1], [
+            'name' => null,
+            'tags' => [],
+            'description' => null,
+            'socials' => [],
+            'logo_url' => null,
+            'photo_url' => null,
+            'stack' => [],
+            'show_contact_form' => false,
+        ]);
 
-        $currentImageUrls = $this->getAllCurrentImageUrls($homepage);
-
-        $payload = $request->input('payload');
-        $payloadDecoded = json_decode($payload, true);
-
-        // Basic fields
-        if (isset($payloadDecoded['name'])) {
-            $homepage->name = $payloadDecoded['name'];
-        }
-        if (isset($payloadDecoded['tags'])) {
-            $homepage->tags = $payloadDecoded['tags'];
-        }
-        if (isset($payloadDecoded['description'])) {
-            $homepage->description = $payloadDecoded['description'];
-        }
-        if (isset($payloadDecoded['socials'])) {
-            $homepage->socials = $payloadDecoded['socials'];
-        }
-        if (isset($payloadDecoded['showContactForm'])) {
-            $homepage->show_contact_form = $payloadDecoded['showContactForm'];
-        }
-
-        // Logo and photo
         if ($request->hasFile('logo')) {
+            $oldLogo = $homepage->logo_url ? $this->pathFromUrl($homepage->logo_url) : null;
             $logo = $request->file('logo');
             $logoName = uniqid() . time() . '.' . $logo->getClientOriginalExtension();
             Storage::disk('public')->put('homepage/' . $logoName, file_get_contents($logo));
             $homepage->logo_url = 'storage/homepage/' . $logoName;
+            if ($oldLogo && Storage::disk('public')->exists($oldLogo)) {
+                Storage::disk('public')->delete($oldLogo);
+            }
         }
 
         if ($request->hasFile('photo')) {
+            $oldPhoto = $homepage->photo_url ? $this->pathFromUrl($homepage->photo_url) : null;
             $photo = $request->file('photo');
             $photoName = uniqid() . time() . '.' . $photo->getClientOriginalExtension();
             Storage::disk('public')->put('homepage/' . $photoName, file_get_contents($photo));
             $homepage->photo_url = 'storage/homepage/' . $photoName;
+            if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
+                Storage::disk('public')->delete($oldPhoto);
+            }
         }
 
-        // Stack images
-        if (isset($payloadDecoded['stack'])) {
-            $stack = $payloadDecoded['stack'];
+        $intro = $request->input('intro', []);
+        if (is_string($intro)) {
+            $intro = json_decode($intro, true) ?? [];
+        }
+
+        if (isset($intro['name'])) {
+            $homepage->name = $intro['name'];
+        }
+        if (isset($intro['tags'])) {
+            $homepage->tags = $intro['tags'];
+        }
+        if (isset($intro['description'])) {
+            $homepage->description = $intro['description'];
+        }
+        if (isset($intro['socials'])) {
+            $homepage->socials = $intro['socials'];
+        }
+        if (isset($intro['showContactForm'])) {
+            $homepage->show_contact_form = $intro['showContactForm'];
+        }
+        if (isset($intro['stack'])) {
+            $stack = $intro['stack'];
             foreach ($stack as $index => &$item) {
                 $fileKey = "stack_image_{$index}";
                 if ($request->hasFile($fileKey)) {
@@ -240,131 +449,7 @@ class HomePageController extends Controller
             $homepage->stack = $stack;
         }
 
-        // Skill categories
-        if (isset($payloadDecoded['skillCategories'])) {
-            $homepage->skill_categories = $payloadDecoded['skillCategories'];
-        }
-
-        // Experience images
-        if (isset($payloadDecoded['experience'])) {
-            $experience = $payloadDecoded['experience'];
-            foreach ($experience as $index => &$exp) {
-                // Main image
-                $fileKey = "exp_image_{$index}";
-                if ($request->hasFile($fileKey)) {
-                    $file = $request->file($fileKey);
-                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                    Storage::disk('public')->put('homepage/experience/' . $fileName, file_get_contents($file));
-                    $exp['img'] = asset('storage/homepage/experience/' . $fileName);
-                }
-                // Tech images (now only iconName)
-                if (isset($exp['technologies'])) {
-                    foreach ($exp['technologies'] as $techIndex => &$tech) {
-                        // Only process if iconName exists (new format)
-                        if (isset($tech['iconName'])) {
-                            // iconName is sent directly, no image upload needed
-                        }
-                    }
-                }
-            }
-            $homepage->experience = $experience;
-        }
-
-        // Projects images
-        if (isset($payloadDecoded['projects'])) {
-            $projects = $payloadDecoded['projects'];
-            foreach ($projects as $index => &$project) {
-                // Main image
-                $fileKey = "project_image_{$index}";
-                if ($request->hasFile($fileKey)) {
-                    $file = $request->file($fileKey);
-                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                    Storage::disk('public')->put('homepage/projects/' . $fileName, file_get_contents($file));
-                    $project['img'] = asset('storage/homepage/projects/' . $fileName);
-                }
-                // Source image
-                $sourceFileKey = "project_source_image_{$index}";
-                if ($request->hasFile($sourceFileKey)) {
-                    $file = $request->file($sourceFileKey);
-                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                    Storage::disk('public')->put('homepage/projects/source/' . $fileName, file_get_contents($file));
-                    $project['source']['img'] = asset('storage/homepage/projects/source/' . $fileName);
-                }
-                // Tech images (now only iconName)
-                if (isset($project['technologies'])) {
-                    foreach ($project['technologies'] as $techIndex => &$tech) {
-                        // Only process if iconName exists (new format)
-                        if (isset($tech['iconName'])) {
-                            // iconName is sent directly, no image upload needed
-                        }
-                    }
-                }
-            }
-            $homepage->projects = $projects;
-        }
-
-        // Certificates images
-        if (isset($payloadDecoded['certificates'])) {
-            $certificates = $payloadDecoded['certificates'];
-            foreach ($certificates as $index => &$cert) {
-                // Main image
-                $fileKey = "cert_image_{$index}";
-                if ($request->hasFile($fileKey)) {
-                    $file = $request->file($fileKey);
-                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                    Storage::disk('public')->put('homepage/certificates/' . $fileName, file_get_contents($file));
-                    $cert['img'] = asset('storage/homepage/certificates/' . $fileName);
-                }
-                // Aptitude images
-                if (isset($cert['aptitudes'])) {
-                    foreach ($cert['aptitudes'] as $aptIndex => &$apt) {
-                        if ($apt['type'] === 'img') {
-                            $aptFileKey = "cert_apt_image_{$index}_{$aptIndex}";
-                            if ($request->hasFile($aptFileKey)) {
-                                $file = $request->file($aptFileKey);
-                                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                                Storage::disk('public')->put('homepage/certificates/apt/' . $fileName, file_get_contents($file));
-                                $apt['source'] = asset('storage/homepage/certificates/apt/' . $fileName);
-                            }
-                        }
-                    }
-                }
-            }
-            $homepage->certificates = $certificates;
-        }
-
-        // Freelance images
-        if (isset($payloadDecoded['freelance'])) {
-            $freelance = $payloadDecoded['freelance'];
-            foreach ($freelance as $index => &$platform) {
-                // Platform image
-                $fileKey = "freelance_image_{$index}";
-                if ($request->hasFile($fileKey)) {
-                    $file = $request->file($fileKey);
-                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                    Storage::disk('public')->put('homepage/freelance/' . $fileName, file_get_contents($file));
-                    $platform['image'] = asset('storage/homepage/freelance/' . $fileName);
-                }
-                // Comment images
-                if (isset($platform['comments'])) {
-                    foreach ($platform['comments'] as $commentIndex => &$comment) {
-                        $commentFileKey = "freelance_comment_image_{$index}_{$commentIndex}";
-                        if ($request->hasFile($commentFileKey)) {
-                            $file = $request->file($commentFileKey);
-                            $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                            Storage::disk('public')->put('homepage/freelance/comments/' . $fileName, file_get_contents($file));
-                            $comment['image'] = asset('storage/homepage/freelance/comments/' . $fileName);
-                        }
-                    }
-                }
-            }
-            $homepage->freelance = $freelance;
-        }
-
         $homepage->save();
-
-        $newImageUrls = $this->getAllCurrentImageUrls($homepage);
-        $this->deleteOldImages($currentImageUrls, $newImageUrls);
 
         return response()->json([
             'name' => $homepage->name,
@@ -374,100 +459,12 @@ class HomePageController extends Controller
             'logoUrl' => $homepage->logo_url ? asset($homepage->logo_url) : null,
             'photoUrl' => $homepage->photo_url ? asset($homepage->photo_url) : null,
             'stack' => $homepage->stack ?? [],
-            'skillCategories' => $homepage->skill_categories ?? [],
-            'experience' => $homepage->experience ?? [],
-            'projects' => $homepage->projects ?? [],
-            'certificates' => $homepage->certificates ?? [],
-            'freelance' => $homepage->freelance ?? [],
-            'showContactForm' => is_array($homepage->show_contact_form) 
-                ? $homepage->show_contact_form 
+            'showContactForm' => is_array($homepage->show_contact_form)
+                ? $homepage->show_contact_form
                 : [
                     'socials' => (bool) ($homepage->show_contact_form ?? false),
                     'freelance' => (bool) ($homepage->show_contact_form ?? false),
                   ],
-        ]);
-    }
-
-    public function updateFreelanceItems(Request $request)
-    {
-        $homepage = HomePage::first();
-        if (!$homepage) {
-            $homepage = new HomePage();
-        }
-
-        $currentFreelance = $homepage->freelance ?? [];
-
-        $currentImageUrls = [];
-        foreach ($currentFreelance as $item) {
-            if (!empty($item['image'])) {
-                $currentImageUrls[] = $this->pathFromUrl($item['image']);
-            }
-        }
-
-        // Handle new separated format (freelancePlatforms + freelanceComments)
-        $platformsJson = $request->input('freelancePlatforms');
-        $commentsJson = $request->input('freelanceComments');
-        
-        $platforms = $platformsJson ? json_decode($platformsJson, true) : [];
-        $comments = $commentsJson ? json_decode($commentsJson, true) : [];
-        
-        // Convert separated format back to legacy format
-        $freelance = [];
-        
-        foreach ($platforms as $index => $platform) {
-            $platformItem = [
-                'name' => $platform['name'] ?? '',
-                'image' => $platform['image'] ?? '',
-                'url' => $platform['url'] ?? '',
-                'comment' => null,
-            ];
-            
-            // Find matching comment for this platform
-            foreach ($comments as $comment) {
-                if (($comment['platformName'] ?? '') === $platform['name']) {
-                    $platformItem['comment'] = [
-                        'title' => $comment['title'] ?? '',
-                        'text' => $comment['text'] ?? '',
-                        'rating' => $comment['rating'] ?? 5,
-                    ];
-                    break;
-                }
-            }
-            
-            $freelance[] = $platformItem;
-        }
-        
-        // Handle legacy format (direct freelance array)
-        $freelanceJson = $request->input('freelance');
-        if ($freelanceJson) {
-            $freelance = json_decode($freelanceJson, true) ?: [];
-        }
-
-        foreach ($freelance as $index => &$platform) {
-            // Platform image
-            $fileKey = "freelance_image_{$index}";
-            if ($request->hasFile($fileKey)) {
-                $file = $request->file($fileKey);
-                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                Storage::disk('public')->put('homepage/freelance/' . $fileName, file_get_contents($file));
-                $platform['image'] = asset('storage/homepage/freelance/' . $fileName);
-            }
-        }
-
-        $homepage->freelance = $freelance;
-        $homepage->save();
-
-        // Clean old images
-        $newImageUrls = [];
-        foreach ($freelance as $item) {
-            if (!empty($item['image'])) {
-                $newImageUrls[] = $this->pathFromUrl($item['image']);
-            }
-        }
-        $this->deleteOldImages($currentImageUrls, $newImageUrls);
-
-        return response()->json([
-            'freelance' => $homepage->freelance ?? [],
         ]);
     }
 }

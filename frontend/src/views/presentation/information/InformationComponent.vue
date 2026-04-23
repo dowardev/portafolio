@@ -355,9 +355,9 @@ import ContactModal from "../../../components/modals/contact/ContactModal.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
-import HomeEditorController from "@/controllers/homeEditorController";
+import IntroController from "@/controllers/introController";
 const systemController = new SystemController();
-const homeEditorController = new HomeEditorController();
+const introController = new IntroController();
 // end controllser
 
 // services
@@ -470,7 +470,7 @@ onMounted(async () => {
 
   // cargar datos de homepage
   try {
-    const data = await homeEditorController.loadPublicData();
+    const data = await introController.loadIntro();
     console.log("Homepage data loaded:", data);
     console.log("Socials data:", data.socials);
     if (data) {
@@ -483,16 +483,10 @@ onMounted(async () => {
         photoUrl: data.photoUrl,
         stack: data.stack || [],
         skillCategories: data.skillCategories || [],
-        experience: data.experience || [],
-        projects: data.projects || [],
-        certificates: data.certificates || [],
-        freelance: data.freelance || [],
-        freelancePlatforms: this.convertToPlatforms(data.freelance || []),
-        freelanceComments: this.convertToComments(data.freelance || []),
         showContactForm: data.showContactForm || {
-        socials: false,
-        freelance: false,
-      },
+          socials: false,
+          freelance: false,
+        },
       };
       console.log("HomeData socials after load:", homeData.value.socials);
       if (homeData.value.socials && homeData.value.socials.length > 0) {

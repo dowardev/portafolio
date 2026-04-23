@@ -23,7 +23,7 @@ export default class SkillsController {
   async loadSkills(): Promise<void> {
     this.skillsStore.setLoading(true);
     try {
-      const data = await api.get<SkillsResponse>({ url: "get-homepage-info" });
+      const data = await api.get<SkillsResponse>({ url: "get-skills" });
       this.skillsStore.setSkillCategories(data.skillCategories || []);
     } catch (error) {
       console.error("Error loading skills:", error);
@@ -50,12 +50,9 @@ export default class SkillsController {
       }
 
       const formData = new FormData();
-      formData.append(
-        "payload",
-        JSON.stringify({ skillCategories: this.skillsStore.skillCategories })
-      );
+      formData.append("skillCategories", JSON.stringify(this.skillsStore.skillCategories));
       await api.post<SkillsResponse>({
-        url: "admin/update-homepage-info",
+        url: "admin/update-skills",
         data: formData,
         contentType: "multipart/form-data",
       });
@@ -77,12 +74,9 @@ export default class SkillsController {
       this.skillsStore.deleteSkillCategory(index);
 
       const formData = new FormData();
-      formData.append(
-        "payload",
-        JSON.stringify({ skillCategories: this.skillsStore.skillCategories })
-      );
+      formData.append("skillCategories", JSON.stringify(this.skillsStore.skillCategories));
       await api.post<SkillsResponse>({
-        url: "admin/update-homepage-info",
+        url: "admin/update-skills",
         data: formData,
         contentType: "multipart/form-data",
       });

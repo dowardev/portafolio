@@ -26,7 +26,7 @@ export default class CertificatesController {
     }
     this.certificatesStore.setLoading(true);
     try {
-      const data = await api.get<CertificatesResponse>({ url: "get-homepage-info" });
+      const data = await api.get<CertificatesResponse>({ url: "get-certificates" });
       this.certificatesStore.setCertificates(data.certificates || []);
     } catch (error) {
       console.error("Error loading certificates:", error);
@@ -58,12 +58,9 @@ export default class CertificatesController {
       }
 
       const formData = new FormData();
-      formData.append(
-        "payload",
-        JSON.stringify({ certificates: this.certificatesStore.certificates })
-      );
+      formData.append("certificates", JSON.stringify(this.certificatesStore.certificates));
       await api.post<CertificatesResponse>({
-        url: "admin/update-homepage-info",
+        url: "admin/update-certificates",
         data: formData,
         contentType: "multipart/form-data",
       });
@@ -87,12 +84,9 @@ export default class CertificatesController {
       this.certificatesStore.deleteCertificate(index);
 
       const formData = new FormData();
-      formData.append(
-        "payload",
-        JSON.stringify({ certificates: this.certificatesStore.certificates })
-      );
+      formData.append("certificates", JSON.stringify(this.certificatesStore.certificates));
       await api.post<CertificatesResponse>({
-        url: "admin/update-homepage-info",
+        url: "admin/update-certificates",
         data: formData,
         contentType: "multipart/form-data",
       });

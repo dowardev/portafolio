@@ -72,22 +72,26 @@ import {
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import * as ionicons from "ionicons/icons";
-import { useHomeEditorStore } from "@/store/homeEditorStore";
 import { useIconColors } from "@/composables/useIconColors";
 import type { StackItem, SkillCategory } from "@/services/types";
-import HomeEditorController from "@/controllers/homeEditorController";
+import IntroController from "@/controllers/introController";
+import SkillsController from "@/controllers/skillsController";
 
 const { getIconColor } = useIconColors();
-const homeEditorController = new HomeEditorController();
+const introController = new IntroController();
+const skillsController = new SkillsController();
 
 const stackItems = ref<StackItem[]>([]);
 const skillCategories = ref<SkillCategory[]>([]);
 
 onMounted(async () => {
   try {
-    const data = await homeEditorController.loadPublicData();
-    stackItems.value = data.stack || [];
-    skillCategories.value = data.skillCategories || [];
+    const [introData, skillsData] = await Promise.all([
+      introController.loadIntro(),
+      skillsController.loadSkills(),
+    ]);
+    stackItems.value = introData.stack || [];
+    skillCategories.value = skillsData.skillCategories || [];
   } catch (error) {
     console.error("Error loading skills data:", error);
   }

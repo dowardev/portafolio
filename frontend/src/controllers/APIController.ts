@@ -21,13 +21,14 @@ export default class APIController {
     data?: P;
   }): Promise<T> {
     const { url, data = {} } = params;
+    const accessToken = this.configService.getConfig().accessToken;
     try {
       const response = await axios.request<T>({
         url: this.baseUrl + url,
         method: "GET",
         headers: {
           Accept: "application/json",
-          Authorization: `${this.configService.getConfig().accessToken}`,
+          ...(accessToken ? { Authorization: accessToken } : {}),
         },
         params: data,
       });
@@ -44,9 +45,10 @@ export default class APIController {
     contentType?: ContentType;
   }): Promise<T> {
     const { url, data = {}, contentType = "application/json" } = params;
+    const accessToken = this.configService.getConfig().accessToken;
 
     const headers: Record<string, string> = {
-      Authorization: `${this.configService.getConfig().accessToken}`,
+      ...(accessToken ? { Authorization: accessToken } : {}),
     };
 
     // Solo establecer Content-Type si no es FormData

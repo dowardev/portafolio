@@ -20,17 +20,19 @@ export default class ProjectsController {
   private projectsStore = useProjectsStore();
   private toastController = new ToastController();
 
-  async loadPublicProjects(): Promise<void> {
+  async loadPublicProjects(): Promise<ProjectItem[]> {
     if (this.projectsStore.loaded && this.projectsStore.projects.length > 0) {
-      return;
+      return this.projectsStore.projects;
     }
     this.projectsStore.setLoading(true);
     try {
-      const data = await api.get<ProjectsResponse>({ url: "get-homepage-info" });
+      const data = await api.get<ProjectsResponse>({ url: "get-projects" });
       this.projectsStore.setProjects(data.projects || []);
+      return data.projects || [];
     } catch (error) {
       console.error("Error loading projects:", error);
       this.projectsStore.setProjects([]);
+      return [];
     } finally {
       this.projectsStore.setLoading(false);
     }
@@ -58,12 +60,10 @@ export default class ProjectsController {
       }
 
       const formData = new FormData();
-      formData.append(
-        "payload",
-        JSON.stringify({ projects: this.projectsStore.projects })
-      );
+      formData.append("projects", JSON.stringify(this.projectsStore.projects));
+
       await api.post<ProjectsResponse>({
-        url: "admin/update-homepage-info",
+        url: "admin/update-projects",
         data: formData,
         contentType: "multipart/form-data",
       });
@@ -87,12 +87,10 @@ export default class ProjectsController {
       this.projectsStore.deleteProject(index);
 
       const formData = new FormData();
-      formData.append(
-        "payload",
-        JSON.stringify({ projects: this.projectsStore.projects })
-      );
+      formData.append("projects", JSON.stringify(this.projectsStore.projects));
+
       await api.post<ProjectsResponse>({
-        url: "admin/update-homepage-info",
+        url: "admin/update-projects",
         data: formData,
         contentType: "multipart/form-data",
       });
