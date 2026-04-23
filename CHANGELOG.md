@@ -1,5 +1,30 @@
 # Changelog
 
+## 12.18.0 - 2026-04-23
+
+### Summary
+This release adds admin-only access middleware to protect administrative API endpoints and refactors the frontend API controller to use browser cookies for authentication token storage instead of the previous ServerConfig approach.
+
+### Added
+- New `AdminOnly` middleware in `backend/app/Http/Middleware/AdminOnly.php` to restrict access to admin-only routes
+- Registration of `admin.only` middleware alias in bootstrap/app.php
+- Cookie-based token retrieval in APIController using js-cookie library
+
+### Changed
+- Refactored admin routes under `/admin` prefix with `admin.only` middleware protection
+- Changed token handling from ServerConfig to cookies for Bearer token authentication
+- Reorganized routes: public auth routes, authenticated routes, and admin-only routes in separate groups
+
+### Affected Files
+- Added:
+  - `backend/app/Http/Middleware/AdminOnly.php`
+- Modified:
+  - `backend/bootstrap/app.php`
+  - `backend/routes/api.php`
+  - `frontend/src/controllers/APIController.ts`
+
+---
+
 ## 12.17.0 - 2026-04-23
 
 ### Summary

@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'sso.auth' => \App\Http\Middleware\SSOTokenAuth::class,
             'cors' => \App\Http\Middleware\Cors::class,
+            'admin.only' => \App\Http\Middleware\AdminOnly::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -1,10 +1,9 @@
 import ServerConfig from "@/controllers/serverConfigController";
 import axios from "axios";
+import Cookies from "js-cookie";
+import ErrorController from "@/controllers/errorController";
 
 type ContentType = "application/json" | "multipart/form-data";
-
-// controllers
-import ErrorController from "@/controllers/errorController";
 
 export default class APIController {
   private configService: ServerConfig;
@@ -16,19 +15,23 @@ export default class APIController {
     this.baseUrl = config.getConfig().baseUrl;
   }
 
+  private getAccessToken(): string {
+    return Cookies.get("user-token") || "";
+  }
+
   public async get<T, P = Record<string, unknown>>(params: {
     url: string;
     data?: P;
   }): Promise<T> {
     const { url, data = {} } = params;
-    const accessToken = this.configService.getConfig().accessToken;
+    const accessToken = this.getAccessToken();
     try {
       const response = await axios.request<T>({
         url: this.baseUrl + url,
         method: "GET",
         headers: {
           Accept: "application/json",
-          ...(accessToken ? { Authorization: accessToken } : {}),
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         },
         params: data,
       });
@@ -45,13 +48,12 @@ export default class APIController {
     contentType?: ContentType;
   }): Promise<T> {
     const { url, data = {}, contentType = "application/json" } = params;
-    const accessToken = this.configService.getConfig().accessToken;
+    const accessToken = this.getAccessToken();
 
     const headers: Record<string, string> = {
-      ...(accessToken ? { Authorization: accessToken } : {}),
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     };
 
-    // Solo establecer Content-Type si no es FormData
     if (!(data instanceof FormData)) {
       headers["Content-Type"] = contentType;
     }
