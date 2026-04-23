@@ -34,6 +34,7 @@ export default class FreelanceController {
 
     for (const item of items) {
       platforms.push({
+        id: item.id || crypto.randomUUID(),
         name: item.name,
         image: item.image,
         url: item.url,
@@ -41,6 +42,7 @@ export default class FreelanceController {
 
       if (item.comment) {
         comments.push({
+          id: crypto.randomUUID(),
           platformName: item.name,
           title: item.comment.title,
           text: item.comment.text,
@@ -83,13 +85,31 @@ export default class FreelanceController {
     });
   }
 
-  async deleteFreelanceItem(
-    type: "platform" | "comment",
-    index: number,
-  ): Promise<void> {
-    await api.post({
-      url: "admin/delete-freelance-item",
-      data: { type, index },
+  async addFreelance(freelance: FreelanceItem): Promise<FreelanceData> {
+    const formData = new FormData();
+    formData.append("freelance", JSON.stringify(freelance));
+
+    if (freelance.image) {
+      const response = await fetch(freelance.image);
+      const blob = await response.blob();
+      formData.append("image", blob, "freelance.jpg");
+    }
+
+    const data = await api.post<{ freelance: FreelanceItem[] }>({
+      url: "admin/add-freelance",
+      data: formData,
+      contentType: "multipart/form-data",
     });
+
+    return this.convertToSeparatedData(data.freelance || []);
+  }
+
+  async deleteFreelance(id: string): Promise<FreelanceData> {
+    const data = await api.post<{ freelance: FreelanceItem[] }>({
+      url: "admin/delete-freelance",
+      data: { id },
+    });
+
+    return this.convertToSeparatedData(data.freelance || []);
   }
 }

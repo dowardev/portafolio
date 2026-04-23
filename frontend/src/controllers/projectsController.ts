@@ -50,6 +50,62 @@ export default class ProjectsController {
     return this.projectsStore.getProject(index);
   }
 
+  async addProject(project: ProjectItem): Promise<boolean> {
+    try {
+      this.projectsStore.setSaving(true);
+
+      const formData = new FormData();
+      formData.append("project", JSON.stringify(project));
+
+      if (project.img) {
+        const response = await fetch(project.img);
+        const blob = await response.blob();
+        formData.append("image", blob, "project.jpg");
+      }
+
+      const data = await api.post<ProjectsResponse>({
+        url: "admin/add-project",
+        data: formData,
+        contentType: "multipart/form-data",
+      });
+
+      this.projectsStore.setProjects(data.projects || []);
+      this.projectsStore.setSaving(false);
+      return true;
+    } catch (error) {
+      this.projectsStore.setSaving(false);
+      console.error("Error adding project:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al agregar el proyecto",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return false;
+    }
+  }
+
+  async deleteProject(id: string): Promise<boolean> {
+    try {
+      const data = await api.post<ProjectsResponse>({
+        url: "admin/delete-project",
+        data: { id },
+      });
+
+      this.projectsStore.setProjects(data.projects || []);
+      return true;
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al eliminar el proyecto",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return false;
+    }
+  }
+
   async saveProject(project: ProjectItem, index?: number): Promise<boolean> {
     try {
       this.projectsStore.setSaving(true);
@@ -80,34 +136,5 @@ export default class ProjectsController {
       await toast.present();
       return false;
     }
-  }
-
-  async deleteProject(index: number): Promise<boolean> {
-    try {
-      this.projectsStore.deleteProject(index);
-
-      const formData = new FormData();
-      formData.append("projects", JSON.stringify(this.projectsStore.projects));
-
-      await api.post<ProjectsResponse>({
-        url: "admin/update-projects",
-        data: formData,
-        contentType: "multipart/form-data",
-      });
-      return true;
-    } catch (error) {
-      console.error("Error deleting project:", error);
-      const toast = await this.toastController.presentToast({
-        message: "Error al eliminar el proyecto",
-        duration: 2000,
-        color: "danger",
-      });
-      await toast.present();
-      return false;
-    }
-  }
-
-  async addProject(project: ProjectItem): Promise<boolean> {
-    return this.saveProject(project);
   }
 }

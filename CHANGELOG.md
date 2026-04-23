@@ -1,5 +1,40 @@
 # Changelog
 
+## 12.17.0 - 2026-04-23
+
+### Summary
+This release adds individual CRUD operations for all homepage sections, enabling add and delete functionality through dedicated API endpoints instead of batch updates. All data types now include an `id` field for proper identification, replacing the previous index-based deletion approach.
+
+### Added
+- New backend API endpoints for individual add/delete operations:
+  - `admin/add-project`, `admin/delete-project`
+  - `admin/add-experience`, `admin/delete-experience`
+  - `admin/add-freelance`, `admin/delete-freelance`
+  - `admin/add-skill-category`, `admin/delete-skill-category`
+  - `admin/add-certificate`, `admin/delete-certificate`
+- New `id` field to all data types: `StackItem`, `SkillCategory`, `ExperienceItem`, `ProjectItem`, `CertificateItem`, `FreelanceItem`, `FreelancePlatform`, `FreelanceComment`
+- New optional `date` field to `ExperienceItem` and `ProjectItem` types
+- New `saving` state to skillsStore for loading feedback
+
+### Changed
+- Refactored all controllers to use new individual add/delete endpoints instead of batch updates
+- Changed deletion mechanism from index-based to ID-based for better reliability
+- Updated frontend controllers to handle new API response structure
+
+### Affected Files
+- Modified:
+  - `backend/app/Http/Controllers/Admin/HomePageController.php`
+  - `backend/routes/api.php`
+  - `frontend/src/controllers/certificatesController.ts`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/controllers/freelanceController.ts`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/controllers/skillsController.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/store/skillsStore.ts`
+
+---
+
 ## 12.16.0 - 2026-04-22
 
 ### Summary

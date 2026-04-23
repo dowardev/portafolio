@@ -39,10 +39,31 @@ Route::middleware([Cors::class, 'sso.auth'])->group(function () {
 
   Route::post("new-post", [PostsController::class, "createPost"]);
 
+  // Intro
   Route::post("admin/update-intro", [HomePageController::class, "updateIntro"]);
+
+  // Projects - REST-like
   Route::post("admin/update-projects", [HomePageController::class, "updateProjects"]);
+  Route::post("admin/add-project", [HomePageController::class, "addProject"]);
+  Route::post("admin/delete-project", [HomePageController::class, "deleteProject"]);
+
+  // Experience - REST-like
   Route::post("admin/update-experiences", [HomePageController::class, "updateExperiences"]);
+  Route::post("admin/add-experience", [HomePageController::class, "addExperience"]);
+  Route::post("admin/delete-experience", [HomePageController::class, "deleteExperience"]);
+
+  // Freelance - REST-like
   Route::post("admin/update-freelance", [HomePageController::class, "updateFreelance"]);
+  Route::post("admin/add-freelance", [HomePageController::class, "addFreelance"]);
+  Route::post("admin/delete-freelance", [HomePageController::class, "deleteFreelance"]);
+
+  // Skills - REST-like
   Route::post("admin/update-skills", [HomePageController::class, "updateSkills"]);
+  Route::post("admin/add-skill-category", [HomePageController::class, "addSkillCategory"]);
+  Route::post("admin/delete-skill-category", [HomePageController::class, "deleteSkillCategory"]);
+
+  // Certificates - REST-like
   Route::post("admin/update-certificates", [HomePageController::class, "updateCertificates"]);
+  Route::post("admin/add-certificate", [HomePageController::class, "addCertificate"]);
+  Route::post("admin/delete-certificate", [HomePageController::class, "deleteCertificate"]);
 });

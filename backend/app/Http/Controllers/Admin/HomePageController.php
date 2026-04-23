@@ -467,4 +467,198 @@ public function getProjects()
                   ],
         ]);
     }
+
+    // ============ PROJECTS ============
+    public function addProject(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['projects' => []]);
+        $project = $request->input('project', []);
+
+        if (is_string($project)) {
+            $project = json_decode($project, true) ?? [];
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+            Storage::disk('public')->put('homepage/projects/' . $fileName, file_get_contents($file));
+            $project['img'] = asset('storage/homepage/projects/' . $fileName);
+        }
+
+        $projects = $homepage->projects ?? [];
+        $projects[] = $project;
+        $homepage->projects = $projects;
+        $homepage->save();
+
+        return response()->json(['projects' => $homepage->projects]);
+    }
+
+    public function deleteProject(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['projects' => []]);
+        $id = $request->input('id');
+
+        $projects = array_filter($homepage->projects ?? [], function ($p) use ($id) {
+            return ($p['id'] ?? '') !== $id;
+        });
+
+        $homepage->projects = array_values($projects);
+        $homepage->save();
+
+        return response()->json(['projects' => $homepage->projects]);
+    }
+
+    // ============ EXPERIENCE ============
+    public function addExperience(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['experience' => []]);
+        $experience = $request->input('experience', []);
+
+        if (is_string($experience)) {
+            $experience = json_decode($experience, true) ?? [];
+        }
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+            Storage::disk('public')->put('homepage/experience/' . $fileName, file_get_contents($file));
+            $experience['img'] = asset('storage/homepage/experience/' . $fileName);
+        }
+
+        $experiences = $homepage->experience ?? [];
+        $experiences[] = $experience;
+        $homepage->experience = $experiences;
+        $homepage->save();
+
+        return response()->json(['experience' => $homepage->experience]);
+    }
+
+    public function deleteExperience(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['experience' => []]);
+        $id = $request->input('id');
+
+        $experience = array_filter($homepage->experience ?? [], function ($e) use ($id) {
+            return ($e['id'] ?? '') !== $id;
+        });
+
+        $homepage->experience = array_values($experience);
+        $homepage->save();
+
+        return response()->json(['experience' => $homepage->experience]);
+    }
+
+    // ============ FREELANCE ============
+    public function addFreelance(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['freelance' => []]);
+        $freelance = $request->input('freelance', []);
+
+        if (is_string($freelance)) {
+            $freelance = json_decode($freelance, true) ?? [];
+        }
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+            Storage::disk('public')->put('homepage/freelance/' . $fileName, file_get_contents($file));
+            $freelance['image'] = asset('storage/homepage/freelance/' . $fileName);
+        }
+
+        $freelanceList = $homepage->freelance ?? [];
+        $freelanceList[] = $freelance;
+        $homepage->freelance = $freelanceList;
+        $homepage->save();
+
+        return response()->json(['freelance' => $homepage->freelance]);
+    }
+
+    public function deleteFreelance(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['freelance' => []]);
+        $id = $request->input('id');
+
+        $freelance = array_filter($homepage->freelance ?? [], function ($f) use ($id) {
+            return ($f['id'] ?? '') !== $id;
+        });
+
+        $homepage->freelance = array_values($freelance);
+        $homepage->save();
+
+        return response()->json(['freelance' => $homepage->freelance]);
+    }
+
+    // ============ SKILLS ============
+    public function addSkillCategory(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['skill_categories' => []]);
+        $skillCategory = $request->input('skillCategory', []);
+
+        if (is_string($skillCategory)) {
+            $skillCategory = json_decode($skillCategory, true) ?? [];
+        }
+
+        $skillCategories = $homepage->skill_categories ?? [];
+        $skillCategories[] = $skillCategory;
+        $homepage->skill_categories = $skillCategories;
+        $homepage->save();
+
+        return response()->json(['skillCategories' => $homepage->skill_categories]);
+    }
+
+    public function deleteSkillCategory(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['skill_categories' => []]);
+        $id = $request->input('id');
+
+        $skillCategories = array_filter($homepage->skill_categories ?? [], function ($s) use ($id) {
+            return ($s['id'] ?? '') !== $id;
+        });
+
+        $homepage->skill_categories = array_values($skillCategories);
+        $homepage->save();
+
+        return response()->json(['skillCategories' => $homepage->skill_categories]);
+    }
+
+    // ============ CERTIFICATES ============
+    public function addCertificate(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['certificates' => []]);
+        $certificate = $request->input('certificate', []);
+
+        if (is_string($certificate)) {
+            $certificate = json_decode($certificate, true) ?? [];
+        }
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+            Storage::disk('public')->put('homepage/certificates/' . $fileName, file_get_contents($file));
+            $certificate['img'] = asset('storage/homepage/certificates/' . $fileName);
+        }
+
+        $certificates = $homepage->certificates ?? [];
+        $certificates[] = $certificate;
+        $homepage->certificates = $certificates;
+        $homepage->save();
+
+        return response()->json(['certificates' => $homepage->certificates]);
+    }
+
+    public function deleteCertificate(Request $request)
+    {
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['certificates' => []]);
+        $id = $request->input('id');
+
+        $certificates = array_filter($homepage->certificates ?? [], function ($c) use ($id) {
+            return ($c['id'] ?? '') !== $id;
+        });
+
+        $homepage->certificates = array_values($certificates);
+        $homepage->save();
+
+        return response()->json(['certificates' => $homepage->certificates]);
+    }
 }

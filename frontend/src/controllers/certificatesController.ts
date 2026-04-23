@@ -79,17 +79,49 @@ export default class CertificatesController {
     }
   }
 
-  async deleteCertificate(index: number): Promise<boolean> {
+  async addCertificate(certificate: CertificateItem): Promise<boolean> {
     try {
-      this.certificatesStore.deleteCertificate(index);
+      this.certificatesStore.setSaving(true);
 
       const formData = new FormData();
-      formData.append("certificates", JSON.stringify(this.certificatesStore.certificates));
-      await api.post<CertificatesResponse>({
-        url: "admin/update-certificates",
+      formData.append("certificate", JSON.stringify(certificate));
+
+      if (certificate.img) {
+        const response = await fetch(certificate.img);
+        const blob = await response.blob();
+        formData.append("image", blob, "certificate.jpg");
+      }
+
+      const data = await api.post<CertificatesResponse>({
+        url: "admin/add-certificate",
         data: formData,
         contentType: "multipart/form-data",
       });
+
+      this.certificatesStore.setCertificates(data.certificates || []);
+      this.certificatesStore.setSaving(false);
+      return true;
+    } catch (error) {
+      this.certificatesStore.setSaving(false);
+      console.error("Error adding certificate:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al agregar el certificado",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return false;
+    }
+  }
+
+  async deleteCertificate(id: string): Promise<boolean> {
+    try {
+      const data = await api.post<CertificatesResponse>({
+        url: "admin/delete-certificate",
+        data: { id },
+      });
+
+      this.certificatesStore.setCertificates(data.certificates || []);
       return true;
     } catch (error) {
       console.error("Error deleting certificate:", error);
@@ -101,9 +133,5 @@ export default class CertificatesController {
       await toast.present();
       return false;
     }
-  }
-
-  async addCertificate(certificate: CertificateItem): Promise<boolean> {
-    return this.saveCertificate(certificate);
   }
 }

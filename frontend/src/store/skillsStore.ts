@@ -5,6 +5,7 @@ interface State {
   skillCategories: SkillCategory[];
   loading: boolean;
   loaded: boolean;
+  saving: boolean;
 }
 
 export const useSkillsStore = defineStore("skills", {
@@ -12,6 +13,7 @@ export const useSkillsStore = defineStore("skills", {
     skillCategories: [],
     loading: false,
     loaded: false,
+    saving: false,
   }),
 
   getters: {
@@ -42,6 +44,10 @@ export const useSkillsStore = defineStore("skills", {
 
     deleteSkillCategory(index: number) {
       this.skillCategories.splice(index, 1);
+    },
+
+    setSaving(saving: boolean) {
+      this.saving = saving;
     },
   },
 });

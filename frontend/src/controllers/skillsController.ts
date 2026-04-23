@@ -69,17 +69,43 @@ export default class SkillsController {
     }
   }
 
-  async deleteSkillCategory(index: number): Promise<boolean> {
+  async addSkillCategory(category: SkillCategory): Promise<boolean> {
     try {
-      this.skillsStore.deleteSkillCategory(index);
+      this.skillsStore.setSaving(true);
 
       const formData = new FormData();
-      formData.append("skillCategories", JSON.stringify(this.skillsStore.skillCategories));
-      await api.post<SkillsResponse>({
-        url: "admin/update-skills",
+      formData.append("skillCategory", JSON.stringify(category));
+
+      const data = await api.post<SkillsResponse>({
+        url: "admin/add-skill-category",
         data: formData,
         contentType: "multipart/form-data",
       });
+
+      this.skillsStore.setSkillCategories(data.skillCategories || []);
+      this.skillsStore.setSaving(false);
+      return true;
+    } catch (error) {
+      this.skillsStore.setSaving(false);
+      console.error("Error adding skill category:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al agregar la categoría",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return false;
+    }
+  }
+
+  async deleteSkillCategory(id: string): Promise<boolean> {
+    try {
+      const data = await api.post<SkillsResponse>({
+        url: "admin/delete-skill-category",
+        data: { id },
+      });
+
+      this.skillsStore.setSkillCategories(data.skillCategories || []);
       return true;
     } catch (error) {
       console.error("Error deleting skill category:", error);
@@ -91,9 +117,5 @@ export default class SkillsController {
       await toast.present();
       return false;
     }
-  }
-
-  async addSkillCategory(category: SkillCategory): Promise<boolean> {
-    return this.saveSkillCategory(category);
   }
 }

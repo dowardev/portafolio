@@ -14,11 +14,13 @@ export type PostFields =
   | "status";
 
 export interface StackItem {
+  id: string;
   name: string;
   image: string;
 }
 
 export interface SkillCategory {
+  id: string;
   name: string;
   technologies: Array<{
     iconName: string;
@@ -26,8 +28,10 @@ export interface SkillCategory {
 }
 
 export interface ExperienceItem {
+  id: string;
   img: string;
   title: string;
+  date?: string;
   startDate: string;
   endDate: string | undefined;
   technologies: Array<{
@@ -40,6 +44,7 @@ export interface ExperienceItem {
 }
 
 export interface ProjectItem {
+  id: string;
   img: string;
   title: string;
   date?: string;
@@ -61,6 +66,7 @@ export interface ProjectItem {
 }
 
 export interface CertificateItem {
+  id: string;
   img: string;
   title: string;
   url: string;
@@ -73,6 +79,7 @@ export interface CertificateItem {
 }
 
 export interface FreelanceItem {
+  id: string;
   name: string;
   image: string;
   url: string;
@@ -84,12 +91,14 @@ export interface FreelanceItem {
 }
 
 export interface FreelancePlatform {
+  id: string;
   name: string;
   image: string;
   url: string;
 }
 
 export interface FreelanceComment {
+  id: string;
   platformName: string;
   title: string;
   text: string;
