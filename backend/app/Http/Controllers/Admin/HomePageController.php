@@ -282,7 +282,7 @@ public function getProjects()
     public function addProject(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'project' => 'required|array',
+            'project' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -319,7 +319,7 @@ public function getProjects()
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',
-            'project' => 'required|array',
+            'project' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -410,7 +410,7 @@ public function getProjects()
     public function addExperience(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'experience' => 'required|array',
+            'experience' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -447,7 +447,7 @@ public function getProjects()
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',
-            'experience' => 'required|array',
+            'experience' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -538,7 +538,7 @@ public function getProjects()
     public function addFreelance(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'freelance' => 'required|array',
+            'freelance' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -575,7 +575,7 @@ public function getProjects()
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',
-            'freelance' => 'required|array',
+            'freelance' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -666,7 +666,7 @@ public function getProjects()
     public function addSkillCategory(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'skillCategory' => 'required|array',
+            'skillCategory' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -696,7 +696,7 @@ public function getProjects()
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',
-            'skillCategory' => 'required|array',
+            'skillCategory' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -759,7 +759,7 @@ public function getProjects()
     public function addCertificate(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'certificate' => 'required|array',
+            'certificate' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -796,7 +796,7 @@ public function getProjects()
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',
-            'certificate' => 'required|array',
+            'certificate' => 'required',
         ]);
 
         if ($validator->fails()) {

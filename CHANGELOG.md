@@ -1,5 +1,24 @@
 # Changelog
 
+## 12.20.1 - 2026-04-24
+
+### Summary
+This release fixes overly restrictive validation rules in the admin API endpoints. The validation previously required array objects for all data fields, but the frontend sends single objects. This fix allows the backend to accept any valid value instead of strictly requiring arrays.
+
+### Fixed
+- Relaxed validation rules in HomePageController to accept any required value instead of requiring array type:
+  - `addProject` and `updateProject`: project validation changed from `'required|array'` to `'required'`
+  - `addExperience` and `updateExperience`: experience validation changed from `'required|array'` to `'required'`
+  - `addFreelance` and `updateFreelance`: freelance validation changed from `'required|array'` to `'required'`
+  - `addSkillCategory` and `updateSkillCategory`: skillCategory validation changed from `'required|array'` to `'required'`
+  - `addCertificate` and `updateCertificate`: certificate validation changed from `'required|array'` to `'required'`
+
+### Affected Files
+- Modified:
+  - `backend/app/Http/Controllers/Admin/HomePageController.php`
+
+---
+
 ## 12.20.0 - 2026-04-24
 
 ### Summary
