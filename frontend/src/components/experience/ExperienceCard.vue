@@ -1,5 +1,5 @@
 <template>
-  <div class="flip-card" :class="{ 'is-flipped': isFlipped }">
+  <div class="flip-card" :class="{ 'is-flipped': isFlipped, 'is-ios': isIOS }">
     <div class="flip-card-face flip-card-front">
       <ion-card class="shadow1 experience-card">
         <div>
@@ -98,6 +98,7 @@ import {
   IonItem,
   IonIcon,
   IonButton,
+  isPlatform,
 } from "@ionic/vue";
 import { ref } from "vue";
 import * as ionicons from "ionicons/icons";
@@ -125,6 +126,7 @@ const props = withDefaults(
 );
 
 const isFlipped = ref(props.flipped);
+const isIOS = isPlatform("ios");
 
 function toggleFlip() {
   isFlipped.value = !isFlipped.value;
@@ -221,6 +223,10 @@ function formatDate(start: string, end?: string): string {
   perspective: 1000px;
   margin-bottom: 16px;
   position: relative;
+}
+
+.flip-card.is-ios {
+  height: 296px;
 }
 
 .flip-card-face {

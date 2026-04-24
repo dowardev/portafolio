@@ -1,9 +1,11 @@
 <template>
   <ion-page>
     <ion-header class="ion-no-border" mode="ios">
-      <ion-toolbar class="container-page">
+      <ion-toolbar style="--background: var(--ion-background-color)">
         <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu"></ion-menu-button>
+          <ion-button @click="$router.back()">
+            <ion-icon :icon="chevronBackOutline"> </ion-icon>
+          </ion-button>
         </ion-buttons>
 
         <ion-title>{{ pageTitle }}</ion-title>
@@ -13,17 +15,22 @@
     <ion-content>
       <ion-grid>
         <ion-row class="ion-justify-content-center">
-          <ion-col size="12">
-            <ion-row>
-              <ion-col
-                v-for="(project, index) in projects"
-                :key="index"
-                size="12"
-                size-lg="4"
-              >
-                <ProjectCard :project="project" />
-              </ion-col>
-            </ion-row>
+          <ion-col size-xs="12" size-lg="8">
+            <ion-grid>
+              <ion-row>
+                <ion-col
+                  v-for="(project, index) in projects"
+                  :key="index"
+                  size-xs="12"
+                  size-sm="6"
+                  size-md="6"
+                  size-lg="6"
+                  size-xl="6"
+                >
+                  <ProjectCard :project="project" />
+                </ion-col>
+              </ion-row>
+            </ion-grid>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -36,7 +43,7 @@ import {
   IonCol,
   IonContent,
   IonHeader,
-  IonMenuButton,
+  IonBackButton,
   IonPage,
   IonRow,
   IonTitle,
@@ -47,6 +54,7 @@ import { ref, onMounted } from "vue";
 import ProjectCard from "@/components/projects/ProjectCard.vue";
 import ProjectsController from "@/controllers/projectsController";
 import type { ProjectItem } from "@/services/types";
+import { chevronBackOutline } from "ionicons/icons";
 
 const projectsController = new ProjectsController();
 const projects = ref<ProjectItem[]>([]);

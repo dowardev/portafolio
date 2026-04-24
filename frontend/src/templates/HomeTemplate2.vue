@@ -6,57 +6,77 @@
           <ion-row class="ion-justify-content-center">
             <ion-col size="12">
               <div class="header-content">
-                <ion-avatar>
-                  <img
-                    alt="Silhouette of a person's head"
-                    src="@/assets/portafolio/logo_dowar_2.1.png"
-                  />
-                </ion-avatar>
-
-                <ion-button
-                  fill="clear"
-                  class="nav-btn"
-                  :class="{ active: activeSection === 'section-yo' }"
-                  @click="scrollToSection('section-yo')"
+                <div
+                  class="avatar-container"
+                  :class="{
+                    'avatar-visible': showAvatar,
+                    'avatar-hidden': !showAvatar,
+                  }"
                 >
-                  Yo
-                </ion-button>
+                  <ion-avatar>
+                    <img
+                      alt="Silhouette of a person's head"
+                      src="@/assets/portafolio/logo_dowar_2.1.png"
+                    />
+                  </ion-avatar>
+                </div>
 
-                <ion-button
-                  fill="clear"
-                  class="nav-btn"
-                  :class="{ active: activeSection === 'section-proyectos' }"
-                  @click="scrollToSection('section-proyectos')"
+                <div
+                  ref="menuContainerRef"
+                  class="menu-scroll"
+                  :style="{
+                    display: 'flex',
+                    width: buttonsWidth,
+                    overflow: 'auto',
+                  }"
                 >
-                  Proyectos
-                </ion-button>
+                  <ion-button
+                    fill="clear"
+                    class="nav-btn"
+                    :class="{ active: activeSection === 'section-yo' }"
+                    @click="scrollToSection('section-yo')"
+                  >
+                    Yo
+                  </ion-button>
 
-                <ion-button
-                  fill="clear"
-                  class="nav-btn"
-                  :class="{ active: activeSection === 'section-skills' }"
-                  @click="scrollToSection('section-skills')"
-                >
-                  Skills
-                </ion-button>
+                  <ion-button
+                    fill="clear"
+                    class="nav-btn"
+                    :class="{ active: activeSection === 'section-proyectos' }"
+                    @click="scrollToSection('section-proyectos')"
+                  >
+                    Proyectos
+                  </ion-button>
 
-                <ion-button
-                  fill="clear"
-                  class="nav-btn"
-                  :class="{ active: activeSection === 'section-experiencia' }"
-                  @click="scrollToSection('section-experiencia')"
-                >
-                  Experiencia
-                </ion-button>
+                  <ion-button
+                    fill="clear"
+                    class="nav-btn"
+                    :class="{ active: activeSection === 'section-skills' }"
+                    @click="scrollToSection('section-skills')"
+                  >
+                    Skills
+                  </ion-button>
 
-                <ion-button
-                  fill="clear"
-                  class="nav-btn"
-                  :class="{ active: activeSection === 'section-colaboracion' }"
-                  @click="scrollToSection('section-colaboracion')"
-                >
-                  Colaboración
-                </ion-button>
+                  <ion-button
+                    fill="clear"
+                    class="nav-btn"
+                    :class="{ active: activeSection === 'section-experiencia' }"
+                    @click="scrollToSection('section-experiencia')"
+                  >
+                    Experiencia
+                  </ion-button>
+
+                  <ion-button
+                    fill="clear"
+                    class="nav-btn"
+                    :class="{
+                      active: activeSection === 'section-colaboracion',
+                    }"
+                    @click="scrollToSection('section-colaboracion')"
+                  >
+                    Colaboración
+                  </ion-button>
+                </div>
               </div>
             </ion-col>
           </ion-row>
@@ -64,7 +84,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content ref="contentRef">
+    <ion-content ref="contentRef" scroll-events @ion-scroll="handleScroll">
       <!-- profile -->
       <ion-grid id="section-yo">
         <ion-row style="height: 80dvh" class="ion-justify-content-center">
@@ -129,7 +149,10 @@
 
       <!-- projects -->
       <ion-grid id="section-proyectos" style="background: #0099ff">
-        <ion-row class="projects-row ion-justify-content-center">
+        <ion-row
+          class="projects-row ion-justify-content-center"
+          :class="{ 'is-ios': isIOS }"
+        >
           <ion-col
             class="ion-justify-content-center"
             size="12"
@@ -141,7 +164,7 @@
               style="display: flex; justify-content: center"
             >
               <h2 style="font-size: 34px; color: var(--ion-color-light)">
-                Proyectos mas recientes
+                Proyectos
               </h2>
             </div>
 
@@ -157,9 +180,11 @@
               <ion-grid>
                 <ion-row>
                   <ion-col
-                    v-for="project in props.projects?.slice(0, 3)"
+                    v-for="project in props.projects?.slice(0, displayLimit)"
                     :key="project.title"
                     size="12"
+                    size-sm="6"
+                    size-md="6"
                     size-lg="4"
                   >
                     <ProjectCard :project="project" />
@@ -228,7 +253,10 @@
 
       <!-- experience -->
       <ion-grid id="section-experiencia" style="background: #0099ff">
-        <ion-row class="experience-row ion-justify-content-center">
+        <ion-row
+          class="experience-row ion-justify-content-center"
+          :class="{ 'is-ios': isIOS }"
+        >
           <ion-col
             class="ion-justify-content-center"
             size="12"
@@ -256,7 +284,7 @@
               <ion-grid>
                 <ion-row>
                   <ion-col
-                    v-for="exp in props.experience?.slice(0, 3)"
+                    v-for="exp in props.experience?.slice(0, displayLimit)"
                     :key="exp.title"
                     size="12"
                     size-lg="4"
@@ -322,9 +350,10 @@ import {
   IonLabel,
   IonIcon,
   IonPage,
+  isPlatform,
 } from "@ionic/vue";
 import { useRouter } from "vue-router";
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 
 import TechCloudBackground from "@/components/common/TechCloudBackground.vue";
 import FinalSection from "@/views/presentation/sections/FinalSection.vue";
@@ -344,12 +373,30 @@ import laravelIcon from "@/assets/otros/laravel-2.svg";
 
 const router = useRouter();
 const props = defineProps<Partial<HomePageData>>();
+const isIOS = isPlatform("ios");
 
 const contentRef = ref();
+const menuContainerRef = ref();
 const activeSection = ref("section-yo");
 const windowWidth = ref(window.innerWidth);
 const isMobile = computed(() => windowWidth.value <= 576);
+const isTablet = computed(
+  () => windowWidth.value >= 576 && windowWidth.value <= 991,
+);
+const isScrolled = ref(false);
+const showAvatar = computed(() => !isMobile.value || !isScrolled.value);
 
+const buttonsWidth = computed(() => {
+  if (isMobile.value) {
+    return isScrolled.value ? "100%" : "80%";
+  }
+  return "";
+});
+
+const handleScroll = (event: CustomEvent) => {
+  const scrollTop = event.detail?.scrollTop;
+  isScrolled.value = scrollTop > 50;
+};
 const backgroundTechs = [
   { name: "capacitor" },
   { name: "javascript" },
@@ -360,6 +407,8 @@ const backgroundTechs = [
 ];
 
 const filteredBackgroundTechs = computed(() => backgroundTechs);
+
+const displayLimit = computed(() => (isTablet.value ? 4 : 3));
 
 const sections = [
   { id: "section-yo" },
@@ -374,24 +423,48 @@ let observer: IntersectionObserver | null = null;
 const scrollToSection = async (sectionId: string) => {
   const element = document.getElementById(sectionId);
   if (element) {
-    element.scrollIntoView({ behavior: "smooth", block: "center" });
     activeSection.value = sectionId;
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(scrollActiveButtonIntoView, 300);
   }
 };
+
+const scrollActiveButtonIntoView = () => {
+  if (!isMobile.value || !menuContainerRef.value) return;
+
+  const activeButton = menuContainerRef.value.querySelector(".nav-btn.active");
+  if (activeButton) {
+    activeButton.scrollIntoView({
+      inline: "center",
+      block: "nearest",
+      behavior: "smooth",
+    });
+  }
+};
+
+watch(activeSection, () => {
+  setTimeout(scrollActiveButtonIntoView, 100);
+});
 
 const setupIntersectionObserver = () => {
   observer = new IntersectionObserver(
     (entries) => {
       let topSection: IntersectionObserverEntry | null = null;
-      let minTop = Infinity;
+      let minAbsTop = Infinity;
 
       for (const entry of entries) {
-        const rect = (entry.target as HTMLElement).getBoundingClientRect();
-        const sectionTop = rect.top;
+        if (!entry.isIntersecting) continue;
 
-        if (sectionTop >= 0 && sectionTop < minTop) {
-          minTop = sectionTop;
-          topSection = entry;
+        const rect = (entry.target as HTMLElement).getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const sectionTop = rect.top;
+        const absTop = Math.abs(sectionTop);
+
+        if (rect.top <= viewportHeight && rect.bottom > 0) {
+          if (absTop < minAbsTop) {
+            minAbsTop = absTop;
+            topSection = entry;
+          }
         }
       }
 
@@ -400,8 +473,8 @@ const setupIntersectionObserver = () => {
       }
     },
     {
-      threshold: [0, 0.25, 0.5, 0.75, 1],
-      rootMargin: "-10% 0px -50% 0px",
+      threshold: 0,
+      rootMargin: isMobile.value ? "-60% 0px -20% 0px" : "-10% 0px -50% 0px",
     },
   );
 
@@ -413,6 +486,8 @@ const setupIntersectionObserver = () => {
 
 const onResize = () => {
   windowWidth.value = window.innerWidth;
+  observer?.disconnect();
+  setupIntersectionObserver();
 };
 
 onMounted(() => {
@@ -434,8 +509,49 @@ onUnmounted(() => {
   gap: 16px;
 }
 
+.avatar-container {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.avatar-container.avatar-visible {
+  opacity: 1;
+  transform: scale(1);
+  width: 40px;
+  height: 40px;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    width 0.2s ease 0.2s;
+}
+
+.avatar-container.avatar-hidden {
+  opacity: 0;
+  transform: scale(0);
+  width: 0;
+  height: 0;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    width 0.2s ease 0.2s;
+}
+
+.avatar-container ion-avatar {
+  width: 100%;
+  height: 100%;
+}
+
 .nav-btn {
   position: relative;
+}
+
+.menu-scroll::-webkit-scrollbar {
+  display: none;
+}
+.menu-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .nav-btn::after {
@@ -507,10 +623,24 @@ onUnmounted(() => {
   height: 124dvh;
 }
 
-@media (min-width: 992px) {
+@media (max-width: 410px) {
+  .projects-row.is-ios,
+  .experience-row.is-ios {
+    height: 130dvh;
+  }
+}
+
+@media (max-width: 375px) {
+  .projects-row.is-ios,
+  .experience-row.is-ios {
+    height: 167dvh;
+  }
+}
+
+@media (min-width: 768px) {
   .projects-row,
   .experience-row {
-    height: 64dvh;
+    height: 84dvh;
   }
 }
 

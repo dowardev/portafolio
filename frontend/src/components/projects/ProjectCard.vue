@@ -1,5 +1,5 @@
 <template>
-  <div class="flip-card" :class="{ 'is-flipped': isFlipped }">
+  <div class="flip-card" :class="{ 'is-flipped': isFlipped, 'is-ios': isIOS }">
     <div class="flip-card-face flip-card-front">
       <ion-card class="shadow1 experience-card">
         <div>
@@ -38,7 +38,7 @@
             <ion-icon slot="start" :icon="briefcaseOutline"></ion-icon>
 
             <ion-label
-              :ref="(el: unknown) => sourceLabel = (el as { $el?: HTMLElement })?.$el ?? el as HTMLElement"
+              :ref="(el: any) => sourceLabel = el?.$el ?? el"
               v-tooltip="{
                 content: isTruncated ? project.source.name : undefined,
                 trigger: 'mouseenter',
@@ -127,17 +127,7 @@
 
 <script setup lang="ts">
 // imports
-import {
-  IonCard,
-  IonRow,
-  IonCol,
-  IonLabel,
-  IonItem,
-  IonIcon,
-  IonText,
-  IonButton,
-  IonCardContent,
-} from "@ionic/vue";
+import { IonCard, IonRow, IonCol, IonLabel, IonItem, IonIcon, IonText, IonButton, IonCardContent, isPlatform } from "@ionic/vue";
 import { ref, nextTick, onMounted, onUnmounted, watch } from "vue";
 import * as ionicons from "ionicons/icons";
 import {
@@ -166,6 +156,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const isFlipped = ref(props.flipped);
+const isIOS = isPlatform("ios");
 let sourceLabel: HTMLElement | null = null;
 const titleRef = ref<HTMLElement | null>(null);
 const isTruncated = ref(false);
@@ -212,8 +203,8 @@ function toggleFlip() {
 }
 
 function checkTruncation() {
-  if (sourceLabel) {
-    isTruncated.value = sourceLabel.scrollWidth > sourceLabel.clientWidth;
+  if (sourceLabel!) {
+    isTruncated.value = sourceLabel!.scrollWidth > sourceLabel!.clientWidth;
   }
   if (titleRef.value) {
     isTitleTruncated.value = titleRef.value.scrollWidth > titleRef.value.clientWidth;
@@ -300,6 +291,10 @@ function getStatusColor({ status }: { status: string }) {
   perspective: 1000px;
   margin-bottom: 16px;
   position: relative;
+}
+
+.flip-card.is-ios {
+  height: 296px;
 }
 
 .flip-card-face {

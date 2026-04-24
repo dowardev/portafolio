@@ -1,5 +1,37 @@
 # Changelog
 
+## 12.19.0 - 2026-04-24
+
+### Summary
+This release adds mobile-first responsive improvements with scrollable navigation, iOS-specific styling, and improved header visibility controls. It also enhances the Experience and Portfolio pages with better navigation and grid layouts.
+
+### Added
+- iOS platform detection in ProjectCard and ExperienceCard for platform-specific flip card heights (296px)
+- Avatar visibility control based on scroll position: shows avatar on mobile when not scrolled, hides when scrolled
+- Scrollable navigation menu for mobile devices with auto-scrolling active button into view
+- Tablet responsive layout: displays 4 items instead of 3 for tablets (576-991px)
+- Scroll event handling with handleScroll() for tracking scroll position
+- Responsive section heights for iOS: 130dvh for ≤410px, 167dvh for ≤375px
+- isTablet computed property for tablet detection
+
+### Changed
+- Improved intersection observer with simplified threshold (0) and adaptive rootMargin for mobile/desktop
+- Updated ExperiencePage: replaced menu button with back button, added responsive grid layout
+- Updated PortfolioPage: replaced menu button with back button, added responsive grid layout
+- Changed section heights: 124dvh mobile, 84dvh desktop (was 64dvh)
+- Simplified ref type casting in ProjectCard (removed complex type assertion)
+- Updated projects/experiences grid with additional responsive breakpoints (size-sm="6", size-md="6")
+
+### Affected Files
+- Modified:
+  - `frontend/src/components/experience/ExperienceCard.vue`
+  - `frontend/src/components/projects/ProjectCard.vue`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/experience/ExperiencePage.vue`
+  - `frontend/src/views/portfolio/PortfolioPage.vue`
+
+---
+
 ## 12.18.0 - 2026-04-23
 
 ### Summary
