@@ -104,6 +104,26 @@ export default class FreelanceController {
     return this.convertToSeparatedData(data.freelance || []);
   }
 
+  async updateFreelance(id: string, freelance: FreelanceItem): Promise<FreelanceData> {
+    const formData = new FormData();
+    formData.append("id", id);
+    formData.append("freelance", JSON.stringify(freelance));
+
+    if (freelance.image) {
+      const response = await fetch(freelance.image);
+      const blob = await response.blob();
+      formData.append("image", blob, "freelance.jpg");
+    }
+
+    const data = await api.post<{ freelance: FreelanceItem[] }>({
+      url: "admin/update-freelance",
+      data: formData,
+      contentType: "multipart/form-data",
+    });
+
+    return this.convertToSeparatedData(data.freelance || []);
+  }
+
   async deleteFreelance(id: string): Promise<FreelanceData> {
     const data = await api.post<{ freelance: FreelanceItem[] }>({
       url: "admin/delete-freelance",

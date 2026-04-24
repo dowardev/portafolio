@@ -324,6 +324,7 @@ onMounted(async () => {
   await projectsController.loadProjects();
   if (isNew.value) {
     localProject.value = {
+      id: crypto.randomUUID(),
       img: "",
       title: "",
       status: "progress",
@@ -344,10 +345,9 @@ onMounted(async () => {
 async function handleSave() {
   if (!localProject.value) return;
   try {
-    const success = await projectsController.saveProject(
-      localProject.value,
-      isNew.value ? undefined : projectIndex.value,
-    );
+    const success = isNew.value
+      ? await projectsController.addProject(localProject.value)
+      : await projectsController.updateProject(localProject.value.id, localProject.value);
     if (success) {
       router.push("/admin-panel/projects");
     }
@@ -376,8 +376,8 @@ async function confirmDelete() {
 }
 
 async function deleteProject() {
-  if (projectIndex.value === undefined) return;
-  const success = await projectsController.deleteProject(projectIndex.value);
+  if (!localProject.value?.id) return;
+  const success = await projectsController.deleteProject(localProject.value.id);
   if (success) {
     router.push("/admin-panel/projects");
   }

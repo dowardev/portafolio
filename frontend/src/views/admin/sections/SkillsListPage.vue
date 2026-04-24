@@ -154,9 +154,12 @@ function createNewCategory() {
 }
 
 async function confirmDelete(index: number) {
+  const category = skillCategories.value[index];
+  if (!category?.id) return;
+
   const alert = await alertController.create({
     header: "Eliminar skill",
-    message: `¿Estás seguro de eliminar "${skillCategories.value[index].name || "esta skill"}"?`,
+    message: `¿Estás seguro de eliminar "${category.name || "esta skill"}"?`,
     buttons: [
       {
         text: "Cancelar",
@@ -166,7 +169,7 @@ async function confirmDelete(index: number) {
         text: "Eliminar",
         role: "destructive",
         handler: () => {
-          deleteCategory(index);
+          deleteCategory(category.id);
         },
       },
     ],
@@ -174,8 +177,8 @@ async function confirmDelete(index: number) {
   await alert.present();
 }
 
-async function deleteCategory(index: number) {
-  await skillsController.deleteSkillCategory(index);
+async function deleteCategory(id: string) {
+  await skillsController.deleteSkillCategory(id);
 }
 
 async function generateTestSkills() {
@@ -184,6 +187,7 @@ async function generateTestSkills() {
   const testCategories = Array.from({ length: 3 }, () => {
     const techNames = faker.helpers.arrayElements(techs, { min: 2, max: 5 });
     return {
+      id: crypto.randomUUID(),
       name: faker.word.noun(),
       technologies: techNames.map((name) => ({
         name,

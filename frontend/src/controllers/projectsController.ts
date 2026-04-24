@@ -106,30 +106,34 @@ export default class ProjectsController {
     }
   }
 
-  async saveProject(project: ProjectItem, index?: number): Promise<boolean> {
+  async updateProject(id: string, project: ProjectItem): Promise<boolean> {
     try {
       this.projectsStore.setSaving(true);
-      if (index !== undefined) {
-        this.projectsStore.updateProject(index, project);
-      } else {
-        this.projectsStore.addProject(project);
-      }
 
       const formData = new FormData();
-      formData.append("projects", JSON.stringify(this.projectsStore.projects));
+      formData.append("id", id);
+      formData.append("project", JSON.stringify(project));
 
-      await api.post<ProjectsResponse>({
-        url: "admin/update-projects",
+      if (project.img) {
+        const response = await fetch(project.img);
+        const blob = await response.blob();
+        formData.append("image", blob, "project.jpg");
+      }
+
+      const data = await api.post<ProjectsResponse>({
+        url: "admin/update-project",
         data: formData,
         contentType: "multipart/form-data",
       });
+
+      this.projectsStore.setProjects(data.projects || []);
       this.projectsStore.setSaving(false);
       return true;
     } catch (error) {
       this.projectsStore.setSaving(false);
-      console.error("Error saving project:", error);
+      console.error("Error updating project:", error);
       const toast = await this.toastController.presentToast({
-        message: "Error al guardar el proyecto",
+        message: "Error al actualizar el proyecto",
         duration: 2000,
         color: "danger",
       });

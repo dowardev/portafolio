@@ -138,9 +138,12 @@ function createNewCertificate() {
 }
 
 async function confirmDelete(index: number) {
+  const cert = certificates.value[index];
+  if (!cert?.id) return;
+
   const alert = await alertController.create({
     header: "Eliminar certificado",
-    message: `¿Estás seguro de eliminar "${certificates.value[index].title || "este certificado"}"?`,
+    message: `¿Estás seguro de eliminar "${cert.title || "este certificado"}"?`,
     buttons: [
       {
         text: "Cancelar",
@@ -150,7 +153,7 @@ async function confirmDelete(index: number) {
         text: "Eliminar",
         role: "destructive",
         handler: () => {
-          deleteCertificate(index);
+          deleteCertificate(cert.id);
         },
       },
     ],
@@ -158,8 +161,8 @@ async function confirmDelete(index: number) {
   await alert.present();
 }
 
-async function deleteCertificate(index: number) {
-  await certificatesController.deleteCertificate(index);
+async function deleteCertificate(id: string) {
+  await certificatesController.deleteCertificate(id);
 }
 </script>
 

@@ -106,6 +106,7 @@ const categoryIndex = computed(() => {
   const idx = route.params.index;
   return idx ? parseInt(idx as string, 10) : undefined;
 });
+const categoryId = ref<string | undefined>(undefined);
 
 const loading = ref(true);
 const saving = ref(false);
@@ -126,6 +127,7 @@ onMounted(async () => {
     const category = skillsController.getSkillCategory(categoryIndex.value);
     if (category) {
       categoryName.value = category.name;
+      categoryId.value = category.id;
       technologies.value.splice(
         0,
         technologies.value.length,
@@ -159,8 +161,8 @@ async function confirmDelete() {
 }
 
 async function deleteCategory() {
-  if (categoryIndex.value !== undefined) {
-    await skillsController.deleteSkillCategory(categoryIndex.value);
+  if (categoryId.value) {
+    await skillsController.deleteSkillCategory(categoryId.value);
     router.push("/admin-panel/skills");
   }
 }
@@ -170,17 +172,24 @@ async function saveCategory() {
 
   if (!categoryName.value.trim()) return;
 
-  const category = {
-    name: categoryName.value.trim(),
-    technologies: technologies.value.filter((t) => t.iconName?.trim()),
-  };
-
   saving.value = true;
   try {
-    const success = await skillsController.saveSkillCategory(
-      category,
-      categoryIndex.value,
-    );
+    let success: boolean;
+    if (isEditing.value && categoryId.value) {
+      const category = {
+        id: categoryId.value,
+        name: categoryName.value.trim(),
+        technologies: technologies.value.filter((t) => t.iconName?.trim()),
+      };
+      success = await skillsController.updateSkillCategory(categoryId.value, category);
+    } else {
+      const category = {
+        id: crypto.randomUUID(),
+        name: categoryName.value.trim(),
+        technologies: technologies.value.filter((t) => t.iconName?.trim()),
+      };
+      success = await skillsController.addSkillCategory(category);
+    }
     if (success) {
       router.push("/admin-panel/skills");
     }

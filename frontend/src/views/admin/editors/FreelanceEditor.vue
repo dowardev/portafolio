@@ -254,7 +254,7 @@ import {
 } from "ionicons/icons";
 import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import type { FreelancePlatform, FreelanceComment } from "@/services/types";
+import type { FreelancePlatform, FreelanceComment, FreelanceItem } from "@/services/types";
 import FreelanceController from "@/controllers/freelanceController";
 import { useFreelanceStore } from "@/store/freelanceStore";
 import { faker } from "@faker-js/faker";
@@ -280,6 +280,8 @@ const freelanceIndex = computed(() => {
   return undefined;
 });
 
+const freelanceId = ref<string | undefined>(undefined);
+
 const isNew = computed(() => route.name === "FreelanceNewPage" || route.name === "FreelanceNewPageOld");
 
 const loading = ref(true);
@@ -302,12 +304,14 @@ onMounted(async () => {
     if (isNew.value) {
       if (freelanceType.value === "platform") {
         localItem.value = {
+          id: crypto.randomUUID(),
           name: "",
           image: "",
           url: "",
         } as FreelancePlatform;
       } else {
         localItem.value = {
+          id: crypto.randomUUID(),
           platformName: platforms.value[0]?.name || "",
           title: "",
           text: "",
@@ -319,11 +323,13 @@ onMounted(async () => {
         const item = freelanceStore.getPlatform(freelanceIndex.value);
         if (item) {
           localItem.value = { ...item };
+          freelanceId.value = item.id;
         }
       } else {
         const item = freelanceStore.getComment(freelanceIndex.value);
         if (item) {
           localItem.value = { ...item };
+          freelanceId.value = item.id;
         }
       }
     }
@@ -346,17 +352,12 @@ async function handleSave() {
 
     saving.value = true;
     try {
+      const item = localItem.value as FreelancePlatform;
       if (isNew.value) {
-        freelanceStore.addPlatform(localItem.value as FreelancePlatform);
-      } else if (freelanceIndex.value !== undefined) {
-        freelanceStore.updatePlatform(freelanceIndex.value, localItem.value as FreelancePlatform);
+        await freelanceController.addFreelance({ ...item, comment: null } as FreelanceItem);
+      } else if (freelanceId.value) {
+        await freelanceController.updateFreelance(freelanceId.value, { ...item, comment: null } as FreelanceItem);
       }
-
-      await freelanceController.saveFreelance(
-        freelanceStore.platforms,
-        freelanceStore.comments,
-        pendingFiles,
-      );
       router.push("/admin-panel/freelance");
     } catch (error) {
       console.error("Error saving freelance:", error);
@@ -368,16 +369,23 @@ async function handleSave() {
 
     saving.value = true;
     try {
+      const item = localItem.value as FreelanceComment;
+      const freelanceItem: FreelanceItem = {
+        id: item.id,
+        name: item.platformName,
+        image: "",
+        url: "",
+        comment: {
+          title: item.title,
+          text: item.text,
+          rating: item.rating,
+        },
+      };
       if (isNew.value) {
-        freelanceStore.addComment(localItem.value as FreelanceComment);
-      } else if (freelanceIndex.value !== undefined) {
-        freelanceStore.updateComment(freelanceIndex.value, localItem.value as FreelanceComment);
+        await freelanceController.addFreelance(freelanceItem);
+      } else if (freelanceId.value) {
+        await freelanceController.updateFreelance(freelanceId.value, freelanceItem);
       }
-
-      await freelanceController.saveFreelance(
-        freelanceStore.platforms,
-        freelanceStore.comments,
-      );
       router.push("/admin-panel/freelance");
     } catch (error) {
       console.error("Error saving freelance:", error);
@@ -407,18 +415,9 @@ async function confirmDelete() {
 }
 
 async function deleteFreelance() {
-  if (freelanceIndex.value === undefined) return;
+  if (!freelanceId.value) return;
 
-  if (freelanceType.value === "platform") {
-    freelanceStore.deletePlatform(freelanceIndex.value);
-  } else {
-    freelanceStore.deleteComment(freelanceIndex.value);
-  }
-
-  await freelanceController.saveFreelance(
-    freelanceStore.platforms,
-    freelanceStore.comments,
-  );
+  await freelanceController.deleteFreelance(freelanceId.value);
   router.push("/admin-panel/freelance");
 }
 
@@ -426,6 +425,7 @@ function generateTestData() {
   if (freelanceType.value === "platform") {
     const platformName = faker.helpers.arrayElement(["Upwork", "Fiverr", "Toptal", "Freelancer.com"]);
     localItem.value = {
+      id: crypto.randomUUID(),
       name: platformName,
       image: `https://ui-avatars.com/api/?name=${encodeURIComponent(platformName)}&background=random&size=100`,
       url: faker.internet.url(),
@@ -433,6 +433,7 @@ function generateTestData() {
   } else {
     const availablePlatforms = platforms.value;
     localItem.value = {
+      id: crypto.randomUUID(),
       platformName: availablePlatforms[0]?.name || "Upwork",
       title: faker.person.fullName(),
       text: faker.lorem.paragraph(),

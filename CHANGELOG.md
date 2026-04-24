@@ -1,5 +1,41 @@
 # Changelog
 
+## 12.20.0 - 2026-04-24
+
+### Summary
+This release completes the CRUD operations for all homepage sections by adding individual update endpoints. All editors now use ID-based operations instead of the previous batch-based approach, enabling proper update functionality with automatic image cleanup.
+
+### Added
+- New backend API endpoints for individual update operations:
+  - `admin/update-project`, `admin/update-experience`, `admin/update-freelance`
+  - `admin/update-skill-category`, `admin/update-certificate`
+- Automatic image cleanup when deleting certificates and freelance items
+- Validation for all delete endpoints to ensure ID is provided
+- New `getPlatformById`, `getCommentById`, `updatePlatformById`, `updateCommentById` methods to freelanceStore
+
+### Changed
+- Refactored all frontend editors to use ID-based operations instead of index-based
+- Changed list pages from index-based to ID-based deletion
+- Removed batch save methods: `saveCertificate`, `saveExperience`, `saveProject`, `saveSkillCategory`
+
+### Breaking Changes
+- All CRUD operations now require an `id` field
+- Index-based deletion replaced with ID-based approach
+
+### Affected Files
+- Modified:
+  - `backend/app/Http/Controllers/Admin/HomePageController.php`
+  - `backend/routes/api.php`
+  - `frontend/src/controllers/certificatesController.ts`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/controllers/freelanceController.ts`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/controllers/skillsController.ts`
+  - `frontend/src/store/freelanceStore.ts`
+  - All editor and list page components
+
+---
+
 ## 12.19.0 - 2026-04-24
 
 ### Summary

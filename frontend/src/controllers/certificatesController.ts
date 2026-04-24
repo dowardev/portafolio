@@ -48,37 +48,6 @@ export default class CertificatesController {
     return this.certificatesStore.getCertificate(index);
   }
 
-  async saveCertificate(certificate: CertificateItem, index?: number): Promise<boolean> {
-    try {
-      this.certificatesStore.setSaving(true);
-      if (index !== undefined) {
-        this.certificatesStore.updateCertificate(index, certificate);
-      } else {
-        this.certificatesStore.addCertificate(certificate);
-      }
-
-      const formData = new FormData();
-      formData.append("certificates", JSON.stringify(this.certificatesStore.certificates));
-      await api.post<CertificatesResponse>({
-        url: "admin/update-certificates",
-        data: formData,
-        contentType: "multipart/form-data",
-      });
-      this.certificatesStore.setSaving(false);
-      return true;
-    } catch (error) {
-      this.certificatesStore.setSaving(false);
-      console.error("Error saving certificate:", error);
-      const toast = await this.toastController.presentToast({
-        message: "Error al guardar el certificado",
-        duration: 2000,
-        color: "danger",
-      });
-      await toast.present();
-      return false;
-    }
-  }
-
   async addCertificate(certificate: CertificateItem): Promise<boolean> {
     try {
       this.certificatesStore.setSaving(true);
@@ -127,6 +96,42 @@ export default class CertificatesController {
       console.error("Error deleting certificate:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al eliminar el certificado",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return false;
+    }
+  }
+
+  async updateCertificate(id: string, certificate: CertificateItem): Promise<boolean> {
+    try {
+      this.certificatesStore.setSaving(true);
+
+      const formData = new FormData();
+      formData.append("id", id);
+      formData.append("certificate", JSON.stringify(certificate));
+
+      if (certificate.img) {
+        const response = await fetch(certificate.img);
+        const blob = await response.blob();
+        formData.append("image", blob, "certificate.jpg");
+      }
+
+      const data = await api.post<CertificatesResponse>({
+        url: "admin/update-certificate",
+        data: formData,
+        contentType: "multipart/form-data",
+      });
+
+      this.certificatesStore.setCertificates(data.certificates || []);
+      this.certificatesStore.setSaving(false);
+      return true;
+    } catch (error) {
+      this.certificatesStore.setSaving(false);
+      console.error("Error updating certificate:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al actualizar el certificado",
         duration: 2000,
         color: "danger",
       });

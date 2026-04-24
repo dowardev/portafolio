@@ -261,6 +261,7 @@ const technologies = computed({
 });
 
 const localExperience = ref<ExperienceItem>({
+  id: "",
   img: "",
   title: "",
   startDate: "",
@@ -273,6 +274,7 @@ onMounted(async () => {
   await experienceController.loadExperiences();
   if (isNew.value) {
     localExperience.value = {
+      id: "",
       img: "",
       title: "",
       startDate: "",
@@ -290,10 +292,9 @@ onMounted(async () => {
 
 async function handleSave() {
   try {
-    const success = await experienceController.saveExperience(
-      localExperience.value,
-      isNew.value ? undefined : experienceIndex.value,
-    );
+    const success = isNew.value
+      ? await experienceController.addExperience(localExperience.value)
+      : await experienceController.updateExperience(localExperience.value.id, localExperience.value);
     if (success) {
       router.push("/admin-panel/experience");
     }
@@ -322,10 +323,8 @@ async function confirmDelete() {
 }
 
 async function deleteExperience() {
-  if (experienceIndex.value === undefined) return;
-  const success = await experienceController.deleteExperience(
-    experienceIndex.value,
-  );
+  if (!localExperience.value?.id) return;
+  const success = await experienceController.deleteExperience(localExperience.value.id);
   if (success) {
     router.push("/admin-panel/experience");
   }

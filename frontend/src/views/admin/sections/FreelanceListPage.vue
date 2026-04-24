@@ -266,6 +266,9 @@ async function confirmDelete(type: "platform" | "comment", index: number) {
   const itemName = type === "platform"
     ? (item as any).name || "esta plataforma"
     : (item as any).title || "este comentario";
+  const itemId = (item as any).id;
+
+  if (!itemId) return;
 
   const alert = await alertController.create({
     header: `Eliminar ${itemType}`,
@@ -279,7 +282,7 @@ async function confirmDelete(type: "platform" | "comment", index: number) {
         text: "Eliminar",
         role: "destructive",
         handler: () => {
-          deleteFreelance(type, index);
+          deleteFreelance(itemId);
         },
       },
     ],
@@ -287,52 +290,38 @@ async function confirmDelete(type: "platform" | "comment", index: number) {
   await alert.present();
 }
 
-async function deleteFreelance(type: "platform" | "comment", index: number) {
-  if (type === "platform") {
-    freelanceStore.deletePlatform(index);
-  } else {
-    freelanceStore.deleteComment(index);
-  }
-  await freelanceController.saveFreelance(
-    freelanceStore.platforms,
-    freelanceStore.comments,
-  );
+async function deleteFreelance(id: string) {
+  await freelanceController.deleteFreelance(id);
 }
 
 async function generateTestFreelance() {
   const platformNames = ["Upwork", "Fiverr", "Toptal", "Freelancer.com"];
 
-  const testPlatforms = Array.from({ length: 3 }, () => {
+  for (let i = 0; i < 3; i++) {
     const platformName = faker.helpers.arrayElement(platformNames);
-    return {
+    await freelanceController.addFreelance({
+      id: crypto.randomUUID(),
       name: platformName,
       image: faker.image.url({ width: 100, height: 100 }),
       url: faker.internet.url(),
-    };
-  });
-
-  for (const platform of testPlatforms) {
-    freelanceStore.addPlatform(platform);
+      comment: null,
+    });
   }
 
-  const testComments = Array.from({ length: 3 }, () => {
+  for (let i = 0; i < 3; i++) {
     const platformName = faker.helpers.arrayElement(platformNames);
-    return {
-      platformName,
-      title: faker.person.fullName(),
-      text: faker.lorem.paragraph(),
-      rating: faker.number.int({ min: 3, max: 5 }),
-    };
-  });
-
-  for (const comment of testComments) {
-    freelanceStore.addComment(comment);
+    await freelanceController.addFreelance({
+      id: crypto.randomUUID(),
+      name: platformName,
+      image: faker.image.url({ width: 100, height: 100 }),
+      url: faker.internet.url(),
+      comment: {
+        title: faker.person.fullName(),
+        text: faker.lorem.paragraph(),
+        rating: faker.number.int({ min: 3, max: 5 }),
+      },
+    });
   }
-
-  await freelanceController.saveFreelance(
-    freelanceStore.platforms,
-    freelanceStore.comments,
-  );
 }
 </script>
 

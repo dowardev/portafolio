@@ -50,38 +50,6 @@ export default class ExperienceController {
     return this.experienceStore.getExperience(index);
   }
 
-  async saveExperience(experience: ExperienceItem, index?: number): Promise<boolean> {
-    try {
-      this.experienceStore.setSaving(true);
-      if (index !== undefined) {
-        this.experienceStore.updateExperience(index, experience);
-      } else {
-        this.experienceStore.addExperience(experience);
-      }
-
-      const formData = new FormData();
-      formData.append("experience", JSON.stringify(this.experienceStore.experiences));
-
-      await api.post<ExperienceResponse>({
-        url: "admin/update-experiences",
-        data: formData,
-        contentType: "multipart/form-data",
-      });
-      this.experienceStore.setSaving(false);
-      return true;
-    } catch (error) {
-      this.experienceStore.setSaving(false);
-      console.error("Error saving experience:", error);
-      const toast = await this.toastController.presentToast({
-        message: "Error al guardar la experiencia",
-        duration: 2000,
-        color: "danger",
-      });
-      await toast.present();
-      return false;
-    }
-  }
-
   async addExperience(experience: ExperienceItem): Promise<boolean> {
     try {
       this.experienceStore.setSaving(true);
@@ -130,6 +98,42 @@ export default class ExperienceController {
       console.error("Error deleting experience:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al eliminar la experiencia",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return false;
+    }
+  }
+
+  async updateExperience(id: string, experience: ExperienceItem): Promise<boolean> {
+    try {
+      this.experienceStore.setSaving(true);
+
+      const formData = new FormData();
+      formData.append("id", id);
+      formData.append("experience", JSON.stringify(experience));
+
+      if (experience.img) {
+        const response = await fetch(experience.img);
+        const blob = await response.blob();
+        formData.append("image", blob, "experience.jpg");
+      }
+
+      const data = await api.post<ExperienceResponse>({
+        url: "admin/update-experience",
+        data: formData,
+        contentType: "multipart/form-data",
+      });
+
+      this.experienceStore.setExperiences(data.experience || []);
+      this.experienceStore.setSaving(false);
+      return true;
+    } catch (error) {
+      this.experienceStore.setSaving(false);
+      console.error("Error updating experience:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al actualizar la experiencia",
         duration: 2000,
         color: "danger",
       });

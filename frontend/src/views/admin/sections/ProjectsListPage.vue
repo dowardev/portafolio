@@ -174,9 +174,12 @@ function createNewProject() {
 }
 
 async function confirmDelete(index: number) {
+  const project = projects.value[index];
+  if (!project?.id) return;
+
   const alert = await alertController.create({
     header: "Eliminar proyecto",
-    message: `¿Estás seguro de eliminar "${projects.value[index].title || "este proyecto"}"?`,
+    message: `¿Estás seguro de eliminar "${project.title || "este proyecto"}"?`,
     buttons: [
       {
         text: "Cancelar",
@@ -186,7 +189,7 @@ async function confirmDelete(index: number) {
         text: "Eliminar",
         role: "destructive",
         handler: () => {
-          deleteProject(index);
+          deleteProject(project.id);
         },
       },
     ],
@@ -194,8 +197,8 @@ async function confirmDelete(index: number) {
   await alert.present();
 }
 
-async function deleteProject(index: number) {
-  await projectsController.deleteProject(index);
+async function deleteProject(id: string) {
+  await projectsController.deleteProject(id);
 }
 
 async function generateTestProjects() {
@@ -205,15 +208,13 @@ async function generateTestProjects() {
   const testProjects = Array.from({ length: 5 }, () => {
     const techNames = faker.helpers.arrayElements(techs, { min: 1, max: 3 });
     return {
+      id: crypto.randomUUID(),
       img: faker.image.url({ width: 300, height: 200 }),
       title: faker.word.noun(),
       date: faker.date.past().toISOString(),
       status: faker.helpers.arrayElement(statuses),
       technologies: techNames.map((name) => ({
-        source: `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${name.toLowerCase()}/${name.toLowerCase()}-original.svg`,
-        name,
-        size: "32px",
-        type: "icon" as const,
+        iconName: name.toLowerCase(),
       })),
       source: {
         img: faker.image.url({ width: 50, height: 50 }),

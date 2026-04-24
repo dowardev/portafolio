@@ -228,6 +228,7 @@ onMounted(async () => {
   await certificatesController.loadCertificates();
   if (isNew.value) {
     localCertificate.value = {
+      id: "",
       img: "",
       title: "",
       url: "",
@@ -244,10 +245,9 @@ onMounted(async () => {
 async function handleSave() {
   if (!localCertificate.value) return;
   try {
-    const success = await certificatesController.saveCertificate(
-      localCertificate.value,
-      isNew.value ? undefined : certificateIndex.value,
-    );
+    const success = isNew.value
+      ? await certificatesController.addCertificate(localCertificate.value)
+      : await certificatesController.updateCertificate(localCertificate.value.id, localCertificate.value);
     if (success) {
       router.push("/admin-panel/certificates");
     }
@@ -276,9 +276,9 @@ async function confirmDelete() {
 }
 
 async function deleteCertificate() {
-  if (certificateIndex.value === undefined) return;
+  if (!localCertificate.value?.id) return;
   const success = await certificatesController.deleteCertificate(
-    certificateIndex.value,
+    localCertificate.value.id,
   );
   if (success) {
     router.push("/admin-panel/certificates");

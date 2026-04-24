@@ -45,28 +45,28 @@ Route::middleware([Cors::class, 'sso.auth', 'admin.only'])->prefix('admin')->gro
   // Intro
   Route::post("update-intro", [HomePageController::class, "updateIntro"]);
 
-  // Projects - REST-like
-  Route::post("update-projects", [HomePageController::class, "updateProjects"]);
+  // Projects - Individual operations
   Route::post("add-project", [HomePageController::class, "addProject"]);
+  Route::post("update-project", [HomePageController::class, "updateProject"]);
   Route::post("delete-project", [HomePageController::class, "deleteProject"]);
 
-  // Experience - REST-like
-  Route::post("update-experiences", [HomePageController::class, "updateExperiences"]);
+  // Experience - Individual operations
   Route::post("add-experience", [HomePageController::class, "addExperience"]);
+  Route::post("update-experience", [HomePageController::class, "updateExperience"]);
   Route::post("delete-experience", [HomePageController::class, "deleteExperience"]);
 
-  // Freelance - REST-like
-  Route::post("update-freelance", [HomePageController::class, "updateFreelance"]);
+  // Freelance - Individual operations
   Route::post("add-freelance", [HomePageController::class, "addFreelance"]);
+  Route::post("update-freelance", [HomePageController::class, "updateFreelance"]);
   Route::post("delete-freelance", [HomePageController::class, "deleteFreelance"]);
 
-  // Skills - REST-like
-  Route::post("update-skills", [HomePageController::class, "updateSkills"]);
+  // Skills - Individual operations
   Route::post("add-skill-category", [HomePageController::class, "addSkillCategory"]);
+  Route::post("update-skill-category", [HomePageController::class, "updateSkillCategory"]);
   Route::post("delete-skill-category", [HomePageController::class, "deleteSkillCategory"]);
 
-  // Certificates - REST-like
-  Route::post("update-certificates", [HomePageController::class, "updateCertificates"]);
+  // Certificates - Individual operations
   Route::post("add-certificate", [HomePageController::class, "addCertificate"]);
+  Route::post("update-certificate", [HomePageController::class, "updateCertificate"]);
   Route::post("delete-certificate", [HomePageController::class, "deleteCertificate"]);
 });

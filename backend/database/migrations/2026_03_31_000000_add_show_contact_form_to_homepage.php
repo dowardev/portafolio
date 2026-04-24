@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('homepage', function (Blueprint $table) {
-            $table->boolean('show_contact_form')->nullable()->default(false)->after('reviews');
+            $table->boolean('show_contact_form')->nullable()->default(false)->after('freelance');
         });
     }
 

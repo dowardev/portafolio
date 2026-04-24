@@ -170,9 +170,12 @@ function createNewExperience() {
 }
 
 async function confirmDelete(index: number) {
+  const exp = experiences.value[index];
+  if (!exp?.id) return;
+
   const alert = await alertController.create({
     header: "Eliminar experiencia",
-    message: `¿Estás seguro de eliminar "${experiences.value[index].title || "esta experiencia"}"?`,
+    message: `¿Estás seguro de eliminar "${exp.title || "esta experiencia"}"?`,
     buttons: [
       {
         text: "Cancelar",
@@ -182,7 +185,7 @@ async function confirmDelete(index: number) {
         text: "Eliminar",
         role: "destructive",
         handler: () => {
-          deleteExperience(index);
+          deleteExperience(exp.id);
         },
       },
     ],
@@ -190,8 +193,8 @@ async function confirmDelete(index: number) {
   await alert.present();
 }
 
-async function deleteExperience(index: number) {
-  await experienceController.deleteExperience(index);
+async function deleteExperience(id: string) {
+  await experienceController.deleteExperience(id);
 }
 
 function formatExperienceDate(start: string, end: string | undefined): string {
@@ -216,15 +219,13 @@ async function generateTestExperiences() {
   const testExperiences = Array.from({ length: 3 }, () => {
     const techNames = faker.helpers.arrayElements(techs, { min: 2, max: 4 });
     return {
+      id: crypto.randomUUID(),
       img: faker.image.url({ width: 100, height: 100 }),
       title: faker.company.name(),
       startDate: faker.date.past({ years: 2 }).toISOString(),
       endDate: faker.date.recent({ days: 100 }).toISOString(),
       technologies: techNames.map((name) => ({
-        source: `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${name.toLowerCase()}/${name.toLowerCase()}-original.svg`,
-        name,
-        size: "24px",
-        type: "icon" as const,
+        iconName: name.toLowerCase(),
       })),
       details: {
         description: faker.lorem.paragraph(),

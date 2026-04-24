@@ -7,6 +7,7 @@ use App\Models\HomePage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class HomePageController extends Controller
 {
@@ -143,132 +144,7 @@ public function getProjects()
         return response()->json(['freelance' => $homepage->freelance ?? []]);
     }
 
-    public function updateProjects(Request $request)
-    {
-        $homepage = HomePage::firstOrCreate(['id' => 1], ['projects' => []]);
-
-        $currentImageUrls = [];
-        foreach ($homepage->projects ?? [] as $project) {
-            if (!empty($project['img'])) {
-                $currentImageUrls[] = $this->pathFromUrl($project['img']);
-            }
-        }
-
-        $projects = $request->input('projects', []);
-        if (is_string($projects)) {
-            $projects = json_decode($projects, true) ?? [];
-        }
-
-        foreach ($projects as $index => &$project) {
-            $fileKey = "project_image_{$index}";
-            if ($request->hasFile($fileKey)) {
-                $file = $request->file($fileKey);
-                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                Storage::disk('public')->put('homepage/projects/' . $fileName, file_get_contents($file));
-                $project['img'] = asset('storage/homepage/projects/' . $fileName);
-            }
-            $sourceFileKey = "project_source_image_{$index}";
-            if ($request->hasFile($sourceFileKey)) {
-                $file = $request->file($sourceFileKey);
-                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                Storage::disk('public')->put('homepage/projects/source/' . $fileName, file_get_contents($file));
-                $project['source']['img'] = asset('storage/homepage/projects/source/' . $fileName);
-            }
-        }
-
-        $homepage->projects = $projects;
-        $homepage->save();
-
-        $newImageUrls = [];
-        foreach ($projects as $project) {
-            if (!empty($project['img'])) {
-                $newImageUrls[] = $this->pathFromUrl($project['img']);
-            }
-        }
-        $this->deleteOldImages($currentImageUrls, $newImageUrls);
-
-        return response()->json(['projects' => $homepage->projects]);
-    }
-
-    public function updateExperiences(Request $request)
-    {
-        $homepage = HomePage::firstOrCreate(['id' => 1], ['experience' => []]);
-
-        $currentImageUrls = [];
-        foreach ($homepage->experience ?? [] as $exp) {
-            if (!empty($exp['img'])) {
-                $currentImageUrls[] = $this->pathFromUrl($exp['img']);
-            }
-        }
-
-        $experience = $request->input('experience', []);
-        if (is_string($experience)) {
-            $experience = json_decode($experience, true) ?? [];
-        }
-
-        foreach ($experience as $index => &$exp) {
-            $fileKey = "exp_image_{$index}";
-            if ($request->hasFile($fileKey)) {
-                $file = $request->file($fileKey);
-                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                Storage::disk('public')->put('homepage/experience/' . $fileName, file_get_contents($file));
-                $exp['img'] = asset('storage/homepage/experience/' . $fileName);
-            }
-        }
-
-        $homepage->experience = $experience;
-        $homepage->save();
-
-        $newImageUrls = [];
-        foreach ($experience as $exp) {
-            if (!empty($exp['img'])) {
-                $newImageUrls[] = $this->pathFromUrl($exp['img']);
-            }
-        }
-        $this->deleteOldImages($currentImageUrls, $newImageUrls);
-
-        return response()->json(['experience' => $homepage->experience]);
-    }
-
-    public function updateFreelance(Request $request)
-    {
-        $homepage = HomePage::firstOrCreate(['id' => 1], ['freelance' => []]);
-
-        $currentImageUrls = [];
-        foreach ($homepage->freelance ?? [] as $item) {
-            if (!empty($item['image'])) {
-                $currentImageUrls[] = $this->pathFromUrl($item['image']);
-            }
-        }
-
-        $freelance = $request->input('freelance', []);
-        if (is_string($freelance)) {
-            $freelance = json_decode($freelance, true) ?? [];
-        }
-
-        foreach ($freelance as $index => &$item) {
-            $fileKey = "freelance_image_{$index}";
-            if ($request->hasFile($fileKey)) {
-                $file = $request->file($fileKey);
-                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                Storage::disk('public')->put('homepage/freelance/' . $fileName, file_get_contents($file));
-                $item['image'] = asset('storage/homepage/freelance/' . $fileName);
-            }
-        }
-
-        $homepage->freelance = $freelance;
-        $homepage->save();
-
-        $newImageUrls = [];
-        foreach ($freelance as $item) {
-            if (!empty($item['image'])) {
-                $newImageUrls[] = $this->pathFromUrl($item['image']);
-            }
-        }
-        $this->deleteOldImages($currentImageUrls, $newImageUrls);
-
-        return response()->json(['freelance' => $homepage->freelance]);
-    }
+    // Projects are now managed via addProject and updateProject (individual operations)
 
     public function getSkills()
     {
@@ -282,73 +158,7 @@ public function getProjects()
         return response()->json(['certificates' => $homepage->certificates ?? []]);
     }
 
-    public function updateSkills(Request $request)
-    {
-        $homepage = HomePage::firstOrCreate(['id' => 1], ['skill_categories' => []]);
-
-        $skillCategories = $request->input('skillCategories', []);
-        if (is_string($skillCategories)) {
-            $skillCategories = json_decode($skillCategories, true) ?? [];
-        }
-
-        $homepage->skill_categories = $skillCategories;
-        $homepage->save();
-
-        return response()->json(['skillCategories' => $homepage->skill_categories]);
-    }
-
-    public function updateCertificates(Request $request)
-    {
-        $homepage = HomePage::firstOrCreate(['id' => 1], ['certificates' => []]);
-
-        $currentImageUrls = [];
-        foreach ($homepage->certificates ?? [] as $cert) {
-            if (!empty($cert['img'])) {
-                $currentImageUrls[] = $this->pathFromUrl($cert['img']);
-            }
-        }
-
-        $certificates = $request->input('certificates', []);
-        if (is_string($certificates)) {
-            $certificates = json_decode($certificates, true) ?? [];
-        }
-
-        foreach ($certificates as $index => &$cert) {
-            $fileKey = "cert_image_{$index}";
-            if ($request->hasFile($fileKey)) {
-                $file = $request->file($fileKey);
-                $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                Storage::disk('public')->put('homepage/certificates/' . $fileName, file_get_contents($file));
-                $cert['img'] = asset('storage/homepage/certificates/' . $fileName);
-            }
-            if (isset($cert['aptitudes'])) {
-                foreach ($cert['aptitudes'] as $aptIndex => &$apt) {
-                    if ($apt['type'] === 'img') {
-                        $aptFileKey = "cert_apt_image_{$index}_{$aptIndex}";
-                        if ($request->hasFile($aptFileKey)) {
-                            $file = $request->file($aptFileKey);
-                            $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-                            Storage::disk('public')->put('homepage/certificates/apt/' . $fileName, file_get_contents($file));
-                            $apt['source'] = asset('storage/homepage/certificates/apt/' . $fileName);
-                        }
-                    }
-                }
-            }
-        }
-
-        $homepage->certificates = $certificates;
-        $homepage->save();
-
-        $newImageUrls = [];
-        foreach ($certificates as $cert) {
-            if (!empty($cert['img'])) {
-                $newImageUrls[] = $this->pathFromUrl($cert['img']);
-            }
-        }
-        $this->deleteOldImages($currentImageUrls, $newImageUrls);
-
-        return response()->json(['certificates' => $homepage->certificates]);
-    }
+    // ============ EXPERIENCE ============
 
     public function getIntro()
     {
@@ -471,6 +281,14 @@ public function getProjects()
     // ============ PROJECTS ============
     public function addProject(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'project' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $homepage = HomePage::firstOrCreate(['id' => 1], ['projects' => []]);
         $project = $request->input('project', []);
 
@@ -478,12 +296,15 @@ public function getProjects()
             $project = json_decode($project, true) ?? [];
         }
 
-        // Handle image upload
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
             Storage::disk('public')->put('homepage/projects/' . $fileName, file_get_contents($file));
             $project['img'] = asset('storage/homepage/projects/' . $fileName);
+        }
+
+        if (empty($project['id'])) {
+            $project['id'] = uniqid();
         }
 
         $projects = $homepage->projects ?? [];
@@ -494,12 +315,88 @@ public function getProjects()
         return response()->json(['projects' => $homepage->projects]);
     }
 
+    public function updateProject(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+            'project' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['projects' => []]);
+        $id = $request->input('id');
+        $projectData = $request->input('project', []);
+
+        if (is_string($projectData)) {
+            $projectData = json_decode($projectData, true) ?? [];
+        }
+
+        $projects = $homepage->projects ?? [];
+        $found = false;
+
+        foreach ($projects as $index => &$project) {
+            if (($project['id'] ?? '') === $id) {
+                if ($request->hasFile('image')) {
+                    if (!empty($project['img'])) {
+                        $oldImagePath = $this->pathFromUrl($project['img']);
+                        if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                            Storage::disk('public')->delete($oldImagePath);
+                        }
+                    }
+                    $file = $request->file('image');
+                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                    Storage::disk('public')->put('homepage/projects/' . $fileName, file_get_contents($file));
+                    $projectData['img'] = asset('storage/homepage/projects/' . $fileName);
+                }
+                $project = array_merge($project, $projectData);
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            return response()->json(['error' => 'Proyecto no encontrado'], 404);
+        }
+
+        $homepage->projects = $projects;
+        $homepage->save();
+
+        return response()->json(['projects' => $homepage->projects]);
+    }
+
     public function deleteProject(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $homepage = HomePage::firstOrCreate(['id' => 1], ['projects' => []]);
         $id = $request->input('id');
 
-        $projects = array_filter($homepage->projects ?? [], function ($p) use ($id) {
+        $projects = $homepage->projects ?? [];
+        $projectToDelete = null;
+        foreach ($projects as $project) {
+            if (($project['id'] ?? '') === $id) {
+                $projectToDelete = $project;
+                break;
+            }
+        }
+
+        if ($projectToDelete && !empty($projectToDelete['img'])) {
+            $oldImagePath = $this->pathFromUrl($projectToDelete['img']);
+            if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
+        }
+
+        $projects = array_filter($projects, function ($p) use ($id) {
             return ($p['id'] ?? '') !== $id;
         });
 
@@ -512,6 +409,14 @@ public function getProjects()
     // ============ EXPERIENCE ============
     public function addExperience(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'experience' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $homepage = HomePage::firstOrCreate(['id' => 1], ['experience' => []]);
         $experience = $request->input('experience', []);
 
@@ -526,6 +431,10 @@ public function getProjects()
             $experience['img'] = asset('storage/homepage/experience/' . $fileName);
         }
 
+        if (empty($experience['id'])) {
+            $experience['id'] = uniqid();
+        }
+
         $experiences = $homepage->experience ?? [];
         $experiences[] = $experience;
         $homepage->experience = $experiences;
@@ -534,12 +443,88 @@ public function getProjects()
         return response()->json(['experience' => $homepage->experience]);
     }
 
+    public function updateExperience(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+            'experience' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['experience' => []]);
+        $id = $request->input('id');
+        $expData = $request->input('experience', []);
+
+        if (is_string($expData)) {
+            $expData = json_decode($expData, true) ?? [];
+        }
+
+        $experiences = $homepage->experience ?? [];
+        $found = false;
+
+        foreach ($experiences as $index => &$exp) {
+            if (($exp['id'] ?? '') === $id) {
+                if ($request->hasFile('image')) {
+                    if (!empty($exp['img'])) {
+                        $oldImagePath = $this->pathFromUrl($exp['img']);
+                        if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                            Storage::disk('public')->delete($oldImagePath);
+                        }
+                    }
+                    $file = $request->file('image');
+                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                    Storage::disk('public')->put('homepage/experience/' . $fileName, file_get_contents($file));
+                    $expData['img'] = asset('storage/homepage/experience/' . $fileName);
+                }
+                $exp = array_merge($exp, $expData);
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            return response()->json(['error' => 'Experiencia no encontrada'], 404);
+        }
+
+        $homepage->experience = $experiences;
+        $homepage->save();
+
+        return response()->json(['experience' => $homepage->experience]);
+    }
+
     public function deleteExperience(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $homepage = HomePage::firstOrCreate(['id' => 1], ['experience' => []]);
         $id = $request->input('id');
 
-        $experience = array_filter($homepage->experience ?? [], function ($e) use ($id) {
+        $experience = $homepage->experience ?? [];
+        $expToDelete = null;
+        foreach ($experience as $exp) {
+            if (($exp['id'] ?? '') === $id) {
+                $expToDelete = $exp;
+                break;
+            }
+        }
+
+        if ($expToDelete && !empty($expToDelete['img'])) {
+            $oldImagePath = $this->pathFromUrl($expToDelete['img']);
+            if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
+        }
+
+        $experience = array_filter($experience, function ($e) use ($id) {
             return ($e['id'] ?? '') !== $id;
         });
 
@@ -552,6 +537,14 @@ public function getProjects()
     // ============ FREELANCE ============
     public function addFreelance(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'freelance' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $homepage = HomePage::firstOrCreate(['id' => 1], ['freelance' => []]);
         $freelance = $request->input('freelance', []);
 
@@ -566,6 +559,10 @@ public function getProjects()
             $freelance['image'] = asset('storage/homepage/freelance/' . $fileName);
         }
 
+        if (empty($freelance['id'])) {
+            $freelance['id'] = uniqid();
+        }
+
         $freelanceList = $homepage->freelance ?? [];
         $freelanceList[] = $freelance;
         $homepage->freelance = $freelanceList;
@@ -574,12 +571,88 @@ public function getProjects()
         return response()->json(['freelance' => $homepage->freelance]);
     }
 
+    public function updateFreelance(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+            'freelance' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['freelance' => []]);
+        $id = $request->input('id');
+        $freelanceData = $request->input('freelance', []);
+
+        if (is_string($freelanceData)) {
+            $freelanceData = json_decode($freelanceData, true) ?? [];
+        }
+
+        $freelanceList = $homepage->freelance ?? [];
+        $found = false;
+
+        foreach ($freelanceList as $index => &$item) {
+            if (($item['id'] ?? '') === $id) {
+                if ($request->hasFile('image')) {
+                    if (!empty($item['image'])) {
+                        $oldImagePath = $this->pathFromUrl($item['image']);
+                        if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                            Storage::disk('public')->delete($oldImagePath);
+                        }
+                    }
+                    $file = $request->file('image');
+                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                    Storage::disk('public')->put('homepage/freelance/' . $fileName, file_get_contents($file));
+                    $freelanceData['image'] = asset('storage/homepage/freelance/' . $fileName);
+                }
+                $item = array_merge($item, $freelanceData);
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            return response()->json(['error' => 'Freelance no encontrado'], 404);
+        }
+
+        $homepage->freelance = $freelanceList;
+        $homepage->save();
+
+        return response()->json(['freelance' => $homepage->freelance]);
+    }
+
     public function deleteFreelance(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $homepage = HomePage::firstOrCreate(['id' => 1], ['freelance' => []]);
         $id = $request->input('id');
 
-        $freelance = array_filter($homepage->freelance ?? [], function ($f) use ($id) {
+        $freelance = $homepage->freelance ?? [];
+        $itemToDelete = null;
+        foreach ($freelance as $item) {
+            if (($item['id'] ?? '') === $id) {
+                $itemToDelete = $item;
+                break;
+            }
+        }
+
+        if ($itemToDelete && !empty($itemToDelete['image'])) {
+            $oldImagePath = $this->pathFromUrl($itemToDelete['image']);
+            if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
+        }
+
+        $freelance = array_filter($freelance, function ($f) use ($id) {
             return ($f['id'] ?? '') !== $id;
         });
 
@@ -592,11 +665,23 @@ public function getProjects()
     // ============ SKILLS ============
     public function addSkillCategory(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'skillCategory' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $homepage = HomePage::firstOrCreate(['id' => 1], ['skill_categories' => []]);
         $skillCategory = $request->input('skillCategory', []);
 
         if (is_string($skillCategory)) {
             $skillCategory = json_decode($skillCategory, true) ?? [];
+        }
+
+        if (empty($skillCategory['id'])) {
+            $skillCategory['id'] = uniqid();
         }
 
         $skillCategories = $homepage->skill_categories ?? [];
@@ -607,8 +692,56 @@ public function getProjects()
         return response()->json(['skillCategories' => $homepage->skill_categories]);
     }
 
+    public function updateSkillCategory(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+            'skillCategory' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['skill_categories' => []]);
+        $id = $request->input('id');
+        $categoryData = $request->input('skillCategory', []);
+
+        if (is_string($categoryData)) {
+            $categoryData = json_decode($categoryData, true) ?? [];
+        }
+
+        $skillCategories = $homepage->skill_categories ?? [];
+        $found = false;
+
+        foreach ($skillCategories as $index => &$category) {
+            if (($category['id'] ?? '') === $id) {
+                $category = array_merge($category, $categoryData);
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            return response()->json(['error' => 'Categoría no encontrada'], 404);
+        }
+
+        $homepage->skill_categories = $skillCategories;
+        $homepage->save();
+
+        return response()->json(['skillCategories' => $homepage->skill_categories]);
+    }
+
     public function deleteSkillCategory(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $homepage = HomePage::firstOrCreate(['id' => 1], ['skill_categories' => []]);
         $id = $request->input('id');
 
@@ -625,6 +758,14 @@ public function getProjects()
     // ============ CERTIFICATES ============
     public function addCertificate(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'certificate' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $homepage = HomePage::firstOrCreate(['id' => 1], ['certificates' => []]);
         $certificate = $request->input('certificate', []);
 
@@ -639,6 +780,10 @@ public function getProjects()
             $certificate['img'] = asset('storage/homepage/certificates/' . $fileName);
         }
 
+        if (empty($certificate['id'])) {
+            $certificate['id'] = uniqid();
+        }
+
         $certificates = $homepage->certificates ?? [];
         $certificates[] = $certificate;
         $homepage->certificates = $certificates;
@@ -647,12 +792,88 @@ public function getProjects()
         return response()->json(['certificates' => $homepage->certificates]);
     }
 
+    public function updateCertificate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+            'certificate' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $homepage = HomePage::firstOrCreate(['id' => 1], ['certificates' => []]);
+        $id = $request->input('id');
+        $certData = $request->input('certificate', []);
+
+        if (is_string($certData)) {
+            $certData = json_decode($certData, true) ?? [];
+        }
+
+        $certificates = $homepage->certificates ?? [];
+        $found = false;
+
+        foreach ($certificates as $index => &$cert) {
+            if (($cert['id'] ?? '') === $id) {
+                if ($request->hasFile('image')) {
+                    if (!empty($cert['img'])) {
+                        $oldImagePath = $this->pathFromUrl($cert['img']);
+                        if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                            Storage::disk('public')->delete($oldImagePath);
+                        }
+                    }
+                    $file = $request->file('image');
+                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                    Storage::disk('public')->put('homepage/certificates/' . $fileName, file_get_contents($file));
+                    $certData['img'] = asset('storage/homepage/certificates/' . $fileName);
+                }
+                $cert = array_merge($cert, $certData);
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            return response()->json(['error' => 'Certificado no encontrado'], 404);
+        }
+
+        $homepage->certificates = $certificates;
+        $homepage->save();
+
+        return response()->json(['certificates' => $homepage->certificates]);
+    }
+
     public function deleteCertificate(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $homepage = HomePage::firstOrCreate(['id' => 1], ['certificates' => []]);
         $id = $request->input('id');
 
-        $certificates = array_filter($homepage->certificates ?? [], function ($c) use ($id) {
+        $certificates = $homepage->certificates ?? [];
+        $certToDelete = null;
+        foreach ($certificates as $cert) {
+            if (($cert['id'] ?? '') === $id) {
+                $certToDelete = $cert;
+                break;
+            }
+        }
+
+        if ($certToDelete && !empty($certToDelete['img'])) {
+            $oldImagePath = $this->pathFromUrl($certToDelete['img']);
+            if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
+        }
+
+        $certificates = array_filter($certificates, function ($c) use ($id) {
             return ($c['id'] ?? '') !== $id;
         });
 
