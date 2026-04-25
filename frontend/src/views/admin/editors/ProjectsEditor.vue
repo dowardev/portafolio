@@ -180,33 +180,6 @@
                 </ion-list-header>
 
                 <ion-card class="shadow1">
-                  <ion-item lines="full" button @click="openSourceFileDialog">
-                    <ion-label>Imagen fuente</ion-label>
-
-                    <ion-note v-if="sourceFileName" slot="end">{{
-                      sourceFileName
-                    }}</ion-note>
-
-                    <ion-note v-else slot="end">Seleccionar</ion-note>
-
-                    <ion-button
-                      slot="end"
-                      fill="clear"
-                      :disabled="!localProject.source?.img"
-                      @click.stop="showSourcePreview"
-                    >
-                      <ion-icon :icon="eyeOutline"></ion-icon>
-                    </ion-button>
-                  </ion-item>
-
-                  <input
-                    ref="sourceFileInput"
-                    style="display: none"
-                    type="file"
-                    accept="image/*"
-                    @change="onSourceFileChange"
-                  />
-
                   <ion-item>
                     <ion-input
                       v-model="localProject.source.name"
@@ -346,8 +319,8 @@ async function handleSave() {
   if (!localProject.value) return;
   try {
     const success = isNew.value
-      ? await projectsController.addProject(localProject.value, pendingMainImageFile, pendingSourceImageFile, pendingTechFiles)
-      : await projectsController.updateProject(localProject.value.id, localProject.value, pendingMainImageFile, pendingSourceImageFile, pendingTechFiles);
+      ? await projectsController.addProject(localProject.value, pendingMainImageFile, pendingTechFiles)
+      : await projectsController.updateProject(localProject.value.id, localProject.value, pendingMainImageFile, pendingTechFiles);
     if (success) {
       router.push("/admin-panel/projects");
     }
@@ -385,12 +358,9 @@ async function deleteProject() {
 
 // vars and const
 let pendingMainImageFile: File | null = null;
-let pendingSourceImageFile: File | null = null;
 let pendingTechFiles: Record<number, File> = {};
 const fileName = ref("");
-const sourceFileName = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
-const sourceFileInput = ref<HTMLInputElement | null>(null);
 
 const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
@@ -444,29 +414,6 @@ function onMainFileChange(event: Event) {
 
 function showPreview() {
   const src = localProject.value?.img;
-  if (src) {
-    previewSrc.value = src;
-    isPreviewOpen.value = true;
-  }
-}
-
-function openSourceFileDialog() {
-  sourceFileInput.value?.click();
-}
-
-function onSourceFileChange(event: Event) {
-  const input = event.target as HTMLInputElement;
-  if (!input.files?.length) return;
-  const file = input.files[0];
-  pendingSourceImageFile = file;
-  if (localProject.value) {
-    localProject.value.source.img = URL.createObjectURL(file);
-  }
-  sourceFileName.value = file.name;
-}
-
-function showSourcePreview() {
-  const src = localProject.value?.source?.img;
   if (src) {
     previewSrc.value = src;
     isPreviewOpen.value = true;

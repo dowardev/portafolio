@@ -56,7 +56,6 @@ export interface ProjectItem {
     iconName: string;
   }>;
   source: {
-    img: string;
     name: string;
     url: string;
   };

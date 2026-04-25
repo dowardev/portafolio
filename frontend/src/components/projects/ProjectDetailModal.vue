@@ -82,22 +82,10 @@
               button
               @click="openUrl(project.source.url)"
             >
-              <img
-                v-if="project.source.img"
-                :src="project.source.img"
-                alt=""
-                style="height: 30px; margin-right: 12px"
-              />
               <ion-label>{{ project.source.name }}</ion-label>
               <ion-icon slot="end" :icon="openOutline"></ion-icon>
             </ion-item>
             <ion-item v-else lines="none">
-              <img
-                v-if="project.source.img"
-                :src="project.source.img"
-                alt=""
-                style="height: 30px; margin-right: 12px"
-              />
               <ion-label>{{ project.source.name }}</ion-label>
             </ion-item>
           </ion-list>

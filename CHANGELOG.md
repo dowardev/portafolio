@@ -1,5 +1,25 @@
 # Changelog
 
+## 13.3.0 - 2026-04-25
+
+### Summary
+This release removes the source image feature for projects that was added in the previous release but never had backend support. The feature is being removed to simplify the codebase until proper backend image handling is implemented.
+
+### Removed
+- Removed `img` field from project `source` type in types.ts
+- Removed `sourceImageFile` parameter from `addProject` and `updateProject` methods in projectsController
+- Removed source image upload UI from ProjectsEditor: file input, preview button, and related handlers
+- Removed source image display from ProjectDetailModal component
+
+### Affected Files
+- Modified:
+  - `frontend/src/components/projects/ProjectDetailModal.vue`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+
+---
+
 ## 13.2.0 - 2026-04-25
 
 ### Summary

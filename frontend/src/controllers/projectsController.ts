@@ -50,7 +50,7 @@ export default class ProjectsController {
     return this.projectsStore.getProject(index);
   }
 
-  async addProject(project: ProjectItem, imageFile?: File | null, sourceImageFile?: File | null, techFiles?: Record<number, File>): Promise<boolean> {
+  async addProject(project: ProjectItem, imageFile?: File | null, techFiles?: Record<number, File>): Promise<boolean> {
     try {
       this.projectsStore.setSaving(true);
 
@@ -59,9 +59,6 @@ export default class ProjectsController {
 
       if (imageFile) {
         formData.append("image", imageFile, "project.jpg");
-      }
-      if (sourceImageFile) {
-        formData.append("sourceImage", sourceImageFile, "source.jpg");
       }
       if (techFiles) {
         for (const [index, file] of Object.entries(techFiles)) {
@@ -112,7 +109,7 @@ export default class ProjectsController {
     }
   }
 
-  async updateProject(id: string, project: ProjectItem, imageFile?: File | null, sourceImageFile?: File | null, techFiles?: Record<number, File>): Promise<boolean> {
+  async updateProject(id: string, project: ProjectItem, imageFile?: File | null, techFiles?: Record<number, File>): Promise<boolean> {
     try {
       this.projectsStore.setSaving(true);
 
@@ -122,9 +119,6 @@ export default class ProjectsController {
 
       if (imageFile) {
         formData.append("image", imageFile, "project.jpg");
-      }
-      if (sourceImageFile) {
-        formData.append("sourceImage", sourceImageFile, "source.jpg");
       }
       if (techFiles) {
         for (const [index, file] of Object.entries(techFiles)) {
