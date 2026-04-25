@@ -91,6 +91,12 @@ export default class ExperienceController {
       });
 
       this.experienceStore.setExperiences(data.experience || []);
+      const toast = await this.toastController.presentToast({
+        message: "Experiencia eliminada correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return true;
     } catch (error) {
       console.error("Error deleting experience:", error);
@@ -124,6 +130,12 @@ export default class ExperienceController {
 
       this.experienceStore.setExperiences(data.experience || []);
       this.experienceStore.setSaving(false);
+      const toast = await this.toastController.presentToast({
+        message: "Experiencia actualizada correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return true;
     } catch (error) {
       this.experienceStore.setSaving(false);

@@ -61,6 +61,7 @@ import {
   IonSpinner,
 } from "@ionic/vue";
 import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
 import StackEditor from "../editors/StackEditor.vue";
 import IntroController from "@/controllers/introController";
 import { useIntroStore } from "@/store/introStore";
@@ -68,6 +69,7 @@ import { saveOutline } from "ionicons/icons";
 
 const introController = new IntroController();
 const introStore = useIntroStore();
+const router = useRouter();
 
 const stackData = computed({
   get: () => introStore.form.stack,
@@ -104,6 +106,7 @@ async function handleSave() {
       stack: introStore.form.stack,
       showContactForm: introStore.form.showContactForm,
     }, files);
+    router.push("/admin-panel");
   } catch (error) {
     console.error("Error saving stack:", error);
   }

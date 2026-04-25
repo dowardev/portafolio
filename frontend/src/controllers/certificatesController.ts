@@ -89,6 +89,12 @@ export default class CertificatesController {
       });
 
       this.certificatesStore.setCertificates(data.certificates || []);
+      const toast = await this.toastController.presentToast({
+        message: "Certificado eliminado correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return true;
     } catch (error) {
       console.error("Error deleting certificate:", error);
@@ -122,6 +128,12 @@ export default class CertificatesController {
 
       this.certificatesStore.setCertificates(data.certificates || []);
       this.certificatesStore.setSaving(false);
+      const toast = await this.toastController.presentToast({
+        message: "Certificado actualizado correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return true;
     } catch (error) {
       this.certificatesStore.setSaving(false);

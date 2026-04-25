@@ -2,6 +2,7 @@ import APIController from "./APIController";
 import ServerConfig from "./serverConfigController";
 import Cookies from "js-cookie";
 import { useIntroStore } from "@/store/introStore";
+import { ToastController } from "./toastController";
 
 const userToken = Cookies.get("user-token");
 const config = new ServerConfig({
@@ -26,6 +27,7 @@ export interface IntroData {
 
 export default class IntroController {
   private introStore = useIntroStore();
+  private toastController = new ToastController();
 
   async loadIntro(): Promise<IntroData> {
     this.introStore.setLoading(true);
@@ -94,9 +96,21 @@ export default class IntroController {
         stack: data.stack,
         showContactForm: data.showContactForm,
       });
+      const toast = await this.toastController.presentToast({
+        message: "Guardado correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return data;
     } catch (error) {
       console.error("Error saving intro:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al guardar",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
       return intro;
     } finally {
       this.introStore.setSaving(false);

@@ -50,6 +50,7 @@ import {
   IonSpinner,
 } from "@ionic/vue";
 import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
 import FreelanceEditor from "../editors/FreelanceEditor.vue";
 import FreelanceController from "@/controllers/freelanceController";
 import { useFreelanceStore } from "@/store/freelanceStore";
@@ -57,6 +58,7 @@ import { saveOutline } from "ionicons/icons";
 
 const freelanceController = new FreelanceController();
 const freelanceStore = useFreelanceStore();
+const router = useRouter();
 
 const freelanceData = computed(() => freelanceStore.allFreelance);
 const saving = computed(() => freelanceStore.saving);
@@ -91,6 +93,7 @@ async function handleSave() {
         rating: item.comment.rating,
       }));
     await freelanceController.saveFreelance(platforms, comments, freelanceFiles.value);
+    router.push("/admin-panel/freelance");
   } catch (error) {
     console.error("Error saving freelance:", error);
   } finally {

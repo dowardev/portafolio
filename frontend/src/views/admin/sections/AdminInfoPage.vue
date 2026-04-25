@@ -90,6 +90,7 @@ import {
   IonSpinner,
 } from "@ionic/vue";
 import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import InfoEditor from "../editors/InfoEditor.vue";
 import { useIntroStore } from "@/store/introStore";
 import IntroController from "@/controllers/introController";
@@ -99,6 +100,7 @@ const introStore = useIntroStore();
 const introController = new IntroController();
 const infoEditorRef = ref<InstanceType<typeof InfoEditor>>();
 const isDev = import.meta.env.DEV;
+const router = useRouter();
 
 // datos iniciales para el form del hijo (se actualiza cuando loadIntro termina)
 const initialData = computed(() => ({
@@ -160,6 +162,7 @@ async function handleSave(payload: {
         Object.entries(introStore.sectionFiles.stack).map(([k, v]) => [`stack_image_${k}`, v])
       ),
     });
+    router.push("/admin-panel");
   } finally {
     introStore.setSaving(false);
   }

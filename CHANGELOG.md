@@ -1,5 +1,41 @@
 # Changelog
 
+## 13.5.0 - 2026-04-25
+
+### Summary
+This release adds toast notifications to all admin controllers for user feedback on CRUD operations. Success and error messages are now displayed after add, update, delete, and save operations across all admin sections.
+
+### Added
+- Toast notifications in categoriesController for addCategory, deleteCategory, and updateCategory operations
+- Toast notifications in certificatesController for deleteCertificate and updateCertificate operations
+- Toast notifications in experienceController for deleteExperience and updateExperience operations
+- Toast notifications in freelanceController for save, addFreelance, updateFreelance, and deleteFreelance operations with error handling
+- Toast notifications in introController for save operation with error handling
+- Toast notifications in projectsController for addProject, deleteProject, and updateProject operations
+- ToastController instantiation in freelanceController and introController
+- useRouter navigation in AdminFreelancePage, AdminInfoPage, and AdminStackPage for post-save redirects
+
+### Changed
+- Updated SkillsEditor to check deleteCategory success before navigating away
+- Updated AdminFreelancePage to redirect to freelance list after saving
+- Updated AdminInfoPage to redirect to admin panel after saving
+- Updated AdminStackPage to redirect to admin panel after saving
+
+### Affected Files
+- Modified:
+  - `frontend/src/controllers/categoriesController.ts`
+  - `frontend/src/controllers/certificatesController.ts`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/controllers/freelanceController.ts`
+  - `frontend/src/controllers/introController.ts`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `frontend/src/views/admin/sections/AdminFreelancePage.vue`
+  - `frontend/src/views/admin/sections/AdminInfoPage.vue`
+  - `frontend/src/views/admin/sections/AdminStackPage.vue`
+
+---
+
 ## 13.4.0 - 2026-04-25
 
 ### Summary

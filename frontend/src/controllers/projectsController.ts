@@ -74,6 +74,12 @@ export default class ProjectsController {
 
       this.projectsStore.setProjects(data.projects || []);
       this.projectsStore.setSaving(false);
+      const toast = await this.toastController.presentToast({
+        message: "Proyecto agregado correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return true;
     } catch (error) {
       this.projectsStore.setSaving(false);
@@ -96,6 +102,12 @@ export default class ProjectsController {
       });
 
       this.projectsStore.setProjects(data.projects || []);
+      const toast = await this.toastController.presentToast({
+        message: "Proyecto eliminado correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return true;
     } catch (error) {
       console.error("Error deleting project:", error);
@@ -134,6 +146,12 @@ export default class ProjectsController {
 
       this.projectsStore.setProjects(data.projects || []);
       this.projectsStore.setSaving(false);
+      const toast = await this.toastController.presentToast({
+        message: "Proyecto actualizado correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return true;
     } catch (error) {
       this.projectsStore.setSaving(false);

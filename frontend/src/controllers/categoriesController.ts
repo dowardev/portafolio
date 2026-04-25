@@ -58,6 +58,12 @@ export default class CategoriesController {
 
       this.categoriesStore.setSkillCategories(data.skillCategories || []);
       this.categoriesStore.setSaving(false);
+      const toast = await this.toastController.presentToast({
+        message: "Categoría agregada correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return true;
     } catch (error) {
       this.categoriesStore.setSaving(false);
@@ -80,6 +86,12 @@ export default class CategoriesController {
       });
 
       this.categoriesStore.setSkillCategories(data.skillCategories || []);
+      const toast = await this.toastController.presentToast({
+        message: "Categoría eliminada correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return true;
     } catch (error) {
       console.error("Error deleting category:", error);
@@ -109,6 +121,12 @@ export default class CategoriesController {
 
       this.categoriesStore.setSkillCategories(data.skillCategories || []);
       this.categoriesStore.setSaving(false);
+      const toast = await this.toastController.presentToast({
+        message: "Categoría actualizada correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return true;
     } catch (error) {
       this.categoriesStore.setSaving(false);

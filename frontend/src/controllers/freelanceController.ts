@@ -3,6 +3,7 @@ import ServerConfig from "./serverConfigController";
 import Cookies from "js-cookie";
 import type { FreelancePlatform, FreelanceComment, FreelanceItem } from "@/services/types";
 import { useFreelanceStore } from "@/store/freelanceStore";
+import { ToastController } from "./toastController";
 
 const userToken = Cookies.get("user-token");
 const config = new ServerConfig({
@@ -18,6 +19,7 @@ interface FreelanceData {
 
 export default class FreelanceController {
   private freelanceStore = useFreelanceStore();
+  private toastController = new ToastController();
 
   async loadFreelance(): Promise<FreelanceData> {
     this.freelanceStore.setLoading(true);
@@ -86,8 +88,20 @@ export default class FreelanceController {
 
       this.freelanceStore.setPlatforms(platforms);
       this.freelanceStore.setComments(comments);
+      const toast = await this.toastController.presentToast({
+        message: "Guardado correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
     } catch (error) {
       console.error("Error saving freelance:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al guardar",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
     } finally {
       this.freelanceStore.setSaving(false);
     }
@@ -109,7 +123,23 @@ export default class FreelanceController {
         contentType: "multipart/form-data",
       });
 
-      return this.setStoreFromData(data.freelance || []);
+      const result = this.setStoreFromData(data.freelance || []);
+      const toast = await this.toastController.presentToast({
+        message: "Trabajo freelance agregado",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
+      return result;
+    } catch (error) {
+      console.error("Error adding freelance:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al agregar el trabajo freelance",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return { freelancePlatforms: [], freelanceComments: [] };
     } finally {
       this.freelanceStore.setSaving(false);
     }
@@ -132,7 +162,23 @@ export default class FreelanceController {
         contentType: "multipart/form-data",
       });
 
-      return this.setStoreFromData(data.freelance || []);
+      const result = this.setStoreFromData(data.freelance || []);
+      const toast = await this.toastController.presentToast({
+        message: "Trabajo freelance actualizado",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
+      return result;
+    } catch (error) {
+      console.error("Error updating freelance:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al actualizar el trabajo freelance",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return { freelancePlatforms: [], freelanceComments: [] };
     } finally {
       this.freelanceStore.setSaving(false);
     }
@@ -146,7 +192,23 @@ export default class FreelanceController {
         data: { id },
       });
 
-      return this.setStoreFromData(data.freelance || []);
+      const result = this.setStoreFromData(data.freelance || []);
+      const toast = await this.toastController.presentToast({
+        message: "Trabajo freelance eliminado",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
+      return result;
+    } catch (error) {
+      console.error("Error deleting freelance:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al eliminar el trabajo freelance",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return { freelancePlatforms: [], freelanceComments: [] };
     } finally {
       this.freelanceStore.setSaving(false);
     }

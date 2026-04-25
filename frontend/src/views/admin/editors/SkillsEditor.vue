@@ -158,8 +158,10 @@ async function confirmDelete() {
 
 async function deleteCategory() {
   if (categoryId.value) {
-    await categoriesController.deleteCategory(categoryId.value);
-    router.push("/admin-panel/categories");
+    const success = await categoriesController.deleteCategory(categoryId.value);
+    if (success) {
+      router.push("/admin-panel/categories");
+    }
   }
 }
 
