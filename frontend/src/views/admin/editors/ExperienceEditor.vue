@@ -67,40 +67,66 @@
                     ></ion-input>
                   </ion-item>
 
-                  <ion-item lines="full" button @click="openStartDatePopover">
+                  <ion-item lines="full" button @click="openStartDatePopover($event)">
                     <ion-label>Inicio</ion-label>
                     <ion-note slot="end">{{ formattedStartDate }}</ion-note>
                   </ion-item>
 
                   <ion-popover
                     :is-open="startDatePopoverOpen"
-                    @ion-popover-dismiss="closeStartDatePopover"
+                    :event="startDatePopoverEvent"
+                    @did-dismiss="closeStartDatePopover"
                   >
-                    <ion-datetime
-                      presentation="month-year"
-                      locale="es-ES"
-                      :value="localExperience.startDate ?? undefined"
-                      :max="localExperience.endDate || undefined"
-                      @ion-change="onStartDateChange"
-                    ></ion-datetime>
+                    <div>
+                      <ion-datetime
+                        presentation="month-year"
+                        locale="es-ES"
+                        :show-default-buttons="true"
+                        done-text="Aceptar"
+                        cancel-text="Cancelar"
+                        :value="localExperience.startDate ?? undefined"
+                        :max="localExperience.endDate || undefined"
+                        @ion-change="onStartDateChange"
+                      ></ion-datetime>
+                    </div>
                   </ion-popover>
 
-                  <ion-item lines="full" button @click="openEndDatePopover">
+                  <ion-item lines="full" button @click="syncAndOpenEndDatePopover($event)">
                     <ion-label>Fin</ion-label>
                     <ion-note slot="end">{{ formattedEndDate }}</ion-note>
                   </ion-item>
 
                   <ion-popover
                     :is-open="endDatePopoverOpen"
-                    @ion-popover-dismiss="closeEndDatePopover"
+                    :event="endDatePopoverEvent"
+                    @did-dismiss="closeEndDatePopover"
                   >
-                    <ion-datetime
-                      presentation="month-year"
-                      locale="es-ES"
-                      :value="localExperience.endDate ?? undefined"
-                      :min="localExperience.startDate || undefined"
-                      @ion-change="onEndDateChange"
-                    ></ion-datetime>
+                    <div>
+                      <ion-datetime
+                        presentation="month-year"
+                        locale="es-ES"
+                        :show-default-buttons="true"
+                        done-text="Aceptar"
+                        cancel-text="Cancelar"
+                        :value="localExperience.endDate ?? undefined"
+                        :min="localExperience.startDate || undefined"
+                        @ion-change="onEndDateChange"
+                      ></ion-datetime>
+
+                      <ion-item lines="full">
+                        <ion-checkbox
+                          :checked="isCurrentJob"
+                          @click="onIsCurrentJobClick"
+                          @blur="endDateTouched = true"
+                        >
+                          Actualidad
+                        </ion-checkbox>
+                      </ion-item>
+
+                      <span v-if="endDateTouched && endDateError" class="error">{{
+                        endDateError
+                      }}</span>
+                    </div>
                   </ion-popover>
 
                   <ion-item lines="full" button @click="openFileDialog">
@@ -286,6 +312,7 @@ onMounted(async () => {
     const exp = experienceController.getExperience(experienceIndex.value);
     if (exp) {
       localExperience.value = { ...exp };
+      isCurrentJob.value = !localExperience.value.endDate;
     }
   }
 });
@@ -294,7 +321,10 @@ async function handleSave() {
   try {
     const success = isNew.value
       ? await experienceController.addExperience(localExperience.value)
-      : await experienceController.updateExperience(localExperience.value.id, localExperience.value);
+      : await experienceController.updateExperience(
+          localExperience.value.id,
+          localExperience.value,
+        );
     if (success) {
       router.push("/admin-panel/experience");
     }
@@ -324,7 +354,9 @@ async function confirmDelete() {
 
 async function deleteExperience() {
   if (!localExperience.value?.id) return;
-  const success = await experienceController.deleteExperience(localExperience.value.id);
+  const success = await experienceController.deleteExperience(
+    localExperience.value.id,
+  );
   if (success) {
     router.push("/admin-panel/experience");
   }
@@ -335,6 +367,8 @@ const pendingFiles: Record<string, File> = {};
 const fileName = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
 
+const isCurrentJob = ref(false);
+
 const isPreviewOpen = ref(false);
 const previewSrc = ref<string | null>(null);
 
@@ -342,6 +376,7 @@ const previewSrc = ref<string | null>(null);
 const titleTouched = ref(false);
 const imgTouched = ref(false);
 const descriptionTouched = ref(false);
+const endDateTouched = ref(false);
 // end vars and const
 
 // formatted dates for UI (inline to avoid referencing helper in template)
@@ -355,6 +390,7 @@ const formattedStartDate = computed(() => {
 });
 
 const formattedEndDate = computed(() => {
+  if (isCurrentJob.value) return "Actual";
   const d = localExperience.value.endDate;
   if (!d) return "Seleccionar";
   return new Date(d).toLocaleDateString("es-ES", {
@@ -379,6 +415,15 @@ const imgError = computed(() => {
 const descriptionError = computed(() => {
   if (!localExperience.value.details?.description?.trim())
     return "Descripción es requerida";
+  return "";
+});
+
+const endDateError = computed(() => {
+  if (endDateTouched.value) {
+    if (!localExperience.value.endDate && !isCurrentJob.value) {
+      return "Selecciona una fecha o marca Actualidad";
+    }
+  }
   return "";
 });
 
@@ -409,16 +454,20 @@ function closePreview() {
   isPreviewOpen.value = false;
   previewSrc.value = null;
 }
-// date popover state
+
 const startDatePopoverOpen = ref(false);
 const endDatePopoverOpen = ref(false);
+const startDatePopoverEvent = ref<Event | undefined>(undefined);
+const endDatePopoverEvent = ref<Event | undefined>(undefined);
 
-function openStartDatePopover() {
+function openStartDatePopover(event: Event) {
+  startDatePopoverEvent.value = event;
   startDatePopoverOpen.value = true;
 }
 
 function closeStartDatePopover() {
   startDatePopoverOpen.value = false;
+  startDatePopoverEvent.value = undefined;
 }
 
 function onStartDateChange(event: CustomEvent) {
@@ -429,22 +478,40 @@ function onStartDateChange(event: CustomEvent) {
   closeStartDatePopover();
 }
 
-function openEndDatePopover() {
+function openEndDatePopover(event: Event) {
+  endDatePopoverEvent.value = event;
   endDatePopoverOpen.value = true;
+}
+
+function syncAndOpenEndDatePopover(event: Event) {
+  if (!isNew.value) {
+    isCurrentJob.value = !localExperience.value.endDate;
+  }
+  openEndDatePopover(event);
 }
 
 function closeEndDatePopover() {
   endDatePopoverOpen.value = false;
+  endDatePopoverEvent.value = undefined;
 }
 
 function onEndDateChange(event: CustomEvent) {
   const value = event.detail.value;
   if (value) {
     localExperience.value.endDate = value;
+    isCurrentJob.value = false;
   }
   closeEndDatePopover();
 }
-// end functions
+
+function onIsCurrentJobClick() {
+  isCurrentJob.value = !isCurrentJob.value;
+  if (isCurrentJob.value) {
+    localExperience.value.endDate = undefined;
+  }
+  endDateTouched.value = true;
+  closeEndDatePopover();
+}
 </script>
 
 <style scoped>

@@ -1,5 +1,35 @@
 # Changelog
 
+## 13.1.0 - 2026-04-24
+
+### Summary
+This release adds "Current Job" functionality to the Experience Editor, allowing users to mark positions as ongoing without an end date. It also improves the date picker UX with proper popover positioning and localized button labels.
+
+### Added
+- New "Actualidad" (Current Job) checkbox in Experience Editor to mark positions as current/ongoing
+- New `isCurrentJob` ref state to track current job status
+- New `endDateTouched` ref state for validation tracking
+- New `endDateError` computed property for end date validation
+- New `syncAndOpenEndDatePopover` function to sync current job state when opening popover
+- New `onIsCurrentJobClick` handler for checkbox interaction
+- Confirm and cancel buttons for date pickers with localized text ("Aceptar", "Cancelar")
+- Event prop for proper popover positioning
+
+### Fixed
+- Fixed popover dismiss event handling: changed from deprecated `ion-popover-dismiss` to `did-dismiss`
+- Fixed popover positioning by adding event prop to ion-popover
+- Added validation error when end date is required but neither date nor "Actualidad" is selected
+
+### Changed
+- Updated date pickers to use `show-default-buttons` with localized labels
+- Updated formattedEndDate to display "Actual" when isCurrentJob is true
+
+### Affected Files
+- Modified:
+  - `frontend/src/views/admin/editors/ExperienceEditor.vue`
+
+---
+
 ## 13.0.0 - 2026-04-24
 
 ### Summary
