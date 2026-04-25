@@ -1,7 +1,8 @@
-import APIController from "@/controllers/APIController";
-import ServerConfig from "@/controllers/serverConfigController";
+import APIController from "./APIController";
+import ServerConfig from "./serverConfigController";
 import Cookies from "js-cookie";
 import type { FreelancePlatform, FreelanceComment, FreelanceItem } from "@/services/types";
+import { useFreelanceStore } from "@/store/freelanceStore";
 
 const userToken = Cookies.get("user-token");
 const config = new ServerConfig({
@@ -16,45 +17,42 @@ interface FreelanceData {
 }
 
 export default class FreelanceController {
+  private freelanceStore = useFreelanceStore();
+
   async loadFreelance(): Promise<FreelanceData> {
-    const data = await api.get<{ freelance: FreelanceItem[] }>({
-      url: "get-freelance",
-    });
+    this.freelanceStore.setLoading(true);
+    try {
+      const data = await api.get<{ freelance: FreelanceItem[] }>({
+        url: "get-freelance",
+      });
 
-    const freelanceItems = data.freelance || [];
-
-    return this.convertToSeparatedData(freelanceItems);
-  }
-
-  private convertToSeparatedData(
-    items: FreelanceItem[],
-  ): FreelanceData {
-    const platforms: FreelancePlatform[] = [];
-    const comments: FreelanceComment[] = [];
-
-    for (const item of items) {
-      platforms.push({
+      const freelanceItems = data.freelance || [];
+      const platforms: FreelancePlatform[] = freelanceItems.map(item => ({
         id: item.id || crypto.randomUUID(),
         name: item.name,
         image: item.image,
         url: item.url,
-      });
-
-      if (item.comment) {
-        comments.push({
+      }));
+      const comments: FreelanceComment[] = freelanceItems
+        .filter(item => !!item.comment)
+        .map(item => ({
           id: crypto.randomUUID(),
           platformName: item.name,
-          title: item.comment.title,
-          text: item.comment.text,
-          rating: item.comment.rating,
-        });
-      }
-    }
+          title: item.comment!.title,
+          text: item.comment!.text,
+          rating: item.comment!.rating,
+        }));
 
-    return {
-      freelancePlatforms: platforms,
-      freelanceComments: comments,
-    };
+      this.freelanceStore.setPlatforms(platforms);
+      this.freelanceStore.setComments(comments);
+
+      return { freelancePlatforms: platforms, freelanceComments: comments };
+    } catch (error) {
+      console.error("Error loading freelance:", error);
+      return { freelancePlatforms: [], freelanceComments: [] };
+    } finally {
+      this.freelanceStore.setLoading(false);
+    }
   }
 
   async saveFreelance(
@@ -62,70 +60,118 @@ export default class FreelanceController {
     comments: FreelanceComment[],
     files?: Record<string, File>,
   ): Promise<void> {
-    const formData = new FormData();
-    formData.append("freelance", JSON.stringify(
-      platforms.map((platform, index) => ({
-        name: platform.name,
-        image: platform.image,
-        url: platform.url,
-        comment: comments.find(c => c.platformName === platform.name) || null,
-      }))
-    ));
+    this.freelanceStore.setSaving(true);
+    try {
+      const formData = new FormData();
+      formData.append("freelance", JSON.stringify(
+        platforms.map((platform) => ({
+          name: platform.name,
+          image: platform.image,
+          url: platform.url,
+          comment: comments.find(c => c.platformName === platform.name) || null,
+        }))
+      ));
 
-    if (files) {
-      Object.entries(files).forEach(([key, file]) => {
-        formData.append(key, file);
+      if (files) {
+        Object.entries(files).forEach(([key, file]) => {
+          formData.append(key, file);
+        });
+      }
+
+      await api.post({
+        url: "admin/update-freelance",
+        data: formData,
+        contentType: "multipart/form-data",
       });
-    }
 
-    await api.post({
-      url: "admin/update-freelance",
-      data: formData,
-      contentType: "multipart/form-data",
-    });
+      this.freelanceStore.setPlatforms(platforms);
+      this.freelanceStore.setComments(comments);
+    } catch (error) {
+      console.error("Error saving freelance:", error);
+    } finally {
+      this.freelanceStore.setSaving(false);
+    }
   }
 
   async addFreelance(freelance: FreelanceItem, imageFile?: File | null): Promise<FreelanceData> {
-    const formData = new FormData();
-    formData.append("freelance", JSON.stringify(freelance));
+    this.freelanceStore.setSaving(true);
+    try {
+      const formData = new FormData();
+      formData.append("freelance", JSON.stringify(freelance));
 
-    if (imageFile) {
-      formData.append("image", imageFile, "freelance.jpg");
+      if (imageFile) {
+        formData.append("image", imageFile, "freelance.jpg");
+      }
+
+      const data = await api.post<{ freelance: FreelanceItem[] }>({
+        url: "admin/add-freelance",
+        data: formData,
+        contentType: "multipart/form-data",
+      });
+
+      return this.setStoreFromData(data.freelance || []);
+    } finally {
+      this.freelanceStore.setSaving(false);
     }
-
-    const data = await api.post<{ freelance: FreelanceItem[] }>({
-      url: "admin/add-freelance",
-      data: formData,
-      contentType: "multipart/form-data",
-    });
-
-    return this.convertToSeparatedData(data.freelance || []);
   }
 
   async updateFreelance(id: string, freelance: FreelanceItem, imageFile?: File | null): Promise<FreelanceData> {
-    const formData = new FormData();
-    formData.append("id", id);
-    formData.append("freelance", JSON.stringify(freelance));
+    this.freelanceStore.setSaving(true);
+    try {
+      const formData = new FormData();
+      formData.append("id", id);
+      formData.append("freelance", JSON.stringify(freelance));
 
-    if (imageFile) {
-      formData.append("image", imageFile, "freelance.jpg");
+      if (imageFile) {
+        formData.append("image", imageFile, "freelance.jpg");
+      }
+
+      const data = await api.post<{ freelance: FreelanceItem[] }>({
+        url: "admin/update-freelance",
+        data: formData,
+        contentType: "multipart/form-data",
+      });
+
+      return this.setStoreFromData(data.freelance || []);
+    } finally {
+      this.freelanceStore.setSaving(false);
     }
-
-    const data = await api.post<{ freelance: FreelanceItem[] }>({
-      url: "admin/update-freelance",
-      data: formData,
-      contentType: "multipart/form-data",
-    });
-
-    return this.convertToSeparatedData(data.freelance || []);
   }
 
   async deleteFreelance(id: string): Promise<FreelanceData> {
-    const data = await api.post<{ freelance: FreelanceItem[] }>({
-      url: "admin/delete-freelance",
-      data: { id },
-    });
+    this.freelanceStore.setSaving(true);
+    try {
+      const data = await api.post<{ freelance: FreelanceItem[] }>({
+        url: "admin/delete-freelance",
+        data: { id },
+      });
 
-    return this.convertToSeparatedData(data.freelance || []);
+      return this.setStoreFromData(data.freelance || []);
+    } finally {
+      this.freelanceStore.setSaving(false);
+    }
+  }
+
+  private setStoreFromData(items: FreelanceItem[]): FreelanceData {
+    const platforms: FreelancePlatform[] = items.map(item => ({
+      id: item.id || crypto.randomUUID(),
+      name: item.name,
+      image: item.image,
+      url: item.url,
+    }));
+    const comments: FreelanceComment[] = items
+      .filter(item => !!item.comment)
+      .map(item => ({
+        id: crypto.randomUUID(),
+        platformName: item.name,
+        title: item.comment!.title,
+        text: item.comment!.text,
+        rating: item.comment!.rating,
+      }));
+
+    this.freelanceStore.setPlatforms(platforms);
+    this.freelanceStore.setComments(comments);
+
+    return { freelancePlatforms: platforms, freelanceComments: comments };
   }
 }

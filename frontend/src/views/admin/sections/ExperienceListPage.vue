@@ -149,13 +149,15 @@ import { faker } from "@faker-js/faker";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import ExperienceController from "@/controllers/experienceController";
+import { useExperienceStore } from "@/store/experienceStore";
 
 const router = useRouter();
 const experienceController = new ExperienceController();
+const experienceStore = useExperienceStore();
 
 const isDev = import.meta.env.DEV;
 
-const experiences = computed(() => experienceController.getExperiences());
+const experiences = computed(() => experienceStore.experiences);
 
 onMounted(async () => {
   await experienceController.loadExperiences();

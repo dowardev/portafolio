@@ -284,8 +284,8 @@ const freelanceId = ref<string | undefined>(undefined);
 
 const isNew = computed(() => route.name === "FreelanceNewPage" || route.name === "FreelanceNewPageOld");
 
-const loading = ref(true);
-const saving = ref(false);
+const loading = computed(() => freelanceStore.loading);
+const saving = computed(() => freelanceStore.saving);
 
 const platforms = computed(() => freelanceStore.platforms);
 const isDev = import.meta.env.DEV;
@@ -296,9 +296,7 @@ const localItem = ref<FreelancePlatform | FreelanceComment | null>(null);
 onMounted(async () => {
   try {
     if (freelanceStore.platforms.length === 0 || freelanceStore.comments.length === 0) {
-      const data = await freelanceController.loadFreelance();
-      freelanceStore.setPlatforms(data.freelancePlatforms);
-      freelanceStore.setComments(data.freelanceComments);
+      await freelanceController.loadFreelance();
     }
 
     if (isNew.value) {
@@ -333,8 +331,8 @@ onMounted(async () => {
         }
       }
     }
-  } finally {
-    loading.value = false;
+  } catch (error) {
+    console.error("Error loading freelance:", error);
   }
 });
 
@@ -350,48 +348,34 @@ async function handleSave() {
       return;
     }
 
-    saving.value = true;
-    try {
-      const item = localItem.value as FreelancePlatform;
-      if (isNew.value) {
-        await freelanceController.addFreelance({ ...item, comment: null } as FreelanceItem, pendingImageFile);
-      } else if (freelanceId.value) {
-        await freelanceController.updateFreelance(freelanceId.value, { ...item, comment: null } as FreelanceItem, pendingImageFile);
-      }
-      router.push("/admin-panel/freelance");
-    } catch (error) {
-      console.error("Error saving freelance:", error);
-    } finally {
-      saving.value = false;
+    const item = localItem.value as FreelancePlatform;
+    if (isNew.value) {
+      await freelanceController.addFreelance({ ...item, comment: null } as FreelanceItem, pendingImageFile);
+    } else if (freelanceId.value) {
+      await freelanceController.updateFreelance(freelanceId.value, { ...item, comment: null } as FreelanceItem, pendingImageFile);
     }
+    router.push("/admin-panel/freelance");
   } else {
     nameTouched.value = true;
 
-    saving.value = true;
-    try {
-      const item = localItem.value as FreelanceComment;
-      const freelanceItem: FreelanceItem = {
-        id: item.id,
-        name: item.platformName,
-        image: "",
-        url: "",
-        comment: {
-          title: item.title,
-          text: item.text,
-          rating: item.rating,
-        },
-      };
-      if (isNew.value) {
-        await freelanceController.addFreelance(freelanceItem);
-      } else if (freelanceId.value) {
-        await freelanceController.updateFreelance(freelanceId.value, freelanceItem);
-      }
-      router.push("/admin-panel/freelance");
-    } catch (error) {
-      console.error("Error saving freelance:", error);
-    } finally {
-      saving.value = false;
+    const item = localItem.value as FreelanceComment;
+    const freelanceItem: FreelanceItem = {
+      id: item.id,
+      name: item.platformName,
+      image: "",
+      url: "",
+      comment: {
+        title: item.title,
+        text: item.text,
+        rating: item.rating,
+      },
+    };
+    if (isNew.value) {
+      await freelanceController.addFreelance(freelanceItem);
+    } else if (freelanceId.value) {
+      await freelanceController.updateFreelance(freelanceId.value, freelanceItem);
     }
+    router.push("/admin-panel/freelance");
   }
 }
 

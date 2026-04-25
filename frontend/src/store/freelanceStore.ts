@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type { FreelancePlatform, FreelanceComment } from "@/services/types";
 
 export const useFreelanceStore = defineStore("freelance", () => {
@@ -8,6 +8,24 @@ export const useFreelanceStore = defineStore("freelance", () => {
   const loading = ref(false);
   const loaded = ref(false);
   const saving = ref(false);
+
+  const allFreelance = computed(() => {
+    const items = [...platforms.value];
+    comments.value.forEach(comment => {
+      const platform = platforms.value.find(p => p.name === comment.platformName);
+      if (platform) {
+        items.push({
+          ...platform,
+          comment: {
+            title: comment.title,
+            text: comment.text,
+            rating: comment.rating,
+          },
+        } as FreelancePlatform & { comment: { title: string; text: string; rating: number } });
+      }
+    });
+    return items;
+  });
 
   function setPlatforms(data: FreelancePlatform[]): void {
     platforms.value = data;
@@ -115,6 +133,7 @@ export const useFreelanceStore = defineStore("freelance", () => {
     loading,
     loaded,
     saving,
+    allFreelance,
     setPlatforms,
     setComments,
     setLoading,

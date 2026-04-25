@@ -49,20 +49,22 @@ import {
   IonButton,
   IonSpinner,
 } from "@ionic/vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import FreelanceEditor from "../editors/FreelanceEditor.vue";
 import FreelanceController from "@/controllers/freelanceController";
+import { useFreelanceStore } from "@/store/freelanceStore";
 import { saveOutline } from "ionicons/icons";
 
 const freelanceController = new FreelanceController();
-const freelanceData = ref<any[]>([]);
-const saving = ref(false);
+const freelanceStore = useFreelanceStore();
+
+const freelanceData = computed(() => freelanceStore.allFreelance);
+const saving = computed(() => freelanceStore.saving);
 const freelanceFiles = ref<Record<string, File>>({});
 
 onMounted(async () => {
   try {
-    const data = await freelanceController.loadFreelance();
-    freelanceData.value = data.freelance || [];
+    await freelanceController.loadFreelance();
   } catch (error) {
     console.error("Error loading freelance:", error);
   }
@@ -73,16 +75,16 @@ function updateFreelanceFiles(fileMap: Record<string, File>) {
 }
 
 async function handleSave() {
-  saving.value = true;
+  freelanceStore.setSaving(true);
   try {
-    const platforms = freelanceData.value.map(item => ({
+    const platforms = freelanceData.value.map((item: any) => ({
       name: item.name,
       image: item.image,
       url: item.url,
     }));
     const comments = freelanceData.value
-      .filter(item => item.comment)
-      .map(item => ({
+      .filter((item: any) => item.comment)
+      .map((item: any) => ({
         platformName: item.name,
         title: item.comment.title,
         text: item.comment.text,
@@ -92,7 +94,7 @@ async function handleSave() {
   } catch (error) {
     console.error("Error saving freelance:", error);
   } finally {
-    saving.value = false;
+    freelanceStore.setSaving(false);
   }
 }
 </script>

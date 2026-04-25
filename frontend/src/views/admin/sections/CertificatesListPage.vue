@@ -119,11 +119,13 @@ import { onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { addOutline, ribbonOutline, trashOutline } from "ionicons/icons";
 import CertificatesController from "@/controllers/certificatesController";
+import { useCertificatesStore } from "@/store/certificatesStore";
 
 const router = useRouter();
 const certificatesController = new CertificatesController();
+const certificatesStore = useCertificatesStore();
 
-const certificates = computed(() => certificatesController.getCertificates());
+const certificates = computed(() => certificatesStore.certificates);
 
 onMounted(async () => {
   await certificatesController.loadCertificates();

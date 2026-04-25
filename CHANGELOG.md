@@ -1,5 +1,42 @@
 # Changelog
 
+## 13.4.0 - 2026-04-25
+
+### Summary
+This release integrates Pinia stores into the freelance and intro controllers for centralized state management. Admin pages now use store-based computed properties for loading/saving states, providing better reactivity and eliminating local loading/saving refs.
+
+### Added
+- Pinia store integration in freelanceController with useFreelanceStore for centralized state management
+- Pinia store integration in introController with useIntroStore for centralized state management
+- setLoading and setSaving methods to freelanceStore and introStore for external loading state management
+- allFreelance computed property in freelanceStore that merges platforms with their comments
+
+### Changed
+- Refactored freelanceController to use freelanceStore.setPlatforms/setComments instead of returning separated data
+- Refactored introController to use introStore.setData for centralized data storage
+- Updated FreelanceEditor to use freelanceStore.loading and freelanceStore.saving computed properties
+- Updated SkillsEditor to use categoriesStore.loading and categoriesStore.saving computed properties
+- Updated AdminFreelancePage to use freelanceStore.allFreelance and freelanceStore.saving
+- Updated AdminStackPage to use introStore.form, introStore.saving, and introStore.loading
+- Updated CertificatesListPage, ExperienceListPage, ProjectsListPage, SkillsListPage to use store-based data and loading states
+- Changed import paths from absolute (@/controllers/) to relative (./) in freelanceController and introController
+
+### Affected Files
+- Modified:
+  - `frontend/src/controllers/freelanceController.ts`
+  - `frontend/src/controllers/introController.ts`
+  - `frontend/src/store/freelanceStore.ts`
+  - `frontend/src/views/admin/editors/FreelanceEditor.vue`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `frontend/src/views/admin/sections/AdminFreelancePage.vue`
+  - `frontend/src/views/admin/sections/AdminStackPage.vue`
+  - `frontend/src/views/admin/sections/CertificatesListPage.vue`
+  - `frontend/src/views/admin/sections/ExperienceListPage.vue`
+  - `frontend/src/views/admin/sections/ProjectsListPage.vue`
+  - `frontend/src/views/admin/sections/SkillsListPage.vue`
+
+---
+
 ## 13.3.0 - 2026-04-25
 
 ### Summary

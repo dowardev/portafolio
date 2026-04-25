@@ -60,51 +60,52 @@ import {
   IonButton,
   IonSpinner,
 } from "@ionic/vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import StackEditor from "../editors/StackEditor.vue";
 import IntroController from "@/controllers/introController";
+import { useIntroStore } from "@/store/introStore";
 import { saveOutline } from "ionicons/icons";
 
 const introController = new IntroController();
-const stackData = ref<Array<{ name: string; image: string }>>([]);
-const saving = ref(false);
-const stackFiles = ref<Record<number, File>>({});
+const introStore = useIntroStore();
+
+const stackData = computed({
+  get: () => introStore.form.stack,
+  set: (value) => { introStore.form.stack = value; }
+});
+const saving = computed(() => introStore.saving);
+const loading = computed(() => introStore.loading);
 
 onMounted(async () => {
   try {
-    const data = await introController.loadIntro();
-    stackData.value = data.stack || [];
+    await introController.loadIntro();
   } catch (error) {
     console.error("Error loading stack:", error);
   }
 });
 
 function updateStackFiles(fileMap: Record<number, File>) {
-  Object.assign(stackFiles.value, fileMap);
+  Object.assign(introStore.sectionFiles.stack, fileMap);
 }
 
 async function handleSave() {
-  saving.value = true;
   try {
-    const introData = {
-      name: null,
-      tags: [],
-      description: null,
-      socials: [],
-      logoUrl: null,
-      photoUrl: null,
-      stack: stackData.value,
-      showContactForm: { socials: false, freelance: false },
-    };
     const files: Record<string, File> = {};
-    Object.entries(stackFiles.value).forEach(([k, v]) => {
+    Object.entries(introStore.sectionFiles.stack).forEach(([k, v]) => {
       files[`stack_image_${k}`] = v;
     });
-    await introController.saveIntro(introData, files);
+    await introController.saveIntro({
+      name: introStore.form.name,
+      tags: introStore.form.tags,
+      description: introStore.form.description,
+      socials: introStore.form.socials,
+      logoUrl: introStore.form.logoUrl,
+      photoUrl: introStore.form.photoUrl,
+      stack: introStore.form.stack,
+      showContactForm: introStore.form.showContactForm,
+    }, files);
   } catch (error) {
     console.error("Error saving stack:", error);
-  } finally {
-    saving.value = false;
   }
 }
 </script>

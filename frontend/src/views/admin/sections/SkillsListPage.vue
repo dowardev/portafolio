@@ -133,13 +133,16 @@ import {
 } from "ionicons/icons";
 import { faker } from "@faker-js/faker";
 import CategoriesController from "@/controllers/categoriesController";
+import { useCategoriesStore } from "@/store/categoriesStore";
 
 const router = useRouter();
 const categoriesController = new CategoriesController();
+const categoriesStore = useCategoriesStore();
 
 const isDev = import.meta.env.DEV;
 
-const skillCategories = computed(() => categoriesController.getSkillCategories());
+const skillCategories = computed(() => categoriesStore.skillCategories);
+const loading = computed(() => categoriesStore.loading);
 
 onMounted(async () => {
   await categoriesController.loadCategories();

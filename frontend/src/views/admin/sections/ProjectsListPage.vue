@@ -145,12 +145,14 @@ import {
 } from "ionicons/icons";
 import { faker } from "@faker-js/faker";
 import ProjectsController from "@/controllers/projectsController";
+import { useProjectsStore } from "@/store/projectsStore";
 
 const router = useRouter();
 const projectsController = new ProjectsController();
+const projectsStore = useProjectsStore();
 
 const isDev = import.meta.env.DEV;
-const projects = computed(() => projectsController.getProjects());
+const projects = computed(() => projectsStore.projects);
 
 onMounted(async () => {
   await projectsController.loadProjects();
