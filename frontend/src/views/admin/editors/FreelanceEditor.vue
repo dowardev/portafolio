@@ -354,9 +354,9 @@ async function handleSave() {
     try {
       const item = localItem.value as FreelancePlatform;
       if (isNew.value) {
-        await freelanceController.addFreelance({ ...item, comment: null } as FreelanceItem);
+        await freelanceController.addFreelance({ ...item, comment: null } as FreelanceItem, pendingImageFile);
       } else if (freelanceId.value) {
-        await freelanceController.updateFreelance(freelanceId.value, { ...item, comment: null } as FreelanceItem);
+        await freelanceController.updateFreelance(freelanceId.value, { ...item, comment: null } as FreelanceItem, pendingImageFile);
       }
       router.push("/admin-panel/freelance");
     } catch (error) {
@@ -442,9 +442,8 @@ function generateTestData() {
   }
 }
 
-const pendingFiles: Record<string, File> = {};
-
 const fileName = ref("");
+let pendingImageFile: File | null = null;
 const fileInput = ref<HTMLInputElement | null>(null);
 
 const isPreviewOpen = ref(false);
@@ -488,7 +487,7 @@ function onImageChange(event: Event) {
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
-  pendingFiles["freelance_image"] = file;
+  pendingImageFile = file;
   if (localItem.value && freelanceType.value === "platform") {
     (localItem.value as FreelancePlatform).image = URL.createObjectURL(file);
   }

@@ -16,6 +16,14 @@ Route::middleware([Cors::class])->group(function () {
   Route::post("contact", [SystemController::class, "createContactMessage"]);
   Route::post("feedback", [FeedbackController::class, "createFeedback"]);
   Route::get("get-image", [SystemController::class, "getImage"]);
+  Route::get("serve-image", [SystemController::class, "serveImage"]);
+  Route::options("serve-image", function () {
+    return response("", 200, [
+      "Access-Control-Allow-Origin" => "*",
+      "Access-Control-Allow-Methods" => "GET, OPTIONS",
+      "Access-Control-Allow-Headers" => "Content-Type",
+    ]);
+  });
   Route::get("get-intro", [HomePageController::class, "getIntro"]);
   Route::get("get-projects", [HomePageController::class, "getProjects"]);
   Route::get("get-experiences", [HomePageController::class, "getExperiences"]);

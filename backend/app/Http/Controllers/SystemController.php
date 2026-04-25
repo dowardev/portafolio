@@ -106,4 +106,43 @@ class SystemController extends Controller
       200
     );
   }
+
+  public function serveImage(Request $request)
+  {
+    $path = $request->input("path");
+
+    if (!$path) {
+      return response()->json(["error" => "Path is required"], 400);
+    }
+
+    $safePath = storage_path("app/public/" . $path);
+
+    if (!file_exists($safePath) || !is_readable($safePath)) {
+      return response()->json(["error" => "File not found"], 404);
+    }
+
+    $extension = strtolower(pathinfo($safePath, PATHINFO_EXTENSION));
+    $mimeTypes = [
+      "jpg" => "image/jpeg",
+      "jpeg" => "image/jpeg",
+      "png" => "image/png",
+      "gif" => "image/gif",
+      "webp" => "image/webp",
+      "svg" => "image/svg+xml",
+      "ico" => "image/x-icon",
+    ];
+
+    $mimeType = $mimeTypes[$extension] ?? "application/octet-stream";
+
+    $response = response()->make(file_get_contents($safePath), 200, [
+      "Content-Type" => $mimeType,
+      "Cache-Control" => "public, max-age=31536000",
+    ]);
+
+    $response->headers->set("Access-Control-Allow-Origin", "*");
+    $response->headers->set("Access-Control-Allow-Methods", "GET, OPTIONS");
+    $response->headers->set("Access-Control-Allow-HEADERS", "Content-Type");
+
+    return $response;
+  }
 }

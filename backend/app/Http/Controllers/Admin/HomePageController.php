@@ -11,6 +11,20 @@ use Illuminate\Support\Facades\Validator;
 
 class HomePageController extends Controller
 {
+    private function getExtensionFromMime($file): string
+    {
+        $mime = $file->getMimeType();
+        $mimeToExt = [
+            'image/svg+xml' => 'svg',
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp',
+            'image/x-icon' => 'ico',
+        ];
+        return $mimeToExt[$mime] ?? $file->getClientOriginalExtension();
+    }
+
     private function getAllCurrentImageUrls(HomePage $homepage): array
     {
         $urls = [];
@@ -206,7 +220,7 @@ public function getProjects()
         if ($request->hasFile('logo')) {
             $oldLogo = $homepage->logo_url ? $this->pathFromUrl($homepage->logo_url) : null;
             $logo = $request->file('logo');
-            $logoName = uniqid() . time() . '.' . $logo->getClientOriginalExtension();
+            $logoName = uniqid() . time() . '.' . $this->getExtensionFromMime($logo);
             Storage::disk('public')->put('homepage/' . $logoName, file_get_contents($logo));
             $homepage->logo_url = 'storage/homepage/' . $logoName;
             if ($oldLogo && Storage::disk('public')->exists($oldLogo)) {
@@ -217,7 +231,7 @@ public function getProjects()
         if ($request->hasFile('photo')) {
             $oldPhoto = $homepage->photo_url ? $this->pathFromUrl($homepage->photo_url) : null;
             $photo = $request->file('photo');
-            $photoName = uniqid() . time() . '.' . $photo->getClientOriginalExtension();
+            $photoName = uniqid() . time() . '.' . $this->getExtensionFromMime($photo);
             Storage::disk('public')->put('homepage/' . $photoName, file_get_contents($photo));
             $homepage->photo_url = 'storage/homepage/' . $photoName;
             if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
@@ -251,9 +265,9 @@ public function getProjects()
                 $fileKey = "stack_image_{$index}";
                 if ($request->hasFile($fileKey)) {
                     $file = $request->file($fileKey);
-                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                    $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
                     Storage::disk('public')->put('homepage/stack/' . $fileName, file_get_contents($file));
-                    $item['image'] = asset('storage/homepage/stack/' . $fileName);
+                    $item['image'] = url('api/serve-image?path=homepage/stack/' . $fileName);
                 }
             }
             $homepage->stack = $stack;
@@ -298,9 +312,9 @@ public function getProjects()
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+            $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
             Storage::disk('public')->put('homepage/projects/' . $fileName, file_get_contents($file));
-            $project['img'] = asset('storage/homepage/projects/' . $fileName);
+            $project['img'] = url('api/serve-image?path=homepage/projects/' . $fileName);
         }
 
         if (empty($project['id'])) {
@@ -347,9 +361,9 @@ public function getProjects()
                         }
                     }
                     $file = $request->file('image');
-                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                    $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
                     Storage::disk('public')->put('homepage/projects/' . $fileName, file_get_contents($file));
-                    $projectData['img'] = asset('storage/homepage/projects/' . $fileName);
+                    $projectData['img'] = url('api/serve-image?path=homepage/projects/' . $fileName);
                 }
                 $project = array_merge($project, $projectData);
                 $found = true;
@@ -426,9 +440,9 @@ public function getProjects()
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+            $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
             Storage::disk('public')->put('homepage/experience/' . $fileName, file_get_contents($file));
-            $experience['img'] = asset('storage/homepage/experience/' . $fileName);
+            $experience['img'] = url('api/serve-image?path=homepage/experience/' . $fileName);
         }
 
         if (empty($experience['id'])) {
@@ -475,9 +489,9 @@ public function getProjects()
                         }
                     }
                     $file = $request->file('image');
-                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                    $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
                     Storage::disk('public')->put('homepage/experience/' . $fileName, file_get_contents($file));
-                    $expData['img'] = asset('storage/homepage/experience/' . $fileName);
+                    $expData['img'] = url('api/serve-image?path=homepage/experience/' . $fileName);
                 }
                 $exp = array_merge($exp, $expData);
                 $found = true;
@@ -554,9 +568,9 @@ public function getProjects()
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+            $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
             Storage::disk('public')->put('homepage/freelance/' . $fileName, file_get_contents($file));
-            $freelance['image'] = asset('storage/homepage/freelance/' . $fileName);
+            $freelance['image'] = url('api/serve-image?path=homepage/freelance/' . $fileName);
         }
 
         if (empty($freelance['id'])) {
@@ -603,9 +617,9 @@ public function getProjects()
                         }
                     }
                     $file = $request->file('image');
-                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                    $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
                     Storage::disk('public')->put('homepage/freelance/' . $fileName, file_get_contents($file));
-                    $freelanceData['image'] = asset('storage/homepage/freelance/' . $fileName);
+                    $freelanceData['image'] = url('api/serve-image?path=homepage/freelance/' . $fileName);
                 }
                 $item = array_merge($item, $freelanceData);
                 $found = true;
@@ -775,9 +789,9 @@ public function getProjects()
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+            $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
             Storage::disk('public')->put('homepage/certificates/' . $fileName, file_get_contents($file));
-            $certificate['img'] = asset('storage/homepage/certificates/' . $fileName);
+            $certificate['img'] = url('api/serve-image?path=homepage/certificates/' . $fileName);
         }
 
         if (empty($certificate['id'])) {
@@ -824,9 +838,9 @@ public function getProjects()
                         }
                     }
                     $file = $request->file('image');
-                    $fileName = uniqid() . time() . '.' . $file->getClientOriginalExtension();
+                    $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
                     Storage::disk('public')->put('homepage/certificates/' . $fileName, file_get_contents($file));
-                    $certData['img'] = asset('storage/homepage/certificates/' . $fileName);
+                    $certData['img'] = url('api/serve-image?path=homepage/certificates/' . $fileName);
                 }
                 $cert = array_merge($cert, $certData);
                 $found = true;

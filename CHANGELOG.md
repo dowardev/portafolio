@@ -1,5 +1,40 @@
 # Changelog
 
+## 13.2.0 - 2026-04-25
+
+### Summary
+This release adds a backend image serving endpoint with proper MIME type detection and CORS support, and refactors the frontend image upload flow to pass File objects directly instead of converting blob URLs.
+
+### Added
+- New `serveImage` endpoint in SystemController for serving images with proper Content-Type headers
+- MIME type mapping for common image formats (jpg, jpeg, png, gif, webp, svg, ico)
+- CORS headers for cross-origin image requests (Access-Control-Allow-Origin: *)
+- Cache-Control header with 1-year max-age for images
+- OPTIONS route handler for serve-image endpoint
+- New `getExtensionFromMime` helper method in HomePageController for MIME-to-extension mapping
+
+### Changed
+- Updated all editor components to pass File objects directly to controllers instead of converting blob URLs
+- Simplified `pendingFiles` object pattern to individual `pendingImageFile` variables across all editors
+- Refactored image URL generation from `asset()` to `url('api/serve-image?path=...')` for consistent image serving
+- Updated add/update methods in all controllers to accept optional File parameters
+
+### Affected Files
+- Modified:
+  - `backend/app/Http/Controllers/Admin/HomePageController.php`
+  - `backend/app/Http/Controllers/SystemController.php`
+  - `backend/routes/api.php`
+  - `frontend/src/controllers/certificatesController.ts`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/controllers/freelanceController.ts`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/views/admin/editors/CertificatesEditor.vue`
+  - `frontend/src/views/admin/editors/ExperienceEditor.vue`
+  - `frontend/src/views/admin/editors/FreelanceEditor.vue`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+
+---
+
 ## 13.1.0 - 2026-04-24
 
 ### Summary

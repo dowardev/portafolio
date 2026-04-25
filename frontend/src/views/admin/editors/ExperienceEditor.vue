@@ -296,6 +296,8 @@ const localExperience = ref<ExperienceItem>({
   details: { description: "", website: "" },
 });
 
+let pendingImageFile: File | null = null;
+
 onMounted(async () => {
   await experienceController.loadExperiences();
   if (isNew.value) {
@@ -320,10 +322,11 @@ onMounted(async () => {
 async function handleSave() {
   try {
     const success = isNew.value
-      ? await experienceController.addExperience(localExperience.value)
+      ? await experienceController.addExperience(localExperience.value, pendingImageFile)
       : await experienceController.updateExperience(
           localExperience.value.id,
           localExperience.value,
+          pendingImageFile,
         );
     if (success) {
       router.push("/admin-panel/experience");
@@ -363,7 +366,6 @@ async function deleteExperience() {
 }
 
 // vars and const
-const pendingFiles: Record<string, File> = {};
 const fileName = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
 
@@ -432,7 +434,7 @@ function onFileChange(event: Event) {
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
-  pendingFiles["exp_image_0"] = file;
+  pendingImageFile = file;
   localExperience.value.img = URL.createObjectURL(file);
   fileName.value = file.name;
   imgTouched.value = true;

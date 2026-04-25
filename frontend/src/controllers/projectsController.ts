@@ -50,17 +50,23 @@ export default class ProjectsController {
     return this.projectsStore.getProject(index);
   }
 
-  async addProject(project: ProjectItem): Promise<boolean> {
+  async addProject(project: ProjectItem, imageFile?: File | null, sourceImageFile?: File | null, techFiles?: Record<number, File>): Promise<boolean> {
     try {
       this.projectsStore.setSaving(true);
 
       const formData = new FormData();
       formData.append("project", JSON.stringify(project));
 
-      if (project.img) {
-        const response = await fetch(project.img);
-        const blob = await response.blob();
-        formData.append("image", blob, "project.jpg");
+      if (imageFile) {
+        formData.append("image", imageFile, "project.jpg");
+      }
+      if (sourceImageFile) {
+        formData.append("sourceImage", sourceImageFile, "source.jpg");
+      }
+      if (techFiles) {
+        for (const [index, file] of Object.entries(techFiles)) {
+          formData.append(`techImage_${index}`, file, `tech_${index}.jpg`);
+        }
       }
 
       const data = await api.post<ProjectsResponse>({
@@ -106,7 +112,7 @@ export default class ProjectsController {
     }
   }
 
-  async updateProject(id: string, project: ProjectItem): Promise<boolean> {
+  async updateProject(id: string, project: ProjectItem, imageFile?: File | null, sourceImageFile?: File | null, techFiles?: Record<number, File>): Promise<boolean> {
     try {
       this.projectsStore.setSaving(true);
 
@@ -114,10 +120,16 @@ export default class ProjectsController {
       formData.append("id", id);
       formData.append("project", JSON.stringify(project));
 
-      if (project.img) {
-        const response = await fetch(project.img);
-        const blob = await response.blob();
-        formData.append("image", blob, "project.jpg");
+      if (imageFile) {
+        formData.append("image", imageFile, "project.jpg");
+      }
+      if (sourceImageFile) {
+        formData.append("sourceImage", sourceImageFile, "source.jpg");
+      }
+      if (techFiles) {
+        for (const [index, file] of Object.entries(techFiles)) {
+          formData.append(`techImage_${index}`, file, `tech_${index}.jpg`);
+        }
       }
 
       const data = await api.post<ProjectsResponse>({

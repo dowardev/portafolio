@@ -50,17 +50,15 @@ export default class ExperienceController {
     return this.experienceStore.getExperience(index);
   }
 
-  async addExperience(experience: ExperienceItem): Promise<boolean> {
+  async addExperience(experience: ExperienceItem, imageFile?: File | null): Promise<boolean> {
     try {
       this.experienceStore.setSaving(true);
 
       const formData = new FormData();
       formData.append("experience", JSON.stringify(experience));
 
-      if (experience.img) {
-        const response = await fetch(experience.img);
-        const blob = await response.blob();
-        formData.append("image", blob, "experience.jpg");
+      if (imageFile) {
+        formData.append("image", imageFile, "experience.jpg");
       }
 
       const data = await api.post<ExperienceResponse>({
@@ -106,7 +104,7 @@ export default class ExperienceController {
     }
   }
 
-  async updateExperience(id: string, experience: ExperienceItem): Promise<boolean> {
+  async updateExperience(id: string, experience: ExperienceItem, imageFile?: File | null): Promise<boolean> {
     try {
       this.experienceStore.setSaving(true);
 
@@ -114,10 +112,8 @@ export default class ExperienceController {
       formData.append("id", id);
       formData.append("experience", JSON.stringify(experience));
 
-      if (experience.img) {
-        const response = await fetch(experience.img);
-        const blob = await response.blob();
-        formData.append("image", blob, "experience.jpg");
+      if (imageFile) {
+        formData.append("image", imageFile, "experience.jpg");
       }
 
       const data = await api.post<ExperienceResponse>({

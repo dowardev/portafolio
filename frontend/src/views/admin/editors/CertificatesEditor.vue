@@ -224,6 +224,8 @@ const aptitudes = computed({
 
 const localCertificate = ref<CertificateItem | null>(null);
 
+let pendingImageFile: File | null = null;
+
 onMounted(async () => {
   await certificatesController.loadCertificates();
   if (isNew.value) {
@@ -246,8 +248,8 @@ async function handleSave() {
   if (!localCertificate.value) return;
   try {
     const success = isNew.value
-      ? await certificatesController.addCertificate(localCertificate.value)
-      : await certificatesController.updateCertificate(localCertificate.value.id, localCertificate.value);
+      ? await certificatesController.addCertificate(localCertificate.value, pendingImageFile)
+      : await certificatesController.updateCertificate(localCertificate.value.id, localCertificate.value, pendingImageFile);
     if (success) {
       router.push("/admin-panel/certificates");
     }
@@ -285,7 +287,6 @@ async function deleteCertificate() {
   }
 }
 
-const pendingFiles: Record<string, File> = {};
 const fileName = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
 
@@ -324,7 +325,7 @@ function onImageChange(event: Event) {
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
-  pendingFiles["cert_image_0"] = file;
+  pendingImageFile = file;
   if (localCertificate.value) {
     localCertificate.value.img = URL.createObjectURL(file);
   }

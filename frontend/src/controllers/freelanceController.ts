@@ -85,14 +85,12 @@ export default class FreelanceController {
     });
   }
 
-  async addFreelance(freelance: FreelanceItem): Promise<FreelanceData> {
+  async addFreelance(freelance: FreelanceItem, imageFile?: File | null): Promise<FreelanceData> {
     const formData = new FormData();
     formData.append("freelance", JSON.stringify(freelance));
 
-    if (freelance.image) {
-      const response = await fetch(freelance.image);
-      const blob = await response.blob();
-      formData.append("image", blob, "freelance.jpg");
+    if (imageFile) {
+      formData.append("image", imageFile, "freelance.jpg");
     }
 
     const data = await api.post<{ freelance: FreelanceItem[] }>({
@@ -104,15 +102,13 @@ export default class FreelanceController {
     return this.convertToSeparatedData(data.freelance || []);
   }
 
-  async updateFreelance(id: string, freelance: FreelanceItem): Promise<FreelanceData> {
+  async updateFreelance(id: string, freelance: FreelanceItem, imageFile?: File | null): Promise<FreelanceData> {
     const formData = new FormData();
     formData.append("id", id);
     formData.append("freelance", JSON.stringify(freelance));
 
-    if (freelance.image) {
-      const response = await fetch(freelance.image);
-      const blob = await response.blob();
-      formData.append("image", blob, "freelance.jpg");
+    if (imageFile) {
+      formData.append("image", imageFile, "freelance.jpg");
     }
 
     const data = await api.post<{ freelance: FreelanceItem[] }>({

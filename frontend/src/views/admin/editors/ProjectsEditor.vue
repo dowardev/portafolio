@@ -346,8 +346,8 @@ async function handleSave() {
   if (!localProject.value) return;
   try {
     const success = isNew.value
-      ? await projectsController.addProject(localProject.value)
-      : await projectsController.updateProject(localProject.value.id, localProject.value);
+      ? await projectsController.addProject(localProject.value, pendingMainImageFile, pendingSourceImageFile, pendingTechFiles)
+      : await projectsController.updateProject(localProject.value.id, localProject.value, pendingMainImageFile, pendingSourceImageFile, pendingTechFiles);
     if (success) {
       router.push("/admin-panel/projects");
     }
@@ -384,7 +384,9 @@ async function deleteProject() {
 }
 
 // vars and const
-const pendingFiles: Record<string, File> = {};
+let pendingMainImageFile: File | null = null;
+let pendingSourceImageFile: File | null = null;
+let pendingTechFiles: Record<number, File> = {};
 const fileName = ref("");
 const sourceFileName = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -421,15 +423,7 @@ const descriptionError = computed(() => {
 
 // functions
 function updateTechFiles(files: Record<number, File>) {
-  Object.keys(pendingFiles).forEach((key) => {
-    if (!key.startsWith("project_tech_image_0_")) {
-      delete pendingFiles[key];
-    }
-  });
-
-  for (const [techIndex, file] of Object.entries(files)) {
-    pendingFiles[`project_tech_image_0_${techIndex}`] = file;
-  }
+  pendingTechFiles = files;
 }
 
 function openFileDialog() {
@@ -440,7 +434,7 @@ function onMainFileChange(event: Event) {
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
-  pendingFiles["project_image_0"] = file;
+  pendingMainImageFile = file;
   if (localProject.value) {
     localProject.value.img = URL.createObjectURL(file);
   }
@@ -464,7 +458,7 @@ function onSourceFileChange(event: Event) {
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
   const file = input.files[0];
-  pendingFiles["project_source_image_0"] = file;
+  pendingSourceImageFile = file;
   if (localProject.value) {
     localProject.value.source.img = URL.createObjectURL(file);
   }

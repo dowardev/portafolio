@@ -48,17 +48,15 @@ export default class CertificatesController {
     return this.certificatesStore.getCertificate(index);
   }
 
-  async addCertificate(certificate: CertificateItem): Promise<boolean> {
+  async addCertificate(certificate: CertificateItem, imageFile?: File | null): Promise<boolean> {
     try {
       this.certificatesStore.setSaving(true);
 
       const formData = new FormData();
       formData.append("certificate", JSON.stringify(certificate));
 
-      if (certificate.img) {
-        const response = await fetch(certificate.img);
-        const blob = await response.blob();
-        formData.append("image", blob, "certificate.jpg");
+      if (imageFile) {
+        formData.append("image", imageFile, "certificate.jpg");
       }
 
       const data = await api.post<CertificatesResponse>({
@@ -104,7 +102,7 @@ export default class CertificatesController {
     }
   }
 
-  async updateCertificate(id: string, certificate: CertificateItem): Promise<boolean> {
+  async updateCertificate(id: string, certificate: CertificateItem, imageFile?: File | null): Promise<boolean> {
     try {
       this.certificatesStore.setSaving(true);
 
@@ -112,10 +110,8 @@ export default class CertificatesController {
       formData.append("id", id);
       formData.append("certificate", JSON.stringify(certificate));
 
-      if (certificate.img) {
-        const response = await fetch(certificate.img);
-        const blob = await response.blob();
-        formData.append("image", blob, "certificate.jpg");
+      if (imageFile) {
+        formData.append("image", imageFile, "certificate.jpg");
       }
 
       const data = await api.post<CertificatesResponse>({
