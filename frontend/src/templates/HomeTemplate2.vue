@@ -51,10 +51,10 @@
                   <ion-button
                     fill="clear"
                     class="nav-btn"
-                    :class="{ active: activeSection === 'section-skills' }"
-                    @click="scrollToSection('section-skills')"
+                    :class="{ active: activeSection === 'section-categories' }"
+                    @click="scrollToSection('section-categories')"
                   >
-                    Skills
+Categorías
                   </ion-button>
 
                   <ion-button
@@ -211,13 +211,13 @@
         ></path>
       </svg>
 
-      <!-- skills -->
-      <ion-grid id="section-skills" class="skills-grid">
+      <!-- categories -->
+      <ion-grid id="section-categories" class="skills-grid">
         <ion-row class="ion-justify-content-center">
           <ion-col size="12" size-lg="8">
             <!-- TODO:implement project filter by technology -->
             <TechCloudBackground
-              title="My Skillsets"
+              title="My Categorías"
               :height="isMobile ? 350 : 600"
               :main-icons="[
                 { name: 'Vue', svg: vueIcon },
@@ -359,7 +359,7 @@ import TechCloudBackground from "@/components/common/TechCloudBackground.vue";
 import FinalSection from "@/views/presentation/sections/FinalSection.vue";
 import ProjectCard from "@/components/projects/ProjectCard.vue";
 import ExperienceCard from "@/components/experience/ExperienceCard.vue";
-import type { HomePageData } from "@/services/types";
+import type { HomePageData, SkillCategory } from "@/services/types";
 import {
   chatbox,
   logoGitlab,
@@ -370,10 +370,12 @@ import vueIcon from "@/assets/otros/vue-js-1.svg";
 import mariadbIcon from "@/assets/otros/mariadb-icon.svg";
 import ionicIcon from "@/assets/otros/ionicframework-icon.svg";
 import laravelIcon from "@/assets/otros/laravel-2.svg";
+import CategoriesController from "@/controllers/categoriesController";
 
 const router = useRouter();
 const props = defineProps<Partial<HomePageData>>();
 const isIOS = isPlatform("ios");
+const categoriesController = new CategoriesController();
 
 const contentRef = ref();
 const menuContainerRef = ref();
@@ -397,23 +399,30 @@ const handleScroll = (event: CustomEvent) => {
   const scrollTop = event.detail?.scrollTop;
   isScrolled.value = scrollTop > 50;
 };
-const backgroundTechs = [
-  { name: "capacitor" },
-  { name: "javascript" },
-  { name: "CSS" },
-  { name: "TypeScript" },
-  { name: "Linux" },
-  { name: "Pinia" },
-];
 
-const filteredBackgroundTechs = computed(() => backgroundTechs);
+const categories = ref<SkillCategory[]>([]);
+
+const backgroundTechs = computed(() => {
+  const techs: { name: string }[] = [];
+  categories.value.forEach((cat) => {
+    cat.technologies?.forEach((tech) => {
+      const techName = tech.name || tech.iconName;
+      if (techName) {
+        techs.push({ name: techName });
+      }
+    });
+  });
+  return techs;
+});
+
+const filteredBackgroundTechs = computed(() => backgroundTechs.value);
 
 const displayLimit = computed(() => (isTablet.value ? 4 : 3));
 
 const sections = [
   { id: "section-yo" },
   { id: "section-proyectos" },
-  { id: "section-skills" },
+  { id: "section-categories" },
   { id: "section-experiencia" },
   { id: "section-colaboracion" },
 ];
@@ -490,9 +499,14 @@ const onResize = () => {
   setupIntersectionObserver();
 };
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener("resize", onResize);
   setTimeout(setupIntersectionObserver, 100);
+  try {
+    categories.value = await categoriesController.loadCategories();
+  } catch (error) {
+    console.error("Error loading categories:", error);
+  }
 });
 
 onUnmounted(() => {
@@ -613,8 +627,8 @@ onUnmounted(() => {
   transform: scaleY(-1);
 }
 
-/* Pull the skills section up to sit closer to the lower wave */
-.skills-grid {
+/* Pull the categories section up to sit closer to the lower wave */
+.categories-grid {
   margin-top: -8px; /* adjust -4px..-12px if you want it closer/further */
 }
 
@@ -645,7 +659,7 @@ onUnmounted(() => {
 }
 
 @media (max-width: 576px) {
-  .skills-grid {
+  .categories-grid {
     padding: 0 8px;
   }
 }

@@ -6,7 +6,7 @@
           <ion-menu-button></ion-menu-button>
         </ion-buttons>
 
-        <ion-title>Skills</ion-title>
+        <ion-title>Categorías</ion-title>
 
         <ion-buttons slot="end">
           <ion-button
@@ -17,7 +17,7 @@
               touch: 'hold',
             }"
             color="tertiary"
-            @click="generateTestSkills"
+            @click="generateTestCategories"
           >
             <ion-icon
               slot="start"
@@ -42,7 +42,7 @@
                 <RouterLink :to="{ name: 'PanelAdminPage' }">Panel</RouterLink>
               </ion-breadcrumb>
 
-              <ion-breadcrumb>Skills</ion-breadcrumb>
+              <ion-breadcrumb>Categorías</ion-breadcrumb>
             </ion-breadcrumbs>
           </ion-col>
         </ion-row>
@@ -71,7 +71,7 @@
                       <p
                         style="font-size: 12px; color: var(--ion-color-medium)"
                       >
-                        {{ category.technologies?.length || 0 }} skills
+                        {{ category.technologies?.length || 0 }} tecnologías
                       </p>
                     </ion-label>
 
@@ -95,11 +95,11 @@
       <div v-else class="empty-state">
         <ion-icon :icon="codeSlashOutline" size="large" />
 
-        <p>No hay skills aún</p>
+        <p>No hay categorías aún</p>
 
         <ion-button @click="createNewCategory">
           <ion-icon slot="start" :icon="addOutline"></ion-icon>
-          Crear primera skill
+          Crear primera categoría
         </ion-button>
       </div>
     </ion-content>
@@ -132,25 +132,25 @@ import {
   bugOutline,
 } from "ionicons/icons";
 import { faker } from "@faker-js/faker";
-import SkillsController from "@/controllers/skillsController";
+import CategoriesController from "@/controllers/categoriesController";
 
 const router = useRouter();
-const skillsController = new SkillsController();
+const categoriesController = new CategoriesController();
 
 const isDev = import.meta.env.DEV;
 
-const skillCategories = computed(() => skillsController.getSkillCategories());
+const skillCategories = computed(() => categoriesController.getSkillCategories());
 
 onMounted(async () => {
-  await skillsController.loadSkills();
+  await categoriesController.loadCategories();
 });
 
 function editCategory(index: number) {
-  router.push(`/admin-panel/skills/edit/${index}`);
+  router.push(`/admin-panel/categories/edit/${index}`);
 }
 
 function createNewCategory() {
-  router.push("/admin-panel/skills/new");
+  router.push("/admin-panel/categories/new");
 }
 
 async function confirmDelete(index: number) {
@@ -158,8 +158,8 @@ async function confirmDelete(index: number) {
   if (!category?.id) return;
 
   const alert = await alertController.create({
-    header: "Eliminar skill",
-    message: `¿Estás seguro de eliminar "${category.name || "esta skill"}"?`,
+    header: "Eliminar categoría",
+    message: `¿Estás seguro de eliminar "${category.name || "esta categoría"}"?`,
     buttons: [
       {
         text: "Cancelar",
@@ -178,10 +178,10 @@ async function confirmDelete(index: number) {
 }
 
 async function deleteCategory(id: string) {
-  await skillsController.deleteSkillCategory(id);
+  await categoriesController.deleteCategory(id);
 }
 
-async function generateTestSkills() {
+async function generateTestCategories() {
   const techs = ["React", "Vue", "Node", "Python", "TypeScript", "Go", "Rust"];
 
   const testCategories = Array.from({ length: 3 }, () => {
@@ -200,7 +200,7 @@ async function generateTestSkills() {
   });
 
   for (const category of testCategories) {
-    await skillsController.addSkillCategory(category);
+    await categoriesController.addCategory(category);
   }
 }
 </script>

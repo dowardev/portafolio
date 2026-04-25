@@ -25,7 +25,7 @@
 
   <ion-row
     style="overflow: auto; max-height: calc(100% - 22dvh)"
-    class="sec-skill"
+    class="sec-category"
   >
     <ion-col
       v-for="(category, indexCat) in skillCategories"
@@ -75,11 +75,11 @@ import * as ionicons from "ionicons/icons";
 import { useIconColors } from "@/composables/useIconColors";
 import type { StackItem, SkillCategory } from "@/services/types";
 import IntroController from "@/controllers/introController";
-import SkillsController from "@/controllers/skillsController";
+import CategoriesController from "@/controllers/categoriesController";
 
 const { getIconColor } = useIconColors();
 const introController = new IntroController();
-const skillsController = new SkillsController();
+const categoriesController = new CategoriesController();
 
 const stackItems = ref<StackItem[]>([]);
 const skillCategories = ref<SkillCategory[]>([]);
@@ -88,12 +88,12 @@ onMounted(async () => {
   try {
     const [introData, skillsData] = await Promise.all([
       introController.loadIntro(),
-      skillsController.loadSkills(),
+      categoriesController.loadCategories(),
     ]);
     stackItems.value = introData.stack || [];
     skillCategories.value = skillsData.skillCategories || [];
   } catch (error) {
-    console.error("Error loading skills data:", error);
+    console.error("Error loading categories data:", error);
   }
 });
 

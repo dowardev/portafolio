@@ -146,7 +146,7 @@
                 :class="{
                   'menu-option-selected':
                     $route.name == 'PresentationPage' ||
-                    $route.name == 'SkillsPage' ||
+                    $route.name == 'CategoriesPage' ||
                     $route.name == 'HistoryPage' ||
                     $route.name == 'PortfolioPage' ||
                     $route.name == 'CertificatesPage' ||
@@ -164,7 +164,7 @@
                     :icon="
                       ![
                         'PresentationPage',
-                        'SkillsPage',
+                        'CategoriesPage',
                         'HistoryPage',
                         'PortfolioPage',
                         'CertificatesPage',

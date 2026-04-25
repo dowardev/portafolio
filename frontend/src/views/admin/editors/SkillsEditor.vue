@@ -5,7 +5,7 @@
         <ion-buttons slot="start">
           <ion-back-button
             text=""
-            default-href="/admin-panel/skills"
+            default-href="/admin-panel/categories"
           ></ion-back-button>
         </ion-buttons>
 
@@ -42,7 +42,7 @@
                 <ion-item lines="none">
                   <ion-input
                     v-model="categoryName"
-                    label="Nombre de skill"
+                    label="Nombre de categoría"
                     label-placement="floating"
                     placeholder="Ej: Frameworks"
                     :error-text="nameError"
@@ -90,7 +90,7 @@ import {
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { saveOutline, trashOutline } from "ionicons/icons";
-import SkillsController from "@/controllers/skillsController";
+import CategoriesController from "@/controllers/categoriesController";
 import TechSkillsEditor from "./TechSkillsEditor.vue";
 
 interface TechItem {
@@ -99,50 +99,46 @@ interface TechItem {
 
 const route = useRoute();
 const router = useRouter();
-const skillsController = new SkillsController();
-
-const isEditing = computed(() => route.path.includes("/edit/"));
-const categoryIndex = computed(() => {
-  const idx = route.params.index;
-  return idx ? parseInt(idx as string, 10) : undefined;
-});
-const categoryId = ref<string | undefined>(undefined);
-
-const loading = ref(true);
-const saving = ref(false);
-const nameTouched = ref(false);
+const categoriesController = new CategoriesController();
 
 const categoryName = ref("");
 const technologies = ref<TechItem[]>([]);
+const loading = ref(true);
+const saving = ref(false);
+const nameTouched = ref(false);
+const nameError = ref("");
 
-const nameError = computed(() => {
-  if (!nameTouched.value || !categoryName.value) return "";
-  return categoryName.value.trim() ? "" : "Nombre de skill es requerido";
-});
+const isEditing = computed(() => route.path.includes("/edit/"));
+const categoryIndex = computed(() => parseInt(route.params.index as string));
+const categoryId = ref("");
 
 onMounted(async () => {
-  await skillsController.loadSkills();
+  try {
+    await categoriesController.loadCategories();
 
-  if (isEditing.value && categoryIndex.value !== undefined) {
-    const category = skillsController.getSkillCategory(categoryIndex.value);
-    if (category) {
-      categoryName.value = category.name;
-      categoryId.value = category.id;
-      technologies.value.splice(
-        0,
-        technologies.value.length,
-        ...category.technologies,
-      );
+    if (isEditing.value && categoryIndex.value !== undefined) {
+      const category = categoriesController.getSkillCategory(categoryIndex.value);
+      if (category) {
+        categoryName.value = category.name;
+        categoryId.value = category.id;
+        technologies.value.splice(
+          0,
+          technologies.value.length,
+          ...category.technologies,
+        );
+      }
     }
+  } catch (error) {
+    console.error("Error loading category:", error);
+  } finally {
+    loading.value = false;
   }
-
-  loading.value = false;
 });
 
 async function confirmDelete() {
   const alert = await alertController.create({
-    header: "Eliminar skill",
-    message: `¿Estás seguro de eliminar "${categoryName.value || "esta skill"}"?`,
+    header: "Eliminar categoría",
+    message: `¿Estás seguro de eliminar "${categoryName.value || "esta categoría"}"?`,
     buttons: [
       {
         text: "Cancelar",
@@ -162,8 +158,8 @@ async function confirmDelete() {
 
 async function deleteCategory() {
   if (categoryId.value) {
-    await skillsController.deleteSkillCategory(categoryId.value);
-    router.push("/admin-panel/skills");
+    await categoriesController.deleteCategory(categoryId.value);
+    router.push("/admin-panel/categories");
   }
 }
 
@@ -181,17 +177,17 @@ async function saveCategory() {
         name: categoryName.value.trim(),
         technologies: technologies.value.filter((t) => t.iconName?.trim()),
       };
-      success = await skillsController.updateSkillCategory(categoryId.value, category);
+      success = await categoriesController.updateCategory(categoryId.value, category);
     } else {
       const category = {
         id: crypto.randomUUID(),
         name: categoryName.value.trim(),
         technologies: technologies.value.filter((t) => t.iconName?.trim()),
       };
-      success = await skillsController.addSkillCategory(category);
+      success = await categoriesController.addCategory(category);
     }
     if (success) {
-      router.push("/admin-panel/skills");
+      router.push("/admin-panel/categories");
     }
   } finally {
     saving.value = false;

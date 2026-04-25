@@ -8,7 +8,7 @@ interface State {
   saving: boolean;
 }
 
-export const useSkillsStore = defineStore("skills", {
+export const useCategoriesStore = defineStore("categories", {
   state: (): State => ({
     skillCategories: [],
     loading: false,

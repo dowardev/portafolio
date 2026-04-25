@@ -20,7 +20,7 @@
           :scrollable="true"
           @ion-change="emits('mainsegment', $event.detail.value as string)"
         >
-          <ion-segment-button value="skills">Habilidades</ion-segment-button>
+          <ion-segment-button value="categories">Habilidades</ion-segment-button>
           <ion-segment-button value="history">Historia</ion-segment-button>
           <ion-segment-button value="portfolio">Portfolio</ion-segment-button>
         </ion-segment>
@@ -43,7 +43,7 @@ const props = defineProps({
     type: String,
     required: true,
     validator: (value: any) => {
-      return ["skills", "history", "portfolio"].includes(value);
+      return ["categories", "history", "portfolio"].includes(value);
     },
   },
   showTitle: { type: Boolean, required: true, default: false },

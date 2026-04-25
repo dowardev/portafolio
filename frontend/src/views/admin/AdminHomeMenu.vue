@@ -63,10 +63,10 @@ const menuItems = [
     color: "#4ECB71",
   },
   {
-    section: "skills",
-    label: "Skills",
+    section: "categories",
+    label: "Categorías",
     icon: barChartOutline,
-    route: "/admin-panel/skills",
+    route: "/admin-panel/categories",
     color: "#F5A623",
   },
   {

@@ -1,4 +1,4 @@
-import { useSkillsStore } from "@/store/skillsStore";
+import { useCategoriesStore } from "@/store/categoriesStore";
 import type { SkillCategory } from "@/services/types";
 import { ToastController } from "./toastController";
 import APIController from "./APIController";
@@ -16,34 +16,36 @@ interface SkillsResponse {
   skillCategories: SkillCategory[];
 }
 
-export default class SkillsController {
-  private skillsStore = useSkillsStore();
+export default class CategoriesController {
+  private categoriesStore = useCategoriesStore();
   private toastController = new ToastController();
 
-  async loadSkills(): Promise<void> {
-    this.skillsStore.setLoading(true);
+  async loadCategories(): Promise<SkillCategory[]> {
+    this.categoriesStore.setLoading(true);
     try {
       const data = await api.get<SkillsResponse>({ url: "get-skills" });
-      this.skillsStore.setSkillCategories(data.skillCategories || []);
+      this.categoriesStore.setSkillCategories(data.skillCategories || []);
+      return data.skillCategories || [];
     } catch (error) {
-      console.error("Error loading skills:", error);
-      this.skillsStore.setSkillCategories([]);
+      console.error("Error loading categories:", error);
+      this.categoriesStore.setSkillCategories([]);
+      return [];
     } finally {
-      this.skillsStore.setLoading(false);
+      this.categoriesStore.setLoading(false);
     }
   }
 
   getSkillCategories(): SkillCategory[] {
-    return this.skillsStore.skillCategories;
+    return this.categoriesStore.skillCategories;
   }
 
   getSkillCategory(index: number): SkillCategory | undefined {
-    return this.skillsStore.getSkillCategory(index);
+    return this.categoriesStore.getSkillCategory(index);
   }
 
-  async addSkillCategory(category: SkillCategory): Promise<boolean> {
+  async addCategory(category: SkillCategory): Promise<boolean> {
     try {
-      this.skillsStore.setSaving(true);
+      this.categoriesStore.setSaving(true);
 
       const formData = new FormData();
       formData.append("skillCategory", JSON.stringify(category));
@@ -54,12 +56,12 @@ export default class SkillsController {
         contentType: "multipart/form-data",
       });
 
-      this.skillsStore.setSkillCategories(data.skillCategories || []);
-      this.skillsStore.setSaving(false);
+      this.categoriesStore.setSkillCategories(data.skillCategories || []);
+      this.categoriesStore.setSaving(false);
       return true;
     } catch (error) {
-      this.skillsStore.setSaving(false);
-      console.error("Error adding skill category:", error);
+      this.categoriesStore.setSaving(false);
+      console.error("Error adding category:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al agregar la categoría",
         duration: 2000,
@@ -70,17 +72,17 @@ export default class SkillsController {
     }
   }
 
-  async deleteSkillCategory(id: string): Promise<boolean> {
+  async deleteCategory(id: string): Promise<boolean> {
     try {
       const data = await api.post<SkillsResponse>({
         url: "admin/delete-skill-category",
         data: { id },
       });
 
-      this.skillsStore.setSkillCategories(data.skillCategories || []);
+      this.categoriesStore.setSkillCategories(data.skillCategories || []);
       return true;
     } catch (error) {
-      console.error("Error deleting skill category:", error);
+      console.error("Error deleting category:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al eliminar la categoría",
         duration: 2000,
@@ -91,9 +93,9 @@ export default class SkillsController {
     }
   }
 
-  async updateSkillCategory(id: string, category: SkillCategory): Promise<boolean> {
+  async updateCategory(id: string, category: SkillCategory): Promise<boolean> {
     try {
-      this.skillsStore.setSaving(true);
+      this.categoriesStore.setSaving(true);
 
       const formData = new FormData();
       formData.append("id", id);
@@ -105,12 +107,12 @@ export default class SkillsController {
         contentType: "multipart/form-data",
       });
 
-      this.skillsStore.setSkillCategories(data.skillCategories || []);
-      this.skillsStore.setSaving(false);
+      this.categoriesStore.setSkillCategories(data.skillCategories || []);
+      this.categoriesStore.setSaving(false);
       return true;
     } catch (error) {
-      this.skillsStore.setSaving(false);
-      console.error("Error updating skill category:", error);
+      this.categoriesStore.setSaving(false);
+      console.error("Error updating category:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al actualizar la categoría",
         duration: 2000,

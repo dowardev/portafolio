@@ -20,7 +20,7 @@
           @ion-change="scrollToSection({ event: $event })"
         >
           <ion-segment-button value="contact">Contacto</ion-segment-button>
-          <ion-segment-button value="skills">Skills</ion-segment-button>
+          <ion-segment-button value="categories">Categorías</ion-segment-button>
           <ion-segment-button value="experience">Experiencia</ion-segment-button>
           <ion-segment-button value="projects">Proyectos</ion-segment-button>
           <ion-segment-button value="certificates">Certificados</ion-segment-button>
@@ -37,7 +37,7 @@
         @ion-change="scrollToSection({ event: $event })"
       >
         <ion-segment-button value="contact">Contacto</ion-segment-button>
-        <ion-segment-button value="skills">Skills</ion-segment-button>
+        <ion-segment-button value="categories">Categorías</ion-segment-button>
         <ion-segment-button value="experience">Experiencia</ion-segment-button>
         <ion-segment-button value="projects">Proyectos</ion-segment-button>
         <ion-segment-button value="certificates">Certificados</ion-segment-button>
@@ -56,7 +56,7 @@
         </ion-row>
       </section>
 
-      <section id="skills">
+      <section id="categories">
         <ion-row class="snap-section ion-justify-content-center" style="display: flex">
           <ion-col size-xs="12" size-md="8" size-lg="6">
             <div style="height: 81dvh">
@@ -149,7 +149,7 @@ import SystemController from "@/controllers/systemController";
 const systemController = new SystemController();
 
 import InformationComponent from "@/views/presentation/information/InformationComponent.vue";
-import SkillsPage from "@/views/presentation/skills/SkillsPage.vue";
+import CategoriesPage from "@/views/presentation/categories/SkillsPage.vue";
 import ExperienceComponent from "@/views/presentation/experience/ExperienceComponent.vue";
 import ProjectsComponent from "@/views/presentation/projects/ProjectsComponent.vue";
 import CertificatesComponent from "@/views/presentation/certificates/CertificatesComponent.vue";

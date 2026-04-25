@@ -24,6 +24,7 @@ export interface SkillCategory {
   name: string;
   technologies: Array<{
     iconName: string;
+    name?: string;
   }>;
 }
 

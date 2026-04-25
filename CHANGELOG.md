@@ -1,6 +1,53 @@
 # Changelog
 
-## 12.20.1 - 2026-04-24
+## 13.0.0 - 2026-04-24
+
+### Summary
+This major release renames the "Skills" feature to "Categorías" (Categories) throughout the application, including route URL changes, controller/store refactoring, and dynamic category loading. This is a breaking change that updates public-facing URLs.
+
+### Added
+- New CategoriesController for category data operations (renamed from SkillsController)
+- New categoriesStore for category state management (renamed from skillsStore)
+- Reactive watch in TechCloudBackground to dynamically update background technologies when props change
+- Dynamic category loading in HomeTemplate2 using CategoriesController
+
+### Changed
+- Renamed routes from `/home/skills` to `/home/categories` (SkillsPage -> CategoriesPage)
+- Renamed routes from `/admin-panel/skills` to `/admin-panel/categories` (CategoriesListPage, CategoriesEditor)
+- Renamed all UI labels from "Skills" to "Categorías" in menus, templates, and admin pages
+- Updated background section ID from `section-skills` to `section-categories`
+- Updated CSS class from `.skills-grid` to `.categories-grid`
+- Updated default title in TechCloudBackground from "My Skillsets" to "My Categorías"
+
+### Breaking Changes
+- Route URLs changed: `/home/skills` → `/home/categories`
+- Admin route URLs changed: `/admin-panel/skills` → `/admin-panel/categories`
+- Route names changed: SkillsPage → CategoriesPage, SkillsListPage → CategoriesListPage, etc.
+- Controller name changed: SkillsController → CategoriesController
+- Store name changed: skills → categories
+
+### Affected Files
+- Renamed:
+  - `frontend/src/controllers/skillsController.ts` → `frontend/src/controllers/categoriesController.ts`
+  - `frontend/src/store/skillsStore.ts` → `frontend/src/store/categoriesStore.ts`
+  - `frontend/src/views/presentation/skills/SkillsPage.vue` → `frontend/src/views/presentation/categories/SkillsPage.vue`
+- Modified:
+  - `frontend/src/router/index.ts`
+  - `frontend/src/App.vue`
+  - `frontend/src/components/common/TechCloudBackground.vue`
+  - `frontend/src/components/menu/MenuComponent.vue`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/templates/HomeTemplate1.vue`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/admin/AdminHomeMenu.vue`
+  - `frontend/src/views/admin/HomeEditorComponent.vue`
+  - `frontend/src/views/admin/editors/ExperienceEditor.vue`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `frontend/src/views/admin/sections/SkillsListPage.vue`
+  - `frontend/src/views/presentation/header/Header.vue`
+
+---
 
 ### Summary
 This release fixes overly restrictive validation rules in the admin API endpoints. The validation previously required array objects for all data fields, but the frontend sends single objects. This fix allows the backend to accept any valid value instead of strictly requiring arrays.

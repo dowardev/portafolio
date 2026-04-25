@@ -82,7 +82,7 @@ watch(
 // computed
 const disableAnimation = computed(() => {
   const currentPath = route.path;
-  const routes = ["/home/presentation", "/home/skills", "/home/portfolio"];
+  const routes = ["/home/presentation", "/home/categories", "/home/portfolio"];
   const isTargetRoute = routes.includes(currentPath);
   const wasOnTargetRoute = routes.includes(previousRoute.value);
 

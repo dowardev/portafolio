@@ -7,8 +7,8 @@
       <ion-button :color="activeSection === 'stack' ? 'primary' : 'medium'" @click="navigateTo('stack')">
         Stack
       </ion-button>
-      <ion-button :color="activeSection === 'skills' ? 'primary' : 'medium'" @click="navigateTo('skills')">
-        Skills
+      <ion-button :color="activeSection === 'categories' ? 'primary' : 'medium'" @click="navigateTo('categories')">
+        Categorías
       </ion-button>
       <ion-button :color="activeSection === 'experience' ? 'primary' : 'medium'" @click="navigateToExperience">
         Experiencia
@@ -177,9 +177,9 @@
         @update:files="updateStackFiles"
       />
 
-      <!-- Sección Skills -->
+      <!-- Sección Categorías -->
       <SkillsEditor
-        v-if="activeSection === 'skills'"
+        v-if="activeSection === 'categories'"
         v-model="form.skillCategories"
         @update:files="updateSkillFiles"
       />
@@ -266,7 +266,7 @@ const isDev = import.meta.env.DEV;
 const router = useRouter();
 const route = useRoute();
 
-const validSections = ["info", "stack", "skills", "experience", "projects", "certificates", "freelance"];
+const validSections = ["info", "stack", "categories", "experience", "projects", "certificates", "freelance"];
 
 const activeSection = computed(() => {
   const section = route.params.section as string;
@@ -384,7 +384,7 @@ const files = reactive({
 
 const sectionFiles = reactive({
   stack: {} as Record<number, File>,
-  skills: {} as Record<string, File>,
+  categories: {} as Record<string, File>,
   experience: {} as Record<string, File>,
   projects: {} as Record<string, File>,
   certificates: {} as Record<string, File>,
@@ -452,7 +452,7 @@ function updateStackFiles(fileMap: Record<number, File>) {
 }
 
 function updateSkillFiles(fileMap: Record<string, File>) {
-  Object.assign(sectionFiles.skills, fileMap);
+  Object.assign(sectionFiles.categories, fileMap);
 }
 
 function updateExpFiles(fileMap: Record<string, File>) {
@@ -542,7 +542,7 @@ async function save() {
     }
 
     // Skills files
-    for (const [key, file] of Object.entries(sectionFiles.skills)) {
+    for (const [key, file] of Object.entries(sectionFiles.categories)) {
       formData.append(`skill_image_${key}`, file);
     }
 

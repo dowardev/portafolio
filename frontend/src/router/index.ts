@@ -4,7 +4,7 @@ import NoFoundPage from "../views/404/404Page.vue";
 import Prueba from "@/views/prueba/Prueba.vue";
 
 import HomePresentationPage from "@/views/presentation/HomePresentationPage.vue";
-import SkillsPage from "@/views/presentation/skills/SkillsPage.vue";
+import CategoriesPage from "@/views/presentation/categories/SkillsPage.vue";
 import HistoryPage from "@/views/history/HistoryPage.vue";
 import PortfolioPage from "@/views/portfolio/PortfolioPage.vue";
 import CertificatesPage from "@/views/certificates/CertificatesPage.vue";
@@ -23,8 +23,8 @@ import ProjectsListPage from "@/views/admin/sections/ProjectsListPage.vue";
 import ProjectsEditor from "@/views/admin/editors/ProjectsEditor.vue";
 import ExperienceListPage from "@/views/admin/sections/ExperienceListPage.vue";
 import ExperienceEditor from "@/views/admin/editors/ExperienceEditor.vue";
-import SkillsListPage from "@/views/admin/sections/SkillsListPage.vue";
-import SkillsEditor from "@/views/admin/editors/SkillsEditor.vue";
+import CategoriesListPage from "@/views/admin/sections/SkillsListPage.vue";
+import CategoriesEditor from "@/views/admin/editors/SkillsEditor.vue";
 import CertificatesListPage from "@/views/admin/sections/CertificatesListPage.vue";
 import CertificatesEditor from "@/views/admin/editors/CertificatesEditor.vue";
 import FreelanceListPage from "@/views/admin/sections/FreelanceListPage.vue";
@@ -74,9 +74,9 @@ const routes: Array<RouteRecordRaw> = [
     component: HomePresentationPage,
   },
   {
-    path: "/home/skills",
-    name: "SkillsPage",
-    component: SkillsPage,
+    path: "/home/categories",
+    name: "CategoriesPage",
+    component: CategoriesPage,
   },
   {
     path: "/home/history",
@@ -174,19 +174,19 @@ const routes: Array<RouteRecordRaw> = [
     component: ExperienceEditor,
   },
   {
-    path: "/admin-panel/skills",
-    name: "SkillsListPage",
-    component: SkillsListPage,
+    path: "/admin-panel/categories",
+    name: "CategoriesListPage",
+    component: CategoriesListPage,
   },
   {
-    path: "/admin-panel/skills/new",
-    name: "SkillsNewPage",
-    component: SkillsEditor,
+    path: "/admin-panel/categories/new",
+    name: "CategoriesNewPage",
+    component: CategoriesEditor,
   },
   {
-    path: "/admin-panel/skills/edit/:index",
-    name: "SkillsEditPage",
-    component: SkillsEditor,
+    path: "/admin-panel/categories/edit/:index",
+    name: "CategoriesEditPage",
+    component: CategoriesEditor,
   },
   {
     path: "/admin-panel/certificates",
@@ -250,7 +250,7 @@ router.beforeEach(async (to, from, next) => {
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];
   const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
-  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage", "FreelanceListPage", "FreelanceEditPage", "FreelanceEditPageOld", "FreelanceNewPage", "FreelanceNewPageOld"];
+  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "CategoriesListPage", "CategoriesEditPage", "CategoriesNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage", "FreelanceListPage", "FreelanceEditPage", "FreelanceEditPageOld", "FreelanceNewPage", "FreelanceNewPageOld"];
   const noGuardRequired = [
     "RestorePasswordPage",
     "PresentationPage",
@@ -258,6 +258,7 @@ router.beforeEach(async (to, from, next) => {
     "HistoryPage",
     "PortfolioPage",
     "SkillsPage",
+    "CategoriesPage",
     "BlogPage",
     "PostsPage",
     "PostPage",
