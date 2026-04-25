@@ -1,5 +1,37 @@
 # Changelog
 
+## 13.6.0 - 2026-04-25
+
+### Summary
+This release adds a reusable IconSelector component with centralized icon configuration, refactors SocialsEditor and TechSkillsEditor to use the new component, and adds toast duration support for customizable display times.
+
+### Added
+- New reusable `IconSelector.vue` component with icon picker modal and search functionality
+- New `iconConfig.ts` composable with centralized icon configuration for 70+ icons (social and tech types)
+- `getIconsByType()` function to filter icons by type ("social" | "tech")
+- `getIconByName()` function to get icon configuration by name
+- `getIconColor()` function to get icon color
+- New `duration` field to Toast interface for customizable toast display time
+
+### Changed
+- Refactored `useIconColors.ts` to use centralized iconConfig instead of hardcoded colors
+- Refactored `SocialsEditor.vue` to use new IconSelector component
+- Refactored `TechSkillsEditor.vue` to use new IconSelector component
+- Updated toastController to accept optional duration parameter with default 2000ms
+
+### Affected Files
+- Added:
+  - `frontend/src/components/admin/IconSelector.vue`
+  - `frontend/src/composables/iconConfig.ts`
+- Modified:
+  - `frontend/src/composables/useIconColors.ts`
+  - `frontend/src/controllers/toastController.ts`
+  - `frontend/src/utils/interfaces.ts`
+  - `frontend/src/views/admin/editors/SocialsEditor.vue`
+  - `frontend/src/views/admin/editors/TechSkillsEditor.vue`
+
+---
+
 ## 13.5.0 - 2026-04-25
 
 ### Summary

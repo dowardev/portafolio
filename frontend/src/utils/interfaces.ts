@@ -118,6 +118,7 @@ export interface Toast {
   message: string;
   color?: string;
   position?: "top" | "bottom" | "middle";
+  duration?: number;
   buttons?: Array<{
     text: string;
     role?: string;

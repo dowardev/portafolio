@@ -11,11 +11,12 @@ export class ToastController {
 
   async presentToast(params: Toast): Promise<HTMLIonToastElement> {
     try {
-      const { message, color = "dark", buttons = [] } = params;
+      const { message, color = "dark", buttons = [], duration = 2000 } = params;
       return await toastController.create({
         message,
         position: "bottom",
         color,
+        duration,
         buttons,
       });
     } catch (error) {
