@@ -12,8 +12,12 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
+interface ExperiencesResponse {
+  experiences: ExperienceItem[];
+}
+
 interface ExperienceResponse {
-  experience: ExperienceItem[];
+  experience: ExperienceItem;
 }
 
 export default class ExperienceController {
@@ -26,9 +30,9 @@ export default class ExperienceController {
     }
     this.experienceStore.setLoading(true);
     try {
-      const data = await api.get<ExperienceResponse>({ url: "get-experiences" });
-      this.experienceStore.setExperiences(data.experience || []);
-      return data.experience || [];
+      const data = await api.get<ExperiencesResponse>({ url: "experiences" });
+      this.experienceStore.setExperiences(data.experiences || []);
+      return data.experiences || [];
     } catch (error) {
       console.error("Error loading experiences:", error);
       this.experienceStore.setExperiences([]);
@@ -53,20 +57,39 @@ export default class ExperienceController {
   async addExperience(experience: ExperienceItem, imageFile?: File | null): Promise<boolean> {
     try {
       const formData = new FormData();
-      formData.append("experience", JSON.stringify(experience));
+      formData.append("title", experience.title);
+      formData.append("start_date", experience.startDate);
+      if (experience.endDate) {
+        formData.append("end_date", experience.endDate);
+      }
+      if (experience.description || experience.details?.description) {
+        formData.append("description", experience.details?.description || experience.description || "");
+      }
+      if (experience.details?.website) {
+        formData.append("website", experience.details.website);
+      }
+      if (experience.technologies) {
+        formData.append("technologies", JSON.stringify(experience.technologies));
+      }
 
       if (imageFile) {
         formData.append("image", imageFile, "experience.jpg");
       }
 
       await api.post<ExperienceResponse>({
-        url: "admin/add-experience",
+        url: "admin/experiences",
         data: formData,
         contentType: "multipart/form-data",
       });
 
       await this.loadPublicExperiences();
 
+      const toast = await this.toastController.presentToast({
+        message: "Experiencia agregada correctamente",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
       return true;
     } catch (error) {
       console.error("Error adding experience:", error);
@@ -82,9 +105,8 @@ export default class ExperienceController {
 
   async deleteExperience(id: string): Promise<boolean> {
     try {
-      await api.post<ExperienceResponse>({
-        url: "admin/delete-experience",
-        data: { id },
+      await api.delete({
+        url: `admin/experiences/${id}`,
       });
 
       await this.loadPublicExperiences();
@@ -111,15 +133,27 @@ export default class ExperienceController {
   async updateExperience(id: string, experience: ExperienceItem, imageFile?: File | null): Promise<boolean> {
     try {
       const formData = new FormData();
-      formData.append("id", id);
-      formData.append("experience", JSON.stringify(experience));
+      formData.append("title", experience.title);
+      formData.append("start_date", experience.startDate);
+      if (experience.endDate) {
+        formData.append("end_date", experience.endDate);
+      }
+      if (experience.description || experience.details?.description) {
+        formData.append("description", experience.details?.description || experience.description || "");
+      }
+      if (experience.details?.website) {
+        formData.append("website", experience.details.website);
+      }
+      if (experience.technologies) {
+        formData.append("technologies", JSON.stringify(experience.technologies));
+      }
 
       if (imageFile) {
         formData.append("image", imageFile, "experience.jpg");
       }
 
       await api.post<ExperienceResponse>({
-        url: "admin/update-experience",
+        url: `admin/experiences/${id}`,
         data: formData,
         contentType: "multipart/form-data",
       });

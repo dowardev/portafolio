@@ -1,5 +1,50 @@
 # Changelog
 
+## 13.9.0 - 2026-04-26
+
+### Summary
+This release implements a RESTful API architecture by creating dedicated Laravel controllers and models for each entity (Experience, Project, Freelance, Certificate), replacing the previous monolithic HomePageController approach. The frontend has been updated to consume the new REST endpoints with proper HTTP methods.
+
+### Added
+- New dedicated Laravel controllers: `ExperienceController`, `ProjectController`, `FreelanceController`, `CertificateController`
+- New Eloquent models: `Experience`, `Project`, `Freelance`, `Certificate`
+- New database migrations creating separate tables for each entity
+- RESTful GET endpoints: `/experiences`, `/projects`, `/certificates`, `/freelances`
+- DELETE method in frontend APIController
+
+### Changed
+- Converted admin API routes from action-based to RESTful pattern:
+  - `admin/add-*` → `admin/*` (POST)
+  - `admin/update-*` → `admin/*/{id}` (POST)
+  - `admin/delete-*` → `admin/*/{id}` (DELETE)
+- Updated all frontend controllers to use REST endpoints with FormData instead of JSON payloads
+- Changed public GET endpoints from `get-*` to RESTful `/experiences`, `/projects`, `/certificates`, `/freelances`
+- Controllers now return single item responses (`{ item }`) instead of arrays for add/update operations
+
+### Affected Files
+- Added:
+  - `backend/app/Http/Controllers/Admin/CertificateController.php`
+  - `backend/app/Http/Controllers/Admin/ExperienceController.php`
+  - `backend/app/Http/Controllers/Admin/FreelanceController.php`
+  - `backend/app/Http/Controllers/Admin/ProjectController.php`
+  - `backend/app/Models/Certificate.php`
+  - `backend/app/Models/Experience.php`
+  - `backend/app/Models/Freelance.php`
+  - `backend/app/Models/Project.php`
+  - `backend/database/migrations/2026_04_26_000001_create_experiences_table.php`
+  - `backend/database/migrations/2026_04_26_000002_create_projects_table.php`
+  - `backend/database/migrations/2026_04_26_000003_create_certificates_table.php`
+  - `backend/database/migrations/2026_04_26_000004_create_freelances_table.php`
+- Modified:
+  - `backend/routes/api.php`
+  - `frontend/src/controllers/APIController.ts`
+  - `frontend/src/controllers/certificatesController.ts`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/controllers/freelanceController.ts`
+  - `frontend/src/controllers/projectsController.ts`
+
+---
+
 ## 13.8.1 - 2026-04-26
 
 ### Summary

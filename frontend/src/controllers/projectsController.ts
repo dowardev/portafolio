@@ -16,6 +16,10 @@ interface ProjectsResponse {
   projects: ProjectItem[];
 }
 
+interface ProjectItemResponse {
+  project: ProjectItem;
+}
+
 export default class ProjectsController {
   private projectsStore = useProjectsStore();
   private toastController = new ToastController();
@@ -26,7 +30,7 @@ export default class ProjectsController {
     }
     this.projectsStore.setLoading(true);
     try {
-      const data = await api.get<ProjectsResponse>({ url: "get-projects" });
+      const data = await api.get<ProjectsResponse>({ url: "projects" });
       this.projectsStore.setProjects(data.projects || []);
       return data.projects || [];
     } catch (error) {
@@ -53,7 +57,31 @@ export default class ProjectsController {
   async addProject(project: ProjectItem, imageFile?: File | null, techFiles?: Record<number, File>): Promise<boolean> {
     try {
       const formData = new FormData();
-      formData.append("project", JSON.stringify(project));
+      formData.append("title", project.title);
+      if (project.startDate) {
+        formData.append("start_date", project.startDate);
+      }
+      if (project.endDate) {
+        formData.append("end_date", project.endDate);
+      }
+      if (project.status) {
+        formData.append("status", project.status);
+      }
+      if (project.description || project.details?.description) {
+        formData.append("description", project.details?.description || project.description || "");
+      }
+      if (project.details?.website) {
+        formData.append("website", project.details.website);
+      }
+      if (project.source?.name) {
+        formData.append("source_name", project.source.name);
+      }
+      if (project.source?.url) {
+        formData.append("source_url", project.source.url);
+      }
+      if (project.technologies) {
+        formData.append("technologies", JSON.stringify(project.technologies));
+      }
 
       if (imageFile) {
         formData.append("image", imageFile, "project.jpg");
@@ -64,8 +92,8 @@ export default class ProjectsController {
         }
       }
 
-      await api.post<ProjectsResponse>({
-        url: "admin/add-project",
+      await api.post<ProjectItemResponse>({
+        url: "admin/projects",
         data: formData,
         contentType: "multipart/form-data",
       });
@@ -93,9 +121,8 @@ export default class ProjectsController {
 
   async deleteProject(id: string): Promise<boolean> {
     try {
-      await api.post<ProjectsResponse>({
-        url: "admin/delete-project",
-        data: { id },
+      await api.delete({
+        url: `admin/projects/${id}`,
       });
 
       await this.loadPublicProjects();
@@ -122,8 +149,31 @@ export default class ProjectsController {
   async updateProject(id: string, project: ProjectItem, imageFile?: File | null, techFiles?: Record<number, File>): Promise<boolean> {
     try {
       const formData = new FormData();
-      formData.append("id", id);
-      formData.append("project", JSON.stringify(project));
+      formData.append("title", project.title);
+      if (project.startDate) {
+        formData.append("start_date", project.startDate);
+      }
+      if (project.endDate) {
+        formData.append("end_date", project.endDate);
+      }
+      if (project.status) {
+        formData.append("status", project.status);
+      }
+      if (project.description || project.details?.description) {
+        formData.append("description", project.details?.description || project.description || "");
+      }
+      if (project.details?.website) {
+        formData.append("website", project.details.website);
+      }
+      if (project.source?.name) {
+        formData.append("source_name", project.source.name);
+      }
+      if (project.source?.url) {
+        formData.append("source_url", project.source.url);
+      }
+      if (project.technologies) {
+        formData.append("technologies", JSON.stringify(project.technologies));
+      }
 
       if (imageFile) {
         formData.append("image", imageFile, "project.jpg");
@@ -134,8 +184,8 @@ export default class ProjectsController {
         }
       }
 
-      await api.post<ProjectsResponse>({
-        url: "admin/update-project",
+      await api.post<ProjectItemResponse>({
+        url: `admin/projects/${id}`,
         data: formData,
         contentType: "multipart/form-data",
       });

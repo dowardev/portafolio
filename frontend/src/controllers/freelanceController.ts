@@ -12,30 +12,35 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
-interface FreelanceData {
-  freelancePlatforms: FreelancePlatform[];
-  freelanceComments: FreelanceComment[];
+interface FreelancesResponse {
+  freelances: FreelanceItem[];
+}
+
+interface FreelanceResponse {
+  freelance: FreelanceItem;
 }
 
 export default class FreelanceController {
   private freelanceStore = useFreelanceStore();
   private toastController = new ToastController();
 
-  async loadFreelance(): Promise<FreelanceData> {
+  async loadFreelance(): Promise<FreelancePlatform[]> {
     this.freelanceStore.setLoading(true);
     try {
-      const data = await api.get<{ freelance: FreelanceItem[] }>({
-        url: "get-freelance",
+      const data = await api.get<FreelancesResponse>({
+        url: "freelances",
       });
 
-      const freelanceItems = data.freelance || [];
-      const platforms: FreelancePlatform[] = freelanceItems.map(item => ({
-        id: item.id || crypto.randomUUID(),
+      const items = data.freelances || [];
+
+      const platforms: FreelancePlatform[] = items.map(item => ({
+        id: String(item.id || crypto.randomUUID()),
         name: item.name,
         image: item.image,
         url: item.url,
       }));
-      const comments: FreelanceComment[] = freelanceItems
+
+      const comments: FreelanceComment[] = items
         .filter(item => !!item.comment)
         .map(item => ({
           id: crypto.randomUUID(),
@@ -46,10 +51,10 @@ export default class FreelanceController {
         }));
 
       this.freelanceStore.setFreelance(platforms, comments);
-      return { freelancePlatforms: platforms, freelanceComments: comments };
+      return platforms;
     } catch (error) {
       console.error("Error loading freelance:", error);
-      return { freelancePlatforms: [], freelanceComments: [] };
+      return [];
     } finally {
       this.freelanceStore.setLoading(false);
     }
@@ -71,78 +76,38 @@ export default class FreelanceController {
     return this.freelanceStore.getComment(index);
   }
 
-  async saveFreelance(
-    platforms: FreelancePlatform[],
-    comments: FreelanceComment[],
-    files?: Record<string, File>,
-  ): Promise<void> {
+  async addFreelance(freelance: FreelanceItem, imageFile?: File | null): Promise<boolean> {
     try {
       const formData = new FormData();
-      formData.append("freelance", JSON.stringify(
-        platforms.map((platform) => ({
-          name: platform.name,
-          image: platform.image,
-          url: platform.url,
-          comment: comments.find(c => c.platformName === platform.name) || null,
-        }))
-      ));
-
-      if (files) {
-        Object.entries(files).forEach(([key, file]) => {
-          formData.append(key, file);
-        });
+      formData.append("name", freelance.name);
+      if (freelance.url) {
+        formData.append("url", freelance.url);
       }
-
-      await api.post({
-        url: "admin/update-freelance",
-        data: formData,
-        contentType: "multipart/form-data",
-      });
-
-      await this.loadFreelance();
-
-      const toast = await this.toastController.presentToast({
-        message: "Guardado correctamente",
-        duration: 2000,
-        color: "success",
-      });
-      await toast.present();
-    } catch (error) {
-      console.error("Error saving freelance:", error);
-      const toast = await this.toastController.presentToast({
-        message: "Error al guardar",
-        duration: 2000,
-        color: "danger",
-      });
-      await toast.present();
-    }
-  }
-
-  async addFreelance(freelance: FreelanceItem, imageFile?: File | null): Promise<FreelanceData> {
-    try {
-      const formData = new FormData();
-      formData.append("freelance", JSON.stringify(freelance));
+      if (freelance.comment) {
+        formData.append("comment_title", freelance.comment.title);
+        formData.append("comment_text", freelance.comment.text);
+        formData.append("comment_rating", String(freelance.comment.rating));
+      }
 
       if (imageFile) {
         formData.append("image", imageFile, "freelance.jpg");
       }
 
-      const data = await api.post<{ freelance: FreelanceItem[] }>({
-        url: "admin/add-freelance",
+      await api.post<FreelanceResponse>({
+        url: "admin/freelances",
         data: formData,
         contentType: "multipart/form-data",
       });
 
       await this.loadFreelance();
 
-      const result = this.extractFromData(data.freelance || []);
       const toast = await this.toastController.presentToast({
         message: "Trabajo freelance agregado",
         duration: 2000,
         color: "success",
       });
       await toast.present();
-      return result;
+      return true;
     } catch (error) {
       console.error("Error adding freelance:", error);
       const toast = await this.toastController.presentToast({
@@ -151,36 +116,42 @@ export default class FreelanceController {
         color: "danger",
       });
       await toast.present();
-      return { freelancePlatforms: [], freelanceComments: [] };
+      return false;
     }
   }
 
-  async updateFreelance(id: string, freelance: FreelanceItem, imageFile?: File | null): Promise<FreelanceData> {
+  async updateFreelance(id: string, freelance: FreelanceItem, imageFile?: File | null): Promise<boolean> {
     try {
       const formData = new FormData();
-      formData.append("id", id);
-      formData.append("freelance", JSON.stringify(freelance));
+      formData.append("name", freelance.name);
+      if (freelance.url) {
+        formData.append("url", freelance.url);
+      }
+      if (freelance.comment) {
+        formData.append("comment_title", freelance.comment.title);
+        formData.append("comment_text", freelance.comment.text);
+        formData.append("comment_rating", String(freelance.comment.rating));
+      }
 
       if (imageFile) {
         formData.append("image", imageFile, "freelance.jpg");
       }
 
-      const data = await api.post<{ freelance: FreelanceItem[] }>({
-        url: "admin/update-freelance",
+      await api.post<FreelanceResponse>({
+        url: `admin/freelances/${id}`,
         data: formData,
         contentType: "multipart/form-data",
       });
 
       await this.loadFreelance();
 
-      const result = this.extractFromData(data.freelance || []);
       const toast = await this.toastController.presentToast({
         message: "Trabajo freelance actualizado",
         duration: 2000,
         color: "success",
       });
       await toast.present();
-      return result;
+      return true;
     } catch (error) {
       console.error("Error updating freelance:", error);
       const toast = await this.toastController.presentToast({
@@ -189,27 +160,25 @@ export default class FreelanceController {
         color: "danger",
       });
       await toast.present();
-      return { freelancePlatforms: [], freelanceComments: [] };
+      return false;
     }
   }
 
-  async deleteFreelance(id: string): Promise<FreelanceData> {
+  async deleteFreelance(id: string): Promise<boolean> {
     try {
-      const data = await api.post<{ freelance: FreelanceItem[] }>({
-        url: "admin/delete-freelance",
-        data: { id },
+      await api.delete({
+        url: `admin/freelances/${id}`,
       });
 
       await this.loadFreelance();
 
-      const result = this.extractFromData(data.freelance || []);
       const toast = await this.toastController.presentToast({
         message: "Trabajo freelance eliminado",
         duration: 2000,
         color: "success",
       });
       await toast.present();
-      return result;
+      return true;
     } catch (error) {
       console.error("Error deleting freelance:", error);
       const toast = await this.toastController.presentToast({
@@ -218,27 +187,7 @@ export default class FreelanceController {
         color: "danger",
       });
       await toast.present();
-      return { freelancePlatforms: [], freelanceComments: [] };
+      return false;
     }
-  }
-
-  private extractFromData(items: FreelanceItem[]): FreelanceData {
-    const platforms: FreelancePlatform[] = items.map(item => ({
-      id: item.id || crypto.randomUUID(),
-      name: item.name,
-      image: item.image,
-      url: item.url,
-    }));
-    const comments: FreelanceComment[] = items
-      .filter(item => !!item.comment)
-      .map(item => ({
-        id: crypto.randomUUID(),
-        platformName: item.name,
-        title: item.comment!.title,
-        text: item.comment!.text,
-        rating: item.comment!.rating,
-      }));
-
-    return { freelancePlatforms: platforms, freelanceComments: comments };
   }
 }

@@ -6,6 +6,10 @@ use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PostsController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\Admin\HomePageController;
+use App\Http\Controllers\Admin\ExperienceController;
+use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\FreelanceController;
+use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Middleware\Cors;
 use App\Http\Middleware\SSOTokenAuth;
 use App\Http\Middleware\AdminOnly;
@@ -35,6 +39,12 @@ Route::middleware([Cors::class])->group(function () {
     "createErrorReport",
   ]);
 
+  // REST endpoints for separate tables
+  Route::get("experiences", [ExperienceController::class, "index"]);
+  Route::get("projects", [ProjectController::class, "index"]);
+  Route::get("certificates", [CertificateController::class, "index"]);
+  Route::get("freelances", [FreelanceController::class, "index"]);
+
   Route::get("posts/{date}/{filter}", [PostsController::class, "getPosts"]);
   Route::get("post-dates", [PostsController::class, "getPostsDates"]);
   Route::get("post/{id}", [PostsController::class, "getPost"]);
@@ -53,28 +63,28 @@ Route::middleware([Cors::class, 'sso.auth', 'admin.only'])->prefix('admin')->gro
   // Intro
   Route::post("update-intro", [HomePageController::class, "updateIntro"]);
 
-  // Projects - Individual operations
-  Route::post("add-project", [HomePageController::class, "addProject"]);
-  Route::post("update-project", [HomePageController::class, "updateProject"]);
-  Route::post("delete-project", [HomePageController::class, "deleteProject"]);
+  // Projects - REST API
+  Route::post("projects", [ProjectController::class, "store"]);
+  Route::post("projects/{id}", [ProjectController::class, "update"]);
+  Route::delete("projects/{id}", [ProjectController::class, "destroy"]);
 
-  // Experience - Individual operations
-  Route::post("add-experience", [HomePageController::class, "addExperience"]);
-  Route::post("update-experience", [HomePageController::class, "updateExperience"]);
-  Route::post("delete-experience", [HomePageController::class, "deleteExperience"]);
+  // Experience - REST API
+  Route::post("experiences", [ExperienceController::class, "store"]);
+  Route::post("experiences/{id}", [ExperienceController::class, "update"]);
+  Route::delete("experiences/{id}", [ExperienceController::class, "destroy"]);
 
-  // Freelance - Individual operations
-  Route::post("add-freelance", [HomePageController::class, "addFreelance"]);
-  Route::post("update-freelance", [HomePageController::class, "updateFreelance"]);
-  Route::post("delete-freelance", [HomePageController::class, "deleteFreelance"]);
+  // Freelance - REST API
+  Route::post("freelances", [FreelanceController::class, "store"]);
+  Route::post("freelances/{id}", [FreelanceController::class, "update"]);
+  Route::delete("freelances/{id}", [FreelanceController::class, "destroy"]);
 
   // Skills - Individual operations
   Route::post("add-skill-category", [HomePageController::class, "addSkillCategory"]);
   Route::post("update-skill-category", [HomePageController::class, "updateSkillCategory"]);
   Route::post("delete-skill-category", [HomePageController::class, "deleteSkillCategory"]);
 
-  // Certificates - Individual operations
-  Route::post("add-certificate", [HomePageController::class, "addCertificate"]);
-  Route::post("update-certificate", [HomePageController::class, "updateCertificate"]);
-  Route::post("delete-certificate", [HomePageController::class, "deleteCertificate"]);
+  // Certificates - REST API
+  Route::post("certificates", [CertificateController::class, "store"]);
+  Route::post("certificates/{id}", [CertificateController::class, "update"]);
+  Route::delete("certificates/{id}", [CertificateController::class, "destroy"]);
 });

@@ -67,4 +67,23 @@ export default class APIController {
 
     return response.data;
   }
+
+  public async delete<T>(params: {
+    url: string;
+  }): Promise<T> {
+    const { url } = params;
+    const accessToken = this.getAccessToken();
+
+    const headers: Record<string, string> = {
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    };
+
+    const response = await axios.request<T>({
+      url: this.baseUrl + url,
+      method: "DELETE",
+      headers,
+    });
+
+    return response.data;
+  }
 }
