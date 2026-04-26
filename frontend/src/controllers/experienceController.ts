@@ -1,4 +1,5 @@
 import { useExperienceStore } from "@/store/experienceStore";
+import { storeToRefs } from "pinia";
 import type { ExperienceItem } from "@/services/types";
 import { ToastController } from "./toastController";
 import APIController from "./APIController";
@@ -12,6 +13,8 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
+const experienceStore = useExperienceStore();
+
 interface ExperiencesResponse {
   experiences: ExperienceItem[];
 }
@@ -21,7 +24,7 @@ interface ExperienceResponse {
 }
 
 export default class ExperienceController {
-  private experienceStore = useExperienceStore();
+  private experienceStore = experienceStore;
   private toastController = new ToastController();
 
   async loadPublicExperiences(): Promise<ExperienceItem[]> {
@@ -82,7 +85,8 @@ export default class ExperienceController {
         contentType: "multipart/form-data",
       });
 
-      await this.loadPublicExperiences();
+      this.experienceStore.addExperience(experience);
+      this.experienceStore.setExperiences([...this.experienceStore.experiences]);
 
       const toast = await this.toastController.presentToast({
         message: "Experiencia agregada correctamente",
@@ -105,11 +109,15 @@ export default class ExperienceController {
 
   async deleteExperience(id: string): Promise<boolean> {
     try {
+      const index = this.experienceStore.experiences.findIndex((e) => e.id === id);
+      if (index === -1) return false;
+
       await api.delete({
         url: `admin/experiences/${id}`,
       });
 
-      await this.loadPublicExperiences();
+      this.experienceStore.deleteExperience(index);
+      this.experienceStore.setExperiences([...this.experienceStore.experiences]);
 
       const toast = await this.toastController.presentToast({
         message: "Experiencia eliminada correctamente",
@@ -132,6 +140,9 @@ export default class ExperienceController {
 
   async updateExperience(id: string, experience: ExperienceItem, imageFile?: File | null): Promise<boolean> {
     try {
+      const index = this.experienceStore.experiences.findIndex((e) => e.id === id);
+      if (index === -1) return false;
+
       const formData = new FormData();
       formData.append("title", experience.title);
       formData.append("start_date", experience.startDate);
@@ -158,7 +169,8 @@ export default class ExperienceController {
         contentType: "multipart/form-data",
       });
 
-      await this.loadPublicExperiences();
+      this.experienceStore.updateExperience(index, experience);
+      this.experienceStore.setExperiences([...this.experienceStore.experiences]);
 
       const toast = await this.toastController.presentToast({
         message: "Experiencia actualizada correctamente",
@@ -179,3 +191,6 @@ export default class ExperienceController {
     }
   }
 }
+
+export const { experiences } = storeToRefs(experienceStore);
+export const { loading: experiencesLoading } = storeToRefs(experienceStore);

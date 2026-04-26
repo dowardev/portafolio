@@ -123,7 +123,7 @@ import {
   IonCard,
   alertController,
 } from "@ionic/vue";
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import {
   addOutline,
@@ -132,20 +132,18 @@ import {
   bugOutline,
 } from "ionicons/icons";
 import { faker } from "@faker-js/faker";
-import CategoriesController from "@/controllers/categoriesController";
-import type { SkillCategory } from "@/services/types";
+import CategoriesController, {
+  skillCategories,
+  categoriesLoading,
+} from "@/controllers/categoriesController";
 
 const router = useRouter();
 const categoriesController = new CategoriesController();
 
 const isDev = import.meta.env.DEV;
-const skillCategories = ref<SkillCategory[]>([]);
-const loading = ref(false);
 
 onMounted(async () => {
-  loading.value = true;
-  skillCategories.value = await categoriesController.loadCategories();
-  loading.value = false;
+  await categoriesController.loadCategories();
 });
 
 function editCategory(index: number) {
@@ -157,7 +155,7 @@ function createNewCategory() {
 }
 
 async function confirmDelete(index: number) {
-  const category = skillCategories.value[index];
+  const category = skillCategories[index];
   if (!category?.id) return;
 
   const alert = await alertController.create({

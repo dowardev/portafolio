@@ -1,5 +1,47 @@
 # Changelog
 
+## 13.10.0 - 2026-04-26
+
+### Summary
+This release refactors admin list pages to use reactive Pinia store data via `storeToRefs` instead of local component refs, and updates controllers to use direct store mutations instead of reloading from API after CRUD operations.
+
+### Added
+- New `storeToRefs` exports from all controllers:
+  - `categoriesController`: `skillCategories`, `categoriesLoading`
+  - `certificatesController`: `certificates`, `certificatesLoading`
+  - `experienceController`: `experiences`, `experiencesLoading`
+  - `projectsController`: `projects`, `projectsLoading`
+- New direct store mutations in controllers after CRUD operations:
+  - `loadCategories()` now returns categories, updates store via `addSkillCategory`, `setSkillCategories`
+  - `loadPublicCertificates()` now returns certificates, updates store via `addCertificate`, `setCertificates`
+  - `loadPublicExperiences()` now returns experiences, updates store via `addExperience`, `setExperiences`
+  - `loadPublicProjects()` now returns projects, updates store via `addProject`, `setProjects`
+
+### Changed
+- Updated list pages to use reactive store data via `storeToRefs` instead of local refs:
+  - `CertificatesListPage.vue`: uses `certificates` from store
+  - `ExperienceListPage.vue`: uses `experiences` from store
+  - `ProjectsListPage.vue`: uses `projects`, `projectsLoading` from store
+  - `SkillsListPage.vue`: uses `skillCategories`, `categoriesLoading` from store
+- Controllers now use direct store mutations instead of calling reload methods:
+  - `addCategory`/`addCertificate`/`addExperience`/`addProject`: use store add + set methods
+  - `deleteCategory`/`deleteCertificate`/`deleteExperience`/`deleteProject`: use store delete + set methods
+  - `updateCategory`/`updateCertificate`/`updateExperience`/`updateProject`: use store update + set methods
+- Controllers include index validation before performing operations to avoid unnecessary API calls
+
+### Affected Files
+- Modified:
+  - `frontend/src/controllers/categoriesController.ts`
+  - `frontend/src/controllers/certificatesController.ts`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/views/admin/sections/CertificatesListPage.vue`
+  - `frontend/src/views/admin/sections/ExperienceListPage.vue`
+  - `frontend/src/views/admin/sections/ProjectsListPage.vue`
+  - `frontend/src/views/admin/sections/SkillsListPage.vue`
+
+---
+
 ## 13.9.0 - 2026-04-26
 
 ### Summary

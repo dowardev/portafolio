@@ -1,4 +1,5 @@
 import { useProjectsStore } from "@/store/projectsStore";
+import { storeToRefs } from "pinia";
 import type { ProjectItem } from "@/services/types";
 import { ToastController } from "./toastController";
 import APIController from "./APIController";
@@ -12,6 +13,8 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
+const projectsStore = useProjectsStore();
+
 interface ProjectsResponse {
   projects: ProjectItem[];
 }
@@ -21,7 +24,7 @@ interface ProjectItemResponse {
 }
 
 export default class ProjectsController {
-  private projectsStore = useProjectsStore();
+  private projectsStore = projectsStore;
   private toastController = new ToastController();
 
   async loadPublicProjects(): Promise<ProjectItem[]> {
@@ -98,7 +101,8 @@ export default class ProjectsController {
         contentType: "multipart/form-data",
       });
 
-      await this.loadPublicProjects();
+      this.projectsStore.addProject(project);
+      this.projectsStore.setProjects([...this.projectsStore.projects]);
 
       const toast = await this.toastController.presentToast({
         message: "Proyecto agregado correctamente",
@@ -121,11 +125,15 @@ export default class ProjectsController {
 
   async deleteProject(id: string): Promise<boolean> {
     try {
+      const index = this.projectsStore.projects.findIndex((p) => p.id === id);
+      if (index === -1) return false;
+
       await api.delete({
         url: `admin/projects/${id}`,
       });
 
-      await this.loadPublicProjects();
+      this.projectsStore.deleteProject(index);
+      this.projectsStore.setProjects([...this.projectsStore.projects]);
 
       const toast = await this.toastController.presentToast({
         message: "Proyecto eliminado correctamente",
@@ -148,6 +156,9 @@ export default class ProjectsController {
 
   async updateProject(id: string, project: ProjectItem, imageFile?: File | null, techFiles?: Record<number, File>): Promise<boolean> {
     try {
+      const index = this.projectsStore.projects.findIndex((p) => p.id === id);
+      if (index === -1) return false;
+
       const formData = new FormData();
       formData.append("title", project.title);
       if (project.startDate) {
@@ -190,7 +201,8 @@ export default class ProjectsController {
         contentType: "multipart/form-data",
       });
 
-      await this.loadPublicProjects();
+      this.projectsStore.updateProject(index, project);
+      this.projectsStore.setProjects([...this.projectsStore.projects]);
 
       const toast = await this.toastController.presentToast({
         message: "Proyecto actualizado correctamente",
@@ -211,3 +223,6 @@ export default class ProjectsController {
     }
   }
 }
+
+export const { projects } = storeToRefs(projectsStore);
+export const { loading: projectsLoading } = storeToRefs(projectsStore);

@@ -1,4 +1,5 @@
 import { useCategoriesStore } from "@/store/categoriesStore";
+import { storeToRefs } from "pinia";
 import type { SkillCategory } from "@/services/types";
 import { ToastController } from "./toastController";
 import APIController from "./APIController";
@@ -12,12 +13,14 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
+const categoriesStore = useCategoriesStore();
+
 interface SkillsResponse {
   skillCategories: SkillCategory[];
 }
 
 export default class CategoriesController {
-  private categoriesStore = useCategoriesStore();
+  private categoriesStore = categoriesStore;
   private toastController = new ToastController();
 
   async loadCategories(): Promise<SkillCategory[]> {
@@ -54,7 +57,8 @@ export default class CategoriesController {
         contentType: "multipart/form-data",
       });
 
-      await this.loadCategories();
+      this.categoriesStore.addSkillCategory(category);
+      this.categoriesStore.setSkillCategories([...this.categoriesStore.skillCategories]);
 
       const toast = await this.toastController.presentToast({
         message: "Categoría agregada correctamente",
@@ -77,12 +81,18 @@ export default class CategoriesController {
 
   async deleteCategory(id: string): Promise<boolean> {
     try {
+      const index = this.categoriesStore.skillCategories.findIndex(
+        (c) => c.id === id
+      );
+      if (index === -1) return false;
+
       await api.post<SkillsResponse>({
         url: "admin/delete-skill-category",
         data: { id },
       });
 
-      await this.loadCategories();
+      this.categoriesStore.deleteSkillCategory(index);
+      this.categoriesStore.setSkillCategories([...this.categoriesStore.skillCategories]);
 
       const toast = await this.toastController.presentToast({
         message: "Categoría eliminada correctamente",
@@ -105,6 +115,9 @@ export default class CategoriesController {
 
   async updateCategory(id: string, category: SkillCategory): Promise<boolean> {
     try {
+      const index = this.categoriesStore.skillCategories.findIndex((c) => c.id === id);
+      if (index === -1) return false;
+
       const formData = new FormData();
       formData.append("id", id);
       formData.append("skillCategory", JSON.stringify(category));
@@ -115,7 +128,8 @@ export default class CategoriesController {
         contentType: "multipart/form-data",
       });
 
-      await this.loadCategories();
+      this.categoriesStore.updateSkillCategory(index, category);
+      this.categoriesStore.setSkillCategories([...this.categoriesStore.skillCategories]);
 
       const toast = await this.toastController.presentToast({
         message: "Categoría actualizada correctamente",
@@ -136,3 +150,6 @@ export default class CategoriesController {
     }
   }
 }
+
+export const { skillCategories } = storeToRefs(categoriesStore);
+export const { loading: categoriesLoading } = storeToRefs(categoriesStore);

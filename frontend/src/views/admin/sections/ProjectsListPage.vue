@@ -134,7 +134,7 @@ import {
   IonImg,
   alertController,
 } from "@ionic/vue";
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import {
   addOutline,
@@ -144,20 +144,15 @@ import {
   warningOutline,
 } from "ionicons/icons";
 import { faker } from "@faker-js/faker";
-import ProjectsController from "@/controllers/projectsController";
-import type { ProjectItem } from "@/services/types";
+import ProjectsController, { projects, projectsLoading } from "@/controllers/projectsController";
 
 const router = useRouter();
 const projectsController = new ProjectsController();
 
 const isDev = import.meta.env.DEV;
-const projects = ref<ProjectItem[]>([]);
-const loading = ref(false);
 
 onMounted(async () => {
-  loading.value = true;
-  projects.value = await projectsController.loadPublicProjects();
-  loading.value = false;
+  await projectsController.loadPublicProjects();
 });
 
 function getStatusLabel(status?: string): string {
@@ -178,7 +173,7 @@ function createNewProject() {
 }
 
 async function confirmDelete(index: number) {
-  const project = projects.value[index];
+  const project = projects[index];
   if (!project?.id) return;
 
   const alert = await alertController.create({

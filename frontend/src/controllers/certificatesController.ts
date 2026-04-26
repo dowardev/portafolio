@@ -1,4 +1,5 @@
 import { useCertificatesStore } from "@/store/certificatesStore";
+import { storeToRefs } from "pinia";
 import type { CertificateItem } from "@/services/types";
 import { ToastController } from "./toastController";
 import APIController from "./APIController";
@@ -12,6 +13,8 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
+const certificatesStore = useCertificatesStore();
+
 interface CertificatesResponse {
   certificates: CertificateItem[];
 }
@@ -21,7 +24,7 @@ interface CertificateResponse {
 }
 
 export default class CertificatesController {
-  private certificatesStore = useCertificatesStore();
+  private certificatesStore = certificatesStore;
   private toastController = new ToastController();
 
   async loadPublicCertificates(): Promise<CertificateItem[]> {
@@ -76,7 +79,8 @@ export default class CertificatesController {
         contentType: "multipart/form-data",
       });
 
-      await this.loadPublicCertificates();
+      this.certificatesStore.addCertificate(certificate);
+      this.certificatesStore.setCertificates([...this.certificatesStore.certificates]);
 
       const toast = await this.toastController.presentToast({
         message: "Certificado agregado correctamente",
@@ -99,11 +103,15 @@ export default class CertificatesController {
 
   async deleteCertificate(id: string): Promise<boolean> {
     try {
+      const index = this.certificatesStore.certificates.findIndex((c) => c.id === id);
+      if (index === -1) return false;
+
       await api.delete({
         url: `admin/certificates/${id}`,
       });
 
-      await this.loadPublicCertificates();
+      this.certificatesStore.deleteCertificate(index);
+      this.certificatesStore.setCertificates([...this.certificatesStore.certificates]);
 
       const toast = await this.toastController.presentToast({
         message: "Certificado eliminado correctamente",
@@ -126,6 +134,9 @@ export default class CertificatesController {
 
   async updateCertificate(id: string, certificate: CertificateItem, imageFile?: File | null): Promise<boolean> {
     try {
+      const index = this.certificatesStore.certificates.findIndex((c) => c.id === id);
+      if (index === -1) return false;
+
       const formData = new FormData();
       formData.append("title", certificate.title);
 
@@ -146,7 +157,8 @@ export default class CertificatesController {
         contentType: "multipart/form-data",
       });
 
-      await this.loadPublicCertificates();
+      this.certificatesStore.updateCertificate(index, certificate);
+      this.certificatesStore.setCertificates([...this.certificatesStore.certificates]);
 
       const toast = await this.toastController.presentToast({
         message: "Certificado actualizado correctamente",
@@ -167,3 +179,6 @@ export default class CertificatesController {
     }
   }
 }
+
+export const { certificates } = storeToRefs(certificatesStore);
+export const { loading: certificatesLoading } = storeToRefs(certificatesStore);
