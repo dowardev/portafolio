@@ -1,7 +1,8 @@
+import { useIntroStore } from "@/store/introStore";
+import { useStackStore } from "@/store/stackStore";
 import APIController from "./APIController";
 import ServerConfig from "./serverConfigController";
 import Cookies from "js-cookie";
-import { useIntroStore } from "@/store/introStore";
 import { ToastController } from "./toastController";
 
 const userToken = Cookies.get("user-token");
@@ -27,22 +28,15 @@ export interface IntroData {
 
 export default class IntroController {
   private introStore = useIntroStore();
+  private stackStore = useStackStore();
   private toastController = new ToastController();
 
   async loadIntro(): Promise<IntroData> {
     this.introStore.setLoading(true);
     try {
       const data = await api.get<IntroData>({ url: "get-intro" });
-      this.introStore.setData({
-        name: data.name,
-        tags: data.tags,
-        description: data.description,
-        socials: data.socials,
-        logoUrl: data.logoUrl,
-        photoUrl: data.photoUrl,
-        stack: data.stack,
-        showContactForm: data.showContactForm,
-      });
+      this.introStore.setData(data);
+      this.stackStore.setStack(data.stack || []);
       return data;
     } catch (error) {
       console.error("Error loading intro:", error);
@@ -56,13 +50,10 @@ export default class IntroController {
         stack: [],
         showContactForm: { socials: false, freelance: false },
       };
-    } finally {
-      this.introStore.setLoading(false);
     }
   }
 
   async saveIntro(intro: IntroData, files?: Record<string, File>): Promise<IntroData> {
-    this.introStore.setSaving(true);
     try {
       const formData = new FormData();
       formData.append("intro", JSON.stringify({
@@ -86,16 +77,9 @@ export default class IntroController {
         contentType: "multipart/form-data",
       });
 
-      this.introStore.setData({
-        name: data.name,
-        tags: data.tags,
-        description: data.description,
-        socials: data.socials,
-        logoUrl: data.logoUrl,
-        photoUrl: data.photoUrl,
-        stack: data.stack,
-        showContactForm: data.showContactForm,
-      });
+      this.introStore.setData(data);
+      this.stackStore.setStack(data.stack || []);
+
       const toast = await this.toastController.presentToast({
         message: "Guardado correctamente",
         duration: 2000,
@@ -112,8 +96,6 @@ export default class IntroController {
       });
       await toast.present();
       return intro;
-    } finally {
-      this.introStore.setSaving(false);
     }
   }
 }

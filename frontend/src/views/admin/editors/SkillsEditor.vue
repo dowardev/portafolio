@@ -91,8 +91,8 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { saveOutline, trashOutline } from "ionicons/icons";
 import CategoriesController from "@/controllers/categoriesController";
-import { useCategoriesStore } from "@/store/categoriesStore";
 import TechSkillsEditor from "./TechSkillsEditor.vue";
+import type { SkillCategory } from "@/services/types";
 
 interface TechItem {
   iconName: string;
@@ -101,25 +101,28 @@ interface TechItem {
 const route = useRoute();
 const router = useRouter();
 const categoriesController = new CategoriesController();
-const categoriesStore = useCategoriesStore();
+
+const loading = ref(false);
+const saving = ref(false);
+const loaded = ref(false);
+const skillCategories = ref<SkillCategory[]>([]);
 
 const categoryName = ref("");
 const technologies = ref<TechItem[]>([]);
 const nameTouched = ref(false);
 const nameError = ref("");
-const saving = computed(() => categoriesStore.saving);
 
 const isEditing = computed(() => route.path.includes("/edit/"));
 const categoryIndex = computed(() => parseInt(route.params.index as string));
 const categoryId = ref("");
-const loading = computed(() => categoriesStore.loading);
 
 onMounted(async () => {
+  loading.value = true;
   try {
-    await categoriesController.loadCategories();
+    skillCategories.value = await categoriesController.loadCategories();
 
     if (isEditing.value && categoryIndex.value !== undefined) {
-      const category = categoriesController.getSkillCategory(categoryIndex.value);
+      const category = skillCategories.value[categoryIndex.value];
       if (category) {
         categoryName.value = category.name;
         categoryId.value = category.id;
@@ -132,6 +135,9 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error("Error loading category:", error);
+  } finally {
+    loading.value = false;
+    loaded.value = true;
   }
 });
 
@@ -158,7 +164,9 @@ async function confirmDelete() {
 
 async function deleteCategory() {
   if (categoryId.value) {
+    saving.value = true;
     const success = await categoriesController.deleteCategory(categoryId.value);
+    saving.value = false;
     if (success) {
       router.push("/admin-panel/categories");
     }
@@ -170,6 +178,7 @@ async function saveCategory() {
 
   if (!categoryName.value.trim()) return;
 
+  saving.value = true;
   let success: boolean;
   if (isEditing.value && categoryId.value) {
     const category = {
@@ -186,6 +195,7 @@ async function saveCategory() {
     };
     success = await categoriesController.addCategory(category);
   }
+  saving.value = false;
   if (success) {
     router.push("/admin-panel/categories");
   }

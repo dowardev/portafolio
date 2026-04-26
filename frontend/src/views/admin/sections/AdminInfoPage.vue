@@ -16,18 +16,18 @@
             touch: 'hold',
           }"
           color="warning"
-          @click="infoEditorRef?.fillTestData()"
+          @click="fillTestData"
         >
           <ion-icon :icon="bugOutline"></ion-icon>
         </ion-button>
 
         <ion-button
           v-tooltip="'Guardar cambios'"
-          :disabled="introStore.saving"
-          @click="infoEditorRef?.handleSubmit()"
+          :disabled="saving"
+          @click="handleSave"
         >
           <ion-spinner
-            v-if="introStore.saving"
+            v-if="saving"
             slot="start"
             name="crescent"
           ></ion-spinner>
@@ -57,15 +57,17 @@
         <ion-col size="4">
           <InfoEditor
             ref="infoEditorRef"
-            :tags="introStore.form.tags"
-            :initial-data="initialData"
-            :show-contact-form="contactForm"
-            @remove-tag="handleRemoveTag"
-            @add-tag="handleAddTag"
-            @reorder-tags="handleReorderTags"
+            :name="formData.name"
+            :description="formData.description"
+            :tags="formData.tags"
+            :socials="formData.socials"
+            :show-contact-form="formData.showContactForm"
+            @update:name="formData.name = $event"
+            @update:description="formData.description = $event"
+            @update:tags="formData.tags = $event"
+            @update:socials="formData.socials = $event"
+            @update:show-contact-form="formData.showContactForm = $event"
             @file-change="handleFileChange"
-            @update:show-contact-form="handleUpdateContactForm"
-            @save="handleSave"
           />
         </ion-col>
       </ion-row>
@@ -75,7 +77,6 @@
 
 <script setup lang="ts">
 import { vTooltip } from "@/directives/tooltip";
-// register directive locally for this SFC
 defineOptions({
   directives: { tooltip: vTooltip },
 });
@@ -84,97 +85,108 @@ import {
   IonToolbar,
   IonTitle,
   IonButtons,
-  IonBackButton,
   IonContent,
   IonButton,
   IonSpinner,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonBreadcrumbs,
+  IonBreadcrumb,
 } from "@ionic/vue";
-import { ref, computed, onMounted } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import InfoEditor from "../editors/InfoEditor.vue";
-import { useIntroStore } from "@/store/introStore";
 import IntroController from "@/controllers/introController";
 import { bugOutline, saveOutline } from "ionicons/icons";
 
-const introStore = useIntroStore();
 const introController = new IntroController();
 const infoEditorRef = ref<InstanceType<typeof InfoEditor>>();
 const isDev = import.meta.env.DEV;
 const router = useRouter();
+const saving = ref(false);
 
-// datos iniciales para el form del hijo (se actualiza cuando loadIntro termina)
-const initialData = computed(() => ({
-  name: introStore.form.name,
-  description: introStore.form.description,
-  socials: introStore.form.socials,
-}));
-
-// showContactForm como computed para manejar el tipo correcto
-const contactForm = computed(() => {
-  const val = introStore.form.showContactForm;
-  if (typeof val === "boolean") {
-    return { socials: val, freelance: val };
-  }
-  return val as { socials: boolean; freelance: boolean };
+const formData = reactive({
+  name: "",
+  tags: [] as string[],
+  description: "",
+  socials: [] as Array<{ platform: string; url: string; iconName: string }>,
+  logoUrl: null as string | null,
+  photoUrl: null as string | null,
+  showContactForm: { socials: false, freelance: false },
 });
 
-// handlers de emits
-function handleRemoveTag(index: number) {
-  introStore.form.tags.splice(index, 1);
-}
-
-function handleAddTag(tag: string) {
-  if (!introStore.form.tags.includes(tag)) {
-    introStore.form.tags.push(tag);
-  }
-}
-
-function handleReorderTags(tags: string[]) {
-  introStore.form.tags = tags.slice();
-}
+const files = reactive({
+  logo: null as File | null,
+  photo: null as File | null,
+});
 
 function handleFileChange(payload: { file: File; type: "logo" | "photo" }) {
-  introStore.files[payload.type] = payload.file;
-  introStore.preview[payload.type] = URL.createObjectURL(payload.file);
+  files[payload.type] = payload.file;
 }
 
-function handleUpdateContactForm(value: {
-  socials: boolean;
-  freelance: boolean;
-}) {
-  (introStore.form.showContactForm as any) = value;
+function fillTestData() {
+  formData.name = "Juan Pérez";
+  formData.description =
+    "Desarrollador Full-Stack con más de 5 años de experiencia en el desarrollo de aplicaciones web y móviles. Especializado en Vue.js, Laravel y bases de datos relacionales.";
+  formData.socials = [
+    {
+      platform: "LinkedIn",
+      url: "https://linkedin.com/in/juanperez",
+      iconName: "logoLinkedin",
+    },
+    {
+      platform: "GitHub",
+      url: "https://github.com/juanperez",
+      iconName: "logoGithub",
+    },
+    {
+      platform: "Twitter",
+      url: "https://twitter.com/juanperez",
+      iconName: "logoTwitter",
+    },
+  ];
+  formData.showContactForm = { socials: true, freelance: true };
 }
 
-async function handleSave(payload: {
-  name: string;
-  description: string;
-  socials: Array<{ platform: string; url: string; iconName: string }>;
-}) {
-  introStore.form.name = payload.name;
-  introStore.form.description = payload.description;
-  introStore.form.socials = payload.socials;
-  introStore.setSaving(true);
+async function handleSave() {
+  if (!infoEditorRef?.value) return;
+
+  const isValid = await infoEditorRef.value.handleSubmit();
+  if (!isValid) return;
+
+  saving.value = true;
   try {
-    await introController.saveIntro(introStore.form, {
-      logo: introStore.files.logo || undefined,
-      photo: introStore.files.photo || undefined,
-      ...Object.fromEntries(
-        Object.entries(introStore.sectionFiles.stack).map(([k, v]) => [`stack_image_${k}`, v])
-      ),
-    });
+    await introController.saveIntro(
+      {
+        name: formData.name,
+        tags: formData.tags,
+        description: formData.description,
+        socials: formData.socials,
+        logoUrl: formData.logoUrl,
+        photoUrl: formData.photoUrl,
+        stack: [],
+        showContactForm: formData.showContactForm,
+      },
+      {
+        logo: files.logo || undefined,
+        photo: files.photo || undefined,
+      }
+    );
     router.push("/admin-panel");
   } finally {
-    introStore.setSaving(false);
+    saving.value = false;
   }
 }
 
 onMounted(async () => {
-  introStore.setLoading(true);
-  try {
-    const data = await introController.loadIntro();
-    introStore.setData(data);
-  } finally {
-    introStore.setLoading(false);
-  }
+  const data = await introController.loadIntro();
+  formData.name = data.name || "";
+  formData.tags = data.tags || [];
+  formData.description = data.description || "";
+  formData.socials = data.socials || [];
+  formData.logoUrl = data.logoUrl;
+  formData.photoUrl = data.photoUrl;
+  formData.showContactForm = data.showContactForm || { socials: false, freelance: false };
 });
 </script>

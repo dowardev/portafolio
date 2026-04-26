@@ -216,7 +216,7 @@ import {
   IonCard,
   alertController,
 } from "@ionic/vue";
-import { onMounted, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import {
   addOutline,
@@ -227,26 +227,25 @@ import {
   starOutline,
 } from "ionicons/icons";
 import { faker } from "@faker-js/faker";
-import { useFreelanceStore } from "@/store/freelanceStore";
 import FreelanceController from "@/controllers/freelanceController";
+import type { FreelancePlatform, FreelanceComment } from "@/services/types";
 
 const router = useRouter();
-const freelanceStore = useFreelanceStore();
 const freelanceController = new FreelanceController();
 
 const isDev = import.meta.env.DEV;
-
-const platforms = computed(() => freelanceStore.platforms);
-const comments = computed(() => freelanceStore.comments);
+const platforms = ref<FreelancePlatform[]>([]);
+const comments = ref<FreelanceComment[]>([]);
+const loading = ref(false);
 
 onMounted(async () => {
-  freelanceStore.setLoading(true);
+  loading.value = true;
   try {
     const data = await freelanceController.loadFreelance();
-    freelanceStore.setPlatforms(data.freelancePlatforms);
-    freelanceStore.setComments(data.freelanceComments);
+    platforms.value = data.freelancePlatforms;
+    comments.value = data.freelanceComments;
   } finally {
-    freelanceStore.setLoading(false);
+    loading.value = false;
   }
 });
 

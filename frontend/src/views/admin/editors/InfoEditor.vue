@@ -8,30 +8,32 @@
       <ion-item lines="full">
         <ion-label position="stacked">Nombre</ion-label>
         <ion-input
-          v-model="form.name"
+          :value="name"
           placeholder="Tu nombre o título"
-          :error-text="v$.form.name.$errors[0]?.$message.toString()"
+          :error-text="v$.name.$errors[0]?.$message.toString()"
           :class="{
-            'ion-invalid': v$.form.name.$invalid && v$.form.name.$dirty,
-            'ion-touched': v$.form.name.$dirty,
+            'ion-invalid': v$.name.$invalid && v$.name.$dirty,
+            'ion-touched': v$.name.$dirty,
           }"
-          @ion-blur="v$.form.name.$touch()"
+          @ion-input="emit('update:name', $event.detail.value || '')"
+          @ion-blur="v$.name.$touch()"
         ></ion-input>
       </ion-item>
 
       <ion-item lines="full">
         <ion-label position="stacked">Descripción</ion-label>
         <ion-textarea
-          v-model="form.description"
+          :value="description"
           :rows="4"
           placeholder="Describe quién eres o qué haces"
-          :error-text="v$.form.description.$errors[0]?.$message.toString()"
+          :error-text="v$.description.$errors[0]?.$message.toString()"
           :class="{
             'ion-invalid':
-              v$.form.description.$invalid && v$.form.description.$dirty,
-            'ion-touched': v$.form.description.$dirty,
+              v$.description.$invalid && v$.description.$dirty,
+            'ion-touched': v$.description.$dirty,
           }"
-          @ion-blur="v$.form.description.$touch()"
+          @ion-input="emit('update:description', $event.detail.value || '')"
+          @ion-blur="v$.description.$touch()"
         ></ion-textarea>
       </ion-item>
     </ion-card>
@@ -61,7 +63,7 @@
             <ion-label>{{ tagItem }}</ion-label>
             <ion-icon
               :icon="closeOutline"
-              @click="emit('remove-tag', tagIndex)"
+              @click="removeTag(tagIndex)"
             ></ion-icon>
           </ion-chip>
         </div>
@@ -69,7 +71,10 @@
     </ion-card>
   </ion-list>
 
-  <SocialsEditor v-model="form.socials" />
+  <SocialsEditor
+    :socials="socials"
+    @update:socials="emit('update:socials', $event)"
+  />
 
   <ion-list>
     <ion-list-header>
@@ -81,7 +86,7 @@
         <ion-item
           lines="full"
           button
-          @click="openFileDialog({ targetType: 'logo' })"
+          @click="openFileDialog('logo')"
         >
           <ion-label>Logo</ion-label>
 
@@ -92,11 +97,11 @@
         </ion-item>
 
         <input
+          ref="logoInputRef"
           style="display: none"
-          data-type="logo"
           type="file"
           accept="image/*"
-          @change="onFileChange({ fileEvent: $event, fileType: 'logo' })"
+          @change="onFileChange($event, 'logo')"
         />
       </section>
 
@@ -104,7 +109,7 @@
         <ion-item
           lines="full"
           button
-          @click="openFileDialog({ targetType: 'photo' })"
+          @click="openFileDialog('photo')"
         >
           <ion-label>Foto (Cover)</ion-label>
 
@@ -116,11 +121,11 @@
         </ion-item>
 
         <input
+          ref="photoInputRef"
           style="display: none"
-          data-type="photo"
           type="file"
           accept="image/*"
-          @change="onFileChange({ fileEvent: $event, fileType: 'photo' })"
+          @change="onFileChange($event, 'photo')"
         />
       </section>
     </ion-card>
@@ -139,12 +144,7 @@
         <ion-toggle
           slot="end"
           :checked="showContactForm.socials"
-          @ion-change="
-            emit('update:showContactForm', {
-              ...showContactForm,
-              socials: $event.detail.checked,
-            })
-          "
+          @ion-change="updateShowContactForm('socials', $event.detail.checked)"
         ></ion-toggle>
       </ion-item>
 
@@ -155,26 +155,20 @@
         <ion-toggle
           slot="end"
           :checked="showContactForm.freelance"
-          @ion-change="
-            emit('update:showContactForm', {
-              ...showContactForm,
-              freelance: $event.detail.checked,
-            })
-          "
+          @ion-change="updateShowContactForm('freelance', $event.detail.checked)"
         ></ion-toggle>
       </ion-item>
     </ion-card>
   </ion-list>
 
-  <!-- modals -->
   <ion-modal :is-open="isReorderModalOpen" @did-dismiss="onReorderDismiss">
     <ion-header>
       <ion-toolbar>
         <ion-title>Reordenar etiquetas</ion-title>
         <ion-buttons slot="end">
-          <ion-button fill="clear" @click="closeReorderModal"
-            >Cerrar</ion-button
-          >
+          <ion-button fill="clear" @click="closeReorderModal">
+            Cerrar
+          </ion-button>
           <ion-button color="primary" @click="saveReorder">Guardar</ion-button>
         </ion-buttons>
       </ion-toolbar>
@@ -191,9 +185,7 @@
       </ion-list>
     </ion-content>
   </ion-modal>
-  <!-- end modals -->
 
-  <!-- alerts -->
   <ion-alert
     :is-open="isAddTagAlertOpen"
     header="Agregar etiqueta"
@@ -201,18 +193,11 @@
       { name: 'tag', type: 'text', placeholder: 'Etiqueta', value: newTag },
     ]"
     :buttons="addTagAlertButtons"
-    @did-dismiss="
-      () => {
-        isAddTagAlertOpen = false;
-        newTag = '';
-      }
-    "
-  ></ion-alert>
-  <!-- end alerts -->
+    @did-dismiss="onAlertDismiss"
+  />
 </template>
 
 <script setup lang="ts">
-// imports
 import {
   IonAlert,
   IonButton,
@@ -240,11 +225,9 @@ import {
 import { addOutline, closeOutline, reorderThreeOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, onMounted } from "vue";
 import SocialsEditor from "./SocialsEditor.vue";
-// end imports
 
-// interface and types imports
 interface SocialItem {
   platform: string;
   url: string;
@@ -256,50 +239,40 @@ interface LocalTag {
   label: string;
 }
 
-type FileType = "logo" | "photo";
-
 interface ReorderEventDetail {
   from: number;
   to: number;
   complete: (data?: boolean | LocalTag[]) => LocalTag[];
 }
-// end interface and types imports
 
-// main
 const props = defineProps<{
+  name: string;
+  description: string;
   tags: string[];
-  initialData: {
-    name: string;
-    description: string;
-    socials: SocialItem[];
-  };
-  showContactForm: {
-    socials: boolean;
-    freelance: boolean;
-  };
+  socials: SocialItem[];
+  showContactForm: { socials: boolean; freelance: boolean };
 }>();
 
 const emit = defineEmits<{
-  "remove-tag": [tagIndex: number];
-  "add-tag": [tagValue: string];
-  "file-change": [payload: { file: File; type: FileType }];
-  "update:showContactForm": [value: { socials: boolean; freelance: boolean }];
-  save: [payload: { name: string; description: string; socials: SocialItem[] }];
-  "reorder-tags": [tags: string[]];
+  "update:name": [value: string];
+  "update:description": [value: string];
+  "update:tags": [value: string[]];
+  "update:socials": [value: SocialItem[]];
+  "update:show-contact-form": [value: { socials: boolean; freelance: boolean }];
+  "file-change": [payload: { file: File; type: "logo" | "photo" }];
 }>();
-// end main
 
-// vars and const
 const isAddTagAlertOpen = ref(false);
 const isReorderModalOpen = ref(false);
 const fileNames = reactive<Record<string, string>>({});
 const newTag = ref("");
-
 let tagIdCounter = 0;
+const logoInputRef = ref<HTMLInputElement | null>(null);
+const photoInputRef = ref<HTMLInputElement | null>(null);
 
 const localTags = ref<LocalTag[]>([]);
 
-const addTagAlertButtons = [
+const addTagAlertButtons = computed(() => [
   {
     text: "Cancelar",
     role: "cancel",
@@ -311,32 +284,21 @@ const addTagAlertButtons = [
       const tagValue = alertData?.tag ?? newTag.value;
       if (tagValue && tagValue.toString().trim()) {
         const trimmedValue = tagValue.toString().trim();
-        emit("add-tag", trimmedValue);
-        localTags.value.push({
-          id: `tag_${Date.now()}_${tagIdCounter++}`,
-          label: trimmedValue,
-        });
+        const newTags = [...props.tags];
+        if (!newTags.includes(trimmedValue)) {
+          newTags.push(trimmedValue);
+          emit("update:tags", newTags);
+        }
       }
       newTag.value = "";
-      isAddTagAlertOpen.value = false;
     },
   },
-];
-
-const form = ref<{
-  name: string;
-  description: string;
-  socials: SocialItem[];
-}>({
-  name: "",
-  description: "",
-  socials: [],
-});
+]);
 
 const alphaName = helpers.regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s-]+$/);
 
-const rules = {
-  form: {
+const v$ = useVuelidate(
+  {
     name: {
       required: helpers.withMessage("El nombre es requerido", required),
       minLength: helpers.withMessage(
@@ -364,57 +326,34 @@ const rules = {
       ),
     },
   },
-};
-
-const v$ = useVuelidate(rules, { form });
-// end vars and const
-
-// watch
-watch(
-  () => props.tags,
-  () => {
-    localTags.value = createLocalTags();
-  },
-  { immediate: true },
+  { name: computed(() => props.name), description: computed(() => props.description) },
 );
 
-watch(
-  () => props.initialData,
-  (initialDataValue) => {
-    form.value.name = initialDataValue.name;
-    form.value.description = initialDataValue.description;
-    form.value.socials = initialDataValue.socials.map((socialItem) => ({
-      ...socialItem,
-    }));
-  },
-  { immediate: true },
-);
-// end watch
-
-// functions
 function createLocalTags(): LocalTag[] {
-  return (props.tags || []).map((tagLabel) => ({
+  return props.tags.map((tagLabel) => ({
     id: `tag_${Date.now()}_${tagIdCounter++}`,
     label: tagLabel,
   }));
 }
 
-function onFileChange(params: { fileEvent: Event; fileType: FileType }) {
-  const { fileEvent, fileType } = params;
-  const inputElement = fileEvent.target as HTMLInputElement;
-  if (!inputElement.files?.length) return;
-  const selectedFile = inputElement.files[0];
-  fileNames[fileType] = selectedFile.name;
-  emit("file-change", { file: selectedFile, type: fileType });
+function onFileChange(event: Event, type: "logo" | "photo") {
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
+  const file = input.files[0];
+  fileNames[type] = file.name;
+  emit("file-change", { file, type });
+  input.value = "";
 }
 
-function openFileDialog(params: { targetType: FileType }) {
-  const { targetType } = params;
-  const selector = `input[data-type="${targetType}"]`;
-  const inputElement = document.querySelector(
-    selector,
-  ) as HTMLInputElement | null;
-  if (inputElement) inputElement.click();
+function openFileDialog(type: "logo" | "photo") {
+  const input = type === "logo" ? logoInputRef.value : photoInputRef.value;
+  input?.click();
+}
+
+function removeTag(index: number) {
+  const newTags = [...props.tags];
+  newTags.splice(index, 1);
+  emit("update:tags", newTags);
 }
 
 function closeReorderModal() {
@@ -424,6 +363,11 @@ function closeReorderModal() {
 
 function onReorderDismiss() {
   closeReorderModal();
+}
+
+function onAlertDismiss() {
+  isAddTagAlertOpen.value = false;
+  newTag.value = "";
 }
 
 function handleReorder(reorderEvent: CustomEvent<ReorderEventDetail>) {
@@ -437,12 +381,11 @@ function handleReorder(reorderEvent: CustomEvent<ReorderEventDetail>) {
         const labelMapping = new Map(
           localTags.value.map((localTag) => [localTag.label, localTag]),
         );
-        localTags.value = (reorderResult as unknown as string[]).map(
-          (label) =>
-            labelMapping.get(label) || {
-              id: `tag_${Date.now()}_${tagIdCounter++}`,
-              label,
-            },
+        localTags.value = (reorderResult as unknown as string[]).map((label) =>
+          labelMapping.get(label) || {
+            id: `tag_${Date.now()}_${tagIdCounter++}`,
+            label,
+          },
         );
       } else {
         localTags.value = (reorderResult as unknown as LocalTag[]).slice();
@@ -463,46 +406,27 @@ function handleReorder(reorderEvent: CustomEvent<ReorderEventDetail>) {
 
 function saveReorder() {
   const reorderedLabels = localTags.value.map((localTag) => localTag.label);
-  emit("reorder-tags", reorderedLabels);
+  emit("update:tags", reorderedLabels);
   isReorderModalOpen.value = false;
 }
 
-async function handleSubmit() {
+function updateShowContactForm(key: "socials" | "freelance", value: boolean) {
+  emit("update:show-contact-form", {
+    ...props.showContactForm,
+    [key]: value,
+  });
+}
+
+async function handleSubmit(): Promise<boolean> {
   const isValid = await v$.value.$validate();
-  if (isValid) {
-    emit("save", {
-      name: form.value.name,
-      description: form.value.description,
-      socials: form.value.socials,
-    });
-  }
+  return isValid;
 }
 
-function fillTestData() {
-  form.value.name = "Juan Pérez";
-  form.value.description =
-    "Desarrollador Full-Stack con más de 5 años de experiencia en el desarrollo de aplicaciones web y móviles. Especializado en Vue.js, Laravel y bases de datos relacionales.";
-  form.value.socials = [
-    {
-      platform: "LinkedIn",
-      url: "https://linkedin.com/in/juanperez",
-      iconName: "logoLinkedin",
-    },
-    {
-      platform: "GitHub",
-      url: "https://github.com/juanperez",
-      iconName: "logoGithub",
-    },
-    {
-      platform: "Twitter",
-      url: "https://twitter.com/juanperez",
-      iconName: "logoTwitter",
-    },
-  ];
-}
+defineExpose({ handleSubmit });
 
-defineExpose({ fillTestData, handleSubmit });
-// end functions
+onMounted(() => {
+  localTags.value = createLocalTags();
+});
 </script>
 
 <style scoped>

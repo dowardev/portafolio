@@ -23,8 +23,8 @@
             <ion-icon :icon="trashOutline"></ion-icon>
           </ion-button>
 
-          <ion-button :disabled="projectsStore.saving" @click="handleSave">
-            <ion-spinner v-if="projectsStore.saving" slot="start"></ion-spinner>
+          <ion-button :disabled="saving" @click="handleSave">
+            <ion-spinner v-if="saving" slot="start"></ion-spinner>
             <ion-icon :icon="saveOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -33,7 +33,7 @@
 
     <ion-content>
       <div
-        v-if="projectsStore.loading || !projectsStore.loaded"
+        v-if="loading || !loaded"
         class="ion-text-center ion-padding"
       >
         <ion-spinner name="lines"></ion-spinner>
@@ -273,13 +273,16 @@ import { useRoute, useRouter } from "vue-router";
 import type { ProjectItem } from "@/services/types";
 import TechnologiesEditor from "./TechSkillsEditor.vue";
 import ProjectsController from "@/controllers/projectsController";
-import { useProjectsStore } from "@/store/projectsStore";
 // end imports
 
 const route = useRoute();
 const router = useRouter();
 const projectsController = new ProjectsController();
-const projectsStore = useProjectsStore();
+
+const loading = ref(false);
+const saving = ref(false);
+const loaded = ref(false);
+const projects = ref<ProjectItem[]>([]);
 
 const projectIndex = computed(() => {
   const index = route.params.index;
@@ -294,7 +297,8 @@ const isNew = computed(() => route.name === "ProjectNewPage");
 const localProject = ref<ProjectItem | null>(null);
 
 onMounted(async () => {
-  await projectsController.loadProjects();
+loading.value = true;
+  projects.value = await projectsController.loadPublicProjects();
   if (isNew.value) {
     localProject.value = {
       id: crypto.randomUUID(),
@@ -308,11 +312,13 @@ onMounted(async () => {
       details: { description: "", website: "" },
     };
   } else if (projectIndex.value !== undefined) {
-    const project = projectsController.getProject(projectIndex.value);
+    const project = projects[projectIndex.value];
     if (project) {
       localProject.value = { ...project };
     }
   }
+  loading.value = false;
+  loaded.value = true;
 });
 
 async function handleSave() {

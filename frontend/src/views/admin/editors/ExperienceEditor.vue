@@ -23,9 +23,9 @@
             <ion-icon :icon="trashOutline"></ion-icon>
           </ion-button>
 
-          <ion-button :disabled="experienceStore.saving" @click="handleSave">
+          <ion-button :disabled="saving" @click="handleSave">
             <ion-spinner
-              v-if="experienceStore.saving"
+              v-if="saving"
               slot="start"
             ></ion-spinner>
             <ion-icon :icon="saveOutline"></ion-icon>
@@ -36,7 +36,7 @@
 
     <ion-content>
       <div
-        v-if="experienceStore.loading || !experienceStore.loaded"
+        v-if="loading || !loaded"
         class="ion-text-center ion-padding"
       >
         <ion-spinner name="lines"></ion-spinner>
@@ -261,13 +261,14 @@ import { useRoute, useRouter } from "vue-router";
 import type { ExperienceItem } from "@/services/types";
 import TechSkillsEditor from "./TechSkillsEditor.vue";
 import ExperienceController from "@/controllers/experienceController";
-import { useExperienceStore } from "@/store/experienceStore";
-// end imports
 
 const route = useRoute();
 const router = useRouter();
 const experienceController = new ExperienceController();
-const experienceStore = useExperienceStore();
+
+const loading = ref(false);
+const saving = ref(false);
+const loaded = ref(false);
 
 const experienceIndex = computed(() => {
   const index = route.params.index;
@@ -299,7 +300,8 @@ const localExperience = ref<ExperienceItem>({
 let pendingImageFile: File | null = null;
 
 onMounted(async () => {
-  await experienceController.loadExperiences();
+  loading.value = true;
+  const experiences = await experienceController.loadPublicExperiences();
   if (isNew.value) {
     localExperience.value = {
       id: "",
@@ -311,15 +313,18 @@ onMounted(async () => {
       details: { description: "", website: "" },
     };
   } else if (experienceIndex.value !== undefined) {
-    const exp = experienceController.getExperience(experienceIndex.value);
+    const exp = experiences[experienceIndex.value];
     if (exp) {
       localExperience.value = { ...exp };
       isCurrentJob.value = !localExperience.value.endDate;
     }
   }
+  loading.value = false;
+  loaded.value = true;
 });
 
 async function handleSave() {
+  saving.value = true;
   try {
     const success = isNew.value
       ? await experienceController.addExperience(localExperience.value, pendingImageFile)
@@ -333,6 +338,8 @@ async function handleSave() {
     }
   } catch (error) {
     console.error("Error saving experience:", error);
+  } finally {
+    saving.value = false;
   }
 }
 

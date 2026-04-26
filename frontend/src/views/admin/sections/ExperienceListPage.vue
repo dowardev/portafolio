@@ -137,7 +137,7 @@ import {
   IonCard,
   alertController,
 } from "@ionic/vue";
-import { onMounted, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import {
   addOutline,
@@ -149,18 +149,16 @@ import { faker } from "@faker-js/faker";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import ExperienceController from "@/controllers/experienceController";
-import { useExperienceStore } from "@/store/experienceStore";
+import type { ExperienceItem } from "@/services/types";
 
 const router = useRouter();
 const experienceController = new ExperienceController();
-const experienceStore = useExperienceStore();
 
 const isDev = import.meta.env.DEV;
-
-const experiences = computed(() => experienceStore.experiences);
+const experiences = ref<ExperienceItem[]>([]);
 
 onMounted(async () => {
-  await experienceController.loadExperiences();
+  experiences.value = await experienceController.loadPublicExperiences();
 });
 
 function editExperience(index: number) {

@@ -1,21 +1,19 @@
 <template>
   <div>
     <IconSelector
-      v-model="localItems"
+      :model-value="socials"
       type="social"
       title="Redes sociales"
       placeholder="Seleccionar plataforma"
       show-url-input
-      @add="addItem"
-      @remove="removeItem"
+      @update:model-value="handleUpdate"
+      @add="handleAdd"
+      @remove="handleRemove"
     />
-
-    
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
 import IconSelector, { IconItem } from "@/components/admin/IconSelector.vue";
 
 export interface SocialItem {
@@ -25,46 +23,28 @@ export interface SocialItem {
 }
 
 const props = defineProps<{
-  modelValue: SocialItem[];
+  socials: SocialItem[];
 }>();
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value: SocialItem[]): void;
+  "update:socials": [value: SocialItem[]];
 }>();
 
-const localItems = ref<IconItem[]>([]);
-
-watch(
-  () => props.modelValue,
-  (newVal) => {
-    localItems.value = newVal.map((item) => ({
-      iconName: item.iconName,
-      url: item.url,
-    }));
-  },
-  { immediate: true }
-);
-
-watch(
-  localItems,
-  (newVal) => {
-    emit(
-      "update:modelValue",
-      newVal.map((item) => ({
-        platform: item.iconName,
-        url: item.url || "",
-        iconName: item.iconName,
-      }))
-    );
-  },
-  { deep: true }
-);
-
-function addItem() {
-  localItems.value = [...localItems.value, { iconName: "", url: "" }];
+function handleUpdate(value: IconItem[]) {
+  emit("update:socials", value.map((item) => ({
+    platform: item.iconName,
+    url: item.url || "",
+    iconName: item.iconName,
+  })));
 }
 
-function removeItem(index: number) {
-  localItems.value = localItems.value.filter((_, i) => i !== index);
+function handleAdd() {
+  const newSocials = [...props.socials, { platform: "", url: "", iconName: "" }];
+  emit("update:socials", newSocials);
+}
+
+function handleRemove(index: number) {
+  const newSocials = props.socials.filter((_, i) => i !== index);
+  emit("update:socials", newSocials);
 }
 </script>

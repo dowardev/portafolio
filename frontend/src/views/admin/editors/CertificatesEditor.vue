@@ -23,9 +23,9 @@
             <ion-icon :icon="trashOutline"></ion-icon>
           </ion-button>
 
-          <ion-button :disabled="certificatesStore.saving" @click="handleSave">
+          <ion-button :disabled="saving" @click="handleSave">
             <ion-spinner
-              v-if="certificatesStore.saving"
+              v-if="saving"
               slot="start"
             ></ion-spinner>
             <ion-icon :icon="saveOutline"></ion-icon>
@@ -36,7 +36,7 @@
 
     <ion-content>
       <div
-        v-if="certificatesStore.loading || !certificatesStore.loaded"
+        v-if="loading || !loaded"
         class="ion-text-center ion-padding"
       >
         <ion-spinner name="lines"></ion-spinner>
@@ -182,12 +182,14 @@ import { useRoute, useRouter } from "vue-router";
 import type { CertificateItem } from "@/services/types";
 import TechSkillsEditor from "./TechSkillsEditor.vue";
 import CertificatesController from "@/controllers/certificatesController";
-import { useCertificatesStore } from "@/store/certificatesStore";
 
 const route = useRoute();
 const router = useRouter();
 const certificatesController = new CertificatesController();
-const certificatesStore = useCertificatesStore();
+
+const loading = ref(false);
+const saving = ref(false);
+const loaded = ref(false);
 
 const certificateIndex = computed(() => {
   const index = route.params.index;
@@ -227,7 +229,8 @@ const localCertificate = ref<CertificateItem | null>(null);
 let pendingImageFile: File | null = null;
 
 onMounted(async () => {
-  await certificatesController.loadCertificates();
+  loading.value = true;
+  const certificates = await certificatesController.loadPublicCertificates();
   if (isNew.value) {
     localCertificate.value = {
       id: "",
@@ -237,15 +240,18 @@ onMounted(async () => {
       aptitudes: [],
     };
   } else if (certificateIndex.value !== undefined) {
-    const cert = certificatesController.getCertificate(certificateIndex.value);
+    const cert = certificates[certificateIndex.value];
     if (cert) {
       localCertificate.value = { ...cert };
     }
   }
+  loading.value = false;
+  loaded.value = true;
 });
 
 async function handleSave() {
   if (!localCertificate.value) return;
+  saving.value = true;
   try {
     const success = isNew.value
       ? await certificatesController.addCertificate(localCertificate.value, pendingImageFile)
@@ -255,6 +261,8 @@ async function handleSave() {
     }
   } catch (error) {
     console.error("Error saving certificate:", error);
+  } finally {
+    saving.value = false;
   }
 }
 

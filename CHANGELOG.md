@@ -1,5 +1,53 @@
 # Changelog
 
+## 13.8.0 - 2026-04-26
+
+### Summary
+This release refactors the admin editor components to use local component state instead of Pinia stores, and introduces a new stackStore for improved state management. Controllers now return data directly for better component control.
+
+### Added
+- New `stackStore.ts` for stack section state management with setStack and setLoading methods
+
+### Changed
+- Refactored all editor components (CertificatesEditor, ExperienceEditor, FreelanceEditor, InfoEditor, ProjectsEditor, SkillsEditor) to use local component state (loading, saving, loaded refs) instead of Pinia store computed properties
+- Refactored controllers to return data directly instead of storing in Pinia stores
+- Updated AdminFreelancePage to manage freelance data locally with ref-based state
+- Updated AdminInfoPage to manage form data locally with reactive state
+- Updated AdminStackPage to manage stack data locally with ref-based state
+- Simplified InfoEditor with v-model patterns and removed form object wrapper
+- Removed saving state from introStore (no longer needed with local component state)
+- Removed faker dependency usage in FreelanceEditor (replaced with static test data)
+
+### Affected Files
+- Added:
+  - `frontend/src/store/stackStore.ts`
+- Modified:
+  - `frontend/src/controllers/categoriesController.ts`
+  - `frontend/src/controllers/certificatesController.ts`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/controllers/freelanceController.ts`
+  - `frontend/src/controllers/introController.ts`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/store/freelanceStore.ts`
+  - `frontend/src/store/introStore.ts`
+  - `frontend/src/views/admin/editors/CertificatesEditor.vue`
+  - `frontend/src/views/admin/editors/ExperienceEditor.vue`
+  - `frontend/src/views/admin/editors/FreelanceEditor.vue`
+  - `frontend/src/views/admin/editors/InfoEditor.vue`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `frontend/src/views/admin/editors/SocialsEditor.vue`
+  - `frontend/src/views/admin/sections/AdminFreelancePage.vue`
+  - `frontend/src/views/admin/sections/AdminInfoPage.vue`
+  - `frontend/src/views/admin/sections/AdminStackPage.vue`
+  - `frontend/src/views/admin/sections/CertificatesListPage.vue`
+  - `frontend/src/views/admin/sections/ExperienceListPage.vue`
+  - `frontend/src/views/admin/sections/FreelanceListPage.vue`
+  - `frontend/src/views/admin/sections/ProjectsListPage.vue`
+  - `frontend/src/views/admin/sections/SkillsListPage.vue`
+
+---
+
 ## 13.7.0 - 2026-04-25
 
 ### Summary

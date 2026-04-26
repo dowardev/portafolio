@@ -1,8 +1,8 @@
+import { useFreelanceStore } from "@/store/freelanceStore";
 import APIController from "./APIController";
 import ServerConfig from "./serverConfigController";
 import Cookies from "js-cookie";
 import type { FreelancePlatform, FreelanceComment, FreelanceItem } from "@/services/types";
-import { useFreelanceStore } from "@/store/freelanceStore";
 import { ToastController } from "./toastController";
 
 const userToken = Cookies.get("user-token");
@@ -45,9 +45,7 @@ export default class FreelanceController {
           rating: item.comment!.rating,
         }));
 
-      this.freelanceStore.setPlatforms(platforms);
-      this.freelanceStore.setComments(comments);
-
+      this.freelanceStore.setFreelance(platforms, comments);
       return { freelancePlatforms: platforms, freelanceComments: comments };
     } catch (error) {
       console.error("Error loading freelance:", error);
@@ -57,12 +55,27 @@ export default class FreelanceController {
     }
   }
 
+  getPlatforms(): FreelancePlatform[] {
+    return this.freelanceStore.platforms;
+  }
+
+  getComments(): FreelanceComment[] {
+    return this.freelanceStore.comments;
+  }
+
+  getPlatform(index: number): FreelancePlatform | undefined {
+    return this.freelanceStore.getPlatform(index);
+  }
+
+  getComment(index: number): FreelanceComment | undefined {
+    return this.freelanceStore.getComment(index);
+  }
+
   async saveFreelance(
     platforms: FreelancePlatform[],
     comments: FreelanceComment[],
     files?: Record<string, File>,
   ): Promise<void> {
-    this.freelanceStore.setSaving(true);
     try {
       const formData = new FormData();
       formData.append("freelance", JSON.stringify(
@@ -86,8 +99,8 @@ export default class FreelanceController {
         contentType: "multipart/form-data",
       });
 
-      this.freelanceStore.setPlatforms(platforms);
-      this.freelanceStore.setComments(comments);
+      await this.loadFreelance();
+
       const toast = await this.toastController.presentToast({
         message: "Guardado correctamente",
         duration: 2000,
@@ -102,13 +115,10 @@ export default class FreelanceController {
         color: "danger",
       });
       await toast.present();
-    } finally {
-      this.freelanceStore.setSaving(false);
     }
   }
 
   async addFreelance(freelance: FreelanceItem, imageFile?: File | null): Promise<FreelanceData> {
-    this.freelanceStore.setSaving(true);
     try {
       const formData = new FormData();
       formData.append("freelance", JSON.stringify(freelance));
@@ -123,7 +133,9 @@ export default class FreelanceController {
         contentType: "multipart/form-data",
       });
 
-      const result = this.setStoreFromData(data.freelance || []);
+      await this.loadFreelance();
+
+      const result = this.extractFromData(data.freelance || []);
       const toast = await this.toastController.presentToast({
         message: "Trabajo freelance agregado",
         duration: 2000,
@@ -140,13 +152,10 @@ export default class FreelanceController {
       });
       await toast.present();
       return { freelancePlatforms: [], freelanceComments: [] };
-    } finally {
-      this.freelanceStore.setSaving(false);
     }
   }
 
   async updateFreelance(id: string, freelance: FreelanceItem, imageFile?: File | null): Promise<FreelanceData> {
-    this.freelanceStore.setSaving(true);
     try {
       const formData = new FormData();
       formData.append("id", id);
@@ -162,7 +171,9 @@ export default class FreelanceController {
         contentType: "multipart/form-data",
       });
 
-      const result = this.setStoreFromData(data.freelance || []);
+      await this.loadFreelance();
+
+      const result = this.extractFromData(data.freelance || []);
       const toast = await this.toastController.presentToast({
         message: "Trabajo freelance actualizado",
         duration: 2000,
@@ -179,20 +190,19 @@ export default class FreelanceController {
       });
       await toast.present();
       return { freelancePlatforms: [], freelanceComments: [] };
-    } finally {
-      this.freelanceStore.setSaving(false);
     }
   }
 
   async deleteFreelance(id: string): Promise<FreelanceData> {
-    this.freelanceStore.setSaving(true);
     try {
       const data = await api.post<{ freelance: FreelanceItem[] }>({
         url: "admin/delete-freelance",
         data: { id },
       });
 
-      const result = this.setStoreFromData(data.freelance || []);
+      await this.loadFreelance();
+
+      const result = this.extractFromData(data.freelance || []);
       const toast = await this.toastController.presentToast({
         message: "Trabajo freelance eliminado",
         duration: 2000,
@@ -209,12 +219,10 @@ export default class FreelanceController {
       });
       await toast.present();
       return { freelancePlatforms: [], freelanceComments: [] };
-    } finally {
-      this.freelanceStore.setSaving(false);
     }
   }
 
-  private setStoreFromData(items: FreelanceItem[]): FreelanceData {
+  private extractFromData(items: FreelanceItem[]): FreelanceData {
     const platforms: FreelancePlatform[] = items.map(item => ({
       id: item.id || crypto.randomUUID(),
       name: item.name,
@@ -230,9 +238,6 @@ export default class FreelanceController {
         text: item.comment!.text,
         rating: item.comment!.rating,
       }));
-
-    this.freelanceStore.setPlatforms(platforms);
-    this.freelanceStore.setComments(comments);
 
     return { freelancePlatforms: platforms, freelanceComments: comments };
   }

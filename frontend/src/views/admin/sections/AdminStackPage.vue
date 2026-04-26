@@ -40,7 +40,8 @@
       <ion-row class="ion-justify-content-center">
         <ion-col size="4">
           <StackEditor
-            v-model="stackData"
+            :model-value="stackData"
+            @update:model-value="stackData = $event"
             @update:files="updateStackFiles"
           />
         </ion-col>
@@ -55,60 +56,66 @@ import {
   IonToolbar,
   IonTitle,
   IonButtons,
-  IonBackButton,
   IonContent,
   IonButton,
   IonSpinner,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonBreadcrumbs,
+  IonBreadcrumb,
 } from "@ionic/vue";
-import { ref, onMounted, computed } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import StackEditor from "../editors/StackEditor.vue";
 import IntroController from "@/controllers/introController";
-import { useIntroStore } from "@/store/introStore";
 import { saveOutline } from "ionicons/icons";
+import type { StackItem } from "@/services/types";
 
 const introController = new IntroController();
-const introStore = useIntroStore();
 const router = useRouter();
+const saving = ref(false);
 
-const stackData = computed({
-  get: () => introStore.form.stack,
-  set: (value) => { introStore.form.stack = value; }
-});
-const saving = computed(() => introStore.saving);
-const loading = computed(() => introStore.loading);
+const stackData = ref<StackItem[]>([]);
+const pendingFiles = reactive<Record<number, File>>({});
 
 onMounted(async () => {
   try {
-    await introController.loadIntro();
+    const data = await introController.loadIntro();
+    stackData.value = data.stack || [];
   } catch (error) {
     console.error("Error loading stack:", error);
   }
 });
 
 function updateStackFiles(fileMap: Record<number, File>) {
-  Object.assign(introStore.sectionFiles.stack, fileMap);
+  Object.keys(fileMap).forEach(key => {
+    pendingFiles[Number(key)] = fileMap[Number(key)];
+  });
 }
 
 async function handleSave() {
+  saving.value = true;
   try {
     const files: Record<string, File> = {};
-    Object.entries(introStore.sectionFiles.stack).forEach(([k, v]) => {
+    Object.entries(pendingFiles).forEach(([k, v]) => {
       files[`stack_image_${k}`] = v;
     });
     await introController.saveIntro({
-      name: introStore.form.name,
-      tags: introStore.form.tags,
-      description: introStore.form.description,
-      socials: introStore.form.socials,
-      logoUrl: introStore.form.logoUrl,
-      photoUrl: introStore.form.photoUrl,
-      stack: introStore.form.stack,
-      showContactForm: introStore.form.showContactForm,
+      name: "",
+      tags: [],
+      description: "",
+      socials: [],
+      logoUrl: null,
+      photoUrl: null,
+      stack: stackData.value,
+      showContactForm: { socials: false, freelance: false },
     }, files);
     router.push("/admin-panel");
   } catch (error) {
     console.error("Error saving stack:", error);
+  } finally {
+    saving.value = false;
   }
 }
 </script>

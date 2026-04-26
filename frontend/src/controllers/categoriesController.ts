@@ -45,19 +45,17 @@ export default class CategoriesController {
 
   async addCategory(category: SkillCategory): Promise<boolean> {
     try {
-      this.categoriesStore.setSaving(true);
-
       const formData = new FormData();
       formData.append("skillCategory", JSON.stringify(category));
 
-      const data = await api.post<SkillsResponse>({
+      await api.post<SkillsResponse>({
         url: "admin/add-skill-category",
         data: formData,
         contentType: "multipart/form-data",
       });
 
-      this.categoriesStore.setSkillCategories(data.skillCategories || []);
-      this.categoriesStore.setSaving(false);
+      await this.loadCategories();
+
       const toast = await this.toastController.presentToast({
         message: "Categoría agregada correctamente",
         duration: 2000,
@@ -66,7 +64,6 @@ export default class CategoriesController {
       await toast.present();
       return true;
     } catch (error) {
-      this.categoriesStore.setSaving(false);
       console.error("Error adding category:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al agregar la categoría",
@@ -80,12 +77,13 @@ export default class CategoriesController {
 
   async deleteCategory(id: string): Promise<boolean> {
     try {
-      const data = await api.post<SkillsResponse>({
+      await api.post<SkillsResponse>({
         url: "admin/delete-skill-category",
         data: { id },
       });
 
-      this.categoriesStore.setSkillCategories(data.skillCategories || []);
+      await this.loadCategories();
+
       const toast = await this.toastController.presentToast({
         message: "Categoría eliminada correctamente",
         duration: 2000,
@@ -107,20 +105,18 @@ export default class CategoriesController {
 
   async updateCategory(id: string, category: SkillCategory): Promise<boolean> {
     try {
-      this.categoriesStore.setSaving(true);
-
       const formData = new FormData();
       formData.append("id", id);
       formData.append("skillCategory", JSON.stringify(category));
 
-      const data = await api.post<SkillsResponse>({
+      await api.post<SkillsResponse>({
         url: "admin/update-skill-category",
         data: formData,
         contentType: "multipart/form-data",
       });
 
-      this.categoriesStore.setSkillCategories(data.skillCategories || []);
-      this.categoriesStore.setSaving(false);
+      await this.loadCategories();
+
       const toast = await this.toastController.presentToast({
         message: "Categoría actualizada correctamente",
         duration: 2000,
@@ -129,7 +125,6 @@ export default class CategoriesController {
       await toast.present();
       return true;
     } catch (error) {
-      this.categoriesStore.setSaving(false);
       console.error("Error updating category:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al actualizar la categoría",

@@ -20,17 +20,19 @@ export default class CertificatesController {
   private certificatesStore = useCertificatesStore();
   private toastController = new ToastController();
 
-  async loadPublicCertificates(): Promise<void> {
+  async loadPublicCertificates(): Promise<CertificateItem[]> {
     if (this.certificatesStore.loaded && this.certificatesStore.certificates.length > 0) {
-      return;
+      return this.certificatesStore.certificates;
     }
     this.certificatesStore.setLoading(true);
     try {
       const data = await api.get<CertificatesResponse>({ url: "get-certificates" });
       this.certificatesStore.setCertificates(data.certificates || []);
+      return data.certificates || [];
     } catch (error) {
       console.error("Error loading certificates:", error);
       this.certificatesStore.setCertificates([]);
+      return [];
     } finally {
       this.certificatesStore.setLoading(false);
     }
@@ -50,8 +52,6 @@ export default class CertificatesController {
 
   async addCertificate(certificate: CertificateItem, imageFile?: File | null): Promise<boolean> {
     try {
-      this.certificatesStore.setSaving(true);
-
       const formData = new FormData();
       formData.append("certificate", JSON.stringify(certificate));
 
@@ -59,17 +59,16 @@ export default class CertificatesController {
         formData.append("image", imageFile, "certificate.jpg");
       }
 
-      const data = await api.post<CertificatesResponse>({
+      await api.post<CertificatesResponse>({
         url: "admin/add-certificate",
         data: formData,
         contentType: "multipart/form-data",
       });
 
-      this.certificatesStore.setCertificates(data.certificates || []);
-      this.certificatesStore.setSaving(false);
+      await this.loadPublicCertificates();
+
       return true;
     } catch (error) {
-      this.certificatesStore.setSaving(false);
       console.error("Error adding certificate:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al agregar el certificado",
@@ -83,12 +82,13 @@ export default class CertificatesController {
 
   async deleteCertificate(id: string): Promise<boolean> {
     try {
-      const data = await api.post<CertificatesResponse>({
+      await api.post<CertificatesResponse>({
         url: "admin/delete-certificate",
         data: { id },
       });
 
-      this.certificatesStore.setCertificates(data.certificates || []);
+      await this.loadPublicCertificates();
+
       const toast = await this.toastController.presentToast({
         message: "Certificado eliminado correctamente",
         duration: 2000,
@@ -110,8 +110,6 @@ export default class CertificatesController {
 
   async updateCertificate(id: string, certificate: CertificateItem, imageFile?: File | null): Promise<boolean> {
     try {
-      this.certificatesStore.setSaving(true);
-
       const formData = new FormData();
       formData.append("id", id);
       formData.append("certificate", JSON.stringify(certificate));
@@ -120,14 +118,14 @@ export default class CertificatesController {
         formData.append("image", imageFile, "certificate.jpg");
       }
 
-      const data = await api.post<CertificatesResponse>({
+      await api.post<CertificatesResponse>({
         url: "admin/update-certificate",
         data: formData,
         contentType: "multipart/form-data",
       });
 
-      this.certificatesStore.setCertificates(data.certificates || []);
-      this.certificatesStore.setSaving(false);
+      await this.loadPublicCertificates();
+
       const toast = await this.toastController.presentToast({
         message: "Certificado actualizado correctamente",
         duration: 2000,
@@ -136,7 +134,6 @@ export default class CertificatesController {
       await toast.present();
       return true;
     } catch (error) {
-      this.certificatesStore.setSaving(false);
       console.error("Error updating certificate:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al actualizar el certificado",

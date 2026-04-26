@@ -256,13 +256,17 @@ import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type { FreelancePlatform, FreelanceComment, FreelanceItem } from "@/services/types";
 import FreelanceController from "@/controllers/freelanceController";
-import { useFreelanceStore } from "@/store/freelanceStore";
-import { faker } from "@faker-js/faker";
 
 const route = useRoute();
 const router = useRouter();
 const freelanceController = new FreelanceController();
-const freelanceStore = useFreelanceStore();
+
+const isDev = import.meta.env.DEV;
+const loading = ref(false);
+const saving = ref(false);
+const loaded = ref(false);
+const platforms = ref<FreelancePlatform[]>([]);
+const comments = ref<FreelanceComment[]>([]);
 
 const freelanceType = computed(() => {
   const type = route.params.type;
@@ -284,19 +288,15 @@ const freelanceId = ref<string | undefined>(undefined);
 
 const isNew = computed(() => route.name === "FreelanceNewPage" || route.name === "FreelanceNewPageOld");
 
-const loading = computed(() => freelanceStore.loading);
-const saving = computed(() => freelanceStore.saving);
-
-const platforms = computed(() => freelanceStore.platforms);
-const isDev = import.meta.env.DEV;
-const comments = computed(() => freelanceStore.comments);
-
 const localItem = ref<FreelancePlatform | FreelanceComment | null>(null);
 
 onMounted(async () => {
+  loading.value = true;
   try {
-    if (freelanceStore.platforms.length === 0 || freelanceStore.comments.length === 0) {
-      await freelanceController.loadFreelance();
+    if (platforms.value.length === 0 || comments.value.length === 0) {
+      const data = await freelanceController.loadFreelance();
+      platforms.value = data.freelancePlatforms;
+      comments.value = data.freelanceComments;
     }
 
     if (isNew.value) {
@@ -318,21 +318,22 @@ onMounted(async () => {
       }
     } else if (freelanceIndex.value !== undefined) {
       if (freelanceType.value === "platform") {
-        const item = freelanceStore.getPlatform(freelanceIndex.value);
+        const item = platforms.value[freelanceIndex.value];
         if (item) {
           localItem.value = { ...item };
           freelanceId.value = item.id;
         }
       } else {
-        const item = freelanceStore.getComment(freelanceIndex.value);
+        const item = comments.value[freelanceIndex.value];
         if (item) {
           localItem.value = { ...item };
           freelanceId.value = item.id;
         }
       }
     }
-  } catch (error) {
-    console.error("Error loading freelance:", error);
+  } finally {
+    loading.value = false;
+    loaded.value = true;
   }
 });
 
@@ -407,21 +408,22 @@ async function deleteFreelance() {
 
 function generateTestData() {
   if (freelanceType.value === "platform") {
-    const platformName = faker.helpers.arrayElement(["Upwork", "Fiverr", "Toptal", "Freelancer.com"]);
+    const platformNames = ["Upwork", "Fiverr", "Toptal", "Freelancer.com"];
+    const platformName = platformNames[Math.floor(Math.random() * platformNames.length)];
     localItem.value = {
       id: crypto.randomUUID(),
       name: platformName,
       image: `https://ui-avatars.com/api/?name=${encodeURIComponent(platformName)}&background=random&size=100`,
-      url: faker.internet.url(),
+      url: "https://example.com",
     } as FreelancePlatform;
   } else {
     const availablePlatforms = platforms.value;
     localItem.value = {
       id: crypto.randomUUID(),
       platformName: availablePlatforms[0]?.name || "Upwork",
-      title: faker.person.fullName(),
-      text: faker.lorem.paragraph(),
-      rating: faker.number.int({ min: 3, max: 5 }),
+      title: "Cliente de prueba",
+      text: "Este es un comentario de prueba generado automáticamente.",
+      rating: 4,
     } as FreelanceComment;
   }
 }

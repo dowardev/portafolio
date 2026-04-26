@@ -115,20 +115,19 @@ import {
   IonCard,
   alertController,
 } from "@ionic/vue";
-import { onMounted, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { addOutline, ribbonOutline, trashOutline } from "ionicons/icons";
 import CertificatesController from "@/controllers/certificatesController";
-import { useCertificatesStore } from "@/store/certificatesStore";
+import type { CertificateItem } from "@/services/types";
 
 const router = useRouter();
 const certificatesController = new CertificatesController();
-const certificatesStore = useCertificatesStore();
 
-const certificates = computed(() => certificatesStore.certificates);
+const certificates = ref<CertificateItem[]>([]);
 
 onMounted(async () => {
-  await certificatesController.loadCertificates();
+  certificates.value = await certificatesController.loadPublicCertificates();
 });
 
 function editCertificate(index: number) {

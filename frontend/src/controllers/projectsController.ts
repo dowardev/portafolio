@@ -52,8 +52,6 @@ export default class ProjectsController {
 
   async addProject(project: ProjectItem, imageFile?: File | null, techFiles?: Record<number, File>): Promise<boolean> {
     try {
-      this.projectsStore.setSaving(true);
-
       const formData = new FormData();
       formData.append("project", JSON.stringify(project));
 
@@ -66,14 +64,14 @@ export default class ProjectsController {
         }
       }
 
-      const data = await api.post<ProjectsResponse>({
+      await api.post<ProjectsResponse>({
         url: "admin/add-project",
         data: formData,
         contentType: "multipart/form-data",
       });
 
-      this.projectsStore.setProjects(data.projects || []);
-      this.projectsStore.setSaving(false);
+      await this.loadPublicProjects();
+
       const toast = await this.toastController.presentToast({
         message: "Proyecto agregado correctamente",
         duration: 2000,
@@ -82,7 +80,6 @@ export default class ProjectsController {
       await toast.present();
       return true;
     } catch (error) {
-      this.projectsStore.setSaving(false);
       console.error("Error adding project:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al agregar el proyecto",
@@ -96,12 +93,13 @@ export default class ProjectsController {
 
   async deleteProject(id: string): Promise<boolean> {
     try {
-      const data = await api.post<ProjectsResponse>({
+      await api.post<ProjectsResponse>({
         url: "admin/delete-project",
         data: { id },
       });
 
-      this.projectsStore.setProjects(data.projects || []);
+      await this.loadPublicProjects();
+
       const toast = await this.toastController.presentToast({
         message: "Proyecto eliminado correctamente",
         duration: 2000,
@@ -123,8 +121,6 @@ export default class ProjectsController {
 
   async updateProject(id: string, project: ProjectItem, imageFile?: File | null, techFiles?: Record<number, File>): Promise<boolean> {
     try {
-      this.projectsStore.setSaving(true);
-
       const formData = new FormData();
       formData.append("id", id);
       formData.append("project", JSON.stringify(project));
@@ -138,14 +134,14 @@ export default class ProjectsController {
         }
       }
 
-      const data = await api.post<ProjectsResponse>({
+      await api.post<ProjectsResponse>({
         url: "admin/update-project",
         data: formData,
         contentType: "multipart/form-data",
       });
 
-      this.projectsStore.setProjects(data.projects || []);
-      this.projectsStore.setSaving(false);
+      await this.loadPublicProjects();
+
       const toast = await this.toastController.presentToast({
         message: "Proyecto actualizado correctamente",
         duration: 2000,
@@ -154,7 +150,6 @@ export default class ProjectsController {
       await toast.present();
       return true;
     } catch (error) {
-      this.projectsStore.setSaving(false);
       console.error("Error updating project:", error);
       const toast = await this.toastController.presentToast({
         message: "Error al actualizar el proyecto",
