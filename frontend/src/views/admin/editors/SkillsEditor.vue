@@ -56,8 +56,8 @@
               </ion-card>
 
               <TechSkillsEditor
+                ref="techSkillsRef"
                 :model-value="technologies"
-                @update:model-value="technologies = $event"
               />
             </ion-col>
           </ion-row>
@@ -94,13 +94,10 @@ import CategoriesController from "@/controllers/categoriesController";
 import TechSkillsEditor from "./TechSkillsEditor.vue";
 import type { SkillCategory } from "@/services/types";
 
-interface TechItem {
-  iconName: string;
-}
-
 const route = useRoute();
 const router = useRouter();
 const categoriesController = new CategoriesController();
+const techSkillsRef = ref<InstanceType<typeof TechSkillsEditor> | null>(null);
 
 const loading = ref(false);
 const saving = ref(false);
@@ -178,20 +175,21 @@ async function saveCategory() {
 
   if (!categoryName.value.trim()) return;
 
+  const techData = techSkillsRef.value?.modelValue || technologies.value;
   saving.value = true;
   let success: boolean;
   if (isEditing.value && categoryId.value) {
     const category = {
       id: categoryId.value,
       name: categoryName.value.trim(),
-      technologies: technologies.value.filter((t) => t.iconName?.trim()),
+      technologies: techData.filter((t) => t.iconName?.trim()),
     };
     success = await categoriesController.updateCategory(categoryId.value, category);
   } else {
     const category = {
       id: crypto.randomUUID(),
       name: categoryName.value.trim(),
-      technologies: technologies.value.filter((t) => t.iconName?.trim()),
+      technologies: techData.filter((t) => t.iconName?.trim()),
     };
     success = await categoriesController.addCategory(category);
   }

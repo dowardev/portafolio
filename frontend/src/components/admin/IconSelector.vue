@@ -3,7 +3,7 @@
     <ion-list-header>
       <ion-label>{{ title }}</ion-label>
 
-      <ion-button @click="$emit('add')">
+      <ion-button @click="openNewSelector">
         <ion-icon slot="start" :icon="addOutline"></ion-icon>
         Añadir
       </ion-button>
@@ -258,6 +258,12 @@ function getLabel(name: string) {
 function openSelector(index: number) {
   currentIndex = index;
   selectedIcon.value = props.modelValue[index]?.iconName || "";
+  showSelector.value = true;
+}
+
+function openNewSelector() {
+  currentIndex = props.modelValue.length;
+  selectedIcon.value = "";
   showSelector.value = true;
 }
 

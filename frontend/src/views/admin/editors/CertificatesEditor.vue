@@ -115,8 +115,8 @@
                 </ion-card>
 
                 <TechSkillsEditor
+                  ref="techSkillsRef"
                   v-model="aptitudes"
-                  @update:model-value="aptitudes = $event"
                 />
               </ion-list>
             </ion-col>
@@ -186,6 +186,7 @@ import CertificatesController from "@/controllers/certificatesController";
 const route = useRoute();
 const router = useRouter();
 const certificatesController = new CertificatesController();
+const techSkillsRef = ref<InstanceType<typeof TechSkillsEditor> | null>(null);
 
 const loading = ref(false);
 const saving = ref(false);
@@ -251,6 +252,9 @@ onMounted(async () => {
 
 async function handleSave() {
   if (!localCertificate.value) return;
+  if (techSkillsRef.value) {
+    localCertificate.value.technologies = techSkillsRef.value.modelValue;
+  }
   saving.value = true;
   try {
     const success = isNew.value

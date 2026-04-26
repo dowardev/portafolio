@@ -188,8 +188,8 @@
               </ion-list>
 
               <TechSkillsEditor
+                ref="techSkillsRef"
                 :model-value="technologies"
-                @update:model-value="technologies = $event"
               />
             </ion-col>
           </ion-row>
@@ -265,6 +265,7 @@ import ExperienceController from "@/controllers/experienceController";
 const route = useRoute();
 const router = useRouter();
 const experienceController = new ExperienceController();
+const techSkillsRef = ref<InstanceType<typeof TechSkillsEditor> | null>(null);
 
 const loading = ref(false);
 const saving = ref(false);
@@ -324,6 +325,9 @@ onMounted(async () => {
 });
 
 async function handleSave() {
+  if (techSkillsRef.value) {
+    localExperience.value.technologies = techSkillsRef.value.modelValue;
+  }
   saving.value = true;
   try {
     const success = isNew.value

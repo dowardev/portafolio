@@ -1,5 +1,26 @@
 # Changelog
 
+## 13.8.1 - 2026-04-26
+
+### Summary
+This release refactors the tech skills editor components to use ref-based access instead of event-based v-model, allowing parent components to directly access the tech skills data when saving.
+
+### Changed
+- Refactored TechSkillsEditor to use v-model directly and expose modelValue via defineExpose
+- Updated CertificatesEditor, ExperienceEditor, and SkillsEditor to use ref-based access to TechSkillsEditor instead of @update:model-value event
+- Added openNewSelector function in IconSelector for consistent "add new" behavior
+- Removed duplicate TechItem interface from SkillsEditor
+
+### Affected Files
+- Modified:
+  - `frontend/src/components/admin/IconSelector.vue`
+  - `frontend/src/views/admin/editors/CertificatesEditor.vue`
+  - `frontend/src/views/admin/editors/ExperienceEditor.vue`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `frontend/src/views/admin/editors/TechSkillsEditor.vue`
+
+---
+
 ## 13.8.0 - 2026-04-26
 
 ### Summary
