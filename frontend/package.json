@@ -1,7 +1,7 @@
 {
   "name": "dowar-blog",
   "private": true,
-  "version": "13.6.0",
+  "version": "13.7.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -22,6 +22,8 @@
     "@ionic/storage": "^4.0.0",
     "@ionic/vue": "^8.4.1",
     "@ionic/vue-router": "^8.4.1",
+    "@lineiconshq/free-icons": "^1.0.4",
+    "@lineiconshq/vue-lineicons": "^0.0.4",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
     "axios": "^1.7.9",
@@ -49,6 +51,7 @@
     "@vue/test-utils": "^2.4.6",
     "cypress": "^13.17.0",
     "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-vue": "^9.32.0",
     "jsdom": "^25.0.1",

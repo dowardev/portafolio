@@ -7,10 +7,11 @@ export interface IconConfig {
   label: string;
   color: string;
   type: IconType;
-  icon: object;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon: any;
 }
 
-const iconMap: Record<string, object> = {
+const iconMap: Record<string, any> = {
   logoBehance: ionicons.logoBehance,
   logoBitbucket: ionicons.logoBitbucket,
   logoBitcoin: ionicons.logoBitcoin,
@@ -67,7 +68,6 @@ const iconMap: Record<string, object> = {
   logoYoutube: ionicons.logoYoutube,
   logoAngular: ionicons.logoAngular,
   logoFirebase: ionicons.logoFirebase,
-  logoAmazon: ionicons.logoAmazon,
   logoJavascript: ionicons.logoJavascript,
   logoCapacitor: ionicons.logoCapacitor,
   logoAndroid: ionicons.logoAndroid,
@@ -79,6 +79,19 @@ const iconMap: Record<string, object> = {
   gitBranchOutline: ionicons.gitBranchOutline,
   hardwareChipOutline: ionicons.hardwareChipOutline,
   chatbox: ionicons.chatbox,
+  logoMastodon: ionicons.logoMastodon,
+  logoFoursquare: ionicons.logoFoursquare,
+  logoFlickr: ionicons.logoFlickr,
+  logoHackernews: ionicons.logoHackernews,
+  logoDesignernews: ionicons.logoDesignernews,
+  logoXing: ionicons.logoXing,
+  logoYahoo: ionicons.logoYahoo,
+  logoStencil: ionicons.logoStencil,
+  logoTableau: ionicons.logoTableau,
+  logoPwa: ionicons.logoPwa,
+  logoAlipay: ionicons.logoAlipay,
+  logoAmplify: ionicons.logoAmplify,
+  logoAppflow: ionicons.logoAppflow,
 };
 
 export const allIcons: IconConfig[] = [
@@ -151,6 +164,19 @@ export const allIcons: IconConfig[] = [
   { name: "logoSkype", label: "Skype", color: "#00aff0", type: "social", icon: iconMap.logoSkype },
   { name: "logoBitcoin", label: "Bitcoin", color: "#f7931a", type: "social", icon: iconMap.logoBitcoin },
   { name: "chatbox", label: "ChatBox", color: "#007acc", type: "social", icon: iconMap.chatbox },
+  { name: "logoMastodon", label: "Mastodon", color: "#3085d3", type: "social", icon: iconMap.logoMastodon },
+  { name: "logoFoursquare", label: "Foursquare", color: "#ff5722", type: "social", icon: iconMap.logoFoursquare },
+  { name: "logoFlickr", label: "Flickr", color: "#0063dc", type: "social", icon: iconMap.logoFlickr },
+  { name: "logoHackernews", label: "Hacker News", color: "#ff6600", type: "social", icon: iconMap.logoHackernews },
+  { name: "logoDesignernews", label: "Designer News", color: "#2e70b1", type: "social", icon: iconMap.logoDesignernews },
+  { name: "logoXing", label: "Xing", color: "#026466", type: "social", icon: iconMap.logoXing },
+  { name: "logoYahoo", label: "Yahoo", color: "#6001d2", type: "social", icon: iconMap.logoYahoo },
+  { name: "logoStencil", label: "Stencil", color: "#dd4949", type: "tech", icon: iconMap.logoStencil },
+  { name: "logoTableau", label: "Tableau", color: "#e97627", type: "tech", icon: iconMap.logoTableau },
+  { name: "logoPwa", label: "PWA", color: "#5a0fc8", type: "tech", icon: iconMap.logoPwa },
+  { name: "logoAlipay", label: "Alipay", color: "#1892d8", type: "tech", icon: iconMap.logoAlipay },
+  { name: "logoAmplify", label: "AWS Amplify", color: "#ffb415", type: "tech", icon: iconMap.logoAmplify },
+  { name: "logoAppflow", label: "Appflow", color: "#099de0", type: "tech", icon: iconMap.logoAppflow },
 ];
 
 export function getIconsByType(type: IconType | "all"): IconConfig[] {

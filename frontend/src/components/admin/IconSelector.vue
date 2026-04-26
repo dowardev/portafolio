@@ -9,22 +9,30 @@
       </ion-button>
     </ion-list-header>
 
-    <ion-card
-      v-for="(item, index) in modelValue"
-      :key="index"
-      class="shadow1"
-    >
+    <ion-card v-for="(item, index) in modelValue" :key="index" class="shadow1">
       <ion-item button lines="full" @click="openSelector(index)">
         <template v-if="item.iconName">
+          <template v-if="isLineIconName(item.iconName)">
+            <Lineicons
+              slot="start"
+              :icon="getIconComponent(item.iconName)"
+              :color="getColor(item.iconName)"
+              :size="24"
+            />
+          </template>
+
           <ion-icon
+            v-else
             slot="start"
-            :icon="getIcon(item.iconName)"
+            :icon="getIconSvg(item.iconName)"
             :style="{ color: getColor(item.iconName) }"
-          ></ion-icon>
+          />
+
           <ion-label :style="{ color: getColor(item.iconName) }">
             {{ getLabel(item.iconName) }}
           </ion-label>
         </template>
+
         <template v-else>
           <ion-label>{{ placeholder }}</ion-label>
         </template>
@@ -37,7 +45,9 @@
           label-placement="floating"
           placeholder="https://..."
           type="url"
-          @ion-input="updateItem(index, { url: $event.detail.value })"
+          @ion-input="
+            updateItem(index, { url: $event.detail.value || undefined })
+          "
         ></ion-input>
       </ion-item>
 
@@ -61,7 +71,7 @@
 
     <ion-modal :is-open="showSelector" @did-dismiss="showSelector = false">
       <ion-header class="ion-no-border" mode="ios">
-        <ion-toolbar>
+        <ion-toolbar style="--background: var(--ion-background-color)">
           <ion-buttons slot="start">
             <ion-button @click="showSelector = false">
               <ion-icon :icon="closeOutline"></ion-icon>
@@ -69,13 +79,29 @@
           </ion-buttons>
           <ion-title>{{ title }}</ion-title>
         </ion-toolbar>
+
         <ion-toolbar>
           <ion-searchbar
             v-model="searchText"
             placeholder="Buscar..."
           ></ion-searchbar>
         </ion-toolbar>
+
+        <ion-toolbar>
+          <ion-segment v-model="selectedSource">
+            <ion-segment-button value="all">
+              <ion-label>Todos</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="ionicons">
+              <ion-label>IonIcons</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="lineicons">
+              <ion-label>LineIcons</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </ion-toolbar>
       </ion-header>
+
       <ion-content>
         <ion-list>
           <ion-item
@@ -85,6 +111,7 @@
           >
             <ion-label>Ninguno</ion-label>
           </ion-item>
+
           <ion-item
             v-for="icon in filteredIcons"
             :key="icon.name"
@@ -92,12 +119,28 @@
             :color="selectedIcon === icon.name ? 'light' : ''"
             @click="selectIcon(icon.name)"
           >
+            <template v-if="icon.source === 'lineicons'">
+              <Lineicons
+                slot="start"
+                :icon="icon.icon"
+                :color="icon.color"
+                :size="24"
+              />
+            </template>
             <ion-icon
+              v-else
               slot="start"
               :icon="icon.icon"
               :style="{ color: icon.color, fontSize: '24px' }"
-            ></ion-icon>
-            <ion-label>{{ icon.label }}</ion-label>
+            />
+
+            <ion-label>
+              {{ icon.label }}
+            </ion-label>
+
+            <ion-note v-if="selectedSource === 'all'" slot="end">
+              ({{ icon.source }})
+            </ion-note>
           </ion-item>
         </ion-list>
       </ion-content>
@@ -122,10 +165,19 @@ import {
   IonContent,
   IonSearchbar,
   IonInput,
+  IonSegment,
+  IonSegmentButton,
 } from "@ionic/vue";
 import { addOutline, trashOutline, closeOutline } from "ionicons/icons";
 import { computed, ref } from "vue";
-import { getIconsByType, getIconByName } from "@/composables/iconConfig";
+import {
+  getIconsBySourceAndType,
+  getIconByName,
+  getIonIconSvg,
+  getLineIconComponent,
+  isLineIcon,
+} from "@/composables/iconsIndex";
+import { Lineicons } from "@lineiconshq/vue-lineicons";
 
 export interface IconItem {
   iconName: string;
@@ -136,6 +188,7 @@ const props = withDefaults(
   defineProps<{
     modelValue: IconItem[];
     type: "social" | "tech";
+    source?: string;
     title?: string;
     placeholder?: string;
     showUrlInput?: boolean;
@@ -144,7 +197,8 @@ const props = withDefaults(
     title: "Seleccionar",
     placeholder: "Seleccionar...",
     showUrlInput: false,
-  }
+    source: "all",
+  },
 );
 
 const emit = defineEmits<{
@@ -153,7 +207,14 @@ const emit = defineEmits<{
   (e: "remove", index: number): void;
 }>();
 
-const icons = computed(() => getIconsByType(props.type));
+const selectedSource = ref<string>(props.source || "all");
+
+const icons = computed(() =>
+  getIconsBySourceAndType(
+    selectedSource.value as "ionicons" | "lineicons" | "all",
+    props.type,
+  ),
+);
 
 const showSelector = ref(false);
 const searchText = ref("");
@@ -162,18 +223,26 @@ let currentIndex = 0;
 const selectedIcon = ref("");
 
 const filteredIcons = computed(() => {
-  if (!searchText.value) return icons.value;
-  const search = searchText.value.toLowerCase();
-  return icons.value.filter(
-    (icon) =>
-      icon.label.toLowerCase().includes(search) ||
-      icon.name.toLowerCase().includes(search)
-  );
+  const list = searchText.value
+    ? icons.value.filter(
+        (icon) =>
+          icon.label.toLowerCase().includes(searchText.value.toLowerCase()) ||
+          icon.name.toLowerCase().includes(searchText.value.toLowerCase()),
+      )
+    : icons.value;
+  return [...list].sort((a, b) => a.label.localeCompare(b.label, "es"));
 });
 
-function getIcon(name: string) {
-  const icon = getIconByName(name);
-  return icon?.icon || closeOutline;
+function isLineIconName(name: string): boolean {
+  return isLineIcon(name);
+}
+
+function getIconSvg(name: string): string | undefined {
+  return getIonIconSvg(name);
+}
+
+function getIconComponent(name: string): object | undefined {
+  return getLineIconComponent(name);
 }
 
 function getColor(name: string) {
@@ -204,4 +273,10 @@ function updateItem(index: number, updates: Partial<IconItem>) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.icon-source {
+  font-size: 0.75em;
+  opacity: 0.7;
+  font-weight: normal;
+}
+</style>

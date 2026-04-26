@@ -1,5 +1,42 @@
 # Changelog
 
+## 13.7.0 - 2026-04-25
+
+### Summary
+This release adds LineIcons support with 150+ additional icons, implements source filtering in IconSelector (ionicons/lineicons), and updates dependencies.
+
+### Added
+- LineIcons integration with `@lineiconshq/free-icons` and `@lineiconshq/vue-lineicons` packages
+- New `IconRenderer.vue` component for rendering both IonIcons and LineIcons
+- New `iconsIndex.ts` composable unifying icon sources with `getIconsBySource()`, `getIconsBySourceAndType()`, `isLineIcon()`, and `getIconColor()` functions
+- New `lineiconsConfig.ts` with 150+ LineIcons (social and tech categories)
+- Segment-based icon source filtering in IconSelector (all/ionicons/lineicons)
+- Icon source display in icon list
+
+### Changed
+- Refactored IconSelector to support multiple icon sources with unified interface
+- Updated IconSelector modal with source segment selection
+- Removed validation UI from SocialsEditor for simplified UX
+- Fixed icon URL input to handle empty strings correctly
+- Fixed IconSelector modal background styling
+- Updated eslint-config-prettier to v10.1.8
+- Added 15 new IonIcons: logoMastodon, logoFoursquare, logoFlickr, logoHackernews, logoDesignernews, logoXing, logoYahoo, logoStencil, logoTableau, logoPwa, logoAlipay, logoAmplify, logoAppflow
+
+### Affected Files
+- Added:
+  - `frontend/src/components/IconRenderer.vue`
+  - `frontend/src/composables/iconsIndex.ts`
+  - `frontend/src/composables/lineiconsConfig.ts`
+- Modified:
+  - `frontend/src/components/admin/IconSelector.vue`
+  - `frontend/src/composables/iconConfig.ts`
+  - `frontend/src/composables/useIconColors.ts`
+  - `frontend/src/views/admin/editors/SocialsEditor.vue`
+  - `frontend/package.json`
+  - `frontend/pnpm-lock.yaml`
+
+---
+
 ## 13.6.0 - 2026-04-25
 
 ### Summary

@@ -1,12 +1,11 @@
-import { allIcons } from "./iconConfig";
+import { getIconColor as getColor } from "./iconsIndex";
 
 const defaultColor = "#888888";
 
 export function useIconColors() {
   const getIconColor = (source: string): string => {
     if (!source) return defaultColor;
-    const icon = allIcons.find((i) => i.name === source);
-    return icon?.color || defaultColor;
+    return getColor(source) || defaultColor;
   };
 
   return { getIconColor };

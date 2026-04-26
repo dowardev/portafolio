@@ -38,6 +38,12 @@ importers:
       '@ionic/vue-router':
         specifier: ^8.4.1
         version: 8.4.1
+      '@lineiconshq/free-icons':
+        specifier: ^1.0.4
+        version: 1.0.4
+      '@lineiconshq/vue-lineicons':
+        specifier: ^0.0.4
+        version: 0.0.4(react@19.2.5)(vue@3.5.13(typescript@5.7.3))
       '@vuelidate/core':
         specifier: ^2.0.3
         version: 2.0.3(vue@3.5.13(typescript@5.7.3))
@@ -115,11 +121,11 @@ importers:
         specifier: ^9.18.0
         version: 9.18.0
       eslint-config-prettier:
-        specifier: ^9.1.0
-        version: 9.1.0(eslint@9.18.0)
+        specifier: ^10.1.8
+        version: 10.1.8(eslint@9.18.0)
       eslint-plugin-prettier:
         specifier: ^5.2.3
-        version: 5.2.3(eslint-config-prettier@9.1.0(eslint@9.18.0))(eslint@9.18.0)(prettier@3.4.2)
+        version: 5.2.3(eslint-config-prettier@10.1.8(eslint@9.18.0))(eslint@9.18.0)(prettier@3.4.2)
       eslint-plugin-vue:
         specifier: ^9.32.0
         version: 9.32.0(eslint@9.18.0)
@@ -997,6 +1003,19 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@lineiconshq/free-icons@0.0.1':
+    resolution: {integrity: sha512-fnWSSjIv/4vojAKsBZXluhMRr1LIb5p85IzXK0Dh27KF9qXxz89HZJrnvXH71ZqMCP+NFzo/xh0dJsv8PT+3xg==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@lineiconshq/free-icons@1.0.4':
+    resolution: {integrity: sha512-erFnjTHhiuXyQUM4c00gEC51vAyHPnMc6wKca5Qa7YV865bPsyngQQPkHSfPcLUxYGx+APLXxjBhYKfbmph0xw==}
+
+  '@lineiconshq/vue-lineicons@0.0.4':
+    resolution: {integrity: sha512-14kG6ZpjN4gUQRu08qYhtgfj2OJL++rvjCh5jkG6kofYcj7WymwT1lnJ9e6eisHSrSDiUPov+eOQtfCE3QpF0A==}
+    peerDependencies:
+      vue: ^3.5.21
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1962,8 +1981,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-config-prettier@9.1.0:
-    resolution: {integrity: sha512-NSWl5BFQWEPi1j4TjVNItzYV7dZXZ+wP6I6ZhrBGpChQhZRUaElihE9uRRkcbRnNb76UMKDF3r+WTmNcGPKsqw==}
+  eslint-config-prettier@10.1.8:
+    resolution: {integrity: sha512-82GZUjRS0p/jganf6q1rEO25VSoHH0hKPCTrgillPjdI/3bgBhAE1QzHrHTizjpRvy6pGAvKjDJtk2pF9NDq8w==}
     hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
@@ -2722,6 +2741,9 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
+  meilisearch@0.53.0:
+    resolution: {integrity: sha512-nG4VXbEOSzUmtbfsgOo+t6yX1ECEgXaT4hC0ap9MBpQGK5xwT+NWYDENYsKWR75cVaWaAqva+ok4zHlgtdXlLw==}
+
   meow@13.2.0:
     resolution: {integrity: sha512-pxQJQzB6djGPXh08dacEloMFopsOqGVRKFPYvPOt9XDZ1HasbgDZA74CJGreSU4G3Ak7EFJGoiH2auq+yXISgA==}
     engines: {node: '>=18'}
@@ -3037,6 +3059,10 @@ packages:
 
   randombytes@2.1.0:
     resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
+
+  react@19.2.5:
+    resolution: {integrity: sha512-llUJLzz1zTUBrskt2pwZgLq59AemifIftw4aB7JxOqf1HY2FDaGDxgwpAPVzHU1kdWabH7FauP4i1oEeer2WCA==}
+    engines: {node: '>=0.10.0'}
 
   readable-stream@3.6.2:
     resolution: {integrity: sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==}
@@ -4865,6 +4891,21 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
+  '@lineiconshq/free-icons@0.0.1(react@19.2.5)':
+    dependencies:
+      react: 19.2.5
+
+  '@lineiconshq/free-icons@1.0.4':
+    dependencies:
+      meilisearch: 0.53.0
+
+  '@lineiconshq/vue-lineicons@0.0.4(react@19.2.5)(vue@3.5.13(typescript@5.7.3))':
+    dependencies:
+      '@lineiconshq/free-icons': 0.0.1(react@19.2.5)
+      vue: 3.5.13(typescript@5.7.3)
+    transitivePeerDependencies:
+      - react
+
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -5925,18 +5966,18 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-prettier@9.1.0(eslint@9.18.0):
+  eslint-config-prettier@10.1.8(eslint@9.18.0):
     dependencies:
       eslint: 9.18.0
 
-  eslint-plugin-prettier@5.2.3(eslint-config-prettier@9.1.0(eslint@9.18.0))(eslint@9.18.0)(prettier@3.4.2):
+  eslint-plugin-prettier@5.2.3(eslint-config-prettier@10.1.8(eslint@9.18.0))(eslint@9.18.0)(prettier@3.4.2):
     dependencies:
       eslint: 9.18.0
       prettier: 3.4.2
       prettier-linter-helpers: 1.0.0
       synckit: 0.9.2
     optionalDependencies:
-      eslint-config-prettier: 9.1.0(eslint@9.18.0)
+      eslint-config-prettier: 10.1.8(eslint@9.18.0)
 
   eslint-plugin-vue@9.32.0(eslint@9.18.0):
     dependencies:
@@ -6713,6 +6754,8 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
+  meilisearch@0.53.0: {}
+
   meow@13.2.0: {}
 
   merge-stream@2.0.0: {}
@@ -6993,6 +7036,8 @@ snapshots:
   randombytes@2.1.0:
     dependencies:
       safe-buffer: 5.2.1
+
+  react@19.2.5: {}
 
   readable-stream@3.6.2:
     dependencies:
