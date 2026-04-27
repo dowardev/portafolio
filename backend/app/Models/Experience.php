@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Experience extends Model
 {
@@ -16,10 +17,10 @@ class Experience extends Model
         'end_date',
         'description',
         'website',
-        'technologies',
     ];
 
-    protected $casts = [
-        'technologies' => 'array',
-    ];
+    public function technologies(): BelongsToMany
+    {
+        return $this->belongsToMany(Technology::class, 'experience_technologies');
+    }
 }

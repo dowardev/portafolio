@@ -1,53 +1,71 @@
 import { defineStore } from "pinia";
-import type { SkillCategory } from "@/services/types";
+import { ref } from "vue";
+import type { TechnologyItem } from "@/services/types";
 
-interface State {
-  skillCategories: SkillCategory[];
-  loading: boolean;
-  loaded: boolean;
-  saving: boolean;
+export interface CategoryTechItem {
+  id?: number;
+  name?: string;
+  category?: string;
+  image?: string;
+  iconName: string;
 }
 
-export const useCategoriesStore = defineStore("categories", {
-  state: (): State => ({
-    skillCategories: [],
-    loading: false,
-    loaded: false,
-    saving: false,
-  }),
+export interface CategoryItem {
+  id?: number;
+  name: string;
+  sort_order?: number;
+  technologies: CategoryTechItem[];
+}
 
-  getters: {
-    getSkillCategory:
-      (state) =>
-      (index: number): SkillCategory | undefined => {
-        return state.skillCategories[index];
-      },
-  },
+export const useCategoriesStore = defineStore("categories", () => {
+  const categories = ref<CategoryItem[]>([]);
+  const loading = ref(false);
+  const loaded = ref(false);
 
-  actions: {
-    setSkillCategories(categories: SkillCategory[]) {
-      this.skillCategories = categories;
-      this.loaded = true;
-    },
+  function setCategories(data: CategoryItem[]): void {
+    categories.value = data;
+    loaded.value = true;
+  }
 
-    setLoading(loading: boolean) {
-      this.loading = loading;
-    },
+  function setLoading(value: boolean): void {
+    loading.value = value;
+  }
 
-    updateSkillCategory(index: number, category: SkillCategory) {
-      this.skillCategories[index] = category;
-    },
+  function getCategories(): CategoryItem[] {
+    return categories.value;
+  }
 
-    addSkillCategory(category: SkillCategory) {
-      this.skillCategories.push(category);
-    },
+  function addCategory(category: CategoryItem): void {
+    categories.value.push(category);
+  }
 
-    deleteSkillCategory(index: number) {
-      this.skillCategories.splice(index, 1);
-    },
+  function updateCategory(index: number, category: CategoryItem): void {
+    if (index >= 0 && index < categories.value.length) {
+      categories.value[index] = category;
+    }
+  }
 
-    setSaving(saving: boolean) {
-      this.saving = saving;
-    },
-  },
+  function deleteCategory(index: number): void {
+    if (index >= 0 && index < categories.value.length) {
+      categories.value.splice(index, 1);
+    }
+  }
+
+  function resetCategories(): void {
+    categories.value = [];
+    loaded.value = false;
+  }
+
+  return {
+    categories,
+    loading,
+    loaded,
+    setCategories,
+    setLoading,
+    getCategories,
+    addCategory,
+    updateCategory,
+    deleteCategory,
+    resetCategories,
+  };
 });

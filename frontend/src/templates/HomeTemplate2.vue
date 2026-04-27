@@ -104,8 +104,8 @@ Categorías
               style="display: flex; flex-direction: column; align-items: center"
             >
               <div style="display: flex">
-                <ion-chip v-for="tag in tags" :key="tag" color="primary">{{
-                  tag
+                <ion-chip v-for="tag in tags" :key="tag.id || tag.name" color="primary">{{
+                  tag.name
                 }}</ion-chip>
               </div>
 
@@ -371,6 +371,7 @@ import mariadbIcon from "@/assets/otros/mariadb-icon.svg";
 import ionicIcon from "@/assets/otros/ionicframework-icon.svg";
 import laravelIcon from "@/assets/otros/laravel-2.svg";
 import CategoriesController from "@/controllers/categoriesController";
+import { getIconByName } from "@/composables/iconsIndex";
 
 const router = useRouter();
 const props = defineProps<Partial<HomePageData>>();
@@ -400,15 +401,16 @@ const handleScroll = (event: CustomEvent) => {
   isScrolled.value = scrollTop > 50;
 };
 
-const categories = ref<SkillCategory[]>([]);
+const categories = ref<SkillCategory[]>(props.skillCategories || []);
 
 const backgroundTechs = computed(() => {
   const techs: { name: string }[] = [];
   categories.value.forEach((cat) => {
     cat.technologies?.forEach((tech) => {
-      const techName = tech.name || tech.iconName;
-      if (techName) {
-        techs.push({ name: techName });
+      const iconName = tech.iconName;
+      if (iconName) {
+        const label = getIconByName(iconName)?.label || iconName;
+        techs.push({ name: label });
       }
     });
   });
@@ -502,10 +504,12 @@ const onResize = () => {
 onMounted(async () => {
   window.addEventListener("resize", onResize);
   setTimeout(setupIntersectionObserver, 100);
-  try {
-    categories.value = await categoriesController.loadCategories();
-  } catch (error) {
-    console.error("Error loading categories:", error);
+  if (!categories.value.length) {
+    try {
+      categories.value = await categoriesController.loadCategories();
+    } catch (error) {
+      console.error("Error loading categories:", error);
+    }
   }
 });
 

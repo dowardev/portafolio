@@ -35,13 +35,18 @@ export interface ExperienceItem {
   date?: string;
   startDate: string;
   endDate: string | undefined;
-  technologies: Array<{
-    iconName: string;
-  }>;
+  technologies: TechnologyItem[];
   details: {
     description: string;
     website: string;
   };
+}
+
+export interface TechnologyItem {
+  id: number;
+  name: string;
+  category?: string;
+  image?: string;
 }
 
 export interface ProjectItem {
@@ -52,9 +57,7 @@ export interface ProjectItem {
   startDate?: string;
   endDate?: string;
   status: "progress" | "indeterminate" | "finished";
-  technologies: Array<{
-    iconName: string;
-  }>;
+  technologies: TechnologyItem[];
   source: {
     name: string;
     url: string;
@@ -105,11 +108,24 @@ export interface FreelanceComment {
   rating: number;
 }
 
+export interface TagItem {
+  id?: number;
+  name: string;
+  sort_order?: number;
+}
+
+export interface SocialItem {
+  id?: number;
+  platform: string;
+  url: string;
+  iconName: string;
+}
+
 export interface HomePageData {
   name: string;
-  tags: string[];
+  tags: TagItem[];
   description: string;
-  socials: Array<{ platform: string; url: string; iconName: string }>;
+  socials: SocialItem[];
   logoUrl: string | null;
   photoUrl: string | null;
   stack: StackItem[];

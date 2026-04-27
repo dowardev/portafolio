@@ -92,7 +92,7 @@ import { useRoute, useRouter } from "vue-router";
 import { saveOutline, trashOutline } from "ionicons/icons";
 import CategoriesController from "@/controllers/categoriesController";
 import TechSkillsEditor from "./TechSkillsEditor.vue";
-import type { SkillCategory } from "@/services/types";
+import type { CategoryItem } from "@/store/categoriesStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -102,16 +102,16 @@ const techSkillsRef = ref<InstanceType<typeof TechSkillsEditor> | null>(null);
 const loading = ref(false);
 const saving = ref(false);
 const loaded = ref(false);
-const skillCategories = ref<SkillCategory[]>([]);
+const skillCategories = ref<CategoryItem[]>([]);
 
 const categoryName = ref("");
-const technologies = ref<TechItem[]>([]);
+const technologies = ref<{ iconName: string }[]>([]);
 const nameTouched = ref(false);
 const nameError = ref("");
 
 const isEditing = computed(() => route.path.includes("/edit/"));
 const categoryIndex = computed(() => parseInt(route.params.index as string));
-const categoryId = ref("");
+const categoryId = ref<number | null>(null);
 
 onMounted(async () => {
   loading.value = true;
@@ -122,7 +122,7 @@ onMounted(async () => {
       const category = skillCategories.value[categoryIndex.value];
       if (category) {
         categoryName.value = category.name;
-        categoryId.value = category.id;
+        categoryId.value = category.id ?? null;
         technologies.value.splice(
           0,
           technologies.value.length,
@@ -160,7 +160,7 @@ async function confirmDelete() {
 }
 
 async function deleteCategory() {
-  if (categoryId.value) {
+  if (categoryId.value !== null) {
     saving.value = true;
     const success = await categoriesController.deleteCategory(categoryId.value);
     saving.value = false;
@@ -178,20 +178,16 @@ async function saveCategory() {
   const techData = techSkillsRef.value?.modelValue || technologies.value;
   saving.value = true;
   let success: boolean;
-  if (isEditing.value && categoryId.value) {
-    const category = {
-      id: categoryId.value,
-      name: categoryName.value.trim(),
-      technologies: techData.filter((t) => t.iconName?.trim()),
-    };
-    success = await categoriesController.updateCategory(categoryId.value, category);
+  
+  const categoryData = {
+    name: categoryName.value.trim(),
+    technologies: techData,
+  };
+  
+  if (isEditing.value && categoryId.value !== null) {
+    success = await categoriesController.updateCategory(categoryId.value, categoryData);
   } else {
-    const category = {
-      id: crypto.randomUUID(),
-      name: categoryName.value.trim(),
-      technologies: techData.filter((t) => t.iconName?.trim()),
-    };
-    success = await categoriesController.addCategory(category);
+    success = await categoriesController.addCategory(categoryData);
   }
   saving.value = false;
   if (success) {

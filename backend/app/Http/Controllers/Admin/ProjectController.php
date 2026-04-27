@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Models\Technology;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -12,8 +13,32 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::orderBy('start_date', 'desc')->get();
-        return response()->json(['projects' => $projects]);
+        $projects = Project::with('technologies')->orderBy('start_date', 'desc')->get();
+
+        $projectsData = $projects->map(function ($project) {
+            return [
+                'id' => $project->id,
+                'title' => $project->title,
+                'img' => $project->img,
+                'start_date' => $project->start_date,
+                'end_date' => $project->end_date,
+                'status' => $project->status,
+                'description' => $project->description,
+                'website' => $project->website,
+                'source_name' => $project->source_name,
+                'source_url' => $project->source_url,
+                'technologies' => $project->technologies->map(function ($tech) {
+                    return [
+                        'id' => $tech->id,
+                        'name' => $tech->name,
+                        'category' => $tech->category,
+                        'image' => $tech->image,
+                    ];
+                }),
+            ];
+        });
+
+        return response()->json(['projects' => $projectsData]);
     }
 
     public function store(Request $request)
@@ -27,7 +52,7 @@ class ProjectController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $data = $request->except(['image']);
+        $data = $request->except(['image', 'technologies']);
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
@@ -38,12 +63,14 @@ class ProjectController extends Controller
 
         $project = Project::create($data);
 
+        $this->syncTechnologies($project, $request->input('technologies', []));
+
         return response()->json(['project' => $project]);
     }
 
     public function show($id)
     {
-        $project = Project::findOrFail($id);
+        $project = Project::with('technologies')->findOrFail($id);
         return response()->json(['project' => $project]);
     }
 
@@ -58,7 +85,7 @@ class ProjectController extends Controller
         }
 
         $project = Project::findOrFail($id);
-        $data = $request->except(['image']);
+        $data = $request->except(['image', 'technologies']);
 
         if ($request->hasFile('image')) {
             if (!empty($project->img)) {
@@ -75,6 +102,8 @@ class ProjectController extends Controller
         }
 
         $project->update($data);
+
+        $this->syncTechnologies($project, $request->input('technologies', []));
 
         return response()->json(['project' => $project]);
     }
@@ -93,6 +122,33 @@ class ProjectController extends Controller
         $project->delete();
 
         return response()->json(['success' => true]);
+    }
+
+    private function syncTechnologies($project, array $technologiesData): void
+    {
+        $technologyIds = [];
+
+        foreach ($technologiesData as $techData) {
+            if (isset($techData['id']) && $techData['id']) {
+                $tech = Technology::find($techData['id']);
+                if ($tech) {
+                    $tech->name = $techData['name'] ?? $tech->name;
+                    $tech->category = $techData['category'] ?? $tech->category;
+                    $tech->image = $techData['image'] ?? $tech->image;
+                    $tech->save();
+                    $technologyIds[] = $tech->id;
+                }
+            } else {
+                $tech = Technology::create([
+                    'name' => $techData['name'],
+                    'category' => $techData['category'] ?? null,
+                    'image' => $techData['image'] ?? null,
+                ]);
+                $technologyIds[] = $tech->id;
+            }
+        }
+
+        $project->technologies()->sync($technologyIds);
     }
 
     private function getExtensionFromMime($file)

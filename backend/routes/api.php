@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\FreelanceController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\StackController;
 use App\Http\Controllers\Admin\SkillController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Middleware\Cors;
 use App\Http\Middleware\SSOTokenAuth;
 use App\Http\Middleware\AdminOnly;
@@ -49,6 +50,7 @@ Route::middleware([Cors::class])->group(function () {
   Route::get("freelances", [FreelanceController::class, "index"]);
   Route::get("stacks", [StackController::class, "index"]);
   Route::get("skills", [SkillController::class, "index"]);
+  Route::get("categories", [CategoryController::class, "index"]);
 
   Route::get("posts/{date}/{filter}", [PostsController::class, "getPosts"]);
   Route::get("post-dates", [PostsController::class, "getPostsDates"]);
@@ -100,4 +102,9 @@ Route::middleware([Cors::class, 'sso.auth', 'admin.only'])->prefix('admin')->gro
   Route::post("stacks", [StackController::class, "store"]);
   Route::post("stacks/{id}", [StackController::class, "update"]);
   Route::delete("stacks/{id}", [StackController::class, "destroy"]);
+
+  // Categories - REST API
+  Route::post("categories", [CategoryController::class, "store"]);
+  Route::post("categories/{id}", [CategoryController::class, "update"]);
+  Route::delete("categories/{id}", [CategoryController::class, "destroy"]);
 });

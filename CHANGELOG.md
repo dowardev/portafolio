@@ -1,5 +1,70 @@
 # Changelog
 
+## 13.14.0 - 2026-04-27
+
+### Summary
+This release introduces a dedicated Category entity with REST API, migrates tags, socials, and technologies from embedded JSON to normalized database tables, and updates models to use Eloquent relationships.
+
+### Added
+- New `Category` Eloquent model with name and sort_order fields
+- New `Tag` Eloquent model with name and sort_order fields
+- New `Social` Eloquent model with platform, url, and icon_name fields
+- New `Technology` Eloquent model with name, category, image, and sort_order fields
+- New `CategoryController.php` for category CRUD operations
+- New database migrations for relations tables:
+  - `create_relations_tables`: tags, socials, technologies, intro_profile_tags, intro_profile_socials, project_technologies, experience_technologies
+  - `create_categories_tables`: categories, category_technologies
+- Public GET endpoint `/categories` for retrieving categories
+- Admin REST endpoints: POST/POST{id}/DELETE `/admin/categories`
+- `TechnologyItem`, `TagItem`, `SocialItem` type definitions in types.ts
+- `getIconByName()` usage in HomeTemplate2 for icon label resolution
+
+### Changed
+- Refactored `IntroProfile` model to use BelongsToMany relationships for tags and socials instead of JSON arrays
+- Refactored `Project` model to use BelongsToMany relationship for technologies instead of JSON array
+- Refactored `Experience` model to use BelongsToMany relationship for technologies instead of JSON array
+- Updated `ExperienceController` and `ProjectController` with `syncTechnologies()` method for managing technology relationships
+- Updated `IntroProfileController` to fetch tags and socials through relationships
+- Refactored `categoriesStore.ts` to use Composition API with ref() and exported interfaces
+- Updated `categoriesController.ts` to use new Category REST API endpoints
+- Updated `introStore.ts` with `TagItem` and `SocialItem` interfaces
+- Updated `InfoEditor.vue` to handle tag items as objects with name property
+- Updated `SkillsEditor.vue` to use CategoryItem type and numeric IDs
+- Updated `SkillsListPage.vue` to use `categories` instead of `skillCategories`
+- Updated `HomeTemplate2.vue` to display tag names and resolve icon labels
+- Updated `HomePresentationPage.vue` to load categories with controller
+
+### Affected Files
+- Added:
+  - `backend/app/Http/Controllers/Admin/CategoryController.php`
+  - `backend/app/Models/Category.php`
+  - `backend/app/Models/Social.php`
+  - `backend/app/Models/Tag.php`
+  - `backend/app/Models/Technology.php`
+  - `backend/database/migrations/2026_04_27_000003_create_relations_tables.php`
+  - `backend/database/migrations/2026_04_27_000004_create_categories_tables.php`
+- Modified:
+  - `backend/app/Http/Controllers/Admin/ExperienceController.php`
+  - `backend/app/Http/Controllers/Admin/IntroProfileController.php`
+  - `backend/app/Http/Controllers/Admin/ProjectController.php`
+  - `backend/app/Models/Experience.php`
+  - `backend/app/Models/IntroProfile.php`
+  - `backend/app/Models/Project.php`
+  - `backend/routes/api.php`
+  - `frontend/src/composables/iconsIndex.ts`
+  - `frontend/src/controllers/categoriesController.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/store/categoriesStore.ts`
+  - `frontend/src/store/introStore.ts`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/admin/editors/InfoEditor.vue`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `frontend/src/views/admin/editors/SocialsEditor.vue`
+  - `frontend/src/views/admin/sections/SkillsListPage.vue`
+  - `frontend/src/views/presentation/HomePresentationPage.vue`
+
+---
+
 ## 13.13.0 - 2026-04-27
 
 ### Summary

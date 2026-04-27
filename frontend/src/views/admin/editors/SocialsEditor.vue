@@ -17,6 +17,7 @@
 import IconSelector, { IconItem } from "@/components/admin/IconSelector.vue";
 
 export interface SocialItem {
+  id?: number;
   platform: string;
   url: string;
   iconName: string;

@@ -4,17 +4,38 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Experience;
+use App\Models\Technology;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class ExperienceController extends Controller
 {
     public function index()
     {
-        $experiences = Experience::orderBy('start_date', 'desc')->get();
-        return response()->json(['experiences' => $experiences]);
+        $experiences = Experience::with('technologies')->orderBy('start_date', 'desc')->get();
+
+        $experiencesData = $experiences->map(function ($experience) {
+            return [
+                'id' => $experience->id,
+                'title' => $experience->title,
+                'img' => $experience->img,
+                'start_date' => $experience->start_date,
+                'end_date' => $experience->end_date,
+                'description' => $experience->description,
+                'website' => $experience->website,
+                'technologies' => $experience->technologies->map(function ($tech) {
+                    return [
+                        'id' => $tech->id,
+                        'name' => $tech->name,
+                        'category' => $tech->category,
+                        'image' => $tech->image,
+                    ];
+                }),
+            ];
+        });
+
+        return response()->json(['experiences' => $experiencesData]);
     }
 
     public function store(Request $request)
@@ -28,7 +49,7 @@ class ExperienceController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $data = $request->except(['image']);
+        $data = $request->except(['image', 'technologies']);
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
@@ -39,12 +60,14 @@ class ExperienceController extends Controller
 
         $experience = Experience::create($data);
 
+        $this->syncTechnologies($experience, $request->input('technologies', []));
+
         return response()->json(['experience' => $experience]);
     }
 
     public function show($id)
     {
-        $experience = Experience::findOrFail($id);
+        $experience = Experience::with('technologies')->findOrFail($id);
         return response()->json(['experience' => $experience]);
     }
 
@@ -60,7 +83,7 @@ class ExperienceController extends Controller
         }
 
         $experience = Experience::findOrFail($id);
-        $data = $request->except(['image']);
+        $data = $request->except(['image', 'technologies']);
 
         if ($request->hasFile('image')) {
             if (!empty($experience->img)) {
@@ -77,6 +100,8 @@ class ExperienceController extends Controller
         }
 
         $experience->update($data);
+
+        $this->syncTechnologies($experience, $request->input('technologies', []));
 
         return response()->json(['experience' => $experience]);
     }
@@ -95,6 +120,33 @@ class ExperienceController extends Controller
         $experience->delete();
 
         return response()->json(['success' => true]);
+    }
+
+    private function syncTechnologies($experience, array $technologiesData): void
+    {
+        $technologyIds = [];
+
+        foreach ($technologiesData as $techData) {
+            if (isset($techData['id']) && $techData['id']) {
+                $tech = Technology::find($techData['id']);
+                if ($tech) {
+                    $tech->name = $techData['name'] ?? $tech->name;
+                    $tech->category = $techData['category'] ?? $tech->category;
+                    $tech->image = $techData['image'] ?? $tech->image;
+                    $tech->save();
+                    $technologyIds[] = $tech->id;
+                }
+            } else {
+                $tech = Technology::create([
+                    'name' => $techData['name'],
+                    'category' => $techData['category'] ?? null,
+                    'image' => $techData['image'] ?? null,
+                ]);
+                $technologyIds[] = $tech->id;
+            }
+        }
+
+        $experience->technologies()->sync($technologyIds);
     }
 
     private function getExtensionFromMime($file)

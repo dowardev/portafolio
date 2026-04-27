@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from "vue";
+import { reactive, onMounted, onActivated } from "vue";
 import HomeTemplate1 from "@/templates/HomeTemplate1.vue";
 import HomeTemplate2 from "@/templates/HomeTemplate2.vue";
 
@@ -17,6 +17,7 @@ import IntroController from "@/controllers/introController";
 import ProjectsController from "@/controllers/projectsController";
 import ExperienceController from "@/controllers/experienceController";
 import FreelanceController from "@/controllers/freelanceController";
+import CategoriesController from "@/controllers/categoriesController";
 import type { HomePageData } from "@/services/types";
 
 const templateData = reactive<Partial<HomePageData>>({});
@@ -24,13 +25,19 @@ const introController = new IntroController();
 const projectsController = new ProjectsController();
 const experienceController = new ExperienceController();
 const freelanceController = new FreelanceController();
+const categoriesController = new CategoriesController();
+const skillCategories = categoriesController.categories;
 
-onMounted(async () => {
+async function loadData() {
   try {
-    const [introData, freelanceData] = await Promise.all([
+    const [introData, freelancePlatforms] = await Promise.all([
       introController.loadIntro(),
       freelanceController.loadFreelance(),
     ]);
+
+    const freelanceComments = freelanceController.getComments();
+
+    await categoriesController.loadCategories();
 
     const [projects, experiences] = await Promise.all([
       projectsController.loadPublicProjects(),
@@ -48,12 +55,16 @@ onMounted(async () => {
       showContactForm: introData.showContactForm,
       projects,
       experience: experiences,
-      freelance: freelanceData.freelance,
-      freelancePlatforms: freelanceData.freelancePlatforms,
-      freelanceComments: freelanceData.freelanceComments,
+      freelance: freelancePlatforms,
+      freelancePlatforms: freelancePlatforms,
+      freelanceComments: freelanceComments,
+      skillCategories: skillCategories.value,
     });
   } catch (error) {
     console.error("Error loading template data:", error);
   }
-});
+}
+
+onMounted(loadData);
+onActivated(() => categoriesController.reloadCategories());
 </script>

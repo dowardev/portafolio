@@ -57,10 +57,10 @@
         <div class="chips-container">
           <ion-chip
             v-for="(tagItem, tagIndex) in tags"
-            :key="tagItem + '-' + tagIndex"
+            :key="(tagItem.id || tagItem.name || tagIndex) + '-' + tagIndex"
             color="primary"
           >
-            <ion-label>{{ tagItem }}</ion-label>
+            <ion-label>{{ tagItem.name }}</ion-label>
             <ion-icon
               :icon="closeOutline"
               @click="removeTag(tagIndex)"
@@ -245,10 +245,16 @@ interface ReorderEventDetail {
   complete: (data?: boolean | LocalTag[]) => LocalTag[];
 }
 
+interface TagItem {
+  id?: number;
+  name: string;
+  sort_order?: number;
+}
+
 const props = defineProps<{
   name: string;
   description: string;
-  tags: string[];
+  tags: TagItem[];
   socials: SocialItem[];
   showContactForm: { socials: boolean; freelance: boolean };
 }>();
@@ -256,7 +262,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   "update:name": [value: string];
   "update:description": [value: string];
-  "update:tags": [value: string[]];
+  "update:tags": [value: TagItem[]];
   "update:socials": [value: SocialItem[]];
   "update:show-contact-form": [value: { socials: boolean; freelance: boolean }];
   "file-change": [payload: { file: File; type: "logo" | "photo" }];
@@ -285,8 +291,9 @@ const addTagAlertButtons = computed(() => [
       if (tagValue && tagValue.toString().trim()) {
         const trimmedValue = tagValue.toString().trim();
         const newTags = [...props.tags];
-        if (!newTags.includes(trimmedValue)) {
-          newTags.push(trimmedValue);
+        const exists = newTags.some(t => t.name === trimmedValue);
+        if (!exists) {
+          newTags.push({ name: trimmedValue, sort_order: newTags.length });
           emit("update:tags", newTags);
         }
       }
@@ -330,9 +337,9 @@ const v$ = useVuelidate(
 );
 
 function createLocalTags(): LocalTag[] {
-  return props.tags.map((tagLabel) => ({
+  return props.tags.map((tag) => ({
     id: `tag_${Date.now()}_${tagIdCounter++}`,
-    label: tagLabel,
+    label: tag.name,
   }));
 }
 
@@ -405,8 +412,11 @@ function handleReorder(reorderEvent: CustomEvent<ReorderEventDetail>) {
 }
 
 function saveReorder() {
-  const reorderedLabels = localTags.value.map((localTag) => localTag.label);
-  emit("update:tags", reorderedLabels);
+  const reorderedTags = localTags.value.map((localTag, index) => ({
+    name: localTag.label,
+    sort_order: index,
+  }));
+  emit("update:tags", reorderedTags);
   isReorderModalOpen.value = false;
 }
 

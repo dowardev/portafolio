@@ -12,11 +12,9 @@ export interface UnifiedIconConfig {
 
 import {
   allIcons as ioniconsAll,
-  IconConfig as IoniconConfig,
 } from "./iconConfig";
 import {
   allLineIcons as lineiconsAll,
-  LineIconConfig as LineiconConfig,
 } from "./lineiconsConfig";
 
 export function getUnifiedIcons(): UnifiedIconConfig[] {

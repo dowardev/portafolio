@@ -1,10 +1,10 @@
 import { useCategoriesStore } from "@/store/categoriesStore";
-import { storeToRefs } from "pinia";
-import type { SkillCategory } from "@/services/types";
+import type { CategoryItem } from "@/store/categoriesStore";
 import { ToastController } from "./toastController";
 import APIController from "./APIController";
 import ServerConfig from "./serverConfigController";
 import Cookies from "js-cookie";
+import { storeToRefs } from "pinia";
 
 const userToken = Cookies.get("user-token");
 const config = new ServerConfig({
@@ -13,46 +13,78 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
+interface CategoriesResponse {
+  categories: CategoryItem[];
+}
+
+interface CategoryResponse {
+  category: CategoryItem;
+}
+
 export default class CategoriesController {
   categoriesStore = useCategoriesStore();
   private toastController = new ToastController();
 
-  async loadCategories(): Promise<SkillCategory[]> {
+  async loadCategories(): Promise<CategoryItem[]> {
+    if (this.categoriesStore.loaded && this.categoriesStore.categories.length > 0) {
+      return this.categoriesStore.categories;
+    }
     this.categoriesStore.setLoading(true);
     try {
-      const data = await api.get<SkillsResponse>({ url: "get-skills" });
-      this.categoriesStore.setSkillCategories(data.skillCategories || []);
-      return data.skillCategories || [];
+      const data = await api.get<CategoriesResponse>({ url: "categories" });
+      this.categoriesStore.setCategories(data.categories || []);
+      return data.categories || [];
     } catch (error) {
       console.error("Error loading categories:", error);
-      this.categoriesStore.setSkillCategories([]);
+      this.categoriesStore.setCategories([]);
       return [];
     } finally {
       this.categoriesStore.setLoading(false);
     }
   }
 
-  getSkillCategories(): SkillCategory[] {
-    return this.categoriesStore.skillCategories;
+  async reloadCategories(): Promise<CategoryItem[]> {
+    this.categoriesStore.setLoading(true);
+    this.categoriesStore.resetCategories();
+    try {
+      const data = await api.get<CategoriesResponse>({ url: "categories" });
+      this.categoriesStore.setCategories(data.categories || []);
+      return data.categories || [];
+    } catch (error) {
+      console.error("Error reloading categories:", error);
+      this.categoriesStore.setCategories([]);
+      return [];
+    } finally {
+      this.categoriesStore.setLoading(false);
+    }
   }
 
-  getSkillCategory(index: number): SkillCategory | undefined {
-    return this.categoriesStore.getSkillCategory(index);
+  getCategories(): CategoryItem[] {
+    return this.categoriesStore.categories;
   }
 
-  async addCategory(category: SkillCategory): Promise<boolean> {
+  getCategory(index: number): CategoryItem | undefined {
+    return this.categoriesStore.getCategories()[index];
+  }
+
+  async addCategory(category: CategoryItem): Promise<boolean> {
     try {
       const formData = new FormData();
-      formData.append("skillCategory", JSON.stringify(category));
+      formData.append("name", category.name);
+      if (category.sort_order !== undefined) {
+        formData.append("sort_order", String(category.sort_order));
+      }
+      if (category.technologies) {
+        formData.append("technologies", JSON.stringify(category.technologies));
+      }
 
-      await api.post<SkillsResponse>({
-        url: "admin/add-skill-category",
+      await api.post<CategoryResponse>({
+        url: "admin/categories",
         data: formData,
         contentType: "multipart/form-data",
       });
 
-      this.categoriesStore.addSkillCategory(category);
-      this.categoriesStore.setSkillCategories([...this.categoriesStore.skillCategories]);
+      await this.loadCategories();
 
       const toast = await this.toastController.presentToast({
         message: "Categoría agregada correctamente",
@@ -73,20 +105,13 @@ export default class CategoriesController {
     }
   }
 
-  async deleteCategory(id: string): Promise<boolean> {
+  async deleteCategory(id: number): Promise<boolean> {
     try {
-      const index = this.categoriesStore.skillCategories.findIndex(
-        (c) => c.id === id
-      );
-      if (index === -1) return false;
-
-      await api.post<SkillsResponse>({
-        url: "admin/delete-skill-category",
-        data: { id },
+      await api.delete({
+        url: `admin/categories/${id}`,
       });
 
-      this.categoriesStore.deleteSkillCategory(index);
-      this.categoriesStore.setSkillCategories([...this.categoriesStore.skillCategories]);
+      await this.loadCategories();
 
       const toast = await this.toastController.presentToast({
         message: "Categoría eliminada correctamente",
@@ -107,23 +132,24 @@ export default class CategoriesController {
     }
   }
 
-  async updateCategory(id: string, category: SkillCategory): Promise<boolean> {
+  async updateCategory(id: number, category: CategoryItem): Promise<boolean> {
     try {
-      const index = this.categoriesStore.skillCategories.findIndex((c) => c.id === id);
-      if (index === -1) return false;
-
       const formData = new FormData();
-      formData.append("id", id);
-      formData.append("skillCategory", JSON.stringify(category));
+      formData.append("name", category.name);
+      if (category.sort_order !== undefined) {
+        formData.append("sort_order", String(category.sort_order));
+      }
+      if (category.technologies) {
+        formData.append("technologies", JSON.stringify(category.technologies));
+      }
 
-      await api.post<SkillsResponse>({
-        url: "admin/update-skill-category",
+      await api.post<CategoryResponse>({
+        url: `admin/categories/${id}`,
         data: formData,
         contentType: "multipart/form-data",
       });
 
-      this.categoriesStore.updateSkillCategory(index, category);
-      this.categoriesStore.setSkillCategories([...this.categoriesStore.skillCategories]);
+      await this.loadCategories();
 
       const toast = await this.toastController.presentToast({
         message: "Categoría actualizada correctamente",
@@ -144,8 +170,8 @@ export default class CategoriesController {
     }
   }
 
-  get skillCategories() {
-    return storeToRefs(this.categoriesStore).skillCategories;
+  get categories() {
+    return storeToRefs(this.categoriesStore).categories;
   }
 
   get categoriesLoading() {

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\IntroProfile;
+use App\Models\Tag;
+use App\Models\Social;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -79,19 +81,34 @@ class IntroProfileController extends Controller
     {
         $introProfile = IntroProfile::firstOrCreate(['id' => 1], [
             'name' => null,
-            'tags' => [],
             'description' => null,
-            'socials' => [],
             'logo_url' => null,
             'photo_url' => null,
             'show_contact_form' => false,
         ]);
 
+        $tags = $introProfile->tags()->get()->map(function ($tag) {
+            return [
+                'id' => $tag->id,
+                'name' => $tag->name,
+                'sort_order' => $tag->sort_order,
+            ];
+        });
+
+        $socials = $introProfile->socials()->get()->map(function ($social) {
+            return [
+                'id' => $social->id,
+                'platform' => $social->platform,
+                'url' => $social->url,
+                'iconName' => $social->icon_name,
+            ];
+        });
+
         return response()->json([
             'name' => $introProfile->name,
-            'tags' => $introProfile->tags ?? [],
+            'tags' => $tags,
             'description' => $introProfile->description,
-            'socials' => $introProfile->socials ?? [],
+            'socials' => $socials,
             'logoUrl' => $introProfile->logo_url ? asset($introProfile->logo_url) : null,
             'photoUrl' => $introProfile->photo_url ? asset($introProfile->photo_url) : null,
             'showContactForm' => is_array($introProfile->show_contact_form)
@@ -107,9 +124,7 @@ class IntroProfileController extends Controller
     {
         $introProfile = IntroProfile::firstOrCreate(['id' => 1], [
             'name' => null,
-            'tags' => [],
             'description' => null,
-            'socials' => [],
             'logo_url' => null,
             'photo_url' => null,
             'show_contact_form' => false,
@@ -150,14 +165,8 @@ class IntroProfileController extends Controller
         if (isset($intro['name'])) {
             $introProfile->name = $intro['name'];
         }
-        if (isset($intro['tags'])) {
-            $introProfile->tags = $intro['tags'];
-        }
         if (isset($intro['description'])) {
             $introProfile->description = $intro['description'];
-        }
-        if (isset($intro['socials'])) {
-            $introProfile->socials = $intro['socials'];
         }
         if (isset($intro['showContactForm'])) {
             $introProfile->show_contact_form = $intro['showContactForm'];
@@ -167,21 +176,66 @@ class IntroProfileController extends Controller
 
         $introProfile->save();
 
+        if (isset($intro['tags'])) {
+            $tagsData = $intro['tags'];
+            $tagIds = [];
+
+            foreach ($tagsData as $tagData) {
+                $tagName = is_array($tagData) ? ($tagData['name'] ?? '') : $tagData;
+
+                if (is_array($tagData) && isset($tagData['id']) && $tagData['id']) {
+                    $tag = Tag::find($tagData['id']);
+                    if ($tag) {
+                        $tag->name = $tagName ?: $tag->name;
+                        $tag->sort_order = $tagData['sort_order'] ?? $tag->sort_order;
+                        $tag->save();
+                        $tagIds[] = $tag->id;
+                    }
+                } else {
+                    $tag = Tag::where('name', $tagName)->first();
+                    if (!$tag) {
+                        $tag = Tag::create([
+                            'name' => $tagName,
+                            'sort_order' => is_array($tagData) ? ($tagData['sort_order'] ?? 0) : 0,
+                        ]);
+                    }
+                    $tagIds[] = $tag->id;
+                }
+            }
+
+            $introProfile->tags()->sync($tagIds);
+        }
+
+        if (isset($intro['socials'])) {
+            $socialsData = $intro['socials'];
+            $socialIds = [];
+
+            foreach ($socialsData as $socialData) {
+                if (is_array($socialData) && isset($socialData['id']) && $socialData['id']) {
+                    $social = Social::find($socialData['id']);
+                    if ($social) {
+                        $social->platform = $socialData['platform'] ?? $social->platform;
+                        $social->url = $socialData['url'] ?? $social->url;
+                        $social->icon_name = $socialData['iconName'] ?? $socialData['icon_name'] ?? $social->icon_name;
+                        $social->save();
+                        $socialIds[] = $social->id;
+                    }
+                } else {
+                    $socialData = is_array($socialData) ? $socialData : [];
+                    $social = Social::create([
+                        'platform' => $socialData['platform'] ?? '',
+                        'url' => $socialData['url'] ?? '',
+                        'icon_name' => $socialData['iconName'] ?? $socialData['icon_name'] ?? '',
+                    ]);
+                    $socialIds[] = $social->id;
+                }
+            }
+
+            $introProfile->socials()->sync($socialIds);
+        }
+
         $this->deleteOldImages($currentImageUrls, $newImageUrls);
 
-        return response()->json([
-            'name' => $introProfile->name,
-            'tags' => $introProfile->tags ?? [],
-            'description' => $introProfile->description,
-            'socials' => $introProfile->socials ?? [],
-            'logoUrl' => $introProfile->logo_url ? asset($introProfile->logo_url) : null,
-            'photoUrl' => $introProfile->photo_url ? asset($introProfile->photo_url) : null,
-            'showContactForm' => is_array($introProfile->show_contact_form)
-                ? $introProfile->show_contact_form
-                : [
-                    'socials' => (bool) ($introProfile->show_contact_form ?? false),
-                    'freelance' => (bool) ($introProfile->show_contact_form ?? false),
-                  ],
-        ]);
+        return $this->getIntro();
     }
 }

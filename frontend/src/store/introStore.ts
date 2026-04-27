@@ -1,14 +1,27 @@
 import { defineStore } from "pinia";
 import { ref, reactive } from "vue";
 
+export interface TagItem {
+  id?: number;
+  name: string;
+  sort_order?: number;
+}
+
+export interface SocialItem {
+  id?: number;
+  platform: string;
+  url: string;
+  iconName: string;
+}
+
 export const useIntroStore = defineStore("intro", () => {
   const loading = ref(false);
 
   const data = reactive({
     name: "",
-    tags: [] as string[],
+    tags: [] as TagItem[],
     description: "",
-    socials: [] as Array<{ platform: string; url: string; iconName: string }>,
+    socials: [] as SocialItem[],
     logoUrl: null as string | null,
     photoUrl: null as string | null,
     stack: [] as Array<{ name: string; image: string }>,
@@ -17,9 +30,9 @@ export const useIntroStore = defineStore("intro", () => {
 
   function setData(newData: {
     name: string | null;
-    tags: string[];
+    tags: TagItem[];
     description: string | null;
-    socials: Array<{ platform: string; url: string; iconName: string }>;
+    socials: SocialItem[];
     logoUrl: string | null;
     photoUrl: string | null;
     stack: Array<{ name: string; image: string }>;

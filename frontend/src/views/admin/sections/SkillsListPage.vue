@@ -137,7 +137,7 @@ import { storeToRefs } from "pinia";
 
 const router = useRouter();
 const categoriesController = new CategoriesController();
-const { skillCategories, loading: categoriesLoading } = storeToRefs(categoriesController.categoriesStore);
+const { categories: skillCategories, loading: categoriesLoading } = storeToRefs(categoriesController.categoriesStore);
 
 const isDev = import.meta.env.DEV;
 
@@ -190,11 +190,7 @@ async function generateTestCategories() {
       id: crypto.randomUUID(),
       name: faker.word.noun(),
       technologies: techNames.map((name) => ({
-        name,
-        image: "",
         iconName: name.toLowerCase(),
-        size: "32px",
-        type: "icon" as const,
       })),
     };
   });
