@@ -13,18 +13,8 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
-const projectsStore = useProjectsStore();
-
-interface ProjectsResponse {
-  projects: ProjectItem[];
-}
-
-interface ProjectItemResponse {
-  project: ProjectItem;
-}
-
 export default class ProjectsController {
-  private projectsStore = projectsStore;
+  projectsStore = useProjectsStore();
   private toastController = new ToastController();
 
   async loadPublicProjects(): Promise<ProjectItem[]> {
@@ -222,7 +212,12 @@ export default class ProjectsController {
       return false;
     }
   }
-}
 
-export const { projects } = storeToRefs(projectsStore);
-export const { loading: projectsLoading } = storeToRefs(projectsStore);
+  get projects() {
+    return storeToRefs(this.projectsStore).projects;
+  }
+
+  get projectsLoading() {
+    return storeToRefs(this.projectsStore).loading;
+  }
+}

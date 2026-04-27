@@ -13,14 +13,8 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
-const categoriesStore = useCategoriesStore();
-
-interface SkillsResponse {
-  skillCategories: SkillCategory[];
-}
-
 export default class CategoriesController {
-  private categoriesStore = categoriesStore;
+  categoriesStore = useCategoriesStore();
   private toastController = new ToastController();
 
   async loadCategories(): Promise<SkillCategory[]> {
@@ -149,7 +143,12 @@ export default class CategoriesController {
       return false;
     }
   }
-}
 
-export const { skillCategories } = storeToRefs(categoriesStore);
-export const { loading: categoriesLoading } = storeToRefs(categoriesStore);
+  get skillCategories() {
+    return storeToRefs(this.categoriesStore).skillCategories;
+  }
+
+  get categoriesLoading() {
+    return storeToRefs(this.categoriesStore).loading;
+  }
+}

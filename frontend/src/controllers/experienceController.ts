@@ -13,18 +13,8 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
-const experienceStore = useExperienceStore();
-
-interface ExperiencesResponse {
-  experiences: ExperienceItem[];
-}
-
-interface ExperienceResponse {
-  experience: ExperienceItem;
-}
-
 export default class ExperienceController {
-  private experienceStore = experienceStore;
+  experienceStore = useExperienceStore();
   private toastController = new ToastController();
 
   async loadPublicExperiences(): Promise<ExperienceItem[]> {
@@ -190,7 +180,12 @@ export default class ExperienceController {
       return false;
     }
   }
-}
 
-export const { experiences } = storeToRefs(experienceStore);
-export const { loading: experiencesLoading } = storeToRefs(experienceStore);
+  get experiences() {
+    return storeToRefs(this.experienceStore).experiences;
+  }
+
+  get experiencesLoading() {
+    return storeToRefs(this.experienceStore).loading;
+  }
+}

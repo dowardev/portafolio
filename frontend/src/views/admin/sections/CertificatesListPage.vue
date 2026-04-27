@@ -118,10 +118,12 @@ import {
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { addOutline, ribbonOutline, trashOutline } from "ionicons/icons";
-import CertificatesController, { certificates } from "@/controllers/certificatesController";
+import CertificatesController from "@/controllers/certificatesController";
+import { storeToRefs } from "pinia";
 
 const router = useRouter();
 const certificatesController = new CertificatesController();
+const { certificates } = storeToRefs(certificatesController.certificatesStore);
 
 onMounted(async () => {
   await certificatesController.loadPublicCertificates();

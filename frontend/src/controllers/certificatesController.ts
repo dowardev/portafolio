@@ -13,18 +13,8 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
-const certificatesStore = useCertificatesStore();
-
-interface CertificatesResponse {
-  certificates: CertificateItem[];
-}
-
-interface CertificateResponse {
-  certificate: CertificateItem;
-}
-
 export default class CertificatesController {
-  private certificatesStore = certificatesStore;
+  certificatesStore = useCertificatesStore();
   private toastController = new ToastController();
 
   async loadPublicCertificates(): Promise<CertificateItem[]> {
@@ -178,7 +168,12 @@ export default class CertificatesController {
       return false;
     }
   }
-}
 
-export const { certificates } = storeToRefs(certificatesStore);
-export const { loading: certificatesLoading } = storeToRefs(certificatesStore);
+  get certificates() {
+    return storeToRefs(this.certificatesStore).certificates;
+  }
+
+  get certificatesLoading() {
+    return storeToRefs(this.certificatesStore).loading;
+  }
+}

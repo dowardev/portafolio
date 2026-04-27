@@ -1,5 +1,34 @@
 # Changelog
 
+## 13.13.0 - 2026-04-27
+
+### Summary
+This release refactors all controllers to use instance-based store access with getter properties, replacing the previous module-level store references. List pages now access store data directly through controller instances using `storeToRefs`.
+
+### Changed
+- Refactored all controllers (categories, certificates, experience, projects) to use instance-based store access:
+  - Removed module-level store instantiation (e.g., `const categoriesStore = useCategoriesStore()`)
+  - Made `categoriesStore`/`certificatesStore`/`experienceStore`/`projectsStore` instance properties (public instead of private)
+  - Converted exported store references to getter properties (`skillCategories`, `certificates`, `experiences`, `projects`)
+  - Converted exported loading states to getter properties (`categoriesLoading`, `certificatesLoading`, `experiencesLoading`, `projectsLoading`)
+- Updated all list pages (Certificates, Experience, Projects, Skills) to:
+  - Import controller without store exports
+  - Access store via `storeToRefs(controllerInstance.storeProperty)`
+  - Removed inline type definitions from controllers (now use centralized types from services/types.ts)
+
+### Affected Files
+- Modified:
+  - `frontend/src/controllers/categoriesController.ts`
+  - `frontend/src/controllers/certificatesController.ts`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/views/admin/sections/CertificatesListPage.vue`
+  - `frontend/src/views/admin/sections/ExperienceListPage.vue`
+  - `frontend/src/views/admin/sections/ProjectsListPage.vue`
+  - `frontend/src/views/admin/sections/SkillsListPage.vue`
+
+---
+
 ## 13.12.0 - 2026-04-27
 
 ### Summary

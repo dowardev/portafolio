@@ -148,10 +148,12 @@ import {
 import { faker } from "@faker-js/faker";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import ExperienceController, { experiences } from "@/controllers/experienceController";
+import ExperienceController from "@/controllers/experienceController";
+import { storeToRefs } from "pinia";
 
 const router = useRouter();
 const experienceController = new ExperienceController();
+const { experiences } = storeToRefs(experienceController.experienceStore);
 
 const isDev = import.meta.env.DEV;
 

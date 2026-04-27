@@ -132,13 +132,12 @@ import {
   bugOutline,
 } from "ionicons/icons";
 import { faker } from "@faker-js/faker";
-import CategoriesController, {
-  skillCategories,
-  categoriesLoading,
-} from "@/controllers/categoriesController";
+import CategoriesController from "@/controllers/categoriesController";
+import { storeToRefs } from "pinia";
 
 const router = useRouter();
 const categoriesController = new CategoriesController();
+const { skillCategories, loading: categoriesLoading } = storeToRefs(categoriesController.categoriesStore);
 
 const isDev = import.meta.env.DEV;
 

@@ -144,10 +144,12 @@ import {
   warningOutline,
 } from "ionicons/icons";
 import { faker } from "@faker-js/faker";
-import ProjectsController, { projects, projectsLoading } from "@/controllers/projectsController";
+import ProjectsController from "@/controllers/projectsController";
+import { storeToRefs } from "pinia";
 
 const router = useRouter();
 const projectsController = new ProjectsController();
+const { projects, loading: projectsLoading } = storeToRefs(projectsController.projectsStore);
 
 const isDev = import.meta.env.DEV;
 
