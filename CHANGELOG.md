@@ -1,5 +1,33 @@
 # Changelog
 
+## 13.11.0 - 2026-04-27
+
+### Summary
+This release implements a dedicated Stack CRUD API following the RESTful architecture pattern established in previous releases. It adds a new Stack entity with full CRUD operations for managing technology stack items in the admin panel.
+
+### Added
+- New `StackController.php` for backend Stack CRUD operations (index, store, show, update, destroy)
+- New `Stack` Eloquent model with name, img, and sort_order fields
+- New database migration `create_stacks_table` with id, name, img, sort_order, timestamps
+- New `stackController.ts` frontend controller with loadStack, addStack, deleteStack, updateStack methods
+- Public GET endpoint `/stacks` for retrieving stack items
+- Admin API endpoints: POST `/admin/stacks`, POST `/admin/stacks/{id}`, DELETE `/admin/stacks/{id}`
+- Image upload support with automatic old image cleanup on update
+- Multipart form data support with MIME-to-extension mapping
+- StackStore integration for centralized state management
+
+### Affected Files
+- Added:
+  - `backend/app/Http/Controllers/Admin/StackController.php`
+  - `backend/app/Models/Stack.php`
+  - `backend/database/migrations/2026_04_27_000000_create_stacks_table.php`
+  - `frontend/src/controllers/stackController.ts`
+- Modified:
+  - `backend/routes/api.php`
+  - `frontend/src/store/stackStore.ts`
+
+---
+
 ## 13.10.0 - 2026-04-26
 
 ### Summary

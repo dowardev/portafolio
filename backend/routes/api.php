@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\FreelanceController;
 use App\Http\Controllers\Admin\CertificateController;
+use App\Http\Controllers\Admin\StackController;
 use App\Http\Middleware\Cors;
 use App\Http\Middleware\SSOTokenAuth;
 use App\Http\Middleware\AdminOnly;
@@ -44,6 +45,7 @@ Route::middleware([Cors::class])->group(function () {
   Route::get("projects", [ProjectController::class, "index"]);
   Route::get("certificates", [CertificateController::class, "index"]);
   Route::get("freelances", [FreelanceController::class, "index"]);
+  Route::get("stacks", [StackController::class, "index"]);
 
   Route::get("posts/{date}/{filter}", [PostsController::class, "getPosts"]);
   Route::get("post-dates", [PostsController::class, "getPostsDates"]);
@@ -87,4 +89,9 @@ Route::middleware([Cors::class, 'sso.auth', 'admin.only'])->prefix('admin')->gro
   Route::post("certificates", [CertificateController::class, "store"]);
   Route::post("certificates/{id}", [CertificateController::class, "update"]);
   Route::delete("certificates/{id}", [CertificateController::class, "destroy"]);
+
+  // Stack - REST API
+  Route::post("stacks", [StackController::class, "store"]);
+  Route::post("stacks/{id}", [StackController::class, "update"]);
+  Route::delete("stacks/{id}", [StackController::class, "destroy"]);
 });
