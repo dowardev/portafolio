@@ -8,13 +8,13 @@ use App\Models\Technology;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CategoryController extends Controller
+class SkillsCategoryController extends Controller
 {
     public function index()
     {
         $categories = Category::with('technologies')->orderBy('sort_order', 'asc')->get();
 
-        $categoriesData = $categories->map(function ($category) {
+        $skillsCategoriesData = $categories->map(function ($category) {
             return [
                 'id' => $category->id,
                 'name' => $category->name,
@@ -31,13 +31,13 @@ class CategoryController extends Controller
             ];
         });
 
-        return response()->json(['categories' => $categoriesData]);
+        return response()->json(['skillsCategories' => $skillsCategoriesData]);
     }
 
     public function store(Request $request)
     {
         $name = $request->get('name') ?? $request->input('name');
-        
+
         if (empty($name)) {
             return response()->json(['error' => 'El nombre es requerido'], 422);
         }
@@ -53,19 +53,19 @@ class CategoryController extends Controller
         }
         $this->syncTechnologies($category, $technologiesData);
 
-        return response()->json(['category' => $category]);
+        return response()->json(['skillsCategory' => $category]);
     }
 
     public function update(Request $request, $id)
     {
         $name = $request->get('name') ?? $request->input('name');
-        
+
         if (empty($name)) {
             return response()->json(['error' => 'El nombre es requerido'], 422);
         }
 
         $category = Category::findOrFail($id);
-        
+
         $category->name = $name;
         $category->sort_order = $request->input('sort_order', $category->sort_order);
         $category->save();
@@ -76,7 +76,7 @@ class CategoryController extends Controller
         }
         $this->syncTechnologies($category, $technologiesData);
 
-        return response()->json(['category' => $category]);
+        return response()->json(['skillsCategory' => $category]);
     }
 
     public function destroy($id)

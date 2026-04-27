@@ -5,7 +5,7 @@
         <ion-buttons slot="start">
           <ion-back-button
             text=""
-            default-href="/admin-panel/categories"
+            default-href="/admin-panel/skills-categories"
           ></ion-back-button>
         </ion-buttons>
 
@@ -90,19 +90,19 @@ import {
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { saveOutline, trashOutline } from "ionicons/icons";
-import CategoriesController from "@/controllers/categoriesController";
+import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
 import TechSkillsEditor from "./TechSkillsEditor.vue";
-import type { CategoryItem } from "@/store/categoriesStore";
+import type { SkillsCategoryItem } from "@/store/skillsCategoriesStore";
 
 const route = useRoute();
 const router = useRouter();
-const categoriesController = new CategoriesController();
+const skillsCategoriesController = new SkillsCategoriesController();
 const techSkillsRef = ref<InstanceType<typeof TechSkillsEditor> | null>(null);
 
 const loading = ref(false);
 const saving = ref(false);
 const loaded = ref(false);
-const skillCategories = ref<CategoryItem[]>([]);
+const skillCategories = ref<SkillsCategoryItem[]>([]);
 
 const categoryName = ref("");
 const technologies = ref<{ iconName: string }[]>([]);
@@ -116,7 +116,7 @@ const categoryId = ref<number | null>(null);
 onMounted(async () => {
   loading.value = true;
   try {
-    skillCategories.value = await categoriesController.loadCategories();
+    skillCategories.value = await skillsCategoriesController.loadSkillsCategories();
 
     if (isEditing.value && categoryIndex.value !== undefined) {
       const category = skillCategories.value[categoryIndex.value];
@@ -162,11 +162,11 @@ async function confirmDelete() {
 async function deleteCategory() {
   if (categoryId.value !== null) {
     saving.value = true;
-    const success = await categoriesController.deleteCategory(categoryId.value);
+    const success = await skillsCategoriesController.deleteSkillsCategory(categoryId.value);
     saving.value = false;
     if (success) {
-      router.push("/admin-panel/categories");
-    }
+router.push("/admin-panel/skills-categories");
+}
   }
 }
 
@@ -185,14 +185,14 @@ async function saveCategory() {
   };
   
   if (isEditing.value && categoryId.value !== null) {
-    success = await categoriesController.updateCategory(categoryId.value, categoryData);
+    success = await skillsCategoriesController.updateSkillsCategory(categoryId.value, categoryData);
   } else {
-    success = await categoriesController.addCategory(categoryData);
+    success = await skillsCategoriesController.addSkillsCategory(categoryData);
   }
   saving.value = false;
   if (success) {
-    router.push("/admin-panel/categories");
-  }
+router.push("/admin-panel/skills-categories");
+}
 }
 </script>
 

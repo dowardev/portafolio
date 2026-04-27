@@ -17,7 +17,7 @@ import IntroController from "@/controllers/introController";
 import ProjectsController from "@/controllers/projectsController";
 import ExperienceController from "@/controllers/experienceController";
 import FreelanceController from "@/controllers/freelanceController";
-import CategoriesController from "@/controllers/categoriesController";
+import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
 import type { HomePageData } from "@/services/types";
 
 const templateData = reactive<Partial<HomePageData>>({});
@@ -25,8 +25,8 @@ const introController = new IntroController();
 const projectsController = new ProjectsController();
 const experienceController = new ExperienceController();
 const freelanceController = new FreelanceController();
-const categoriesController = new CategoriesController();
-const skillCategories = categoriesController.categories;
+const skillsCategoriesController = new SkillsCategoriesController();
+const skillCategories = skillsCategoriesController.skillsCategories;
 
 async function loadData() {
   try {
@@ -37,7 +37,7 @@ async function loadData() {
 
     const freelanceComments = freelanceController.getComments();
 
-    await categoriesController.loadCategories();
+    await skillsCategoriesController.loadSkillsCategories();
 
     const [projects, experiences] = await Promise.all([
       projectsController.loadPublicProjects(),
@@ -66,5 +66,5 @@ async function loadData() {
 }
 
 onMounted(loadData);
-onActivated(() => categoriesController.reloadCategories());
+onActivated(() => skillsCategoriesController.reloadSkillsCategories());
 </script>

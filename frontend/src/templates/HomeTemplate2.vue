@@ -370,13 +370,13 @@ import vueIcon from "@/assets/otros/vue-js-1.svg";
 import mariadbIcon from "@/assets/otros/mariadb-icon.svg";
 import ionicIcon from "@/assets/otros/ionicframework-icon.svg";
 import laravelIcon from "@/assets/otros/laravel-2.svg";
-import CategoriesController from "@/controllers/categoriesController";
+import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
 import { getIconByName } from "@/composables/iconsIndex";
 
 const router = useRouter();
 const props = defineProps<Partial<HomePageData>>();
 const isIOS = isPlatform("ios");
-const categoriesController = new CategoriesController();
+const skillsCategoriesController = new SkillsCategoriesController();
 
 const contentRef = ref();
 const menuContainerRef = ref();
@@ -506,7 +506,14 @@ onMounted(async () => {
   setTimeout(setupIntersectionObserver, 100);
   if (!categories.value.length) {
     try {
-      categories.value = await categoriesController.loadCategories();
+      categories.value = (await skillsCategoriesController.loadSkillsCategories()).map(cat => ({
+  id: cat.id || '',
+  name: cat.name,
+  technologies: cat.technologies?.map(tech => ({
+    iconName: tech.iconName,
+    name: tech.name
+  })) || []
+}));
     } catch (error) {
       console.error("Error loading categories:", error);
     }

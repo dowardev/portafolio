@@ -75,11 +75,11 @@ import * as ionicons from "ionicons/icons";
 import { useIconColors } from "@/composables/useIconColors";
 import type { StackItem, SkillCategory } from "@/services/types";
 import IntroController from "@/controllers/introController";
-import CategoriesController from "@/controllers/categoriesController";
+import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
 
 const { getIconColor } = useIconColors();
 const introController = new IntroController();
-const categoriesController = new CategoriesController();
+const skillsCategoriesController = new SkillsCategoriesController();
 
 const stackItems = ref<StackItem[]>([]);
 const skillCategories = ref<SkillCategory[]>([]);
@@ -88,10 +88,10 @@ onMounted(async () => {
   try {
     const [introData, skillsData] = await Promise.all([
       introController.loadIntro(),
-      categoriesController.loadCategories(),
+      skillsCategoriesController.loadSkillsCategories(),
     ]);
     stackItems.value = introData.stack || [];
-    skillCategories.value = skillsData.skillCategories || [];
+    skillCategories.value = skillsData || [];
   } catch (error) {
     console.error("Error loading categories data:", error);
   }

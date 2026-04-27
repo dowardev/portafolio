@@ -66,7 +66,7 @@ const menuItems = [
     section: "categories",
     label: "Categorías",
     icon: barChartOutline,
-    route: "/admin-panel/categories",
+    route: "/admin-panel/skills-categories",
     color: "#F5A623",
   },
   {

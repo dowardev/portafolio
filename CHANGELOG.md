@@ -1,5 +1,55 @@
 # Changelog
 
+## 14.0.0 - 2026-04-27
+
+### Summary
+This major release renames the "Categorías" feature to "Skills Categories" throughout the application, including dedicated API endpoints with `/skills-categories` routes, updated backend controller, and refactored frontend components. This is a breaking change with new API endpoints and response format.
+
+### Added
+- New `SkillsCategoryController.php` for skills category management (renamed from CategoryController)
+- New `skillsCategoriesController.ts` for frontend skills category operations
+- New `skillsCategoriesStore.ts` for centralized state management
+- New `SkillsCategoriesListPage.vue` for admin list view (renamed from SkillsListPage)
+- New response keys: `skillsCategories` (array), `skillsCategory` (single item)
+
+### Changed
+- Renamed API endpoints from `/categories` to `/skills-categories`:
+  - Public GET: `/categories` → `/skills-categories`
+  - Admin POST: `/admin/categories` → `/admin/skills-categories`
+  - Admin POST{id}: `/admin/categories/{id}` → `/admin/skills-categories/{id}`
+  - Admin DELETE: `/admin/categories/{id}` → `/admin/skills-categories/{id}`
+- Renamed routes from `/admin-panel/categories` to `/admin-panel/skills-categories`
+- Updated response format: `categories` → `skillsCategories`, `category` → `skillsCategory`
+- Updated controller class name: `CategoryController` → `SkillsCategoryController`
+- Updated all frontend imports and references throughout the codebase
+- Updated admin menu link and back button navigation targets
+
+### Breaking Changes
+- API endpoints changed: `/categories` → `/skills-categories`
+- Response keys changed: `categories` → `skillsCategories`, `category` → `skillsCategory`
+- Route URLs changed: `/admin-panel/categories` → `/admin-panel/skills-categories`
+- Route names changed: `CategoriesListPage` → `SkillsCategoriesListPage`, etc.
+- Controller class name changed: `CategoryController` → `SkillsCategoryController`
+
+### Affected Files
+- Renamed:
+  - `backend/app/Http/Controllers/Admin/CategoryController.php` → `backend/app/Http/Controllers/Admin/SkillsCategoryController.php`
+  - `frontend/src/controllers/categoriesController.ts` → `frontend/src/controllers/skillsCategoriesController.ts`
+  - `frontend/src/store/categoriesStore.ts` → `frontend/src/store/skillsCategoriesStore.ts`
+  - `frontend/src/views/admin/sections/SkillsListPage.vue` → `frontend/src/views/admin/sections/SkillsCategoriesListPage.vue`
+- Modified:
+  - `backend/routes/api.php`
+  - `frontend/src/router/index.ts`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/admin/AdminHomeMenu.vue`
+  - `frontend/src/views/admin/editors/ExperienceEditor.vue`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `frontend/src/views/presentation/HomePresentationPage.vue`
+  - `frontend/src/views/presentation/categories/SkillsPage.vue`
+
+---
+
 ## 13.14.0 - 2026-04-27
 
 ### Summary

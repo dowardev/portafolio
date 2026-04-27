@@ -23,7 +23,7 @@ import ProjectsListPage from "@/views/admin/sections/ProjectsListPage.vue";
 import ProjectsEditor from "@/views/admin/editors/ProjectsEditor.vue";
 import ExperienceListPage from "@/views/admin/sections/ExperienceListPage.vue";
 import ExperienceEditor from "@/views/admin/editors/ExperienceEditor.vue";
-import CategoriesListPage from "@/views/admin/sections/SkillsListPage.vue";
+import SkillsCategoriesListPage from "@/views/admin/sections/SkillsCategoriesListPage.vue";
 import CategoriesEditor from "@/views/admin/editors/SkillsEditor.vue";
 import CertificatesListPage from "@/views/admin/sections/CertificatesListPage.vue";
 import CertificatesEditor from "@/views/admin/editors/CertificatesEditor.vue";
@@ -173,21 +173,21 @@ const routes: Array<RouteRecordRaw> = [
     name: "ExperienceEditPage",
     component: ExperienceEditor,
   },
-  {
-    path: "/admin-panel/categories",
-    name: "CategoriesListPage",
-    component: CategoriesListPage,
-  },
-  {
-    path: "/admin-panel/categories/new",
-    name: "CategoriesNewPage",
-    component: CategoriesEditor,
-  },
-  {
-    path: "/admin-panel/categories/edit/:index",
-    name: "CategoriesEditPage",
-    component: CategoriesEditor,
-  },
+{
+path: "/admin-panel/skills-categories",
+name: "SkillsCategoriesListPage",
+component: SkillsCategoriesListPage,
+},
+{
+path: "/admin-panel/skills-categories/new",
+name: "SkillsCategoriesNewPage",
+component: CategoriesEditor,
+},
+{
+path: "/admin-panel/skills-categories/edit/:index",
+name: "SkillsCategoriesEditPage",
+component: CategoriesEditor,
+},
   {
     path: "/admin-panel/certificates",
     name: "CertificatesListPage",
@@ -250,7 +250,7 @@ router.beforeEach(async (to, from, next) => {
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];
   const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
-  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "CategoriesListPage", "CategoriesEditPage", "CategoriesNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage", "FreelanceListPage", "FreelanceEditPage", "FreelanceEditPageOld", "FreelanceNewPage", "FreelanceNewPageOld"];
+  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsCategoriesListPage", "SkillsCategoriesEditPage", "SkillsCategoriesNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage", "FreelanceListPage", "FreelanceEditPage", "FreelanceEditPageOld", "FreelanceNewPage", "FreelanceNewPageOld"];
   const noGuardRequired = [
     "RestorePasswordPage",
     "PresentationPage",
