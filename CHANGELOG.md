@@ -1,5 +1,50 @@
 # Changelog
 
+## 13.12.0 - 2026-04-27
+
+### Summary
+This release introduces a new dedicated Skills entity with its own database table and REST API, separating skills management from the homepage JSON structure. It also refactors the intro/profile handling into a dedicated `IntroProfileController` for better code organization.
+
+### Added
+- New `Skill` Eloquent model with name, level, iconName, and sort_order fields
+- New `SkillController.php` with full REST API (index, store, update, destroy)
+- New `IntroProfile` Eloquent model for intro/profile data management
+- New `IntroProfileController.php` for intro operations (getIntro, updateIntro)
+- New database migration `create_skills_table` with dedicated skills table
+- New database migration `rename_homepage_to_intro_profiles` for table refactoring
+- Public GET endpoint `/skills` for retrieving skills
+- Admin REST endpoints: POST/POST{id}/DELETE `/admin/skills`
+- New frontend `skillsController.ts` with loadSkills, addSkill, deleteSkill, updateSkill methods
+- New frontend `skillsStore.ts` for centralized skills state management
+
+### Changed
+- Refactored `get-intro` endpoint to use `IntroProfileController` instead of `HomePageController`
+- Updated admin `update-intro` endpoint to use `IntroProfileController`
+- Migrated skills from embedded JSON in homepage to separate skills table
+- Changed skill category operations from action-based to RESTful:
+  - `admin/add-skill-category` → `admin/skills` (POST)
+  - `admin/update-skill-category` → `admin/skills/{id}` (POST)
+  - `admin/delete-skill-category` → `admin/skills/{id}` (DELETE)
+
+### Breaking Changes
+- Skills data now stored in dedicated `skills` table instead of homepage JSON
+- API changes for skills: different endpoint structure and response format
+
+### Affected Files
+- Added:
+  - `backend/app/Http/Controllers/Admin/IntroProfileController.php`
+  - `backend/app/Http/Controllers/Admin/SkillController.php`
+  - `backend/app/Models/IntroProfile.php`
+  - `backend/app/Models/Skill.php`
+  - `backend/database/migrations/2026_04_27_000001_rename_homepage_to_intro_profiles.php`
+  - `backend/database/migrations/2026_04_27_000002_create_skills_table.php`
+  - `frontend/src/controllers/skillsController.ts`
+  - `frontend/src/store/skillsStore.ts`
+- Modified:
+  - `backend/routes/api.php`
+
+---
+
 ## 13.11.0 - 2026-04-27
 
 ### Summary
