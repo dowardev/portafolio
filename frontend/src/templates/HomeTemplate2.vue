@@ -109,23 +109,16 @@ Categorías
                 }}</ion-chip>
               </div>
 
-              <div>
-                <ion-button fill="clear">
-                  <ion-icon slot="icon-only" :icon="logoGitlab"></ion-icon>
-                </ion-button>
-
-                <ion-button fill="clear">
-                  <ion-icon slot="icon-only" :icon="logoLinkedin"></ion-icon>
-                </ion-button>
-
-                <ion-button fill="clear">
-                  <ion-icon slot="icon-only" :icon="logoMastodon"></ion-icon>
-                </ion-button>
-
-                <ion-button fill="clear">
-                  <ion-icon slot="icon-only" :icon="chatbox"></ion-icon>
-                </ion-button>
-              </div>
+<div>
+            <ion-button
+              v-for="social in props.socials"
+              :key="social.platform"
+              fill="clear"
+              @click="openSocialUrl(social.url)"
+            >
+              <ion-icon slot="icon-only" :icon="getIconByName(social.iconName)?.icon"></ion-icon>
+            </ion-button>
+          </div>
             </div>
           </ion-col>
         </ion-row>
@@ -360,12 +353,7 @@ import FinalSection from "@/views/presentation/sections/FinalSection.vue";
 import ProjectCard from "@/components/projects/ProjectCard.vue";
 import ExperienceCard from "@/components/experience/ExperienceCard.vue";
 import type { HomePageData, SkillCategory } from "@/services/types";
-import {
-  chatbox,
-  logoGitlab,
-  logoLinkedin,
-  logoMastodon,
-} from "ionicons/icons";
+
 import vueIcon from "@/assets/otros/vue-js-1.svg";
 import mariadbIcon from "@/assets/otros/mariadb-icon.svg";
 import ionicIcon from "@/assets/otros/ionicframework-icon.svg";
@@ -451,6 +439,10 @@ const scrollActiveButtonIntoView = () => {
       behavior: "smooth",
     });
   }
+};
+
+const openSocialUrl = (url: string) => {
+  window.open(url, "_blank");
 };
 
 watch(activeSection, () => {

@@ -1,5 +1,22 @@
 # Changelog
 
+## 14.1.0 - 2026-04-27
+
+### Summary
+This release refactors the social buttons in HomeTemplate2 to be dynamically rendered from props instead of hardcoded values, enabling configurable social links without code changes.
+
+### Changed
+- Refactored social buttons from hardcoded ion-button elements to dynamic v-for loop using `props.socials`
+- Added `openSocialUrl(url)` function to open social URLs in new tab
+- Social icons now resolved via `getIconByName(social.iconName)?.icon` for centralized icon management
+- Removed unused icon imports: chatbox, logoGitlab, logoLinkedin, logoMastodon
+
+### Affected Files
+- Modified:
+- `frontend/src/templates/HomeTemplate2.vue`
+
+---
+
 ## 14.0.0 - 2026-04-27
 
 ### Summary
