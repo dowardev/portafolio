@@ -57,14 +57,7 @@
             <ion-card class="shadow-1">
               <ion-item lines="full">
                 <ion-thumbnail slot="start">
-                  <img
-                    v-if="getPlatformImage(comment.platformName)"
-                    :src="getPlatformImage(comment.platformName)"
-                    :alt="comment.platformName"
-                    style="height: 45px"
-                  />
                   <ion-icon
-                    v-else
                     :icon="chatbubblesOutline"
                     style="font-size: 24px"
                   />

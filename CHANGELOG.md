@@ -1,5 +1,47 @@
 # Changelog
 
+## 15.4.0 - 2026-04-28
+
+### Summary
+This release introduces separate API endpoints for platforms and comments management, along with several bug fixes for undefined errors and data loading issues.
+
+### Added
+- New `CommentController` for managing comments with dedicated endpoints
+- New frontend methods: `addComment`, `updateComment`, `deleteComment`
+- Auto-refresh functionality on FreelanceListPage using `onIonViewWillEnter`
+
+### Changed
+- Separated API endpoints: `profile-platforms` for platforms, `profile-comments` for comments
+- FreelanceComment interface now uses flat fields (`comment_title`, `comment_text`, `comment_rating`) instead of nested `platformName`
+- Backend FreelanceController methods renamed to `storePlatform`, `updatePlatform`, `destroyPlatform`
+- Comments now sent as JSON instead of FormData
+- FreelanceEditor now uses dedicated methods for platforms vs comments
+
+### Fixed
+- Fixed undefined errors when accessing `platforms.value` and `comments.value` in FreelanceEditor and FreelanceListPage
+- Fixed logical condition error (changed `||` to `&&`) for data loading
+- Fixed list not refreshing after adding/editing items
+
+### Removed
+- Removed `platformName` field from FreelanceComment interface
+- Removed `platformName` display from FinalSection and FreelanceListPage
+- Removed image platform display from comments in FinalSection
+
+### Affected Files
+- Modified:
+  - `backend/app/Http/Controllers/Admin/FreelanceController.php`
+  - `backend/routes/api.php`
+  - `frontend/src/controllers/freelanceController.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/views/admin/editors/FreelanceEditor.vue`
+  - `frontend/src/views/admin/sections/FreelanceListPage.vue`
+  - `frontend/src/views/presentation/sections/FinalSection.vue`
+  - `frontend/src/views/presentation/information/InformationComponent.vue`
+- Added:
+  - `backend/app/Http/Controllers/Admin/CommentController.php`
+
+---
+
 ## 15.3.1 - 2026-04-28
 
 ### Summary

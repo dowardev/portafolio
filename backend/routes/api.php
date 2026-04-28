@@ -83,10 +83,15 @@ Route::middleware([Cors::class, 'sso.auth', 'admin.only'])->prefix('admin')->gro
   Route::post("experiences/{id}", [ExperienceController::class, "update"]);
   Route::delete("experiences/{id}", [ExperienceController::class, "destroy"]);
 
-  // Freelance - REST API
-  Route::post("freelances", [FreelanceController::class, "store"]);
-  Route::post("freelances/{id}", [FreelanceController::class, "update"]);
-  Route::delete("freelances/{id}", [FreelanceController::class, "destroy"]);
+  // Freelance Platforms - REST API
+  Route::post("profile-platforms", [FreelanceController::class, "storePlatform"]);
+  Route::post("profile-platforms/{id}", [FreelanceController::class, "updatePlatform"]);
+  Route::delete("profile-platforms/{id}", [FreelanceController::class, "destroyPlatform"]);
+
+  // Freelance Comments - REST API
+  Route::post("profile-comments", [CommentController::class, "store"]);
+  Route::post("profile-comments/{id}", [CommentController::class, "update"]);
+  Route::delete("profile-comments/{id}", [CommentController::class, "destroy"]);
 
   // Skills - REST API (tabla separada)
   Route::post("skills", [SkillController::class, "store"]);

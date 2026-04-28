@@ -86,7 +86,10 @@ export interface FreelanceItem {
   name: string;
   image: string;
   url: string;
-  comment: {
+  comment_title?: string;
+  comment_text?: string;
+  comment_rating?: number;
+  comment?: {
     title: string;
     text: string;
     rating: number;
@@ -102,10 +105,9 @@ export interface FreelancePlatform {
 
 export interface FreelanceComment {
   id: string;
-  platformName: string;
   title: string;
-  text: string;
-  rating: number;
+  text?: string;
+  rating?: number;
 }
 
 export interface TagItem {

@@ -81,11 +81,11 @@
               <h3>Plataformas</h3>
             </div>
 
-            <template v-if="platforms.length > 0">
+            <template v-if="platforms?.length > 0">
               <ion-list>
                 <ion-card class="shadow1">
                   <ion-item
-                    v-for="(item, index) in platforms"
+                    v-for="(item, index) in (platforms || [])"
                     :key="index"
                     button
                     lines="full"
@@ -136,11 +136,11 @@
               <h3>Comentarios</h3>
             </div>
 
-            <template v-if="comments.length > 0">
+            <template v-if="comments?.length > 0">
               <ion-list>
                 <ion-card class="shadow1">
                   <ion-item
-                    v-for="(item, index) in comments"
+                    v-for="(item, index) in (comments || [])"
                     :key="index"
                     button
                     lines="full"
@@ -152,9 +152,6 @@
 
                     <ion-label>
                       <h2>{{ item.title || "Sin título" }}</h2>
-                      <p style="font-size: 12px; color: var(--ion-color-medium)">
-                        {{ item.platformName || "Sin plataforma" }}
-                      </p>
                       <div v-if="item.rating" class="rating-stars">
                         <ion-icon
                           v-for="n in item.rating"
@@ -215,8 +212,9 @@ import {
   IonPopover,
   IonCard,
   alertController,
+  onIonViewWillEnter,
 } from "@ionic/vue";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import {
   addOutline,
@@ -238,7 +236,7 @@ const platforms = ref<FreelancePlatform[]>([]);
 const comments = ref<FreelanceComment[]>([]);
 const loading = ref(false);
 
-onMounted(async () => {
+async function loadData() {
   loading.value = true;
   try {
     const data = await freelanceController.loadFreelance();
@@ -247,7 +245,11 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
-});
+}
+
+onMounted(loadData);
+
+onIonViewWillEnter(loadData);
 
 function editFreelance(type: "platform" | "comment", index: number) {
   router.push(`/admin-panel/freelance/${type}/edit/${index}`);
@@ -260,8 +262,8 @@ function createNewFreelance(type: "platform" | "comment") {
 async function confirmDelete(type: "platform" | "comment", index: number) {
   const itemType = type === "platform" ? "plataforma" : "comentario";
   const item = type === "platform"
-    ? platforms.value[index]
-    : comments.value[index];
+    ? platforms.value?.[index]
+    : comments.value?.[index];
   const itemName = type === "platform"
     ? (item as any).name || "esta plataforma"
     : (item as any).title || "este comentario";
@@ -281,7 +283,7 @@ async function confirmDelete(type: "platform" | "comment", index: number) {
         text: "Eliminar",
         role: "destructive",
         handler: () => {
-          deleteFreelance(itemId);
+          deleteFreelance(type, itemId);
         },
       },
     ],
@@ -289,8 +291,12 @@ async function confirmDelete(type: "platform" | "comment", index: number) {
   await alert.present();
 }
 
-async function deleteFreelance(id: string) {
-  await freelanceController.deleteFreelance(id);
+async function deleteFreelance(type: "platform" | "comment", id: string) {
+  if (type === "platform") {
+    await freelanceController.deleteFreelance(id);
+  } else {
+    await freelanceController.deleteComment(id);
+  }
 }
 
 async function generateTestFreelance() {

@@ -142,23 +142,6 @@
 
                   <ion-card class="shadow1">
                     <ion-item lines="full">
-                      <ion-select
-                        v-model="(localItem as FreelanceComment).platformName"
-                        label="Plataforma"
-                        label-placement="floating"
-                        :interface-popover="true"
-                      >
-                        <ion-select-option
-                          v-for="(platform, idx) in platforms"
-                          :key="idx"
-                          :value="platform.name"
-                        >
-                          {{ platform.name }}
-                        </ion-select-option>
-                      </ion-select>
-                    </ion-item>
-
-                    <ion-item lines="full">
                       <ion-input
                         v-model="(localItem as FreelanceComment).title"
                         label="Nombre del cliente"
@@ -293,7 +276,7 @@ const localItem = ref<FreelancePlatform | FreelanceComment | null>(null);
 onMounted(async () => {
   loading.value = true;
   try {
-    if (platforms.value.length === 0 || comments.value.length === 0) {
+    if (platforms.value.length === 0 && comments.value.length === 0) {
       const data = await freelanceController.loadFreelance();
       platforms.value = data.freelancePlatforms;
       comments.value = data.freelanceComments;
@@ -310,7 +293,6 @@ onMounted(async () => {
       } else {
         localItem.value = {
           id: crypto.randomUUID(),
-          platformName: platforms.value[0]?.name || "",
           title: "",
           text: "",
           rating: 5,
@@ -318,13 +300,13 @@ onMounted(async () => {
       }
     } else if (freelanceIndex.value !== undefined) {
       if (freelanceType.value === "platform") {
-        const item = platforms.value[freelanceIndex.value];
+        const item = platforms.value?.[freelanceIndex.value];
         if (item) {
           localItem.value = { ...item };
           freelanceId.value = item.id;
         }
       } else {
-        const item = comments.value[freelanceIndex.value];
+        const item = comments.value?.[freelanceIndex.value];
         if (item) {
           localItem.value = { ...item };
           freelanceId.value = item.id;
@@ -360,23 +342,23 @@ async function handleSave() {
     nameTouched.value = true;
 
     const item = localItem.value as FreelanceComment;
-    const freelanceItem: FreelanceItem = {
-      id: item.id,
-      name: item.platformName,
-      image: "",
-      url: "",
-      comment: {
-        title: item.title,
-        text: item.text,
-        rating: item.rating,
-      },
+    const payload = {
+      name: item.title,
+      comment_text: item.text,
+      comment_rating: item.rating,
     };
-    if (isNew.value) {
-      await freelanceController.addFreelance(freelanceItem);
-    } else if (freelanceId.value) {
-      await freelanceController.updateFreelance(freelanceId.value, freelanceItem);
+
+    saving.value = true;
+    try {
+      if (isNew.value) {
+        await freelanceController.addComment(payload);
+      } else if (freelanceId.value) {
+        await freelanceController.updateComment(freelanceId.value, payload);
+      }
+      router.push("/admin-panel/freelance");
+    } finally {
+      saving.value = false;
     }
-    router.push("/admin-panel/freelance");
   }
 }
 
@@ -420,7 +402,6 @@ function generateTestData() {
     const availablePlatforms = platforms.value;
     localItem.value = {
       id: crypto.randomUUID(),
-      platformName: availablePlatforms[0]?.name || "Upwork",
       title: "Cliente de prueba",
       text: "Este es un comentario de prueba generado automáticamente.",
       rating: 4,

@@ -20,11 +20,16 @@ interface FreelanceResponse {
   freelance: FreelanceItem;
 }
 
+interface FreelanceLoadResult {
+  freelancePlatforms: FreelancePlatform[];
+  freelanceComments: FreelanceComment[];
+}
+
 export default class FreelanceController {
   private freelanceStore = useFreelanceStore();
   private toastController = new ToastController();
 
-  async loadFreelance(): Promise<FreelancePlatform[]> {
+  async loadFreelance(): Promise<FreelanceLoadResult> {
     this.freelanceStore.setLoading(true);
     try {
       const data = await api.get<FreelancesResponse>({
@@ -33,28 +38,29 @@ export default class FreelanceController {
 
       const items = data.freelances || [];
 
-      const platforms: FreelancePlatform[] = items.map(item => ({
-        id: String(item.id || crypto.randomUUID()),
-        name: item.name,
-        image: item.image,
-        url: item.url,
-      }));
+      const platforms: FreelancePlatform[] = items
+        .filter(item => !item.comment_title && !item.comment_text)
+        .map(item => ({
+          id: String(item.id || crypto.randomUUID()),
+          name: item.name,
+          image: item.image,
+          url: item.url,
+        }));
 
       const comments: FreelanceComment[] = items
-        .filter(item => !!item.comment)
+        .filter(item => !!item.comment_title || !!item.comment_text)
         .map(item => ({
-          id: crypto.randomUUID(),
-          platformName: item.name,
-          title: item.comment!.title,
-          text: item.comment!.text,
-          rating: item.comment!.rating,
+          id: String(item.id || crypto.randomUUID()),
+          title: item.name,
+          text: item.comment_text,
+          rating: item.comment_rating,
         }));
 
       this.freelanceStore.setFreelance(platforms, comments);
-      return platforms;
+      return { freelancePlatforms: platforms, freelanceComments: comments };
     } catch (error) {
       console.error("Error loading freelance:", error);
-      return [];
+      return { freelancePlatforms: [], freelanceComments: [] };
     } finally {
       this.freelanceStore.setLoading(false);
     }
@@ -76,25 +82,19 @@ export default class FreelanceController {
     return this.freelanceStore.getComment(index);
   }
 
-  async addFreelance(freelance: FreelanceItem, imageFile?: File | null): Promise<boolean> {
+  async addFreelance(data: FreelanceItem | any, imageFile?: File | null): Promise<boolean> {
     try {
       const formData = new FormData();
-      formData.append("name", freelance.name);
-      if (freelance.url) {
-        formData.append("url", freelance.url);
+      formData.append("name", data.name);
+      if (data.url) {
+        formData.append("url", data.url);
       }
-      if (freelance.comment) {
-        formData.append("comment_title", freelance.comment.title);
-        formData.append("comment_text", freelance.comment.text);
-        formData.append("comment_rating", String(freelance.comment.rating));
-      }
-
       if (imageFile) {
         formData.append("image", imageFile, "freelance.jpg");
       }
 
       await api.post<FreelanceResponse>({
-        url: "admin/freelances",
+        url: "admin/profile-platforms",
         data: formData,
         contentType: "multipart/form-data",
       });
@@ -102,16 +102,16 @@ export default class FreelanceController {
       await this.loadFreelance();
 
       const toast = await this.toastController.presentToast({
-        message: "Trabajo freelance agregado",
+        message: "Plataforma agregada",
         duration: 2000,
         color: "success",
       });
       await toast.present();
       return true;
     } catch (error) {
-      console.error("Error adding freelance:", error);
+      console.error("Error adding platform:", error);
       const toast = await this.toastController.presentToast({
-        message: "Error al agregar el trabajo freelance",
+        message: "Error al agregar la plataforma",
         duration: 2000,
         color: "danger",
       });
@@ -120,28 +120,107 @@ export default class FreelanceController {
     }
   }
 
-  async updateFreelance(id: string, freelance: FreelanceItem, imageFile?: File | null): Promise<boolean> {
+  async addComment(data: { name: string; comment_text?: string; comment_rating?: number }): Promise<boolean> {
     try {
-      const formData = new FormData();
-      formData.append("name", freelance.name);
-      if (freelance.url) {
-        formData.append("url", freelance.url);
-      }
-      if (freelance.comment) {
-        formData.append("comment_title", freelance.comment.title);
-        formData.append("comment_text", freelance.comment.text);
-        formData.append("comment_rating", String(freelance.comment.rating));
-      }
-
-      if (imageFile) {
-        formData.append("image", imageFile, "freelance.jpg");
-      }
-
       await api.post<FreelanceResponse>({
-        url: `admin/freelances/${id}`,
-        data: formData,
-        contentType: "multipart/form-data",
+        url: "admin/profile-comments",
+        data,
       });
+
+      await this.loadFreelance();
+
+      const toast = await this.toastController.presentToast({
+        message: "Comentario agregado",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
+      return true;
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al agregar el comentario",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return false;
+    }
+  }
+
+  async updateComment(id: string, data: { name: string; comment_text?: string; comment_rating?: number }): Promise<boolean> {
+    try {
+      await api.post<FreelanceResponse>({
+        url: `admin/profile-comments/${id}`,
+        data,
+      });
+
+      await this.loadFreelance();
+
+      const toast = await this.toastController.presentToast({
+        message: "Comentario actualizado",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
+      return true;
+    } catch (error) {
+      console.error("Error updating comment:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al actualizar el comentario",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return false;
+    }
+  }
+
+  async deleteComment(id: string): Promise<boolean> {
+    try {
+      await api.delete({
+        url: `admin/profile-comments/${id}`,
+      });
+
+      await this.loadFreelance();
+
+      const toast = await this.toastController.presentToast({
+        message: "Comentario eliminado",
+        duration: 2000,
+        color: "success",
+      });
+      await toast.present();
+      return true;
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      const toast = await this.toastController.presentToast({
+        message: "Error al eliminar el comentario",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+      return false;
+    }
+  }
+
+  async updateFreelance(id: string, data: FreelanceItem | any, imageFile?: File | null): Promise<boolean> {
+    try {
+      if (imageFile || (data as FreelanceItem).comment === null) {
+        const formData = new FormData();
+        formData.append("name", data.name);
+        if (data.url) {
+          formData.append("url", data.url);
+        }
+        if (imageFile) {
+          formData.append("image", imageFile, "freelance.jpg");
+        }
+
+        await api.post<FreelanceResponse>({
+          url: `admin/profile-platforms/${id}`,
+          data: formData,
+          contentType: "multipart/form-data",
+        });
+      }
 
       await this.loadFreelance();
 
@@ -167,7 +246,7 @@ export default class FreelanceController {
   async deleteFreelance(id: string): Promise<boolean> {
     try {
       await api.delete({
-        url: `admin/freelances/${id}`,
+        url: `admin/profile-platforms/${id}`,
       });
 
       await this.loadFreelance();

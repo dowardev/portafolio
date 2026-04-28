@@ -571,7 +571,6 @@ function convertToComments(freelance: any[]) {
   for (const item of freelance) {
     if (item.comment) {
       comments.push({
-        platformName: item.name,
         title: item.comment.title,
         text: item.comment.text,
         rating: item.comment.rating,

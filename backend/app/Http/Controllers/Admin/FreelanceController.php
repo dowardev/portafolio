@@ -16,8 +16,10 @@ class FreelanceController extends Controller
         return response()->json(['freelances' => $freelances]);
     }
 
-    public function store(Request $request)
+    public function storePlatform(Request $request)
     {
+        $data = $request->except(['image']);
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
         ]);
@@ -25,8 +27,6 @@ class FreelanceController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
-
-        $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
@@ -40,13 +40,7 @@ class FreelanceController extends Controller
         return response()->json(['freelance' => $freelance]);
     }
 
-    public function show($id)
-    {
-        $freelance = Freelance::findOrFail($id);
-        return response()->json(['freelance' => $freelance]);
-    }
-
-    public function update(Request $request, $id)
+    public function updatePlatform(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
@@ -78,7 +72,7 @@ class FreelanceController extends Controller
         return response()->json(['freelance' => $freelance]);
     }
 
-    public function destroy($id)
+    public function destroyPlatform($id)
     {
         $freelance = Freelance::findOrFail($id);
 
@@ -92,6 +86,27 @@ class FreelanceController extends Controller
         $freelance->delete();
 
         return response()->json(['success' => true]);
+    }
+
+    public function show($id)
+    {
+        $freelance = Freelance::findOrFail($id);
+        return response()->json(['freelance' => $freelance]);
+    }
+
+    public function store(Request $request)
+    {
+        return $this->storePlatform($request);
+    }
+
+    public function update(Request $request, $id)
+    {
+        return $this->updatePlatform($request, $id);
+    }
+
+    public function destroy($id)
+    {
+        return $this->destroyPlatform($id);
     }
 
     private function getExtensionFromMime($file)
