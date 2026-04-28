@@ -43,8 +43,8 @@ export interface ExperienceItem {
 }
 
 export interface TechnologyItem {
-  id: number;
-  name: string;
+  id?: number;
+  iconName: string;
   category?: string;
   image?: string;
 }

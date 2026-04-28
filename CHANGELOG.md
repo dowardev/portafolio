@@ -1,5 +1,43 @@
 # Changelog
 
+## 15.0.0 - 2026-04-27
+
+### Summary
+This release standardizes the technology field naming across the entire application by renaming `name` to `iconName`, fixes JSON parsing issues when saving technologies, and adds logic to prevent duplicate technology creation.
+
+### Added
+- Added JSON parsing for technologies in ExperienceController and ProjectController store/update methods
+- Added logic to find existing technology by iconName before creating new one (prevents duplicates)
+- Made `id` optional in TechnologyItem interface for new records
+
+### Changed
+- Renamed `name` field to `iconName` in TechnologyItem interface (frontend/types.ts)
+- Updated API responses in ExperienceController, ProjectController, and SkillsCategoryController to return `iconName` instead of `name`
+- Updated syncTechnologies methods to use `iconName` for creating/updating technologies
+- Simplified technology mapping in HomeTemplate2.vue (removed duplicate name field)
+- Removed duplicate `name` field from SkillsCategoryTechItem interface
+
+### Breaking Changes
+- API response field changed: `technologies[].name` → `technologies[].iconName`
+- Frontend interface field changed: `TechnologyItem.name` → `TechnologyItem.iconName`
+- Frontend interface change: `TechnologyItem.id` is now optional
+
+### Fixed
+- Fixed "Undefined array key 'name'" error when creating new technologies without id
+- Fixed JSON string not being parsed in ExperienceController and ProjectController
+
+### Affected Files
+- Modified:
+  - `backend/app/Http/Controllers/Admin/ExperienceController.php`
+  - `backend/app/Http/Controllers/Admin/ProjectController.php`
+  - `backend/app/Http/Controllers/Admin/SkillsCategoryController.php`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/store/skillsCategoriesStore.ts`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/presentation/HomePresentationPage.vue`
+
+---
+
 ## 14.1.0 - 2026-04-27
 
 ### Summary

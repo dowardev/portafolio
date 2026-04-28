@@ -30,7 +30,7 @@ class ProjectController extends Controller
                 'technologies' => $project->technologies->map(function ($tech) {
                     return [
                         'id' => $tech->id,
-                        'name' => $tech->name,
+                        'iconName' => $tech->name,
                         'category' => $tech->category,
                         'image' => $tech->image,
                     ];
@@ -63,7 +63,8 @@ class ProjectController extends Controller
 
         $project = Project::create($data);
 
-        $this->syncTechnologies($project, $request->input('technologies', []));
+        $technologiesData = json_decode($request->input('technologies', '[]'), true) ?? [];
+        $this->syncTechnologies($project, $technologiesData);
 
         return response()->json(['project' => $project]);
     }
@@ -103,7 +104,8 @@ class ProjectController extends Controller
 
         $project->update($data);
 
-        $this->syncTechnologies($project, $request->input('technologies', []));
+        $technologiesData = json_decode($request->input('technologies', '[]'), true) ?? [];
+        $this->syncTechnologies($project, $technologiesData);
 
         return response()->json(['project' => $project]);
     }
@@ -132,18 +134,21 @@ class ProjectController extends Controller
             if (isset($techData['id']) && $techData['id']) {
                 $tech = Technology::find($techData['id']);
                 if ($tech) {
-                    $tech->name = $techData['name'] ?? $tech->name;
+                    $tech->name = $techData['iconName'] ?? $tech->name;
                     $tech->category = $techData['category'] ?? $tech->category;
                     $tech->image = $techData['image'] ?? $tech->image;
                     $tech->save();
                     $technologyIds[] = $tech->id;
                 }
-            } else {
-                $tech = Technology::create([
-                    'name' => $techData['name'],
-                    'category' => $techData['category'] ?? null,
-                    'image' => $techData['image'] ?? null,
-                ]);
+            } elseif (isset($techData['iconName'])) {
+                $tech = Technology::where('name', $techData['iconName'])->first();
+                if (!$tech) {
+                    $tech = Technology::create([
+                        'name' => $techData['iconName'],
+                        'category' => $techData['category'] ?? null,
+                        'image' => $techData['image'] ?? null,
+                    ]);
+                }
                 $technologyIds[] = $tech->id;
             }
         }

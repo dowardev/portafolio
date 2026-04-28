@@ -3,10 +3,9 @@ import { ref } from "vue";
 
 export interface SkillsCategoryTechItem {
   id?: string;
-  name?: string;
+  iconName: string;
   category?: string;
   image?: string;
-  iconName: string;
 }
 
 export interface SkillsCategoryItem {

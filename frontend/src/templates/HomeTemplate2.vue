@@ -502,8 +502,7 @@ onMounted(async () => {
   id: cat.id || '',
   name: cat.name,
   technologies: cat.technologies?.map(tech => ({
-    iconName: tech.iconName,
-    name: tech.name
+    iconName: tech.iconName
   })) || []
 }));
     } catch (error) {

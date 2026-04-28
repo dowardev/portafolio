@@ -23,7 +23,6 @@ class SkillsCategoryController extends Controller
                     return [
                         'id' => $tech->id,
                         'iconName' => $tech->name,
-                        'name' => $tech->name,
                         'category' => $tech->category,
                         'image' => $tech->image,
                     ];

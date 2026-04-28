@@ -10,6 +10,7 @@
 
 <script setup lang="ts">
 import { reactive, onMounted, onActivated } from "vue";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import HomeTemplate1 from "@/templates/HomeTemplate1.vue";
 import HomeTemplate2 from "@/templates/HomeTemplate2.vue";
 
