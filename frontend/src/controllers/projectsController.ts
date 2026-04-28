@@ -61,8 +61,8 @@ export default class ProjectsController {
         id: project.id,
         img: project.img,
         title: project.title,
-        startDate: project.startDate,
-        endDate: project.endDate,
+        startDate: project.start_date,
+        endDate: project.end_date,
         status: project.status,
         technologies: project.technologies || [],
         details: {

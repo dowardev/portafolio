@@ -64,7 +64,7 @@
                     ></ion-input>
                   </ion-item>
 
-                  <ion-item lines="full" button @click="openStartDatePopover">
+                  <ion-item lines="full" button @click="openStartDatePopover($event)">
                     <ion-label>Inicio</ion-label>
                     <ion-note slot="end">{{
                       formatDate(localProject.startDate ?? "")
@@ -73,31 +73,59 @@
 
                   <ion-popover
                     :is-open="startDatePopoverOpen"
-                    @ion-popover-dismiss="closeStartDatePopover"
+                    :event="startDatePopoverEvent"
+                    @did-dismiss="closeStartDatePopover"
                   >
-                    <ion-datetime
-                      presentation="month-year"
-                      :value="localProject.startDate ?? undefined"
-                      @ion-change="onStartDateChange"
-                    ></ion-datetime>
+                    <div>
+                      <ion-datetime
+                        presentation="month-year"
+                        locale="es-ES"
+                        :show-default-buttons="true"
+                        done-text="Aceptar"
+                        cancel-text="Cancelar"
+                        :value="localProject.startDate ?? undefined"
+                        :max="localProject.endDate || undefined"
+                        @ion-change="onStartDateChange"
+                      ></ion-datetime>
+                    </div>
                   </ion-popover>
 
-                  <ion-item lines="full" button @click="openEndDatePopover">
+                  <ion-item lines="full" button @click="syncAndOpenEndDatePopover($event)">
                     <ion-label>Fin</ion-label>
-                    <ion-note slot="end">{{
-                      formatDate(localProject.endDate ?? "")
-                    }}</ion-note>
+                    <ion-note slot="end">{{ formattedEndDate }}</ion-note>
                   </ion-item>
 
                   <ion-popover
                     :is-open="endDatePopoverOpen"
-                    @ion-popover-dismiss="closeEndDatePopover"
+                    :event="endDatePopoverEvent"
+                    @did-dismiss="closeEndDatePopover"
                   >
-                    <ion-datetime
-                      presentation="month-year"
-                      :value="localProject.endDate ?? undefined"
-                      @ion-change="onEndDateChange"
-                    ></ion-datetime>
+                    <div>
+                      <ion-datetime
+                        presentation="month-year"
+                        locale="es-ES"
+                        :show-default-buttons="true"
+                        done-text="Aceptar"
+                        cancel-text="Cancelar"
+                        :value="localProject.endDate ?? undefined"
+                        :min="localProject.startDate || undefined"
+                        @ion-change="onEndDateChange"
+                      ></ion-datetime>
+
+                      <ion-item lines="full">
+                        <ion-checkbox
+                          :checked="isCurrent"
+                          @click="onIsCurrentClick"
+                          @blur="endDateTouched = true"
+                        >
+                          Actualidad
+                        </ion-checkbox>
+                      </ion-item>
+
+                      <span v-if="endDateTouched && endDateError" class="error">{{
+                        endDateError
+                      }}</span>
+                    </div>
                   </ion-popover>
 
                   <ion-item lines="full">
@@ -252,6 +280,7 @@ import {
   IonSelect,
   IonSelectOption,
   IonModal,
+  IonCheckbox,
   IonToolbar,
   IonButtons,
   IonTitle,
@@ -312,7 +341,7 @@ function handleTechRemove(index: number) {
 }
 
 onMounted(async () => {
-loading.value = true;
+  loading.value = true;
   projects.value = await projectsController.loadPublicProjects();
   if (isNew.value) {
     localProject.value = {
@@ -321,15 +350,16 @@ loading.value = true;
       title: "",
       status: "progress",
       startDate: "",
-      endDate: "",
+      endDate: undefined,
       technologies: [],
       source: { img: "", name: "", url: "" },
       details: { description: "", website: "" },
     };
   } else if (projectIndex.value !== undefined) {
-    const project = projects[projectIndex.value];
+    const project = projects.value[projectIndex.value];
     if (project) {
       localProject.value = { ...project };
+      isCurrent.value = !localProject.value?.endDate;
     }
   }
   loading.value = false;
@@ -388,11 +418,16 @@ const previewSrc = ref<string | null>(null);
 
 const startDatePopoverOpen = ref(false);
 const endDatePopoverOpen = ref(false);
+const startDatePopoverEvent = ref<Event | undefined>(undefined);
+const endDatePopoverEvent = ref<Event | undefined>(undefined);
+
+const isCurrent = ref(false);
 
 // validation state
 const titleTouched = ref(false);
 const imgTouched = ref(false);
 const descriptionTouched = ref(false);
+const endDateTouched = ref(false);
 // end vars and const
 
 // validation computed
@@ -409,6 +444,15 @@ const imgError = computed(() => {
 const descriptionError = computed(() => {
   if (!localProject.value?.details?.description?.trim())
     return "Descripción es requerida";
+  return "";
+});
+
+const endDateError = computed(() => {
+  if (endDateTouched.value) {
+    if (!localProject.value?.endDate && !isCurrent.value) {
+      return "Selecciona una fecha o marca Actualidad";
+    }
+  }
   return "";
 });
 
@@ -452,12 +496,24 @@ function formatDate(dateStr: string): string {
   return date.toLocaleDateString("es-ES", { month: "short", year: "numeric" });
 }
 
-function openStartDatePopover() {
+const formattedEndDate = computed(() => {
+  if (isCurrent.value) return "Actual";
+  const d = localProject.value?.endDate;
+  if (!d) return "Seleccionar";
+  return new Date(d).toLocaleDateString("es-ES", {
+    month: "short",
+    year: "numeric",
+  });
+});
+
+function openStartDatePopover(event: Event) {
+  startDatePopoverEvent.value = event;
   startDatePopoverOpen.value = true;
 }
 
 function closeStartDatePopover() {
   startDatePopoverOpen.value = false;
+  startDatePopoverEvent.value = undefined;
 }
 
 function onStartDateChange(event: CustomEvent) {
@@ -468,19 +524,38 @@ function onStartDateChange(event: CustomEvent) {
   closeStartDatePopover();
 }
 
-function openEndDatePopover() {
+function openEndDatePopover(event: Event) {
+  endDatePopoverEvent.value = event;
   endDatePopoverOpen.value = true;
+}
+
+function syncAndOpenEndDatePopover(event: Event) {
+  if (!isNew.value && localProject.value) {
+    isCurrent.value = !localProject.value.endDate;
+  }
+  openEndDatePopover(event);
 }
 
 function closeEndDatePopover() {
   endDatePopoverOpen.value = false;
+  endDatePopoverEvent.value = undefined;
 }
 
 function onEndDateChange(event: CustomEvent) {
   const value = event.detail.value;
   if (value && localProject.value) {
     localProject.value.endDate = value;
+    isCurrent.value = false;
   }
+  closeEndDatePopover();
+}
+
+function onIsCurrentClick() {
+  isCurrent.value = !isCurrent.value;
+  if (isCurrent.value && localProject.value) {
+    localProject.value.endDate = undefined;
+  }
+  endDateTouched.value = true;
   closeEndDatePopover();
 }
 // end functions

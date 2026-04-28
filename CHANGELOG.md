@@ -1,5 +1,29 @@
 # Changelog
 
+## 15.2.0 - 2026-04-28
+
+### Summary
+This release adds the "Current" functionality to ProjectsEditor (matching ExperienceEditor), fixes date picker closing immediately, and resolves date mapping issues from the backend API.
+
+### Added
+- Added "Actualidad" (Current) checkbox to ProjectsEditor end date picker, allowing projects to be marked as currently in progress
+
+### Fixed
+- Fixed ion-datetime popover closing immediately when selecting a date in ProjectsEditor (added event binding, did-dismiss handler, and confirmation buttons)
+- Fixed startDate and endDate not loading when editing projects (changed mapping from camelCase to snake_case in projectsController.ts)
+- Fixed projects array access error (changed `projects[index]` to `projects.value[index]`)
+- Added endDate validation in ProjectsEditor
+
+### Changed
+- ProjectsEditor now uses undefined instead of empty string for endDate when "Current" is selected (consistent with ExperienceEditor)
+
+### Affected Files
+- Modified:
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+  - `frontend/src/controllers/projectsController.ts`
+
+---
+
 ## 15.1.1 - 2026-04-28
 
 ### Summary
