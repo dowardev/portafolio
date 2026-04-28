@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { closeOutline } from "ionicons/icons";
+import { IonIcon } from "@ionic/vue";
 import { Lineicons } from "@lineiconshq/vue-lineicons";
 import { getIconByName } from "@/composables/iconsIndex";
 
@@ -24,5 +24,11 @@ const iconSize = computed(() => props.size || "24px");
     :icon="iconData.icon"
     :color="iconColor"
     :size="iconSize"
+  />
+  <ion-icon
+    v-else-if="iconData"
+    :icon="iconData.icon"
+    :color="iconColor"
+    :style="{ width: iconSize, height: iconSize, fontSize: iconSize }"
   />
 </template>

@@ -1,5 +1,20 @@
 # Changelog
 
+## 15.1.1 - 2026-04-28
+
+### Summary
+This release fixes an issue where ionicons were not rendering in the ExperienceCard component, causing blank icon placeholders in the experience section.
+
+### Fixed
+- Fixed IconRenderer to render ionicons when the icon source is not lineicons
+- Changed import from specific ionicon to IonIcon component for dynamic rendering
+
+### Affected Files
+- Modified:
+  - `frontend/src/components/IconRenderer.vue`
+
+---
+
 ## 15.1.0 - 2026-04-28
 
 ### Summary
