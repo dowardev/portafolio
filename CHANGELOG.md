@@ -1,5 +1,25 @@
 # Changelog
 
+## 15.3.1 - 2026-04-28
+
+### Summary
+This release fixes two critical issues in the CertificatesEditor component: a TypeError when loading certificates with invalid aptitudes data, and technologies not being sent to the backend when saving.
+
+### Fixed
+- Fixed TypeError ".map is not a function" when editing certificates by adding proper array type checking
+- Fixed technologies not being sent to backend by filtering empty items and using correct format
+- Improved data validation using Array.isArray() instead of falsy check to handle edge cases
+
+### Changed
+- Changed aptitudes mapping from conditional type ('icon'/'img') to always use 'icon' type (consistent with other editors)
+- Now filters out empty iconName values before saving to prevent invalid data submission
+
+### Affected Files
+- Modified:
+  - `frontend/src/views/admin/editors/CertificatesEditor.vue`
+
+---
+
 ## 15.3.0 - 2026-04-28
 
 ### Summary

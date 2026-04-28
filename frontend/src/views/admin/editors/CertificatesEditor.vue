@@ -239,7 +239,7 @@ onMounted(async () => {
     const cert = certificates[certificateIndex.value];
     if (cert) {
       localCertificate.value = { ...cert };
-      aptitudes.value = (cert.aptitudes || []).map((apt: any) => ({
+      aptitudes.value = (Array.isArray(cert.aptitudes) ? cert.aptitudes : []).map((apt: any) => ({
         iconName: apt.type === 'icon' ? apt.source : '',
       }));
     }
@@ -250,12 +250,14 @@ onMounted(async () => {
 
 async function handleSave() {
   if (!localCertificate.value) return;
-  localCertificate.value.aptitudes = aptitudes.value.map(item => ({
-    source: item.iconName,
-    name: item.iconName,
-    type: item.iconName ? 'icon' as const : 'img' as const,
-    size: '24px',
-  }));
+  localCertificate.value.aptitudes = (Array.isArray(aptitudes.value) ? aptitudes.value : [])
+    .filter(item => item.iconName?.trim())
+    .map(item => ({
+      source: item.iconName,
+      name: item.iconName,
+      type: 'icon' as const,
+      size: '24px',
+    }));
   saving.value = true;
   try {
     const success = isNew.value
