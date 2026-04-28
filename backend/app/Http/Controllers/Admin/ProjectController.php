@@ -22,7 +22,6 @@ class ProjectController extends Controller
                 'img' => $project->img,
                 'start_date' => $project->start_date,
                 'end_date' => $project->end_date,
-                'status' => $project->status,
                 'description' => $project->description,
                 'website' => $project->website,
                 'source_name' => $project->source_name,

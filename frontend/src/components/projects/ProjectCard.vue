@@ -28,8 +28,8 @@
                 {{ project.title }}
               </h2>
 
-              <ion-text :color="getStatusColor({ status: project.status })">
-                {{ getStatusText({ status: project.status }) }}
+              <ion-text :color="getStatusColor()">
+                {{ getStatusText() }}
               </ion-text>
             </ion-label>
           </ion-item>
@@ -276,17 +276,12 @@ function getTechLabel({ iconName }: { iconName: string }) {
   return labels[name] || name;
 }
 
-function getStatusText({ status }: { status: string }) {
-  if (status === "progress") return "En progreso";
-  if (status === "indeterminate") return "Indeterminado";
-  return "Terminado";
+function getStatusText() {
+  return props.project.endDate ? "Terminado" : "En progreso";
 }
 
-function getStatusColor({ status }: { status: string }) {
-  if (status === "finished") return "success";
-  if (status === "indeterminate") return "warning";
-  if (status === "progress") return "primary";
-  return "medium";
+function getStatusColor() {
+  return props.project.endDate ? "success" : "primary";
 }
 // end functions
 </script>

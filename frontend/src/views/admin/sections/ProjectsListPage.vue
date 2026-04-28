@@ -79,9 +79,9 @@
                       <p
                         style="font-size: 12px"
                         class="status-chip"
-                        :class="project.status"
+                        :class="getProjectStatus(project)"
                       >
-                        {{ getStatusLabel(project.status) }}
+                        {{ getProjectStatusLabel(project) }}
                       </p>
                     </ion-label>
 
@@ -146,6 +146,7 @@ import {
 import { faker } from "@faker-js/faker";
 import ProjectsController from "@/controllers/projectsController";
 import { storeToRefs } from "pinia";
+import type { ProjectItem } from "@/services/types";
 
 const router = useRouter();
 const projectsController = new ProjectsController();
@@ -157,13 +158,12 @@ onMounted(async () => {
   await projectsController.loadPublicProjects();
 });
 
-function getStatusLabel(status?: string): string {
-  const labels: Record<string, string> = {
-    progress: "En progreso",
-    indeterminate: "Indeterminado",
-    finished: "Terminado",
-  };
-  return labels[status || ""] || "Sin estado";
+function getProjectStatus(project: ProjectItem): string {
+  return project.endDate ? "finished" : "progress";
+}
+
+function getProjectStatusLabel(project: ProjectItem): string {
+  return project.endDate ? "Terminado" : "En progreso";
 }
 
 function editProject(index: number) {

@@ -1,5 +1,33 @@
 # Changelog
 
+## 15.3.0 - 2026-04-28
+
+### Summary
+This release removes the manual status selection from projects and replaces it with automatic status calculation based on project dates. Projects with an end date are marked as "finished", while projects without an end date are marked as "in progress".
+
+### Removed
+- Removed manual status selector (ion-select) from ProjectsEditor
+- Removed status field from projects database table
+- Removed status field from backend API response
+- Removed status from frontend controller form data
+
+### Changed
+- Project status is now automatically calculated based on endDate: if endDate exists → "Terminado" (finished), otherwise → "En progreso" (progress)
+- Status now displays correctly in ProjectsListPage and ProjectCard components
+- Fixed end_date being sent as empty string when "Current" is selected to properly clear the value in the database
+
+### Affected Files
+- Modified:
+  - `backend/app/Http/Controllers/Admin/ProjectController.php`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/views/admin/sections/ProjectsListPage.vue`
+  - `frontend/src/components/projects/ProjectCard.vue`
+- Added:
+  - `backend/database/migrations/2026_04_28_000001_drop_status_from_projects_table.php`
+
+---
+
 ## 15.2.0 - 2026-04-28
 
 ### Summary

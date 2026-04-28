@@ -128,24 +128,6 @@
                     </div>
                   </ion-popover>
 
-                  <ion-item lines="full">
-                    <ion-select
-                      v-model="localProject.status"
-                      label="Estado"
-                      label-placement="floating"
-                    >
-                      <ion-select-option value="progress"
-                        >En progreso</ion-select-option
-                      >
-                      <ion-select-option value="indeterminate"
-                        >Indeterminado</ion-select-option
-                      >
-                      <ion-select-option value="finished"
-                        >Terminado</ion-select-option
-                      >
-                    </ion-select>
-                  </ion-item>
-
                   <ion-item lines="full" button @click="openFileDialog">
                     <ion-label>Logo del proyecto</ion-label>
 
@@ -277,8 +259,6 @@ import {
   IonTextarea,
   IonButton,
   IonIcon,
-  IonSelect,
-  IonSelectOption,
   IonModal,
   IonCheckbox,
   IonToolbar,

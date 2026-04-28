@@ -106,9 +106,8 @@ export default class ProjectsController {
       }
       if (project.endDate) {
         formData.append("end_date", project.endDate);
-      }
-      if (project.status) {
-        formData.append("status", project.status);
+      } else {
+        formData.append("end_date", "");
       }
       if (project.details?.description) {
         formData.append("description", project.details.description);
@@ -206,9 +205,8 @@ export default class ProjectsController {
       }
       if (project.endDate) {
         formData.append("end_date", project.endDate);
-      }
-      if (project.status) {
-        formData.append("status", project.status);
+      } else {
+        formData.append("end_date", "");
       }
       if (project.details?.description) {
         formData.append("description", project.details.description);
