@@ -71,9 +71,11 @@
     </ion-card>
   </ion-list>
 
-  <SocialsEditor
-    :socials="socials"
-    @update:socials="emit('update:socials', $event)"
+  <IconSelector
+    :model-value="socials"
+    type="social"
+    show-url-input
+    @update:model-value="emit('update:socials', $event.map((item: any) => ({ platform: item.iconName, url: item.url || '', iconName: item.iconName })))"
   />
 
   <ion-list>
@@ -226,7 +228,7 @@ import { addOutline, closeOutline, reorderThreeOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
 import { computed, reactive, ref, onMounted } from "vue";
-import SocialsEditor from "./SocialsEditor.vue";
+import IconSelector from "@/components/admin/IconSelector.vue";
 
 interface SocialItem {
   platform: string;

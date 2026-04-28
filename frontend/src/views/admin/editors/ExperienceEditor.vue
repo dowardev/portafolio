@@ -187,9 +187,13 @@
                 </ion-card>
               </ion-list>
 
-              <TechSkillsEditor
+              <IconSelector
                 ref="techSkillsRef"
-                :model-value="technologies"
+                :model-value="techs"
+                type="tech"
+                @update:model-value="techs = $event"
+                @add="handleTechAdd"
+                @remove="handleTechRemove"
               />
             </ion-col>
           </ion-row>
@@ -259,13 +263,13 @@ import {
 import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type { ExperienceItem } from "@/services/types";
-import TechSkillsEditor from "./TechSkillsEditor.vue";
+import IconSelector from "@/components/admin/IconSelector.vue";
 import ExperienceController from "@/controllers/experienceController";
 
 const route = useRoute();
 const router = useRouter();
 const experienceController = new ExperienceController();
-const techSkillsRef = ref<InstanceType<typeof TechSkillsEditor> | null>(null);
+const techSkillsRef = ref<InstanceType<typeof IconSelector> | null>(null);
 
 const loading = ref(false);
 const saving = ref(false);
@@ -281,12 +285,15 @@ const experienceIndex = computed(() => {
 
 const isNew = computed(() => route.name === "ExperienceNewPage");
 
-const technologies = computed({
-  get: () => localExperience.value.technologies,
-  set: (value) => {
-    localExperience.value.technologies = value;
-  },
-});
+const techs = ref<{ iconName: string }[]>([]);
+
+function handleTechAdd() {
+  techs.value = [...techs.value, { iconName: "" }];
+}
+
+function handleTechRemove(index: number) {
+  techs.value = techs.value.filter((_: any, i: number) => i !== index);
+}
 
 const localExperience = ref<ExperienceItem>({
   id: "",
@@ -317,6 +324,7 @@ onMounted(async () => {
     const exp = experiences[experienceIndex.value];
     if (exp) {
       localExperience.value = { ...exp };
+      techs.value = localExperience.value.technologies || [];
       isCurrentJob.value = !localExperience.value.endDate;
     }
   }
@@ -325,9 +333,7 @@ onMounted(async () => {
 });
 
 async function handleSave() {
-  if (techSkillsRef.value) {
-    localExperience.value.technologies = techSkillsRef.value.modelValue;
-  }
+  localExperience.value.technologies = techs.value;
   saving.value = true;
   try {
     const success = isNew.value

@@ -114,9 +114,13 @@
                   }}</span>
                 </ion-card>
 
-                <TechSkillsEditor
+                <IconSelector
                   ref="techSkillsRef"
-                  v-model="aptitudes"
+                  :model-value="aptitudes"
+                  type="tech"
+                  @update:model-value="aptitudes = $event"
+                  @add="handleAdd"
+                  @remove="handleRemove"
                 />
               </ion-list>
             </ion-col>
@@ -180,13 +184,13 @@ import {
 import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type { CertificateItem } from "@/services/types";
-import TechSkillsEditor from "./TechSkillsEditor.vue";
+import IconSelector from "@/components/admin/IconSelector.vue";
 import CertificatesController from "@/controllers/certificatesController";
 
 const route = useRoute();
 const router = useRouter();
 const certificatesController = new CertificatesController();
-const techSkillsRef = ref<InstanceType<typeof TechSkillsEditor> | null>(null);
+const techSkillsRef = ref<InstanceType<typeof IconSelector> | null>(null);
 
 const loading = ref(false);
 const saving = ref(false);
@@ -206,24 +210,15 @@ interface AptitudeTechItem {
   iconName: string;
 }
 
-const aptitudes = computed({
-  get: (): AptitudeTechItem[] => {
-    const certAptitudes = localCertificate.value?.aptitudes || [];
-    return certAptitudes.map(apt => ({
-      iconName: apt.type === 'icon' ? apt.source : '',
-    }));
-  },
-  set: (value: AptitudeTechItem[]) => {
-    if (localCertificate.value) {
-      localCertificate.value.aptitudes = value.map(item => ({
-        source: item.iconName,
-        name: item.iconName,
-        type: item.iconName ? 'icon' as const : 'img' as const,
-        size: '24px',
-      }));
-    }
-  },
-});
+const aptitudes = ref<AptitudeTechItem[]>([]);
+
+function handleAdd() {
+  aptitudes.value = [...aptitudes.value, { iconName: "" }];
+}
+
+function handleRemove(index: number) {
+  aptitudes.value = aptitudes.value.filter((_: any, i: number) => i !== index);
+}
 
 const localCertificate = ref<CertificateItem | null>(null);
 
@@ -244,6 +239,9 @@ onMounted(async () => {
     const cert = certificates[certificateIndex.value];
     if (cert) {
       localCertificate.value = { ...cert };
+      aptitudes.value = (cert.aptitudes || []).map((apt: any) => ({
+        iconName: apt.type === 'icon' ? apt.source : '',
+      }));
     }
   }
   loading.value = false;
@@ -252,9 +250,12 @@ onMounted(async () => {
 
 async function handleSave() {
   if (!localCertificate.value) return;
-  if (techSkillsRef.value) {
-    localCertificate.value.technologies = techSkillsRef.value.modelValue;
-  }
+  localCertificate.value.aptitudes = aptitudes.value.map(item => ({
+    source: item.iconName,
+    name: item.iconName,
+    type: item.iconName ? 'icon' as const : 'img' as const,
+    size: '24px',
+  }));
   saving.value = true;
   try {
     const success = isNew.value

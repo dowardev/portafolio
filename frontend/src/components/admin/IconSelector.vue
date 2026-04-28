@@ -78,71 +78,106 @@
             </ion-button>
           </ion-buttons>
           <ion-title>{{ title }}</ion-title>
+
+          <ion-buttons slot="end">
+            <ion-button id="type-trigger">
+              <ion-icon slot="icon-only" :icon="filterOutline" />
+            </ion-button>
+          </ion-buttons>
         </ion-toolbar>
 
-        <ion-toolbar>
+        <ion-toolbar style="--background: var(--ion-background-color)">
           <ion-searchbar
             v-model="searchText"
             placeholder="Buscar..."
           ></ion-searchbar>
         </ion-toolbar>
 
-        <ion-toolbar>
-          <ion-segment v-model="selectedSource">
-            <ion-segment-button value="all">
-              <ion-label>Todos</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="ionicons">
-              <ion-label>IonIcons</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="lineicons">
-              <ion-label>LineIcons</ion-label>
-            </ion-segment-button>
-          </ion-segment>
+        <ion-popover
+          :trigger="'type-trigger'"
+          side="bottom"
+          alignment="center"
+          :mode="designMode"
+        >
+          <ion-content>
+            <ion-list>
+              <ion-item button @click="selectedType = 'all'">
+                <ion-label :color="selectedType === 'all' ? 'primary' : ''"
+                  >Todos</ion-label
+                >
+              </ion-item>
+              <ion-item button @click="selectedType = 'social'">
+                <ion-label :color="selectedType === 'social' ? 'primary' : ''"
+                  >Sociales</ion-label
+                >
+              </ion-item>
+              <ion-item button @click="selectedType = 'tech'">
+                <ion-label :color="selectedType === 'tech' ? 'primary' : ''"
+                  >Tecnologías</ion-label
+                >
+              </ion-item>
+            </ion-list>
+          </ion-content>
+        </ion-popover>
+
+        <ion-toolbar style="--background: var(--ion-background-color)">
+          <div class="ion-padding-start ion-padding-end">
+            <ion-segment v-model="selectedSource" :mode="designMode">
+              <ion-segment-button value="all">
+                <ion-label>Todos</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="ionicons">
+                <ion-label>IonIcons</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="lineicons">
+                <ion-label>LineIcons</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+          </div>
         </ion-toolbar>
       </ion-header>
 
-      <ion-content>
-        <ion-list>
-          <ion-item
-            button
-            :color="!selectedIcon ? 'light' : ''"
-            @click="selectIcon('')"
-          >
-            <ion-label>Ninguno</ion-label>
-          </ion-item>
+      <ion-content :scroll-y="false">
+        <div style="display: flex; flex-direction: column; height: 100%">
+          <ion-list style="overflow: hidden">
+            <ion-card
+              class="shadow1"
+              style="overflow: auto; height: 96%"
+            >
+              <ion-item
+                v-for="icon in filteredIcons"
+                :key="icon.name"
+                lines="full"
+                button
+                :color="selectedIcon === icon.name ? 'light' : ''"
+                @click="selectIcon(icon.name)"
+              >
+                <template v-if="icon.source === 'lineicons'">
+                  <Lineicons
+                    slot="start"
+                    :icon="icon.icon"
+                    :color="icon.color"
+                    :size="24"
+                  />
+                </template>
+                <ion-icon
+                  v-else
+                  slot="start"
+                  :icon="icon.icon"
+                  :style="{ color: icon.color, fontSize: '24px' }"
+                />
 
-          <ion-item
-            v-for="icon in filteredIcons"
-            :key="icon.name"
-            button
-            :color="selectedIcon === icon.name ? 'light' : ''"
-            @click="selectIcon(icon.name)"
-          >
-            <template v-if="icon.source === 'lineicons'">
-              <Lineicons
-                slot="start"
-                :icon="icon.icon"
-                :color="icon.color"
-                :size="24"
-              />
-            </template>
-            <ion-icon
-              v-else
-              slot="start"
-              :icon="icon.icon"
-              :style="{ color: icon.color, fontSize: '24px' }"
-            />
+                <ion-label>
+                  {{ icon.label }}
+                </ion-label>
 
-            <ion-label>
-              {{ icon.label }}
-            </ion-label>
-
-            <ion-note v-if="selectedSource === 'all'" slot="end">
-              ({{ icon.source }})
-            </ion-note>
-          </ion-item>
-        </ion-list>
+                <ion-note v-if="selectedSource === 'all'" slot="end">
+                  ({{ icon.source }})
+                </ion-note>
+              </ion-item>
+            </ion-card>
+          </ion-list>
+        </div>
       </ion-content>
     </ion-modal>
   </ion-list>
@@ -167,9 +202,17 @@ import {
   IonInput,
   IonSegment,
   IonSegmentButton,
+  IonPopover,
 } from "@ionic/vue";
-import { addOutline, trashOutline, closeOutline } from "ionicons/icons";
+import {
+  addOutline,
+  trashOutline,
+  closeOutline,
+  filterOutline,
+} from "ionicons/icons";
 import { computed, ref } from "vue";
+import { DesignMode } from "@/utils/types";
+import SystemController from "@/controllers/systemController";
 import {
   getIconsBySourceAndType,
   getIconByName,
@@ -179,6 +222,8 @@ import {
 } from "@/composables/iconsIndex";
 import { Lineicons } from "@lineiconshq/vue-lineicons";
 
+const systemController = new SystemController();
+
 export interface IconItem {
   iconName: string;
   url?: string;
@@ -187,13 +232,14 @@ export interface IconItem {
 const props = withDefaults(
   defineProps<{
     modelValue: IconItem[];
-    type: "social" | "tech";
+    type?: "social" | "tech" | "all";
     source?: string;
     title?: string;
     placeholder?: string;
     showUrlInput?: boolean;
   }>(),
   {
+    type: "all",
     title: "Seleccionar",
     placeholder: "Seleccionar...",
     showUrlInput: false,
@@ -208,15 +254,29 @@ const emit = defineEmits<{
 }>();
 
 const selectedSource = ref<string>(props.source || "all");
+const selectedType = ref<string>(props.type || "all");
+const designMode = ref<DesignMode>(systemController.getdesignMode());
 
 const icons = computed(() =>
   getIconsBySourceAndType(
     selectedSource.value as "ionicons" | "lineicons" | "all",
-    props.type,
+    selectedType.value as "social" | "tech" | "all",
   ),
 );
 
 const showSelector = ref(false);
+
+function openSelector(index: number) {
+  currentIndex = index;
+  selectedIcon.value = props.modelValue[index]?.iconName || "";
+  showSelector.value = true;
+}
+
+function openNewSelector() {
+  currentIndex = props.modelValue.length;
+  selectedIcon.value = "";
+  showSelector.value = true;
+}
 const searchText = ref("");
 let currentIndex = 0;
 
@@ -253,18 +313,6 @@ function getColor(name: string) {
 function getLabel(name: string) {
   const icon = getIconByName(name);
   return icon?.label || name;
-}
-
-function openSelector(index: number) {
-  currentIndex = index;
-  selectedIcon.value = props.modelValue[index]?.iconName || "";
-  showSelector.value = true;
-}
-
-function openNewSelector() {
-  currentIndex = props.modelValue.length;
-  selectedIcon.value = "";
-  showSelector.value = true;
 }
 
 function selectIcon(name: string) {

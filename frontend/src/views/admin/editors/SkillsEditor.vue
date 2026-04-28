@@ -55,9 +55,13 @@
                 </ion-item>
               </ion-card>
 
-              <TechSkillsEditor
+              <IconSelector
                 ref="techSkillsRef"
                 :model-value="technologies"
+                type="tech"
+                @update:model-value="technologies = $event"
+                @add="handleAdd"
+                @remove="handleRemove"
               />
             </ion-col>
           </ion-row>
@@ -91,13 +95,13 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { saveOutline, trashOutline } from "ionicons/icons";
 import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
-import TechSkillsEditor from "./TechSkillsEditor.vue";
+import IconSelector from "@/components/admin/IconSelector.vue";
 import type { SkillsCategoryItem } from "@/store/skillsCategoriesStore";
 
 const route = useRoute();
 const router = useRouter();
 const skillsCategoriesController = new SkillsCategoriesController();
-const techSkillsRef = ref<InstanceType<typeof TechSkillsEditor> | null>(null);
+const techSkillsRef = ref<InstanceType<typeof IconSelector> | null>(null);
 
 const loading = ref(false);
 const saving = ref(false);
@@ -108,6 +112,14 @@ const categoryName = ref("");
 const technologies = ref<{ iconName: string }[]>([]);
 const nameTouched = ref(false);
 const nameError = ref("");
+
+function handleAdd() {
+  technologies.value = [...technologies.value, { iconName: "" }];
+}
+
+function handleRemove(index: number) {
+  technologies.value = technologies.value.filter((_, i) => i !== index);
+}
 
 const isEditing = computed(() => route.path.includes("/edit/"));
 const categoryIndex = computed(() => parseInt(route.params.index as string));

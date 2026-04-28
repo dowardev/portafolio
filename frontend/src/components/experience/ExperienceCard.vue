@@ -36,18 +36,16 @@
                     v-for="(tech, techIndex) in experience.technologies"
                     :key="techIndex"
                   >
-                    <ion-icon
+                    <IconRenderer
+                      :name="tech.iconName"
+                      :color="getIconColor(tech.iconName)"
+                      size="18px"
                       v-tooltip="{
                         content: getTechLabel(tech.iconName),
                         trigger: 'mouseenter',
                         touch: 'hold',
                       }"
-                      :icon="getIconByName(tech.iconName)"
-                      :style="{
-                        color: getIconColor(tech.iconName),
-                      }"
-                      style="font-size: 18px"
-                    ></ion-icon>
+                    />
                   </template>
                 </div>
               </ion-col>
@@ -101,7 +99,6 @@ import {
   isPlatform,
 } from "@ionic/vue";
 import { ref } from "vue";
-import * as ionicons from "ionicons/icons";
 import type { ExperienceItem } from "@/services/types";
 import { vTooltip } from "@/directives/tooltip";
 import { format, parseISO, isValid } from "date-fns";
@@ -111,7 +108,10 @@ import {
   arrowBackOutline,
   calendarOutline,
   informationCircleOutline,
+  helpCircleOutline,
 } from "ionicons/icons";
+import { getIconByName as getUnifiedIcon, getIonIconSvg } from "@/composables/iconsIndex";
+import IconRenderer from "@/components/IconRenderer.vue";
 
 const { getIconColor } = useIconColors();
 
@@ -133,9 +133,16 @@ function toggleFlip() {
 }
 
 function getIconByName(source: string) {
-  if (!source) return ionicons.helpCircleOutline;
-  const icon = ionicons[source as keyof typeof ionicons];
-  return icon || ionicons.helpCircleOutline;
+  if (!source) return helpCircleOutline;
+  const iconData = getUnifiedIcon(source);
+  if (!iconData) return helpCircleOutline;
+  
+  if (iconData.source === "lineicons") {
+    return iconData.icon;
+  }
+  
+  const svgIcon = getIonIconSvg(source);
+  return svgIcon || helpCircleOutline;
 }
 
 function getTechLabel(iconName: string): string {

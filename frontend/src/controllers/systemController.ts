@@ -196,11 +196,11 @@ export default class SystemController {
     }
   }
 
-  getdesignMode(): DesignMode | void {
+  getdesignMode(): DesignMode {
     try {
-      return this.systemStore.getDesignMode();
+      return this.systemStore.getDesignMode() || "md";
     } catch (error) {
-      return this.errorController.handleError({ error });
+      return "md";
     }
   }
 

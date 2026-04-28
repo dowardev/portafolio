@@ -13,7 +13,7 @@ class ExperienceController extends Controller
 {
     public function index()
     {
-        $experiences = Experience::with('technologies')->orderBy('start_date', 'desc')->get();
+        $experiences = Experience::orderBy('start_date', 'desc')->get();
 
         $experiencesData = $experiences->map(function ($experience) {
             return [
@@ -24,14 +24,7 @@ class ExperienceController extends Controller
                 'end_date' => $experience->end_date,
                 'description' => $experience->description,
                 'website' => $experience->website,
-                'technologies' => $experience->technologies->map(function ($tech) {
-                    return [
-                        'id' => $tech->id,
-                        'iconName' => $tech->name,
-                        'category' => $tech->category,
-                        'image' => $tech->image,
-                    ];
-                }),
+                'technologies' => $experience->technologies ?? [],
             ];
         });
 
@@ -61,14 +54,15 @@ class ExperienceController extends Controller
         $experience = Experience::create($data);
 
         $technologiesData = json_decode($request->input('technologies', '[]'), true) ?? [];
-        $this->syncTechnologies($experience, $technologiesData);
+        $experience->technologies = $technologiesData;
+        $experience->save();
 
         return response()->json(['experience' => $experience]);
     }
 
     public function show($id)
     {
-        $experience = Experience::with('technologies')->findOrFail($id);
+        $experience = Experience::findOrFail($id);
         return response()->json(['experience' => $experience]);
     }
 
@@ -103,7 +97,8 @@ class ExperienceController extends Controller
         $experience->update($data);
 
         $technologiesData = json_decode($request->input('technologies', '[]'), true) ?? [];
-        $this->syncTechnologies($experience, $technologiesData);
+        $experience->technologies = $technologiesData;
+        $experience->save();
 
         return response()->json(['experience' => $experience]);
     }
@@ -122,36 +117,6 @@ class ExperienceController extends Controller
         $experience->delete();
 
         return response()->json(['success' => true]);
-    }
-
-    private function syncTechnologies($experience, array $technologiesData): void
-    {
-        $technologyIds = [];
-
-        foreach ($technologiesData as $techData) {
-            if (isset($techData['id']) && $techData['id']) {
-                $tech = Technology::find($techData['id']);
-                if ($tech) {
-                    $tech->name = $techData['iconName'] ?? $tech->name;
-                    $tech->category = $techData['category'] ?? $tech->category;
-                    $tech->image = $techData['image'] ?? $tech->image;
-                    $tech->save();
-                    $technologyIds[] = $tech->id;
-                }
-            } elseif (isset($techData['iconName'])) {
-                $tech = Technology::where('name', $techData['iconName'])->first();
-                if (!$tech) {
-                    $tech = Technology::create([
-                        'name' => $techData['iconName'],
-                        'category' => $techData['category'] ?? null,
-                        'image' => $techData['image'] ?? null,
-                    ]);
-                }
-                $technologyIds[] = $tech->id;
-            }
-        }
-
-        $experience->technologies()->sync($technologyIds);
     }
 
     private function getExtensionFromMime($file)

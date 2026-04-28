@@ -1,5 +1,52 @@
 # Changelog
 
+## 15.1.0 - 2026-04-28
+
+### Summary
+This release replaces the old specialized editor components with the reusable IconSelector component, adds type filtering via popover in the icon selector modal, and fixes scroll/border issues in the modal.
+
+### Added
+- Added type filtering popover in IconSelector to filter icons by category (Sociales/Tecnologías/Todos)
+- Added designMode prop to ion-segment for consistent iOS/Android styling
+
+### Changed
+- Replaced TechSkillsEditor with IconSelector in SkillsEditor
+- Replaced SocialsEditor with IconSelector in InfoEditor (component deleted)
+- Updated IconSelector modal with improved scroll handling using height: 96%
+- Simplified controllers (ExperienceController, ProjectController) by removing unused JSON parsing code
+
+### Removed
+- Deleted SocialsEditor.vue (replaced by direct IconSelector usage)
+- Deleted TechSkillsEditor.vue (replaced by IconSelector)
+
+### Fixed
+- Fixed modal scroll in IconSelector - card no longer exceeds modal border
+- Fixed responsive behavior using percentage-based height (96%) instead of fixed calculations
+
+### Affected Files
+- Modified:
+  - `frontend/src/components/admin/IconSelector.vue`
+  - `frontend/src/components/experience/ExperienceCard.vue`
+  - `frontend/src/components/projects/ProjectCard.vue`
+  - `frontend/src/controllers/experienceController.ts`
+  - `frontend/src/controllers/projectsController.ts`
+  - `frontend/src/controllers/systemController.ts`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/admin/editors/CertificatesEditor.vue`
+  - `frontend/src/views/admin/editors/ExperienceEditor.vue`
+  - `frontend/src/views/admin/editors/InfoEditor.vue`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+  - `backend/app/Http/Controllers/Admin/ExperienceController.php`
+  - `backend/app/Http/Controllers/Admin/ProjectController.php`
+  - `backend/app/Models/Experience.php`
+  - `backend/app/Models/Project.php`
+- Deleted:
+  - `frontend/src/views/admin/editors/SocialsEditor.vue`
+  - `frontend/src/views/admin/editors/TechSkillsEditor.vue`
+
+---
+
 ## 15.0.0 - 2026-04-27
 
 ### Summary

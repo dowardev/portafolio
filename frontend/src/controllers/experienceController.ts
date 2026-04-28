@@ -1,6 +1,6 @@
 import { useExperienceStore } from "@/store/experienceStore";
 import { storeToRefs } from "pinia";
-import type { ExperienceItem } from "@/services/types";
+import type { ExperienceItem, TechnologyItem } from "@/services/types";
 import { ToastController } from "./toastController";
 import APIController from "./APIController";
 import ServerConfig from "./serverConfigController";
@@ -13,6 +13,32 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
+interface ExperienceApiResponse {
+  id: string;
+  img: string;
+  title: string;
+  startDate: string;
+  endDate?: string;
+  description?: string;
+  website?: string;
+  technologies: TechnologyItem[];
+}
+
+interface ExperiencesResponse {
+  experiences: ExperienceApiResponse[];
+}
+
+interface ExperienceApiResponseFull extends ExperienceApiResponse {
+  details: {
+    description: string;
+    website: string;
+  };
+}
+
+interface ExperienceResponse {
+  experience: ExperienceApiResponseFull;
+}
+
 export default class ExperienceController {
   experienceStore = useExperienceStore();
   private toastController = new ToastController();
@@ -24,8 +50,20 @@ export default class ExperienceController {
     this.experienceStore.setLoading(true);
     try {
       const data = await api.get<ExperiencesResponse>({ url: "experiences" });
-      this.experienceStore.setExperiences(data.experiences || []);
-      return data.experiences || [];
+      const experiences: ExperienceItem[] = (data.experiences || []).map(exp => ({
+        id: exp.id,
+        img: exp.img,
+        title: exp.title,
+        startDate: exp.startDate,
+        endDate: exp.endDate,
+        technologies: exp.technologies || [],
+        details: {
+          description: exp.description || "",
+          website: exp.website || ""
+        }
+      }));
+      this.experienceStore.setExperiences(experiences);
+      return experiences;
     } catch (error) {
       console.error("Error loading experiences:", error);
       this.experienceStore.setExperiences([]);
@@ -55,8 +93,8 @@ export default class ExperienceController {
       if (experience.endDate) {
         formData.append("end_date", experience.endDate);
       }
-      if (experience.description || experience.details?.description) {
-        formData.append("description", experience.details?.description || experience.description || "");
+      if (experience.details?.description) {
+        formData.append("description", experience.details.description);
       }
       if (experience.details?.website) {
         formData.append("website", experience.details.website);
@@ -139,8 +177,8 @@ export default class ExperienceController {
       if (experience.endDate) {
         formData.append("end_date", experience.endDate);
       }
-      if (experience.description || experience.details?.description) {
-        formData.append("description", experience.details?.description || experience.description || "");
+      if (experience.details?.description) {
+        formData.append("description", experience.details.description);
       }
       if (experience.details?.website) {
         formData.append("website", experience.details.website);

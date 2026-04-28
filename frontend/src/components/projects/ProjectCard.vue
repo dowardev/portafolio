@@ -60,18 +60,16 @@
                     v-for="(technology, technologyIndex) in project.technologies"
                     :key="technologyIndex"
                   >
-                    <ion-icon
+                    <IconRenderer
+                      :name="technology.iconName"
+                      :color="getIconColor(technology.iconName)"
+                      size="18px"
                       v-tooltip="{
                         content: getTechLabel({ iconName: technology.iconName }),
                         trigger: 'mouseenter',
                         touch: 'hold',
                       }"
-                      :icon="getIconByName({ source: technology.iconName })"
-                      :style="{
-                        color: getIconColor(technology.iconName),
-                      }"
-                      style="font-size: 18px"
-                    ></ion-icon>
+                    />
                   </template>
                 </div>
               </ion-col>
@@ -129,16 +127,18 @@
 // imports
 import { IonCard, IonRow, IonCol, IonLabel, IonItem, IonIcon, IonText, IonButton, IonCardContent, isPlatform } from "@ionic/vue";
 import { ref, nextTick, onMounted, onUnmounted, watch } from "vue";
-import * as ionicons from "ionicons/icons";
 import {
   arrowBackOutline,
   briefcaseOutline,
   informationCircleOutline,
   openOutline,
+  helpCircleOutline,
 } from "ionicons/icons";
 import type { ProjectItem } from "@/services/types";
 import { vTooltip } from "@/directives/tooltip";
 import { useIconColors } from "@/composables/useIconColors";
+import { getIconByName as getUnifiedIcon, getIonIconSvg } from "@/composables/iconsIndex";
+import IconRenderer from "@/components/IconRenderer.vue";
 // end imports
 
 // interface and types imports
@@ -212,9 +212,16 @@ function checkTruncation() {
 }
 
 function getIconByName({ source }: { source: string }) {
-  if (!source) return ionicons.helpCircleOutline;
-  const icon = ionicons[source as keyof typeof ionicons];
-  return icon || ionicons.helpCircleOutline;
+  if (!source) return helpCircleOutline;
+  const iconData = getUnifiedIcon(source);
+  if (!iconData) return helpCircleOutline;
+  
+  if (iconData.source === "lineicons") {
+    return iconData.icon;
+  }
+  
+  const svgIcon = getIonIconSvg(source);
+  return svgIcon || helpCircleOutline;
 }
 
 function getTechLabel({ iconName }: { iconName: string }) {

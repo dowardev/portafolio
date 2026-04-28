@@ -104,14 +104,14 @@ Categorías
               style="display: flex; flex-direction: column; align-items: center"
             >
               <div style="display: flex">
-                <ion-chip v-for="tag in tags" :key="tag.id || tag.name" color="primary">{{
+                <ion-chip v-for="tag in safeTags" :key="tag.id || tag.name" color="primary">{{
                   tag.name
                 }}</ion-chip>
               </div>
 
 <div>
             <ion-button
-              v-for="social in props.socials"
+              v-for="social in safeSocials"
               :key="social.platform"
               fill="clear"
               @click="openSocialUrl(social.url)"
@@ -170,10 +170,16 @@ Categorías
                 >
               </ion-list-header>
 
-              <ion-grid>
+              <div v-if="safeProjects.length === 0" class="ion-padding">
+                <p style="text-align: center; color: var(--ion-color-light)">
+                  No hay proyectos disponibles
+                </p>
+              </div>
+
+              <ion-grid v-else>
                 <ion-row>
                   <ion-col
-                    v-for="project in props.projects?.slice(0, displayLimit)"
+                    v-for="project in safeProjects.slice(0, displayLimit)"
                     :key="project.title"
                     size="12"
                     size-sm="6"
@@ -274,10 +280,16 @@ Categorías
                 >
               </ion-list-header>
 
-              <ion-grid>
+              <div v-if="safeExperience.length === 0" class="ion-padding">
+                <p style="text-align: center; color: var(--ion-color-light)">
+                  No hay experiencias disponibles
+                </p>
+              </div>
+
+              <ion-grid v-else>
                 <ion-row>
                   <ion-col
-                    v-for="exp in props.experience?.slice(0, displayLimit)"
+                    v-for="exp in safeExperience.slice(0, displayLimit)"
                     :key="exp.title"
                     size="12"
                     size-lg="4"
@@ -408,6 +420,11 @@ const backgroundTechs = computed(() => {
 const filteredBackgroundTechs = computed(() => backgroundTechs.value);
 
 const displayLimit = computed(() => (isTablet.value ? 4 : 3));
+
+const safeExperience = computed(() => props.experience || []);
+const safeProjects = computed(() => props.projects || []);
+const safeTags = computed(() => props.tags || []);
+const safeSocials = computed(() => props.socials || []);
 
 const sections = [
   { id: "section-yo" },

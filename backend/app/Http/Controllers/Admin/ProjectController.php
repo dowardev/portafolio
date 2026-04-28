@@ -13,7 +13,7 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::with('technologies')->orderBy('start_date', 'desc')->get();
+        $projects = Project::orderBy('start_date', 'desc')->get();
 
         $projectsData = $projects->map(function ($project) {
             return [
@@ -27,14 +27,7 @@ class ProjectController extends Controller
                 'website' => $project->website,
                 'source_name' => $project->source_name,
                 'source_url' => $project->source_url,
-                'technologies' => $project->technologies->map(function ($tech) {
-                    return [
-                        'id' => $tech->id,
-                        'iconName' => $tech->name,
-                        'category' => $tech->category,
-                        'image' => $tech->image,
-                    ];
-                }),
+                'technologies' => $project->technologies ?? [],
             ];
         });
 
@@ -64,14 +57,15 @@ class ProjectController extends Controller
         $project = Project::create($data);
 
         $technologiesData = json_decode($request->input('technologies', '[]'), true) ?? [];
-        $this->syncTechnologies($project, $technologiesData);
+        $project->technologies = $technologiesData;
+        $project->save();
 
         return response()->json(['project' => $project]);
     }
 
     public function show($id)
     {
-        $project = Project::with('technologies')->findOrFail($id);
+        $project = Project::findOrFail($id);
         return response()->json(['project' => $project]);
     }
 
@@ -105,7 +99,8 @@ class ProjectController extends Controller
         $project->update($data);
 
         $technologiesData = json_decode($request->input('technologies', '[]'), true) ?? [];
-        $this->syncTechnologies($project, $technologiesData);
+        $project->technologies = $technologiesData;
+        $project->save();
 
         return response()->json(['project' => $project]);
     }
@@ -124,36 +119,6 @@ class ProjectController extends Controller
         $project->delete();
 
         return response()->json(['success' => true]);
-    }
-
-    private function syncTechnologies($project, array $technologiesData): void
-    {
-        $technologyIds = [];
-
-        foreach ($technologiesData as $techData) {
-            if (isset($techData['id']) && $techData['id']) {
-                $tech = Technology::find($techData['id']);
-                if ($tech) {
-                    $tech->name = $techData['iconName'] ?? $tech->name;
-                    $tech->category = $techData['category'] ?? $tech->category;
-                    $tech->image = $techData['image'] ?? $tech->image;
-                    $tech->save();
-                    $technologyIds[] = $tech->id;
-                }
-            } elseif (isset($techData['iconName'])) {
-                $tech = Technology::where('name', $techData['iconName'])->first();
-                if (!$tech) {
-                    $tech = Technology::create([
-                        'name' => $techData['iconName'],
-                        'category' => $techData['category'] ?? null,
-                        'image' => $techData['image'] ?? null,
-                    ]);
-                }
-                $technologyIds[] = $tech->id;
-            }
-        }
-
-        $project->technologies()->sync($technologyIds);
     }
 
     private function getExtensionFromMime($file)

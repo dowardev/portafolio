@@ -199,9 +199,12 @@
                   </ion-item>
                 </ion-card>
 
-                <TechnologiesEditor
-                  v-model="localProject.technologies"
-                  @update:files="updateTechFiles"
+                <IconSelector
+                  :model-value="localProject.technologies"
+                  type="tech"
+                  @update:model-value="localProject.technologies = $event"
+                  @add="handleTechAdd"
+                  @remove="handleTechRemove"
                 />
               </ion-list>
             </ion-col>
@@ -271,7 +274,7 @@ import {
 import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type { ProjectItem } from "@/services/types";
-import TechnologiesEditor from "./TechSkillsEditor.vue";
+import IconSelector from "@/components/admin/IconSelector.vue";
 import ProjectsController from "@/controllers/projectsController";
 // end imports
 
@@ -295,6 +298,18 @@ const projectIndex = computed(() => {
 const isNew = computed(() => route.name === "ProjectNewPage");
 
 const localProject = ref<ProjectItem | null>(null);
+
+function handleTechAdd() {
+  if (localProject.value) {
+    localProject.value.technologies = [...(localProject.value.technologies || []), { iconName: "" }];
+  }
+}
+
+function handleTechRemove(index: number) {
+  if (localProject.value && localProject.value.technologies) {
+    localProject.value.technologies = localProject.value.technologies.filter((_: any, i: number) => i !== index);
+  }
+}
 
 onMounted(async () => {
 loading.value = true;

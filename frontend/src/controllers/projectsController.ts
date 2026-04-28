@@ -1,6 +1,6 @@
 import { useProjectsStore } from "@/store/projectsStore";
 import { storeToRefs } from "pinia";
-import type { ProjectItem } from "@/services/types";
+import type { ProjectItem, TechnologyItem } from "@/services/types";
 import { ToastController } from "./toastController";
 import APIController from "./APIController";
 import ServerConfig from "./serverConfigController";
@@ -13,6 +13,39 @@ const config = new ServerConfig({
 });
 const api = new APIController(config);
 
+interface ProjectApiResponse {
+  id: string;
+  img: string;
+  title: string;
+  startDate?: string;
+  endDate?: string;
+  status: "progress" | "indeterminate" | "finished";
+  description?: string;
+  website?: string;
+  source_name?: string;
+  source_url?: string;
+  technologies: TechnologyItem[];
+}
+
+interface ProjectsResponse {
+  projects: ProjectApiResponse[];
+}
+
+interface ProjectApiResponseFull extends ProjectApiResponse {
+  details: {
+    description: string;
+    website: string;
+  };
+  source: {
+    name: string;
+    url: string;
+  };
+}
+
+interface ProjectItemResponse {
+  project: ProjectApiResponseFull;
+}
+
 export default class ProjectsController {
   projectsStore = useProjectsStore();
   private toastController = new ToastController();
@@ -24,8 +57,25 @@ export default class ProjectsController {
     this.projectsStore.setLoading(true);
     try {
       const data = await api.get<ProjectsResponse>({ url: "projects" });
-      this.projectsStore.setProjects(data.projects || []);
-      return data.projects || [];
+      const projects: ProjectItem[] = (data.projects || []).map(project => ({
+        id: project.id,
+        img: project.img,
+        title: project.title,
+        startDate: project.startDate,
+        endDate: project.endDate,
+        status: project.status,
+        technologies: project.technologies || [],
+        details: {
+          description: project.description || "",
+          website: project.website || ""
+        },
+        source: {
+          name: project.source_name || "",
+          url: project.source_url || ""
+        }
+      }));
+      this.projectsStore.setProjects(projects);
+      return projects;
     } catch (error) {
       console.error("Error loading projects:", error);
       this.projectsStore.setProjects([]);
@@ -60,8 +110,8 @@ export default class ProjectsController {
       if (project.status) {
         formData.append("status", project.status);
       }
-      if (project.description || project.details?.description) {
-        formData.append("description", project.details?.description || project.description || "");
+      if (project.details?.description) {
+        formData.append("description", project.details.description);
       }
       if (project.details?.website) {
         formData.append("website", project.details.website);
@@ -160,8 +210,8 @@ export default class ProjectsController {
       if (project.status) {
         formData.append("status", project.status);
       }
-      if (project.description || project.details?.description) {
-        formData.append("description", project.details?.description || project.description || "");
+      if (project.details?.description) {
+        formData.append("description", project.details.description);
       }
       if (project.details?.website) {
         formData.append("website", project.details.website);

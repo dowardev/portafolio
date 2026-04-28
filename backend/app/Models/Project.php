@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
 class Project extends Model
 {
     use HasFactory;
@@ -20,10 +18,10 @@ class Project extends Model
         'website',
         'source_name',
         'source_url',
+        'technologies',
     ];
 
-    public function technologies(): BelongsToMany
-    {
-        return $this->belongsToMany(Technology::class, 'project_technologies');
-    }
+    protected $casts = [
+        'technologies' => 'array',
+    ];
 }
