@@ -1,5 +1,43 @@
 # Changelog
 
+## 15.9.1 - 2026-04-29
+
+### Summary
+This release removes legacy authentication references and consolidates database migrations. The application now relies entirely on external SSO for authentication, eliminating local auth dependencies.
+
+### Changed
+- Removed `after()` clause from tags table creation (MariaDB/MySQL compatibility fix)
+- Removed `HasApiTokens` trait from User and Post models
+
+### Removed
+- Deleted 10 legacy authentication migrations:
+  - `create_password_resets_table.php`
+  - `create_users_verify.php`
+  - `create_reset_code_passwords_table.php`
+  - `create_oauth_auth_codes_table.php`
+  - `create_oauth_access_tokens_table.php`
+  - `create_oauth_refresh_tokens_table.php`
+  - `create_oauth_clients_table.php`
+  - `create_oauth_personal_access_clients_table.php`
+  - `create_sessions_table.php`
+  - `drop_legacy_auth_tables.php`
+- Deleted `config/passport.php`
+
+### Affected Files
+- Modified:
+  - `backend/app/Models/User.php` (removed HasApiTokens)
+  - `backend/app/Models/Post.php` (removed HasApiTokens)
+  - `backend/database/migrations/2026_04_27_000003_create_relations_tables.php` (removed after clause)
+- Deleted:
+  - 10 migration files (see Removed section)
+  - `backend/config/passport.php`
+
+### Breaking Changes
+- Requires `php artisan migrate:fresh` (tables removed)
+- Authentication now handled entirely by external SSO
+
+---
+
 ## 15.9.0 - 2026-04-29
 
 ### Summary
