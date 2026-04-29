@@ -39,100 +39,29 @@
               </ion-item-divider>
 
               <div class="ion-padding-bottom">
-                <!-- admin panel -->
-                <div
+                <MenuItem
+                  v-if="isAdmin"
+                  target-route-name="PanelAdminPage"
+                  :active-routes="ADMIN_PAGES"
+                  :icon-outline="cogOutline"
+                  :icon-filled="cog"
+                  label="Panel administrador"
+                  :disabled="spinners.buttonAdminPanel"
+                  :loading="spinners.buttonAdminPanel"
+                  transparent
+                />
+
+                <MenuItem
                   v-if="userController.getUser()?.id"
-                  :class="{
-                    'menu-option-selected':
-                      $route.name == 'PanelAdminPage' ||
-                      $route.name == 'ProjectsListPage' ||
-                      $route.name == 'ProjectNewPage' ||
-                      $route.name == 'ProjectEditPage' ||
-                      $route.name == 'ExperienceListPage' ||
-                      $route.name == 'ExperienceNewPage' ||
-                      $route.name == 'ExperienceEditPage' ||
-                      $route.name == 'AdminEditorPage' ||
-                      $route.name == 'HomeEditorPage' ||
-                      $route.name == 'CreatePostPage' ||
-                      $route.name == 'UpdatePostPage',
-                  }"
-                >
-                  <ion-item
-                    v-if="isAdmin"
-                    button
-                    :disabled="spinners.buttonAdminPanel"
-                    lines="none"
-                    class="transparent"
-                    @click="goToAdminPanel()"
-                  >
-                    <ion-icon
-                      v-if="spinners.buttonAdminPanel == false"
-                      slot="start"
-                      color="primary"
-                      :icon="
-                        ![
-                          'PanelAdminPage',
-                          'ProjectsListPage',
-                          'ProjectNewPage',
-                          'ProjectEditPage',
-                          'ExperienceListPage',
-                          'ExperienceNewPage',
-                          'ExperienceEditPage',
-                          'AdminEditorPage',
-                          'HomeEditorPage',
-                          'CreatePostPage',
-                          'UpdatePostPage',
-                        ].includes($route.name as string)
-                          ? cogOutline
-                          : cog
-                      "
-                    ></ion-icon>
-
-                    <ion-spinner
-                      v-if="spinners.buttonAdminPanel"
-                      slot="start"
-                      color="primary"
-                      name="crescent"
-                    >
-                    </ion-spinner>
-
-                    <ion-label>Panel administrador</ion-label>
-                  </ion-item>
-                </div>
-
-                <!-- user panel -->
-                <div
-                  v-if="userController.getUser()?.id"
-                  :class="{
-                    'menu-option-selected': $route.name == 'UserPanelPage',
-                  }"
-                >
-                  <ion-item
-                    :disabled="spinners.buttonUserPanel"
-                    button
-                    lines="none"
-                    class="transparent"
-                    @click="goToUserPanel()"
-                  >
-                    <ion-icon
-                      v-if="spinners.buttonUserPanel == false"
-                      slot="start"
-                      color="primary"
-                      :icon="
-                        $route.name != 'UserPanelPage' ? personOutline : person
-                      "
-                    ></ion-icon>
-
-                    <ion-spinner
-                      v-if="spinners.buttonUserPanel"
-                      slot="start"
-                      color="primary"
-                      name="crescent"
-                    >
-                    </ion-spinner>
-                    <ion-label>Panel usuario</ion-label>
-                  </ion-item>
-                </div>
+                  target-route-name="UserPanelPage"
+                  :active-routes="['UserPanelPage']"
+                  :icon-outline="personOutline"
+                  :icon-filled="person"
+                  label="Panel usuario"
+                  :disabled="spinners.buttonUserPanel"
+                  :loading="spinners.buttonUserPanel"
+                  transparent
+                />
               </div>
             </section>
 
@@ -141,89 +70,29 @@
             </ion-item-divider>
 
             <div class="ion-padding-bottom">
-              <!-- presentation -->
-              <div
-                :class="{
-                  'menu-option-selected':
-                    $route.name == 'PresentationPage' ||
-                    $route.name == 'CategoriesPage' ||
-                    $route.name == 'HistoryPage' ||
-                    $route.name == 'PortfolioPage' ||
-                    $route.name == 'CertificatesPage' ||
-                    $route.name == 'ExperiencePage',
-                }"
-              >
-                <ion-item
-                  lines="none"
-                  button
-                  @click="openRoute({ name: 'PresentationPage' })"
-                >
-                  <ion-icon
-                    slot="start"
-                    color="primary"
-                    :icon="
-                      ![
-                        'PresentationPage',
-                        'CategoriesPage',
-                        'HistoryPage',
-                        'PortfolioPage',
-                        'CertificatesPage',
-                        'ExperiencePage',
-                      ].includes($route.name as string)
-                        ? homeOutline
-                        : home
-                    "
-                  ></ion-icon>
-                  <ion-label> Presentación </ion-label>
-                </ion-item>
-              </div>
+              <MenuItem
+                target-route-name="PresentationPage"
+                :active-routes="PRESENTATION_PAGES"
+                :icon-outline="homeOutline"
+                :icon-filled="home"
+                label="Presentación"
+              />
 
-              <!-- blog -->
-              <div
-                :class="{
-                  'menu-option-selected':
-                    $route.name == 'PostsPage' || $route.name == 'PostPage',
-                }"
-              >
-                <ion-item
-                  lines="none"
-                  button
-                  @click="openRoute({ name: 'PostsPage' })"
-                >
-                  <ion-icon
-                    slot="start"
-                    color="primary"
-                    :icon="
-                      $route.name != 'PostsPage' ? libraryOutline : library
-                    "
-                  ></ion-icon>
-                  <ion-label> Blog </ion-label>
-                </ion-item>
-              </div>
+              <MenuItem
+                target-route-name="PostsPage"
+                :active-routes="BLOG_PAGES"
+                :icon-outline="libraryOutline"
+                :icon-filled="library"
+                label="Blog"
+              />
 
-              <!-- policies -->
-              <div
-                :class="{
-                  'menu-option-selected': $route.name == 'PoliciesPage',
-                }"
-              >
-                <ion-item
-                  lines="none"
-                  button
-                  @click="openRoute({ name: 'PoliciesPage' })"
-                >
-                  <ion-icon
-                    slot="start"
-                    color="primary"
-                    :icon="
-                      $route.name != 'PoliciesPage'
-                        ? documentsOutline
-                        : documents
-                    "
-                  ></ion-icon>
-                  <ion-label>Políticas</ion-label>
-                </ion-item>
-              </div>
+              <MenuItem
+                target-route-name="PoliciesPage"
+                :active-routes="['PoliciesPage']"
+                :icon-outline="documentsOutline"
+                :icon-filled="documents"
+                label="Políticas"
+              />
             </div>
           </ion-item-group>
 
@@ -441,7 +310,6 @@ import {
   IonContent,
   IonPage,
   modalController,
-  isPlatform,
   menuController,
   IonLabel,
   IonItem,
@@ -459,9 +327,9 @@ import {
   documentsOutline,
   personOutline,
   cogOutline,
-  ellipsisVerticalOutline,
   cashOutline,
   libraryOutline,
+  library,
   newspaperOutline,
   person,
   cog,
@@ -482,14 +350,38 @@ import ServerConfig from "@/controllers/serverConfigController";
 import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
 import { ssoApiConnector } from "@/main";
-import { library } from "ionicons/icons";
+import MenuItem from "./MenuItem.vue";
+
+const ADMIN_PAGES = [
+  'PanelAdminPage',
+  'ProjectsListPage',
+  'ProjectNewPage',
+  'ProjectEditPage',
+  'ExperienceListPage',
+  'ExperienceNewPage',
+  'ExperienceEditPage',
+  'AdminEditorPage',
+  'HomeEditorPage',
+  'CreatePostPage',
+  'UpdatePostPage',
+];
+
+const PRESENTATION_PAGES = [
+  'PresentationPage',
+  'CategoriesPage',
+  'HistoryPage',
+  'PortfolioPage',
+  'CertificatesPage',
+  'ExperiencePage',
+];
+
+const BLOG_PAGES = ['PostsPage', 'PostPage'];
+
 const serverConfig = new ServerConfig();
 const userController = new UserController();
 const systemController = new SystemController();
 
 const router = useRouter();
-const isOpenRefPopOverUserOptions = ref(false);
-const eventPopOverUserOptions = ref();
 const spinners = ref({
   buttonLogin: false,
   buttonSignup: false,
@@ -529,23 +421,7 @@ function openRoute(params: { route?: string; name?: string }) {
 }
 
 async function getUser() {
-  try {
-    await userController.loadUser();
-  } catch (error) {}
-}
-
-async function login() {
-  spinners.value.buttonLogin = true;
-  await router.push("/login");
-  spinners.value.buttonLogin = false;
-  menuController.close();
-}
-
-async function signup() {
-  spinners.value.buttonSignup = true;
-  await router.push("/signup");
-  spinners.value.buttonSignup = false;
-  menuController.close();
+  await userController.loadUser();
 }
 
 async function logout() {
@@ -568,22 +444,6 @@ async function openModalApps() {
   });
   menuController.close();
   return modal.present();
-}
-
-async function goToUserPanel() {
-  spinners.value.buttonUserPanel = true;
-  await router.push("/user");
-  spinners.value.buttonUserPanel = false;
-  isOpenRefPopOverUserOptions.value = false;
-  if (isPlatform("mobile")) menuController.close();
-}
-
-async function goToAdminPanel() {
-  spinners.value.buttonAdminPanel = true;
-  await router.push({ name: "PanelAdminPage" });
-  spinners.value.buttonAdminPanel = false;
-  isOpenRefPopOverUserOptions.value = false;
-  if (isPlatform("mobile")) menuController.close();
 }
 
 function updateApp() {

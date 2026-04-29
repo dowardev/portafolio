@@ -1,5 +1,26 @@
 # Changelog
 
+## 15.5.0 - 2026-04-28
+
+### Summary
+This release refactors the menu component to use a reusable MenuItem component, reducing code duplication and improving maintainability.
+
+### Added
+- New reusable `MenuItem` component with automatic route active detection
+- Route constants: `ADMIN_PAGES`, `PRESENTATION_PAGES`, `BLOG_PAGES`
+
+### Changed
+- Refactored `MenuComponent` to use `MenuItem` for admin panel, user panel, presentation, blog, and policies
+- Simplified template from ~270 lines to ~50 lines of repetitive code
+
+### Fixed
+- Removed unused functions (`login`, `signup`, `goToUserPanel`, `goToAdminPanel`)
+- Removed unused imports (`isPlatform`, `ellipsisVerticalOutline`, `eventPopOverUserOptions`)
+
+### Affected Files
+- `frontend/src/components/menu/MenuComponent.vue` (refactored)
+- `frontend/src/components/menu/MenuItem.vue` (new)
+
 ## 15.4.0 - 2026-04-28
 
 ### Summary
