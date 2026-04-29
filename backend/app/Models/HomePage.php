@@ -9,7 +9,7 @@ class HomePage extends Model
 {
     use HasFactory;
 
-    protected $table = 'homepage';
+    protected $table = 'intro_profiles';
 
     protected $fillable = [
         'name',
@@ -36,6 +36,6 @@ class HomePage extends Model
         'projects' => 'array',
         'certificates' => 'array',
         'freelance' => 'array',
-        'show_contact_form' => 'boolean',
+        'show_contact_form' => 'array',
     ];
 }

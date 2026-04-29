@@ -1,5 +1,41 @@
 # Changelog
 
+## 15.9.0 - 2026-04-29
+
+### Summary
+This release consolidates database migrations by integrating modification migrations into creation migrations, reducing the total number of migrations. This simplifies the migration history and improves maintainability.
+
+### Changed
+- Integrated `url` column into `tags` table creation migration (previously added via separate migration)
+- Removed `status` column from `projects` table creation (previously dropped via separate migration)
+- Consolidated homepage table modifications into single creation migration:
+  - Table renamed from `homepage` to `intro_profiles` directly in creation
+  - All JSON columns (`stack`, `skill_categories`, `experience`, `projects`, `certificates`, `freelance`, `show_contact_form`) created in initial migration
+
+### Removed
+- Deleted 7 modification migrations from 2026:
+  - `add_url_to_tags_table`
+  - `drop_status_from_projects_table`
+  - `rename_homepage_to_intro_profiles`
+  - `modify_show_contact_form_to_json`
+  - `add_show_contact_form_to_homepage`
+  - `add_homepage_sections_columns`
+  - `rename_homepages_to_homepage`
+
+### Affected Files
+- Modified:
+  - `backend/database/migrations/2026_01_17_220000_create_homepages_table.php` (renamed to intro_profiles with all columns)
+  - `backend/database/migrations/2026_04_26_000002_create_projects_table.php` (removed status column)
+  - `backend/database/migrations/2026_04_27_000003_create_relations_tables.php` (added url to tags)
+  - `backend/app/Models/HomePage.php` (updated table name to intro_profiles, cast show_contact_form to array)
+- Deleted:
+  - 7 migration files (see Removed section above)
+
+### Breaking Changes
+- Requires `php artisan migrate:fresh` to apply changes (table renamed from `homepage` to `intro_profiles`)
+
+---
+
 ## 15.8.0 - 2026-04-29
 
 ### Summary

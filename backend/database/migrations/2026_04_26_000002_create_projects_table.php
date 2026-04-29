@@ -14,7 +14,6 @@ return new class extends Migration
             $table->string('img')->nullable();
             $table->string('start_date')->nullable();
             $table->string('end_date')->nullable();
-            $table->enum('status', ['progress', 'indeterminate', 'finished'])->default('indeterminate');
             $table->text('description')->nullable();
             $table->string('website')->nullable();
             $table->string('source_name')->nullable();
