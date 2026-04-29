@@ -12,6 +12,7 @@ class Tag extends Model
 
     protected $fillable = [
         'name',
+        'url',
         'sort_order',
     ];
 

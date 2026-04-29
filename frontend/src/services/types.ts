@@ -113,6 +113,7 @@ export interface FreelanceComment {
 export interface TagItem {
   id?: number;
   name: string;
+  url?: string;
   sort_order?: number;
 }
 

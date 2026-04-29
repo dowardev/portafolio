@@ -28,8 +28,7 @@
           placeholder="Describe quién eres o qué haces"
           :error-text="v$.description.$errors[0]?.$message.toString()"
           :class="{
-            'ion-invalid':
-              v$.description.$invalid && v$.description.$dirty,
+            'ion-invalid': v$.description.$invalid && v$.description.$dirty,
             'ion-touched': v$.description.$dirty,
           }"
           @ion-input="emit('update:description', $event.detail.value || '')"
@@ -43,7 +42,7 @@
     <ion-list-header>
       <ion-label>Etiquetas</ion-label>
 
-      <ion-button @click="isAddTagAlertOpen = true">
+      <ion-button @click="addLink">
         <ion-icon slot="icon-only" :icon="addOutline"></ion-icon>
       </ion-button>
 
@@ -54,18 +53,50 @@
 
     <ion-card class="shadow1">
       <ion-card-content>
-        <div class="chips-container">
-          <ion-chip
-            v-for="(tagItem, tagIndex) in tags"
-            :key="(tagItem.id || tagItem.name || tagIndex) + '-' + tagIndex"
-            color="primary"
-          >
-            <ion-label>{{ tagItem.name }}</ion-label>
-            <ion-icon
-              :icon="closeOutline"
-              @click="removeTag(tagIndex)"
-            ></ion-icon>
-          </ion-chip>
+        <div
+          v-for="(linkItem, linkIndex) in tags"
+          :key="linkIndex"
+          class="link-item"
+        >
+          <ion-item lines="full">
+            <ion-input
+              label="Nombre"
+              label-placement="floating"
+              :value="linkItem.name"
+              :error-text="getLinkError({ index: linkIndex, field: 'name' })"
+              :class="{
+                'ion-invalid': hasLinkError({ index: linkIndex, field: 'name' }),
+                'ion-touched': touched[linkIndex]?.name,
+              }"
+              @ion-input="updateLink({ index: linkIndex, field: 'name', value: $event.detail.value || '' })"
+              @ion-blur="touchLinkField({ index: linkIndex, field: 'name' })"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-input
+              label="URL"
+              label-placement="floating"
+              :value="linkItem.url"
+              :error-text="getLinkError({ index: linkIndex, field: 'url' })"
+              :class="{
+                'ion-invalid': hasLinkError({ index: linkIndex, field: 'url' }),
+                'ion-touched': touched[linkIndex]?.url,
+              }"
+              @ion-input="updateLink({ index: linkIndex, field: 'url', value: $event.detail.value || '' })"
+              @ion-blur="touchLinkField({ index: linkIndex, field: 'url' })"
+            ></ion-input>
+          </ion-item>
+
+          <div class="link-actions">
+            <ion-button
+              fill="clear"
+              color="danger"
+              @click="removeLink(linkIndex)"
+            >
+              <ion-icon :icon="trashOutline"></ion-icon>
+            </ion-button>
+          </div>
         </div>
       </ion-card-content>
     </ion-card>
@@ -75,7 +106,16 @@
     :model-value="socials"
     type="social"
     show-url-input
-    @update:model-value="emit('update:socials', $event.map((item: any) => ({ platform: item.iconName, url: item.url || '', iconName: item.iconName })))"
+    @update:model-value="
+      emit(
+        'update:socials',
+        $event.map((item: any) => ({
+          platform: item.iconName,
+          url: item.url || '',
+          iconName: item.iconName,
+        })),
+      )
+    "
   />
 
   <ion-list>
@@ -85,11 +125,7 @@
 
     <ion-card class="shadow1">
       <section>
-        <ion-item
-          lines="full"
-          button
-          @click="openFileDialog('logo')"
-        >
+        <ion-item lines="full" button @click="openFileDialog('logo')">
           <ion-label>Logo</ion-label>
 
           <ion-note v-if="fileNames.logo" slot="end">{{
@@ -108,11 +144,7 @@
       </section>
 
       <section>
-        <ion-item
-          lines="full"
-          button
-          @click="openFileDialog('photo')"
-        >
+        <ion-item lines="full" button @click="openFileDialog('photo')">
           <ion-label>Foto (Cover)</ion-label>
 
           <ion-note v-if="fileNames.photo" slot="end">{{
@@ -157,7 +189,9 @@
         <ion-toggle
           slot="end"
           :checked="showContactForm.freelance"
-          @ion-change="updateShowContactForm('freelance', $event.detail.checked)"
+          @ion-change="
+            updateShowContactForm('freelance', $event.detail.checked)
+          "
         ></ion-toggle>
       </ion-item>
     </ion-card>
@@ -187,16 +221,6 @@
       </ion-list>
     </ion-content>
   </ion-modal>
-
-  <ion-alert
-    :is-open="isAddTagAlertOpen"
-    header="Agregar etiqueta"
-    :inputs="[
-      { name: 'tag', type: 'text', placeholder: 'Etiqueta', value: newTag },
-    ]"
-    :buttons="addTagAlertButtons"
-    @did-dismiss="onAlertDismiss"
-  />
 </template>
 
 <script setup lang="ts">
@@ -224,9 +248,9 @@ import {
   IonToggle,
   IonToolbar,
 } from "@ionic/vue";
-import { addOutline, closeOutline, reorderThreeOutline } from "ionicons/icons";
+import { addOutline, closeOutline, reorderThreeOutline, linkOutline, trashOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
-import { helpers, maxLength, minLength, required } from "@vuelidate/validators";
+import { helpers, maxLength, minLength, required, url } from "@vuelidate/validators";
 import { computed, reactive, ref, onMounted } from "vue";
 import IconSelector from "@/components/admin/IconSelector.vue";
 
@@ -250,6 +274,7 @@ interface ReorderEventDetail {
 interface TagItem {
   id?: number;
   name: string;
+  url?: string;
   sort_order?: number;
 }
 
@@ -270,73 +295,100 @@ const emit = defineEmits<{
   "file-change": [payload: { file: File; type: "logo" | "photo" }];
 }>();
 
-const isAddTagAlertOpen = ref(false);
 const isReorderModalOpen = ref(false);
 const fileNames = reactive<Record<string, string>>({});
-const newTag = ref("");
 let tagIdCounter = 0;
 const logoInputRef = ref<HTMLInputElement | null>(null);
 const photoInputRef = ref<HTMLInputElement | null>(null);
 
 const localTags = ref<LocalTag[]>([]);
 
-const addTagAlertButtons = computed(() => [
-  {
-    text: "Cancelar",
-    role: "cancel",
-  },
-  {
-    text: "Agregar",
-    role: "confirm",
-    handler: (alertData: { tag?: string } | undefined) => {
-      const tagValue = alertData?.tag ?? newTag.value;
-      if (tagValue && tagValue.toString().trim()) {
-        const trimmedValue = tagValue.toString().trim();
-        const newTags = [...props.tags];
-        const exists = newTags.some(t => t.name === trimmedValue);
-        if (!exists) {
-          newTags.push({ name: trimmedValue, sort_order: newTags.length });
-          emit("update:tags", newTags);
-        }
-      }
-      newTag.value = "";
-    },
-  },
-]);
+const touched = reactive<Record<number, Record<string, boolean>>>({});
+
+function hasLinkError(params: { index: number; field: string }): boolean {
+  const { index, field } = params;
+  const errors = v$.value.tags.$each.$response.$errors[index]?.[field];
+  return touched[index]?.[field] === true && errors?.length > 0;
+}
+
+function getLinkError(params: { index: number; field: string }): string {
+  const { index, field } = params;
+  const errors = v$.value.tags.$each.$response.$errors[index]?.[field];
+  return errors?.[0]?.$message || "";
+}
+
+function touchLinkField(params: { index: number; field: string }) {
+  const { index, field } = params;
+  if (!touched[index]) touched[index] = {};
+  touched[index][field] = true;
+}
+
+function addLink() {
+  const newTags = [...props.tags];
+  newTags.push({ name: '', url: '' });
+  emit('update:tags', newTags);
+}
+
+function removeLink(index: number) {
+  const newTags = [...props.tags];
+  newTags.splice(index, 1);
+  emit('update:tags', newTags);
+}
+
+function updateLink(params: { index: number; field: 'name' | 'url'; value: string }) {
+  const { index, field, value } = params;
+  const newTags = [...props.tags];
+  newTags[index] = { ...newTags[index], [field]: value };
+  emit('update:tags', newTags);
+}
 
 const alphaName = helpers.regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s-]+$/);
 
-const v$ = useVuelidate(
-  {
-    name: {
-      required: helpers.withMessage("El nombre es requerido", required),
-      minLength: helpers.withMessage(
-        "El nombre debe tener al menos 2 caracteres",
-        minLength(2),
-      ),
-      maxLength: helpers.withMessage(
-        "El nombre no puede exceder 50 caracteres",
-        maxLength(50),
-      ),
-      alphaName: helpers.withMessage(
-        "El nombre solo puede contener letras, espacios y guiones",
-        alphaName,
-      ),
-    },
-    description: {
-      required: helpers.withMessage("La descripción es requerida", required),
-      minLength: helpers.withMessage(
-        "La descripción debe tener al menos 10 caracteres",
-        minLength(10),
-      ),
-      maxLength: helpers.withMessage(
-        "La descripción no puede exceder 500 caracteres",
-        maxLength(500),
-      ),
-    },
+const rules = {
+  name: {
+    required: helpers.withMessage("El nombre es requerido", required),
+    minLength: helpers.withMessage(
+      "El nombre debe tener al menos 2 caracteres",
+      minLength(2),
+    ),
+    maxLength: helpers.withMessage(
+      "El nombre no puede exceder 50 caracteres",
+      maxLength(50),
+    ),
+    alphaName: helpers.withMessage(
+      "El nombre solo puede contener letras, espacios y guiones",
+      alphaName,
+    ),
   },
-  { name: computed(() => props.name), description: computed(() => props.description) },
-);
+  description: {
+    required: helpers.withMessage("La descripción es requerida", required),
+    minLength: helpers.withMessage(
+      "La descripción debe tener al menos 10 caracteres",
+      minLength(10),
+    ),
+    maxLength: helpers.withMessage(
+      "La descripción no puede exceder 500 caracteres",
+      maxLength(500),
+    ),
+  },
+  tags: {
+    $each: helpers.forEach({
+      name: {
+        required: helpers.withMessage("El nombre es requerido", required),
+        minLength: helpers.withMessage("Mínimo 2 caracteres", minLength(2)),
+      },
+      url: {
+        urlValid: helpers.withMessage("URL inválida", url),
+      },
+    }),
+  },
+};
+
+const v$ = useVuelidate(rules, {
+  name: computed(() => props.name),
+  description: computed(() => props.description),
+  tags: computed(() => props.tags),
+});
 
 function createLocalTags(): LocalTag[] {
   return props.tags.map((tag) => ({
@@ -374,11 +426,6 @@ function onReorderDismiss() {
   closeReorderModal();
 }
 
-function onAlertDismiss() {
-  isAddTagAlertOpen.value = false;
-  newTag.value = "";
-}
-
 function handleReorder(reorderEvent: CustomEvent<ReorderEventDetail>) {
   const detail = reorderEvent.detail as ReorderEventDetail;
   const { from: originIndex, to: destinationIndex, complete } = detail;
@@ -390,11 +437,12 @@ function handleReorder(reorderEvent: CustomEvent<ReorderEventDetail>) {
         const labelMapping = new Map(
           localTags.value.map((localTag) => [localTag.label, localTag]),
         );
-        localTags.value = (reorderResult as unknown as string[]).map((label) =>
-          labelMapping.get(label) || {
-            id: `tag_${Date.now()}_${tagIdCounter++}`,
-            label,
-          },
+        localTags.value = (reorderResult as unknown as string[]).map(
+          (label) =>
+            labelMapping.get(label) || {
+              id: `tag_${Date.now()}_${tagIdCounter++}`,
+              label,
+            },
         );
       } else {
         localTags.value = (reorderResult as unknown as LocalTag[]).slice();
@@ -450,5 +498,18 @@ onMounted(() => {
 }
 input[type="file"] {
   margin-top: 8px;
+}
+.link-item {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ion-color-light-shade);
+}
+.link-item:last-of-type {
+  border-bottom: none;
+}
+.link-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
 }
 </style>

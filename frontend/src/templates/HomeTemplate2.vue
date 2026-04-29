@@ -54,7 +54,7 @@
                     :class="{ active: activeSection === 'section-categories' }"
                     @click="scrollToSection('section-categories')"
                   >
-Categorías
+                    Categorías
                   </ion-button>
 
                   <ion-button
@@ -104,21 +104,31 @@ Categorías
               style="display: flex; flex-direction: column; align-items: center"
             >
               <div style="display: flex">
-                <ion-chip v-for="tag in safeTags" :key="tag.id || tag.name" color="primary">{{
-                  tag.name
-                }}</ion-chip>
+                <ion-chip
+                  v-for="tag in safeTags"
+                  :key="tag.id || tag.name"
+                  color="primary"
+                  :button="!!tag.url"
+                  @click="tag.url ? openUrl(tag.url) : null"
+                >
+                  <ion-icon v-if="tag.url" :icon="linkOutline"></ion-icon>
+                  <ion-label>{{ tag.name }}</ion-label>
+                </ion-chip>
               </div>
 
-<div>
-            <ion-button
-              v-for="social in safeSocials"
-              :key="social.platform"
-              fill="clear"
-              @click="openSocialUrl(social.url)"
-            >
-              <ion-icon slot="icon-only" :icon="getIconByName(social.iconName)?.icon"></ion-icon>
-            </ion-button>
-          </div>
+              <div>
+                <ion-button
+                  v-for="social in safeSocials"
+                  :key="social.platform"
+                  fill="clear"
+                  @click="openSocialUrl(social.url)"
+                >
+                  <ion-icon
+                    slot="icon-only"
+                    :icon="getIconByName(social.iconName)?.icon"
+                  ></ion-icon>
+                </ion-button>
+              </div>
             </div>
           </ion-col>
         </ion-row>
@@ -372,6 +382,7 @@ import ionicIcon from "@/assets/otros/ionicframework-icon.svg";
 import laravelIcon from "@/assets/otros/laravel-2.svg";
 import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
 import { getIconByName } from "@/composables/iconsIndex";
+import { linkOutline } from "ionicons/icons";
 
 const router = useRouter();
 const props = defineProps<Partial<HomePageData>>();
@@ -462,6 +473,13 @@ const openSocialUrl = (url: string) => {
   window.open(url, "_blank");
 };
 
+const openUrl = (url: string) => {
+  if (url) {
+    const fullUrl = url.startsWith("http") ? url : `https://${url}`;
+    window.open(fullUrl, "_blank");
+  }
+};
+
 watch(activeSection, () => {
   setTimeout(scrollActiveButtonIntoView, 100);
 });
@@ -515,13 +533,16 @@ onMounted(async () => {
   setTimeout(setupIntersectionObserver, 100);
   if (!categories.value.length) {
     try {
-      categories.value = (await skillsCategoriesController.loadSkillsCategories()).map(cat => ({
-  id: cat.id || '',
-  name: cat.name,
-  technologies: cat.technologies?.map(tech => ({
-    iconName: tech.iconName
-  })) || []
-}));
+      categories.value = (
+        await skillsCategoriesController.loadSkillsCategories()
+      ).map((cat) => ({
+        id: String(cat.id || ""),
+        name: cat.name,
+        technologies:
+          cat.technologies?.map((tech) => ({
+            iconName: tech.iconName,
+          })) || [],
+      }));
     } catch (error) {
       console.error("Error loading categories:", error);
     }

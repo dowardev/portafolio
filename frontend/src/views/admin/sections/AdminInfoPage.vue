@@ -97,6 +97,7 @@ import {
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import InfoEditor from "../editors/InfoEditor.vue";
+import type { TagItem } from "@/services/types";
 import IntroController from "@/controllers/introController";
 import { bugOutline, saveOutline } from "ionicons/icons";
 
@@ -108,7 +109,7 @@ const saving = ref(false);
 
 const formData = reactive({
   name: "",
-  tags: [] as string[],
+  tags: [] as TagItem[],
   description: "",
   socials: [] as Array<{ platform: string; url: string; iconName: string }>,
   logoUrl: null as string | null,

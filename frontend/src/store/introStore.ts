@@ -4,6 +4,7 @@ import { ref, reactive } from "vue";
 export interface TagItem {
   id?: number;
   name: string;
+  url?: string;
   sort_order?: number;
 }
 

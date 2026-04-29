@@ -4,6 +4,7 @@ import APIController from "./APIController";
 import ServerConfig from "./serverConfigController";
 import Cookies from "js-cookie";
 import { ToastController } from "./toastController";
+import type { TagItem } from "@/services/types";
 
 const userToken = Cookies.get("user-token");
 const config = new ServerConfig({
@@ -14,7 +15,7 @@ const api = new APIController(config);
 
 export interface IntroData {
   name: string | null;
-  tags: string[];
+  tags: TagItem[];
   description: string | null;
   socials: Array<{ platform: string; url: string; iconName: string }>;
   logoUrl: string | null;

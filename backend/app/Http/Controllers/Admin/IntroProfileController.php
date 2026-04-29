@@ -91,6 +91,7 @@ class IntroProfileController extends Controller
             return [
                 'id' => $tag->id,
                 'name' => $tag->name,
+                'url' => $tag->url,
                 'sort_order' => $tag->sort_order,
             ];
         });
@@ -182,11 +183,13 @@ class IntroProfileController extends Controller
 
             foreach ($tagsData as $tagData) {
                 $tagName = is_array($tagData) ? ($tagData['name'] ?? '') : $tagData;
+                $tagUrl = is_array($tagData) ? ($tagData['url'] ?? null) : null;
 
                 if (is_array($tagData) && isset($tagData['id']) && $tagData['id']) {
                     $tag = Tag::find($tagData['id']);
                     if ($tag) {
                         $tag->name = $tagName ?: $tag->name;
+                        $tag->url = $tagUrl ?? $tag->url;
                         $tag->sort_order = $tagData['sort_order'] ?? $tag->sort_order;
                         $tag->save();
                         $tagIds[] = $tag->id;
@@ -196,6 +199,7 @@ class IntroProfileController extends Controller
                     if (!$tag) {
                         $tag = Tag::create([
                             'name' => $tagName,
+                            'url' => $tagUrl,
                             'sort_order' => is_array($tagData) ? ($tagData['sort_order'] ?? 0) : 0,
                         ]);
                     }

@@ -1,5 +1,33 @@
 # Changelog
 
+## 15.7.0 - 2026-04-29
+
+### Summary
+This release converts tags to links with optional URL support. Tags can now store an optional URL that is displayed as a clickable link icon in the frontend template, and users can manage them through the admin panel with proper Vuelidate validation.
+
+### Added
+- New migration to add `url` field to `tags` table
+- TagItem interface now includes optional `url` field in types, store, and controller
+- New route handling in IntroProfileController for reading/writing URL field
+
+### Changed
+- Refactored InfoEditor.vue: replaced chips display with inputs (name + URL) for each link
+- Integrated Vuelidate validation with `$each` for array items using native `url` validator
+- HomeTemplate2.vue: tags with URL now show link icon and open URL in new window on click
+- AdminInfoPage.vue: updated tags type from string[] to TagItem[]
+- IntroController.ts: updated tags type to TagItem[]
+
+### Affected Files
+- `backend/database/migrations/2026_04_29_000001_add_url_to_tags_table.php` (new)
+- `backend/app/Models/Tag.php`
+- `backend/app/Http/Controllers/Admin/IntroProfileController.php`
+- `frontend/src/services/types.ts`
+- `frontend/src/store/introStore.ts`
+- `frontend/src/controllers/introController.ts`
+- `frontend/src/views/admin/sections/AdminInfoPage.vue`
+- `frontend/src/views/admin/editors/InfoEditor.vue`
+- `frontend/src/templates/HomeTemplate2.vue`
+
 ## 15.6.0 - 2026-04-29
 
 ### Summary
