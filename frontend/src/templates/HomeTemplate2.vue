@@ -94,10 +94,10 @@
             size-lg="4"
             style="display: flex; flex-direction: column"
           >
-            <h2 style="text-align: center">Hola, Soy {{ name }}.</h2>
+            <h2 style="text-align: center">Hola, Soy {{ introData?.name }}.</h2>
 
             <p style="text-align: center">
-              {{ description }}
+              {{ introData?.description }}
             </p>
 
             <div
@@ -334,7 +334,11 @@
           class="ion-justify-content-center"
         >
           <ion-col size="12" size-lg="8">
-            <FinalSection v-bind="$props" />
+            <FinalSection 
+              :freelance-platforms="freelancePlatforms" 
+              :freelance-comments="freelanceComments" 
+              :show-contact-form="showContactForm" 
+            />
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -370,24 +374,33 @@ import {
 import { useRouter } from "vue-router";
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 
+import IntroController from "@/controllers/introController";
+import ProjectsController from "@/controllers/projectsController";
+import ExperienceController from "@/controllers/experienceController";
+import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
+import FreelanceController from "@/controllers/freelanceController";
+
 import TechCloudBackground from "@/components/common/TechCloudBackground.vue";
 import FinalSection from "@/views/presentation/sections/FinalSection.vue";
 import ProjectCard from "@/components/projects/ProjectCard.vue";
 import ExperienceCard from "@/components/experience/ExperienceCard.vue";
-import type { HomePageData, SkillCategory } from "@/services/types";
+import type { HomePageData } from "@/services/types";
 
 import vueIcon from "@/assets/otros/vue-js-1.svg";
 import mariadbIcon from "@/assets/otros/mariadb-icon.svg";
 import ionicIcon from "@/assets/otros/ionicframework-icon.svg";
 import laravelIcon from "@/assets/otros/laravel-2.svg";
-import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
 import { getIconByName } from "@/composables/iconsIndex";
 import { linkOutline } from "ionicons/icons";
 
 const router = useRouter();
-const props = defineProps<Partial<HomePageData>>();
 const isIOS = isPlatform("ios");
+
+const introController = new IntroController();
+const projectsController = new ProjectsController();
+const experienceController = new ExperienceController();
 const skillsCategoriesController = new SkillsCategoriesController();
+const freelanceController = new FreelanceController();
 
 const contentRef = ref();
 const menuContainerRef = ref();
@@ -412,7 +425,8 @@ const handleScroll = (event: CustomEvent) => {
   isScrolled.value = scrollTop > 50;
 };
 
-const categories = ref<SkillCategory[]>(props.skillCategories || []);
+const introData = computed(() => introController.data.value);
+const categories = computed(() => skillsCategoriesController.skillsCategories.value);
 
 const backgroundTechs = computed(() => {
   const techs: { name: string }[] = [];
@@ -432,10 +446,14 @@ const filteredBackgroundTechs = computed(() => backgroundTechs.value);
 
 const displayLimit = computed(() => (isTablet.value ? 4 : 3));
 
-const safeExperience = computed(() => props.experience || []);
-const safeProjects = computed(() => props.projects || []);
-const safeTags = computed(() => props.tags || []);
-const safeSocials = computed(() => props.socials || []);
+const safeExperience = computed(() => experienceController.experiences.value || []);
+const safeProjects = computed(() => projectsController.projects.value || []);
+const safeTags = computed(() => introData.value?.tags || []);
+const safeSocials = computed(() => introData.value?.socials || []);
+
+const freelancePlatforms = computed(() => freelanceController.platforms.value || []);
+const freelanceComments = computed(() => freelanceController.comments.value || []);
+const showContactForm = computed(() => introController.showContactForm);
 
 const sections = [
   { id: "section-yo" },
@@ -531,22 +549,13 @@ const onResize = () => {
 onMounted(async () => {
   window.addEventListener("resize", onResize);
   setTimeout(setupIntersectionObserver, 100);
-  if (!categories.value.length) {
-    try {
-      categories.value = (
-        await skillsCategoriesController.loadSkillsCategories()
-      ).map((cat) => ({
-        id: String(cat.id || ""),
-        name: cat.name,
-        technologies:
-          cat.technologies?.map((tech) => ({
-            iconName: tech.iconName,
-          })) || [],
-      }));
-    } catch (error) {
-      console.error("Error loading categories:", error);
-    }
-  }
+  await Promise.all([
+    introController.loadIntro(),
+    projectsController.loadPublicProjects(),
+    experienceController.loadPublicExperiences(),
+    skillsCategoriesController.loadSkillsCategories(),
+    freelanceController.loadFreelance(),
+  ]);
 });
 
 onUnmounted(() => {

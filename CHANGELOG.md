@@ -1,5 +1,28 @@
 # Changelog
 
+## 15.8.0 - 2026-04-29
+
+### Summary
+This release refactors the home page to use Pinia stores directly through controllers, enabling reactive data updates from admin panel and inspection via Pinia browser extension. Each section in HomeTemplate2 now manages its own data via controllers while storing state in Pinia stores.
+
+### Added
+- Reactive getters to FreelanceController: `platforms` and `comments` for direct Pinia store access
+- Reactive getters to IntroController: `data` and `showContactForm` for direct Pinia store access
+
+### Changed
+- Refactored HomeTemplate2.vue: replaced props-based data flow with controller-based reactive getters
+- HomeTemplate2 now imports and uses all controllers directly (IntroController, ProjectsController, ExperienceController, SkillsCategoriesController, FreelanceController)
+- Simplified HomePresentationPage.vue: removed all data loading logic, now only renders the template
+- Each section in HomeTemplate2 now loads its own data via Promise.all in onMounted
+- FinalSection now receives explicit props instead of $props binding
+- Template now uses computed properties accessing controller getters for introData, categories, projects, experiences, etc.
+
+### Affected Files
+- `frontend/src/controllers/freelanceController.ts` (added reactive getters)
+- `frontend/src/controllers/introController.ts` (added reactive getters)
+- `frontend/src/templates/HomeTemplate2.vue` (full refactor to use controllers)
+- `frontend/src/views/presentation/HomePresentationPage.vue` (simplified)
+
 ## 15.7.0 - 2026-04-29
 
 ### Summary

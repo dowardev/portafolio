@@ -1,5 +1,6 @@
 import { useIntroStore } from "@/store/introStore";
 import { useStackStore } from "@/store/stackStore";
+import { storeToRefs } from "pinia";
 import APIController from "./APIController";
 import ServerConfig from "./serverConfigController";
 import Cookies from "js-cookie";
@@ -98,5 +99,13 @@ export default class IntroController {
       await toast.present();
       return intro;
     }
+  }
+
+  get data() {
+    return storeToRefs(this.introStore).data;
+  }
+
+  get showContactForm() {
+    return this.introStore.data.showContactForm;
   }
 }

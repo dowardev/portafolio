@@ -1,4 +1,5 @@
 import { useFreelanceStore } from "@/store/freelanceStore";
+import { storeToRefs } from "pinia";
 import APIController from "./APIController";
 import ServerConfig from "./serverConfigController";
 import Cookies from "js-cookie";
@@ -268,5 +269,13 @@ export default class FreelanceController {
       await toast.present();
       return false;
     }
+  }
+
+  get platforms() {
+    return storeToRefs(this.freelanceStore).platforms;
+  }
+
+  get comments() {
+    return storeToRefs(this.freelanceStore).comments;
   }
 }
