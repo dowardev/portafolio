@@ -17,6 +17,7 @@ import LoginPage from "@/views/session/login/LoginPage.vue";
 import SignUpPage from "@/views/session/signup/SignUpPage.vue";
 import PoliciesPage from "@/views/policies/PoliciesPage.vue";
 import UserPanelPage from "@/views/user/UserPanelPage.vue";
+import UsersPage from "@/views/admin/users/UsersPage.vue";
 import PanelAdminPage from "@/views/admin/PanelAdminPage.vue";
 import AdminEditorPage from "@/views/admin/AdminEditorPage.vue";
 import ProjectsListPage from "@/views/admin/sections/ProjectsListPage.vue";
@@ -139,6 +140,11 @@ const routes: Array<RouteRecordRaw> = [
     component: UserPanelPage,
   },
   {
+    path: "/admin-panel/users",
+    name: "UsersPage",
+    component: UsersPage,
+  },
+  {
     path: "/admin-panel",
     name: "PanelAdminPage",
     component: PanelAdminPage,
@@ -250,7 +256,7 @@ router.beforeEach(async (to, from, next) => {
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];
   const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
-  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsCategoriesListPage", "SkillsCategoriesEditPage", "SkillsCategoriesNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage", "FreelanceListPage", "FreelanceEditPage", "FreelanceEditPageOld", "FreelanceNewPage", "FreelanceNewPageOld"];
+  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsCategoriesListPage", "SkillsCategoriesEditPage", "SkillsCategoriesNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage", "FreelanceListPage", "FreelanceEditPage", "FreelanceEditPageOld", "FreelanceNewPage", "FreelanceNewPageOld", "UsersPage"];
   const noGuardRequired = [
     "RestorePasswordPage",
     "PresentationPage",

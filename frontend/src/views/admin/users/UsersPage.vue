@@ -1,5 +1,16 @@
 <template>
-  <ion-row>
+  <ion-page>
+    <ion-header class="ion-no-border" mode="ios">
+      <ion-toolbar style="--background: var(--ion-background-color)">
+        <ion-buttons slot="start">
+          <ion-menu-button menu="mainMenu" :mode="designElements"></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Gestión de Usuarios</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-row>
     <ion-col>
       <ion-list>
         <ion-list-header mode="ios">
@@ -670,10 +681,18 @@
       </ion-card>
     </ion-content>
   </ion-modal>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
 import {
+  IonPage,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonButtons,
+  IonMenuButton,
   IonButton,
   IonItem,
   IonLabel,
@@ -690,6 +709,7 @@ import {
   IonContent,
   IonCardContent,
   IonModal,
+  isPlatform,
 } from "@ionic/vue";
 import { onMounted, reactive, ref, watch } from "vue";
 import {
@@ -755,6 +775,7 @@ const modals = reactive({
 });
 const userSelected = reactive<User>({});
 const designMode = ref<DesignMode>(systemController.getdesignMode());
+const designElements = isPlatform("ios") ? "ios" : "md";
 const userHoverIndex = ref<number>(-1);
 const screenSize = ref(systemController.getScreenSize());
 const contextMenu = ref<"modal" | "main">("modal");

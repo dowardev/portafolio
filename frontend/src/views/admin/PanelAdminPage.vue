@@ -27,10 +27,6 @@
               <ion-label>Posts</ion-label>
             </ion-segment-button>
 
-            <ion-segment-button value="users">
-              <ion-label>Usuarios</ion-label>
-            </ion-segment-button>
-
             <ion-segment-button value="home">
               <ion-label>Inicio</ion-label>
             </ion-segment-button>
@@ -52,10 +48,6 @@
     </ion-header>
 
     <ion-content>
-      <section v-if="mainSegment == 'users'">
-        <UsersComponent />
-      </section>
-
       <section v-if="mainSegment == 'home'">
         <AdminHomeMenu />
       </section>
@@ -70,10 +62,6 @@
         <ion-content>
           <ion-item button @click="mainSegment = 'users'">
             <ion-label>Posts</ion-label>
-          </ion-item>
-
-          <ion-item button @click="mainSegment = 'users'">
-            <ion-label>Usuarios</ion-label>
           </ion-item>
         </ion-content>
       </ion-popover>
@@ -94,7 +82,6 @@ import {
   IonPopover,
 } from "@ionic/vue";
 import { reactive, ref, watch } from "vue";
-import UsersComponent from "./users/UsersComponent.vue";
 import AdminHomeMenu from "./AdminHomeMenu.vue";
 
 // controllers

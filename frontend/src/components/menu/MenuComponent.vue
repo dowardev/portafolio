@@ -35,7 +35,7 @@
           <ion-item-group>
             <section v-if="userController.getUser()?.id">
               <ion-item-divider>
-                <ion-label> Usuario </ion-label>
+                <ion-label> Administración </ion-label>
               </ion-item-divider>
 
               <div class="ion-padding-bottom">
@@ -51,6 +51,38 @@
                   transparent
                 />
 
+                <MenuItem
+                  v-if="userController.getUser()?.id"
+                  target-route-name="UsersPage"
+                  :active-routes="['UsersPage']"
+                  :icon-outline="peopleOutline"
+                  :icon-filled="people"
+                  label="Usuarios"
+                  :disabled="spinners.buttonUserPanel"
+                  :loading="spinners.buttonUserPanel"
+                  transparent
+                />
+
+                <!-- <MenuItem -->
+                <!--   v-if="userController.getUser()?.id" -->
+                <!--   target-route-name="UserPanelPage" -->
+                <!--   :active-routes="['UserPanelPage']" -->
+                <!--   :icon-outline="documentsOutline" -->
+                <!--   :icon-filled="documents" -->
+                <!--   label="Posts" -->
+                <!--   :loading="spinners.buttonUserPanel" -->
+                <!--   :disabled="spinners.buttonUserPanel" -->
+                <!--   transparent -->
+                <!-- /> -->
+              </div>
+            </section>
+
+            <section v-if="userController.getUser()?.id">
+              <ion-item-divider>
+                <ion-label> Usuario </ion-label>
+              </ion-item-divider>
+
+              <div class="ion-padding-bottom">
                 <MenuItem
                   v-if="userController.getUser()?.id"
                   target-route-name="UserPanelPage"
@@ -336,6 +368,8 @@ import {
   documents,
   homeOutline,
   home,
+  peopleOutline,
+  people,
 } from "ionicons/icons";
 import AppsComponent from "./apps/Apps.vue";
 import DonationsComponent from "./donations/Donations.vue";
@@ -353,29 +387,29 @@ import { ssoApiConnector } from "@/main";
 import MenuItem from "./MenuItem.vue";
 
 const ADMIN_PAGES = [
-  'PanelAdminPage',
-  'ProjectsListPage',
-  'ProjectNewPage',
-  'ProjectEditPage',
-  'ExperienceListPage',
-  'ExperienceNewPage',
-  'ExperienceEditPage',
-  'AdminEditorPage',
-  'HomeEditorPage',
-  'CreatePostPage',
-  'UpdatePostPage',
+  "PanelAdminPage",
+  "ProjectsListPage",
+  "ProjectNewPage",
+  "ProjectEditPage",
+  "ExperienceListPage",
+  "ExperienceNewPage",
+  "ExperienceEditPage",
+  "AdminEditorPage",
+  "HomeEditorPage",
+  "CreatePostPage",
+  "UpdatePostPage",
 ];
 
 const PRESENTATION_PAGES = [
-  'PresentationPage',
-  'CategoriesPage',
-  'HistoryPage',
-  'PortfolioPage',
-  'CertificatesPage',
-  'ExperiencePage',
+  "PresentationPage",
+  "CategoriesPage",
+  "HistoryPage",
+  "PortfolioPage",
+  "CertificatesPage",
+  "ExperiencePage",
 ];
 
-const BLOG_PAGES = ['PostsPage', 'PostPage'];
+const BLOG_PAGES = ["PostsPage", "PostPage"];
 
 const serverConfig = new ServerConfig();
 const userController = new UserController();

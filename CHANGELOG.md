@@ -1,5 +1,31 @@
 # Changelog
 
+## 15.6.0 - 2026-04-29
+
+### Summary
+This release converts the UsersComponent into a standalone page accessible from the menu, improving navigation and code organization.
+
+### Added
+- New `UsersPage` component (formerly UsersComponent) as a full Ionic page with ion-page structure
+- New route: `/admin-panel/users` -> `UsersPage`
+- MenuItem for "Usuarios" now navigates to UsersPage instead of UserPanelPage
+
+### Changed
+- Renamed `UsersComponent.vue` to `UsersPage.vue`
+- Added ion-page, ion-header, and ion-content wrapper to UsersPage
+- Menu "Usuarios" item now points to UsersPage with active route detection
+- Added "UsersPage" to ADMIN_PAGES constant and adminRoutes guard
+
+### Removed
+- Removed users segment from PanelAdminPage (inline UsersComponent usage)
+- Removed popover option for users in PanelAdminPage
+
+### Affected Files
+- `frontend/src/views/admin/users/UsersPage.vue` (renamed from UsersComponent.vue)
+- `frontend/src/router/index.ts` (added route)
+- `frontend/src/components/menu/MenuComponent.vue` (updated menu item)
+- `frontend/src/views/admin/PanelAdminPage.vue` (removed embedded users component)
+
 ## 15.5.0 - 2026-04-28
 
 ### Summary
