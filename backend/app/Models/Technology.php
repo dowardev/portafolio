@@ -12,8 +12,6 @@ class Technology extends Model
 
     protected $fillable = [
         'name',
-        'image',
-        'sort_order',
     ];
 
     public function projects(): BelongsToMany

@@ -1,5 +1,22 @@
 # Changelog
 
+## 16.1.2 - 2026-04-30
+
+### Summary
+Removed `image` and `sort_order` fields from `technologies` table. These fields are not used - technologies are displayed using their name as icon reference.
+
+### Changed
+- Removed `image` and `sort_order` columns from `technologies` table (migration required)
+- Updated Technology model fillable fields to only include `name`
+- Updated SkillsCategoryController to not handle image field
+- Removed image from frontend TypeScript interfaces
+
+### Breaking Changes
+- Requires `php artisan migrate` to run new migration
+- The image and sort_order fields are no longer available in technology data
+
+---
+
 ## 16.1.1 - 2026-04-30
 
 ### Summary

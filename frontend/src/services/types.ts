@@ -45,7 +45,6 @@ export interface ExperienceItem {
 export interface TechnologyItem {
   id?: number;
   iconName: string;
-  image?: string;
 }
 
 export interface ProjectItem {
