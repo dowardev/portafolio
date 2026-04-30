@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SkillsCategory;
-use App\Models\Technology;
+use App\Models\Icon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,13 +12,12 @@ class SkillsCategoryController extends Controller
 {
     public function index()
     {
-        $categories = SkillsCategory::with('technologies')->orderBy('sort_order', 'asc')->get();
+        $categories = SkillsCategory::with('technologies')->get();
 
         $skillsCategoriesData = $categories->map(function ($category) {
             return [
                 'id' => $category->id,
                 'name' => $category->name,
-                'sort_order' => $category->sort_order,
                 'technologies' => $category->technologies->map(function ($tech) {
                     return [
                         'id' => $tech->id,
@@ -41,7 +40,6 @@ class SkillsCategoryController extends Controller
 
         $category = SkillsCategory::create([
             'name' => $name,
-            'sort_order' => $request->input('sort_order', 0),
         ]);
 
         $technologiesData = $request->input('technologies', []);
@@ -64,7 +62,6 @@ class SkillsCategoryController extends Controller
         $category = SkillsCategory::findOrFail($id);
 
         $category->name = $name;
-        $category->sort_order = $request->input('sort_order', $category->sort_order);
         $category->save();
 
         $technologiesData = $request->input('technologies', []);
@@ -86,32 +83,32 @@ class SkillsCategoryController extends Controller
 
     private function syncTechnologies($category, array $technologiesData): void
     {
-        $technologyIds = [];
+        $iconIds = [];
 
         foreach ($technologiesData as $techData) {
             if (isset($techData['id']) && $techData['id']) {
-                $tech = Technology::find($techData['id']);
-                if ($tech) {
-                    $tech->name = $techData['name'] ?? $tech->name;
-                    $tech->save();
-                    $technologyIds[] = $tech->id;
+                $icon = Icon::find($techData['id']);
+                if ($icon) {
+                    $icon->name = $techData['name'] ?? $icon->name;
+                    $icon->save();
+                    $iconIds[] = $icon->id;
                 }
             } elseif (isset($techData['iconName'])) {
-                $tech = Technology::where('name', $techData['iconName'])->first();
-                if (!$tech) {
-                    $tech = Technology::create([
+                $icon = Icon::where('name', $techData['iconName'])->first();
+                if (!$icon) {
+                    $icon = Icon::create([
                         'name' => $techData['iconName'],
                     ]);
                 }
-                $technologyIds[] = $tech->id;
+                $iconIds[] = $icon->id;
             } elseif (isset($techData['name'])) {
-                $tech = Technology::create([
+                $icon = Icon::create([
                     'name' => $techData['name'],
                 ]);
-                $technologyIds[] = $tech->id;
+                $iconIds[] = $icon->id;
             }
         }
 
-        $category->technologies()->sync($technologyIds);
+        $category->technologies()->sync($iconIds);
     }
 }

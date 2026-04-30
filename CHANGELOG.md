@@ -1,5 +1,27 @@
 # Changelog
 
+## 9.3.0 - 2026-04-30
+
+### Summary
+Restructured icons and technologies into a unified `icons` table with pack support. Simplified categories by removing unused sort_order field.
+
+### Changed
+- Renamed `technologies` table to `icons` with new `pack_name` field (lineicons/ionicons)
+- Added foreign key `icon_id` to `socials` table (replaces `icon_name` column)
+- Renamed pivot tables: `project_technologies` → `project_icons`, `experience_technologies` → `experience_icons`
+- Renamed `category_skills_technologies` → `category_skills_tech`
+- Removed `sort_order` field from `categories_skills` table
+- Updated SkillsCategoryController to not handle sort_order
+- Created new `Icon` model replacing `Technology`
+- Updated `Social` model with icon() relationship
+
+### Breaking Changes
+- Requires `php artisan migrate` to run new migrations
+- The `icon_name` column in `socials` is replaced by `icon_id` foreign key
+- Technology model replaced by Icon model
+
+---
+
 ## 16.1.2 - 2026-04-30
 
 ### Summary

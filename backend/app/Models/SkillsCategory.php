@@ -12,7 +12,6 @@ class SkillsCategory extends Model
 
     protected $fillable = [
         'name',
-        'sort_order',
     ];
 
     protected $table = 'categories_skills';
@@ -20,10 +19,10 @@ class SkillsCategory extends Model
     public function technologies(): BelongsToMany
     {
         return $this->belongsToMany(
-            Technology::class, 
-            'category_skills_technologies',
+            Icon::class,
+            'category_skills_tech',
             'category_id',
-            'technology_id'
+            'icon_id'
         );
     }
 }

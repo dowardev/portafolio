@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Icon;
 use App\Models\IntroProfile;
 use App\Models\Tag;
 use App\Models\Social;
@@ -101,7 +102,8 @@ class IntroProfileController extends Controller
                 'id' => $social->id,
                 'platform' => $social->platform,
                 'url' => $social->url,
-                'iconName' => $social->icon_name,
+                'iconName' => $social->icon?->name,
+                'packName' => $social->icon?->pack_name,
             ];
         });
 
@@ -215,12 +217,21 @@ class IntroProfileController extends Controller
             $socialIds = [];
 
             foreach ($socialsData as $socialData) {
+                $iconId = null;
+                if (isset($socialData['iconName'])) {
+                    $icon = Icon::firstOrCreate(
+                        ['name' => $socialData['iconName']],
+                        ['pack_name' => $socialData['packName'] ?? 'lineicons']
+                    );
+                    $iconId = $icon->id;
+                }
+
                 if (is_array($socialData) && isset($socialData['id']) && $socialData['id']) {
                     $social = Social::find($socialData['id']);
                     if ($social) {
                         $social->platform = $socialData['platform'] ?? $social->platform;
                         $social->url = $socialData['url'] ?? $social->url;
-                        $social->icon_name = $socialData['iconName'] ?? $socialData['icon_name'] ?? $social->icon_name;
+                        $social->icon_id = $iconId;
                         $social->save();
                         $socialIds[] = $social->id;
                     }
@@ -229,7 +240,7 @@ class IntroProfileController extends Controller
                     $social = Social::create([
                         'platform' => $socialData['platform'] ?? '',
                         'url' => $socialData['url'] ?? '',
-                        'icon_name' => $socialData['iconName'] ?? $socialData['icon_name'] ?? '',
+                        'icon_id' => $iconId,
                     ]);
                     $socialIds[] = $social->id;
                 }
