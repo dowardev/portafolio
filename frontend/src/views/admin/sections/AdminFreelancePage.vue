@@ -51,11 +51,13 @@ import {
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import FreelanceEditor from "../editors/FreelanceEditor.vue";
-import FreelanceController from "@/controllers/freelanceController";
+import FreelancePlatformController from "@/controllers/freelancePlatformController";
+import FreelanceCommentController from "@/controllers/freelanceCommentController";
 import type { FreelancePlatform, FreelanceComment } from "@/services/types";
 import { saveOutline } from "ionicons/icons";
 
-const freelanceController = new FreelanceController();
+const freelancePlatformController = new FreelancePlatformController();
+const freelanceCommentController = new FreelanceCommentController();
 const router = useRouter();
 
 const freelanceData = ref<FreelancePlatform[]>([]);
@@ -66,9 +68,12 @@ const loading = ref(false);
 onMounted(async () => {
   loading.value = true;
   try {
-    const data = await freelanceController.loadFreelance();
-    freelanceData.value = data.freelancePlatforms;
-    comments.value = data.freelanceComments;
+    const [platforms, commentsData] = await Promise.all([
+      freelancePlatformController.loadFreelancePlatforms(),
+      freelanceCommentController.loadFreelanceComments(),
+    ]);
+    freelanceData.value = platforms;
+    comments.value = commentsData;
   } catch (error) {
     console.error("Error loading freelance:", error);
   } finally {
@@ -79,7 +84,20 @@ onMounted(async () => {
 async function handleSave() {
   saving.value = true;
   try {
-    await freelanceController.saveFreelance(freelanceData.value, comments.value);
+    for (const platform of freelanceData.value) {
+      if (platform.id) {
+        await freelancePlatformController.updateFreelancePlatform(Number(platform.id), platform);
+      } else {
+        await freelancePlatformController.addFreelancePlatform(platform);
+      }
+    }
+    for (const comment of comments.value) {
+      if (comment.id) {
+        await freelanceCommentController.updateFreelanceComment(Number(comment.id), comment);
+      } else {
+        await freelanceCommentController.addFreelanceComment(comment);
+      }
+    }
     router.push("/admin-panel/freelance");
   } catch (error) {
     console.error("Error saving freelance:", error);

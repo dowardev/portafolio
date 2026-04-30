@@ -1,5 +1,40 @@
 # Changelog
 
+## 16.1.0 - 2026-04-30
+
+### Summary
+This release separates the Freelance entity into two independent entities: FreelancePlatform and FreelanceComment. Each now has its own table, model, controller, and frontend components. Also fixes issues with SkillsCategory and improves code consistency.
+
+### Changed
+- Renamed Freelance model to FreelancePlatform
+- Renamed table `freelances` to `freelance_platforms`
+- Updated FreelanceComment to be an independent entity (removed platform_id FK)
+- Fixed duplicate class name in SkillsCategoryController (SkillsSkillsCategory → SkillsCategory)
+- Fixed SkillsCategory pivot table FK column name (category_id)
+- Updated frontend to use separate FreelancePlatformController and FreelanceCommentController
+
+### Added
+- Created FreelanceComment model and controller
+- Created freelanceCommentController.ts and freelanceCommentStore.ts
+- Created new database migrations for tables separation
+
+### Affected Files
+- Backend:
+  - Created: FreelancePlatform.php, FreelanceComment.php, FreelancePlatformController.php, FreelanceCommentController.php
+  - Deleted: Freelance.php, CommentController.php
+  - Modified: api.php, SkillsCategoryController.php, SkillsCategory.php
+- Frontend:
+  - Renamed: freelanceController.ts → freelancePlatformController.ts
+  - Created: freelanceCommentController.ts, freelanceCommentStore.ts, freelancePlatformStore.ts
+  - Deleted: freelanceController.ts, freelanceStore.ts
+  - Modified: FreelanceEditor.vue, FreelanceListPage.vue, AdminFreelancePage.vue, HomeTemplate2.vue
+
+### Breaking Changes
+- Requires `php artisan migrate` to run new migrations
+- FreelanceComments no longer linked to FreelancePlatforms (independent entities)
+
+---
+
 ## 16.0.0 - 2026-04-30
 
 ### Summary

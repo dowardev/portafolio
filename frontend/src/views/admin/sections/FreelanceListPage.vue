@@ -225,11 +225,13 @@ import {
   starOutline,
 } from "ionicons/icons";
 import { faker } from "@faker-js/faker";
-import FreelanceController from "@/controllers/freelanceController";
+import FreelancePlatformController from "@/controllers/freelancePlatformController";
+import FreelanceCommentController from "@/controllers/freelanceCommentController";
 import type { FreelancePlatform, FreelanceComment } from "@/services/types";
 
 const router = useRouter();
-const freelanceController = new FreelanceController();
+const freelancePlatformController = new FreelancePlatformController();
+const freelanceCommentController = new FreelanceCommentController();
 
 const isDev = import.meta.env.DEV;
 const platforms = ref<FreelancePlatform[]>([]);
@@ -239,9 +241,12 @@ const loading = ref(false);
 async function loadData() {
   loading.value = true;
   try {
-    const data = await freelanceController.loadFreelance();
-    platforms.value = data.freelancePlatforms;
-    comments.value = data.freelanceComments;
+    const [platformsData, commentsData] = await Promise.all([
+      freelancePlatformController.loadFreelancePlatforms(),
+      freelanceCommentController.loadFreelanceComments(),
+    ]);
+    platforms.value = platformsData;
+    comments.value = commentsData;
   } finally {
     loading.value = false;
   }
@@ -291,11 +296,11 @@ async function confirmDelete(type: "platform" | "comment", index: number) {
   await alert.present();
 }
 
-async function deleteFreelance(type: "platform" | "comment", id: string) {
+async function deleteFreelance(type: "platform" | "comment", id: number) {
   if (type === "platform") {
-    await freelanceController.deleteFreelance(id);
+    await freelancePlatformController.deleteFreelancePlatform(id);
   } else {
-    await freelanceController.deleteComment(id);
+    await freelanceCommentController.deleteFreelanceComment(id);
   }
 }
 
@@ -304,27 +309,10 @@ async function generateTestFreelance() {
 
   for (let i = 0; i < 3; i++) {
     const platformName = faker.helpers.arrayElement(platformNames);
-    await freelanceController.addFreelance({
-      id: crypto.randomUUID(),
+    await freelancePlatformController.addFreelancePlatform({
       name: platformName,
       image: faker.image.url({ width: 100, height: 100 }),
       url: faker.internet.url(),
-      comment: null,
-    });
-  }
-
-  for (let i = 0; i < 3; i++) {
-    const platformName = faker.helpers.arrayElement(platformNames);
-    await freelanceController.addFreelance({
-      id: crypto.randomUUID(),
-      name: platformName,
-      image: faker.image.url({ width: 100, height: 100 }),
-      url: faker.internet.url(),
-      comment: {
-        title: faker.person.fullName(),
-        text: faker.lorem.paragraph(),
-        rating: faker.number.int({ min: 3, max: 5 }),
-      },
     });
   }
 }

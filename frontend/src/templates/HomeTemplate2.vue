@@ -378,7 +378,8 @@ import IntroController from "@/controllers/introController";
 import ProjectsController from "@/controllers/projectsController";
 import ExperienceController from "@/controllers/experienceController";
 import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
-import FreelanceController from "@/controllers/freelanceController";
+import FreelancePlatformController from "@/controllers/freelancePlatformController";
+import FreelanceCommentController from "@/controllers/freelanceCommentController";
 
 import TechCloudBackground from "@/components/common/TechCloudBackground.vue";
 import FinalSection from "@/views/presentation/sections/FinalSection.vue";
@@ -400,7 +401,8 @@ const introController = new IntroController();
 const projectsController = new ProjectsController();
 const experienceController = new ExperienceController();
 const skillsCategoriesController = new SkillsCategoriesController();
-const freelanceController = new FreelanceController();
+const freelancePlatformController = new FreelancePlatformController();
+const freelanceCommentController = new FreelanceCommentController();
 
 const contentRef = ref();
 const menuContainerRef = ref();
@@ -451,8 +453,8 @@ const safeProjects = computed(() => projectsController.projects.value || []);
 const safeTags = computed(() => introData.value?.tags || []);
 const safeSocials = computed(() => introData.value?.socials || []);
 
-const freelancePlatforms = computed(() => freelanceController.platforms.value || []);
-const freelanceComments = computed(() => freelanceController.comments.value || []);
+const freelancePlatforms = computed(() => freelancePlatformController.freelancePlatforms?.value || []);
+const freelanceComments = computed(() => freelanceCommentController.freelanceComments?.value || []);
 const showContactForm = computed(() => introController.showContactForm);
 
 const sections = [
@@ -554,7 +556,8 @@ onMounted(async () => {
     projectsController.loadPublicProjects(),
     experienceController.loadPublicExperiences(),
     skillsCategoriesController.loadSkillsCategories(),
-    freelanceController.loadFreelance(),
+    freelancePlatformController.loadFreelancePlatforms(),
+    freelanceCommentController.loadFreelanceComments(),
   ]);
 });
 

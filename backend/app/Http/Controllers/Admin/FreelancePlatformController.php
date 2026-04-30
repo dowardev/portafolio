@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Freelance;
+use App\Models\FreelancePlatform;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
-class FreelanceController extends Controller
+class FreelancePlatformController extends Controller
 {
     public function index()
     {
-        $freelances = Freelance::orderBy('id', 'desc')->get();
-        return response()->json(['freelances' => $freelances]);
+        $freelances = FreelancePlatform::orderBy('id', 'desc')->get();
+        return response()->json(['freelancePlatforms' => $freelances]);
     }
 
-    public function storePlatform(Request $request)
+    public function store(Request $request)
     {
         $data = $request->except(['image']);
 
@@ -35,12 +35,12 @@ class FreelanceController extends Controller
             $data['image'] = url('api/serve-image?path=homepage/freelance/' . $fileName);
         }
 
-        $freelance = Freelance::create($data);
+        $freelance = FreelancePlatform::create($data);
 
-        return response()->json(['freelance' => $freelance]);
+        return response()->json(['freelancePlatform' => $freelance]);
     }
 
-    public function updatePlatform(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
@@ -50,7 +50,7 @@ class FreelanceController extends Controller
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $freelance = Freelance::findOrFail($id);
+        $freelance = FreelancePlatform::findOrFail($id);
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
@@ -69,12 +69,12 @@ class FreelanceController extends Controller
 
         $freelance->update($data);
 
-        return response()->json(['freelance' => $freelance]);
+        return response()->json(['freelancePlatform' => $freelance]);
     }
 
-    public function destroyPlatform($id)
+    public function destroy($id)
     {
-        $freelance = Freelance::findOrFail($id);
+        $freelance = FreelancePlatform::findOrFail($id);
 
         if (!empty($freelance->image)) {
             $oldImagePath = $this->pathFromUrl($freelance->image);
@@ -90,23 +90,8 @@ class FreelanceController extends Controller
 
     public function show($id)
     {
-        $freelance = Freelance::findOrFail($id);
-        return response()->json(['freelance' => $freelance]);
-    }
-
-    public function store(Request $request)
-    {
-        return $this->storePlatform($request);
-    }
-
-    public function update(Request $request, $id)
-    {
-        return $this->updatePlatform($request, $id);
-    }
-
-    public function destroy($id)
-    {
-        return $this->destroyPlatform($id);
+        $freelance = FreelancePlatform::findOrFail($id);
+        return response()->json(['freelancePlatform' => $freelance]);
     }
 
     private function getExtensionFromMime($file)

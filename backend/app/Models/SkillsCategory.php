@@ -19,6 +19,11 @@ class SkillsCategory extends Model
 
     public function technologies(): BelongsToMany
     {
-        return $this->belongsToMany(Technology::class, 'category_skills_technologies');
+        return $this->belongsToMany(
+            Technology::class, 
+            'category_skills_technologies',
+            'category_id',
+            'technology_id'
+        );
     }
 }

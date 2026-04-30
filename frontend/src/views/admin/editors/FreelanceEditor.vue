@@ -238,11 +238,13 @@ import {
 import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import type { FreelancePlatform, FreelanceComment, FreelanceItem } from "@/services/types";
-import FreelanceController from "@/controllers/freelanceController";
+import FreelancePlatformController from "@/controllers/freelancePlatformController";
+import FreelanceCommentController from "@/controllers/freelanceCommentController";
 
 const route = useRoute();
 const router = useRouter();
-const freelanceController = new FreelanceController();
+const freelancePlatformController = new FreelancePlatformController();
+const freelanceCommentController = new FreelanceCommentController();
 
 const isDev = import.meta.env.DEV;
 const loading = ref(false);
@@ -277,9 +279,12 @@ onMounted(async () => {
   loading.value = true;
   try {
     if (platforms.value.length === 0 && comments.value.length === 0) {
-      const data = await freelanceController.loadFreelance();
-      platforms.value = data.freelancePlatforms;
-      comments.value = data.freelanceComments;
+      const [platformsData, commentsData] = await Promise.all([
+        freelancePlatformController.loadFreelancePlatforms(),
+        freelanceCommentController.loadFreelanceComments(),
+      ]);
+      platforms.value = platformsData;
+      comments.value = commentsData;
     }
 
     if (isNew.value) {
@@ -333,9 +338,9 @@ async function handleSave() {
 
     const item = localItem.value as FreelancePlatform;
     if (isNew.value) {
-      await freelanceController.addFreelance({ ...item, comment: null } as FreelanceItem, pendingImageFile);
+      await freelancePlatformController.addFreelancePlatform(item, pendingImageFile);
     } else if (freelanceId.value) {
-      await freelanceController.updateFreelance(freelanceId.value, { ...item, comment: null } as FreelanceItem, pendingImageFile);
+      await freelancePlatformController.updateFreelancePlatform(Number(freelanceId.value), item, pendingImageFile);
     }
     router.push("/admin-panel/freelance");
   } else {
@@ -343,17 +348,17 @@ async function handleSave() {
 
     const item = localItem.value as FreelanceComment;
     const payload = {
-      name: item.title,
-      comment_text: item.text,
-      comment_rating: item.rating,
+      title: item.title,
+      text: item.text,
+      rating: item.rating,
     };
 
     saving.value = true;
     try {
       if (isNew.value) {
-        await freelanceController.addComment(payload);
+        await freelanceCommentController.addFreelanceComment(payload);
       } else if (freelanceId.value) {
-        await freelanceController.updateComment(freelanceId.value, payload);
+        await freelanceCommentController.updateFreelanceComment(Number(freelanceId.value), payload);
       }
       router.push("/admin-panel/freelance");
     } finally {
@@ -384,7 +389,11 @@ async function confirmDelete() {
 async function deleteFreelance() {
   if (!freelanceId.value) return;
 
-  await freelanceController.deleteFreelance(freelanceId.value);
+  if (freelanceType.value === "platform") {
+    await freelancePlatformController.deleteFreelancePlatform(Number(freelanceId.value));
+  } else {
+    await freelanceCommentController.deleteFreelanceComment(Number(freelanceId.value));
+  }
   router.push("/admin-panel/freelance");
 }
 

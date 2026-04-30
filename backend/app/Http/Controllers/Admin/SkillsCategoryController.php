@@ -12,7 +12,7 @@ class SkillsCategoryController extends Controller
 {
     public function index()
     {
-        $categories = SkillsSkillsCategory::with('technologies')->orderBy('sort_order', 'asc')->get();
+        $categories = SkillsCategory::with('technologies')->orderBy('sort_order', 'asc')->get();
 
         $skillsCategoriesData = $categories->map(function ($category) {
             return [

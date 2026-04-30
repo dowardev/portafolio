@@ -8,12 +8,11 @@ use App\Http\Controllers\SystemController;
 use App\Http\Controllers\Admin\IntroProfileController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\ProjectController;
-use App\Http\Controllers\Admin\FreelanceController;
+use App\Http\Controllers\Admin\FreelancePlatformController;
+use App\Http\Controllers\Admin\FreelanceCommentController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\StackController;
-use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\SkillsCategoryController;
-use App\Http\Controllers\Admin\CommentController;
 use App\Http\Middleware\Cors;
 use App\Http\Middleware\SSOTokenAuth;
 use App\Http\Middleware\AdminOnly;
@@ -42,7 +41,8 @@ Route::middleware([Cors::class])->group(function () {
   Route::get("experiences", [ExperienceController::class, "index"]);
   Route::get("projects", [ProjectController::class, "index"]);
   Route::get("certificates", [CertificateController::class, "index"]);
-  Route::get("freelances", [FreelanceController::class, "index"]);
+  Route::get("freelance-platforms", [FreelancePlatformController::class, "index"]);
+  Route::get("freelance-comments", [FreelanceCommentController::class, "index"]);
   Route::get("stacks", [StackController::class, "index"]);
   Route::get("skills-categories", [SkillsCategoryController::class, "index"]);
 
@@ -75,14 +75,14 @@ Route::middleware([Cors::class, 'sso.auth', 'admin.only'])->prefix('admin')->gro
   Route::delete("experiences/{id}", [ExperienceController::class, "destroy"]);
 
   // Freelance Platforms - REST API
-  Route::post("profile-platforms", [FreelanceController::class, "storePlatform"]);
-  Route::post("profile-platforms/{id}", [FreelanceController::class, "updatePlatform"]);
-  Route::delete("profile-platforms/{id}", [FreelanceController::class, "destroyPlatform"]);
+  Route::post("freelance-platforms", [FreelancePlatformController::class, "store"]);
+  Route::post("freelance-platforms/{id}", [FreelancePlatformController::class, "update"]);
+  Route::delete("freelance-platforms/{id}", [FreelancePlatformController::class, "destroy"]);
 
   // Freelance Comments - REST API
-  Route::post("profile-comments", [CommentController::class, "store"]);
-  Route::post("profile-comments/{id}", [CommentController::class, "update"]);
-  Route::delete("profile-comments/{id}", [CommentController::class, "destroy"]);
+  Route::post("freelance-comments", [FreelanceCommentController::class, "store"]);
+  Route::post("freelance-comments/{id}", [FreelanceCommentController::class, "update"]);
+  Route::delete("freelance-comments/{id}", [FreelanceCommentController::class, "destroy"]);
 
   // Certificates - REST API
   Route::post("certificates", [CertificateController::class, "store"]);
