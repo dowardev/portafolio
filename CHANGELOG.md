@@ -1,5 +1,56 @@
 # Changelog
 
+## 16.0.0 - 2026-04-30
+
+### Summary
+This major release implements a complete architectural refactoring to ensure each entity (IntroProfile, Stack, SkillsCategory, Projects, Experience, Certificates, Freelance) has its own dedicated table, model, and controller. This eliminates cross-entity logic and fixes the stack saving functionality.
+
+### Changed
+- Renamed `Category` model to `SkillsCategory` for consistency with other entity naming conventions
+- Renamed table `categories` to `categories_skills` for clarity
+- Updated AdminStackPage.vue to use StackController instead of IntroController
+- Cleaned up introController.ts by removing stack-related code
+- Fixed router import error (ICustomError moved to correct location)
+
+### Removed
+- Deleted `HomePageController.php` (redundant, was causing cross-entity issues)
+- Deleted `HomePage.php` model (was sharing intro_profiles table)
+- Deleted `Skill.php` model and `SkillController.php` (redundant, stack now serves this purpose)
+- Deleted `skillsController.ts` and `skillsStore.ts` (frontend, replaced by stackController)
+- Removed old API routes pointing to HomePageController:
+  - `/api/get-projects`
+  - `/api/get-experiences`
+  - `/api/get-freelance`
+  - `/api/get-skills`
+  - `/api/get-certificates`
+- Removed routes `SkillsListPage`, `SkillsEditPage`, `SkillsNewPage` from router
+
+### Added
+- Created cleanup migration to remove legacy JSON fields from intro_profiles table:
+  - `stack`
+  - `skill_categories`
+  - `experience`
+  - `projects`
+  - `certificates`
+  - `freelance`
+
+### Affected Files
+- Backend:
+  - Deleted: HomePageController.php, SkillController.php, HomePage.php, Skill.php
+  - Renamed: Category.php -> SkillsCategory.php
+  - Modified: api.php, SkillsCategoryController.php
+- Frontend:
+  - Deleted: skillsController.ts, skillsStore.ts
+  - Modified: introController.ts, introStore.ts, AdminStackPage.vue, AdminInfoPage.vue, router/index.ts
+
+### Breaking Changes
+- Requires `php artisan migrate` to run new cleanup migration
+- Stack now stored in `stacks` table instead of `intro_profiles.stack` JSON field
+- SkillsCategory stored in `categories_skills` table instead of `categories`
+- All API routes that pointed to HomePageController now point to dedicated controllers
+
+---
+
 ## 15.9.1 - 2026-04-29
 
 ### Summary

@@ -32,8 +32,7 @@ import FreelanceListPage from "@/views/admin/sections/FreelanceListPage.vue";
 import FreelanceEditor from "@/views/admin/editors/FreelanceEditor.vue";
 
 import UserController from "@/controllers/userController";
-import { ICustomError } from "@/services/interfaces";
-import { Role } from "@/utils/interfaces";
+import { ICustomError, Role } from "@/utils/interfaces";
 
 async function loadUser(controller: UserController): Promise<void> {
   try {
@@ -50,10 +49,10 @@ async function loadUser(controller: UserController): Promise<void> {
 
 function hasAdminRole(roles?: Role[]): boolean {
   if (!roles || roles.length === 0) return false;
-  
-  return roles.some(role => 
-    role.slug === 'admin' || 
-    role.name.toLowerCase() === 'administrador'
+
+  return roles.some(
+    (role) =>
+      role.slug === "admin" || role.name.toLowerCase() === "administrador",
   );
 }
 
@@ -179,21 +178,21 @@ const routes: Array<RouteRecordRaw> = [
     name: "ExperienceEditPage",
     component: ExperienceEditor,
   },
-{
-path: "/admin-panel/skills-categories",
-name: "SkillsCategoriesListPage",
-component: SkillsCategoriesListPage,
-},
-{
-path: "/admin-panel/skills-categories/new",
-name: "SkillsCategoriesNewPage",
-component: CategoriesEditor,
-},
-{
-path: "/admin-panel/skills-categories/edit/:index",
-name: "SkillsCategoriesEditPage",
-component: CategoriesEditor,
-},
+  {
+    path: "/admin-panel/skills-categories",
+    name: "SkillsCategoriesListPage",
+    component: SkillsCategoriesListPage,
+  },
+  {
+    path: "/admin-panel/skills-categories/new",
+    name: "SkillsCategoriesNewPage",
+    component: CategoriesEditor,
+  },
+  {
+    path: "/admin-panel/skills-categories/edit/:index",
+    name: "SkillsCategoriesEditPage",
+    component: CategoriesEditor,
+  },
   {
     path: "/admin-panel/certificates",
     name: "CertificatesListPage",
@@ -256,7 +255,31 @@ router.beforeEach(async (to, from, next) => {
   const routeName = to.name as string;
   const authorizedRoutes = ["UserPanelPage"];
   const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
-  const adminRoutes = ["CreatePostPage", "UpdatePostPage", "PanelAdminPage", "HomeEditorPage", "AdminEditorPage", "ProjectsListPage", "ProjectEditPage", "ProjectNewPage", "ExperienceListPage", "ExperienceEditPage", "ExperienceNewPage", "SkillsCategoriesListPage", "SkillsCategoriesEditPage", "SkillsCategoriesNewPage", "SkillsListPage", "SkillsEditPage", "SkillsNewPage", "CertificatesListPage", "CertificateEditPage", "CertificateNewPage", "FreelanceListPage", "FreelanceEditPage", "FreelanceEditPageOld", "FreelanceNewPage", "FreelanceNewPageOld", "UsersPage"];
+  const adminRoutes = [
+    "CreatePostPage",
+    "UpdatePostPage",
+    "PanelAdminPage",
+    "HomeEditorPage",
+    "AdminEditorPage",
+    "ProjectsListPage",
+    "ProjectEditPage",
+    "ProjectNewPage",
+    "ExperienceListPage",
+    "ExperienceEditPage",
+    "ExperienceNewPage",
+    "SkillsCategoriesListPage",
+    "SkillsCategoriesEditPage",
+    "SkillsCategoriesNewPage",
+    "CertificatesListPage",
+    "CertificateEditPage",
+    "CertificateNewPage",
+    "FreelanceListPage",
+    "FreelanceEditPage",
+    "FreelanceEditPageOld",
+    "FreelanceNewPage",
+    "FreelanceNewPageOld",
+    "UsersPage",
+  ];
   const noGuardRequired = [
     "RestorePasswordPage",
     "PresentationPage",

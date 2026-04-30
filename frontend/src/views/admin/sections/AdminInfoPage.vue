@@ -166,7 +166,6 @@ async function handleSave() {
         socials: formData.socials,
         logoUrl: formData.logoUrl,
         photoUrl: formData.photoUrl,
-        stack: [],
         showContactForm: formData.showContactForm,
       },
       {

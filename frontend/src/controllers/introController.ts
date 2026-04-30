@@ -1,5 +1,4 @@
 import { useIntroStore } from "@/store/introStore";
-import { useStackStore } from "@/store/stackStore";
 import { storeToRefs } from "pinia";
 import APIController from "./APIController";
 import ServerConfig from "./serverConfigController";
@@ -21,7 +20,6 @@ export interface IntroData {
   socials: Array<{ platform: string; url: string; iconName: string }>;
   logoUrl: string | null;
   photoUrl: string | null;
-  stack: Array<{ name: string; image: string }>;
   showContactForm: {
     socials: boolean;
     freelance: boolean;
@@ -30,7 +28,6 @@ export interface IntroData {
 
 export default class IntroController {
   private introStore = useIntroStore();
-  private stackStore = useStackStore();
   private toastController = new ToastController();
 
   async loadIntro(): Promise<IntroData> {
@@ -38,7 +35,6 @@ export default class IntroController {
     try {
       const data = await api.get<IntroData>({ url: "get-intro" });
       this.introStore.setData(data);
-      this.stackStore.setStack(data.stack || []);
       return data;
     } catch (error) {
       console.error("Error loading intro:", error);
@@ -49,7 +45,6 @@ export default class IntroController {
         socials: [],
         logoUrl: null,
         photoUrl: null,
-        stack: [],
         showContactForm: { socials: false, freelance: false },
       };
     }
@@ -64,11 +59,10 @@ export default class IntroController {
         description: intro.description,
         socials: intro.socials,
         showContactForm: intro.showContactForm,
-        stack: intro.stack,
       }));
 
       if (files) {
-        Object.entries(files).forEach(([key, file]) => {
+        Object.entries(files).forEach(([key, file]: [string, File]) => {
           formData.append(key, file);
         });
       }
@@ -80,7 +74,6 @@ export default class IntroController {
       });
 
       this.introStore.setData(data);
-      this.stackStore.setStack(data.stack || []);
 
       const toast = await this.toastController.presentToast({
         message: "Guardado correctamente",

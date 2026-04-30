@@ -68,11 +68,11 @@ import {
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import StackEditor from "../editors/StackEditor.vue";
-import IntroController from "@/controllers/introController";
+import StackController from "@/controllers/stackController";
 import { saveOutline } from "ionicons/icons";
 import type { StackItem } from "@/services/types";
 
-const introController = new IntroController();
+const stackController = new StackController();
 const router = useRouter();
 const saving = ref(false);
 
@@ -81,8 +81,8 @@ const pendingFiles = reactive<Record<number, File>>({});
 
 onMounted(async () => {
   try {
-    const data = await introController.loadIntro();
-    stackData.value = data.stack || [];
+    const data = await stackController.loadStack();
+    stackData.value = data || [];
   } catch (error) {
     console.error("Error loading stack:", error);
   }
@@ -97,20 +97,16 @@ function updateStackFiles(fileMap: Record<number, File>) {
 async function handleSave() {
   saving.value = true;
   try {
-    const files: Record<string, File> = {};
-    Object.entries(pendingFiles).forEach(([k, v]) => {
-      files[`stack_image_${k}`] = v;
-    });
-    await introController.saveIntro({
-      name: "",
-      tags: [],
-      description: "",
-      socials: [],
-      logoUrl: null,
-      photoUrl: null,
-      stack: stackData.value,
-      showContactForm: { socials: false, freelance: false },
-    }, files);
+    for (const stack of stackData.value) {
+      if (stack.id) {
+        const file = pendingFiles[stack.id];
+        await stackController.updateStack(stack.id, stack, file);
+      } else {
+        const file = pendingFiles[stackData.value.indexOf(stack)];
+        await stackController.addStack(stack, file);
+      }
+    }
+    await stackController.loadStack();
     router.push("/admin-panel");
   } catch (error) {
     console.error("Error saving stack:", error);

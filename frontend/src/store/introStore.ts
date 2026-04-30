@@ -25,7 +25,6 @@ export const useIntroStore = defineStore("intro", () => {
     socials: [] as SocialItem[],
     logoUrl: null as string | null,
     photoUrl: null as string | null,
-    stack: [] as Array<{ name: string; image: string }>,
     showContactForm: { socials: false, freelance: false },
   });
 
@@ -36,7 +35,6 @@ export const useIntroStore = defineStore("intro", () => {
     socials: SocialItem[];
     logoUrl: string | null;
     photoUrl: string | null;
-    stack: Array<{ name: string; image: string }>;
     showContactForm: { socials: boolean; freelance: boolean };
   }) {
     data.name = newData.name || "";
@@ -45,7 +43,6 @@ export const useIntroStore = defineStore("intro", () => {
     data.socials = newData.socials || [];
     data.logoUrl = newData.logoUrl;
     data.photoUrl = newData.photoUrl;
-    data.stack = newData.stack || [];
     data.showContactForm = newData.showContactForm || { socials: false, freelance: false };
   }
 

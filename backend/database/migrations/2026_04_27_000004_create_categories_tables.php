@@ -8,16 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('categories_skills', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->integer('sort_order')->default(0);
             $table->timestamps();
         });
 
-        Schema::create('category_technologies', function (Blueprint $table) {
+        Schema::create('category_skills_technologies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('category_id')->constrained('categories_skills')->onDelete('cascade');
             $table->foreignId('technology_id')->constrained('technologies')->onDelete('cascade');
             $table->timestamps();
         });
@@ -25,7 +25,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('category_technologies');
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('category_skills_technologies');
+        Schema::dropIfExists('categories_skills');
     }
 };

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Category extends Model
+class SkillsCategory extends Model
 {
     use HasFactory;
 
@@ -15,8 +15,10 @@ class Category extends Model
         'sort_order',
     ];
 
+    protected $table = 'categories_skills';
+
     public function technologies(): BelongsToMany
     {
-        return $this->belongsToMany(Technology::class, 'category_technologies');
+        return $this->belongsToMany(Technology::class, 'category_skills_technologies');
     }
 }

@@ -5,7 +5,6 @@ use App\Http\Controllers\ErrorReportController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PostsController;
 use App\Http\Controllers\SystemController;
-use App\Http\Controllers\Admin\HomePageController;
 use App\Http\Controllers\Admin\IntroProfileController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\ProjectController;
@@ -14,6 +13,7 @@ use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\StackController;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\SkillsCategoryController;
+use App\Http\Controllers\Admin\CommentController;
 use App\Http\Middleware\Cors;
 use App\Http\Middleware\SSOTokenAuth;
 use App\Http\Middleware\AdminOnly;
@@ -33,11 +33,6 @@ Route::middleware([Cors::class])->group(function () {
     ]);
   });
   Route::get("get-intro", [IntroProfileController::class, "getIntro"]);
-  Route::get("get-projects", [HomePageController::class, "getProjects"]);
-  Route::get("get-experiences", [HomePageController::class, "getExperiences"]);
-  Route::get("get-freelance", [HomePageController::class, "getFreelance"]);
-  Route::get("get-skills", [HomePageController::class, "getSkills"]);
-  Route::get("get-certificates", [HomePageController::class, "getCertificates"]);
   Route::post("error-report", [
     ErrorReportController::class,
     "createErrorReport",
@@ -49,7 +44,6 @@ Route::middleware([Cors::class])->group(function () {
   Route::get("certificates", [CertificateController::class, "index"]);
   Route::get("freelances", [FreelanceController::class, "index"]);
   Route::get("stacks", [StackController::class, "index"]);
-  Route::get("skills", [SkillController::class, "index"]);
   Route::get("skills-categories", [SkillsCategoryController::class, "index"]);
 
   Route::get("posts/{date}/{filter}", [PostsController::class, "getPosts"]);
@@ -70,9 +64,6 @@ Route::middleware([Cors::class, 'sso.auth', 'admin.only'])->prefix('admin')->gro
   // Intro Profile
   Route::post("update-intro", [IntroProfileController::class, "updateIntro"]);
 
-  // Skills - Ahora en tabla separada (se creará endpoint)
-  // Las rutas de skills se moverán a SkillController
-
   // Projects - REST API
   Route::post("projects", [ProjectController::class, "store"]);
   Route::post("projects/{id}", [ProjectController::class, "update"]);
@@ -92,11 +83,6 @@ Route::middleware([Cors::class, 'sso.auth', 'admin.only'])->prefix('admin')->gro
   Route::post("profile-comments", [CommentController::class, "store"]);
   Route::post("profile-comments/{id}", [CommentController::class, "update"]);
   Route::delete("profile-comments/{id}", [CommentController::class, "destroy"]);
-
-  // Skills - REST API (tabla separada)
-  Route::post("skills", [SkillController::class, "store"]);
-  Route::post("skills/{id}", [SkillController::class, "update"]);
-  Route::delete("skills/{id}", [SkillController::class, "destroy"]);
 
   // Certificates - REST API
   Route::post("certificates", [CertificateController::class, "store"]);

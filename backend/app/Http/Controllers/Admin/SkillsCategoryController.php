@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use App\Models\SkillsCategory;
 use App\Models\Technology;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,7 +12,7 @@ class SkillsCategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::with('technologies')->orderBy('sort_order', 'asc')->get();
+        $categories = SkillsSkillsCategory::with('technologies')->orderBy('sort_order', 'asc')->get();
 
         $skillsCategoriesData = $categories->map(function ($category) {
             return [
@@ -41,7 +41,7 @@ class SkillsCategoryController extends Controller
             return response()->json(['error' => 'El nombre es requerido'], 422);
         }
 
-        $category = Category::create([
+        $category = SkillsCategory::create([
             'name' => $name,
             'sort_order' => $request->input('sort_order', 0),
         ]);
@@ -63,7 +63,7 @@ class SkillsCategoryController extends Controller
             return response()->json(['error' => 'El nombre es requerido'], 422);
         }
 
-        $category = Category::findOrFail($id);
+        $category = SkillsCategory::findOrFail($id);
 
         $category->name = $name;
         $category->sort_order = $request->input('sort_order', $category->sort_order);
@@ -80,7 +80,7 @@ class SkillsCategoryController extends Controller
 
     public function destroy($id)
     {
-        $category = Category::findOrFail($id);
+        $category = SkillsCategory::findOrFail($id);
         $category->delete();
 
         return response()->json(['success' => true]);
