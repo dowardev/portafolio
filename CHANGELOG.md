@@ -1,5 +1,22 @@
 # Changelog
 
+## 16.1.1 - 2026-04-30
+
+### Summary
+Removed redundant `category` field from `technologies` table. Categories are already managed through `SkillsCategory` model with many-to-many relationship.
+
+### Changed
+- Removed `category` column from `technologies` table (migration required)
+- Updated Technology model fillable fields
+- Updated SkillsCategoryController to not handle category field
+- Removed category from frontend TypeScript interfaces
+
+### Breaking Changes
+- Requires `php artisan migrate` to run new migration
+- The category field is no longer available in technology data
+
+---
+
 ## 16.1.0 - 2026-04-30
 
 ### Summary

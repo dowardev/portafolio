@@ -4,7 +4,6 @@ import { ref } from "vue";
 export interface SkillsCategoryTechItem {
   id?: string;
   iconName: string;
-  category?: string;
   image?: string;
 }
 

@@ -23,7 +23,6 @@ class SkillsCategoryController extends Controller
                     return [
                         'id' => $tech->id,
                         'iconName' => $tech->name,
-                        'category' => $tech->category,
                         'image' => $tech->image,
                     ];
                 }),
@@ -95,7 +94,6 @@ class SkillsCategoryController extends Controller
                 $tech = Technology::find($techData['id']);
                 if ($tech) {
                     $tech->name = $techData['name'] ?? $tech->name;
-                    $tech->category = $techData['category'] ?? $tech->category;
                     $tech->image = $techData['image'] ?? $tech->image;
                     $tech->save();
                     $technologyIds[] = $tech->id;
@@ -105,7 +103,6 @@ class SkillsCategoryController extends Controller
                 if (!$tech) {
                     $tech = Technology::create([
                         'name' => $techData['iconName'],
-                        'category' => $techData['category'] ?? null,
                         'image' => $techData['image'] ?? null,
                     ]);
                 }
@@ -113,7 +110,6 @@ class SkillsCategoryController extends Controller
             } elseif (isset($techData['name'])) {
                 $tech = Technology::create([
                     'name' => $techData['name'],
-                    'category' => $techData['category'] ?? null,
                     'image' => $techData['image'] ?? null,
                 ]);
                 $technologyIds[] = $tech->id;

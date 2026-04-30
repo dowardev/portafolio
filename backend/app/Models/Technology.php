@@ -12,7 +12,6 @@ class Technology extends Model
 
     protected $fillable = [
         'name',
-        'category',
         'image',
         'sort_order',
     ];
