@@ -9,7 +9,7 @@
 
               <img
                 v-else
-                src="../assets/otros/light-wallpaper1.png"
+                src="../../assets/otros/light-wallpaper1.png"
                 class="project-header-img"
                 alt=""
               />

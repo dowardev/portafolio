@@ -1,5 +1,17 @@
 # Changelog
 
+## 9.3.1 - 2026-05-01
+
+### Summary
+Fixed build errors that prevented production compilation.
+
+### Fixed
+- Changed `userSelected` from const to let in UsersPage.vue (was causing "constant reassignment" error)
+- Fixed image path in ExperienceCard.vue (`../assets/` → `../../assets/`)
+- Fixed image path in ProjectCard.vue (`../assets/` → `../../assets/`)
+
+---
+
 ## 9.3.0 - 2026-04-30
 
 ### Summary

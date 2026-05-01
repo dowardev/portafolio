@@ -773,7 +773,7 @@ const modals = reactive({
     open: false,
   }),
 });
-const userSelected = reactive<User>({});
+let userSelected = reactive<User>({});
 const designMode = ref<DesignMode>(systemController.getdesignMode());
 const designElements = isPlatform("ios") ? "ios" : "md";
 const userHoverIndex = ref<number>(-1);
