@@ -225,12 +225,10 @@
 
 <script setup lang="ts">
 import {
-  IonAlert,
   IonButton,
   IonButtons,
   IonCard,
   IonCardContent,
-  IonChip,
   IonContent,
   IonHeader,
   IonIcon,

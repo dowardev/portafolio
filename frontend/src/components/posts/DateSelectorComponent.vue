@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonSelect, IonSelectOption, isPlatform } from "@ionic/vue";
+import { IonButton, IonIcon, IonSelect, IonSelectOption, isPlatform } from "@ionic/vue";
 import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
 import { reactive, ref, watch } from "vue";
 

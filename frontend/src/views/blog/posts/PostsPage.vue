@@ -336,7 +336,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonItem, isPlatform } from "@ionic/vue";
+import { IonAlert, IonButton, IonButtons, IonCard, IonCardContent, IonChip, IonCol, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonModal, IonPopover, IonRadio, IonRadioGroup, IonRow, IonSearchbar, IonSpinner, IonTitle, IonToolbar, isPlatform } from "@ionic/vue";
 import { computed, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 

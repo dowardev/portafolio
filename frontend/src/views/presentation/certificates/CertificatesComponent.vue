@@ -59,6 +59,16 @@
 </template>
 
 <script lang="ts" setup>
+
+import {
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonCol,
+  IonIcon,
+  IonRow,
+} from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import * as ionicons from "ionicons/icons";
 import type { CertificateItem } from "@/services/types";

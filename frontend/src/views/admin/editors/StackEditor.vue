@@ -101,17 +101,20 @@
 <script setup lang="ts">
 // imports
 import {
+  IonButton,
+  IonButtons,
+  IonCard,
+  IonHeader,
+  IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
-  IonInput,
-  IonButton,
-  IonIcon,
-  IonNote,
+  IonList,
+  IonListHeader,
   IonModal,
-  IonHeader,
-  IonToolbar,
+  IonNote,
   IonTitle,
-  IonButtons,
+  IonToolbar,
 } from "@ionic/vue";
 import {
   addOutline,

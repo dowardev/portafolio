@@ -359,16 +359,21 @@
 
 <script setup lang="ts">
 import {
-  IonHeader,
-  IonContent,
-  IonGrid,
-  IonRow,
+  IonAvatar,
+  IonButton,
+  IonChip,
   IonCol,
+  IonContent,
+  IonFooter,
+  IonGrid,
+  IonHeader,
+  IonIcon,
+  IonLabel,
   IonList,
   IonListHeader,
-  IonLabel,
-  IonIcon,
   IonPage,
+  IonRow,
+  IonToolbar,
   isPlatform,
 } from "@ionic/vue";
 import { useRouter } from "vue-router";

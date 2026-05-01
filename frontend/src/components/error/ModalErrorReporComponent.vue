@@ -108,13 +108,25 @@
 
 <script setup lang="ts">
 import {
-  IonLabel,
-  IonItem,
-  IonTextarea,
-  IonRow,
+  IonAccordion,
+  IonAccordionGroup,
+  IonButtons,
+  IonCard,
+  IonCardContent,
   IonCol,
   IonContent,
-  IonAccordion,
+  IonHeader,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonListHeader,
+  IonPage,
+  IonRow,
+  IonTextarea,
+  IonTitle,
+  IonToast,
+  IonToolbar,
   modalController,
 } from "@ionic/vue";
 import { CardAlert, LoadButton } from "ionic-extra-components";

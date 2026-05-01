@@ -1,5 +1,24 @@
 # Changelog
 
+## 16.1.3 - 2026-05-01
+
+### Summary
+Added missing @ionic/vue component imports across 69 Vue files to prevent runtime registration errors throughout the frontend.
+
+### Fixed
+- Added missing `IonPage`, `IonHeader`, `IonToolbar`, `IonTitle`, `IonContent` to 39 view and component files
+- Added missing `IonButton`, `IonIcon`, `IonCard`, `IonRow`, `IonCol`, `IonGrid` to 27 view and component files
+- Added missing `IonButtons`, `IonMenuButton` to 20 view and component files
+- Added missing `IonItem`, `IonLabel` to 16 view and component files
+- Added missing `IonAccordionGroup`, `IonAccordion`, `IonReorderGroup`, `IonReorder` to 5 component files
+- Added missing `IonList`, `IonListHeader`, `IonCardContent`, `IonCardHeader`, `IonCardTitle` to 12 files
+- Added missing `IonBreadcrumbs`, `IonBreadcrumb` to 5 admin list view files
+- Added imports to 6 files (`CertificatesComponent.vue`, `CertificatesPage.vue`, `MarkdownCreator.vue`, `indexContentComponent.vue`, `modalIndexContent.vue`, `FilterOptionsComponent.vue`) that had no `@ionic/vue` import at all
+- Removed unused imports from `EditorComponent.vue`, `InfoEditor.vue`, `UserPanelPage.vue`, `PoliciesPage.vue`, `CreatePostPage.vue`, `UpdatePostPage.vue`
+- Fixed typo `<ion-butons>` → `<ion-buttons>` in `modalIndexContent.vue`
+
+---
+
 ## 9.3.1 - 2026-05-01
 
 ### Summary

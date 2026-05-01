@@ -59,14 +59,22 @@
 
 <script setup lang="ts">
 import {
+  IonButton,
+  IonButtons,
+  IonCard,
+  IonCardContent,
+  IonCol,
   IonContent,
   IonHeader,
+  IonIcon,
+  IonItem,
+  IonLabel,
   IonPage,
+  IonRow,
   IonTitle,
   IonToolbar,
-  IonLabel,
-  modalController,
   isPlatform,
+  modalController,
 } from "@ionic/vue";
 import { closeOutline } from "ionicons/icons";
 

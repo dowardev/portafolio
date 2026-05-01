@@ -40,10 +40,13 @@
 
 <script setup lang="ts">
 import {
+  IonButton,
+  IonButtons,
   IonCol,
   IonContent,
+  IonGrid,
   IonHeader,
-  IonBackButton,
+  IonIcon,
   IonPage,
   IonRow,
   IonTitle,

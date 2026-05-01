@@ -89,13 +89,16 @@
 
 <script setup lang="ts">
 import {
-  IonCard,
-  IonRow,
-  IonCol,
-  IonLabel,
-  IonItem,
-  IonIcon,
   IonButton,
+  IonCard,
+  IonCardContent,
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonRow,
+  IonThumbnail,
   isPlatform,
 } from "@ionic/vue";
 import { ref } from "vue";

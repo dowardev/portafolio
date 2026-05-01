@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonRow, IonCol, IonGrid } from "@ionic/vue";
+import { IonButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRow, IonTitle, IonToolbar } from "@ionic/vue";
 import { computed, ref, onMounted } from "vue";
 
 import { DesignMode } from "@/utils/types";

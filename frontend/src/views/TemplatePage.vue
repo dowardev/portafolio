@@ -28,6 +28,14 @@
 </template>
 
 <script lang="ts" setup>
+
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/vue";
 // imports
 // Ejemplo: ionic,vue,ionicons
 // end

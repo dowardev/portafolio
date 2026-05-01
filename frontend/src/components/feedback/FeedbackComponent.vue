@@ -136,16 +136,21 @@
 
 <script setup lang="ts">
 import {
+  IonButton,
+  IonButtons,
+  IonCheckbox,
+  IonCol,
   IonContent,
   IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
+  IonIcon,
   IonInput,
-  IonTextarea,
-  IonCheckbox,
   IonItem,
+  IonPage,
+  IonRow,
+  IonTextarea,
+  IonTitle,
   IonToast,
+  IonToolbar,
 } from "@ionic/vue";
 import { onMounted, reactive } from "vue";
 import { closeOutline, sendOutline } from "ionicons/icons";

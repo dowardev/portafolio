@@ -35,6 +35,8 @@ import {
   IonMenuButton,
   IonSegment,
   IonSegmentButton,
+  IonTitle,
+  IonToolbar,
 } from "@ionic/vue";
 import { isPlatform } from "@ionic/vue";
 

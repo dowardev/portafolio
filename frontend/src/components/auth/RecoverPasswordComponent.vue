@@ -234,17 +234,26 @@
 
 <script setup lang="ts">
 import {
-  IonPage,
-  IonRow,
-  IonCol,
-  IonInput,
   IonButton,
-  IonIcon,
-  IonHeader,
-  IonToolbar,
   IonButtons,
-  modalController,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonCol,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonInput,
+  IonInputPasswordToggle,
+  IonPage,
+  IonProgressBar,
+  IonRow,
+  IonTitle,
+  IonToolbar,
   isPlatform,
+  modalController,
 } from "@ionic/vue";
 import { ref } from "vue";
 import {

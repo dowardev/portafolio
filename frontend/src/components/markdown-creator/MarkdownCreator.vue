@@ -108,6 +108,19 @@
 </template>
 
 <script setup lang="ts">
+
+import {
+  IonButton,
+  IonButtons,
+  IonCol,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonModal,
+  IonRow,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/vue";
 import { ref, computed } from "vue";
 import {
   arrowRedoOutline,

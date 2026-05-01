@@ -103,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import {} from "@ionic/vue";
+import { IonAccordion, IonAccordionGroup, IonButton, IonCard, IonCardContent, IonCardTitle, IonCol, IonIcon, IonItem, IonLabel, IonRow, IonText } from "@ionic/vue";
 
 import viteLogo from "../../../assets/otros/vite.svg";
 

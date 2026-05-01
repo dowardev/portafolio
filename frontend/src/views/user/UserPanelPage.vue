@@ -49,15 +49,19 @@
 
 <script setup lang="ts">
 import {
+  IonButtons,
+  IonCol,
   IonContent,
   IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
+  IonLabel,
+  IonMenuButton,
+  IonProgressBar,
+  IonRow,
   IonSegment,
   IonSegmentButton,
+  IonTitle,
+  IonToolbar,
   isPlatform,
-  IonItemDivider,
 } from "@ionic/vue";
 import { ref } from "vue";
 import UserProfileComponent from "./profile/UserProfileComponent.vue";

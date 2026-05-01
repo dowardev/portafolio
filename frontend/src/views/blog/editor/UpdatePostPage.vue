@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, isPlatform, loadingController } from "@ionic/vue";
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar, isPlatform, loadingController } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UpdatePost } from "@/utils/interfaces";

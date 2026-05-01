@@ -95,11 +95,14 @@
 
 <script setup lang="ts">
 import {
-  IonRow,
-  IonCol,
+  IonButton,
   IonCard,
+  IonCol,
   IonGrid,
   IonIcon,
+  IonItem,
+  IonLabel,
+  IonRow,
   IonThumbnail,
 } from "@ionic/vue";
 import { Swiper, SwiperSlide } from "swiper/vue";

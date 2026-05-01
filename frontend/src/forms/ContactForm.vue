@@ -131,7 +131,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonInput, IonTextarea } from "@ionic/vue";
+import { IonCol, IonInput, IonRow, IonTextarea } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import { email, helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";

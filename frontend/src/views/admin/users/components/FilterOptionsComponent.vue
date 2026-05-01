@@ -167,6 +167,14 @@
 </template>
 
 <script lang="ts" setup>
+
+import {
+  IonCol,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonRow,
+} from "@ionic/vue";
 import { chevronExpandOutline } from "ionicons/icons";
 import { onMounted, ref, reactive } from "vue";
 

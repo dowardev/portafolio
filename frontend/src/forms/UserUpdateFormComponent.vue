@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonInput, IonIcon } from "@ionic/vue";
+import { IonCol, IonIcon, IonInput, IonRow } from "@ionic/vue";
 import { onMounted, ref, watch } from "vue";
 import { manOutline, personOutline, mailOpenOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";

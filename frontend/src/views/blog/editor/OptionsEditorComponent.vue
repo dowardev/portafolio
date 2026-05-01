@@ -205,7 +205,7 @@
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { IonButton, IonCard, IonItem } from "@ionic/vue";
+import { IonButton, IonCard, IonCol, IonIcon, IonItem, IonLabel, IonRow, IonText, IonToggle } from "@ionic/vue";
 import { StatusPost } from "@/services/types";
 import { trashOutline } from "ionicons/icons";
 

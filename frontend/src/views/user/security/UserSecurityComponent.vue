@@ -206,17 +206,22 @@
 
 <script setup lang="ts">
 import {
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonCol,
+  IonContent,
+  IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
-  IonInput,
-  IonButton,
-  IonSpinner,
-  IonModal,
   IonList,
   IonListHeader,
+  IonModal,
   IonRow,
-  IonCol,
-  IonIcon,
+  IonSpinner,
 } from "@ionic/vue";
 import { ref } from "vue";
 import useVuelidate from "@vuelidate/core";

@@ -84,13 +84,17 @@
 
 <script setup lang="ts">
 import {
-  IonPage,
-  IonContent,
-  alertController,
-  IonCard,
-  IonLabel,
   IonButton,
+  IonCard,
+  IonCardContent,
+  IonContent,
+  IonHeader,
   IonIcon,
+  IonLabel,
+  IonSpinner,
+  IonTitle,
+  IonToolbar,
+  alertController,
 } from "@ionic/vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";

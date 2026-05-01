@@ -67,7 +67,7 @@
 import { onMounted, reactive, ref, watch } from "vue";
 import { User } from "@/services/interfaces";
 import { copyOutline } from "ionicons/icons";
-import { toastController } from "@ionic/vue";
+import { IonButton, IonCard, IonCardContent, IonChip, IonCol, IonIcon, IonLabel, IonList, IonRow, toastController } from "@ionic/vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";

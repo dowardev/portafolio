@@ -139,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonHeader, IonTitle, IonToolbar, isPlatform } from "@ionic/vue";
+import { IonCol, IonHeader, IonRow, IonTitle, IonToolbar, isPlatform } from "@ionic/vue";
 import { ref, watch } from "vue";
 
 // vars

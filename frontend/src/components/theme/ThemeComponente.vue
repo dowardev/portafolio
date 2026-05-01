@@ -38,16 +38,19 @@
 
 <script setup lang="ts">
 import {
+  IonButton,
+  IonButtons,
+  IonCard,
+  IonCol,
   IonContent,
   IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonButtons,
-  IonButton,
+  IonIcon,
   IonItem,
   IonLabel,
+  IonRow,
+  IonTitle,
+  IonToolbar,
   modalController,
-  IonToggle,
 } from "@ionic/vue";
 import { checkmarkOutline, chevronBackOutline } from "ionicons/icons";
 import { Theme as ThemeType } from "../../services/types";

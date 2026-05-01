@@ -120,12 +120,21 @@
 
 <script setup lang="ts">
 import {
-  alertController,
-  IonCard,
-  IonLabel,
   IonButton,
+  IonButtons,
+  IonCard,
+  IonCardContent,
+  IonCol,
   IonContent,
+  IonHeader,
+  IonLabel,
+  IonMenuButton,
   IonModal,
+  IonRow,
+  IonSpinner,
+  IonTitle,
+  IonToolbar,
+  alertController,
   isPlatform,
 } from "@ionic/vue";
 import { reactive, ref } from "vue";

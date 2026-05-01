@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonIcon } from "@ionic/vue";
+import { IonCard, IonCol, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonRow } from "@ionic/vue";
 import { useRouter, useRoute } from "vue-router";
 import {
   personOutline,

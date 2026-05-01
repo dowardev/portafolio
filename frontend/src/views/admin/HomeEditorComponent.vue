@@ -226,16 +226,17 @@
 <script setup lang="ts">
 import {
   IonButton,
+  IonChip,
+  IonContent,
+  IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
-  IonInput,
-  IonTextarea,
-  IonChip,
-  IonIcon,
-  IonSpinner,
-  IonPopover,
   IonList,
-  IonContent,
+  IonNote,
+  IonPopover,
+  IonSpinner,
+  IonTextarea,
   IonToggle,
 } from "@ionic/vue";
 import { ref, reactive, onMounted, computed } from "vue";

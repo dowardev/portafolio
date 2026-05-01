@@ -236,16 +236,28 @@
 
 <script setup lang="ts">
 import {
+  IonAccordion,
+  IonAccordionGroup,
+  IonButton,
+  IonButtons,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonChip,
+  IonCol,
   IonContent,
   IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
+  IonIcon,
   IonItem,
   IonLabel,
+  IonList,
+  IonListHeader,
+  IonPage,
+  IonRow,
+  IonTitle,
+  IonToolbar,
   modalController,
-  IonAccordionGroup,
-  IonAccordion,
 } from "@ionic/vue";
 import {
   closeOutline,

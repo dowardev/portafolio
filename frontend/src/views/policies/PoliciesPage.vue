@@ -153,13 +153,17 @@
 
 <script setup lang="ts">
 import {
+  IonButtons,
+  IonCol,
   IonContent,
   IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
+  IonLabel,
+  IonMenuButton,
+  IonRow,
   IonSegment,
   IonSegmentButton,
+  IonTitle,
+  IonToolbar,
   isPlatform,
 } from "@ionic/vue";
 import { ref } from "vue";

@@ -29,10 +29,13 @@
 
 <script setup lang="ts">
 import {
-  IonTitle,
-  IonToolbar,
+  IonButtons,
+  IonLabel,
+  IonMenuButton,
   IonSegment,
   IonSegmentButton,
+  IonTitle,
+  IonToolbar,
   isPlatform,
 } from "@ionic/vue";
 

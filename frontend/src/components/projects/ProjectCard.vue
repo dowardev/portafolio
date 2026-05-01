@@ -125,7 +125,7 @@
 
 <script setup lang="ts">
 // imports
-import { IonCard, IonRow, IonCol, IonLabel, IonItem, IonIcon, IonText, IonButton, IonCardContent, isPlatform } from "@ionic/vue";
+import { IonButton, IonCard, IonCardContent, IonCol, IonGrid, IonIcon, IonItem, IonLabel, IonRow, IonText, IonThumbnail, isPlatform } from "@ionic/vue";
 import { ref, nextTick, onMounted, onUnmounted, watch } from "vue";
 import {
   arrowBackOutline,

@@ -37,8 +37,11 @@
 
 <script setup lang="ts">
 import {
+  IonButton,
+  IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonPage,
   IonTitle,
   IonToolbar,

@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import {} from "@ionic/vue";
+import { IonAccordion, IonAccordionGroup, IonButton, IonCard, IonCardContent, IonCardTitle, IonCol, IonItem, IonLabel, IonRow, IonText } from "@ionic/vue";
 import { defineComponent } from "vue";
 
 import WorkanaLogo from "../../../assets/otros/Workana_ISOLOGO_W.png";

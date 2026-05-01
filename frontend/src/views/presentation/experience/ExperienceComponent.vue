@@ -82,7 +82,7 @@
 
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from "vue";
-import { IonModal } from "@ionic/vue";
+import { IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonHeader, IonIcon, IonModal, IonRow, IonTitle, IonToolbar } from "@ionic/vue";
 import {
   closeOutline,
   openOutline,

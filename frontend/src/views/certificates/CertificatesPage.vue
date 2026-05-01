@@ -78,6 +78,22 @@
 </template>
 
 <script setup lang="ts">
+
+import {
+  IonButtons,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonCol,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonMenuButton,
+  IonRow,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/vue";
 import { reactive, ref, onMounted } from "vue";
 import * as ionicons from "ionicons/icons";
 

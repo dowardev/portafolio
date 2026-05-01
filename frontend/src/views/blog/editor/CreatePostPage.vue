@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage } from "@ionic/vue";
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from "@ionic/vue";
 import { defineComponent, ref } from "vue";
 import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
 import { CreatePost } from "../../../utils/interfaces";

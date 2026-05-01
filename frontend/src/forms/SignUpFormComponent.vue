@@ -115,7 +115,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonInput, IonIcon } from "@ionic/vue";
+import { IonCol, IonIcon, IonInput, IonInputPasswordToggle, IonRow } from "@ionic/vue";
 import { onMounted, ref, watch } from "vue";
 import {
   manOutline,

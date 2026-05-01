@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonInput, IonIcon } from "@ionic/vue";
+import { IonCol, IonIcon, IonInput, IonInputPasswordToggle, IonRow } from "@ionic/vue";
 import { ref } from "vue";
 import { fingerPrintOutline, mailOpenOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";

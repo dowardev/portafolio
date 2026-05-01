@@ -41,15 +41,17 @@
 
 <script setup lang="ts">
 import {
+  IonButton,
+  IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonMenuButton,
   IonPage,
   IonTitle,
   IonToolbar,
-  IonItem,
-  IonButton,
-  IonLabel,
-  IonIcon,
 } from "@ionic/vue";
 import { banOutline } from "ionicons/icons";
 import { useRoute } from "vue-router";

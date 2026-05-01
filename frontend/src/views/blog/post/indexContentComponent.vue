@@ -61,6 +61,12 @@
 </template>
 
 <script setup lang="ts">
+
+import {
+  IonIcon,
+  IonItem,
+  IonLabel,
+} from "@ionic/vue";
 import { alertCircleOutline } from "ionicons/icons";
 import { ref, onMounted, onUnmounted, watch } from "vue";
 
