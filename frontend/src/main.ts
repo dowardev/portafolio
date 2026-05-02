@@ -45,6 +45,11 @@ import { Storage } from "@ionic/storage";
 const storage = new Storage();
 export const storageInstance = await initStorage();
 
+// DPoP service
+import DpopService from "@/services/dpopService";
+const dpopService = new DpopService();
+await dpopService.initialize();
+
 // server config - API principal
 import ServerConfig from "@/controllers/serverConfigController";
 const userToken = Cookies.get("user-token");
@@ -62,11 +67,11 @@ export const ssoServerConfig = new SSOServerConfig({
 
 // api connector
 import APIController from "@/controllers/APIController";
-const api = new APIController(serverConfigController);
+const api = new APIController(serverConfigController, dpopService);
 export const apiConnector = api;
 
 import SSOAPIController from "@/controllers/SSOAPIController";
-const ssoApi = new SSOAPIController(ssoServerConfig);
+const ssoApi = new SSOAPIController(ssoServerConfig, dpopService);
 export const ssoApiConnector = ssoApi;
 
 // user auth
@@ -90,6 +95,8 @@ if ("serviceWorker" in navigator) {
   wb.register();
 }
 export { wb };
+
+export { dpopService };
 
 const app = createApp(App).use(IonicVue).use(pinia).use(router);
 app.directive("tooltip", vTooltip);

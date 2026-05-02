@@ -50,20 +50,25 @@
 </template>
 
 <script setup lang="ts">
-import { IonCol, IonIcon, IonInput, IonInputPasswordToggle, IonRow } from "@ionic/vue";
+import {
+  IonCol,
+  IonIcon,
+  IonInput,
+  IonInputPasswordToggle,
+  IonRow,
+} from "@ionic/vue";
 import { ref } from "vue";
 import { fingerPrintOutline, mailOpenOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email } from "@vuelidate/validators";
-import { useRouter } from "vue-router";
 import { watch } from "vue";
 
 defineExpose({ getData });
 const emits = defineEmits(["formStatus", "enterPressed"]);
 const inputTypePassword = ref("password" as "text" | "password");
 const form = ref({
-  email: "Janelle71@hotmail.com",
-  password: "lLo4mbepPRKg8Lg1@",
+  email: "test@example.com",
+  password: "password",
 });
 
 const messageError = {
@@ -84,7 +89,7 @@ const rules = {
 const v$ = useVuelidate(rules, { form });
 
 // watch
-watch(form.value, (newValue, oldValue) => {
+watch(form.value, () => {
   emits("formStatus", !v$.value.$invalid);
 });
 

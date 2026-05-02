@@ -4,15 +4,32 @@ import axios from "axios";
 type ContentType = "application/json" | "multipart/form-data";
 
 import ErrorController from "@/controllers/errorController";
+import DpopService from "@/services/dpopService";
 
 export default class SSOAPIController {
   private configService: SSOServerConfig;
   private baseUrl: string = "";
   private errorController = new ErrorController();
+  private dpopService: DpopService | null = null;
 
-  constructor(config: SSOServerConfig) {
+  constructor(config: SSOServerConfig, dpopService?: DpopService) {
     this.configService = config;
     this.baseUrl = config.getConfig().baseUrl;
+    this.dpopService = dpopService ?? null;
+  }
+
+  private stripBearerPrefix(token: string): string {
+    return token.replace(/^Bearer\s+/i, "");
+  }
+
+  private async getDpopHeader(method: string, url: string, accessToken?: string): Promise<string | undefined> {
+    if (!this.dpopService || !accessToken) return undefined;
+    try {
+      const fullUrl = this.baseUrl + url;
+      return await this.dpopService.createDpopProof(method.toUpperCase(), fullUrl, accessToken);
+    } catch {
+      return undefined;
+    }
   }
 
   public async get<T, P = Record<string, unknown>>(params: {
@@ -20,15 +37,19 @@ export default class SSOAPIController {
     data?: P;
   }): Promise<T> {
     const { url, data = {} } = params;
+    const accessToken = this.configService.getConfig().accessToken;
+    const cleanToken = this.stripBearerPrefix(accessToken);
+    const dpopProof = await this.getDpopHeader("GET", url, cleanToken);
     try {
       const response = await axios.request<T>({
         url: this.baseUrl + url,
         method: "GET",
         headers: {
           Accept: "application/json",
-            Authorization: `${this.configService.getConfig().accessToken}`,
-          },
-          params: data,
+          ...(accessToken ? { Authorization: `Bearer ${cleanToken}` } : {}),
+          ...(dpopProof ? { DPoP: dpopProof } : {}),
+        },
+        params: data,
       });
       return response.data;
     } catch (e) {
@@ -43,6 +64,9 @@ export default class SSOAPIController {
     contentType?: ContentType;
   }): Promise<T> {
     const { url, data = {}, contentType = "application/json" } = params;
+    const accessToken = this.configService.getConfig().accessToken;
+    const cleanToken = this.stripBearerPrefix(accessToken);
+    const dpopProof = await this.getDpopHeader("POST", url, cleanToken);
 
     try {
       const response = await axios.request<T>({
@@ -50,7 +74,8 @@ export default class SSOAPIController {
         method: "POST",
         headers: {
           "Content-Type": contentType,
-            Authorization: `${this.configService.getConfig().accessToken}`,
+          ...(accessToken ? { Authorization: `Bearer ${cleanToken}` } : {}),
+          ...(dpopProof ? { DPoP: dpopProof } : {}),
         },
         data,
       });

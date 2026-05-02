@@ -5,7 +5,7 @@ import {
   User,
 } from "../utils/interfaces";
 import Cookies from "js-cookie";
-import { ssoApiConnector, serverConfigController } from "@/main";
+import { ssoApiConnector, serverConfigController, dpopService } from "@/main";
 
 import ErrorController from "./errorController";
 
@@ -38,16 +38,28 @@ export default class UserController {
   async login(params: {
     user: string;
     password: string;
-  }): Promise<{ token: string } | void> {
+  }): Promise<{ token: string; token_type?: string } | void> {
     try {
       const { user, password } = params;
-      const serverResponse = await ssoApiConnector.post<{ token: string }>({
+
+      const dpopPublicKey = dpopService.getPublicKeyJwk();
+      const data: Record<string, unknown> = {
+        email: user,
+        password,
+        client_id: import.meta.env.VITE_SSO_CLIENT_ID,
+      };
+
+      if (dpopPublicKey) {
+        data.dpop_public_key = JSON.stringify(dpopPublicKey);
+      }
+
+      const serverResponse = await ssoApiConnector.post<{ token: string; token_type?: string }>({
         url: `login`,
-        data: { email: user, password, client_id: import.meta.env.VITE_SSO_CLIENT_ID },
+        data,
       });
       const token = `Bearer ${serverResponse.token}`;
 
-      return { token };
+      return { token, token_type: serverResponse.token_type };
     } catch (e: unknown) {
       if (typeof e === "object" && e !== null && "errorDetail" in e) {
         const customError = e as ICustomError;
@@ -68,9 +80,23 @@ export default class UserController {
     try {
       const { name, user, password, email, password_confirmation } = params;
 
+      const dpopPublicKey = dpopService.getPublicKeyJwk();
+      const data: Record<string, unknown> = {
+        name,
+        user,
+        password,
+        email,
+        password_confirmation,
+        client_id: import.meta.env.VITE_SSO_CLIENT_ID,
+      };
+
+      if (dpopPublicKey) {
+        data.dpop_public_key = JSON.stringify(dpopPublicKey);
+      }
+
       await ssoApiConnector.post({
         url: `register`,
-        data: { name, user, password, email, password_confirmation, client_id: import.meta.env.VITE_SSO_CLIENT_ID },
+        data,
       });
     } catch (error) {
       return this.errorController.handleError({ error });
@@ -156,9 +182,9 @@ export default class UserController {
     }
   }
 
-  storeUserToken(params: { token: string }) {
-    const { token } = params;
-    serverConfigController.setAuthTokens({ accessToken: token });
+  storeUserToken(params: { token: string; tokenType?: string }) {
+    const { token, tokenType } = params;
+    serverConfigController.setAuthTokens({ accessToken: token, tokenType });
   }
 
   storeRefreshToken(params: { refreshToken: string }) {
@@ -184,5 +210,10 @@ export default class UserController {
         throw e;
       }
     }
+  }
+
+  async logout() {
+    await dpopService.clearKeys();
+    this.userStore.logout();
   }
 }

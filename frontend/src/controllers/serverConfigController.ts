@@ -1,12 +1,9 @@
-// controllers
-
-// services
 import Cookies from "js-cookie";
-import SystemService from "../services/systemService";
 
 export default class ServerConfig {
   private baseUrl: string = "";
   private accessToken: string = "";
+  private tokenType: string = "Bearer";
 
   constructor(params: {
     baseUrl: string;
@@ -21,10 +18,11 @@ export default class ServerConfig {
     this.baseUrl = baseUrl;
   }
 
-  setAuthTokens(params: { accessToken: string }) {
-    const { accessToken } = params;
+  setAuthTokens(params: { accessToken: string; tokenType?: string }) {
+    const { accessToken, tokenType } = params;
     if (accessToken) {
       this.accessToken = accessToken;
+      this.tokenType = tokenType ?? "Bearer";
       Cookies.set("user-token", accessToken, {
         secure: true,
         sameSite: "Strict",
@@ -35,10 +33,12 @@ export default class ServerConfig {
   public getConfig(): {
     baseUrl: string;
     accessToken: string;
+    tokenType: string;
   } {
     return {
       baseUrl: this.baseUrl,
       accessToken: this.accessToken,
+      tokenType: this.tokenType,
     };
   }
 
@@ -46,5 +46,6 @@ export default class ServerConfig {
     Cookies.remove("user-token");
     this.baseUrl = "";
     this.accessToken = "";
+    this.tokenType = "Bearer";
   }
 }

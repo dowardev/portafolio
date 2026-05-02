@@ -225,7 +225,8 @@ async function login(params: { email: string; password: string }) {
 
     if (response) {
       const token = response.token;
-      userController.storeUserToken({ token });
+      const tokenType = response.token_type;
+      userController.storeUserToken({ token, tokenType });
       spinners.value.buttonLogin = false;
       clearInputs();
       await userController.loadUser();

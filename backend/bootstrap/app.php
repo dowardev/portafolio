@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'sso.auth' => \App\Http\Middleware\SSOTokenAuth::class,
+            'sso.auth' => \App\Http\Middleware\LocalJwtAuth::class,
             'cors' => \App\Http\Middleware\Cors::class,
             'admin.only' => \App\Http\Middleware\AdminOnly::class,
         ]);

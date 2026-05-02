@@ -1,5 +1,40 @@
 # Changelog
 
+## 16.3.0 - 2026-05-01
+
+### Summary
+Added DPoP (Demonstrating Proof of Possession) authentication support for enhanced security when communicating with the SSO. This implementation includes backend JWT validation with DPoP proof verification and frontend DPoP proof generation using RSA key pairs stored in IndexedDB.
+
+### Added
+- New `LocalJwtAuth` middleware in backend for JWT token validation with DPoP support
+- New `JwksService` in backend for fetching and caching public keys from SSO JWKS endpoint
+- New `dpopService` in frontend for generating RSA key pairs and creating DPoP proofs
+- DPoP header generation in `APIController` and `SSOAPIController` for authenticated requests
+- Token type handling in `serverConfigController` and `LoginPage`
+- Added `lcobucci/jwt` dependency to composer.json
+
+### Changed
+- Updated middleware alias from `SSOTokenAuth` to `LocalJwtAuth` in bootstrap/app.php
+- Updated `userController` to include DPoP public key in login/register requests
+- Updated `login` function in `LoginPage` to handle token_type
+
+### Affected Files
+- Backend:
+  - Added: `backend/app/Http/Middleware/LocalJwtAuth.php`
+  - Added: `backend/app/Services/JwksService.php`
+  - Modified: `backend/bootstrap/app.php`
+  - Modified: `backend/composer.json`
+- Frontend:
+  - Added: `frontend/src/services/dpopService.ts`
+  - Modified: `frontend/src/controllers/APIController.ts`
+  - Modified: `frontend/src/controllers/SSOAPIController.ts`
+  - Modified: `frontend/src/controllers/serverConfigController.ts`
+  - Modified: `frontend/src/controllers/userController.ts`
+  - Modified: `frontend/src/main.ts`
+  - Modified: `frontend/src/views/session/login/LoginPage.vue`
+
+---
+
 ## 16.2.0 - 2026-05-01
 
 ### Summary
