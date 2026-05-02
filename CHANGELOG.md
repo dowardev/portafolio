@@ -1,5 +1,19 @@
 # Changelog
 
+## 16.2.0 - 2026-05-01
+
+### Summary
+Added password confirmation support to user registration and replaced hardcoded client_id values with environment variable configuration.
+
+### Added
+- Added `password_confirmation` parameter to user registration endpoint
+
+### Changed
+- Changed hardcoded `client_id` to use environment variable `VITE_SSO_CLIENT_ID` in login function
+- Changed hardcoded `client_id` to use environment variable `VITE_SSO_CLIENT_ID` in register function
+
+---
+
 ## 16.1.3 - 2026-05-01
 
 ### Summary

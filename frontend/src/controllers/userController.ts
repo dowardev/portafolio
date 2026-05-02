@@ -43,7 +43,7 @@ export default class UserController {
       const { user, password } = params;
       const serverResponse = await ssoApiConnector.post<{ token: string }>({
         url: `login`,
-        data: { email: user, password, client_id: "main-app" },
+        data: { email: user, password, client_id: import.meta.env.VITE_SSO_CLIENT_ID },
       });
       const token = `Bearer ${serverResponse.token}`;
 
@@ -63,13 +63,14 @@ export default class UserController {
     user: string;
     password: string;
     email: string;
+    password_confirmation: string;
   }): Promise<void> {
     try {
-      const { name, user, password, email } = params;
+      const { name, user, password, email, password_confirmation } = params;
 
       await ssoApiConnector.post({
         url: `register`,
-        data: { name, user, password, email, client_id: "main-app" },
+        data: { name, user, password, email, password_confirmation, client_id: import.meta.env.VITE_SSO_CLIENT_ID },
       });
     } catch (error) {
       return this.errorController.handleError({ error });
