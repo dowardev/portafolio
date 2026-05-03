@@ -18,11 +18,11 @@
           lines="none"
         >
           <!-- login -->
-          <ion-button @click="openRoute({ name: 'LoginPage' })">
+          <ion-button @click="redirectToSSO('login')">
             Iniciar sesión
           </ion-button>
           <!-- sign up -->
-          <ion-button fill="clear" @click="openRoute({ name: 'SignUpPage' })"
+          <ion-button fill="clear" @click="redirectToSSO('register')"
             >Registrar</ion-button
           >
         </ion-item>
@@ -461,6 +461,19 @@ function openRoute(params: { route?: string; name?: string }) {
   if (route) router.push(route);
   if (name) router.push({ name });
   menuController.close();
+}
+
+function redirectToSSO(page: 'login' | 'register') {
+  const ssoFrontendUrl = import.meta.env.VITE_SSO_FRONTEND_URL;
+  const clientId = import.meta.env.VITE_SSO_CLIENT_ID;
+  const redirectUri = `${window.location.origin}/auth/callback`;
+  const state = crypto.randomUUID();
+  const url = new URL(`/auth/${page}`, ssoFrontendUrl);
+  url.searchParams.set('client_id', clientId);
+  url.searchParams.set('redirect_uri', redirectUri);
+  url.searchParams.set('response_type', 'code');
+  url.searchParams.set('state', state);
+  window.location.href = url.toString();
 }
 
 async function getUser() {

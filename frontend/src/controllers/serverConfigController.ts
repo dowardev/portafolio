@@ -23,10 +23,14 @@ export default class ServerConfig {
     if (accessToken) {
       this.accessToken = accessToken;
       this.tokenType = tokenType ?? "Bearer";
+      
       Cookies.set("user-token", accessToken, {
-        secure: true,
-        sameSite: "Strict",
+        secure: false,
+        sameSite: "Lax",
+        path: "/",
       });
+      
+      localStorage.setItem("user-token", accessToken);
     }
   }
 

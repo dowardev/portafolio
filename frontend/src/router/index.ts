@@ -13,8 +13,7 @@ import CreatePostPage from "@/views/blog/editor/CreatePostPage.vue";
 import UpdatePostPage from "@/views/blog/editor/UpdatePostPage.vue";
 import PostsPage from "@/views/blog/posts/PostsPage.vue";
 import PostPage from "@/views/blog/post/PostPage.vue";
-import LoginPage from "@/views/session/login/LoginPage.vue";
-import SignUpPage from "@/views/session/signup/SignUpPage.vue";
+import AuthCallbackPage from "@/views/session/callback/AuthCallbackPage.vue";
 import PoliciesPage from "@/views/policies/PoliciesPage.vue";
 import UserPanelPage from "@/views/user/UserPanelPage.vue";
 import UsersPage from "@/views/admin/users/UsersPage.vue";
@@ -119,14 +118,9 @@ const routes: Array<RouteRecordRaw> = [
     component: PostPage,
   },
   {
-    path: "/login",
-    name: "LoginPage",
-    component: LoginPage,
-  },
-  {
-    path: "/signup",
-    name: "SignUpPage",
-    component: SignUpPage,
+    path: "/auth/callback",
+    name: "AuthCallbackPage",
+    component: AuthCallbackPage,
   },
   {
     path: "/policies",
@@ -253,8 +247,7 @@ router.beforeEach(async (to, from, next) => {
   const isAdmin = hasAdminRole(roles);
 
   const routeName = to.name as string;
-  const authorizedRoutes = ["UserPanelPage"];
-  const unauthorizedRoutes = ["LoginPage", "SignUpPage"];
+  const authorizedRoutes = ["UserPanelPage", "AuthCallbackPage"];
   const adminRoutes = [
     "CreatePostPage",
     "UpdatePostPage",
@@ -311,10 +304,22 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (user == undefined) {
-    if (unauthorizedRoutes.includes(routeName)) return next();
+    if (routeName === "AuthCallbackPage") return next();
     if (noGuardRequired.includes(routeName)) {
       return next();
-    } else next({ name: "LoginPage" });
+    } else {
+      const ssoFrontendUrl = import.meta.env.VITE_SSO_FRONTEND_URL;
+      const clientId = import.meta.env.VITE_SSO_CLIENT_ID;
+      const redirectUri = `${window.location.origin}/auth/callback`;
+      const state = crypto.randomUUID();
+      const url = new URL("/auth/login", ssoFrontendUrl);
+      url.searchParams.set("client_id", clientId);
+      url.searchParams.set("redirect_uri", redirectUri);
+      url.searchParams.set("response_type", "code");
+      url.searchParams.set("state", state);
+      window.location.href = url.toString();
+      return next(false);
+    }
   }
 });
 

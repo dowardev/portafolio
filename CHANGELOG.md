@@ -1,5 +1,37 @@
 # Changelog
 
+## 16.4.0 - 2026-05-02
+
+### Summary
+Implemented full SSO (Single Sign-On) integration with OAuth authorization code flow. Replaced local login/signup pages with external SSO authentication, creating a centralized authentication experience.
+
+### Added
+- New `AuthCallbackPage.vue` component to handle OAuth callback and token exchange
+- New `redirectToSSO` function in `MenuComponent` for SSO login/register redirects
+- Added `getFullUrl` method to `APIController` and `SSOAPIController` for consistent URL handling
+- Token storage in both cookies and localStorage for improved compatibility
+
+### Changed
+- Replaced local `/login` and `/signup` routes with SSO redirect flow
+- Updated router guard to redirect unauthenticated users to SSO instead of login page
+- Modified `serverConfigController` token storage: changed cookie settings (secure: false, sameSite: 'Lax', path: '/') and added localStorage fallback
+- Updated `APIController` to read token from both cookies and localStorage
+- Menu login/register buttons now redirect to SSO with appropriate auth endpoints
+
+### Removed
+- Removed `LoginPage` and `SignUpPage` route imports and configurations
+
+### Affected Files
+- Frontend:
+  - Added: `frontend/src/views/session/callback/AuthCallbackPage.vue`
+  - Modified: `frontend/src/components/menu/MenuComponent.vue`
+  - Modified: `frontend/src/router/index.ts`
+  - Modified: `frontend/src/controllers/APIController.ts`
+  - Modified: `frontend/src/controllers/SSOAPIController.ts`
+  - Modified: `frontend/src/controllers/serverConfigController.ts`
+
+---
+
 ## 16.3.0 - 2026-05-01
 
 ### Summary

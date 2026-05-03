@@ -22,10 +22,15 @@ export default class SSOAPIController {
     return token.replace(/^Bearer\s+/i, "");
   }
 
+  private getFullUrl(url: string): string {
+    const baseUrl = this.baseUrl.endsWith('/') ? this.baseUrl.slice(0, -1) : this.baseUrl;
+    return `${baseUrl}/${url}`;
+  }
+
   private async getDpopHeader(method: string, url: string, accessToken?: string): Promise<string | undefined> {
     if (!this.dpopService || !accessToken) return undefined;
     try {
-      const fullUrl = this.baseUrl + url;
+      const fullUrl = this.getFullUrl(url);
       return await this.dpopService.createDpopProof(method.toUpperCase(), fullUrl, accessToken);
     } catch {
       return undefined;
@@ -42,7 +47,7 @@ export default class SSOAPIController {
     const dpopProof = await this.getDpopHeader("GET", url, cleanToken);
     try {
       const response = await axios.request<T>({
-        url: this.baseUrl + url,
+        url: this.getFullUrl(url),
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -70,7 +75,7 @@ export default class SSOAPIController {
 
     try {
       const response = await axios.request<T>({
-        url: this.baseUrl + url,
+        url: this.getFullUrl(url),
         method: "POST",
         headers: {
           "Content-Type": contentType,
