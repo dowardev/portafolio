@@ -28,6 +28,27 @@ const userController = new UserController();
 const loading = ref(true);
 const error = ref("");
 
+function generateCodeVerifier(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return base64UrlEncode(array).slice(0, 128);
+}
+
+async function generateCodeChallenge(verifier: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(verifier);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return base64UrlEncode(new Uint8Array(hash));
+}
+
+function base64UrlEncode(data: Uint8Array): string {
+  let binary = '';
+  for (let i = 0; i < data.length; i++) {
+    binary += String.fromCharCode(data[i]);
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
 onMounted(async () => {
   const { code, state } = route.query;
 
@@ -47,15 +68,20 @@ onMounted(async () => {
 
 async function exchangeCodeForToken(code: string) {
   const dpopPublicKey = dpopService.getPublicKeyJwk();
+  const codeVerifier = sessionStorage.getItem('pkce_code_verifier');
+
   const data: Record<string, unknown> = {
     code,
     client_id: import.meta.env.VITE_SSO_CLIENT_ID,
     redirect_uri: `${window.location.origin}/auth/callback`,
+    code_verifier: codeVerifier,
   };
 
   if (dpopPublicKey) {
     data.dpop_public_key = JSON.stringify(dpopPublicKey);
   }
+
+  sessionStorage.removeItem('pkce_code_verifier');
 
   const response = await ssoApiConnector.post<{
     token: string;
@@ -83,7 +109,11 @@ async function exchangeCodeForToken(code: string) {
   router.replace("/");
 }
 
-function redirectToSSO() {
+async function redirectToSSO() {
+  const codeVerifier = generateCodeVerifier();
+  const codeChallenge = await generateCodeChallenge(codeVerifier);
+  sessionStorage.setItem('pkce_code_verifier', codeVerifier);
+
   const ssoFrontendUrl = import.meta.env.VITE_SSO_FRONTEND_URL;
   const clientId = import.meta.env.VITE_SSO_CLIENT_ID;
   const redirectUri = `${window.location.origin}/auth/callback`;
@@ -93,6 +123,8 @@ function redirectToSSO() {
   url.searchParams.set("redirect_uri", redirectUri);
   url.searchParams.set("response_type", "code");
   url.searchParams.set("state", state);
+  url.searchParams.set("code_challenge", codeChallenge);
+  url.searchParams.set("code_challenge_method", "S256");
   window.location.href = url.toString();
 }
 </script>

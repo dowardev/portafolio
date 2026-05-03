@@ -35,41 +35,6 @@ export default class UserController {
     }
   }
 
-  async login(params: {
-    user: string;
-    password: string;
-  }): Promise<{ token: string; token_type?: string } | void> {
-    try {
-      const { user, password } = params;
-
-      const dpopPublicKey = dpopService.getPublicKeyJwk();
-      const data: Record<string, unknown> = {
-        email: user,
-        password,
-        client_id: import.meta.env.VITE_SSO_CLIENT_ID,
-      };
-
-      if (dpopPublicKey) {
-        data.dpop_public_key = JSON.stringify(dpopPublicKey);
-      }
-
-      const serverResponse = await ssoApiConnector.post<{ token: string; token_type?: string }>({
-        url: `login`,
-        data,
-      });
-      const token = `Bearer ${serverResponse.token}`;
-
-      return { token, token_type: serverResponse.token_type };
-    } catch (e: unknown) {
-      if (typeof e === "object" && e !== null && "errorDetail" in e) {
-        const customError = e as ICustomError;
-        if (customError.errorDetail != "Unauthenticated.") throw customError;
-      } else {
-        throw e;
-      }
-    }
-  }
-
   async createUserAccount(params: {
     name: string;
     user: string;

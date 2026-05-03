@@ -1,34 +1,26 @@
 # Changelog
 
-## 16.4.0 - 2026-05-02
+## 16.5.0 - 2026-05-02
 
 ### Summary
-Implemented full SSO (Single Sign-On) integration with OAuth authorization code flow. Replaced local login/signup pages with external SSO authentication, creating a centralized authentication experience.
+Implemented PKCE (Proof Key for Code Exchange) for OAuth authorization code flow to enhance SSO authentication security. PKCE adds an additional layer of protection against authorization code interception attacks.
 
 ### Added
-- New `AuthCallbackPage.vue` component to handle OAuth callback and token exchange
-- New `redirectToSSO` function in `MenuComponent` for SSO login/register redirects
-- Added `getFullUrl` method to `APIController` and `SSOAPIController` for consistent URL handling
-- Token storage in both cookies and localStorage for improved compatibility
+- New `generateCodeVerifier` function in router and AuthCallbackPage for generating cryptographically random code verifiers
+- New `generateCodeChallenge` function for creating SHA-256 hashed code challenges
+- New `base64UrlEncode` helper function for URL-safe base64 encoding
+- Added `code_verifier` parameter to token exchange in AuthCallbackPage
 
 ### Changed
-- Replaced local `/login` and `/signup` routes with SSO redirect flow
-- Updated router guard to redirect unauthenticated users to SSO instead of login page
-- Modified `serverConfigController` token storage: changed cookie settings (secure: false, sameSite: 'Lax', path: '/') and added localStorage fallback
-- Updated `APIController` to read token from both cookies and localStorage
-- Menu login/register buttons now redirect to SSO with appropriate auth endpoints
-
-### Removed
-- Removed `LoginPage` and `SignUpPage` route imports and configurations
+- Updated router guard to include `code_challenge` and `code_challenge_method` parameters in SSO redirect URL
+- Updated AuthCallbackPage to include `code_verifier` in token exchange request
+- Removed `login` method from userController (no longer needed with SSO)
 
 ### Affected Files
 - Frontend:
-  - Added: `frontend/src/views/session/callback/AuthCallbackPage.vue`
-  - Modified: `frontend/src/components/menu/MenuComponent.vue`
   - Modified: `frontend/src/router/index.ts`
-  - Modified: `frontend/src/controllers/APIController.ts`
-  - Modified: `frontend/src/controllers/SSOAPIController.ts`
-  - Modified: `frontend/src/controllers/serverConfigController.ts`
+  - Modified: `frontend/src/views/session/callback/AuthCallbackPage.vue`
+  - Modified: `frontend/src/controllers/userController.ts`
 
 ---
 
