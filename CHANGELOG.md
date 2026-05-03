@@ -1,5 +1,30 @@
 # Changelog
 
+## 16.5.2 - 2026-05-03
+
+### Summary
+Consolidated separate backend and frontend README files into a single unified project README at the root level, providing comprehensive documentation for the entire portfolio application.
+
+### Changed
+- Removed duplicate backend README (backend/README.md)
+- Removed duplicate frontend README (frontend/README.md)
+- Created unified project README (README.md) with complete documentation including:
+  - System architecture diagram with SSO, backend, and frontend components
+  - Tech stack overview for frontend (Ionic/Vue) and backend (Laravel)
+  - Complete installation and configuration instructions
+  - SSO Server integration setup
+  - Development and production environment configuration
+  - API endpoints reference
+  - APK generation instructions
+  - Deployment checklist
+
+### Affected Files
+- Added: `README.md`
+- Deleted: `backend/README.md`
+- Deleted: `frontend/README.md`
+
+---
+
 ## 16.5.1 - 2026-05-03
 
 ### Summary
