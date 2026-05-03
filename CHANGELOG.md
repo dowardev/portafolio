@@ -1,5 +1,26 @@
 # Changelog
 
+## 16.5.1 - 2026-05-03
+
+### Summary
+Documentation updates to fix port references and clarify DPoP authentication flow in README files.
+
+### Fixed
+- Updated backend port from 8003 to 8000 in README documentation
+- Updated SSO port from 8002 to 8001 in README documentation
+
+### Changed
+- Updated authentication architecture diagram to clearly show DPoP flow with RSA key pairs
+- Added documentation for new SSO middleware (LocalJwtAuth, SSOTokenAuth) in backend README
+- Added VITE_SSO_FRONTEND_URL and VITE_SSO_CLIENT_ID environment variables to frontend README
+- Enhanced SSO configuration section with comprehensive setup instructions
+
+### Affected Files
+- Modified: `backend/README.md`
+- Modified: `frontend/README.md`
+
+---
+
 ## 16.5.0 - 2026-05-02
 
 ### Summary
