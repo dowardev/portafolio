@@ -1,34 +1,34 @@
 # Mi Portafolio
 
-Plataforma full-stack para profesionales de desarrollo de software. Incluye interfaz web adaptativa, aplicación móvil para Android y soporte PWA. Permite mostrar conocimientos técnicos, proyectos realizados y un sistema de gestión de contenido/blog para publicaciones.
+Full-stack platform for software development professionals. Includes responsive web interface, Android mobile application and PWA support. Allows showcasing technical knowledge, completed projects, and a content management system for blog publications.
 
 ## Demo
 
-Accede a la aplicación en producción: [Production App](https://dowar.xyz)
+Access the production application at: [Production App](https://dowar.xyz)
 
 ---
 
-> **⚠️ NOTA IMPORTANTE - ENTORNO DE PRODUCCIÓN**
+> **⚠️ IMPORTANT NOTE - PRODUCTION ENVIRONMENT**
 >
-> Los ejemplos en este documento usan `localhost` y dominios de desarrollo.
-> **En producción, reemplaza todos los valores locales con tus dominios reales.**
+> Examples in this document use `localhost` and development domains.
+> **In production, replace all local values with your actual domains.**
 >
-> Consulta la sección "[Configuración de Producción](#configuración-de-producción)" más abajo.
+> See the "[Production Configuration](#production-configuration)" section below.
 
 ---
 
-## Arquitectura del Sistema
+## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                      FRONTEND (Ionic/Vue)                        │
 │                   https://miapp.com                              │
 │                              │                                   │
-│   1. Genera par de claves DPoP (RSA) al iniciar sesión          │
-│   2. Envía clave pública al SSO Server                          │
-│   3. Recibe JWT con cnf.jkt (thumbprint JWK)                    │
-│   4. Crea prueba DPoP (JWT firmado con clave privada)           │
-│   5. Envía JWT + prueba DPoP en cada solicitud API              │
+│   1. Generates DPoP key pair (RSA) on login                     │
+│   2. Sends public key to SSO Server                             │
+│   3. Receives JWT with cnf.jkt (JWK thumbprint)                 │
+│   4. Creates DPoP proof (JWT signed with private key)          │
+│   5. Sends JWT + DPoP proof in every API request                │
 │                              │                                   │
 └──────────────────────────────┼──────────────────────────────────┘
                                  ▼
@@ -36,9 +36,9 @@ Accede a la aplicación en producción: [Production App](https://dowar.xyz)
 │                     PORTAFOLIO BACKEND                            │
 │                   https://api.miapp.com                          │
 │                              │                                   │
-│   1. Valida firma JWT usando JWKS del SSO                       │
-│   2. Valida prueba DPoP (vincula token a clave privada)         │
-│   3. Verifica que jkt en token coincida con clave pública DPoP  │
+│   1. Validates JWT signature using JWKS from SSO               │
+│   2. Validates DPoP proof (binds token to private key)         │
+│   3. Verifies jkt in token matches DPoP public key              │
 │                              │                                   │
 └──────────────────────────────┬──────────────────────────────────┘
                                  ▼
@@ -46,9 +46,9 @@ Accede a la aplicación en producción: [Production App](https://dowar.xyz)
 │                          SSO SERVER                              │
 │                   https://sso.miapp.com/api                      │
 │                              │                                   │
-│   1. Almacena clave pública del cliente                        │
-│   2. Emite JWT con cnf.jkt (thumbprint JWK)                     │
-│   3. Proporciona JWKS en /.well-known/jwks.json                 │
+│   1. Stores client public key                                   │
+│   2. Issues JWT with cnf.jkt (JWK thumbprint)                  │
+│   3. Provides JWKS at /.well-known/jwks.json                    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -61,59 +61,59 @@ Accede a la aplicación en producción: [Production App](https://dowar.xyz)
 - Vue.js 3
 - Capacitor.js
 - Vite
-- Pinia (gestión de estado)
-- Axios (cliente HTTP)
+- Pinia (state management)
+- Axios (HTTP client)
 
 ### Backend
 - Laravel 11
-- Laravel Sanctum (comunicación con SSO)
-- SQLite (desarrollo) / MySQL (producción)
+- Laravel Sanctum (SSO communication)
+- SQLite (development) / MySQL (production)
 
 ### External
-- SSO Server (autenticación centralizada)
+- SSO Server (centralized authentication)
 
 ---
 
-## Requisitos Previos
+## Prerequisites
 
 - Node.js LTS
-- pnpm (gestor de paquetes)
+- pnpm (package manager)
 - PHP 8.2+
 - Composer
-- MySQL (producción) / SQLite (desarrollo)
-- **SSO Server** ejecutándose (ver sección abajo)
+- MySQL (production) / SQLite (development)
+- **SSO Server** running (see section below)
 
 ---
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
 portafolio/
-├── frontend/          # Aplicación Ionic/Vue (web, móvil, PWA)
-├── backend/          # API Laravel
-└── README.md         # Este archivo
+├── frontend/          # Ionic/Vue application (web, mobile, PWA)
+├── backend/          # Laravel API
+└── README.md         # This file
 ```
 
 ---
 
-## SSO Server (Servicio Externo)
+## SSO Server (External Service)
 
-El SSO Server es un **servicio externo separado** que proporciona autenticación centralizada para múltiples aplicaciones.
+The SSO Server is a **separate external service** that provides centralized authentication for multiple applications.
 
-### Propósito
-- Gestiona usuarios y sesiones de forma centralizada
-- Emite tokens JWT para aplicaciones cliente
-- Proporciona endpoints de login, registro y validación de tokens
+### Purpose
+- Manages users and sessions centrally
+- Issues JWT tokens for client applications
+- Provides login, registration and token validation endpoints
 
-### Cómo Integrar
+### How to Integrate
 
-1. **Obtener el SSO Server**:
+1. **Get the SSO Server**:
    ```bash
    cd ../sso/back
-   # Seguir instrucciones de instalación en su README
+   # Follow installation instructions in its README
    ```
 
-2. **Configurar variables de entorno**:
+2. **Configure environment variables**:
 
    **Frontend** (`.env`):
    ```env
@@ -127,7 +127,7 @@ El SSO Server es un **servicio externo separado** que proporciona autenticación
    SSO_URL=http://localhost:8002/api
    ```
 
-3. **Registrar cliente en SSO**:
+3. **Register client in SSO**:
    ```bash
    curl -X POST http://localhost:8002/api/admin/clients \
      -H "Authorization: Bearer {admin_token}" \
@@ -140,33 +140,33 @@ El SSO Server es un **servicio externo separado** que proporciona autenticación
      }'
    ```
 
-### Documentación Completa
-Para detalles completos del SSO Server, consulta: `../sso/back/README.md`
+### Complete Documentation
+For complete SSO Server details, see: `../sso/back/README.md`
 
 ---
 
-## Instalación
+## Installation
 
-### 1. SSO Server (Primero)
+### 1. SSO Server (First)
 
-Ver sección anterior o consultar `../sso/back/README.md`.
+See previous section or consult `../sso/back/README.md`.
 
 ### 2. Backend
 
 ```bash
 cd backend
 
-# Instalar dependencias
+# Install dependencies
 composer install
 
-# Configurar entorno
+# Configure environment
 cp .env.example .env
 php artisan key:generate
 
-# Ejecutar migraciones
+# Run migrations
 php artisan migrate
 
-# Iniciar servidor
+# Start server
 php artisan serve --port=8000
 ```
 
@@ -175,18 +175,18 @@ php artisan serve --port=8000
 ```bash
 cd frontend
 
-# Instalar dependencias
+# Install dependencies
 pnpm i
 
-# Iniciar servidor desarrollo
+# Start development server
 pnpm run dev
-# o
+# or
 ionic s
 ```
 
 ---
 
-## Configuración de Desarrollo
+## Development Configuration
 
 ### Backend (.env)
 
@@ -212,13 +212,13 @@ VITE_SSO_CLIENT_ID=main-app
 
 ---
 
-## Configuración de Producción
+## Production Configuration
 
-> **IMPORTANTE:** Todos los valores `localhost` deben reemplarse con tu dominio real.
+> **IMPORTANT:** All `localhost` values must be replaced with your actual domain.
 
-### Cambios Requeridos
+### Required Changes
 
-| Configuración | Desarrollo | Producción |
+| Configuration | Development | Production |
 |---------------|------------|------------|
 | **Frontend** |
 | `VITE_API_URL` | `http://localhost:8000/api/` | `https://api.miapp.com/api/` |
@@ -231,21 +231,21 @@ VITE_SSO_CLIENT_ID=main-app
 | `DB_CONNECTION` | `sqlite` | `mysql` |
 | `SSO_URL` | `http://localhost:8002/api` | `https://sso.miapp.com/api` |
 
-### Build Producción
+### Production Build
 
 ```bash
 # Frontend
 cd frontend
 ionic build --prod
 
-# Los archivos se generan en el directorio 'dist'
+# Files are generated in the 'dist' directory
 ```
 
 ---
 
-## Cómo Ejecutar
+## How to Run
 
-### Desarrollo (todos los servicios)
+### Development (all services)
 
 ```bash
 # Terminal 1: SSO Server
@@ -261,96 +261,96 @@ cd portafolio/frontend
 ionic s
 ```
 
-### Producción
+### Production
 
-1. Compilar frontend: `ionic build --prod`
-2. Desplegar `dist/` al servidor web
-3. Configurar backend en servidor con MySQL
-4. Configurar DNS y SSL
-
----
-
-## Endpoints API
-
-### Endpoints Protegidos (requieren `Authorization: Bearer {token}`)
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/user-auth` | Obtener usuario autenticado |
-| POST | `/api/new-post` | Crear post (relación con usuario SSO) |
-| GET | `/api/users` | Listar usuarios (admin) |
-| POST | `/api/update-user-status` | Habilitar/deshabilitar usuario |
-| POST | `/api/admin/delete-user` | Eliminar usuario (admin) |
-| POST | `/api/admin/update-user-account` | Actualizar cuenta (admin) |
-
-### Endpoints Públicos
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/posts/{date}/{filter}` | Listar posts |
-| GET | `/api/post-dates` | Fechas de posts |
-| GET | `/api/post/{id}` | Obtener post individual |
-| GET | `/api/search-posts/{search}` | Buscar posts |
-| POST | `/api/create-post` | Crear post público |
-| POST | `/api/update-post` | Actualizar post |
-| POST | `/api/delete-post` | Eliminar post |
-| POST | `/api/upload-image` | Subir imagen |
-| POST | `/api/contact` | Enviar formulario contacto |
-| POST | `/api/feedback` | Enviar feedback |
+1. Compile frontend: `ionic build --prod`
+2. Deploy `dist/` to your web server
+3. Configure backend on server with MySQL
+4. Configure DNS and SSL
 
 ---
 
-## Generación de APK (Android)
+## API Endpoints
 
-### Pruebas
+### Protected Endpoints (require `Authorization: Bearer {token}`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/user-auth` | Get authenticated user |
+| POST | `/api/new-post` | Create post (SSO user relation) |
+| GET | `/api/users` | List users (admin) |
+| POST | `/api/update-user-status` | Enable/disable user |
+| POST | `/api/admin/delete-user` | Delete user (admin) |
+| POST | `/api/admin/update-user-account` | Update account (admin) |
+
+### Public Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/posts/{date}/{filter}` | List posts |
+| GET | `/api/post-dates` | Post dates |
+| GET | `/api/post/{id}` | Get single post |
+| GET | `/api/search-posts/{search}` | Search posts |
+| POST | `/api/create-post` | Create public post |
+| POST | `/api/update-post` | Update post |
+| POST | `/api/delete-post` | Delete post |
+| POST | `/api/upload-image` | Upload image |
+| POST | `/api/contact` | Send contact form |
+| POST | `/api/feedback` | Send feedback |
+
+---
+
+## APK Generation (Android)
+
+### Testing
 
 ```bash
 cd Android
 ./gradlew assembleDebug
-# APK en: app/build/outputs/apk/debug/
+# APK at: app/build/outputs/apk/debug/
 ```
 
-### Producción
+### Production
 
 ```bash
 ionic cap open android
-# Configurar firma y generar build de release
+# Configure signing and generate release build
 ```
 
 ---
 
-## Comandos Útiles
+## Useful Commands
 
 ```bash
 # Backend
-php artisan route:list          # Ver rutas registradas
-php artisan config:clear         # Limpiar caché de configuración
-php artisan migrate              # Ejecutar migraciones
+php artisan route:list          # List registered routes
+php artisan config:clear        # Clear configuration cache
+php artisan migrate             # Run migrations
 
 # Frontend
-ionic build                      # Build de producción
-pnpm run dev                     # Servidor desarrollo
+ionic build                     # Production build
+pnpm run dev                    # Development server
 ```
 
 ---
 
-## Checklist de Deployment
+## Deployment Checklist
 
-- [ ] Configurar dominios (`miapp.com`, `api.miapp.com`, `sso.miapp.com`)
-- [ ] Obtener certificados SSL
-- [ ] Configurar MySQL en producción
-- [ ] Actualizar `.env` con URLs de producción
-- [ ] Compilar build de producción del frontend
-- [ ] Desplegar frontend al servidor web
-- [ ] Desplegar backend al servidor
-- [ ] Configurar headers de seguridad (CORS, CSP)
-- [ ] Probar flujo completo de autenticación
-- [ ] Configurar service worker para PWA (si aplica)
-- [ ] Configurar rate limiting para endpoints públicos
-- [ ] Configurar logs y monitoreo
+- [ ] Configure domains (`miapp.com`, `api.miapp.com`, `sso.miapp.com`)
+- [ ] Obtain SSL certificates
+- [ ] Configure MySQL in production
+- [ ] Update `.env` with production URLs
+- [ ] Compile frontend production build
+- [ ] Deploy frontend to web server
+- [ ] Deploy backend to server
+- [ ] Configure security headers (CORS, CSP)
+- [ ] Test complete authentication flow
+- [ ] Configure service worker for PWA (if applicable)
+- [ ] Configure rate limiting for public endpoints
+- [ ] Configure logs and monitoring
 
 ---
 
-## Licencia
+## License
 
-Este proyecto se desarrolla bajo la licencia GPL 3.
+This project is developed under the GPL 3 license.

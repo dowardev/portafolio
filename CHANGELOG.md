@@ -1,5 +1,20 @@
 # Changelog
 
+## 16.5.3 - 2026-05-03
+
+### Summary
+Translated complete README.md documentation from Spanish to English, improving accessibility for international users.
+
+### Changed
+- Project description, architecture diagram, and all sections now available in English
+- Technical terminology maintained in English with clear explanations
+- Updated all headers, instructions, API endpoints table, and deployment checklist
+
+### Affected Files
+- Modified: `README.md`
+
+---
+
 ## 16.5.2 - 2026-05-03
 
 ### Summary
