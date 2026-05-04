@@ -1,5 +1,37 @@
 # Changelog
 
+## 16.6.0 - 2026-05-03
+
+### Summary
+Added comprehensive deployment guide and corrected README documentation inaccuracies identified during codebase review.
+
+### Added
+- New `DEPLOY.md` with complete shared hosting deployment instructions including:
+  - Apache `.htaccess` configuration for SPA routing
+  - Ionic Capacitor Android build and APK generation steps
+  - Backend deployment with Composer and environment setup
+  - SSL certificate configuration guide
+
+### Changed
+- Updated README.md tech stack documentation:
+  - Replaced incorrect "Laravel Sanctum" with "Laravel Passport + lcobucci/jwt"
+  - Fixed Android directory path from `cd Android` to `cd frontend/android/`
+  - Added environment variable configuration tables for backend and frontend
+  - Improved system architecture diagram with localhost references
+  - Unified SSO environment variable naming and documentation
+  - Added mail configuration variables to backend documentation
+
+### Removed
+- Eliminated non-existent API endpoints from README documentation
+- Removed duplicated content between README sections
+- Removed production-specific configuration from README (now in DEPLOY.md)
+
+### Affected Files
+- Added: `DEPLOY.md`
+- Modified: `README.md`
+
+---
+
 ## 16.5.3 - 2026-05-03
 
 ### Summary

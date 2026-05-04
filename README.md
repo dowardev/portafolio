@@ -6,23 +6,12 @@ Full-stack platform for software development professionals. Includes responsive 
 
 Access the production application at: [Production App](https://dowar.xyz)
 
----
-
-> **⚠️ IMPORTANT NOTE - PRODUCTION ENVIRONMENT**
->
-> Examples in this document use `localhost` and development domains.
-> **In production, replace all local values with your actual domains.**
->
-> See the "[Production Configuration](#production-configuration)" section below.
-
----
-
 ## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                      FRONTEND (Ionic/Vue)                        │
-│                   https://miapp.com                              │
+│                   http://localhost:8100                          │
 │                              │                                   │
 │   1. Generates DPoP key pair (RSA) on login                     │
 │   2. Sends public key to SSO Server                             │
@@ -34,19 +23,19 @@ Access the production application at: [Production App](https://dowar.xyz)
                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                     PORTAFOLIO BACKEND                            │
-│                   https://api.miapp.com                          │
+│                   http://localhost:8000                         │
 │                              │                                   │
-│   1. Validates JWT signature using JWKS from SSO               │
-│   2. Validates DPoP proof (binds token to private key)         │
+│   1. Validates JWT signature using JWKS from SSO                 │
+│   2. Validates DPoP proof (binds token to private key)           │
 │   3. Verifies jkt in token matches DPoP public key              │
 │                              │                                   │
 └──────────────────────────────┬──────────────────────────────────┘
                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                          SSO SERVER                              │
-│                   https://sso.miapp.com/api                      │
+│                   http://localhost:8001                         │
 │                              │                                   │
-│   1. Stores client public key                                   │
+│   1. Stores client public key                                    │
 │   2. Issues JWT with cnf.jkt (JWK thumbprint)                  │
 │   3. Provides JWKS at /.well-known/jwks.json                    │
 └─────────────────────────────────────────────────────────────────┘
@@ -66,7 +55,8 @@ Access the production application at: [Production App](https://dowar.xyz)
 
 ### Backend
 - Laravel 11
-- Laravel Sanctum (SSO communication)
+- Laravel Passport (OAuth2 token infrastructure)
+- lcobucci/jwt (JWT validation & DPoP proof verification)
 - SQLite (development) / MySQL (production)
 
 ### External
@@ -90,8 +80,9 @@ Access the production application at: [Production App](https://dowar.xyz)
 ```
 portafolio/
 ├── frontend/          # Ionic/Vue application (web, mobile, PWA)
-├── backend/          # Laravel API
-└── README.md         # This file
+│   └── android/       # Android project (Capacitor)
+├── backend/           # Laravel API
+└── README.md          # This file
 ```
 
 ---
@@ -115,33 +106,39 @@ The SSO Server is a **separate external service** that provides centralized auth
 
 2. **Configure environment variables**:
 
-   **Frontend** (`.env`):
-   ```env
-   VITE_SSO_URL=http://localhost:8002/api/
-   VITE_SSO_FRONTEND_URL=http://localhost:8102
-   VITE_SSO_CLIENT_ID=main-app
-   ```
+    Only the SSO-related variables are listed here. For the complete list, see the [Development Configuration](#development-configuration) section.
 
-   **Backend** (`.env`):
-   ```env
-   SSO_URL=http://localhost:8002/api
-   ```
+    **Frontend** (`.env`):
+
+    | Variable | Descripción | Ejemplo |
+    |----------|-------------|---------|
+    | `VITE_SSO_URL` | URL de la API del SSO Server | `http://localhost:8001/api` |
+    | `VITE_SSO_FRONTEND_URL` | URL del frontend web del SSO (login visual) | `http://localhost:8101` |
+    | `VITE_SSO_CLIENT_ID` | ID del cliente registrado en el SSO | `main-app` |
+
+    **Backend** (`.env`):
+
+    | Variable | Descripción | Ejemplo |
+    |----------|-------------|---------|
+    | `SSO_URL` | URL de la API del SSO Server | `http://localhost:8001/api` |
 
 3. **Register client in SSO**:
-   ```bash
-   curl -X POST http://localhost:8002/api/admin/clients \
-     -H "Authorization: Bearer {admin_token}" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "name": "Mi Portafolio",
-       "client_id": "main-app",
-       "redirect_url": "https://miapp.com/callback",
-       "active": true
-     }'
-   ```
+    ```bash
+    curl -X POST http://localhost:8001/api/admin/clients \
+      -H "Authorization: Bearer {admin_token}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Mi Portafolio",
+        "client_id": "main-app",
+        "redirect_url": "http://localhost:8100/auth/callback",
+        "active": true
+      }'
+    ```
 
 ### Complete Documentation
-For complete SSO Server details, see: `../sso/back/README.md`
+For complete SSO Server details, see the SSO Server documentation.
+
+> **Note:** The SSO Server is a separate service. Make sure it is running before starting the backend or frontend. See the [SSO Server prerequisites](#sso-server-external-service) section above.
 
 ---
 
@@ -149,7 +146,7 @@ For complete SSO Server details, see: `../sso/back/README.md`
 
 ### 1. SSO Server (First)
 
-See previous section or consult `../sso/back/README.md`.
+Make sure the SSO Server is running. For setup instructions, consult the SSO Server documentation.
 
 ### 2. Backend
 
@@ -190,56 +187,16 @@ ionic s
 
 ### Backend (.env)
 
-```env
-APP_NAME=Portafolio Backend
-APP_ENV=local
-APP_DEBUG=true
-APP_URL=http://localhost:8000
-
-DB_CONNECTION=sqlite
-
-SSO_URL=http://localhost:8002/api
-```
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `APP_URL` | URL donde corre el backend | `http://localhost:8000` |
+| `DB_CONNECTION` | Driver de base de datos (sqlite/mysql) | `sqlite` |
 
 ### Frontend (.env)
 
-```env
-VITE_API_URL=http://localhost:8000/api/
-VITE_SSO_URL=http://localhost:8002/api/
-VITE_SSO_FRONTEND_URL=http://localhost:8102
-VITE_SSO_CLIENT_ID=main-app
-```
-
----
-
-## Production Configuration
-
-> **IMPORTANT:** All `localhost` values must be replaced with your actual domain.
-
-### Required Changes
-
-| Configuration | Development | Production |
-|---------------|------------|------------|
-| **Frontend** |
-| `VITE_API_URL` | `http://localhost:8000/api/` | `https://api.miapp.com/api/` |
-| `VITE_SSO_URL` | `http://localhost:8002/api/` | `https://sso.miapp.com/api/` |
-| `VITE_SSO_FRONTEND_URL` | `http://localhost:8102` | `https://sso.miapp.com` |
-| **Backend** |
-| `APP_URL` | `http://localhost:8000` | `https://api.miapp.com` |
-| `APP_ENV` | `local` | `production` |
-| `APP_DEBUG` | `true` | `false` |
-| `DB_CONNECTION` | `sqlite` | `mysql` |
-| `SSO_URL` | `http://localhost:8002/api` | `https://sso.miapp.com/api` |
-
-### Production Build
-
-```bash
-# Frontend
-cd frontend
-ionic build --prod
-
-# Files are generated in the 'dist' directory
-```
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `VITE_API_URL` | URL del backend Laravel | `http://localhost:8000/api` |
 
 ---
 
@@ -250,53 +207,16 @@ ionic build --prod
 ```bash
 # Terminal 1: SSO Server
 cd ../sso/back
-php artisan serve --port=8002
+php artisan serve --port=8001
 
 # Terminal 2: Backend
-cd portafolio/backend
+cd backend
 php artisan serve --port=8000
 
 # Terminal 3: Frontend
-cd portafolio/frontend
+cd frontend
 ionic s
 ```
-
-### Production
-
-1. Compile frontend: `ionic build --prod`
-2. Deploy `dist/` to your web server
-3. Configure backend on server with MySQL
-4. Configure DNS and SSL
-
----
-
-## API Endpoints
-
-### Protected Endpoints (require `Authorization: Bearer {token}`)
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/user-auth` | Get authenticated user |
-| POST | `/api/new-post` | Create post (SSO user relation) |
-| GET | `/api/users` | List users (admin) |
-| POST | `/api/update-user-status` | Enable/disable user |
-| POST | `/api/admin/delete-user` | Delete user (admin) |
-| POST | `/api/admin/update-user-account` | Update account (admin) |
-
-### Public Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/posts/{date}/{filter}` | List posts |
-| GET | `/api/post-dates` | Post dates |
-| GET | `/api/post/{id}` | Get single post |
-| GET | `/api/search-posts/{search}` | Search posts |
-| POST | `/api/create-post` | Create public post |
-| POST | `/api/update-post` | Update post |
-| POST | `/api/delete-post` | Delete post |
-| POST | `/api/upload-image` | Upload image |
-| POST | `/api/contact` | Send contact form |
-| POST | `/api/feedback` | Send feedback |
 
 ---
 
@@ -305,7 +225,7 @@ ionic s
 ### Testing
 
 ```bash
-cd Android
+cd frontend/android
 ./gradlew assembleDebug
 # APK at: app/build/outputs/apk/debug/
 ```
@@ -331,23 +251,6 @@ php artisan migrate             # Run migrations
 ionic build                     # Production build
 pnpm run dev                    # Development server
 ```
-
----
-
-## Deployment Checklist
-
-- [ ] Configure domains (`miapp.com`, `api.miapp.com`, `sso.miapp.com`)
-- [ ] Obtain SSL certificates
-- [ ] Configure MySQL in production
-- [ ] Update `.env` with production URLs
-- [ ] Compile frontend production build
-- [ ] Deploy frontend to web server
-- [ ] Deploy backend to server
-- [ ] Configure security headers (CORS, CSP)
-- [ ] Test complete authentication flow
-- [ ] Configure service worker for PWA (if applicable)
-- [ ] Configure rate limiting for public endpoints
-- [ ] Configure logs and monitoring
 
 ---
 
