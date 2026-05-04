@@ -11,7 +11,7 @@ Access the production application at: [Production App](https://dowar.xyz)
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                      FRONTEND (Ionic/Vue)                        │
-│                   http://localhost:8100                          │
+│                   [direccion]:[puerto]                          │
 │                              │                                   │
 │   1. Generates DPoP key pair (RSA) on login                     │
 │   2. Sends public key to SSO Server                             │
@@ -23,7 +23,7 @@ Access the production application at: [Production App](https://dowar.xyz)
                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                     PORTAFOLIO BACKEND                            │
-│                   http://localhost:8000                         │
+│                   [direccion]:[puerto]                         │
 │                              │                                   │
 │   1. Validates JWT signature using JWKS from SSO                 │
 │   2. Validates DPoP proof (binds token to private key)           │
@@ -33,7 +33,7 @@ Access the production application at: [Production App](https://dowar.xyz)
                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                          SSO SERVER                              │
-│                   http://localhost:8001                         │
+│                   [direccion]:[puerto]                         │
 │                              │                                   │
 │   1. Stores client public key                                    │
 │   2. Issues JWT with cnf.jkt (JWK thumbprint)                  │
@@ -112,25 +112,25 @@ The SSO Server is a **separate external service** that provides centralized auth
 
     | Variable | Descripción | Ejemplo |
     |----------|-------------|---------|
-    | `VITE_SSO_URL` | URL de la API del SSO Server | `http://localhost:8001/api` |
-    | `VITE_SSO_FRONTEND_URL` | URL del frontend web del SSO (login visual) | `http://localhost:8101` |
+    | `VITE_SSO_URL` | URL de la API del SSO Server | `[direccion]:[puerto]/api` |
+    | `VITE_SSO_FRONTEND_URL` | URL del frontend web del SSO (login visual) | `[direccion]:[puerto]` |
     | `VITE_SSO_CLIENT_ID` | ID del cliente registrado en el SSO | `main-app` |
 
     **Backend** (`.env`):
 
     | Variable | Descripción | Ejemplo |
     |----------|-------------|---------|
-    | `SSO_URL` | URL de la API del SSO Server | `http://localhost:8001/api` |
+    | `SSO_URL` | URL de la API del SSO Server | `[direccion]:[puerto]/api` |
 
 3. **Register client in SSO**:
     ```bash
-    curl -X POST http://localhost:8001/api/admin/clients \
+    curl -X POST [direccion]:[puerto]/api/admin/clients \
       -H "Authorization: Bearer {admin_token}" \
       -H "Content-Type: application/json" \
       -d '{
         "name": "Mi Portafolio",
         "client_id": "main-app",
-        "redirect_url": "http://localhost:8100/auth/callback",
+        "redirect_url": "[direccion]:[puerto]/auth/callback",
         "active": true
       }'
     ```
@@ -189,14 +189,14 @@ ionic s
 
 | Variable | Descripción | Ejemplo |
 |----------|-------------|---------|
-| `APP_URL` | URL donde corre el backend | `http://localhost:8000` |
+| `APP_URL` | URL donde corre el backend | `[direccion]:[puerto]` |
 | `DB_CONNECTION` | Driver de base de datos (sqlite/mysql) | `sqlite` |
 
 ### Frontend (.env)
 
 | Variable | Descripción | Ejemplo |
 |----------|-------------|---------|
-| `VITE_API_URL` | URL del backend Laravel | `http://localhost:8000/api` |
+| `VITE_API_URL` | URL del backend Laravel | `[direccion]:[puerto]/api` |
 
 ---
 

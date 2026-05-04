@@ -1,72 +1,72 @@
-# Guía de Despliegue
+# Deployment Guide
 
-Esta guía cubre el despliegue de la aplicación Portfolio en hosting tradicional (hosting compartido, VPS o servidor dedicado).
+This guide covers deploying the Portfolio application on traditional hosting (shared hosting, VPS, or dedicated server).
 
-> **Nota:** Las instrucciones asumen que tienes tu entorno de desarrollo listo localmente. El servidor solo necesita servir los archivos compilados.
+> **Note:** These instructions assume your local development environment is ready. The server only needs to serve the compiled files.
 
 ---
 
-## 1. Requisitos Previos
+## 1. Prerequisites
 
 - PHP 8.2+
 - Composer
 - Node.js
 - Ionic CLI
-- Base de datos MySQL (proporcionada por tu hosting)
-- Dominio apuntando a tu hosting
+- MySQL database (provided by your hosting)
+- Domain pointing to your hosting
 
 ---
 
-## 2. Despliegue del Backend
+## 2. Backend Deployment
 
-### 1. Instalar Dependencias
+### 1. Install Dependencies
 
 ```bash
 cd backend
 composer install --no-dev --optimize-autoloader
 ```
 
-### 2. Configurar Entorno
+### 2. Configure Environment
 
-Crea el archivo `backend/.env` a partir del ejemplo y configúralo con los valores de producción:
+Create the `backend/.env` file from the example and configure it with production values:
 
 ```bash
 cp .env.example .env
 ```
 
-| Variable | Descripción | Ejemplo |
+| Variable | Description | Example |
 |----------|-------------|---------|
-| `APP_NAME` | Nombre de la aplicación | `Portafolio` |
-| `APP_ENV` | Entorno de ejecución | `production` |
-| `APP_DEBUG` | Modo debug (false en prod) | `false` |
-| `APP_URL` | URL del backend | `https://api.tudominio.com` |
-| `DB_CONNECTION` | Driver de base de datos | `mysql` |
-| `DB_HOST` | Host de MySQL | `[mysql_host_del_hosting]` |
-| `DB_PORT` | Puerto de MySQL | `3306` |
-| `DB_DATABASE` | Nombre de la base de datos | `[nombre_base_datos]` |
-| `DB_USERNAME` | Usuario de la base de datos | `[usuario_base_datos]` |
-| `DB_PASSWORD` | Password de la base de datos | `[password_base_datos]` |
-| `SESSION_DRIVER` | Driver de sesiones | `database` |
-| `MAIL_MAILER` | Driver de correo | `smtp` |
-| `MAIL_HOST` | Servidor SMTP | `smtp.gmail.com` |
-| `MAIL_PORT` | Puerto SMTP | `587` |
-| `MAIL_USERNAME` | Usuario SMTP | `[tu_email@example.com]` |
-| `MAIL_PASSWORD` | Password SMTP | `[tu_password]` |
-| `MAIL_ENCRYPTION` | Encriptación (tls/ssl) | `tls` |
-| `MAIL_FROM_ADDRESS` | Email del remitente | `noreply@tudominio.com` |
-| `MAIL_FROM_NAME` | Nombre del remitente | `Portafolio` |
-| `SSO_URL` | URL de la API del SSO Server | `https://sso.tudominio.com/api` |
+| `APP_NAME` | Application name | `Portfolio` |
+| `APP_ENV` | Environment | `production` |
+| `APP_DEBUG` | Debug mode (false in prod) | `false` |
+| `APP_URL` | Backend URL | `https://api.yourdomain.com` |
+| `DB_CONNECTION` | Database driver | `mysql` |
+| `DB_HOST` | MySQL host | `[mysql_host_from_provider]` |
+| `DB_PORT` | MySQL port | `3306` |
+| `DB_DATABASE` | Database name | `[database_name]` |
+| `DB_USERNAME` | Database user | `[database_user]` |
+| `DB_PASSWORD` | Database password | `[database_password]` |
+| `SESSION_DRIVER` | Session driver | `database` |
+| `MAIL_MAILER` | Mail driver | `smtp` |
+| `MAIL_HOST` | SMTP server | `smtp.gmail.com` |
+| `MAIL_PORT` | SMTP port | `587` |
+| `MAIL_USERNAME` | SMTP user | `[your_email@example.com]` |
+| `MAIL_PASSWORD` | SMTP password | `[your_password]` |
+| `MAIL_ENCRYPTION` | Encryption (tls/ssl) | `tls` |
+| `MAIL_FROM_ADDRESS` | Sender email | `noreply@yourdomain.com` |
+| `MAIL_FROM_NAME` | Sender name | `Portfolio` |
+| `SSO_URL` | SSO Server API URL | `https://sso.yourdomain.com/api` |
 
-### 3. Subir Archivos
+### 3. Upload Files
 
-Sube toda la carpeta `backend/` a tu hosting. Rutas comunes:
+Upload the entire `backend/` folder to your hosting. Common paths:
 
-- Hosting compartido: `/home/[usuario]/[carpeta_proyecto]/`
-- cPanel: `/home/[usuario]/public_html/[carpeta_proyecto]/`
+- Shared hosting: `/home/[user]/[project_folder]/`
+- cPanel: `/home/[user]/public_html/[project_folder]/`
 
-### 4. Ejecutar Migraciones
+### 4. Run Migrations
 
-Ejecuta este comando en tu hosting (vía SSH, terminal o panel del hosting):
+Run these commands on your hosting (via SSH, terminal, or hosting panel):
 
 ```bash
 php artisan migrate --force
@@ -77,40 +77,40 @@ php artisan view:cache
 
 ---
 
-## 3. Despliegue del Frontend
+## 3. Frontend Deployment
 
-### 1. Configurar Entorno
+### 1. Configure Environment
 
-Crea el archivo `frontend/.env` con los valores de producción:
+Create the `frontend/.env` file with production values:
 
-| Variable | Descripción | Ejemplo |
+| Variable | Description | Example |
 |----------|-------------|---------|
-| `VITE_API_URL` | URL del backend Laravel | `https://api.tudominio.com/api` |
-| `VITE_SSO_URL` | URL de la API del SSO Server | `https://sso.tudominio.com/api` |
-| `VITE_SSO_FRONTEND_URL` | URL del frontend web del SSO | `https://sso.tudominio.com` |
-| `VITE_SSO_CLIENT_ID` | ID del cliente registrado en el SSO | `main-app` |
+| `VITE_API_URL` | Laravel backend URL | `https://api.yourdomain.com/api` |
+| `VITE_SSO_URL` | SSO Server API URL | `https://sso.yourdomain.com/api` |
+| `VITE_SSO_FRONTEND_URL` | SSO web frontend URL | `https://sso.yourdomain.com` |
+| `VITE_SSO_CLIENT_ID` | Client ID registered in SSO | `main-app` |
 
-### 2. Compilar para Producción
+### 2. Build for Production
 
 ```bash
 cd frontend
 ionic build --prod
 ```
 
-### 3. Subir Archivos
+### 3. Upload Files
 
-Sube el contenido de `frontend/dist/` al directorio público de tu hosting:
+Upload the contents of `frontend/dist/` to your hosting public directory:
 
-- Hosting compartido: `/home/[usuario]/public_html/`
-- El `index.html` y la carpeta `assets/` deben ser directamente accesibles
+- Shared hosting: `/home/[user]/public_html/`
+- The `index.html` and `assets/` folder must be directly accessible
 
 ---
 
-## 4. Configuración del Servidor Web
+## 4. Web Server Configuration
 
 ### Apache (.htaccess)
 
-Coloca esto en tu directorio público (donde está el index.html):
+Place this in your public directory (where index.html is located):
 
 ```apache
 RewriteEngine On
@@ -127,57 +127,57 @@ location / {
 }
 ```
 
-> **Nota:** Si tu hosting usa una estructura de directorios personalizada, ajusta las rutas según corresponda. Contacta a tu proveedor de hosting para conocer las rutas correctas.
+> **Note:** If your hosting uses a custom directory structure, adjust the paths accordingly. Contact your hosting provider for the correct paths.
 
 ---
 
-## 5. Configuración SSL
+## 5. SSL Configuration
 
-Habilita HTTPS a través del panel de tu hosting (la mayoría de proveedores ofrecen certificados gratuitos de Let's Encrypt) o configura manualmente tu certificado SSL.
+Enable HTTPS through your hosting panel (most providers offer free Let's Encrypt certificates) or manually configure your SSL certificate.
 
-Después de habilitar SSL, actualiza tus archivos `.env` para usar `https://` en lugar de `http://`.
-
----
-
-## 6. Checklist de Despliegue
-
-- [ ] Archivos del backend subidos al hosting
-- [ ] Archivos del frontend subidos al directorio público
-- [ ] Base de datos configurada y migraciones ejecutadas
-- [ ] Variables de entorno configuradas para producción
-- [ ] URLs del SSO actualizadas a dominios de producción
-- [ ] SSL/HTTPS habilitado
-- [ ] Reglas de rewrite funcionando (sin 404 al navegar)
-- [ ] Probar flujo de autenticación
-- [ ] Revisar logs de la aplicación por errores
+After enabling SSL, update your `.env` files to use `https://` instead of `http://`.
 
 ---
 
-## 7. Solución de Problemas
+## 6. Deployment Checklist
 
-### 404 al refrescar página (SPA)
-
-Asegúrate de que las reglas de rewrite estén correctamente configuradas en tu `.htaccess` o configuración del servidor.
-
-### Error de conexión a la base de datos
-
-Verifica tus credenciales de base de datos en `backend/.env`. Contacta a tu proveedor de hosting para obtener el host correcto de la base de datos.
-
-### Assets no cargan
-
-Verifica que los archivos del frontend estén en el directorio público correcto y que las rutas en `index.html` sean correctas.
-
-### Autenticación SSO no funciona
-
-Verifica que `VITE_SSO_URL` y `SSO_URL` apunten al servidor SSO de producción en tus archivos `.env`.
+- [ ] Backend files uploaded to hosting
+- [ ] Frontend files uploaded to public directory
+- [ ] Database configured and migrations executed
+- [ ] Environment variables configured for production
+- [ ] SSO URLs updated to production domains
+- [ ] SSL/HTTPS enabled
+- [ ] Rewrite rules working (no 404 when navigating)
+- [ ] Test authentication flow
+- [ ] Check application logs for errors
 
 ---
 
-## 8. Resumen de Dominios
+## 7. Troubleshooting
 
-| Servicio | Desarrollo | Producción |
-|----------|------------|------------|
-| Frontend | `http://localhost:8100` | `https://tudominio.com` |
-| Backend API | `http://localhost:8000` | `https://api.tudominio.com` |
-| SSO Server | `http://localhost:8001` | `https://sso.tudominio.com` |
-| SSO Frontend | `http://localhost:8101` | `https://sso.tudominio.com` |
+### 404 when refreshing page (SPA)
+
+Make sure rewrite rules are correctly configured in your `.htaccess` or server configuration.
+
+### Database connection error
+
+Verify your database credentials in `backend/.env`. Contact your hosting provider for the correct database host.
+
+### Assets not loading
+
+Verify that frontend files are in the correct public directory and that paths in `index.html` are correct.
+
+### SSO authentication not working
+
+Verify that `VITE_SSO_URL` and `SSO_URL` point to the production SSO server in your `.env` files.
+
+---
+
+## 8. Domain Summary
+
+| Service | Development | Production |
+|---------|-------------|------------|
+| Frontend | `[direccion]:[puerto]` | `https://yourdomain.com` |
+| Backend API | `[direccion]:[puerto]` | `https://api.yourdomain.com` |
+| SSO Server | `[direccion]:[puerto]` | `https://sso.yourdomain.com` |
+| SSO Frontend | `[direccion]:[puerto]` | `https://sso.yourdomain.com` |

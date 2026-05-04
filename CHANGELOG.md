@@ -1,5 +1,21 @@
 # Changelog
 
+## 16.6.1 - 2026-05-04
+
+### Summary
+Translated deployment guide to English and replaced hardcoded localhost URLs with generic placeholders to improve documentation accessibility and environment neutrality.
+
+### Changed
+- Translated complete `DEPLOY.md` from Spanish to English
+- Replaced hardcoded `localhost` URLs in `README.md` with `[direccion]:[puerto]` placeholders
+- Updated architecture diagram, API examples, and environment configuration tables to use generic addressing
+
+### Affected Files
+- Modified: `DEPLOY.md`
+- Modified: `README.md`
+
+---
+
 ## 16.6.0 - 2026-05-03
 
 ### Summary
