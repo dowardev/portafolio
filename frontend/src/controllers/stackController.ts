@@ -1,15 +1,7 @@
 import { useStackStore } from "@/store/stackStore";
-import APIController from "./APIController";
-import ServerConfig from "./serverConfigController";
-import Cookies from "js-cookie";
 import { ToastController } from "./toastController";
-
-const userToken = Cookies.get("user-token");
-const config = new ServerConfig({
-  baseUrl: import.meta.env.VITE_API_URL,
-  accessToken: userToken ?? "",
-});
-const api = new APIController(config);
+import { getApiConnector } from "@/apiConnector";
+import type { HttpClient } from "@tu-org/sso-client";
 
 export interface StackItem {
   id?: number;
@@ -36,7 +28,7 @@ export default class StackController {
     }
     this.stackStore.setLoading(true);
     try {
-      const data = await api.get<StacksResponse>({ url: "stacks" });
+      const data = await getApiConnector().get<StacksResponse>("stacks");
       this.stackStore.setStack(data.stacks || []);
       return data.stacks || [];
     } catch (error) {
@@ -64,38 +56,35 @@ export default class StackController {
         formData.append("image", imageFile, "stack.png");
       }
 
-      await api.post<StackResponse>({
-        url: "admin/stacks",
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+        await getApiConnector().post<StackResponse>(
+          "admin/stacks",
+          formData,
+        );
 
-      await this.loadStack();
+        await this.loadStack();
 
-      const toast = await this.toastController.presentToast({
-        message: "Stack agregado correctamente",
-        duration: 2000,
-        color: "success",
-      });
-      await toast.present();
-      return true;
-    } catch (error) {
-      console.error("Error adding stack:", error);
-      const toast = await this.toastController.presentToast({
-        message: "Error al agregar el stack",
-        duration: 2000,
-        color: "danger",
-      });
-      await toast.present();
-      return false;
-    }
+        const toast = await this.toastController.presentToast({
+          message: "Stack agregado correctamente",
+          duration: 2000,
+          color: "success",
+        });
+        await toast.present();
+        return true;
+      } catch (error) {
+        console.error("Error adding stack:", error);
+        const toast = await this.toastController.presentToast({
+          message: "Error al agregar el stack",
+          duration: 2000,
+          color: "danger",
+        });
+        await toast.present();
+        return false;
+      }
   }
 
   async deleteStack(id: number): Promise<boolean> {
-    try {
-      await api.delete({
-        url: `admin/stacks/${id}`,
-      });
+      try {
+        await getApiConnector().delete(`admin/stacks/${id}`);
 
       await this.loadStack();
 
@@ -130,11 +119,10 @@ export default class StackController {
         formData.append("image", imageFile, "stack.png");
       }
 
-      await api.post<StackResponse>({
-        url: `admin/stacks/${id}`,
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+        await getApiConnector().post<StackResponse>(
+          `admin/stacks/${id}`,
+          formData,
+        );
 
       await this.loadStack();
 

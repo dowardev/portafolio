@@ -3,7 +3,7 @@ import ModalErrorReporComponent from "@/components/error/ModalErrorReporComponen
 import { modalController, toastController } from "@ionic/vue";
 import { AxiosError } from "axios";
 import { alertCircleOutline, closeOutline } from "ionicons/icons";
-import { apiConnector } from "@/main";
+import { getApiConnector } from "@/apiConnector";
 
 export default class ErrorController {
   handleError(params: { error: unknown }) {
@@ -88,10 +88,7 @@ export default class ErrorController {
   }) {
     const { message, stack, comments } = params;
     try {
-      await apiConnector.post({
-        url: `error-report`,
-        data: { message, stack, comments },
-      });
+    await getApiConnector().post("error-report", { message, stack, comments });
     } catch (error) {
       return this.handleError({ error });
     }

@@ -1,5 +1,84 @@
 # Changelog
 
+## 17.0.0 - 2026-05-05
+
+### Summary
+Delegate all authentication responsibilities to @tu-org/sso-client package. The portfolio frontend no longer manages tokens, DPoP proofs, or PKCE flows directly — all handled internally by the SSO client via its built-in HttpClient with auto-injected auth headers and transparent token refresh.
+
+### Breaking Changes
+- Removed `APIController`, `SSOAPIController`, `SSOServerConfigController`, `ServerConfig`, and `DpopService` — all replaced by `ssoClient.http` (HttpClient from @tu-org/sso-client)
+- Removed `token` from userStore and `onAuthStateChange` callback (AuthState no longer exposes tokens)
+- Removed `getAccessToken()` and `createDpopProof()` from public SSOClient API
+- Removed `refreshUserToken()` and `storeUserToken()` from userController
+- Changed `isAuthenticated` from async method to sync boolean property
+- API call signature changed: `api.get<T>({url, data})` → `api.get<T>(url, {params: data})`, `api.post<T>({url, data, contentType?})` → `api.post<T>(url, data)`, `api.delete({url})` → `api.delete(url)`
+
+### Added
+- SSOClient configured with `ssoFrontendUrl` and `apiBaseUrl` from environment variables
+- `ssoClientAccessor.ts` — lazy getter pattern to avoid TDZ circular dependency between main.ts and router
+- `apiConnector.ts` rewritten as lazy `setHttpClient()`/`getApiConnector()` accessor returning `ssoClient.http`
+- `createAuthGuard()` from @tu-org/sso-client for route protection with public routes list
+- `sso-client.d.ts` TypeScript declarations for the new SSOClient, HttpClient, and related types
+- `sso:rebuild` script in package.json to rebuild the sso-client package
+- Vite alias and optimizeDeps.exclude for @tu-org/sso-client source imports
+- @tu-org/sso-client as a file: dependency in package.json
+
+### Changed
+- `main.ts` — creates SSOClient with new config shape (ssoUrl, ssoFrontendUrl, apiBaseUrl, clientId), removed ServerConfig/APIController/DpopService instantiation, onAuthStateChange syncs user without token
+- `router/index.ts` — replaced inline PKCE code + manual auth redirect with `createAuthGuard()`, admin role check still manual after guard passes
+- `userController.ts` — delegates register/recoverPassword/resetPassword/resendEmailVerification/logout to `getSSOClient()` methods instead of manual API calls
+- 12 controllers migrated from `APIController` to `getApiConnector()` (HttpClient): stack, skillsCategories, projects, experience, certificates, freelancePlatform, freelanceComment, intro, post, contact, feedback, error
+- `userService.ts` and `systemService.ts` migrated to `getApiConnector()` HttpClient
+- `LoginPage.vue` — uses `getSSOClient().login()` instead of manual API call + token storage
+- `AuthCallbackPage.vue` — uses `getSSOClient().handleCallback()` instead of manual code exchange + PKCE + DPoP
+- `MenuComponent.vue` — uses `getSSOClient().loginWithRedirect()` and `getSSOClient().logout()`
+
+### Removed
+- `frontend/src/controllers/APIController.ts`
+- `frontend/src/controllers/SSOAPIController.ts`
+- `frontend/src/controllers/SSOServerConfigController.ts`
+- `frontend/src/controllers/serverConfigController.ts`
+- `frontend/src/services/dpopService.ts`
+- `token` ref and `updateTokenProp()` from userStore
+- Inline PKCE helper functions from router and components (generateCodeVerifier, generateCodeChallenge, base64UrlEncode)
+- Manual Cookie-based token storage (Cookies.set/remove for user-token, refresh-token)
+
+### Affected Files
+- Modified: `frontend/package.json`
+- Modified: `frontend/pnpm-lock.yaml`
+- Modified: `frontend/vite.config.ts`
+- Modified: `frontend/src/main.ts`
+- Modified: `frontend/src/router/index.ts`
+- Modified: `frontend/src/store/userStore.ts`
+- Modified: `frontend/src/controllers/userController.ts`
+- Modified: `frontend/src/controllers/stackController.ts`
+- Modified: `frontend/src/controllers/skillsCategoriesController.ts`
+- Modified: `frontend/src/controllers/projectsController.ts`
+- Modified: `frontend/src/controllers/experienceController.ts`
+- Modified: `frontend/src/controllers/certificatesController.ts`
+- Modified: `frontend/src/controllers/freelancePlatformController.ts`
+- Modified: `frontend/src/controllers/freelanceCommentController.ts`
+- Modified: `frontend/src/controllers/introController.ts`
+- Modified: `frontend/src/controllers/postController.ts`
+- Modified: `frontend/src/controllers/contactController.ts`
+- Modified: `frontend/src/controllers/feedbackController.ts`
+- Modified: `frontend/src/controllers/errorController.ts`
+- Modified: `frontend/src/services/userService.ts`
+- Modified: `frontend/src/services/systemService.ts`
+- Modified: `frontend/src/components/menu/MenuComponent.vue`
+- Modified: `frontend/src/views/session/login/LoginPage.vue`
+- Modified: `frontend/src/views/session/callback/AuthCallbackPage.vue`
+- Added: `frontend/src/ssoClientAccessor.ts`
+- Added: `frontend/src/apiConnector.ts`
+- Added: `frontend/src/types/sso-client.d.ts`
+- Deleted: `frontend/src/controllers/APIController.ts`
+- Deleted: `frontend/src/controllers/SSOAPIController.ts`
+- Deleted: `frontend/src/controllers/SSOServerConfigController.ts`
+- Deleted: `frontend/src/controllers/serverConfigController.ts`
+- Deleted: `frontend/src/services/dpopService.ts`
+
+---
+
 ## 16.6.2 - 2026-05-04
 
 ### Summary

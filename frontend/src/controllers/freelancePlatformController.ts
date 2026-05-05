@@ -1,17 +1,9 @@
 import { useFreelancePlatformStore } from "@/store/freelancePlatformStore";
 import { storeToRefs } from "pinia";
-import APIController from "./APIController";
-import ServerConfig from "./serverConfigController";
-import Cookies from "js-cookie";
 import type { FreelancePlatform } from "@/services/types";
 import { ToastController } from "./toastController";
-
-const userToken = Cookies.get("user-token");
-const config = new ServerConfig({
-  baseUrl: import.meta.env.VITE_API_URL,
-  accessToken: userToken ?? "",
-});
-const api = new APIController(config);
+import { getApiConnector } from "@/apiConnector";
+import type { HttpClient } from "@tu-org/sso-client";
 
 interface FreelancePlatformsResponse {
   freelancePlatforms: FreelancePlatform[];
@@ -28,9 +20,9 @@ export default class FreelancePlatformController {
   async loadFreelancePlatforms(): Promise<FreelancePlatform[]> {
     this.freelanceStore.setLoading(true);
     try {
-      const data = await api.get<FreelancePlatformsResponse>({
-        url: "freelance-platforms",
-      });
+      const data = await getApiConnector().get<FreelancePlatformsResponse>(
+        "freelance-platforms",
+      );
       this.freelanceStore.setFreelancePlatforms(data.freelancePlatforms || []);
       return data.freelancePlatforms || [];
     } catch (error) {
@@ -57,11 +49,10 @@ export default class FreelancePlatformController {
         formData.append("image", imageFile);
       }
 
-      await api.post<FreelancePlatformResponse>({
-        url: "admin/freelance-platforms",
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      await getApiConnector().post<FreelancePlatformResponse>(
+        "admin/freelance-platforms",
+        formData,
+      );
 
       await this.loadFreelancePlatforms();
 
@@ -95,11 +86,10 @@ export default class FreelancePlatformController {
         formData.append("image", imageFile);
       }
 
-      await api.post<FreelancePlatformResponse>({
-        url: `admin/freelance-platforms/${id}`,
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      await getApiConnector().post<FreelancePlatformResponse>(
+        `admin/freelance-platforms/${id}`,
+        formData,
+      );
 
       await this.loadFreelancePlatforms();
 
@@ -124,9 +114,7 @@ export default class FreelancePlatformController {
 
   async deleteFreelancePlatform(id: number): Promise<boolean> {
     try {
-      await api.delete({
-        url: `admin/freelance-platforms/${id}`,
-      });
+      await getApiConnector().delete(`admin/freelance-platforms/${id}`);
 
       await this.loadFreelancePlatforms();
 

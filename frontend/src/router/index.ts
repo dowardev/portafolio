@@ -30,6 +30,8 @@ import CertificatesEditor from "@/views/admin/editors/CertificatesEditor.vue";
 import FreelanceListPage from "@/views/admin/sections/FreelanceListPage.vue";
 import FreelanceEditor from "@/views/admin/editors/FreelanceEditor.vue";
 
+import { getSSOClient } from "@/ssoClientAccessor";
+import { createAuthGuard } from "@tu-org/sso-client";
 import UserController from "@/controllers/userController";
 import { ICustomError, Role } from "@/utils/interfaces";
 
@@ -53,27 +55,6 @@ function hasAdminRole(roles?: Role[]): boolean {
     (role) =>
       role.slug === "admin" || role.name.toLowerCase() === "administrador",
   );
-}
-
-function generateCodeVerifier(): string {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return base64UrlEncode(array).slice(0, 128);
-}
-
-async function generateCodeChallenge(verifier: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(verifier);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return base64UrlEncode(new Uint8Array(hash));
-}
-
-function base64UrlEncode(data: Uint8Array): string {
-  let binary = '';
-  for (let i = 0; i < data.length; i++) {
-    binary += String.fromCharCode(data[i]);
-  }
-  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 const routes: Array<RouteRecordRaw> = [
@@ -260,94 +241,77 @@ const router = createRouter({
   routes,
 });
 
+let authGuard: ReturnType<typeof createAuthGuard> | undefined;
+
+const publicRoutes = [
+  "RestorePasswordPage",
+  "PresentationPage",
+  "HomePage",
+  "HistoryPage",
+  "PortfolioPage",
+  "SkillsPage",
+  "CategoriesPage",
+  "BlogPage",
+  "PostsPage",
+  "PostPage",
+  "PoliciesPage",
+  "PruebaPage",
+  "CertificatesPage",
+  "ExperiencePage",
+  "AuthCallbackPage",
+];
+
+const adminRoutes = [
+  "CreatePostPage",
+  "UpdatePostPage",
+  "PanelAdminPage",
+  "HomeEditorPage",
+  "AdminEditorPage",
+  "ProjectsListPage",
+  "ProjectEditPage",
+  "ProjectNewPage",
+  "ExperienceListPage",
+  "ExperienceEditPage",
+  "ExperienceNewPage",
+  "SkillsCategoriesListPage",
+  "SkillsCategoriesEditPage",
+  "SkillsCategoriesNewPage",
+  "CertificatesListPage",
+  "CertificateEditPage",
+  "CertificateNewPage",
+  "FreelanceListPage",
+  "FreelanceEditPage",
+  "FreelanceEditPageOld",
+  "FreelanceNewPage",
+  "FreelanceNewPageOld",
+  "UsersPage",
+];
+
+const authorizedRoutes = ["UserPanelPage", "AuthCallbackPage"];
+
 router.beforeEach(async (to, from, next) => {
+  if (!authGuard) {
+    authGuard = createAuthGuard(getSSOClient(), {
+      publicRoutes,
+      redirectUri: `${window.location.origin}/auth/callback`,
+    });
+  }
+  await authGuard(to, from, next);
+
+  if (!getSSOClient().isAuthenticated) return;
+
   const userController = new UserController();
   await loadUser(userController);
-  const user = userController.getUser()?.user;
   const roles = userController.getUser()?.roles;
   const isAdmin = hasAdminRole(roles);
-
   const routeName = to.name as string;
-  const authorizedRoutes = ["UserPanelPage", "AuthCallbackPage"];
-  const adminRoutes = [
-    "CreatePostPage",
-    "UpdatePostPage",
-    "PanelAdminPage",
-    "HomeEditorPage",
-    "AdminEditorPage",
-    "ProjectsListPage",
-    "ProjectEditPage",
-    "ProjectNewPage",
-    "ExperienceListPage",
-    "ExperienceEditPage",
-    "ExperienceNewPage",
-    "SkillsCategoriesListPage",
-    "SkillsCategoriesEditPage",
-    "SkillsCategoriesNewPage",
-    "CertificatesListPage",
-    "CertificateEditPage",
-    "CertificateNewPage",
-    "FreelanceListPage",
-    "FreelanceEditPage",
-    "FreelanceEditPageOld",
-    "FreelanceNewPage",
-    "FreelanceNewPageOld",
-    "UsersPage",
-  ];
-  const noGuardRequired = [
-    "RestorePasswordPage",
-    "PresentationPage",
-    "HomePage",
-    "HistoryPage",
-    "PortfolioPage",
-    "SkillsPage",
-    "CategoriesPage",
-    "BlogPage",
-    "PostsPage",
-    "PostPage",
-    "PoliciesPage",
-    "PruebaPage",
-    "CertificatesPage",
-    "ExperiencePage",
-  ];
 
-  if (user != undefined) {
-    if (authorizedRoutes.includes(routeName)) {
-      return next();
-    }
-    if (adminRoutes.includes(routeName) && isAdmin) {
-      return next();
-    }
-    if (noGuardRequired.includes(routeName)) {
-      return next();
-    }
+  if (adminRoutes.includes(routeName) && !isAdmin) {
     return next({ name: "PresentationPage" });
   }
 
-  if (user == undefined) {
-    if (routeName === "AuthCallbackPage") return next();
-    if (noGuardRequired.includes(routeName)) {
-      return next();
-    } else {
-      const codeVerifier = generateCodeVerifier();
-      const codeChallenge = await generateCodeChallenge(codeVerifier);
-
-      const ssoFrontendUrl = import.meta.env.VITE_SSO_FRONTEND_URL;
-      const clientId = import.meta.env.VITE_SSO_CLIENT_ID;
-      const redirectUri = `${window.location.origin}/auth/callback`;
-      const state = crypto.randomUUID();
-      sessionStorage.setItem(`pkce_verifier_${state}`, codeVerifier);
-      const url = new URL("/auth/login", ssoFrontendUrl);
-      url.searchParams.set("client_id", clientId);
-      url.searchParams.set("redirect_uri", redirectUri);
-      url.searchParams.set("response_type", "code");
-      url.searchParams.set("state", state);
-      url.searchParams.set("code_challenge", codeChallenge);
-      url.searchParams.set("code_challenge_method", "S256");
-      url.searchParams.set("code_verifier", codeVerifier);
-      window.location.href = url.toString();
-      return next(false);
-    }
+  if (authorizedRoutes.includes(routeName)) {
+    return next();
   }
 });
 

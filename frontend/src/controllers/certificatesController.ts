@@ -2,16 +2,16 @@ import { useCertificatesStore } from "@/store/certificatesStore";
 import { storeToRefs } from "pinia";
 import type { CertificateItem } from "@/services/types";
 import { ToastController } from "./toastController";
-import APIController from "./APIController";
-import ServerConfig from "./serverConfigController";
-import Cookies from "js-cookie";
+import { getApiConnector } from "@/apiConnector";
+import type { HttpClient } from "@tu-org/sso-client";
 
-const userToken = Cookies.get("user-token");
-const config = new ServerConfig({
-  baseUrl: import.meta.env.VITE_API_URL,
-  accessToken: userToken ?? "",
-});
-const api = new APIController(config);
+interface CertificatesResponse {
+  certificates: CertificateItem[];
+}
+
+interface CertificateResponse {
+  certificate: CertificateItem;
+}
 
 export default class CertificatesController {
   certificatesStore = useCertificatesStore();
@@ -23,7 +23,7 @@ export default class CertificatesController {
     }
     this.certificatesStore.setLoading(true);
     try {
-      const data = await api.get<CertificatesResponse>({ url: "certificates" });
+      const data = await getApiConnector().get<CertificatesResponse>("certificates");
       this.certificatesStore.setCertificates(data.certificates || []);
       return data.certificates || [];
     } catch (error) {
@@ -63,11 +63,10 @@ export default class CertificatesController {
         formData.append("image", imageFile, "certificate.jpg");
       }
 
-      await api.post<CertificateResponse>({
-        url: "admin/certificates",
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      await getApiConnector().post<CertificateResponse>(
+        "admin/certificates",
+        formData,
+      );
 
       this.certificatesStore.addCertificate(certificate);
       this.certificatesStore.setCertificates([...this.certificatesStore.certificates]);
@@ -96,9 +95,7 @@ export default class CertificatesController {
       const index = this.certificatesStore.certificates.findIndex((c) => c.id === id);
       if (index === -1) return false;
 
-      await api.delete({
-        url: `admin/certificates/${id}`,
-      });
+      await getApiConnector().delete(`admin/certificates/${id}`);
 
       this.certificatesStore.deleteCertificate(index);
       this.certificatesStore.setCertificates([...this.certificatesStore.certificates]);
@@ -141,11 +138,10 @@ export default class CertificatesController {
         formData.append("image", imageFile, "certificate.jpg");
       }
 
-      await api.post<CertificateResponse>({
-        url: `admin/certificates/${id}`,
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      await getApiConnector().post<CertificateResponse>(
+        `admin/certificates/${id}`,
+        formData,
+      );
 
       this.certificatesStore.updateCertificate(index, certificate);
       this.certificatesStore.setCertificates([...this.certificatesStore.certificates]);

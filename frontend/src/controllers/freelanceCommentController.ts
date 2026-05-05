@@ -1,17 +1,9 @@
 import { useFreelanceCommentStore } from "@/store/freelanceCommentStore";
 import { storeToRefs } from "pinia";
-import APIController from "./APIController";
-import ServerConfig from "./serverConfigController";
-import Cookies from "js-cookie";
 import type { FreelanceComment } from "@/services/types";
 import { ToastController } from "./toastController";
-
-const userToken = Cookies.get("user-token");
-const config = new ServerConfig({
-  baseUrl: import.meta.env.VITE_API_URL,
-  accessToken: userToken ?? "",
-});
-const api = new APIController(config);
+import { getApiConnector } from "@/apiConnector";
+import type { HttpClient } from "@tu-org/sso-client";
 
 interface FreelanceCommentsResponse {
   freelanceComments: FreelanceComment[];
@@ -28,9 +20,9 @@ export default class FreelanceCommentController {
   async loadFreelanceComments(): Promise<FreelanceComment[]> {
     this.commentStore.setLoading(true);
     try {
-      const data = await api.get<FreelanceCommentsResponse>({
-        url: "freelance-comments",
-      });
+      const data = await getApiConnector().get<FreelanceCommentsResponse>(
+        "freelance-comments",
+      );
       this.commentStore.setFreelanceComments(data.freelanceComments || []);
       return data.freelanceComments || [];
     } catch (error) {
@@ -48,10 +40,10 @@ export default class FreelanceCommentController {
 
   async addFreelanceComment(comment: FreelanceComment): Promise<boolean> {
     try {
-      await api.post<FreelanceCommentResponse>({
-        url: "admin/freelance-comments",
-        data: comment,
-      });
+      await getApiConnector().post<FreelanceCommentResponse>(
+        "admin/freelance-comments",
+        comment,
+      );
 
       await this.loadFreelanceComments();
 
@@ -76,10 +68,10 @@ export default class FreelanceCommentController {
 
   async updateFreelanceComment(id: number, comment: FreelanceComment): Promise<boolean> {
     try {
-      await api.post<FreelanceCommentResponse>({
-        url: `admin/freelance-comments/${id}`,
-        data: comment,
-      });
+      await getApiConnector().post<FreelanceCommentResponse>(
+        `admin/freelance-comments/${id}`,
+        comment,
+      );
 
       await this.loadFreelanceComments();
 
@@ -104,9 +96,7 @@ export default class FreelanceCommentController {
 
   async deleteFreelanceComment(id: number): Promise<boolean> {
     try {
-      await api.delete({
-        url: `admin/freelance-comments/${id}`,
-      });
+      await getApiConnector().delete(`admin/freelance-comments/${id}`);
 
       await this.loadFreelanceComments();
 

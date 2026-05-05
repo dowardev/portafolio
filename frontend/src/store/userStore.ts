@@ -5,13 +5,11 @@ import { ref } from "vue";
 
 interface UserState {
   user: User;
-  token: string;
   isLogged: boolean;
 }
 
 export const useUserStore = defineStore("user", () => {
   const user = ref<undefined | User>(undefined);
-  const token = ref<string>("");
   const isLogged = ref<boolean>(false);
 
   function imageProfile() {
@@ -29,22 +27,16 @@ export const useUserStore = defineStore("user", () => {
     isLogged.value = isLoggedParam;
   }
 
-  function updateTokenProp(tokenParam: string) {
-    token.value = tokenParam;
-  }
-
   function logout() {
     user.value = undefined;
   }
 
   return {
     user,
-    token,
     isLogged,
     imageProfile,
     updateUserProps,
     updateUserLoggedProp,
-    updateTokenProp,
     logout,
   };
 });

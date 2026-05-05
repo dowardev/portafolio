@@ -145,13 +145,14 @@ import { useRouter } from "vue-router";
 // interface
 import { ICustomError } from "@/utils/interfaces";
 
+// sso client
+import { getSSOClient } from "@/ssoClientAccessor";
+
 //controllers
-import ServerConfig from "@/controllers/serverConfigController";
 import SystemController from "../../../controllers/systemController";
 import UserController from "@/controllers/userController";
 import ErrorController from "@/controllers/errorController";
 import { ToastController } from "@/controllers/toastController";
-const serverConfig = new ServerConfig();
 const systemController = new SystemController();
 const userController = new UserController();
 const errorController = new ErrorController();
@@ -215,23 +216,16 @@ async function login(params: { email: string; password: string }) {
   const { email, password } = params;
   spinners.value.buttonLogin = true;
 
-  const user = email.trim();
-
   try {
-    const response = await userController.login({
-      user,
+    await getSSOClient().login({
+      email: email.trim(),
       password,
     });
 
-    if (response) {
-      const token = response.token;
-      const tokenType = response.token_type;
-      userController.storeUserToken({ token, tokenType });
-      spinners.value.buttonLogin = false;
-      clearInputs();
-      await userController.loadUser();
-      await router.push("/");
-    }
+    spinners.value.buttonLogin = false;
+    clearInputs();
+    await userController.loadUser();
+    await router.push("/");
   } catch (e: unknown) {
     if (typeof e === "object" && e !== null && "errorDetail" in e) {
       const customError = e as ICustomError;

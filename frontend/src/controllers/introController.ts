@@ -1,17 +1,9 @@
 import { useIntroStore } from "@/store/introStore";
 import { storeToRefs } from "pinia";
-import APIController from "./APIController";
-import ServerConfig from "./serverConfigController";
-import Cookies from "js-cookie";
-import { ToastController } from "./toastController";
 import type { TagItem } from "@/services/types";
-
-const userToken = Cookies.get("user-token");
-const config = new ServerConfig({
-  baseUrl: import.meta.env.VITE_API_URL,
-  accessToken: userToken ?? "",
-});
-const api = new APIController(config);
+import { ToastController } from "./toastController";
+import { getApiConnector } from "@/apiConnector";
+import type { HttpClient } from "@tu-org/sso-client";
 
 export interface IntroData {
   name: string | null;
@@ -33,7 +25,7 @@ export default class IntroController {
   async loadIntro(): Promise<IntroData> {
     this.introStore.setLoading(true);
     try {
-      const data = await api.get<IntroData>({ url: "get-intro" });
+      const data = await getApiConnector().get<IntroData>("get-intro");
       this.introStore.setData(data);
       return data;
     } catch (error) {
@@ -67,11 +59,10 @@ export default class IntroController {
         });
       }
 
-      const data = await api.post<IntroData>({
-        url: "admin/update-intro",
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      const data = await getApiConnector().post<IntroData>(
+        "admin/update-intro",
+        formData,
+      );
 
       this.introStore.setData(data);
 

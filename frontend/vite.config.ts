@@ -42,11 +42,15 @@ export default defineConfig({
     }),
     legacy(),
   ],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
+ resolve: {
+ alias: {
+ "@": path.resolve(__dirname, "./src"),
+ "@tu-org/sso-client": path.resolve(__dirname, "../../sso-client/packages/sso-client/src/index.ts"),
+ },
+ },
+ optimizeDeps: {
+ exclude: ["@tu-org/sso-client"],
+ },
   test: {
     globals: true,
     environment: "jsdom",

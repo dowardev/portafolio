@@ -2,16 +2,8 @@ import { useExperienceStore } from "@/store/experienceStore";
 import { storeToRefs } from "pinia";
 import type { ExperienceItem, TechnologyItem } from "@/services/types";
 import { ToastController } from "./toastController";
-import APIController from "./APIController";
-import ServerConfig from "./serverConfigController";
-import Cookies from "js-cookie";
-
-const userToken = Cookies.get("user-token");
-const config = new ServerConfig({
-  baseUrl: import.meta.env.VITE_API_URL,
-  accessToken: userToken ?? "",
-});
-const api = new APIController(config);
+import { getApiConnector } from "@/apiConnector";
+import type { HttpClient } from "@tu-org/sso-client";
 
 interface ExperienceApiResponse {
   id: string;
@@ -49,7 +41,7 @@ export default class ExperienceController {
     }
     this.experienceStore.setLoading(true);
     try {
-      const data = await api.get<ExperiencesResponse>({ url: "experiences" });
+      const data = await getApiConnector().get<ExperiencesResponse>("experiences");
       const experiences: ExperienceItem[] = (data.experiences || []).map(exp => ({
         id: exp.id,
         img: exp.img,
@@ -107,11 +99,10 @@ export default class ExperienceController {
         formData.append("image", imageFile, "experience.jpg");
       }
 
-      await api.post<ExperienceResponse>({
-        url: "admin/experiences",
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      await getApiConnector().post<ExperienceResponse>(
+        "admin/experiences",
+        formData,
+      );
 
       this.experienceStore.addExperience(experience);
       this.experienceStore.setExperiences([...this.experienceStore.experiences]);
@@ -140,9 +131,7 @@ export default class ExperienceController {
       const index = this.experienceStore.experiences.findIndex((e) => e.id === id);
       if (index === -1) return false;
 
-      await api.delete({
-        url: `admin/experiences/${id}`,
-      });
+      await getApiConnector().delete(`admin/experiences/${id}`);
 
       this.experienceStore.deleteExperience(index);
       this.experienceStore.setExperiences([...this.experienceStore.experiences]);
@@ -191,11 +180,10 @@ export default class ExperienceController {
         formData.append("image", imageFile, "experience.jpg");
       }
 
-      await api.post<ExperienceResponse>({
-        url: `admin/experiences/${id}`,
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      await getApiConnector().post<ExperienceResponse>(
+        `admin/experiences/${id}`,
+        formData,
+      );
 
       this.experienceStore.updateExperience(index, experience);
       this.experienceStore.setExperiences([...this.experienceStore.experiences]);

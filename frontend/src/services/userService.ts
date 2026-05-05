@@ -1,7 +1,7 @@
 import { Storage } from "@ionic/storage";
 const store = new Storage();
 store.create();
-import { apiConnector } from "@/main";
+import { getApiConnector } from "@/apiConnector";
 
 import {
   User,
@@ -10,9 +10,7 @@ import {
 
 export default class UserService {
   async getUser(): Promise<User | undefined> {
-    const response = (await apiConnector.get({
-      url: `user-auth`,
-    })) as UserServerResponse;
+    const response = await getApiConnector().get<UserServerResponse>("user-auth");
 
     if (response) return this.formatUserResponse({ response });
     else return undefined;

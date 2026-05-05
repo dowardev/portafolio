@@ -22,21 +22,10 @@ import "@ionic/vue/css/text-transformation.css";
 import "@ionic/vue/css/flex-utils.css";
 import "@ionic/vue/css/display.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import '@ionic/vue/css/palettes/dark.always.css'; */
-/* @import '@ionic/vue/css/palettes/dark.class.css'; */
-// import "@ionic/vue/css/palettes/dark.system.css";
-
 /* Theme variables */
 import "./theme/variables.css";
 
-// pinia
+// pinia - propio del portafolio
 import { createPinia } from "pinia";
 const pinia = createPinia();
 
@@ -45,50 +34,27 @@ import { Storage } from "@ionic/storage";
 const storage = new Storage();
 export const storageInstance = await initStorage();
 
-// DPoP service
-import DpopService from "@/services/dpopService";
-const dpopService = new DpopService();
-await dpopService.initialize();
-
-// server config - API principal
-import ServerConfig from "@/controllers/serverConfigController";
-const userToken = Cookies.get("user-token");
-export const serverConfigController = new ServerConfig({
-  baseUrl: import.meta.env.VITE_API_URL,
-  accessToken: userToken ?? "",
+// SSO Client - caja negra, el portafolio no gestiona tokens ni estado SSO
+import { SSOClient } from "@tu-org/sso-client";
+const ssoClient = new SSOClient({
+  ssoUrl: import.meta.env.VITE_SSO_URL,
+  ssoFrontendUrl: import.meta.env.VITE_SSO_FRONTEND_URL,
+  clientId: import.meta.env.VITE_SSO_CLIENT_ID,
+  apiBaseUrl: import.meta.env.VITE_API_URL,
 });
+await ssoClient.init();
+export { ssoClient };
 
-// server config - SSO
-import SSOServerConfig from "@/controllers/SSOServerConfigController";
-export const ssoServerConfig = new SSOServerConfig({
-  baseUrl: import.meta.env.VITE_SSO_URL,
-  accessToken: userToken ?? "",
-});
+import { setHttpClient } from "@/apiConnector";
+import { setSSOClient } from "@/ssoClientAccessor";
+setHttpClient(ssoClient.http);
+setSSOClient(ssoClient);
 
-// api connector
-import APIController from "@/controllers/APIController";
-const api = new APIController(serverConfigController, dpopService);
-export const apiConnector = api;
-
-import SSOAPIController from "@/controllers/SSOAPIController";
-const ssoApi = new SSOAPIController(ssoServerConfig, dpopService);
-export const ssoApiConnector = ssoApi;
-
-// user auth
-// import Cookies from "js-cookie";
-// import AuthController from "@/controllers/authController";
-// const token = Cookies.get("user-token");
-// const refreshToken = Cookies.get("user-refresh-token");
-// export const auth = new AuthController(
-//   token,
-//   refreshToken,
-//   import.meta.env.VITE_API_URL,
-//   api,
-// );
+// Sincronizar estado SSO con la store local del portafolio
+import { useUserStore } from "@/store/userStore";
 
 // service worker
 import { Workbox } from "workbox-window";
-import Cookies from "js-cookie";
 let wb: Workbox | null = null;
 if ("serviceWorker" in navigator) {
   wb = new Workbox("/sw.js");
@@ -96,10 +62,19 @@ if ("serviceWorker" in navigator) {
 }
 export { wb };
 
-export { dpopService };
-
 const app = createApp(App).use(IonicVue).use(pinia).use(router);
 app.directive("tooltip", vTooltip);
+
+ssoClient.onAuthStateChange((state) => {
+  const userStore = useUserStore();
+  if (state.isAuthenticated && state.user) {
+    userStore.updateUserProps(state.user);
+    userStore.updateUserLoggedProp(true);
+  } else {
+    userStore.logout();
+    userStore.updateUserLoggedProp(false);
+  }
+});
 
 router.isReady().then(() => {
   app.mount("#app");

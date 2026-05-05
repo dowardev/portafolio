@@ -1,7 +1,6 @@
 import { ContactMessage } from "../utils/interfaces";
-import { apiConnector } from "@/main";
+import { getApiConnector } from "@/apiConnector";
 
-// controllers
 import ErrorController from "./errorController";
 
 export default class ContactController {
@@ -11,10 +10,7 @@ export default class ContactController {
     const { name, subject, email, description } = params;
 
     try {
-      await apiConnector.post({
-        url: `contact/`,
-        data: { name, subject, email, description },
-      });
+      await getApiConnector().post("contact/", { name, subject, email, description });
     } catch (error) {
       return this.errorController.handleError({ error });
     }

@@ -2,16 +2,8 @@ import { useProjectsStore } from "@/store/projectsStore";
 import { storeToRefs } from "pinia";
 import type { ProjectItem, TechnologyItem } from "@/services/types";
 import { ToastController } from "./toastController";
-import APIController from "./APIController";
-import ServerConfig from "./serverConfigController";
-import Cookies from "js-cookie";
-
-const userToken = Cookies.get("user-token");
-const config = new ServerConfig({
-  baseUrl: import.meta.env.VITE_API_URL,
-  accessToken: userToken ?? "",
-});
-const api = new APIController(config);
+import { getApiConnector } from "@/apiConnector";
+import type { HttpClient } from "@tu-org/sso-client";
 
 interface ProjectApiResponse {
   id: string;
@@ -56,7 +48,7 @@ export default class ProjectsController {
     }
     this.projectsStore.setLoading(true);
     try {
-      const data = await api.get<ProjectsResponse>({ url: "projects" });
+      const data = await getApiConnector().get<ProjectsResponse>("projects");
       const projects: ProjectItem[] = (data.projects || []).map(project => ({
         id: project.id,
         img: project.img,
@@ -134,11 +126,10 @@ export default class ProjectsController {
         }
       }
 
-      await api.post<ProjectItemResponse>({
-        url: "admin/projects",
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      await getApiConnector().post<ProjectItemResponse>(
+        "admin/projects",
+        formData,
+      );
 
       this.projectsStore.addProject(project);
       this.projectsStore.setProjects([...this.projectsStore.projects]);
@@ -167,9 +158,7 @@ export default class ProjectsController {
       const index = this.projectsStore.projects.findIndex((p) => p.id === id);
       if (index === -1) return false;
 
-      await api.delete({
-        url: `admin/projects/${id}`,
-      });
+      await getApiConnector().delete(`admin/projects/${id}`);
 
       this.projectsStore.deleteProject(index);
       this.projectsStore.setProjects([...this.projectsStore.projects]);
@@ -233,11 +222,10 @@ export default class ProjectsController {
         }
       }
 
-      await api.post<ProjectItemResponse>({
-        url: `admin/projects/${id}`,
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      await getApiConnector().post<ProjectItemResponse>(
+        `admin/projects/${id}`,
+        formData,
+      );
 
       this.projectsStore.updateProject(index, project);
       this.projectsStore.setProjects([...this.projectsStore.projects]);

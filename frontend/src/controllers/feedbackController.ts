@@ -1,7 +1,6 @@
 import { FeedbackParams } from "../services/interfaces";
-import { apiConnector } from "@/main";
+import { getApiConnector } from "@/apiConnector";
 
-// controllers
 import ErrorController from "./errorController";
 
 export default class FeedbackController {
@@ -11,10 +10,7 @@ export default class FeedbackController {
     const { userId, name, email, description, contactMe } = params;
 
     try {
-      await apiConnector.post({
-        url: `feedback/`,
-        data: { userId, name, email, description, contactMe },
-      });
+      await getApiConnector().post("feedback/", { userId, name, email, description, contactMe });
     } catch (error) {
       return this.errorController.handleError({ error });
     }

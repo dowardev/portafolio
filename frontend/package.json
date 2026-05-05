@@ -1,16 +1,17 @@
 {
   "name": "dowar-blog",
   "private": true,
-  "version": "16.6.2",
+  "version": "17.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview",
-    "test:e2e": "cypress run",
-    "test:unit": "vitest",
-    "lint": "eslint ."
-  },
+"scripts": {
+"dev": "vite",
+"build": "vue-tsc && vite build",
+"preview": "vite preview",
+"test:e2e": "cypress run",
+"test:unit": "vitest",
+"lint": "eslint .",
+"sso:rebuild": "cd ../../sso-client/packages/sso-client && pnpm run build"
+},
   "dependencies": {
     "@capacitor/android": "^7.0.0",
     "@capacitor/app": "7.0.0",
@@ -33,6 +34,7 @@
     "ionic-extra-components": "^0.12.3",
     "ionicons": "^7.4.0",
     "js-cookie": "^3.0.5",
+    "@tu-org/sso-client": "file:../../sso-client/packages/sso-client",
     "mitt": "^3.0.1",
     "pinia": "^2.3.1",
     "swiper": "^11.2.2",

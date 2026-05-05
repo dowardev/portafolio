@@ -8,7 +8,8 @@ import { usePostStore } from "../store/postStore";
 import { storeToRefs } from "pinia";
 import { Post, UpdatePost } from "../utils/interfaces";
 import { filterPostOptions, PostFields } from "@/services/types";
-import { apiConnector } from "@/main";
+import { getApiConnector } from "@/apiConnector";
+import type { HttpClient } from "@tu-org/sso-client";
 
 // controllers
 import ErrorController from "./errorController";
@@ -28,10 +29,10 @@ export default class PostController {
   }) {
     const { date, filter, fields } = params;
     try {
-      const serverResponse = await apiConnector.get({
-        url: `posts/${date}/${filter}`,
-        data: { fields },
-      });
+      const serverResponse = await getApiConnector().get(
+        `posts/${date}/${filter}`,
+        { params: { fields } },
+      );
       const responseData = serverResponse as { posts: PostServerResponse[] };
 
       const posts = await Promise.all(
@@ -50,10 +51,10 @@ export default class PostController {
     const { status } = params;
 
     try {
-      const dates = await apiConnector.get({
-        url: `post-dates`,
-        data: { status },
-      });
+      const dates = await getApiConnector().get(
+        "post-dates",
+        { params: { status } },
+      );
 
       this.postStore.updateDates({ dates });
     } catch (error: unknown) {
@@ -65,10 +66,10 @@ export default class PostController {
     const { id, fields } = params;
 
     try {
-      const serverResponse = (await apiConnector.get({
-        url: `post/${id}`,
-        data: { fields },
-      })) as PostServerResponse;
+      const serverResponse = await getApiConnector().get<PostServerResponse>(
+        `post/${id}`,
+        { params: { fields } },
+      );
       const post = this.formatPostResponse({ response: serverResponse.post });
 
       this.postStore.addPost({ post });
@@ -114,7 +115,7 @@ export default class PostController {
     const id = params.id;
 
     try {
-      await apiConnector.post({ url: `delete-post`, data: { id } });
+      await getApiConnector().post("delete-post", { id });
     } catch (error) {
       return this.errorController.handleError({ error });
     }
@@ -142,9 +143,7 @@ export default class PostController {
       params.post;
 
     try {
-      await apiConnector.post({
-        url: `update-post`,
-        data: {
+      await getApiConnector().post("update-post", {
           images,
           coverId,
           content,
@@ -152,8 +151,7 @@ export default class PostController {
           id,
           imagesRemoved,
           status,
-        },
-      });
+        });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -168,11 +166,9 @@ export default class PostController {
       formData.append("file", image);
       formData.append("type", "post");
 
-      const serverResponse = await apiConnector.post({
-        url: `upload-image`,
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      const serverResponse = await getApiConnector().post<{
+        data: { image: { id: string; path: string; name: string } };
+      }>("upload-image", formData);
 
       const id = serverResponse.data.image.id;
       const path = serverResponse.data.image.url;
@@ -188,10 +184,7 @@ export default class PostController {
     try {
       const { title, content, coverId, images, status } = params;
 
-      await apiConnector.post({
-        url: `create-post`,
-        data: { title, content, coverId, images, status },
-      });
+      await getApiConnector().post("create-post", { title, content, coverId, images, status });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -207,11 +200,9 @@ export default class PostController {
       formData.append("file", image);
       formData.append("type", type);
 
-      const serverResponse = await apiConnector.post({
-        url: `upload-image`,
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      const serverResponse = await getApiConnector().post<{
+        data: { image: { id: string; url: string } };
+      }>("upload-image", formData);
 
       const id = serverResponse.data.image.id;
       const url = serverResponse.data.image.url;

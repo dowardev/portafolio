@@ -1,4 +1,4 @@
-import { apiConnector } from "../main";
+import { getApiConnector } from "@/apiConnector";
 import { storageInstance } from "@/main";
 import Cookies from "js-cookie";
 
@@ -146,10 +146,9 @@ export default class SystemService {
     formData.append("file", image);
     formData.append("type", type);
 
-    const response = await apiConnector.post({
-      url: `upload-image`,
-      data: formData,
-    });
+    const response = await getApiConnector().post<{
+      image: { id: string; path: string; name: string };
+    }>("upload-image", formData);
 
     return response.image;
   }
@@ -170,10 +169,10 @@ export default class SystemService {
   async getImageURL(params: { name: string }): Promise<{ url: string }> {
     const { name } = params;
 
-    const { url } = await apiConnector.get({
-      url: `get-image`,
-      data: { name },
-    });
+    const { url } = await getApiConnector().get<{ url: string }>(
+      "get-image",
+      { params: { name } }
+    );
 
     return {
       url,

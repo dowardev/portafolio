@@ -1,17 +1,9 @@
 import { useSkillsCategoriesStore } from "@/store/skillsCategoriesStore";
 import type { SkillsCategoryItem } from "@/store/skillsCategoriesStore";
-import { ToastController } from "./toastController";
-import APIController from "./APIController";
-import ServerConfig from "./serverConfigController";
-import Cookies from "js-cookie";
 import { storeToRefs } from "pinia";
-
-const userToken = Cookies.get("user-token");
-const config = new ServerConfig({
-  baseUrl: import.meta.env.VITE_API_URL,
-  accessToken: userToken ?? "",
-});
-const api = new APIController(config);
+import { ToastController } from "./toastController";
+import { getApiConnector } from "@/apiConnector";
+import type { HttpClient } from "@tu-org/sso-client";
 
 interface SkillsCategoriesResponse {
   skillsCategories: SkillsCategoryItem[];
@@ -31,7 +23,7 @@ export default class SkillsCategoriesController {
     }
     this.skillsCategoriesStore.setLoading(true);
     try {
-      const data = await api.get<SkillsCategoriesResponse>({ url: "skills-categories" });
+      const data = await getApiConnector().get<SkillsCategoriesResponse>("skills-categories");
       this.skillsCategoriesStore.setSkillsCategories(data.skillsCategories || []);
       return data.skillsCategories || [];
     } catch (error) {
@@ -47,7 +39,7 @@ export default class SkillsCategoriesController {
     this.skillsCategoriesStore.setLoading(true);
     this.skillsCategoriesStore.resetSkillsCategories();
     try {
-      const data = await api.get<SkillsCategoriesResponse>({ url: "skills-categories" });
+      const data = await getApiConnector().get<SkillsCategoriesResponse>("skills-categories");
       this.skillsCategoriesStore.setSkillsCategories(data.skillsCategories || []);
       return data.skillsCategories || [];
     } catch (error) {
@@ -78,11 +70,10 @@ export default class SkillsCategoriesController {
         formData.append("technologies", JSON.stringify(skillsCategory.technologies));
       }
 
-      await api.post<SkillsCategoryResponse>({
-        url: "admin/skills-categories",
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      await getApiConnector().post<SkillsCategoryResponse>(
+        "admin/skills-categories",
+        formData,
+      );
 
       await this.loadSkillsCategories();
 
@@ -107,9 +98,7 @@ export default class SkillsCategoriesController {
 
 async deleteSkillsCategory(id: number): Promise<boolean> {
 try {
-await api.delete({
-url: `admin/skills-categories/${id}`,
-});
+      await getApiConnector().delete(`admin/skills-categories/${id}`);
 
 await this.reloadSkillsCategories();
 
@@ -143,11 +132,10 @@ await this.reloadSkillsCategories();
         formData.append("technologies", JSON.stringify(skillsCategory.technologies));
       }
 
-      await api.post<SkillsCategoryResponse>({
-        url: `admin/skills-categories/${id}`,
-        data: formData,
-        contentType: "multipart/form-data",
-      });
+      await getApiConnector().post<SkillsCategoryResponse>(
+        `admin/skills-categories/${id}`,
+        formData,
+      );
 
       await this.loadSkillsCategories();
 

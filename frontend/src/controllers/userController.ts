@@ -4,8 +4,7 @@ import {
   ICustomError,
   User,
 } from "../utils/interfaces";
-import Cookies from "js-cookie";
-import { ssoApiConnector, serverConfigController, dpopService } from "@/main";
+import { getSSOClient } from "@/ssoClientAccessor";
 
 import ErrorController from "./errorController";
 
@@ -44,24 +43,12 @@ export default class UserController {
   }): Promise<void> {
     try {
       const { name, user, password, email, password_confirmation } = params;
-
-      const dpopPublicKey = dpopService.getPublicKeyJwk();
-      const data: Record<string, unknown> = {
+      await getSSOClient().register({
         name,
         user,
         password,
         email,
         password_confirmation,
-        client_id: import.meta.env.VITE_SSO_CLIENT_ID,
-      };
-
-      if (dpopPublicKey) {
-        data.dpop_public_key = JSON.stringify(dpopPublicKey);
-      }
-
-      await ssoApiConnector.post({
-        url: `register`,
-        data,
       });
     } catch (error) {
       return this.errorController.handleError({ error });
@@ -109,10 +96,8 @@ export default class UserController {
   }
 
   async recoverPassword(params: { email: string }) {
-    const { email } = params;
-
     try {
-      await ssoApiConnector.post({ url: `recover-password`, data: { email } });
+      await getSSOClient().recoverPassword(params);
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -123,50 +108,16 @@ export default class UserController {
     code: number;
     password: string;
   }) {
-    const { code, password, email } = params;
-
     try {
-      await ssoApiConnector.post({
-        url: `reset-password`,
-        data: { email, code, password },
-      });
+      await getSSOClient().resetPassword(params);
     } catch (error) {
       return this.errorController.handleError({ error });
     }
-  }
-
-  async refreshUserToken(params: { refreshToken: string }) {
-    try {
-      const { refreshToken } = params;
-      await ssoApiConnector.post({
-        url: `refresh-token`,
-        data: { refreshToken },
-      });
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  storeUserToken(params: { token: string; tokenType?: string }) {
-    const { token, tokenType } = params;
-    serverConfigController.setAuthTokens({ accessToken: token, tokenType });
-  }
-
-  storeRefreshToken(params: { refreshToken: string }) {
-    const { refreshToken } = params;
-    Cookies.set("refresh-token", refreshToken, {
-      secure: true,
-      sameSite: "Strict",
-    });
   }
 
   async resendEmailVerification(params: { email: string }) {
-    const { email } = params;
     try {
-      await ssoApiConnector.post({
-        url: `resend-confirmation-email`,
-        data: { email },
-      });
+      await getSSOClient().resendEmailVerification(params.email);
     } catch (e: unknown) {
       if (typeof e === "object" && e !== null && "errorDetail" in e) {
         const customError = e as ICustomError;
@@ -178,7 +129,7 @@ export default class UserController {
   }
 
   async logout() {
-    await dpopService.clearKeys();
+    await getSSOClient().logout();
     this.userStore.logout();
   }
 }
