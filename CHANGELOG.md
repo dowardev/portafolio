@@ -1,5 +1,24 @@
 # Changelog
 
+## 16.6.2 - 2026-05-04
+
+### Summary
+Fixed PKCE authentication flow implementation with security improvements and URL corrections.
+
+### Fixed
+- Improved PKCE security by using state-specific sessionStorage keys (`pkce_verifier_${state}`) instead of global key (`pkce_code_verifier`)
+- Added `code_verifier` parameter to SSO redirect URL for proper PKCE flow completion
+- Fixed AuthCallbackPage to retrieve code verifier using state parameter from callback
+- Updated redirect URL from `/login` to `/auth/login` for SSO endpoint consistency
+- Refactored token exchange to include code_verifier only when available
+
+### Affected Files
+- Modified: `frontend/src/components/menu/MenuComponent.vue`
+- Modified: `frontend/src/router/index.ts`
+- Modified: `frontend/src/views/session/callback/AuthCallbackPage.vue`
+
+---
+
 ## 16.6.1 - 2026-05-04
 
 ### Summary

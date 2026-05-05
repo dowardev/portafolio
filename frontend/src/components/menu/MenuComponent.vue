@@ -463,16 +463,45 @@ function openRoute(params: { route?: string; name?: string }) {
   menuController.close();
 }
 
-function redirectToSSO(page: 'login' | 'register') {
+function generateCodeVerifier(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return base64UrlEncode(array).slice(0, 128);
+}
+
+async function generateCodeChallenge(verifier: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(verifier);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return base64UrlEncode(new Uint8Array(hash));
+}
+
+function base64UrlEncode(data: Uint8Array): string {
+  let binary = '';
+  for (let i = 0; i < data.length; i++) {
+    binary += String.fromCharCode(data[i]);
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function redirectToSSO(page: 'login' | 'register') {
   const ssoFrontendUrl = import.meta.env.VITE_SSO_FRONTEND_URL;
   const clientId = import.meta.env.VITE_SSO_CLIENT_ID;
   const redirectUri = `${window.location.origin}/auth/callback`;
   const state = crypto.randomUUID();
+  const codeVerifier = generateCodeVerifier();
+  const codeChallenge = await generateCodeChallenge(codeVerifier);
+  
+  sessionStorage.setItem(`pkce_verifier_${state}`, codeVerifier);
+  
   const url = new URL(`/auth/${page}`, ssoFrontendUrl);
   url.searchParams.set('client_id', clientId);
   url.searchParams.set('redirect_uri', redirectUri);
   url.searchParams.set('response_type', 'code');
   url.searchParams.set('state', state);
+  url.searchParams.set('code_challenge', codeChallenge);
+  url.searchParams.set('code_challenge_method', 'S256');
+  url.searchParams.set('code_verifier', codeVerifier);
   window.location.href = url.toString();
 }
 

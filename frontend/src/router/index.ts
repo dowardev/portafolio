@@ -331,12 +331,12 @@ router.beforeEach(async (to, from, next) => {
     } else {
       const codeVerifier = generateCodeVerifier();
       const codeChallenge = await generateCodeChallenge(codeVerifier);
-      sessionStorage.setItem('pkce_code_verifier', codeVerifier);
 
       const ssoFrontendUrl = import.meta.env.VITE_SSO_FRONTEND_URL;
       const clientId = import.meta.env.VITE_SSO_CLIENT_ID;
       const redirectUri = `${window.location.origin}/auth/callback`;
       const state = crypto.randomUUID();
+      sessionStorage.setItem(`pkce_verifier_${state}`, codeVerifier);
       const url = new URL("/auth/login", ssoFrontendUrl);
       url.searchParams.set("client_id", clientId);
       url.searchParams.set("redirect_uri", redirectUri);
@@ -344,6 +344,7 @@ router.beforeEach(async (to, from, next) => {
       url.searchParams.set("state", state);
       url.searchParams.set("code_challenge", codeChallenge);
       url.searchParams.set("code_challenge_method", "S256");
+      url.searchParams.set("code_verifier", codeVerifier);
       window.location.href = url.toString();
       return next(false);
     }

@@ -59,29 +59,30 @@ onMounted(async () => {
   }
 
   try {
-    await exchangeCodeForToken(code);
+    await exchangeCodeForToken(code, state as string);
   } catch (e: any) {
     error.value = e?.message || "Error en la autenticación";
     loading.value = false;
   }
 });
 
-async function exchangeCodeForToken(code: string) {
+async function exchangeCodeForToken(code: string, stateParam: string) {
   const dpopPublicKey = dpopService.getPublicKeyJwk();
-  const codeVerifier = sessionStorage.getItem('pkce_code_verifier');
+  const codeVerifier = stateParam ? sessionStorage.getItem(`pkce_verifier_${stateParam}`) : null;
 
   const data: Record<string, unknown> = {
     code,
     client_id: import.meta.env.VITE_SSO_CLIENT_ID,
     redirect_uri: `${window.location.origin}/auth/callback`,
-    code_verifier: codeVerifier,
   };
+
+  if (codeVerifier) {
+    data.code_verifier = codeVerifier;
+  }
 
   if (dpopPublicKey) {
     data.dpop_public_key = JSON.stringify(dpopPublicKey);
   }
-
-  sessionStorage.removeItem('pkce_code_verifier');
 
   const response = await ssoApiConnector.post<{
     token: string;
@@ -100,6 +101,10 @@ async function exchangeCodeForToken(code: string) {
 
   userController.storeUserToken({ token, tokenType });
   
+  if (stateParam) {
+    sessionStorage.removeItem(`pkce_verifier_${stateParam}`);
+  }
+  
   console.log("Token stored, loading user...");
 
   await userController.loadUser();
@@ -112,19 +117,19 @@ async function exchangeCodeForToken(code: string) {
 async function redirectToSSO() {
   const codeVerifier = generateCodeVerifier();
   const codeChallenge = await generateCodeChallenge(codeVerifier);
-  sessionStorage.setItem('pkce_code_verifier', codeVerifier);
 
   const ssoFrontendUrl = import.meta.env.VITE_SSO_FRONTEND_URL;
   const clientId = import.meta.env.VITE_SSO_CLIENT_ID;
   const redirectUri = `${window.location.origin}/auth/callback`;
   const state = crypto.randomUUID();
-  const url = new URL("/login", ssoFrontendUrl);
+  const url = new URL("/auth/login", ssoFrontendUrl);
   url.searchParams.set("client_id", clientId);
   url.searchParams.set("redirect_uri", redirectUri);
   url.searchParams.set("response_type", "code");
   url.searchParams.set("state", state);
   url.searchParams.set("code_challenge", codeChallenge);
   url.searchParams.set("code_challenge_method", "S256");
+  url.searchParams.set("code_verifier", codeVerifier);
   window.location.href = url.toString();
 }
 </script>
