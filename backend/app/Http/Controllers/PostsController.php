@@ -8,11 +8,11 @@ use App\Models\PostImage;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\SystemController;
 use Illuminate\Support\Facades\Validator;
+use TuOrg\SsoServer\Facades\SsoAuth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Log;
 
@@ -243,16 +243,16 @@ class PostsController extends Controller
     }
   }
 
-  public function createPost(Request $request)
-  {
-    if (Auth::guard("api")->user()->is_admin == false) {
-      return response()->json(
-        [
-          "message" => "Unauthorized",
-        ],
-        200
-      );
-    }
+    public function createPost(Request $request)
+    {
+        if (!SsoAuth::hasRole('admin')) {
+            return response()->json(
+                [
+                    "message" => "Unauthorized",
+                ],
+                403
+            );
+        }
 
     $title = $request->title;
     $content = $request->content;

@@ -14,8 +14,6 @@ use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\StackController;
 use App\Http\Controllers\Admin\SkillsCategoryController;
 use App\Http\Middleware\Cors;
-use App\Http\Middleware\SSOTokenAuth;
-use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware([Cors::class])->group(function () {
@@ -60,7 +58,7 @@ Route::middleware([Cors::class, 'sso.auth'])->group(function () {
   Route::post("new-post", [PostsController::class, "createPost"]);
 });
 
-Route::middleware([Cors::class, 'sso.auth', 'admin.only'])->prefix('admin')->group(function () {
+Route::middleware([Cors::class, 'sso.auth', 'sso.role:admin'])->prefix('admin')->group(function () {
   // Intro Profile
   Route::post("update-intro", [IntroProfileController::class, "updateIntro"]);
 

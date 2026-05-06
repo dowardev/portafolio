@@ -123,15 +123,4 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | SSO Server URL
-    |--------------------------------------------------------------------------
-    |
-    | URL del servidor SSO para validación de tokens entre backends.
-    |
-    */
-
-    'sso_url' => env('SSO_URL', 'http://localhost:8002/api'),
-
 ];

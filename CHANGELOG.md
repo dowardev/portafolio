@@ -1,5 +1,57 @@
 # Changelog
 
+## 18.0.0 - 2026-05-05
+
+### Summary
+Replace all backend SSO authentication code with the `tu-org/sso-server` package. The backend no longer manages JWT validation, DPoP verification, JWKS fetching, or role resolution directly — all handled internally by the SSO server package via its built-in SsoServerClient, middleware, and facade.
+
+### Breaking Changes
+- Removed `LocalJwtAuth`, `AdminOnly`, `SSOTokenAuth` middlewares — replaced by `SsoAuthMiddleware` and `SsoRoleMiddleware` from the package
+- Controllers must now use `SsoAuth` facade instead of `$request->get('sso_user')`, `$request->is_admin`, `$request->roles`
+- Route middleware changed from `admin.only` to `sso.role:admin`
+- Removed `laravel/passport` dependency — SSO tokens are validated locally via JWKS, not through Passport
+- Removed `api` guard (Passport driver) from `config/auth.php`
+- `AuthController::user()` now returns `SsoUser` object properties instead of request attributes
+
+### Added
+- `tu-org/sso-server` package as a dependency (local path repository)
+- `SsoAuth` facade with high-level API: `user()`, `id()`, `isAuthenticated()`, `hasRole()`, `dpopVerified()`
+- `sso.auth` middleware with optional `dpop` mode (`sso.auth:dpop` forces DPoP)
+- `sso.role:admin` middleware for role-based access control
+- Published `config/sso.php` with centralized SSO configuration (sso_url, jwt_issuer, cache TTLs, role mappings, DPoP settings)
+
+### Changed
+- `AuthController::user()` refactored to use `SsoAuth` facade instead of request attributes
+- `PostsController::createPost()` replaced broken `Auth::guard("api")->user()->is_admin` with `SsoAuth::hasRole('admin')`
+- `routes/api.php` updated middleware from `admin.only` to `sso.role:admin`, removed dead imports
+- `bootstrap/app.php` removed `sso.auth` and `admin.only` middleware aliases (auto-registered by package)
+- `config/app.php` removed redundant `sso_url` key (now in `config/sso.php`)
+- `composer.json` added `tu-org/sso-server` and path repository, removed `laravel/passport`
+
+### Removed
+- `backend/app/Http/Middleware/LocalJwtAuth.php` (370 lines, replaced by SsoAuthMiddleware)
+- `backend/app/Http/Middleware/AdminOnly.php` (21 lines, replaced by SsoRoleMiddleware)
+- `backend/app/Http/Middleware/SSOTokenAuth.php` (73 lines, was unused)
+- `backend/app/Services/JwksService.php` (158 lines, replaced by JwksFetcher + JwkToPemConverter)
+- `laravel/passport` and 11 related transitive dependencies (defuse/php-encryption, firebase/php-jwt, league/oauth2-server, phpseclib/phpseclib, nyholm/psr7, etc.)
+
+### Affected Files
+- Modified: `backend/composer.json`
+- Modified: `backend/composer.lock`
+- Modified: `backend/bootstrap/app.php`
+- Modified: `backend/routes/api.php`
+- Modified: `backend/app/Http/Controllers/AuthController.php`
+- Modified: `backend/app/Http/Controllers/PostsController.php`
+- Modified: `backend/config/app.php`
+- Modified: `backend/config/auth.php`
+- Added: `backend/config/sso.php`
+- Deleted: `backend/app/Http/Middleware/LocalJwtAuth.php`
+- Deleted: `backend/app/Http/Middleware/AdminOnly.php`
+- Deleted: `backend/app/Http/Middleware/SSOTokenAuth.php`
+- Deleted: `backend/app/Services/JwksService.php`
+
+---
+
 ## 17.0.0 - 2026-05-05
 
 ### Summary
