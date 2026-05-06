@@ -41,7 +41,7 @@ async function loadUser(controller: UserController): Promise<void> {
   } catch (e: unknown) {
     if (typeof e === "object" && e !== null && "errorDetail" in e) {
       const customError = e as ICustomError;
-      if (customError.errorDetail != "Unauthenticated.") throw customError;
+      if (customError.errorDetail != "Unauthenticated." && customError.errorDetail != "Token no proporcionado") throw customError;
     } else {
       throw e;
     }

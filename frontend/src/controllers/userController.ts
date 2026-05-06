@@ -62,7 +62,9 @@ export default class UserController {
     } catch (e: unknown) {
       const customError = this.errorController.getError({ error: e });
       
-      const isAuthError = customError.errorDetail === "Unauthenticated.";
+      const isAuthError = 
+        customError.errorDetail === "Unauthenticated." || 
+        customError.errorDetail === "Token no proporcionado";
       const isNetworkError = 
         customError.message === "No response received from server" ||
         customError.message.includes("Network Error") ||
@@ -121,7 +123,7 @@ export default class UserController {
     } catch (e: unknown) {
       if (typeof e === "object" && e !== null && "errorDetail" in e) {
         const customError = e as ICustomError;
-        if (customError.errorDetail != "Unauthenticated.") throw customError;
+        if (customError.errorDetail != "Unauthenticated." && customError.errorDetail != "Token no proporcionado") throw customError;
       } else {
         throw e;
       }

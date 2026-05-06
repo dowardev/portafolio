@@ -1,5 +1,17 @@
 # Changelog
 
+## 18.0.1 - 2026-05-06
+
+### Fixed
+- Fixed session loss on page reload by handling "Token no proporcionado" as an authentication error in `userController` and router guard, preventing unhandled errors from the SSO auth middleware
+- Added "Token no proporcionado" to auth error detection alongside "Unauthenticated." in `loadUser()`, `resendEmailVerification()`, and router `loadUser` function
+
+### Affected Files
+- Modified: `frontend/src/controllers/userController.ts`
+- Modified: `frontend/src/router/index.ts`
+
+---
+
 ## 18.0.0 - 2026-05-05
 
 ### Summary
