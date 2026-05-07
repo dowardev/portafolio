@@ -1,5 +1,22 @@
 # Changelog
 
+## 18.0.2 - 2026-05-07
+
+### Fixed
+- Removed infinite CSS animation (`@property --angle` + `@keyframes rotate`) that caused CPU heating when portfolio page was open - deleted `selectectable-animated.css` file and removed its import from `variables.css`
+- Replaced wildcard icon import (`import * as ionicons`) with explicit named imports of 95 used icons to reduce bundle size by ~1200 unused SVG strings
+
+### Affected Files
+- Modified: `frontend/src/composables/iconConfig.ts`
+- Modified: `frontend/src/theme/variables.css`
+- Deleted: `frontend/src/theme/styles/selectectable-animated.css`
+
+### Added
+- Added `AGENTS.md` with developer commands and project documentation
+- Added `guides/TemplateView.vue` with Vue component template structure guidelines
+
+---
+
 ## 18.0.1 - 2026-05-06
 
 ### Fixed
