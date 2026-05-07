@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="final-section">
     <ion-row>
       <ion-col style="display: flex" class="ion-justify-content-center">
-        <h2>Trabajemos juntos</h2>
+        <h2 class="heading-gradient">Trabajemos juntos</h2>
       </ion-col>
     </ion-row>
 
@@ -15,13 +15,12 @@
           <div
             v-for="platform in freelancePlatforms"
             :key="platform.name"
-            style="cursor: pointer"
-            class="ion-padding-start ion-padding-end"
+            class="platform-icon-container ion-padding-start ion-padding-end"
           >
             <img
-              style="width: 40px"
               :src="platform.image"
               :alt="platform.name"
+              class="platform-icon"
               @click="openUrl(platform.url)"
             />
           </div>
@@ -30,6 +29,7 @@
             v-if="showContactForm?.freelance"
             size="large"
             fill="clear"
+            class="contact-btn"
             @click="openContactModal()"
           >
             <ion-icon :icon="mail"></ion-icon>
@@ -54,7 +54,7 @@
             v-for="(comment, index) in freelanceComments"
             :key="index"
           >
-            <ion-card class="shadow-1">
+            <ion-card class="testimonial-card">
               <ion-item lines="full">
                 <ion-thumbnail slot="start">
                   <ion-icon
@@ -125,14 +125,10 @@ interface Props {
   screenSize?: ScreenSize;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 function openUrl(url: string) {
   window.open(url, "_blank");
-}
-
-function getPlatformImage(platformName: string): string | undefined {
-  return props.freelancePlatforms?.find(p => p.name === platformName)?.image;
 }
 
 async function openContactModal() {
@@ -148,9 +144,79 @@ async function openContactModal() {
 </script>
 
 <style scoped>
+.final-section {
+  padding: 20px 0;
+}
+
+.heading-gradient {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(
+    135deg,
+    var(--ion-color-primary) 0%,
+    var(--ion-color-secondary) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: pulse-text 3s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.platform-icon-container {
+  cursor: pointer;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.platform-icon-container:hover {
+  transform: translateY(-4px);
+  filter: drop-shadow(0 4px 12px rgba(var(--ion-color-primary-rgb, 61, 173, 233), 0.4));
+}
+
+.platform-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.contact-btn {
+  --color: var(--ion-color-primary);
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.contact-btn:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 8px var(--ion-color-primary));
+}
+
+.testimonial-card {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
 .swiper-container {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
+}
+
+.swiper-pagination-bullet-active {
+  --swiper-pagination-color: var(--ion-color-primary);
 }
 </style>

@@ -12,3 +12,18 @@
   opacity: 0;
   transform: translateX(-30px);
 }
+
+.section-reveal {
+  opacity: 0;
+  filter: blur(8px);
+  transition:
+    opacity 0.3s ease-out,
+    filter 0.3s ease-out;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.section-reveal.is-visible {
+  opacity: 1;
+  filter: blur(0);
+}
+

@@ -367,6 +367,11 @@ watch(
   width: 100%;
   height: v-bind(heightPx);
   background: v-bind(bgColor);
+  background-image: radial-gradient(
+    circle at 50% 50%,
+    rgba(var(--ion-color-primary-rgb, 61, 173, 233), 0.08) 0%,
+    transparent 70%
+  );
   border-radius: 12px;
   overflow: hidden;
   display: flex;

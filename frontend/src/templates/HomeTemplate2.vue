@@ -86,41 +86,59 @@
 
     <ion-content ref="contentRef" scroll-events @ion-scroll="handleScroll">
       <!-- profile -->
-      <ion-grid id="section-yo">
-        <ion-row style="height: 80dvh" class="ion-justify-content-center">
-          <ion-col
-            class="ion-justify-content-center"
-            size="12"
-            size-lg="4"
-            style="display: flex; flex-direction: column"
-          >
-            <h2 style="text-align: center">Hola, Soy {{ introData?.name }}.</h2>
-
-            <p style="text-align: center">
-              {{ introData?.description }}
-            </p>
-
-            <div
-              style="display: flex; flex-direction: column; align-items: center"
+      <div id="section-yo" class="hero-section">
+        <ion-grid class="hero-content">
+          <ion-row class="ion-justify-content-center ion-align-items-center">
+            <ion-col
+              class="ion-justify-content-center"
+              size="12"
+              size-lg="10"
+              style="display: flex; flex-direction: column"
             >
-              <div style="display: flex">
+              <div class="profile-photo-container scale-in-item" :class="{ 'is-visible': heroReady }" style="--delay: 0ms">
+                <div class="gradient-ring">
+                  <ion-avatar class="profile-avatar">
+                    <img
+                      alt="Foto de perfil"
+                      src="@/assets/portafolio/foto_perfil.jpg"
+                    />
+                  </ion-avatar>
+                </div>
+              </div>
+
+              <h2 class="hero-title scale-in-item" :class="{ 'is-visible': heroReady }" style="--delay: 150ms">
+                <span class="typing-text">{{ typedGreeting }}</span>
+                <span class="cursor">|</span>
+              </h2>
+
+              <p class="hero-description scale-in-item" :class="{ 'is-visible': heroReady }" style="--delay: 300ms">
+                {{ introData?.description }}
+              </p>
+
+              <div
+                class="tags-container scale-in-item"
+                :class="{ 'is-visible': heroReady }"
+                style="--delay: 450ms"
+              >
                 <ion-chip
                   v-for="tag in safeTags"
                   :key="tag.id || tag.name"
                   color="primary"
+                  class="tag-chip"
                   :button="!!tag.url"
                   @click="tag.url ? openUrl(tag.url) : null"
                 >
                   <ion-icon v-if="tag.url" :icon="linkOutline"></ion-icon>
                   <ion-label>{{ tag.name }}</ion-label>
                 </ion-chip>
-              </div>
+</div>
 
-              <div>
+              <div class="socials-container scale-in-item" :class="{ 'is-visible': heroReady }" style="--delay: 600ms">
                 <ion-button
                   v-for="social in safeSocials"
                   :key="social.platform"
                   fill="clear"
+                  class="social-btn"
                   @click="openSocialUrl(social.url)"
                 >
                   <ion-icon
@@ -129,10 +147,11 @@
                   ></ion-icon>
                 </ion-button>
               </div>
-            </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
 
       <!-- projetcs -->
       <svg
@@ -144,26 +163,27 @@
         viewBox="0 0 1440 320"
       >
         <path
-          fill="#0099ff"
+          fill="var(--ion-color-primary)"
           fill-opacity="1"
           d="M0,128L60,144C120,160,240,192,360,192C480,192,600,160,720,154.7C840,149,960,171,1080,186.7C1200,203,1320,213,1380,218.7L1440,224L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
         ></path>
       </svg>
 
       <!-- projects -->
-      <ion-grid id="section-proyectos" style="background: #0099ff">
+      <ion-grid id="section-proyectos" style="background: var(--ion-color-primary)">
         <ion-row
           class="projects-row ion-justify-content-center"
           :class="{ 'is-ios': isIOS }"
         >
           <ion-col
+            v-section-reveal
             class="ion-justify-content-center"
             size="12"
             size-lg="8"
             style="display: flex; flex-direction: column"
           >
             <div
-              class="ion-padding-bottom"
+              class="ion-padding-bottom section-heading"
               style="display: flex; justify-content: center"
             >
               <h2 style="font-size: 34px; color: var(--ion-color-light)">
@@ -214,14 +234,14 @@
         viewBox="0 0 1440 320"
       >
         <path
-          fill="#0099ff"
+          fill="var(--ion-color-primary)"
           fill-opacity="1"
           d="M0,128L60,144C120,160,240,192,360,192C480,192,600,160,720,154.7C840,149,960,171,1080,186.7C1200,203,1320,213,1380,218.7L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
         ></path>
       </svg>
 
       <!-- categories -->
-      <ion-grid id="section-categories" class="skills-grid">
+      <ion-grid id="section-categories" v-section-reveal class="skills-grid">
         <ion-row class="ion-justify-content-center">
           <ion-col size="12" size-lg="8">
             <!-- TODO:implement project filter by technology -->
@@ -254,26 +274,27 @@
         viewBox="0 0 1440 320"
       >
         <path
-          fill="#0099ff"
+          fill="var(--ion-color-primary)"
           fill-opacity="1"
           d="M0,128L60,144C120,160,240,192,360,192C480,192,600,160,720,154.7C840,149,960,171,1080,186.7C1200,203,1320,213,1380,218.7L1440,224L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
         ></path>
       </svg>
 
       <!-- experience -->
-      <ion-grid id="section-experiencia" style="background: #0099ff">
+      <ion-grid id="section-experiencia" style="background: var(--ion-color-primary)">
         <ion-row
           class="experience-row ion-justify-content-center"
           :class="{ 'is-ios': isIOS }"
         >
           <ion-col
+            v-section-reveal
             class="ion-justify-content-center"
             size="12"
             size-lg="8"
             style="display: flex; flex-direction: column"
           >
             <div
-              class="ion-padding-bottom"
+              class="ion-padding-bottom section-heading"
               style="display: flex; justify-content: center"
             >
               <h2 style="font-size: 34px; color: var(--ion-color-light)">
@@ -322,38 +343,38 @@
         viewBox="0 0 1440 320"
       >
         <path
-          fill="#0099ff"
+          fill="var(--ion-color-primary)"
           fill-opacity="1"
           d="M0,128L60,144C120,160,240,192,360,192C480,192,600,160,720,154.7C840,149,960,171,1080,186.7C1200,203,1320,213,1380,218.7L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
         ></path>
       </svg>
 
-      <ion-grid id="section-colaboracion">
+      <ion-grid id="section-colaboracion" v-section-reveal>
         <ion-row
-          style="height: 80dvh; align-items: center"
+          style="min-height: 80dvh; align-items: center"
           class="ion-justify-content-center"
         >
           <ion-col size="12" size-lg="8">
-            <FinalSection 
-              :freelance-platforms="freelancePlatforms" 
-              :freelance-comments="freelanceComments" 
-              :show-contact-form="showContactForm" 
+            <FinalSection
+              :freelance-platforms="freelancePlatforms"
+              :freelance-comments="freelanceComments"
+              :show-contact-form="showContactForm"
             />
           </ion-col>
         </ion-row>
       </ion-grid>
     </ion-content>
 
-    <!-- <ion-footer> -->
-    <!--   <div class="ion-padding-start"> -->
-    <!--     <p> -->
-    <!--       <a href="https://gitlab.com/dowardev/portafolio" target="_blank" -->
-    <!--         >Código fuente</a -->
-    <!--       > -->
-    <!--       bajo la licencia gpl-3.0. -->
-    <!--     </p> -->
-    <!--   </div> -->
-    <!-- </ion-footer> -->
+    <ion-footer class="home-footer">
+      <div class="ion-padding">
+        <p>
+          <a href="https://gitlab.com/dowardev/portafolio" target="_blank">
+            Código fuente
+          </a>
+          bajo la licencia GPL-3.0.
+        </p>
+      </div>
+    </ion-footer>
   </ion-page>
 </template>
 
@@ -390,7 +411,6 @@ import TechCloudBackground from "@/components/common/TechCloudBackground.vue";
 import FinalSection from "@/views/presentation/sections/FinalSection.vue";
 import ProjectCard from "@/components/projects/ProjectCard.vue";
 import ExperienceCard from "@/components/experience/ExperienceCard.vue";
-import type { HomePageData } from "@/services/types";
 
 import vueIcon from "@/assets/otros/vue-js-1.svg";
 import mariadbIcon from "@/assets/otros/mariadb-icon.svg";
@@ -413,11 +433,14 @@ const contentRef = ref();
 const menuContainerRef = ref();
 const activeSection = ref("section-yo");
 const windowWidth = ref(window.innerWidth);
+
+const typedGreeting = ref("");
 const isMobile = computed(() => windowWidth.value <= 576);
 const isTablet = computed(
   () => windowWidth.value >= 576 && windowWidth.value <= 991,
 );
 const isScrolled = ref(false);
+const heroReady = ref(false);
 const showAvatar = computed(() => !isMobile.value || !isScrolled.value);
 
 const buttonsWidth = computed(() => {
@@ -433,6 +456,33 @@ const handleScroll = (event: CustomEvent) => {
 };
 
 const introData = computed(() => introController.data.value);
+
+const fullGreeting = computed(() => `Hola, Soy ${introData.value?.name || "..."}.`);
+
+let typingInterval: ReturnType<typeof setInterval> | null = null;
+let currentCharIndex = 0;
+
+const startTyping = () => {
+  if (typingInterval) clearInterval(typingInterval);
+  typedGreeting.value = "";
+  currentCharIndex = 0;
+
+  typingInterval = setInterval(() => {
+    if (currentCharIndex < fullGreeting.value.length) {
+      typedGreeting.value = fullGreeting.value.slice(0, currentCharIndex + 1);
+      currentCharIndex++;
+    } else {
+      if (typingInterval) clearInterval(typingInterval);
+    }
+  }, 80);
+};
+
+watch(fullGreeting, (newVal) => {
+  if (newVal && newVal.length > 0) {
+    startTyping();
+  }
+});
+
 const categories = computed(() => skillsCategoriesController.skillsCategories.value);
 
 const backgroundTechs = computed(() => {
@@ -564,11 +614,18 @@ onMounted(async () => {
     freelancePlatformController.loadFreelancePlatforms(),
     freelanceCommentController.loadFreelanceComments(),
   ]);
+
+  heroReady.value = true;
+
+  if (introData.value?.name) {
+    startTyping();
+  }
 });
 
 onUnmounted(() => {
   observer?.disconnect();
   window.removeEventListener("resize", onResize);
+  if (typingInterval) clearInterval(typingInterval);
 });
 </script>
 
@@ -578,6 +635,151 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 16px;
+}
+
+.hero-section {
+  position: relative;
+  min-height: 80dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.profile-photo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.gradient-ring {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  padding: 4px;
+  background: var(--ion-color-primary);
+  box-shadow: 0 8px 32px rgba(var(--ion-color-primary-rgb, 61, 173, 233), 0.4);
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--ion-background-color);
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--ion-text-color);
+  margin: 0 0 16px 0;
+}
+
+.typing-text {
+  display: inline;
+}
+
+.cursor {
+  display: inline-block;
+  color: var(--ion-color-primary);
+  font-weight: 300;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.hero-description {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--ion-text-color-step-400);
+  max-width: 600px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tag-chip {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tag-chip:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(var(--ion-color-primary-rgb, 61, 173, 233), 0.3);
+}
+
+.socials-container {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.social-btn {
+  --color: var(--ion-text-color);
+  --padding-start: 12px;
+  --padding-end: 12px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.social-btn:hover {
+  transform: scale(1.15);
+  --color: var(--ion-color-primary);
+}
+
+.scale-in-item {
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: var(--delay, 0ms);
+}
+
+.scale-in-item.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (max-width: 576px) {
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  .hero-description {
+    font-size: 1rem;
+    padding: 0 16px;
+  }
+  .gradient-ring {
+    width: 140px;
+    height: 140px;
+  }
 }
 
 .avatar-container {
@@ -633,7 +835,7 @@ onUnmounted(() => {
   transform: translateX(-50%) scaleX(0);
   width: 100%;
   height: 2px;
-  background: var(--ion-color-primary, #0099ff);
+  background: var(--ion-color-primary);
   border-radius: 2px;
   transition: transform 0.3s ease;
 }
@@ -680,10 +882,6 @@ onUnmounted(() => {
   margin: 2px;
 }
 
-.wave.invert {
-  transform: scaleY(-1);
-}
-
 /* Pull the categories section up to sit closer to the lower wave */
 .categories-grid {
   margin-top: -8px; /* adjust -4px..-12px if you want it closer/further */
@@ -719,6 +917,29 @@ onUnmounted(() => {
   .categories-grid {
     padding: 0 8px;
   }
+}
+
+.home-footer {
+  --background: var(--ion-background-color);
+  --border-width: 0;
+  text-align: center;
+}
+
+.home-footer p {
+  color: var(--ion-color-medium);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.home-footer a {
+  color: var(--ion-color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.home-footer a:hover {
+  color: var(--ion-color-secondary);
+  text-decoration: underline;
 }
 
 /* ion-content { */

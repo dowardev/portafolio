@@ -1,5 +1,37 @@
 # Changelog
 
+## 18.1.0 - 2026-05-07
+
+### Added
+- Profile photo with animated gradient ring border on homepage hero
+- Typing animation on hero greeting that starts after data loads
+- Scale-in transition with staggered delays for hero elements (photo, title, description, tags, socials)
+- New `v-section-reveal` directive with fade-in + blur effect for sections on scroll
+- TechCloudBackground with radial gradient background and icon hover effects
+- FinalSection with gradient text heading, platform icons hover lift, and glassmorphism testimonial cards
+- Footer uncommented and styled on homepage
+
+### Changed
+- Color consistency: use `var(--ion-color-primary)` instead of hardcoded `#0099ff` in waves and section backgrounds
+- Blur effect applied only to content (not background) in blue sections (Projects, Experience)
+- Removed old `v-scroll-reveal` and `fade-item` transitions, replaced with new scale-in and fade-in+blur
+- Reduced blur transition duration from 0.8s to 0.5s for faster effect
+
+### Removed
+- Hero parallax background (was using b5.jpg with dark overlay)
+- Old scroll reveal directive (`scrollReveal.ts`) replaced by `sectionReveal.ts`
+
+### Affected Files
+- Modified: `frontend/src/templates/HomeTemplate2.vue`
+- Modified: `frontend/src/main.ts`
+- Modified: `frontend/src/theme/styles/transitions.css`
+- Modified: `frontend/src/components/common/TechCloudBackground.vue`
+- Modified: `frontend/src/views/presentation/sections/FinalSection.vue`
+- Added: `frontend/src/directives/sectionReveal.ts`
+- Deleted: `frontend/src/directives/scrollReveal.ts`
+
+---
+
 ## 18.0.2 - 2026-05-07
 
 ### Fixed
