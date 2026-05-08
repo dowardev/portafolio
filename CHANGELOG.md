@@ -1,5 +1,20 @@
 # Changelog
 
+## 18.2.0 - 2026-05-08
+
+### Changed
+- Refactored authentication flow to eliminate redundant user-auth endpoint calls
+- Frontend now uses SSOClient.getUser() directly instead of calling the portafolio backend's user-auth endpoint
+
+### Removed
+- Removed user-auth endpoint from portafolio backend (port 8000) - user data is now fetched exclusively from SSO server (port 8001)
+
+### Affected Files
+- Modified: `frontend/src/controllers/userController.ts`
+- Modified: `backend/routes/api.php`
+
+---
+
 ## 18.1.0 - 2026-05-07
 
 ### Added

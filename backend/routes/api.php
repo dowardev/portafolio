@@ -54,7 +54,6 @@ Route::middleware([Cors::class])->group(function () {
 });
 
 Route::middleware([Cors::class, 'sso.auth'])->group(function () {
-  Route::get("user-auth", [AuthController::class, "user"]);
   Route::post("new-post", [PostsController::class, "createPost"]);
 });
 

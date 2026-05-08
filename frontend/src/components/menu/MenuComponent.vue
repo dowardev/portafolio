@@ -461,7 +461,7 @@ function openRoute(params: { route?: string; name?: string }) {
   menuController.close();
 }
 
-async function redirectToSSO(page: 'login' | 'register') {
+async function redirectToSSO(page: "login" | "register") {
   await getSSOClient().loginWithRedirect({
     screenHint: page,
     redirectUri: `${window.location.origin}/auth/callback`,

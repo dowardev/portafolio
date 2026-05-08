@@ -8,11 +8,9 @@ import { getSSOClient } from "@/ssoClientAccessor";
 
 import ErrorController from "./errorController";
 
-import UserService from "../services/userService";
 import { useUserStore } from "@/store/userStore";
 
 export default class UserController {
-  private userService = new UserService();
   private systemService = new SystemService();
   private errorController = new ErrorController();
   private userStore = useUserStore();
@@ -57,8 +55,8 @@ export default class UserController {
 
   async loadUser() {
     try {
-      const user = await this.userService.getUser();
-      if (user) this.updateUserProps({ user });
+      const ssoUser = await getSSOClient().getUser();
+      if (ssoUser) this.updateUserProps({ user: ssoUser });
     } catch (e: unknown) {
       const customError = this.errorController.getError({ error: e });
       
