@@ -1,5 +1,28 @@
 # Changelog
 
+## 18.3.0 - 2026-05-08
+
+### Added
+- New UI/UX Pro Max agent skill for enhanced design guidance during development
+- BM25 search engine for querying UI/UX style guides across multiple domains (style, color, typography, charts, landing pages, UX guidelines, products)
+- Stack-specific guidelines for HTML/Tailwind, React, Next.js
+- Design system generator that aggregates search results and provides comprehensive recommendations
+- Master + Overrides pattern for persistent design system documentation
+
+### Features
+- Search across 50+ styles, 161 color palettes, 57 font pairings, 161 product types, 99 UX guidelines, 25 chart types
+- Generate complete design system recommendations with pattern, colors, typography, effects
+- Persist design system to design-system/ folder with page-specific override files
+
+### Affected Files
+- Added: `.opencode/skills/ui-ux-pro-max/SKILL.md`
+- Added: `.opencode/skills/ui-ux-pro-max/data/` (CSV data files)
+- Added: `.opencode/skills/ui-ux-pro-max/scripts/core.py`
+- Added: `.opencode/skills/ui-ux-pro-max/scripts/design_system.py`
+- Added: `.opencode/skills/ui-ux-pro-max/scripts/search.py`
+
+---
+
 ## 18.2.0 - 2026-05-08
 
 ### Changed
