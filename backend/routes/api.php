@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\FreelanceCommentController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\StackController;
 use App\Http\Controllers\Admin\SkillsCategoryController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Middleware\Cors;
 use Illuminate\Support\Facades\Route;
 
@@ -95,4 +96,14 @@ Route::middleware([Cors::class, 'sso.auth', 'sso.role:admin'])->prefix('admin')-
 Route::post("skills-categories", [SkillsCategoryController::class, "store"]);
 Route::post("skills-categories/{id}", [SkillsCategoryController::class, "update"]);
 Route::delete("skills-categories/{id}", [SkillsCategoryController::class, "destroy"]);
+
+  // Permissions
+  Route::get("permissions", [PermissionController::class, "index"]);
+  Route::post("permissions", [PermissionController::class, "store"]);
+  Route::put("permissions/{permission}", [PermissionController::class, "update"]);
+  Route::delete("permissions/{permission}", [PermissionController::class, "destroy"]);
+  Route::get("permissions/roles", [PermissionController::class, "getRolePermissions"]);
+  Route::put("permissions/roles", [PermissionController::class, "updateRolePermissions"]);
+  Route::post("permissions/sync", [PermissionController::class, "syncRoles"]);
+  Route::get("permissions/sync-status", [PermissionController::class, "getSyncStatus"]);
 });

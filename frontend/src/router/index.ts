@@ -29,6 +29,7 @@ import CertificatesListPage from "@/views/admin/sections/CertificatesListPage.vu
 import CertificatesEditor from "@/views/admin/editors/CertificatesEditor.vue";
 import FreelanceListPage from "@/views/admin/sections/FreelanceListPage.vue";
 import FreelanceEditor from "@/views/admin/editors/FreelanceEditor.vue";
+import PermissionsPage from "@/views/admin/PermissionsPage.vue";
 
 import { getSSOClient } from "@/ssoClientAccessor";
 import { createAuthGuard } from "@tu-org/sso-client";
@@ -48,7 +49,7 @@ async function loadUser(controller: UserController): Promise<void> {
   }
 }
 
-function hasAdminRole(roles?: Role[]): boolean {
+export function hasAdminRole(roles?: Role[]): boolean {
   if (!roles || roles.length === 0) return false;
 
   return roles.some(
@@ -143,6 +144,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/admin-panel",
     name: "PanelAdminPage",
     component: PanelAdminPage,
+  },
+  {
+    path: "/admin-panel/permissions",
+    name: "PermissionsPage",
+    component: PermissionsPage,
   },
   {
     path: "/admin-panel/projects",

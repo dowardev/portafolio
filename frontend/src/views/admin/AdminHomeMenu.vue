@@ -42,6 +42,7 @@ import {
   folderOutline,
   ribbonOutline,
   peopleOutline,
+  keyOutline,
 } from "ionicons/icons";
 
 const router = useRouter();
@@ -96,6 +97,13 @@ const menuItems = [
     icon: peopleOutline,
     route: "/admin-panel/freelance",
     color: "#EC4899",
+  },
+  {
+    section: "permissions",
+    label: "Permisos",
+    icon: keyOutline,
+    route: "/admin-panel/permissions",
+    color: "#EF4444",
   },
 ];
 

@@ -28,7 +28,6 @@ export default class UserService {
       name: response.name,
       user: response.user,
       email: response.email,
-      isAdmin: response.is_admin,
       roles: response.roles ?? [],
       isEmailVerified: response.is_email_verified,
       isDisabled: response.is_user_disabled,
