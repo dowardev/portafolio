@@ -55,15 +55,17 @@ class PermissionController extends Controller
         return response()->json(['message' => 'Permiso eliminado']);
     }
 
-    public function getRolePermissions(): JsonResponse
+    public function getRolePermissions(RoleSyncService $roleService): JsonResponse
     {
-        $roles = ['admin', 'editor', 'viewer'];
+        $roles = $roleService->getRoles();
+        $roleSlugs = array_map(fn($r) => $r['slug'] ?? $r->slug ?? null, $roles);
+        $roleSlugs = array_filter($roleSlugs);
 
         $permissions = Permission::orderBy('module')->orderBy('name')->get();
         $rolePermissions = RolePermission::all()->groupBy('role_slug');
 
         $result = [];
-        foreach ($roles as $roleSlug) {
+        foreach ($roleSlugs as $roleSlug) {
             $rolePerms = $rolePermissions->get($roleSlug, collect())->pluck('permission_id');
             $result[$roleSlug] = $permissions->map(function ($perm) use ($rolePerms) {
                 return [
@@ -79,10 +81,15 @@ class PermissionController extends Controller
         return response()->json($result);
     }
 
-    public function updateRolePermissions(Request $request): JsonResponse
+    public function updateRolePermissions(Request $request, RoleSyncService $roleService): JsonResponse
     {
+        $roles = $roleService->getRoles();
+        $validSlugs = array_map(fn($r) => $r['slug'] ?? $r->slug ?? null, $roles);
+        $validSlugs = array_filter($validSlugs);
+        $validSlugsStr = implode(',', $validSlugs);
+
         $validated = $request->validate([
-            'role_slug' => 'required|string|in:admin,editor,viewer',
+            'role_slug' => 'required|string|in:' . $validSlugsStr,
             'permission_ids' => 'required|array',
             'permission_ids.*' => 'integer|exists:permissions,id',
         ]);
