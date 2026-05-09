@@ -152,7 +152,6 @@ export interface User {
   user?: string;
   password?: string;
   email?: string;
-  isAdmin?: boolean;
   roles?: Role[];
   isEmailVerified?: boolean;
   isDisabled?: boolean;
@@ -207,13 +206,11 @@ export interface UpdateUserAccount {
 export interface SetUserData {
   name: User["name"];
   email: User["email"];
-  is_admin: User["isAdmin"];
-  rol: User["rol"];
+  roles: Role[];
 }
 
 export interface GetUserPermissionsResponse {
-  admin: User["isAdmin"];
-  rol: User["rol"];
+  roles: Role[];
 }
 
 export interface ResetPassword {
