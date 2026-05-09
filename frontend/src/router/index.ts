@@ -291,6 +291,7 @@ const adminRoutes = [
   "FreelanceNewPage",
   "FreelanceNewPageOld",
   "UsersPage",
+  "PermissionsPage",
 ];
 
 const authorizedRoutes = ["UserPanelPage", "AuthCallbackPage"];

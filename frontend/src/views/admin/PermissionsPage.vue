@@ -58,9 +58,9 @@
         <ion-item>
           <ion-label>Rol:</ion-label>
           <ion-select v-model="selectedRole" @ionChange="loadRolePermissions">
-            <ion-select-option value="admin">Admin</ion-select-option>
-            <ion-select-option value="editor">Editor</ion-select-option>
-            <ion-select-option value="viewer">Visor</ion-select-option>
+            <ion-select-option v-for="role in availableRoles" :key="role.slug" :value="role.slug">
+              {{ role.name }}
+            </ion-select-option>
           </ion-select>
         </ion-item>
 
@@ -174,6 +174,7 @@ const editingPermission = ref<any>(null)
 const form = ref({ slug: '', name: '', module: '' })
 
 const selectedRole = ref('admin')
+const availableRoles = ref<{slug: string; name: string}[]>([])
 const rolePermissions = ref<any>({})
 const originalPermissions = ref<any>({})
 
@@ -193,6 +194,17 @@ async function loadPermissions() {
 async function loadRolePermissions() {
   rolePermissions.value = await controller.getRolePermissions()
   originalPermissions.value = JSON.parse(JSON.stringify(rolePermissions.value))
+}
+
+async function loadAvailableRoles() {
+  const status = await controller.getSyncStatus()
+  availableRoles.value = (status.roles || []).map((r: any) => ({
+    slug: r.slug,
+    name: r.name
+  }))
+  if (availableRoles.value.length > 0 && !selectedRole.value) {
+    selectedRole.value = availableRoles.value[0].slug
+  }
 }
 
 async function loadSyncStatus() {
@@ -282,6 +294,7 @@ async function showToast(message: string, color: string = 'success') {
 
 onMounted(() => {
   loadPermissions()
+  loadAvailableRoles()
 })
 </script>
 
