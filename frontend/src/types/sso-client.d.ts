@@ -14,7 +14,6 @@ declare module '@tu-org/sso-client' {
     name?: string;
     user?: string;
     email?: string;
-    isAdmin?: boolean;
     roles?: Role[];
     isEmailVerified?: boolean;
     isDisabled?: boolean;
