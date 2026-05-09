@@ -10,7 +10,7 @@ use TuOrg\SsoServer\Facades\SsoAuth;
 
 class PermissionMiddleware
 {
-    public function handle(Request $request, string $permission): Response
+    public function handle(Request $request, Closure $next, string $permission): Response
     {
         if (!SsoAuth::isAuthenticated()) {
             return response()->json(['error' => 'No autenticado'], 401);
