@@ -5,76 +5,104 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Permission;
 use App\Models\RolePermission;
+use App\Models\UserPermission;
 use App\Services\RoleSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PermissionController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    private function parsePermissionSlug(string $slug): array
     {
-        $query = Permission::orderBy('module')->orderBy('name');
-
-        if ($request->has('module')) {
-            $query->where('module', $request->module);
-        }
-
-        return response()->json($query->get());
+        $parts = explode('.', $slug, 2);
+        return [
+            'slug' => $slug,
+            'module' => $parts[0],
+            'action' => $parts[1] ?? '',
+        ];
     }
 
-    public function store(Request $request): JsonResponse
+    public function getAvailablePermissions(): JsonResponse
+    {
+        $permissions = Permission::all()->map(function ($perm) {
+            return [
+                'id' => $perm->id,
+                'slug' => $perm->slug,
+                'module' => $perm->module,
+                'action' => $perm->action,
+            ];
+        });
+
+        return response()->json($permissions);
+    }
+
+    public function createPermission(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'slug' => 'required|string|unique:permissions,slug|max:255',
-            'name' => 'required|string|max:255',
-            'module' => 'required|string|max:100',
+            'slug' => 'required|string|max:100|unique:permissions,slug',
+            'module' => 'required|string|max:50',
+            'action' => 'required|string|max:50',
         ]);
 
         $permission = Permission::create($validated);
 
-        return response()->json(['message' => 'Permiso creado', 'permission' => $permission], 201);
+        return response()->json([
+            'message' => 'Permiso creado',
+            'permission' => $this->parsePermissionSlug($permission->slug),
+        ], 201);
     }
 
-    public function update(Request $request, Permission $permission): JsonResponse
+    public function updatePermission(Request $request, int $id): JsonResponse
     {
+        $permission = Permission::findOrFail($id);
+
         $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'module' => 'sometimes|string|max:100',
+            'slug' => 'sometimes|string|max:100|unique:permissions,slug,' . $id,
+            'module' => 'sometimes|string|max:50',
+            'action' => 'sometimes|string|max:50',
         ]);
 
         $permission->update($validated);
 
-        return response()->json(['message' => 'Permiso actualizado', 'permission' => $permission]);
+        return response()->json([
+            'message' => 'Permiso actualizado',
+            'permission' => $this->parsePermissionSlug($permission->slug),
+        ]);
     }
 
-    public function destroy(Permission $permission): JsonResponse
+    public function deletePermission(int $id): JsonResponse
     {
-        RolePermission::where('permission_id', $permission->id)->delete();
-        $permission->delete();
+        $permission = Permission::findOrFail($id);
+        $slug = $permission->slug;
 
-        return response()->json(['message' => 'Permiso eliminado']);
+        try {
+            DB::transaction(function () use ($permission, $slug) {
+                RolePermission::where('permission_slug', $slug)->delete();
+                UserPermission::where('permission_slug', $slug)->delete();
+                $permission->delete();
+            });
+
+            return response()->json(['message' => 'Permiso eliminado']);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Error al eliminar permiso'], 500);
+        }
     }
 
     public function getRolePermissions(RoleSyncService $roleService): JsonResponse
     {
-        $roles = $roleService->getRoles();
-        $roleSlugs = array_map(fn($r) => $r['slug'] ?? $r->slug ?? null, $roles);
-        $roleSlugs = array_filter($roleSlugs);
+        $roleSlugs = $roleService->getRoleSlugs();
+        $allPermissions = Permission::all()->map(function ($perm) {
+            return $this->parsePermissionSlug($perm->slug);
+        });
 
-        $permissions = Permission::orderBy('module')->orderBy('name')->get();
         $rolePermissions = RolePermission::all()->groupBy('role_slug');
 
         $result = [];
         foreach ($roleSlugs as $roleSlug) {
-            $rolePerms = $rolePermissions->get($roleSlug, collect())->pluck('permission_id');
-            $result[$roleSlug] = $permissions->map(function ($perm) use ($rolePerms) {
-                return [
-                    'id' => $perm->id,
-                    'slug' => $perm->slug,
-                    'name' => $perm->name,
-                    'module' => $perm->module,
-                    'enabled' => $rolePerms->contains($perm->id),
-                ];
+            $rolePerms = $rolePermissions->get($roleSlug, collect())->pluck('permission_slug')->toArray();
+            $result[$roleSlug] = $allPermissions->map(function ($perm) use ($rolePerms) {
+                return array_merge($perm, ['enabled' => in_array($perm['slug'], $rolePerms)]);
             })->toArray();
         }
 
@@ -83,27 +111,92 @@ class PermissionController extends Controller
 
     public function updateRolePermissions(Request $request, RoleSyncService $roleService): JsonResponse
     {
-        $roles = $roleService->getRoles();
-        $validSlugs = array_map(fn($r) => $r['slug'] ?? $r->slug ?? null, $roles);
-        $validSlugs = array_filter($validSlugs);
-        $validSlugsStr = implode(',', $validSlugs);
+        $roleSlugs = $roleService->getRoleSlugs();
+        $allSlugs = Permission::pluck('slug')->toArray();
 
         $validated = $request->validate([
-            'role_slug' => 'required|string|in:' . $validSlugsStr,
-            'permission_ids' => 'required|array',
-            'permission_ids.*' => 'integer|exists:permissions,id',
+            'role_slug' => 'required|string|in:' . implode(',', $roleSlugs),
+            'permission_slugs' => 'required|array',
+            'permission_slugs.*' => 'string|in:' . implode(',', $allSlugs),
         ]);
 
-        RolePermission::where('role_slug', $validated['role_slug'])->delete();
+        try {
+            DB::transaction(function () use ($validated) {
+                RolePermission::where('role_slug', $validated['role_slug'])->delete();
 
-        foreach ($validated['permission_ids'] as $permissionId) {
-            RolePermission::create([
-                'role_slug' => $validated['role_slug'],
-                'permission_id' => $permissionId,
-            ]);
+                foreach ($validated['permission_slugs'] as $slug) {
+                    RolePermission::create([
+                        'role_slug' => $validated['role_slug'],
+                        'permission_slug' => $slug,
+                    ]);
+                }
+            });
+
+            return response()->json(['message' => 'Permisos del rol actualizados']);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Error al actualizar permisos'], 500);
+        }
+    }
+
+    public function getUserPermissions(Request $request): JsonResponse
+    {
+        $userSsoId = $request->query('user_sso_id');
+
+        $permissions = Permission::all()->map(function ($perm) {
+            return [
+                'slug' => $perm->slug,
+                'module' => $perm->module,
+                'action' => $perm->action,
+            ];
+        });
+
+        $userPermissionsQuery = UserPermission::query();
+        if ($userSsoId) {
+            $userPermissionsQuery->where('user_sso_id', $userSsoId);
+        }
+        $userPermissions = $userPermissionsQuery->get()->groupBy('user_sso_id');
+
+        $result = [];
+        foreach ($userPermissions as $userId => $userPerms) {
+            $result[$userId] = $permissions->map(function ($perm) use ($userPerms) {
+                $override = $userPerms->firstWhere('permission_slug', $perm['slug']);
+                return array_merge($perm, [
+                    'type' => $override?->type ?? null,
+                ]);
+            })->toArray();
         }
 
-        return response()->json(['message' => 'Permisos del rol actualizados']);
+        return response()->json($result);
+    }
+
+    public function updateUserPermissions(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'user_sso_id' => 'required|string|max:36',
+            'permissions' => 'required|array',
+            'permissions.*.slug' => 'required|string',
+            'permissions.*.type' => 'sometimes|nullable|in:grant,deny',
+        ]);
+
+        try {
+            DB::transaction(function () use ($validated) {
+                UserPermission::where('user_sso_id', $validated['user_sso_id'])->delete();
+
+                foreach ($validated['permissions'] as $perm) {
+                    if ($perm['type'] !== null && $perm['type'] !== '') {
+                        UserPermission::create([
+                            'user_sso_id' => $validated['user_sso_id'],
+                            'permission_slug' => $perm['slug'],
+                            'type' => $perm['type'],
+                        ]);
+                    }
+                }
+            });
+
+            return response()->json(['message' => 'Permisos de usuario actualizados']);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Error al actualizar permisos'], 500);
+        }
     }
 
     public function syncRoles(RoleSyncService $service): JsonResponse

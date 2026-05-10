@@ -17,35 +17,32 @@
         <ion-segment-button value="roles">
           <ion-label>Roles</ion-label>
         </ion-segment-button>
+        <ion-segment-button value="users">
+          <ion-label>Usuarios</ion-label>
+        </ion-segment-button>
         <ion-segment-button value="sync">
-          <ion-label>Sincronización</ion-label>
+          <ion-label>SSO</ion-label>
         </ion-segment-button>
       </ion-segment>
 
-      <!-- Tab: Permisos -->
+      <!-- Tab: Permissions Catalog -->
       <div v-if="activeTab === 'permissions'" class="tab-content">
-        <div class="toolbar">
-          <ion-select v-model="filterModule" placeholder="Filtrar por módulo" @ionChange="loadPermissions">
-            <ion-select-option value="">Todos</ion-select-option>
-            <ion-select-option v-for="mod in modules" :key="mod" :value="mod">{{ mod }}</ion-select-option>
-          </ion-select>
-          <ion-button @click="showCreateModal = true">
-            <ion-icon slot="start" :icon="add"></ion-icon>
-            Nuevo
-          </ion-button>
-        </div>
+        <ion-button @click="showAddPermissionModal" :disabled="saving">
+          <ion-icon slot="start" :icon="addCircle"></ion-icon>
+          Agregar Permiso
+        </ion-button>
 
         <ion-list>
-          <ion-item v-for="perm in permissions" :key="perm.id">
+          <ion-item v-for="perm in permissions" :key="perm.slug">
             <ion-label>
-              <h2>{{ perm.name }}</h2>
-              <p>{{ perm.slug }} ({{ perm.module }})</p>
+              <h2>{{ perm.module }}.{{ perm.action }}</h2>
+              <p>{{ perm.slug }}</p>
             </ion-label>
             <ion-buttons slot="end">
               <ion-button @click="editPermission(perm)">
                 <ion-icon :icon="pencil"></ion-icon>
               </ion-button>
-              <ion-button color="danger" @click="confirmDelete(perm)">
+              <ion-button @click="deletePermission(perm)" color="danger">
                 <ion-icon :icon="trash"></ion-icon>
               </ion-button>
             </ion-buttons>
@@ -64,40 +61,74 @@
           </ion-select>
         </ion-item>
 
-        <div v-if="selectedRole === 'admin'" class="admin-notice">
-          <ion-icon :icon="informationCircle"></ion-icon>
-          El rol Admin siempre tiene acceso total a todos los permisos.
-        </div>
-
-        <div v-else class="permissions-grid">
-          <ion-item v-for="perm in rolePermissions[selectedRole]" :key="perm.id">
+        <div class="permissions-grid">
+          <ion-item v-for="perm in rolePermissions[selectedRole]" :key="perm.slug">
             <ion-checkbox
               slot="start"
               :checked="perm.enabled"
-              @ionChange="togglePermission(perm.id, $detail.checked)"
+              @ionChange="togglePermission(perm.slug, $detail.checked)"
+              :disabled="saving"
             ></ion-checkbox>
             <ion-label>
-              <h3>{{ perm.name }}</h3>
-              <p>{{ perm.module }}</p>
+              <h3>{{ perm.module }}.{{ perm.action }}</h3>
+              <p>{{ perm.slug }}</p>
             </ion-label>
           </ion-item>
         </div>
 
         <ion-button
-          v-if="selectedRole !== 'admin'"
           expand="block"
           @click="saveRolePermissions"
-          :disabled="!hasChanges"
+          :disabled="!hasChanges || saving"
           class="save-btn"
         >
+          <ion-icon slot="start" :icon="save"></ion-icon>
           Guardar Cambios
         </ion-button>
       </div>
 
-      <!-- Tab: Sincronización -->
+      <!-- Tab: Users -->
+      <div v-if="activeTab === 'users'" class="tab-content">
+        <ion-item>
+          <ion-label>Usuario SSO ID:</ion-label>
+          <ion-input v-model="selectedUserId" placeholder="Ingrese ID del usuario"></ion-input>
+        </ion-item>
+
+        <div v-if="userPermissions[selectedUserId]" class="permissions-grid">
+          <ion-item v-for="perm in userPermissions[selectedUserId]" :key="perm.slug">
+            <ion-select
+              slot="start"
+              :value="perm.type"
+              @ionChange="updateUserOverride(perm.slug, $detail.value)"
+              :disabled="saving"
+            >
+              <ion-select-option :value="null">Heredado del rol</ion-select-option>
+              <ion-select-option value="grant">Permitir</ion-select-option>
+              <ion-select-option value="deny">Denegar</ion-select-option>
+            </ion-select>
+            <ion-label>
+              <h3>{{ perm.module }}.{{ perm.action }}</h3>
+              <p>{{ perm.slug }}</p>
+            </ion-label>
+          </ion-item>
+        </div>
+
+        <ion-button
+          v-if="selectedUserId"
+          expand="block"
+          @click="saveUserPermissions"
+          :disabled="saving"
+          class="save-btn"
+        >
+          <ion-icon slot="start" :icon="save"></ion-icon>
+          Guardar Permisos de Usuario
+        </ion-button>
+      </div>
+
+      <!-- Tab: SSO -->
       <div v-if="activeTab === 'sync'" class="tab-content">
         <div class="sync-status">
-          <h3>Roles del SSO (cacheados)</h3>
+          <h3>Roles desde SSO</h3>
           <ion-list>
             <ion-item v-for="role in syncStatus.roles" :key="role.slug">
               <ion-label>
@@ -112,83 +143,63 @@
             Última sincronización: {{ syncStatus.last_sync || 'Nunca' }}
           </p>
 
-          <ion-button @click="doSync">
-            <ion-icon slot="start" :icon="sync"></ion-icon>
+          <ion-button @click="doSync" :disabled="saving">
+            <ion-icon slot="start" :icon="syncIcon"></ion-icon>
             Sincronizar ahora
           </ion-button>
         </div>
       </div>
-
-      <!-- Create/Edit Modal -->
-      <ion-modal :is-open="showCreateModal" @didDismiss="closeModal">
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>{{ editingPermission ? 'Editar' : 'Nuevo' }} Permiso</ion-title>
-            <ion-buttons slot="end">
-              <ion-button @click="closeModal">Cerrar</ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content>
-          <ion-item>
-            <ion-label position="stacked">Slug</ion-label>
-            <ion-input v-model="form.slug" placeholder="posts.create"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="stacked">Nombre</ion-label>
-            <ion-input v-model="form.name" placeholder="Crear post"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="stacked">Módulo</ion-label>
-            <ion-input v-model="form.module" placeholder="posts"></ion-input>
-          </ion-item>
-          <ion-button expand="block" @click="savePermission" class="save-btn">
-            Guardar
-          </ion-button>
-        </ion-content>
-      </ion-modal>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
   IonContent, IonSegment, IonSegmentButton, IonLabel, IonList, IonItem,
-  IonButton, IonIcon, IonSelect, IonSelectOption, IonModal, IonInput,
-  IonCheckbox, toastController
+  IonButton, IonIcon, IonSelect, IonSelectOption, IonCheckbox, toastController,
+  IonInput, alertController
 } from '@ionic/vue'
-import { add, pencil, trash, informationCircle, shield, sync } from 'ionicons/icons'
-import { usePermissionsController } from '@/controllers/permissionsController'
+import { shield, sync as syncIcon, addCircle, pencil, trash, save } from 'ionicons/icons'
+import { usePermissionsController, type AvailablePermission, type RolePermissions, type SyncStatus, type UserPermissions } from '@/controllers/permissionsController'
 
 const controller = usePermissionsController()
 
 const activeTab = ref('permissions')
-const permissions = ref<any[]>([])
-const filterModule = ref('')
-const modules = computed(() => [...new Set(permissions.value.map(p => p.module))])
-
-const showCreateModal = ref(false)
-const editingPermission = ref<any>(null)
-const form = ref({ slug: '', name: '', module: '' })
+const saving = ref(false)
 
 const selectedRole = ref('admin')
 const availableRoles = ref<{slug: string; name: string}[]>([])
-const rolePermissions = ref<any>({})
-const originalPermissions = ref<any>({})
+const rolePermissions = ref<RolePermissions>({})
+const originalPermissions = ref<RolePermissions>({})
 
-const syncStatus = ref<any>({ roles: [], last_sync: null })
+const selectedUserId = ref('')
+const userPermissions = ref<UserPermissions>({})
+const originalUserPermissions = ref<UserPermissions>({})
+
+const permissions = ref<AvailablePermission[]>([])
+
+const syncStatus = ref<SyncStatus>({ roles: [], last_sync: null })
 
 const hasChanges = computed(() => {
-  if (selectedRole.value === 'admin') return false
-  const current = JSON.stringify(rolePermissions.value[selectedRole.value]?.map((p: any) => p.enabled))
-  const original = JSON.stringify(originalPermissions.value[selectedRole.value]?.map((p: any) => p.enabled))
+  if (!selectedRole.value) return false
+  const current = JSON.stringify(rolePermissions.value[selectedRole.value]?.map((p) => p.enabled))
+  const original = JSON.stringify(originalPermissions.value[selectedRole.value]?.map((p) => p.enabled))
   return current !== original
 })
 
+watch(selectedUserId, (newVal) => {
+  if (newVal) {
+    loadUserPermissions()
+  } else {
+    userPermissions.value = {}
+    originalUserPermissions.value = {}
+  }
+})
+
 async function loadPermissions() {
-  permissions.value = await controller.getPermissions(filterModule.value || undefined)
+  permissions.value = await controller.getAvailablePermissions()
 }
 
 async function loadRolePermissions() {
@@ -196,9 +207,15 @@ async function loadRolePermissions() {
   originalPermissions.value = JSON.parse(JSON.stringify(rolePermissions.value))
 }
 
+async function loadUserPermissions() {
+  if (!selectedUserId.value) return
+  userPermissions.value = await controller.getUserPermissions({ userSsoId: selectedUserId.value })
+  originalUserPermissions.value = JSON.parse(JSON.stringify(userPermissions.value))
+}
+
 async function loadAvailableRoles() {
   const status = await controller.getSyncStatus()
-  availableRoles.value = (status.roles || []).map((r: any) => ({
+  availableRoles.value = (status.roles || []).map((r) => ({
     slug: r.slug,
     name: r.name
   }))
@@ -214,87 +231,175 @@ async function loadSyncStatus() {
 function tabChanged() {
   if (activeTab.value === 'permissions') loadPermissions()
   if (activeTab.value === 'roles') loadRolePermissions()
+  if (activeTab.value === 'users') loadUserPermissions()
   if (activeTab.value === 'sync') loadSyncStatus()
 }
 
-function editPermission(perm: any) {
-  editingPermission.value = perm
-  form.value = { slug: perm.slug, name: perm.name, module: perm.module }
-  showCreateModal.value = true
-}
-
-async function savePermission() {
-  try {
-    if (editingPermission.value) {
-      await controller.updatePermission(editingPermission.value.id, {
-        name: form.value.name,
-        module: form.value.module
-      })
-    } else {
-      await controller.createPermission(form.value)
-    }
-    closeModal()
-    loadPermissions()
-    showToast('Permiso guardado')
-  } catch (e: any) {
-    showToast(e.response?.data?.message || 'Error al guardar', 'danger')
-  }
-}
-
-async function confirmDelete(perm: any) {
-  try {
-    await controller.deletePermission(perm.id)
-    loadPermissions()
-    showToast('Permiso eliminado')
-  } catch (e: any) {
-    showToast(e.response?.data?.message || 'Error al eliminar', 'danger')
-  }
-}
-
-function closeModal() {
-  showCreateModal.value = false
-  editingPermission.value = null
-  form.value = { slug: '', name: '', module: '' }
-}
-
-function togglePermission(permId: number, enabled: boolean) {
+function togglePermission(permSlug: string, enabled: boolean) {
   const rolePerms = rolePermissions.value[selectedRole.value]
-  const perm = rolePerms.find((p: any) => p.id === permId)
+  const perm = rolePerms.find((p) => p.slug === permSlug)
   if (perm) perm.enabled = enabled
+}
+
+function updateUserOverride(permSlug: string, type: string | null) {
+  const userPerms = userPermissions.value[selectedUserId.value]
+  const perm = userPerms.find((p) => p.slug === permSlug)
+  if (perm) perm.type = type as 'grant' | 'deny' | null
 }
 
 async function saveRolePermissions() {
   try {
-    const enabledIds = rolePermissions.value[selectedRole.value]
-      .filter((p: any) => p.enabled)
-      .map((p: any) => p.id)
-    await controller.updateRolePermissions(selectedRole.value, enabledIds)
+    saving.value = true
+    const enabledSlugs = rolePermissions.value[selectedRole.value]
+      .filter((p) => p.enabled)
+      .map((p) => p.slug)
+    await controller.updateRolePermissions({ roleSlug: selectedRole.value, permissionSlugs: enabledSlugs })
     originalPermissions.value = JSON.parse(JSON.stringify(rolePermissions.value))
     showToast('Cambios guardados')
   } catch (e: any) {
     showToast(e.response?.data?.message || 'Error al guardar', 'danger')
+  } finally {
+    saving.value = false
+  }
+}
+
+async function saveUserPermissions() {
+  if (!selectedUserId.value) return
+  try {
+    saving.value = true
+    const perms = userPermissions.value[selectedUserId.value].map((p) => ({
+      slug: p.slug,
+      type: p.type,
+    }))
+    await controller.updateUserPermissions({ userSsoId: selectedUserId.value, permissions: perms })
+    originalUserPermissions.value = JSON.parse(JSON.stringify(userPermissions.value))
+    showToast('Permisos de usuario guardados')
+  } catch (e: any) {
+    showToast(e.response?.data?.message || 'Error al guardar', 'danger')
+  } finally {
+    saving.value = false
   }
 }
 
 async function doSync() {
   try {
+    saving.value = true
     syncStatus.value = await controller.syncRoles()
     showToast('Sincronización completada')
   } catch (e: any) {
     showToast('Error al sincronizar', 'danger')
+  } finally {
+    saving.value = false
   }
+}
+
+async function showAddPermissionModal() {
+  const alert = await alertController.create({
+    header: 'Agregar Permiso',
+    inputs: [
+      { name: 'module', placeholder: 'Módulo (ej: posts)', type: 'text' },
+      { name: 'action', placeholder: 'Acción (ej: create)', type: 'text' },
+    ],
+    buttons: [
+      { text: 'Cancelar', role: 'cancel' },
+      {
+        text: 'Agregar',
+        handler: async (data) => {
+          if (!data.module || !data.action) {
+            showToast('Complete todos los campos', 'warning')
+            return
+          }
+          const slug = `${data.module}.${data.action}`
+          try {
+            saving.value = true
+            await controller.createPermission({ slug, module: data.module, action: data.action })
+            await loadPermissions()
+            showToast('Permiso creado')
+          } catch (e: any) {
+            showToast(e.response?.data?.message || 'Error al crear', 'danger')
+          } finally {
+            saving.value = false
+          }
+        },
+      },
+    ],
+  })
+  await alert.present()
+}
+
+async function editPermission(perm: AvailablePermission) {
+  const alert = await alertController.create({
+    header: 'Editar Permiso',
+    inputs: [
+      { name: 'slug', placeholder: 'Slug', value: perm.slug, type: 'text' },
+    ],
+    buttons: [
+      { text: 'Cancelar', role: 'cancel' },
+      {
+        text: 'Guardar',
+        handler: async (data) => {
+          const parts = data.slug.split('.', 2)
+          try {
+            saving.value = true
+            const permId = permissions.value.find(p => p.slug === perm.slug)?.id
+            if (permId) {
+              await controller.updatePermission({ id: permId, slug: data.slug, module: parts[0], action: parts[1] || '' })
+              await loadPermissions()
+              showToast('Permiso actualizado')
+            }
+          } catch (e: any) {
+            showToast(e.response?.data?.message || 'Error al actualizar', 'danger')
+          } finally {
+            saving.value = false
+          }
+        },
+      },
+    ],
+  })
+  await alert.present()
+}
+
+async function deletePermission(perm: AvailablePermission) {
+  const alert = await alertController.create({
+    header: 'Eliminar Permiso',
+    message: `¿Eliminar ${perm.slug}?`,
+    buttons: [
+      { text: 'Cancelar', role: 'cancel' },
+      {
+        text: 'Eliminar',
+        handler: async () => {
+          try {
+            saving.value = true
+            const permId = permissions.value.find(p => p.slug === perm.slug)?.id
+            if (permId) {
+              await controller.deletePermission({ id: permId })
+              await loadPermissions()
+              showToast('Permiso eliminado')
+            }
+          } catch (e: any) {
+            showToast(e.response?.data?.message || 'Error al eliminar', 'danger')
+          } finally {
+            saving.value = false
+          }
+        },
+      },
+    ],
+  })
+  await alert.present()
 }
 
 async function showToast(message: string, color: string = 'success') {
   const toast = await toastController.create({
     message, duration: 2000, color
   })
-  toast.present()
+  await toast.present()
 }
 
 onMounted(() => {
   loadPermissions()
   loadAvailableRoles()
+  loadRolePermissions()
+  loadSyncStatus()
 })
 </script>
 
@@ -302,30 +407,11 @@ onMounted(() => {
 .tab-content {
   padding: 16px;
 }
-.toolbar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-  align-items: center;
-}
-.toolbar ion-select {
-  flex: 1;
-  max-width: 200px;
-}
-.admin-notice {
-  background: var(--ion-color-warning-bg);
-  color: var(--ion-color-warning);
-  padding: 12px;
-  border-radius: 8px;
-  margin: 16px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 .permissions-grid {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin-top: 16px;
 }
 .save-btn {
   margin-top: 20px;

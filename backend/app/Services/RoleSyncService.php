@@ -37,6 +37,14 @@ class RoleSyncService
         return null;
     }
 
+    public function getRoleSlugs(): array
+    {
+        $roles = $this->getRoles();
+        return array_filter(array_map(function ($role) {
+            return $role['slug'] ?? $role->slug ?? null;
+        }, $roles));
+    }
+
     private function fetchRoles(): array
     {
         $clientId = config('sso.client_id', 1);

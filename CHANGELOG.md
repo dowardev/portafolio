@@ -1,5 +1,46 @@
 # Changelog
 
+## 18.4.0 - 2026-05-09
+
+### Added
+- Complete permissions system v2 with three-layer architecture:
+  - `permissions` table: editable catalog of available permissions (slug, module, action)
+  - `role_permissions` table: role-to-permission mappings (editable from admin UI)
+  - `user_permissions` table: per-user permission overrides (grant/deny)
+- Permission catalog CRUD in admin UI (create, read, update, delete permissions)
+- User permission overrides management in admin UI (grant/deny per user)
+- Role permissions editor with checkboxes for each permission
+
+### Features
+- Permission middleware priority: user deny > user grant > role permissions > deny by default
+- Permission slug parser with module/action extraction
+- Backend transaction safety for permission updates
+- User permission filtering by user_sso_id to improve scalability
+- Frontend with loading states, proper types, and named parameters pattern
+
+### Fixed
+- Migration down() now uses column names instead of hardcoded index names
+- Middleware now checks all user roles instead of just the first one
+- PermissionController now uses proper null type validation for user permissions
+- Permission delete now cascades to clean orphaned role_permissions and user_permissions
+- Permission model now returns direct fields instead of re-parsing slug
+
+### Affected Files
+- Added: `backend/app/Models/Permission.php`
+- Added: `backend/app/Models/UserPermission.php`
+- Added: `backend/database/migrations/2026_05_09_000002_simplify_role_permissions.php`
+- Added: `backend/database/migrations/2026_05_09_000003_create_user_permissions_table.php`
+- Added: `backend/database/seeders/RolePermissionSeeder.php`
+- Added: `docs/superpowers/plans/2026-05-09-permissions-v2.md`
+- Modified: `backend/app/Http/Controllers/Admin/PermissionController.php`
+- Modified: `backend/app/Http/Middleware/PermissionMiddleware.php`
+- Modified: `backend/app/Services/RoleSyncService.php`
+- Modified: `backend/routes/api.php`
+- Modified: `frontend/src/controllers/permissionsController.ts`
+- Modified: `frontend/src/views/admin/PermissionsPage.vue`
+
+---
+
 ## 18.3.0 - 2026-05-08
 
 ### Added

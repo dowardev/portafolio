@@ -56,13 +56,21 @@ Route::middleware([Cors::class, 'sso.auth', 'permission:posts.delete'])->post("d
 Route::middleware([Cors::class, 'sso.auth', 'permission:intro.update'])->post("admin/update-intro", [IntroProfileController::class, "updateIntro"]);
 
 Route::middleware([Cors::class, 'sso.auth', 'sso.role:admin'])->prefix('admin')->group(function () {
-  // Permissions (solo admin puede gestionar permisos)
-  Route::get("permissions", [PermissionController::class, "index"]);
-  Route::post("permissions", [PermissionController::class, "store"]);
-  Route::put("permissions/{permission}", [PermissionController::class, "update"]);
-  Route::delete("permissions/{permission}", [PermissionController::class, "destroy"]);
+  // Permissions catalog (CRUD)
+  Route::get("permissions", [PermissionController::class, "getAvailablePermissions"]);
+  Route::post("permissions", [PermissionController::class, "createPermission"]);
+  Route::put("permissions/{id}", [PermissionController::class, "updatePermission"]);
+  Route::delete("permissions/{id}", [PermissionController::class, "deletePermission"]);
+
+  // Role permissions
   Route::get("permissions/roles", [PermissionController::class, "getRolePermissions"]);
   Route::put("permissions/roles", [PermissionController::class, "updateRolePermissions"]);
+
+  // User permission overrides
+  Route::get("permissions/user-override", [PermissionController::class, "getUserPermissions"])->name('permissions.user-override');
+  Route::put("permissions/user-override", [PermissionController::class, "updateUserPermissions"]);
+
+  // SSO sync
   Route::post("permissions/sync", [PermissionController::class, "syncRoles"]);
   Route::get("permissions/sync-status", [PermissionController::class, "getSyncStatus"]);
 });

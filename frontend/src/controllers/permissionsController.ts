@@ -1,79 +1,108 @@
-import { api } from '@/services/api'
+import { getApiConnector } from '@/apiConnector'
 
-interface Permission {
+export interface AvailablePermission {
   id: number
   slug: string
-  name: string
   module: string
+  action: string
 }
 
-interface RolePermissionData {
-  id: number
+export interface RolePermissionData {
   slug: string
-  name: string
   module: string
+  action: string
   enabled: boolean
 }
 
-interface RolePermissions {
+export interface RolePermissions {
   [roleSlug: string]: RolePermissionData[]
 }
 
-interface SyncStatus {
+export interface SyncStatus {
   roles: { slug: string; name: string; is_protected: boolean }[]
   last_sync: string | null
 }
 
+export interface UserPermissionOverride {
+  slug: string
+  module: string
+  action: string
+  type: 'grant' | 'deny' | null
+}
+
+export interface UserPermissions {
+  [userId: string]: UserPermissionOverride[]
+}
+
 export function usePermissionsController() {
-  async function getPermissions(module?: string): Promise<Permission[]> {
-    const params = module ? { module } : {}
-    const { data } = await api.get('/admin/permissions', { params })
-    return data
+  async function getAvailablePermissions(): Promise<AvailablePermission[]> {
+    const response = await getApiConnector().get<AvailablePermission[]>('admin/permissions')
+    return response
   }
 
-  async function createPermission(params: { slug: string; name: string; module: string }): Promise<Permission> {
-    const { data } = await api.post('/admin/permissions', params)
-    return data.permission
+  async function createPermission(params: { slug: string; module: string; action: string }): Promise<void> {
+    const { slug, module, action } = params
+    await getApiConnector().post('admin/permissions', { slug, module, action })
   }
 
-  async function updatePermission(id: number, params: { name?: string; module?: string }): Promise<Permission> {
-    const { data } = await api.put(`/admin/permissions/${id}`, params)
-    return data.permission
+  async function updatePermission(params: { id: number; slug?: string; module?: string; action?: string }): Promise<void> {
+    const { id, ...body } = params
+    await getApiConnector().put(`admin/permissions/${id}`, body)
   }
 
-  async function deletePermission(id: number): Promise<void> {
-    await api.delete(`/admin/permissions/${id}`)
+  async function deletePermission(params: { id: number }): Promise<void> {
+    const { id } = params
+    await getApiConnector().delete(`admin/permissions/${id}`)
   }
 
   async function getRolePermissions(): Promise<RolePermissions> {
-    const { data } = await api.get('/admin/permissions/roles')
-    return data
+    const response = await getApiConnector().get<RolePermissions>('admin/permissions/roles')
+    return response
   }
 
-  async function updateRolePermissions(roleSlug: string, permissionIds: number[]): Promise<void> {
-    await api.put('/admin/permissions/roles', {
+  async function updateRolePermissions(params: { roleSlug: string; permissionSlugs: string[] }): Promise<void> {
+    const { roleSlug, permissionSlugs } = params
+    await getApiConnector().put('admin/permissions/roles', {
       role_slug: roleSlug,
-      permission_ids: permissionIds,
+      permission_slugs: permissionSlugs,
+    })
+  }
+
+  async function getUserPermissions(params?: { userSsoId?: string }): Promise<UserPermissions> {
+    const url = params?.userSsoId 
+      ? 'admin/permissions/user-override?user_sso_id=' + encodeURIComponent(params.userSsoId)
+      : 'admin/permissions/user-override'
+    const response = await getApiConnector().get<UserPermissions>(url)
+    return response
+  }
+
+  async function updateUserPermissions(params: { userSsoId: string; permissions: { slug: string; type: 'grant' | 'deny' | null }[] }): Promise<void> {
+    const { userSsoId, permissions } = params
+    await getApiConnector().put('admin/permissions/user-override', {
+      user_sso_id: userSsoId,
+      permissions,
     })
   }
 
   async function getSyncStatus(): Promise<SyncStatus> {
-    const { data } = await api.get('/admin/permissions/sync-status')
-    return data
+    const response = await getApiConnector().get<SyncStatus>('admin/permissions/sync-status')
+    return response
   }
 
   async function syncRoles(): Promise<SyncStatus> {
-    const { data } = await api.post('/admin/permissions/sync')
-    return data
+    const response = await getApiConnector().post<SyncStatus>('admin/permissions/sync')
+    return response
   }
 
   return {
-    getPermissions,
+    getAvailablePermissions,
     createPermission,
     updatePermission,
     deletePermission,
     getRolePermissions,
     updateRolePermissions,
+    getUserPermissions,
+    updateUserPermissions,
     getSyncStatus,
     syncRoles,
   }
