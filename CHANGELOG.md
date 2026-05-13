@@ -1,5 +1,14 @@
 # Changelog
 
+## 18.4.2 - 2026-05-13
+
+### Fixed
+- **Dynamic logo and photo in HomeTemplate2**: Logo and profile photo in the homepage template were hardcoded to static asset paths instead of using `introData.logoUrl` and `introData.photoUrl` from the store. They now bind dynamically to the configured values from the admin editor, with static assets as fallback defaults.
+
+### Affected Files
+- Modified:
+  - `frontend/src/templates/HomeTemplate2.vue`
+
 ## 18.4.1 - 2026-05-13
 
 ### Fixed (Critical)

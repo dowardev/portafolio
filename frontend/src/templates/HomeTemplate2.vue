@@ -14,10 +14,10 @@
                   }"
                 >
                   <ion-avatar>
-                    <img
-                      alt="Silhouette of a person's head"
-                      src="@/assets/portafolio/logo_dowar_2.1.png"
-                    />
+              <img
+                  alt="Logo"
+                  :src="introData?.logoUrl || defaultLogo"
+                />
                   </ion-avatar>
                 </div>
 
@@ -98,10 +98,10 @@
               <div class="profile-photo-container scale-in-item" :class="{ 'is-visible': heroReady }" style="--delay: 0ms">
                 <div class="gradient-ring">
                   <ion-avatar class="profile-avatar">
-                    <img
-                      alt="Foto de perfil"
-                      src="@/assets/portafolio/foto_perfil.jpg"
-                    />
+            <img
+                  alt="Foto de perfil"
+                  :src="introData?.photoUrl || defaultPhoto"
+                />
                   </ion-avatar>
                 </div>
               </div>
@@ -416,6 +416,8 @@ import vueIcon from "@/assets/otros/vue-js-1.svg";
 import mariadbIcon from "@/assets/otros/mariadb-icon.svg";
 import ionicIcon from "@/assets/otros/ionicframework-icon.svg";
 import laravelIcon from "@/assets/otros/laravel-2.svg";
+import defaultLogo from "@/assets/portafolio/logo_dowar_2.1.png";
+import defaultPhoto from "@/assets/portafolio/foto_perfil.jpg";
 import { getIconByName } from "@/composables/iconsIndex";
 import { linkOutline } from "ionicons/icons";
 
