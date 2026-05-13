@@ -63,7 +63,22 @@ class PermissionController extends Controller
             'action' => 'sometimes|string|max:50',
         ]);
 
-        $permission->update($validated);
+        $oldSlug = $permission->slug;
+
+        try {
+            DB::transaction(function () use ($permission, $validated, $oldSlug) {
+                $permission->update($validated);
+
+                if (isset($validated['slug']) && $validated['slug'] !== $oldSlug) {
+                    RolePermission::where('permission_slug', $oldSlug)
+                        ->update(['permission_slug' => $validated['slug']]);
+                    UserPermission::where('permission_slug', $oldSlug)
+                        ->update(['permission_slug' => $validated['slug']]);
+                }
+            });
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Error al actualizar permiso'], 500);
+        }
 
         return response()->json([
             'message' => 'Permiso actualizado',

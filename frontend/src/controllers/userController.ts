@@ -5,10 +5,16 @@ import {
   User,
 } from "../utils/interfaces";
 import { getSSOClient } from "@/ssoClientAccessor";
+import { getApiConnector } from "@/apiConnector";
 
 import ErrorController from "./errorController";
 
 import { useUserStore } from "@/store/userStore";
+
+interface MyPermissionsResponse {
+  roles: string[];
+  permissions: Record<string, boolean>;
+}
 
 export default class UserController {
   private systemService = new SystemService();
@@ -57,6 +63,9 @@ export default class UserController {
     try {
       const ssoUser = await getSSOClient().getUser();
       if (ssoUser) this.updateUserProps({ user: ssoUser });
+      if (!this.userStore.permissionsLoaded) {
+        await this.loadPermissions();
+      }
     } catch (e: unknown) {
       const customError = this.errorController.getError({ error: e });
       
@@ -131,5 +140,42 @@ export default class UserController {
   async logout() {
     await getSSOClient().logout();
     this.userStore.logout();
+  }
+
+  async loadPermissions(): Promise<void> {
+    try {
+      const response = await getApiConnector().get<MyPermissionsResponse>('my-permissions');
+      this.userStore.setPermissions({ roles: response.roles, permissions: response.permissions });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
+  }
+
+  hasPermission(params: { slug: string }): boolean {
+    return this.userStore.hasPermission(params);
+  }
+
+  hasAnyPermission(params: { slugs: string[] }): boolean {
+    return this.userStore.hasAnyPermission(params);
+  }
+
+  hasRole(params: { slug: string }): boolean {
+    return this.userStore.hasRole(params);
+  }
+
+  hasAnyRole(params: { slugs: string[] }): boolean {
+    return this.userStore.hasAnyRole(params);
+  }
+
+  isAdmin(): boolean {
+    return this.userStore.isAdmin;
+  }
+
+  can(params: { role?: string; permission?: string }): boolean {
+    return this.userStore.can(params);
+  }
+
+  get permissionsStore() {
+    return this.userStore;
   }
 }

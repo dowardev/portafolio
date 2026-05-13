@@ -15,17 +15,21 @@ class Cors
    */
   public function handle(Request $request, Closure $next): Response
   {
-    $response = $next($request);
+    if ($request->isMethod('OPTIONS')) {
+      $response = response('', 204);
+    } else {
+      $response = $next($request);
+    }
 
     $response->headers->set("Access-Control-Allow-Origin", "*");
     $response->headers->set(
       "Access-Control-Allow-Methods",
       "GET, POST, PUT, DELETE, OPTIONS"
-    ); // Métodos permitidos
+    );
     $response->headers->set(
       "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    ); // Cabeceras permitidas
+      "Content-Type, Authorization, DPoP, DPoP-Public-Key"
+    );
 
     return $response;
   }

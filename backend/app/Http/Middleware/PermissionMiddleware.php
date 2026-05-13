@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\RolePermission;
 use App\Models\UserPermission;
+use App\Traits\ExtractsRoleSlugs;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,6 +12,8 @@ use TuOrg\SsoServer\Facades\SsoAuth;
 
 class PermissionMiddleware
 {
+    use ExtractsRoleSlugs;
+
     public function handle(Request $request, Closure $next, string $permission): Response
     {
         if (!SsoAuth::isAuthenticated()) {
@@ -42,6 +45,10 @@ class PermissionMiddleware
             return response()->json(['error' => 'Sin rol asignado'], 403);
         }
 
+        if (in_array('admin', $roleSlugs)) {
+            return $next($request);
+        }
+
         $hasPermission = RolePermission::whereIn('role_slug', $roleSlugs)
             ->where('permission_slug', $permission)
             ->exists();
@@ -51,24 +58,5 @@ class PermissionMiddleware
         }
 
         return $next($request);
-    }
-
-    private function extractRoleSlugs($roles): array
-    {
-        if (empty($roles)) {
-            return [];
-        }
-
-        if (is_array($roles)) {
-            return array_filter(array_map(function ($role) {
-                return $role['slug'] ?? $role->slug ?? null;
-            }, $roles));
-        }
-
-        if (is_object($roles) && isset($roles->slug)) {
-            return [$roles->slug];
-        }
-
-        return [];
     }
 }

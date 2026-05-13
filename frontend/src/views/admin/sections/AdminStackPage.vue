@@ -66,12 +66,16 @@ import {
   IonSpinner,
   IonTitle,
   IonToolbar,
+  alertController,
 } from "@ionic/vue";
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import StackEditor from "../editors/StackEditor.vue";
 import StackController from "@/controllers/stackController";
+import { usePermissionGuard } from "@/composables/usePermissionGuard";
 import { saveOutline } from "ionicons/icons";
+
+const { can, guard } = usePermissionGuard();
 import type { StackItem } from "@/services/types";
 
 const stackController = new StackController();
@@ -97,13 +101,22 @@ function updateStackFiles(fileMap: Record<number, File>) {
 }
 
 async function handleSave() {
+  const canCreate = can({ permission: 'stacks.create' });
+  const canUpdate = can({ permission: 'stacks.update' });
+  if (!canCreate && !canUpdate) {
+    await guard({ permission: 'stacks.update' });
+    return;
+  }
+
   saving.value = true;
   try {
     for (const stack of stackData.value) {
       if (stack.id) {
+        if (!canUpdate) continue;
         const file = pendingFiles[stack.id];
         await stackController.updateStack(stack.id, stack, file);
       } else {
+        if (!canCreate) continue;
         const file = pendingFiles[stackData.value.indexOf(stack)];
         await stackController.addStack(stack, file);
       }

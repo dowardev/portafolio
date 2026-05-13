@@ -404,7 +404,20 @@ const ADMIN_PAGES = [
   "ExperienceNewPage",
   "ExperienceEditPage",
   "AdminEditorPage",
-  "HomeEditorPage",
+  "SkillsCategoriesListPage",
+  "SkillsCategoriesEditPage",
+  "SkillsCategoriesNewPage",
+  "CertificatesListPage",
+  "CertificateEditPage",
+  "CertificateNewPage",
+  "FreelancePlatformsListPage",
+  "FreelancePlatformEditPage",
+  "FreelancePlatformNewPage",
+  "FreelanceCommentsListPage",
+  "FreelanceCommentEditPage",
+  "FreelanceCommentNewPage",
+  "UsersPage",
+  "PermissionsPage",
   "CreatePostPage",
   "UpdatePostPage",
 ];
@@ -472,11 +485,9 @@ async function logout() {
   try {
     spinners.value.buttonLogout = true;
     await getSSOClient().logout();
-    location.reload();
   } catch (error) {
     console.error(error);
-  } finally {
-    spinners.value.buttonLogout = false;
+    location.reload();
   }
 }
 

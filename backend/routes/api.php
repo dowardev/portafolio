@@ -49,6 +49,8 @@ Route::middleware([Cors::class])->group(function () {
   Route::get("search-posts/{search}", [PostsController::class, "searchPost"]);
 });
 
+Route::middleware([Cors::class, 'sso.auth'])->get('my-permissions', \App\Http\Controllers\MyPermissionsController::class);
+
 Route::middleware([Cors::class, 'sso.auth', 'permission:posts.create'])->post("create-post", [PostsController::class, "createPost"]);
 Route::middleware([Cors::class, 'sso.auth', 'permission:posts.update'])->post("update-post", [PostsController::class, "updatePost"]);
 Route::middleware([Cors::class, 'sso.auth', 'permission:posts.delete'])->post("delete-post", [PostsController::class, "deletePost"]);

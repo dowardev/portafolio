@@ -141,9 +141,6 @@ export interface Role {
   slug: string;
   description: string | null;
   is_protected: boolean;
-  pivot?: {
-    sso_client_id: number | null;
-  };
 }
 
 export interface User {

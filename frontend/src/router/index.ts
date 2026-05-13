@@ -27,12 +27,12 @@ import SkillsCategoriesListPage from "@/views/admin/sections/SkillsCategoriesLis
 import CategoriesEditor from "@/views/admin/editors/SkillsEditor.vue";
 import CertificatesListPage from "@/views/admin/sections/CertificatesListPage.vue";
 import CertificatesEditor from "@/views/admin/editors/CertificatesEditor.vue";
-import FreelanceListPage from "@/views/admin/sections/FreelanceListPage.vue";
+import FreelancePlatformsListPage from "@/views/admin/sections/FreelancePlatformsListPage.vue";
+import FreelanceCommentsListPage from "@/views/admin/sections/FreelanceCommentsListPage.vue";
 import FreelanceEditor from "@/views/admin/editors/FreelanceEditor.vue";
 import PermissionsPage from "@/views/admin/PermissionsPage.vue";
 
 import { getSSOClient } from "@/ssoClientAccessor";
-import { createAuthGuard } from "@tu-org/sso-client";
 import UserController from "@/controllers/userController";
 import { ICustomError, Role } from "@/utils/interfaces";
 
@@ -56,6 +56,51 @@ export function hasAdminRole(roles?: Role[]): boolean {
     (role) =>
       role.slug === "admin" || role.name.toLowerCase() === "administrador",
   );
+}
+
+interface RouteGuard {
+  roles?: string[];
+  permissions?: string[];
+}
+
+const routeGuards: Record<string, RouteGuard> = {
+  CreatePostPage: { permissions: ['posts.create'] },
+  UpdatePostPage: { permissions: ['posts.update'] },
+  PanelAdminPage: { roles: ['admin', 'editor'] },
+  ProjectsListPage: { permissions: ['projects.create', 'projects.update', 'projects.delete'] },
+  ProjectEditPage: { permissions: ['projects.update'] },
+  ProjectNewPage: { permissions: ['projects.create'] },
+  ExperienceListPage: { permissions: ['experiences.create', 'experiences.update', 'experiences.delete'] },
+  ExperienceEditPage: { permissions: ['experiences.update'] },
+  ExperienceNewPage: { permissions: ['experiences.create'] },
+  SkillsCategoriesListPage: { permissions: ['skills-categories.create', 'skills-categories.update', 'skills-categories.delete'] },
+  SkillsCategoriesEditPage: { permissions: ['skills-categories.update'] },
+  SkillsCategoriesNewPage: { permissions: ['skills-categories.create'] },
+  CertificatesListPage: { permissions: ['certificates.create', 'certificates.update', 'certificates.delete'] },
+  CertificateEditPage: { permissions: ['certificates.update'] },
+  CertificateNewPage: { permissions: ['certificates.create'] },
+  FreelancePlatformsListPage: { permissions: ['freelance.create', 'freelance.update', 'freelance.delete'] },
+  FreelancePlatformEditPage: { permissions: ['freelance.update'] },
+  FreelancePlatformNewPage: { permissions: ['freelance.create'] },
+  FreelanceCommentsListPage: { permissions: ['freelance-comments.create', 'freelance-comments.update', 'freelance-comments.delete'] },
+  FreelanceCommentEditPage: { permissions: ['freelance-comments.update'] },
+  FreelanceCommentNewPage: { permissions: ['freelance-comments.create'] },
+  UsersPage: { roles: ['admin'] },
+  PermissionsPage: { roles: ['admin'] },
+  AdminEditorPage: { roles: ['admin', 'editor'] },
+};
+
+function canAccessRoute(params: { guard: RouteGuard; userController: UserController }): boolean {
+  const { guard, userController } = params
+  const { roles, permissions } = guard
+
+  if (roles?.length) {
+    if (userController.hasAnyRole({ slugs: roles })) return true
+  }
+  if (permissions?.length) {
+    if (userController.hasAnyPermission({ slugs: permissions })) return true
+  }
+  return false
 }
 
 const routes: Array<RouteRecordRaw> = [
@@ -211,18 +256,33 @@ const routes: Array<RouteRecordRaw> = [
     component: CertificatesEditor,
   },
   {
-    path: "/admin-panel/freelance",
-    name: "FreelanceListPage",
-    component: FreelanceListPage,
+    path: "/admin-panel/freelance-platform",
+    name: "FreelancePlatformsListPage",
+    component: FreelancePlatformsListPage,
   },
   {
-    path: "/admin-panel/freelance/:type(new|platform|comment)/new",
-    name: "FreelanceNewPage",
+    path: "/admin-panel/freelance-platform/new",
+    name: "FreelancePlatformNewPage",
     component: FreelanceEditor,
   },
   {
-    path: "/admin-panel/freelance/:type(platform|comment)/edit/:index",
-    name: "FreelanceEditPage",
+    path: "/admin-panel/freelance-platform/edit/:index",
+    name: "FreelancePlatformEditPage",
+    component: FreelanceEditor,
+  },
+  {
+    path: "/admin-panel/freelance-comments",
+    name: "FreelanceCommentsListPage",
+    component: FreelanceCommentsListPage,
+  },
+  {
+    path: "/admin-panel/freelance-comments/new",
+    name: "FreelanceCommentNewPage",
+    component: FreelanceEditor,
+  },
+  {
+    path: "/admin-panel/freelance-comments/edit/:index",
+    name: "FreelanceCommentEditPage",
     component: FreelanceEditor,
   },
   {
@@ -230,24 +290,12 @@ const routes: Array<RouteRecordRaw> = [
     name: "AdminEditorPage",
     component: AdminEditorPage,
   },
-  {
-    path: "/admin-panel/freelance/edit/:index",
-    name: "FreelanceEditPageOld",
-    component: FreelanceEditor,
-  },
-  {
-    path: "/admin-panel/freelance/new",
-    name: "FreelanceNewPageOld",
-    component: FreelanceEditor,
-  },
 ];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
-
-let authGuard: ReturnType<typeof createAuthGuard> | undefined;
 
 const publicRoutes = [
   "RestorePasswordPage",
@@ -271,7 +319,6 @@ const adminRoutes = [
   "CreatePostPage",
   "UpdatePostPage",
   "PanelAdminPage",
-  "HomeEditorPage",
   "AdminEditorPage",
   "ProjectsListPage",
   "ProjectEditPage",
@@ -285,11 +332,12 @@ const adminRoutes = [
   "CertificatesListPage",
   "CertificateEditPage",
   "CertificateNewPage",
-  "FreelanceListPage",
-  "FreelanceEditPage",
-  "FreelanceEditPageOld",
-  "FreelanceNewPage",
-  "FreelanceNewPageOld",
+  "FreelancePlatformsListPage",
+  "FreelancePlatformEditPage",
+  "FreelancePlatformNewPage",
+  "FreelanceCommentsListPage",
+  "FreelanceCommentEditPage",
+  "FreelanceCommentNewPage",
   "UsersPage",
   "PermissionsPage",
 ];
@@ -297,29 +345,35 @@ const adminRoutes = [
 const authorizedRoutes = ["UserPanelPage", "AuthCallbackPage"];
 
 router.beforeEach(async (to, from, next) => {
-  if (!authGuard) {
-    authGuard = createAuthGuard(getSSOClient(), {
-      publicRoutes,
-      redirectUri: `${window.location.origin}/auth/callback`,
-    });
-  }
-  await authGuard(to, from, next);
-
-  if (!getSSOClient().isAuthenticated) return;
-
-  const userController = new UserController();
-  await loadUser(userController);
-  const roles = userController.getUser()?.roles;
-  const isAdmin = hasAdminRole(roles);
+  const client = getSSOClient();
   const routeName = to.name as string;
 
-  if (adminRoutes.includes(routeName) && !isAdmin) {
-    return next({ name: "PresentationPage" });
+  if (publicRoutes.includes(routeName || "")) {
+    return next();
   }
 
   if (authorizedRoutes.includes(routeName)) {
     return next();
   }
+
+  if (!client.isAuthenticated) {
+    await client.loginWithRedirect({
+      redirectUri: `${window.location.origin}/auth/callback`,
+    });
+    return next("/");
+  }
+
+  const userController = new UserController();
+  await loadUser(userController);
+
+  if (adminRoutes.includes(routeName)) {
+    const guard = routeGuards[routeName];
+    if (guard && !canAccessRoute({ guard, userController })) {
+      return next({ name: "PresentationPage" });
+    }
+  }
+
+  return next();
 });
 
 export default router;

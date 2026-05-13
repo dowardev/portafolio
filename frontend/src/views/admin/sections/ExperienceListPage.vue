@@ -154,8 +154,12 @@ import { faker } from "@faker-js/faker";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import ExperienceController from "@/controllers/experienceController";
+
+import { usePermissionGuard } from "@/composables/usePermissionGuard";
+
 import { storeToRefs } from "pinia";
 
+const { guard } = usePermissionGuard();
 const router = useRouter();
 const experienceController = new ExperienceController();
 const { experiences } = storeToRefs(experienceController.experienceStore);
@@ -171,10 +175,15 @@ function editExperience(index: number) {
 }
 
 function createNewExperience() {
-  router.push("/admin-panel/experience/new");
+  guard({ permission: 'experiences.create' }).then(allowed => {
+    if (allowed) router.push("/admin-panel/experience/new");
+  });
 }
 
 async function confirmDelete(index: number) {
+  if (!(await guard({ permission: 'experiences.delete' }))) {
+    return;
+  }
   const exp = experiences[index];
   if (!exp?.id) return;
 

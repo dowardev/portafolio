@@ -125,8 +125,12 @@ import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { addOutline, ribbonOutline, trashOutline } from "ionicons/icons";
 import CertificatesController from "@/controllers/certificatesController";
+
+import { usePermissionGuard } from "@/composables/usePermissionGuard";
+
 import { storeToRefs } from "pinia";
 
+const { guard } = usePermissionGuard();
 const router = useRouter();
 const certificatesController = new CertificatesController();
 const { certificates } = storeToRefs(certificatesController.certificatesStore);
@@ -140,10 +144,15 @@ function editCertificate(index: number) {
 }
 
 function createNewCertificate() {
-  router.push("/admin-panel/certificates/new");
+  guard({ permission: 'certificates.create' }).then(allowed => {
+    if (allowed) router.push("/admin-panel/certificates/new");
+  });
 }
 
 async function confirmDelete(index: number) {
+  if (!(await guard({ permission: 'certificates.delete' }))) {
+    return;
+  }
   const cert = certificates[index];
   if (!cert?.id) return;
 

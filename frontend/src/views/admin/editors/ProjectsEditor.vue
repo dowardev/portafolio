@@ -284,10 +284,17 @@ import {
   saveOutline,
 } from "ionicons/icons";
 import { computed, ref, onMounted } from "vue";
+
 import { useRoute, useRouter } from "vue-router";
+
 import type { ProjectItem } from "@/services/types";
+
 import IconSelector from "@/components/admin/IconSelector.vue";
+
 import ProjectsController from "@/controllers/projectsController";
+import { usePermissionGuard } from "@/composables/usePermissionGuard";
+
+const { guard } = usePermissionGuard();
 // end imports
 
 const route = useRoute();
@@ -350,6 +357,11 @@ onMounted(async () => {
 });
 
 async function handleSave() {
+  const requiredPerm = isNew.value ? 'projects.create' : 'projects.update';
+  if (!(await guard({ permission: requiredPerm, message: `No tienes permisos para ${isNew.value ? 'crear' : 'actualizar'} proyectos. Contacta al administrador.` }))) {
+    return;
+  }
+
   if (!localProject.value) return;
   try {
     const success = isNew.value
@@ -364,6 +376,10 @@ async function handleSave() {
 }
 
 async function confirmDelete() {
+  if (!(await guard({ permission: 'projects.delete' }))) {
+    return;
+  }
+
   const alert = await alertController.create({
     header: "Eliminar proyecto",
     message: "¿Estás seguro de eliminar este proyecto?",

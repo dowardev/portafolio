@@ -711,6 +711,7 @@ import {
   IonTitle,
   IonToolbar,
   isPlatform,
+  alertController,
 } from "@ionic/vue";
 import { onMounted, reactive, ref, watch } from "vue";
 import {
@@ -904,6 +905,16 @@ async function updateUserStatus(params: { id: string; status: boolean }) {
 }
 
 async function handleUpdateUserStatus(params: { id: string; status: boolean }) {
+  if (!userController.hasRole({ slug: 'admin' })) {
+    const alert = await alertController.create({
+      header: 'Sin permisos',
+      message: 'Solo los administradores pueden cambiar el estado de usuarios. Contacta al administrador.',
+      buttons: ['OK'],
+    });
+    await alert.present();
+    return;
+  }
+
   const { id, status } = params;
   const oldValue = !status;
   const cardOptionsRef = status
@@ -961,6 +972,16 @@ async function deleteUser(params: AdminDeleteUserAccount) {
 }
 
 async function handleDeleteUser(params: AdminDeleteUserAccount) {
+  if (!userController.hasRole({ slug: 'admin' })) {
+    const alert = await alertController.create({
+      header: 'Sin permisos',
+      message: 'Solo los administradores pueden eliminar usuarios. Contacta al administrador.',
+      buttons: ['OK'],
+    });
+    await alert.present();
+    return;
+  }
+
   const { email, id } = params;
   const index = users.findIndex(
     (user) => user.id === id || user.email === email,
@@ -1014,6 +1035,16 @@ async function handleCreateUserAccount(params: {
   email: string;
   password: string;
 }) {
+  if (!userController.hasRole({ slug: 'admin' })) {
+    const alert = await alertController.create({
+      header: 'Sin permisos',
+      message: 'Solo los administradores pueden crear usuarios. Contacta al administrador.',
+      buttons: ['OK'],
+    });
+    await alert.present();
+    return;
+  }
+
   if (
     !params ||
     !params.name ||
@@ -1104,6 +1135,16 @@ async function handleUpdateUserAccount(params: {
   user: string;
   email: string;
 }) {
+  if (!userController.hasRole({ slug: 'admin' })) {
+    const alert = await alertController.create({
+      header: 'Sin permisos',
+      message: 'Solo los administradores pueden actualizar usuarios. Contacta al administrador.',
+      buttons: ['OK'],
+    });
+    await alert.present();
+    return;
+  }
+
   if (!params || !params.id || !params.name || !params.user || !params.email) {
     console.error("Invalid parameters");
     return;

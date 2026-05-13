@@ -245,15 +245,6 @@ class PostsController extends Controller
 
     public function createPost(Request $request)
     {
-        if (!SsoAuth::hasRole('admin')) {
-            return response()->json(
-                [
-                    "message" => "Unauthorized",
-                ],
-                403
-            );
-        }
-
     $title = $request->title;
     $content = $request->content;
     $cover_id = $request->coverId;

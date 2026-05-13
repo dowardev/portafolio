@@ -265,10 +265,17 @@ import {
   saveOutline,
 } from "ionicons/icons";
 import { computed, ref, onMounted } from "vue";
+
 import { useRoute, useRouter } from "vue-router";
+
 import type { ExperienceItem } from "@/services/types";
+
 import IconSelector from "@/components/admin/IconSelector.vue";
+
 import ExperienceController from "@/controllers/experienceController";
+import { usePermissionGuard } from "@/composables/usePermissionGuard";
+
+const { guard } = usePermissionGuard();
 
 const route = useRoute();
 const router = useRouter();
@@ -337,6 +344,11 @@ onMounted(async () => {
 });
 
 async function handleSave() {
+  const requiredPerm = isNew.value ? 'experiences.create' : 'experiences.update';
+  if (!(await guard({ permission: requiredPerm, message: `No tienes permisos para ${isNew.value ? 'crear' : 'actualizar'} experiencias. Contacta al administrador.` }))) {
+    return;
+  }
+
   localExperience.value.technologies = techs.value;
   saving.value = true;
   try {
@@ -358,6 +370,10 @@ async function handleSave() {
 }
 
 async function confirmDelete() {
+  if (!(await guard({ permission: 'experiences.delete' }))) {
+    return;
+  }
+
   const alert = await alertController.create({
     header: "Eliminar experiencia",
     message: "¿Estás seguro de eliminar esta experiencia?",

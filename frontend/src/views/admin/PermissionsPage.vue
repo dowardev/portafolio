@@ -154,7 +154,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
   IonContent, IonSegment, IonSegmentButton, IonLabel, IonList, IonItem,
@@ -175,6 +175,7 @@ const rolePermissions = ref<RolePermissions>({})
 const originalPermissions = ref<RolePermissions>({})
 
 const selectedUserId = ref('')
+let userPermissionsTimeout: ReturnType<typeof setTimeout> | null = null
 const userPermissions = ref<UserPermissions>({})
 const originalUserPermissions = ref<UserPermissions>({})
 
@@ -190,8 +191,11 @@ const hasChanges = computed(() => {
 })
 
 watch(selectedUserId, (newVal) => {
+  if (userPermissionsTimeout) clearTimeout(userPermissionsTimeout)
   if (newVal) {
-    loadUserPermissions()
+    userPermissionsTimeout = setTimeout(() => {
+      loadUserPermissions()
+    }, 500)
   } else {
     userPermissions.value = {}
     originalUserPermissions.value = {}
@@ -400,6 +404,10 @@ onMounted(() => {
   loadAvailableRoles()
   loadRolePermissions()
   loadSyncStatus()
+})
+
+onUnmounted(() => {
+  if (userPermissionsTimeout) clearTimeout(userPermissionsTimeout)
 })
 </script>
 

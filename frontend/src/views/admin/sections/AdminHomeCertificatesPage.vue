@@ -2,7 +2,7 @@
   <div class="ion-padding">
     <h3>Certificados</h3>
     <p>Esta sección se implementará próximamente.</p>
-    <ion-button @click="$router.push({ name: 'AdminHomePage' })">
+    <ion-button @click="$router.push({ name: 'PanelAdminPage' })">
       Volver a secciones
     </ion-button>
   </div>

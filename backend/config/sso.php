@@ -13,6 +13,8 @@ return [
 
     'dpop_iat_leeway' => 60,
 
+    'client_id' => env('SSO_CLIENT_ID', 'main-app'),
+
     'role_mappings' => [
         'admin' => ['slug' => 'admin'],
     ],

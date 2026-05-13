@@ -92,11 +92,19 @@ import {
   alertController,
 } from "@ionic/vue";
 import { ref, onMounted, computed } from "vue";
+
 import { useRoute, useRouter } from "vue-router";
+
 import { saveOutline, trashOutline } from "ionicons/icons";
+
 import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
+
 import IconSelector from "@/components/admin/IconSelector.vue";
+
 import type { SkillsCategoryItem } from "@/store/skillsCategoriesStore";
+import { usePermissionGuard } from "@/composables/usePermissionGuard";
+
+const { guard } = usePermissionGuard();
 
 const route = useRoute();
 const router = useRouter();
@@ -151,6 +159,10 @@ onMounted(async () => {
 });
 
 async function confirmDelete() {
+  if (!(await guard({ permission: 'skills-categories.delete' }))) {
+    return;
+  }
+
   const alert = await alertController.create({
     header: "Eliminar categoría",
     message: `¿Estás seguro de eliminar "${categoryName.value || "esta categoría"}"?`,
@@ -183,6 +195,11 @@ router.push("/admin-panel/skills-categories");
 }
 
 async function saveCategory() {
+  const requiredPerm = isEditing.value ? 'skills-categories.update' : 'skills-categories.create';
+  if (!(await guard({ permission: requiredPerm, message: `No tienes permisos para ${isEditing.value ? 'actualizar' : 'crear'} categorías de habilidades. Contacta al administrador.` }))) {
+    return;
+  }
+
   nameTouched.value = true;
 
   if (!categoryName.value.trim()) return;

@@ -95,13 +95,17 @@ import {
   IonSpinner,
   IonTitle,
   IonToolbar,
+  alertController,
 } from "@ionic/vue";
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import InfoEditor from "../editors/InfoEditor.vue";
 import type { TagItem } from "@/services/types";
 import IntroController from "@/controllers/introController";
+import { usePermissionGuard } from "@/composables/usePermissionGuard";
 import { bugOutline, saveOutline } from "ionicons/icons";
+
+const { guard } = usePermissionGuard();
 
 const introController = new IntroController();
 const infoEditorRef = ref<InstanceType<typeof InfoEditor>>();
@@ -153,6 +157,10 @@ function fillTestData() {
 }
 
 async function handleSave() {
+  if (!(await guard({ permission: 'intro.update' }))) {
+    return;
+  }
+
   if (!infoEditorRef?.value) return;
 
   const isValid = await infoEditorRef.value.handleSubmit();

@@ -123,10 +123,6 @@ async function copyToClipboard(params: { content: string }) {
       duration: 2000,
       position: "bottom",
     });
-    const toast = await toastController.create({
-      message: "Email copiado al portapapeles",
-    });
-    toast.present();
   } catch (e: unknown) {
     const toast = await toastController.create({
       message: "Error al copiar al portapapeles",

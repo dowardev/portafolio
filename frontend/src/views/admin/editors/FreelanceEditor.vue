@@ -5,7 +5,7 @@
         <ion-buttons slot="start">
           <ion-back-button
             text=""
-            default-href="/admin-panel/freelance"
+            :default-href="freelanceType === 'platform' ? '/admin-panel/freelance-platform' : '/admin-panel/freelance-comments'"
           ></ion-back-button>
         </ion-buttons>
 
@@ -237,10 +237,17 @@ import {
   bugOutline,
 } from "ionicons/icons";
 import { computed, ref, onMounted } from "vue";
+
 import { useRoute, useRouter } from "vue-router";
+
 import type { FreelancePlatform, FreelanceComment, FreelanceItem } from "@/services/types";
+
 import FreelancePlatformController from "@/controllers/freelancePlatformController";
+
 import FreelanceCommentController from "@/controllers/freelanceCommentController";
+import { usePermissionGuard } from "@/composables/usePermissionGuard";
+
+const { guard } = usePermissionGuard();
 
 const route = useRoute();
 const router = useRouter();
@@ -255,9 +262,12 @@ const platforms = ref<FreelancePlatform[]>([]);
 const comments = ref<FreelanceComment[]>([]);
 
 const freelanceType = computed(() => {
-  const type = route.params.type;
-  if (typeof type === "string" && (type === "platform" || type === "comment")) {
-    return type;
+  const routeName = route.name as string;
+  if (routeName?.includes("Platform")) {
+    return "platform";
+  }
+  if (routeName?.includes("Comment")) {
+    return "comment";
   }
   return "platform";
 });
@@ -272,7 +282,10 @@ const freelanceIndex = computed(() => {
 
 const freelanceId = ref<string | undefined>(undefined);
 
-const isNew = computed(() => route.name === "FreelanceNewPage" || route.name === "FreelanceNewPageOld");
+const isNew = computed(() => {
+  const routeName = route.name as string;
+  return routeName?.includes("NewPage");
+});
 
 const localItem = ref<FreelancePlatform | FreelanceComment | null>(null);
 
@@ -326,6 +339,13 @@ onMounted(async () => {
 });
 
 async function handleSave() {
+  const permPrefix = freelanceType.value === "platform" ? "freelance" : "freelance-comments";
+  const requiredPerm = isNew.value ? `${permPrefix}.create` : `${permPrefix}.update`;
+  const entityName = freelanceType.value === "platform" ? "plataformas" : "comentarios";
+  if (!(await guard({ permission: requiredPerm, message: `No tienes permisos para ${isNew.value ? 'crear' : 'actualizar'} ${entityName}. Contacta al administrador.` }))) {
+    return;
+  }
+
   if (!localItem.value) return;
 
   if (freelanceType.value === "platform") {
@@ -343,7 +363,7 @@ async function handleSave() {
     } else if (freelanceId.value) {
       await freelancePlatformController.updateFreelancePlatform(Number(freelanceId.value), item, pendingImageFile);
     }
-    router.push("/admin-panel/freelance");
+    router.push(freelanceType.value === "platform" ? "/admin-panel/freelance-platform" : "/admin-panel/freelance-comments");
   } else {
     nameTouched.value = true;
 
@@ -361,7 +381,7 @@ async function handleSave() {
       } else if (freelanceId.value) {
         await freelanceCommentController.updateFreelanceComment(Number(freelanceId.value), payload);
       }
-      router.push("/admin-panel/freelance");
+      router.push(freelanceType.value === "platform" ? "/admin-panel/freelance-platform" : "/admin-panel/freelance-comments");
     } finally {
       saving.value = false;
     }
@@ -369,6 +389,12 @@ async function handleSave() {
 }
 
 async function confirmDelete() {
+  const permPrefix = freelanceType.value === "platform" ? "freelance" : "freelance-comments";
+  const entityName = freelanceType.value === "platform" ? "plataformas" : "comentarios";
+  if (!(await guard({ permission: `${permPrefix}.delete`, message: `No tienes permisos para eliminar ${entityName}. Contacta al administrador.` }))) {
+    return;
+  }
+
   const alert = await alertController.create({
     header: `Eliminar ${freelanceType.value === "platform" ? "plataforma" : "comentario"}`,
     message: "¿Estás seguro de eliminar este elemento?",

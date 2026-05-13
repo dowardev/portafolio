@@ -185,10 +185,17 @@ import {
   saveOutline,
 } from "ionicons/icons";
 import { computed, ref, onMounted } from "vue";
+
 import { useRoute, useRouter } from "vue-router";
+
 import type { CertificateItem } from "@/services/types";
+
 import IconSelector from "@/components/admin/IconSelector.vue";
+
 import CertificatesController from "@/controllers/certificatesController";
+import { usePermissionGuard } from "@/composables/usePermissionGuard";
+
+const { guard } = usePermissionGuard();
 
 const route = useRoute();
 const router = useRouter();
@@ -252,6 +259,11 @@ onMounted(async () => {
 });
 
 async function handleSave() {
+  const requiredPerm = isNew.value ? 'certificates.create' : 'certificates.update';
+  if (!(await guard({ permission: requiredPerm, message: `No tienes permisos para ${isNew.value ? 'crear' : 'actualizar'} certificados. Contacta al administrador.` }))) {
+    return;
+  }
+
   if (!localCertificate.value) return;
   localCertificate.value.aptitudes = (Array.isArray(aptitudes.value) ? aptitudes.value : [])
     .filter(item => item.iconName?.trim())
@@ -277,6 +289,10 @@ async function handleSave() {
 }
 
 async function confirmDelete() {
+  if (!(await guard({ permission: 'certificates.delete' }))) {
+    return;
+  }
+
   const alert = await alertController.create({
     header: "Eliminar certificado",
     message: "¿Estás seguro de eliminar este certificado?",

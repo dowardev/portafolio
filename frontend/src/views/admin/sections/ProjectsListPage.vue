@@ -141,19 +141,19 @@ import {
   alertController,
 } from "@ionic/vue";
 import { onMounted } from "vue";
-import { useRouter } from "vue-router";
-import {
-  addOutline,
-  bugOutline,
-  folderOutline,
-  trashOutline,
-  warningOutline,
-} from "ionicons/icons";
-import { faker } from "@faker-js/faker";
-import ProjectsController from "@/controllers/projectsController";
-import { storeToRefs } from "pinia";
-import type { ProjectItem } from "@/services/types";
 
+import { useRouter } from "vue-router";
+
+import { faker } from "@faker-js/faker";
+
+import ProjectsController from "@/controllers/projectsController";
+
+import { storeToRefs } from "pinia";
+
+import type { ProjectItem } from "@/services/types";
+import { usePermissionGuard } from "@/composables/usePermissionGuard";
+
+const { guard } = usePermissionGuard();
 const router = useRouter();
 const projectsController = new ProjectsController();
 const { projects, loading: projectsLoading } = storeToRefs(projectsController.projectsStore);
@@ -177,11 +177,17 @@ function editProject(index: number) {
 }
 
 function createNewProject() {
-  router.push("/admin-panel/projects/new");
+  guard({ permission: 'projects.create' }).then(allowed => {
+    if (allowed) router.push("/admin-panel/projects/new");
+  });
 }
 
 async function confirmDelete(index: number) {
-  const project = projects[index];
+  if (!(await guard({ permission: 'projects.delete' }))) {
+    return;
+  }
+
+  const project = projects.value[index];
   if (!project?.id) return;
 
   const alert = await alertController.create({

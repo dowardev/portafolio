@@ -1,5 +1,30 @@
 # Changelog
 
+## 18.4.1 - 2026-05-13
+
+### Fixed (Critical)
+- **Admin role bypass in PermissionMiddleware**: Admins now have consistent access across frontend and backend. The middleware now grants all permissions to admin users, matching the behavior in MyPermissionsController.
+- **Route path mismatch**: FreelanceCommentsListPage was navigating to singular `freelance-comment` but router defines plural `freelance-comments`. Fixed navigation paths.
+- **Missing UserController import**: ProjectsListPage was using `new UserController()` without importing it. Migrated to usePermissionGuard composable.
+
+### Code Quality
+- Extracted duplicated `extractRoleSlugs()` method to shared trait `ExtractsRoleSlugs`
+- Migrated ProjectsListPage and SkillsCategoriesListPage to usePermissionGuard composable (consistent pattern)
+- Replaced risky `truncate()` in RolePermissionSeeder with `upsert()` for concurrent safety
+- Replaced fragile try/catch in migration with explicit `hasIndex()` check
+
+### Affected Files
+- Added: `backend/app/Traits/ExtractsRoleSlugs.php`
+- Modified: `backend/app/Http/Middleware/PermissionMiddleware.php` (added admin bypass, uses trait)
+- Modified: `backend/app/Http/Controllers/MyPermissionsController.php` (uses trait)
+- Modified: `backend/database/migrations/2026_05_09_000002_simplify_role_permissions.php`
+- Modified: `backend/database/seeders/RolePermissionSeeder.php`
+- Modified: `frontend/src/views/admin/sections/FreelanceCommentsListPage.vue`
+- Modified: `frontend/src/views/admin/sections/ProjectsListPage.vue`
+- Modified: `frontend/src/views/admin/sections/SkillsCategoriesListPage.vue`
+
+---
+
 ## 18.4.0 - 2026-05-09
 
 ### Added
