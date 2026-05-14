@@ -11,11 +11,6 @@ import ErrorController from "./errorController";
 
 import { useUserStore } from "@/store/userStore";
 
-interface MyPermissionsResponse {
-  roles: string[];
-  permissions: Record<string, boolean>;
-}
-
 export default class UserController {
   private systemService = new SystemService();
   private errorController = new ErrorController();
@@ -149,6 +144,11 @@ export default class UserController {
     } catch (error) {
       return this.errorController.handleError({ error });
     }
+  }
+
+  async refreshPermissions(): Promise<void> {
+    this.userStore.clearPermissions();
+    await this.loadPermissions();
   }
 
   hasPermission(params: { slug: string }): boolean {

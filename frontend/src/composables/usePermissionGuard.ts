@@ -12,6 +12,22 @@ export function usePermissionGuard() {
     return userStore.can({ role: params.role });
   }
 
+  function canAny(params: { permissions: string[] }): boolean {
+    return userStore.hasAnyPermission({ slugs: params.permissions });
+  }
+
+  function canAll(params: { permissions: string[] }): boolean {
+    return params.permissions.every((slug) => userStore.hasPermission({ slug }));
+  }
+
+  function canAnyRole(params: { roles: string[] }): boolean {
+    return userStore.hasAnyRole({ slugs: params.roles });
+  }
+
+  function canAllRoles(params: { roles: string[] }): boolean {
+    return params.roles.every((slug) => userStore.hasRole({ slug }));
+  }
+
   async function guard(params: {
     permission: string;
     message?: string;
@@ -42,5 +58,5 @@ export function usePermissionGuard() {
     return false;
   }
 
-  return { can, canRole, guard, guardRole };
+  return { can, canRole, canAny, canAll, canAnyRole, canAllRoles, guard, guardRole };
 }

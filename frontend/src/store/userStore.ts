@@ -67,6 +67,12 @@ export const useUserStore = defineStore("user", () => {
     permissionsLoaded.value = false;
   }
 
+  function clearPermissions() {
+    roles.value = [];
+    permissions.value = {};
+    permissionsLoaded.value = false;
+  }
+
   const isAdmin = computed(() => roles.value.includes('admin'));
 
   return {
@@ -80,6 +86,7 @@ export const useUserStore = defineStore("user", () => {
     updateUserProps,
     updateUserLoggedProp,
     setPermissions,
+    clearPermissions,
     hasRole,
     hasPermission,
     hasAnyRole,

@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Permission;
 use App\Models\RolePermission;
 use App\Models\UserPermission;
+use App\Traits\ExtractsRoleSlugs;
 use Illuminate\Http\JsonResponse;
 use TuOrg\SsoServer\Facades\SsoAuth;
 
 class MyPermissionsController extends Controller
 {
+    use ExtractsRoleSlugs;
+
     public function __invoke(): JsonResponse
     {
         $user = SsoAuth::user();
@@ -49,27 +52,5 @@ class MyPermissionsController extends Controller
             'roles' => $roleSlugs,
             'permissions' => $permissions,
         ]);
-    }
-
-    private function extractRoleSlugs($roles): array
-    {
-        if (empty($roles)) {
-            return [];
-        }
-
-        if (is_array($roles)) {
-            return array_filter(array_map(function ($role) {
-                $roleArr = is_object($role) ? (array) $role : $role;
-                return $roleArr['slug'] ?? null;
-            }, $roles));
-        }
-
-        if (is_object($roles)) {
-            if (isset($roles->slug)) {
-                return [$roles->slug];
-            }
-        }
-
-        return [];
     }
 }

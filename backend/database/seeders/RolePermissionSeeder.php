@@ -42,6 +42,10 @@ class RolePermissionSeeder extends Seeder
         Permission::upsert($permissions, ['slug'], ['module', 'action']);
 
         // Poblar permisos por rol
+        // Nota: Los permisos del admin se usan para la UI del panel de admin.
+        // El bypass real del admin ocurre en PermissionMiddleware y PermissionService,
+        // donde cualquier usuario con rol 'admin' obtiene todos los permisos automáticamente.
+
         $rolePermissions = [];
 
         $adminPermissions = [

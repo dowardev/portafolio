@@ -1,5 +1,41 @@
 # Changelog
 
+## 18.4.3 - 2026-05-13
+
+### Features
+- **PermissionService with caching**: New service that provides centralized permission checking with Laravel Gates support and 1-hour cache TTL
+- **Eloquent relationships**: Added hasMany/belongsTo relationships to Permission, RolePermission, and UserPermission models
+- **Permission guard helpers**: Added canAny, canAll, canAnyRole, canAllRoles helpers to usePermissionGuard composable for multi-permission checks
+- **Frontend permission refresh**: Added MyPermissionsResponse interface, refreshPermissions method, and clearPermissions to support permission state reset
+
+### Fixed
+- **Broken isAdmin property access**: Fixed userController.getUser()?.isAdmin in PostsPage and PostPage (6 places) — now uses userController.isAdmin() method
+- **Unified admin-check in MenuComponent**: Replaced hasAdminRole with userController.isAdmin() for consistent behavior
+- **Robust migration handling**: Added try-catch blocks to simplify_role_permissions migration for safer execution in different DB states
+
+### Refactored
+- **Eliminated duplicated extractRoleSlugs**: MyPermissionsController now uses ExtractsRoleSlugs trait instead of local method
+
+### Affected Files
+- Added:
+  - `backend/app/Services/PermissionService.php`
+- Modified:
+  - `backend/app/Providers/AppServiceProvider.php` (Gate registration)
+  - `backend/app/Models/Permission.php` (relationships)
+  - `backend/app/Models/RolePermission.php` (relationships)
+  - `backend/app/Models/UserPermission.php` (relationships)
+  - `backend/app/Http/Controllers/MyPermissionsController.php` (uses trait)
+  - `backend/database/migrations/2026_05_09_000002_simplify_role_permissions.php` (robust error handling)
+  - `backend/database/seeders/RolePermissionSeeder.php` (doc comment)
+  - `backend/phpunit.xml` (MySQL test config)
+  - `frontend/src/composables/usePermissionGuard.ts` (canAny/canAll helpers)
+  - `frontend/src/controllers/userController.ts` (refreshPermissions)
+  - `frontend/src/store/userStore.ts` (clearPermissions)
+  - `frontend/src/utils/interfaces.ts` (MyPermissionsResponse)
+  - `frontend/src/components/menu/MenuComponent.vue` (isAdmin method)
+  - `frontend/src/views/blog/post/PostPage.vue` (isAdmin method)
+  - `frontend/src/views/blog/posts/PostsPage.vue` (isAdmin method)
+
 ## 18.4.2 - 2026-05-13
 
 ### Fixed

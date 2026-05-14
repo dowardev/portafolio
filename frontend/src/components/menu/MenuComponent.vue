@@ -392,7 +392,7 @@ import FeedbackComponent from "../feedback/FeedbackComponent.vue";
 import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
 import { getSSOClient } from "@/ssoClientAccessor";
-import { hasAdminRole } from "@/router";
+
 import MenuItem from "./MenuItem.vue";
 
 const ADMIN_PAGES = [
@@ -451,7 +451,7 @@ const modalContribute = ref({ open: false });
 const modalComments = ref({ open: false });
 
 const isAdmin = computed(() => {
-  return hasAdminRole(userController.getUser()?.roles ?? []);
+  return userController.isAdmin();
 });
 
 // mounted

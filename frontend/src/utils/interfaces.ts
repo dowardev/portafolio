@@ -210,6 +210,11 @@ export interface GetUserPermissionsResponse {
   roles: Role[];
 }
 
+export interface MyPermissionsResponse {
+  roles: string[];
+  permissions: Record<string, boolean>;
+}
+
 export interface ResetPassword {
   code: string;
   email: string;

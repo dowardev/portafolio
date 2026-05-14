@@ -8,32 +8,42 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('role_permissions', function (Blueprint $table) {
-            // Only drop foreign key and column if permission_id exists
-            if (Schema::hasColumn('role_permissions', 'permission_id')) {
-                $table->dropForeign(['permission_id']);
-                $table->dropColumn('permission_id');
-            }
+        $hasPermissionId = Schema::hasColumn('role_permissions', 'permission_id');
+        
+        if ($hasPermissionId) {
+            try {
+                $fkExists = \DB::select("SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_NAME = 'role_permissions' AND CONSTRAINT_TYPE = 'FOREIGN KEY' AND CONSTRAINT_NAME = 'role_permissions_permission_id_foreign'");
+                if (!empty($fkExists)) {
+                    Schema::table('role_permissions', fn($t) => $t->dropForeign(['permission_id']));
+                }
+            } catch (\Exception $e) {}
+            
+            try {
+                Schema::table('role_permissions', fn($t) => $t->dropColumn('permission_id'));
+            } catch (\Exception $e) {}
+        }
 
-            // Only add permission_slug if it doesn't exist
-            if (!Schema::hasColumn('role_permissions', 'permission_slug')) {
-                $table->string('permission_slug', 100)->after('role_slug');
-            }
+        if (!Schema::hasColumn('role_permissions', 'permission_slug')) {
+            try {
+                Schema::table('role_permissions', function (Blueprint $table) {
+                    $table->string('permission_slug', 100)->after('role_slug');
+                });
+            } catch (\Exception $e) {}
+        }
 
-            // Only drop old unique if permission_id column exists
-            if (Schema::hasColumn('role_permissions', 'permission_id')) {
-                $table->dropUnique(['role_slug', 'permission_id']);
-            }
+        if ($hasPermissionId) {
+            try {
+                Schema::table('role_permissions', fn($t) => $t->dropUnique(['role_slug', 'permission_id']));
+            } catch (\Exception $e) {}
+        }
 
-            // Add new unique constraint only if it doesn't exist
+        try {
             $sm = Schema::getConnection()->getSchemaBuilder();
             if (!$sm->hasIndex('role_permissions', 'role_permissions_role_slug_permission_slug_unique')) {
-                $table->unique(['role_slug', 'permission_slug']);
+                Schema::table('role_permissions', fn($t) => $t->unique(['role_slug', 'permission_slug']));
             }
-        });
+        } catch (\Exception $e) {}
 
-        // Recreate permissions table as editable catalog (slug, module, action)
-        // Only create if it doesn't exist
         if (!Schema::hasTable('permissions')) {
             Schema::create('permissions', function (Blueprint $table) {
                 $table->id();
