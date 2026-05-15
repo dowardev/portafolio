@@ -1,5 +1,6 @@
 import pluginVue from "eslint-plugin-vue";
 import eslintConfigPrettier from "eslint-config-prettier";
+import pluginOxlint from "eslint-plugin-oxlint";
 import js from "@eslint/js";
 import ts from "typescript-eslint";
 
@@ -27,6 +28,7 @@ export default [
   ...ts.configs.recommended,
   ...pluginVue.configs["flat/recommended"],
   eslintConfigPrettier,
+  ...pluginOxlint.buildFromOxlintConfigFile("../.oxlintrc.json"),
   {
     files: ["*.vue", "**/*.vue"],
     languageOptions: {

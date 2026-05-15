@@ -1,5 +1,36 @@
 # Changelog
 
+## 18.5.0 - 2026-05-15
+
+### Features
+- **oxlint integration**: Added oxlint (v1.64.0) as fast ESLint alternative for improved linting performance
+- **oxfmt integration**: Added oxfmt (v0.49.0) for fast code formatting
+- **eslint-plugin-oxlint**: Integrated oxlint with ESLint configuration for unified linting experience
+- **Split lint scripts**: Updated lint script to run `oxlint` and `eslint` separately for better performance and flexibility
+- **format script**: Added `oxfmt` script for quick code formatting with `pnpm run format`
+
+### Config
+- Added `.oxfmtrc.json` for oxlint formatter configuration
+- Added `.oxlintrc.json` for oxlint linter configuration
+
+### Refactored
+- **package.json cleanup**: Reorganized fields (moved "private" after "version", cleaned up dependencies ordering)
+- **sso-client dependency**: Repositioned `@tu-org/sso-client` in dependencies array
+
+### Fixed
+- **cypress.config.ts**: Fixed ESLint comment syntax for setupNodeEvents
+
+### Affected Files
+- Added:
+  - `.oxfmtrc.json`
+  - `.oxlintrc.json`
+  - `frontend/.eslintcache`
+- Modified:
+  - `frontend/package.json` (version, scripts, dependencies)
+  - `frontend/pnpm-lock.yaml`
+  - `frontend/eslint.config.js` (oxlint integration)
+  - `frontend/cypress.config.ts` (ESLint comment fix)
+
 ## 18.4.3 - 2026-05-13
 
 ### Features
