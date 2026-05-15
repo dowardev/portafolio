@@ -21,7 +21,6 @@ class UserFactory extends Factory
       "password" => bcrypt("123"),
       "remember_token" => Str::random(10),
       "is_email_verified" => rand(0, 1),
-      "is_admin" => rand(0, 1),
       "user" => $this->faker->userName(),
       "is_user_disabled" => rand(0, 1),
     ];

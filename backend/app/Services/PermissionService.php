@@ -51,12 +51,6 @@ class PermissionService
         return false;
     }
 
-    public function isAdmin(): bool
-    {
-        $roleSlugs = $this->getUserRoleSlugs();
-        return in_array('admin', $roleSlugs);
-    }
-
     public function getUserRoleSlugs(): array
     {
         $roles = SsoAuth::roles();

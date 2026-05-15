@@ -40,7 +40,7 @@
 
               <div class="ion-padding-bottom">
                 <MenuItem
-                  v-if="isAdmin"
+                  v-if="userController.hasRole({ slug: 'admin' })"
                   target-route-name="PanelAdminPage"
                   :active-routes="ADMIN_PAGES"
                   :icon-outline="cogOutline"
@@ -359,7 +359,7 @@ import {
   menuController,
   modalController,
 } from "@ionic/vue";
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref } from "vue";
 import {
   logOutOutline,
   thumbsUpOutline,
@@ -449,10 +449,6 @@ const windowSize = ref({
 });
 const modalContribute = ref({ open: false });
 const modalComments = ref({ open: false });
-
-const isAdmin = computed(() => {
-  return userController.isAdmin();
-});
 
 // mounted
 onMounted(async () => {

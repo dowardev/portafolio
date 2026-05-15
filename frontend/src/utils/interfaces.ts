@@ -161,7 +161,6 @@ export interface UserServerResponse {
   email_verified_at: string | null;
   id: number;
   image_id: string | null;
-  is_admin: boolean;
   is_email_verified: boolean;
   is_user_disabled: boolean;
   name: string;
@@ -177,7 +176,6 @@ export interface UserServerResponse {
 //   email?: User["email"];
 //   user?: User["user"];
 //   imageProfile?: User["image_profile"];
-//   isAdmin?: User["is_admin"];
 // }
 
 export interface UserToken {

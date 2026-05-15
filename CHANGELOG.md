@@ -1,5 +1,39 @@
 # Changelog
 
+## 18.5.1 - 2026-05-15
+
+### Refactored
+
+- **is_admin / isAdmin cleanup**: Removed all remnants of the legacy `is_admin` boolean field and `isAdmin` method from the portfolio codebase, completing the migration to a role-based admin system. The backend no longer sends `is_admin` in the user-auth response; frontend components now use `userController.hasRole({ slug: 'admin' })` instead of `userController.isAdmin()`.
+
+  - `AuthController.php`: Removed `is_admin` field from JSON response
+  - `PermissionService.php`: Removed redundant `isAdmin()` method
+  - `UserFactory.php`: Removed obsolete `is_admin` field
+  - `interfaces.ts`: Removed `is_admin: boolean` from `UserServerResponse`
+  - `userStore.ts`: Removed `isAdmin` computed property
+  - `userController.ts`: Removed `isAdmin()` method
+  - `MenuComponent.vue`: Replaced `isAdmin` computed with `hasRole()`
+  - `PostsPage.vue`: Replaced 3 `isAdmin()` calls with `hasRole()`
+  - `PostPage.vue`: Replaced 3 `isAdmin()` calls with `hasRole()`
+
+### Affected Files
+
+- Modified:
+  - `backend/app/Http/Controllers/AuthController.php`
+  - `backend/app/Services/PermissionService.php`
+  - `backend/database/factories/UserFactory.php`
+  - `frontend/src/utils/interfaces.ts`
+  - `frontend/src/store/userStore.ts`
+  - `frontend/src/controllers/userController.ts`
+  - `frontend/src/components/menu/MenuComponent.vue`
+  - `frontend/src/views/blog/posts/PostsPage.vue`
+  - `frontend/src/views/blog/post/PostPage.vue`
+- Added:
+  - `docs/superpowers/specs/2026-05-15-is-admin-cleanup-design.md`
+  - `docs/superpowers/plans/2026-05-15-is-admin-cleanup-plan.md`
+
+---
+
 ## 18.5.0 - 2026-05-15
 
 ### Features

@@ -73,15 +73,12 @@ export const useUserStore = defineStore("user", () => {
     permissionsLoaded.value = false;
   }
 
-  const isAdmin = computed(() => roles.value.includes('admin'));
-
   return {
     user,
     isLogged,
     roles,
     permissions,
     permissionsLoaded,
-    isAdmin,
     imageProfile,
     updateUserProps,
     updateUserLoggedProp,

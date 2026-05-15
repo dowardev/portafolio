@@ -167,10 +167,6 @@ export default class UserController {
     return this.userStore.hasAnyRole(params);
   }
 
-  isAdmin(): boolean {
-    return this.userStore.isAdmin;
-  }
-
   can(params: { role?: string; permission?: string }): boolean {
     return this.userStore.can(params);
   }
