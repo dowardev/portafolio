@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('freelances', function (Blueprint $table) {
+        Schema::create('freelance_platforms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('image')->nullable();
@@ -22,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('freelances');
+        Schema::dropIfExists('freelance_platforms');
     }
 };

@@ -1,5 +1,57 @@
 # Changelog
 
+## 18.5.2 - 2026-05-15
+
+### Refactored
+
+- **Database migrations consolidation**: Consolidated 14 database migration files from 2026 into 6 create migrations by integrating modify operations directly into the initial table creation migrations. This simplifies migration history and improves maintainability.
+
+  - Renamed `technologies` table to `icons` with `pack_name` field directly in create migration
+  - Renamed pivot tables (`project_technologies` → `project_icons`, `experience_technologies` → `experience_icons`)
+  - Added `icon_id` foreign key to `socials` table in create migration
+  - Renamed `freelances` to `freelance_platforms` directly in create migration
+  - Removed unused JSON fields (`stack`, `skill_categories`, `experience`, `projects`, `certificates`, `freelance`) from `intro_profiles` in create migration
+  - Removed `sort_order` from `categories_skills` directly in create migration
+  - Renamed `category_skills_technologies` → `categories_skills_tech` directly in create migration
+  - Added `action` field to `permissions` table in create migration
+  - Changed `role_permissions` to use `permission_slug` instead of `permission_id` foreign key in create migration
+
+- **Deleted migration files** (14 files removed):
+  - `2026_01_17_212502_add_sso_id_to_users_table.php`
+  - `2026_03_30_000000_drop_user_permission_fields.php`
+  - `2026_04_30_000001_cleanup_intro_profiles_table.php`
+  - `2026_04_30_000001_drop_category_from_technologies_table.php`
+  - `2026_04_30_000002_rename_freelances_table.php`
+  - `2026_04_30_000002_drop_image_and_sort_order_from_technologies_table.php`
+  - `2026_04_30_000003_create_freelance_comments_table.php`
+  - `2026_04_30_000004_rename_technologies_to_icons.php`
+  - `2026_04_30_000005_add_icon_foreign_to_socials.php`
+  - `2026_04_30_000006_rename_category_skills_table.php`
+  - `2026_04_30_000007_drop_sort_order_from_categories_skills.php`
+  - `2026_04_30_000008_rename_category_skills_icons.php`
+  - `2026_05_09_000002_simplify_role_permissions.php`
+  - `2026_05_09_000003_create_user_permissions_table.php`
+
+- **New migration files** (2 files added):
+  - `2026_04_26_000005_create_freelance_comments_table.php`
+  - `2026_05_08_000003_create_user_permissions_table.php`
+
+### Affected Files
+
+- Modified:
+  - `backend/database/migrations/2026_01_17_220000_create_homepages_table.php`
+  - `backend/database/migrations/2026_04_26_000004_create_freelances_table.php`
+  - `backend/database/migrations/2026_04_27_000003_create_relations_tables.php`
+  - `backend/database/migrations/2026_04_27_000004_create_categories_tables.php`
+  - `backend/database/migrations/2026_05_08_000001_create_permissions_table.php`
+  - `backend/database/migrations/2026_05_08_000002_create_role_permissions_table.php`
+- Added:
+  - `backend/database/migrations/2026_04_26_000005_create_freelance_comments_table.php`
+  - `backend/database/migrations/2026_05_08_000003_create_user_permissions_table.php`
+- Deleted: 14 migration files (see Refactored section)
+
+---
+
 ## 18.5.1 - 2026-05-15
 
 ### Refactored

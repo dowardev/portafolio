@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('platform_id')->constrained('freelance_platforms')->onDelete('cascade');
             $table->string('title');
-            $table->text('text')->nullable();
+            $table->text('nullable')->nullable();
             $table->integer('rating')->nullable();
             $table->timestamps();
         });

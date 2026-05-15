@@ -16,12 +16,6 @@ return new class extends Migration
             $table->json('socials')->nullable();
             $table->string('logo_url')->nullable();
             $table->string('photo_url')->nullable();
-            $table->json('stack')->nullable();
-            $table->json('skill_categories')->nullable();
-            $table->json('experience')->nullable();
-            $table->json('projects')->nullable();
-            $table->json('certificates')->nullable();
-            $table->json('freelance')->nullable();
             $table->json('show_contact_form')->nullable();
             $table->timestamps();
         });
