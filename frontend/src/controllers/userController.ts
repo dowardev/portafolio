@@ -142,6 +142,7 @@ export default class UserController {
       const response = await getApiConnector().get<MyPermissionsResponse>('my-permissions');
       this.userStore.setPermissions({ roles: response.roles, permissions: response.permissions });
     } catch (error) {
+      console.error('[loadPermissions] Error loading permissions:', error);
       return this.errorController.handleError({ error });
     }
   }

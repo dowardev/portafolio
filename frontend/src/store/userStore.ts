@@ -11,7 +11,14 @@ interface UserState {
 export const useUserStore = defineStore("user", () => {
   const user = ref<undefined | User>(undefined);
   const isLogged = ref<boolean>(false);
+
+  // roles (string[]) proviene del portfolio backend (my-permissions) y contiene solo slugs.
+  // No confundir con user.roles (Role[]) que viene del SSO server (/me) con objetos completos.
+  // Esta separación es intencional: SSO = autenticación/global roles, portfolio backend = autorización/permisos.
   const roles = ref<string[]>([]);
+
+  // permissions proviene exclusivamente del portfolio backend (my-permissions).
+  // El SSO no maneja permisos granulares por aplicación.
   const permissions = ref<Record<string, boolean>>({});
   const permissionsLoaded = ref(false);
 

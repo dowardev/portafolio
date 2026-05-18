@@ -1,5 +1,23 @@
 # Changelog
 
+## 18.5.3 - 2026-05-17
+
+### Fixed
+- **Silent permissions loading failure**: Added `console.error` in `userController.loadPermissions()` catch block so that permission loading failures are no longer silent. This improves debugging of authentication/authorization issues by surfacing errors in the browser console instead of silently failing.
+
+### Refactored
+- **Store roles/permissions documentation**: Added clarifying comments in `userStore.ts` to explain the dual role system:
+  - `user.roles` (Role[]): comes from SSO server (`/me` endpoint) with full role objects
+  - `roles` (string[]): comes from portfolio backend (`my-permissions` endpoint) with only slugs
+  - `permissions` (Record<string, boolean>): comes exclusively from portfolio backend
+  - This separation is intentional: SSO handles authentication/global roles, portfolio backend handles authorization/permissions
+
+### Affected Files
+- Modified: `frontend/src/store/userStore.ts` (documentation comments)
+- Modified: `frontend/src/controllers/userController.ts` (console.error in loadPermissions catch block)
+
+---
+
 ## 18.5.2 - 2026-05-15
 
 ### Refactored
