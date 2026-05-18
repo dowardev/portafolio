@@ -13,38 +13,41 @@
 
   <ion-content class="ion-padding">
     <ion-list>
-      <ion-item>
+      <ion-item v-if="!isEdit">
         <ion-label position="stacked">Módulo</ion-label>
-        <ion-input
-          v-model="module"
-          placeholder="Ej: posts, projects, certificates"
-          @ion-input="updateSlugPreview"
-        ></ion-input>
+        <ion-select v-model="module" placeholder="Seleccionar módulo">
+          <ion-select-option v-for="m in availableModules" :key="m" :value="m">{{ m }}</ion-select-option>
+        </ion-select>
         <ion-note>Al que pertenece el permiso</ion-note>
       </ion-item>
 
-      <ion-item>
+      <ion-item v-if="!isEdit">
         <ion-label position="stacked">Acción</ion-label>
-        <ion-input
-          v-model="action"
-          placeholder="Ej: create, update, delete"
-          @ion-input="updateSlugPreview"
-        ></ion-input>
-        <ion-note>Qué acción permite</ion-note>
+        <ion-select v-model="actions" multiple placeholder="Seleccionar acciones" :cancel-text="'Cancelar'" :ok-text="'Aceptar'">
+          <ion-select-option value="create">create - Crear</ion-select-option>
+          <ion-select-option value="update">update - Editar</ion-select-option>
+          <ion-select-option value="delete">delete - Eliminar</ion-select-option>
+        </ion-select>
+        <ion-note>Selecciona una o más acciones</ion-note>
+      </ion-item>
+
+      <ion-item v-if="isEdit">
+        <ion-label position="stacked">Módulo</ion-label>
+        <ion-input :value="module" readonly></ion-input>
+      </ion-item>
+
+      <ion-item v-if="isEdit">
+        <ion-label position="stacked">Acción</ion-label>
+        <ion-input :value="action" readonly></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Slug (preview)</ion-label>
-        <ion-input :value="slugPreview" readonly></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Descripción (opcional)</ion-label>
+        <ion-label position="stacked">Descripción{{ !isEdit ? ' (opcional)' : '' }}</ion-label>
         <ion-input
           v-model="description"
-          placeholder="Ej: Crear publicaciones"
+          placeholder="Nombre legible para mostrar"
         ></ion-input>
-        <ion-note>Nombre legible para mostrar. Se autogenera si se deja vacío.</ion-note>
+        <ion-note v-if="!isEdit">Se autogenera si se deja vacío</ion-note>
       </ion-item>
     </ion-list>
   </ion-content>
@@ -52,43 +55,32 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
-import { IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonList, IonItem, IonLabel, IonInput, IonNote, modalController } from '@ionic/vue'
+import { IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonList, IonItem, IonLabel, IonSelect, IonSelectOption, IonInput, IonNote, modalController } from '@ionic/vue'
 import type { PermissionWithDescription } from '@/controllers/permissionsController'
 
 const props = defineProps<{
   permission?: PermissionWithDescription | null
+  availableModules?: string[]
 }>()
 
 const emit = defineEmits<{
-  (e: 'saved', permission: { slug: string; module: string; action: string; description: string }): void
+  (e: 'saved', permissions: { slug: string; module: string; action: string; description: string }[]): void
 }>()
 
 const isEdit = computed(() => !!props.permission)
 
 const module = ref('')
 const action = ref('')
+const actions = ref<string[]>([])
 const description = ref('')
-const slugPreview = ref('')
 
-function updateSlugPreview() {
-  if (module.value && action.value) {
-    slugPreview.value = `${module.value.toLowerCase().trim()}.${action.value.toLowerCase().trim()}`
-    if (!description.value) {
-      const actionLabels: Record<string, string> = {
-        create: 'Crear',
-        update: 'Editar',
-        delete: 'Eliminar'
-      }
-      const actionLabel = actionLabels[action.value.toLowerCase()] || action.value
-      description.value = `${actionLabel} ${module.value}`
-    }
-  } else {
-    slugPreview.value = ''
-  }
-}
+const availableModules = computed(() => props.availableModules || [])
 
 const isValid = computed(() => {
-  return module.value.trim().length > 0 && action.value.trim().length > 0
+  if (isEdit.value) {
+    return module.value.trim().length > 0 && action.value.trim().length > 0
+  }
+  return module.value.trim().length > 0 && actions.value.length > 0
 })
 
 function dismiss() {
@@ -98,12 +90,29 @@ function dismiss() {
 function save() {
   if (!isValid.value) return
 
-  emit('saved', {
-    slug: slugPreview.value,
-    module: module.value.trim().toLowerCase(),
-    action: action.value.trim().toLowerCase(),
-    description: description.value.trim()
-  })
+  if (isEdit.value) {
+    emit('saved', [{
+      slug: `${module.value}.${action.value}`,
+      module: module.value.trim().toLowerCase(),
+      action: action.value.trim().toLowerCase(),
+      description: description.value.trim()
+    }])
+  } else {
+    const actionLabels: Record<string, string> = {
+      create: 'Crear',
+      update: 'Editar',
+      delete: 'Eliminar'
+    }
+
+    const permissions = actions.value.map(act => ({
+      slug: `${module.value}.${act}`,
+      module: module.value.trim().toLowerCase(),
+      action: act.trim().toLowerCase(),
+      description: description.value.trim() || `${actionLabels[act] || act} ${module.value}`
+    }))
+
+    emit('saved', permissions)
+  }
 
   modalController.dismiss()
 }
@@ -113,7 +122,6 @@ onMounted(() => {
     module.value = props.permission.module
     action.value = props.permission.action
     description.value = props.permission.description || ''
-    slugPreview.value = props.permission.slug
   }
 })
 </script>

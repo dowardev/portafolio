@@ -363,21 +363,26 @@ async function doSync() {
 async function openCreateModal() {
   const modal = await modalController.create({
     component: PermissionFormModal,
-    componentProps: { permission: null }
+    componentProps: { 
+      permission: null,
+      availableModules: availableModules.value.map(r => r.slug.split('.')[0]).filter((v, i, a) => a.indexOf(v) === i)
+    }
   })
 
   modal.onDidDismiss().then(async (result) => {
-    if (result.data) {
+    if (result.data && result.data.length > 0) {
       try {
         saving.value = true
-        await controller.createPermission({
-          slug: result.data.slug,
-          module: result.data.module,
-          action: result.data.action,
-          description: result.data.description
-        })
+        for (const perm of result.data) {
+          await controller.createPermission({
+            slug: perm.slug,
+            module: perm.module,
+            action: perm.action,
+            description: perm.description
+          })
+        }
         await loadPermissions()
-        showToast('Permiso creado')
+        showToast(result.data.length === 1 ? 'Permiso creado' : `${result.data.length} permisos creados`)
       } catch (e: any) {
         showToast(e.response?.data?.message || 'Error al crear', 'danger')
       } finally {
