@@ -11,6 +11,7 @@ class Permission extends Model
         'slug',
         'module',
         'action',
+        'description',
     ];
 
     public function rolePermissions(): HasMany
