@@ -75,6 +75,9 @@ Route::middleware([Cors::class, 'sso.auth', 'sso.role:admin'])->prefix('admin')-
   // SSO sync
   Route::post("permissions/sync", [PermissionController::class, "syncRoles"]);
   Route::get("permissions/sync-status", [PermissionController::class, "getSyncStatus"]);
+
+  // User search
+  Route::get("permissions/search-users", [PermissionController::class, "searchUsers"]);
 });
 
 Route::middleware([Cors::class, 'sso.auth', 'permission:projects.create'])->post("admin/projects", [ProjectController::class, "store"]);

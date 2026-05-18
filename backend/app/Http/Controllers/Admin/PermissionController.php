@@ -10,6 +10,7 @@ use App\Services\RoleSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class PermissionController extends Controller
 {
@@ -25,16 +26,9 @@ class PermissionController extends Controller
 
     public function getAvailablePermissions(): JsonResponse
     {
-        $permissions = Permission::all()->map(function ($perm) {
-            return [
-                'id' => $perm->id,
-                'slug' => $perm->slug,
-                'module' => $perm->module,
-                'action' => $perm->action,
-            ];
-        });
+        $permissions = Permission::select('id', 'slug', 'module', 'action', 'description')->get();
 
-        return response()->json($permissions);
+        return response()->json(['permissions' => $permissions]);
     }
 
     public function createPermission(Request $request): JsonResponse
@@ -45,7 +39,12 @@ class PermissionController extends Controller
             'action' => 'required|string|max:50',
         ]);
 
-        $permission = Permission::create($validated);
+        $description = $request->input('description');
+        if (empty($description)) {
+            $description = ucfirst($request->action) . ' ' . $request->module;
+        }
+
+        $permission = Permission::create(array_merge($validated, ['description' => $description]));
 
         return response()->json([
             'message' => 'Permiso creado',
@@ -61,12 +60,13 @@ class PermissionController extends Controller
             'slug' => 'sometimes|string|max:100|unique:permissions,slug,' . $id,
             'module' => 'sometimes|string|max:50',
             'action' => 'sometimes|string|max:50',
+            'description' => 'sometimes|string|max:255',
         ]);
 
         $oldSlug = $permission->slug;
 
         try {
-            DB::transaction(function () use ($permission, $validated, $oldSlug) {
+            DB::transaction(function () use ($permission, $validated, $oldSlug, $request) {
                 $permission->update($validated);
 
                 if (isset($validated['slug']) && $validated['slug'] !== $oldSlug) {
@@ -107,8 +107,13 @@ class PermissionController extends Controller
     public function getRolePermissions(RoleSyncService $roleService): JsonResponse
     {
         $roleSlugs = $roleService->getRoleSlugs();
-        $allPermissions = Permission::all()->map(function ($perm) {
-            return $this->parsePermissionSlug($perm->slug);
+        $allPermissions = Permission::select('slug', 'module', 'action', 'description')->get()->map(function ($perm) {
+            return [
+                'slug' => $perm->slug,
+                'module' => $perm->module,
+                'action' => $perm->action,
+                'description' => $perm->description,
+            ];
         });
 
         $rolePermissions = RolePermission::all()->groupBy('role_slug');
@@ -234,5 +239,42 @@ class PermissionController extends Controller
             'roles' => $roles,
             'last_sync' => $lastSync,
         ]);
+    }
+
+    public function searchUsers(Request $request): JsonResponse
+    {
+        $query = $request->query('q', '');
+
+        if (strlen($query) < 2) {
+            return response()->json(['users' => []]);
+        }
+
+        $ssoUrl = config('sso.sso_url');
+        $clientId = config('sso.client_id');
+
+        try {
+            $response = Http::get("{$ssoUrl}/users", [
+                'client_id' => $clientId,
+                'q' => $query,
+                'limit' => 10
+            ]);
+
+            if ($response->successful()) {
+                $users = $response->json('data', []);
+                return response()->json([
+                    'users' => collect($users)->map(function ($user) {
+                        return [
+                            'id' => $user['id'] ?? null,
+                            'name' => $user['name'] ?? $user['username'] ?? 'Sin nombre',
+                            'email' => $user['email'] ?? ''
+                        ];
+                    })->filter(fn($u) => $u['id'])->values()
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('SSO user search failed: ' . $e->getMessage());
+        }
+
+        return response()->json(['users' => []]);
     }
 }
