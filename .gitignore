@@ -10,4 +10,6 @@ dist/
 *.pem
 *.log
 .DS_Store
-Thumbs.db/.worktrees
+Thumbs.db
+/.worktrees
+.superpowers/

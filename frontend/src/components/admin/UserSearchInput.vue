@@ -6,7 +6,7 @@
         v-model="searchQuery"
         placeholder="Escribe para buscar..."
         @ion-input="onSearch"
-        debounce="500"
+        :debounce="500"
       ></ion-input>
     </ion-item>
 
@@ -16,7 +16,7 @@
         :key="user.id"
         button
         @click="selectUser(user)"
-        detail="false"
+        :detail="false"
       >
         <ion-icon :icon="personOutline" slot="start"></ion-icon>
         <ion-label>

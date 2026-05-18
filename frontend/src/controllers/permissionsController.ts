@@ -41,6 +41,7 @@ export interface UserPermissionOverride {
   slug: string
   module: string
   action: string
+  description: string | null
   type: 'grant' | 'deny' | null
 }
 
@@ -54,12 +55,12 @@ export function usePermissionsController() {
     return response
   }
 
-  async function createPermission(params: { slug: string; module: string; action: string }): Promise<void> {
-    const { slug, module, action } = params
-    await getApiConnector().post('admin/permissions', { slug, module, action })
+  async function createPermission(params: { slug: string; module: string; action: string; description?: string }): Promise<void> {
+    const { slug, module, action, description } = params
+    await getApiConnector().post('admin/permissions', { slug, module, action, description })
   }
 
-  async function updatePermission(params: { id: number; slug?: string; module?: string; action?: string }): Promise<void> {
+  async function updatePermission(params: { id: number; slug?: string; module?: string; action?: string; description?: string }): Promise<void> {
     const { id, ...body } = params
     await getApiConnector().put(`admin/permissions/${id}`, body)
   }

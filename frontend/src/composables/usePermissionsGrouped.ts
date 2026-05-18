@@ -1,15 +1,14 @@
 import { computed } from 'vue'
-import type { PermissionWithDescription } from '@/controllers/permissionsController'
 
-export interface GroupedPermission {
+export interface GroupedPermission<T = any> {
   module: string
   label: string
-  permissions: PermissionWithDescription[]
+  permissions: T[]
 }
 
 export function usePermissionsGrouped() {
-  function groupPermissions(permissions: PermissionWithDescription[]): GroupedPermission[] {
-    const groups: Record<string, PermissionWithDescription[]> = {}
+  function groupPermissions<T extends { module: string; action: string; description?: string | null }>(permissions: T[]): GroupedPermission<T>[] {
+    const groups: Record<string, T[]> = {}
 
     for (const perm of permissions) {
       if (!groups[perm.module]) {
@@ -37,7 +36,7 @@ export function usePermissionsGrouped() {
     })).sort((a, b) => a.label.localeCompare(b.label))
   }
 
-  function getPermissionLabel(permission: PermissionWithDescription): string {
+  function getPermissionLabel(permission: { description?: string | null; action: string; module: string }): string {
     if (permission.description) {
       return permission.description
     }

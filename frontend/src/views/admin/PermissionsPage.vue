@@ -80,7 +80,7 @@
             <ion-checkbox
               slot="start"
               :checked="perm.enabled"
-              @ionChange="togglePermission(perm.slug, $detail.checked)"
+              @ionChange="(e: any) => togglePermission(perm.slug, e.detail.checked)"
               :disabled="saving"
             ></ion-checkbox>
             <ion-label>
@@ -118,7 +118,7 @@
               <ion-select
                 slot="start"
                 :value="perm.type"
-                @ionChange="updateUserOverride(perm.slug, $detail.value)"
+                @ionChange="(e: any) => updateUserOverride(perm.slug, e.detail.value)"
                 :disabled="saving"
               >
                 <ion-select-option :value="null">
@@ -223,9 +223,9 @@ const groupedRolePermissions = computed(() => {
     module: p.slug.split('.')[0],
     description: null as string | null
   }))
-  return groupPermissions(withDesc as PermissionWithDescription[]).map(g => ({
+  return groupPermissions(withDesc).map(g => ({
     ...g,
-    enabledCount: g.permissions.filter(p => p.enabled).length
+    enabledCount: g.permissions.filter((p: any) => (p as any).enabled).length
   }))
 })
 
@@ -240,7 +240,7 @@ const groupedUserPermissions = computed(() => {
     module: p.slug.split('.')[0],
     description: p.description
   }))
-  return groupPermissions(perms as PermissionWithDescription[])
+  return groupPermissions(perms)
 })
 
 const hasChanges = computed(() => {
