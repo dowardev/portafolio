@@ -1,5 +1,19 @@
 import { getApiConnector } from '@/apiConnector'
 
+export interface PermissionWithDescription {
+  id: number
+  slug: string
+  module: string
+  action: string
+  description: string | null
+}
+
+export interface SearchUserResult {
+  id: string
+  name: string
+  email: string
+}
+
 export interface AvailablePermission {
   id: number
   slug: string
@@ -35,8 +49,8 @@ export interface UserPermissions {
 }
 
 export function usePermissionsController() {
-  async function getAvailablePermissions(): Promise<AvailablePermission[]> {
-    const response = await getApiConnector().get<AvailablePermission[]>('admin/permissions')
+  async function getAvailablePermissions(): Promise<PermissionWithDescription[]> {
+    const response = await getApiConnector().get<PermissionWithDescription[]>('admin/permissions')
     return response
   }
 
@@ -84,6 +98,17 @@ export function usePermissionsController() {
     })
   }
 
+  async function searchUsers(params: { query: string }): Promise<SearchUserResult[]> {
+    const { query } = params
+    if (query.length < 2) return []
+
+    const response = await getApiConnector().get<{ users: SearchUserResult[] }>(
+      'admin/permissions/search-users',
+      { params: { q: query } }
+    )
+    return response.users
+  }
+
   async function getSyncStatus(): Promise<SyncStatus> {
     const response = await getApiConnector().get<SyncStatus>('admin/permissions/sync-status')
     return response
@@ -103,6 +128,7 @@ export function usePermissionsController() {
     updateRolePermissions,
     getUserPermissions,
     updateUserPermissions,
+    searchUsers,
     getSyncStatus,
     syncRoles,
   }
