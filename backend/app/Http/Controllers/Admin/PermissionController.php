@@ -7,10 +7,10 @@ use App\Models\Permission;
 use App\Models\RolePermission;
 use App\Models\UserPermission;
 use App\Services\RoleSyncService;
+use App\Services\SsoApiService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 
 class PermissionController extends Controller
 {
@@ -52,9 +52,9 @@ class PermissionController extends Controller
         ], 201);
     }
 
-    public function updatePermission(Request $request, int $id): JsonResponse
+    public function updatePermission(Request $request, string $id): JsonResponse
     {
-        $permission = Permission::findOrFail($id);
+        $permission = Permission::findOrFail((int) $id);
 
         $validated = $request->validate([
             'slug' => 'sometimes|string|max:100|unique:permissions,slug,' . $id,
@@ -86,9 +86,9 @@ class PermissionController extends Controller
         ]);
     }
 
-    public function deletePermission(int $id): JsonResponse
+    public function deletePermission(string $id): JsonResponse
     {
-        $permission = Permission::findOrFail($id);
+        $permission = Permission::findOrFail((int) $id);
         $slug = $permission->slug;
 
         try {
@@ -186,6 +186,12 @@ class PermissionController extends Controller
             })->toArray();
         }
 
+        if ($userSsoId && !isset($result[$userSsoId])) {
+            $result[$userSsoId] = $permissions->map(function ($perm) {
+                return array_merge($perm, ['type' => null]);
+            })->toArray();
+        }
+
         return response()->json($result);
     }
 
@@ -241,40 +247,13 @@ class PermissionController extends Controller
         ]);
     }
 
-    public function searchUsers(Request $request): JsonResponse
+    public function getSsoUsers(Request $request, SsoApiService $ssoApi): JsonResponse
     {
-        $query = $request->query('q', '');
+        $search = $request->query('search');
+        $perPage = (int) $request->query('per_page', 50);
 
-        if (strlen($query) < 2) {
-            return response()->json(['users' => []]);
-        }
+        $users = $ssoApi->getUsers($search, $perPage);
 
-        $ssoUrl = config('sso.sso_url');
-        $clientId = config('sso.client_id');
-
-        try {
-            $response = Http::get("{$ssoUrl}/users", [
-                'client_id' => $clientId,
-                'q' => $query,
-                'limit' => 10
-            ]);
-
-            if ($response->successful()) {
-                $users = $response->json('data', []);
-                return response()->json([
-                    'users' => collect($users)->map(function ($user) {
-                        return [
-                            'id' => $user['id'] ?? null,
-                            'name' => $user['name'] ?? $user['username'] ?? 'Sin nombre',
-                            'email' => $user['email'] ?? ''
-                        ];
-                    })->filter(fn($u) => $u['id'])->values()
-                ]);
-            }
-        } catch (\Exception $e) {
-            \Log::error('SSO user search failed: ' . $e->getMessage());
-        }
-
-        return response()->json(['users' => []]);
+        return response()->json(['users' => $users]);
     }
 }

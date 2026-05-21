@@ -58,11 +58,9 @@ Route::middleware([Cors::class, 'sso.auth', 'permission:posts.delete'])->post("d
 Route::middleware([Cors::class, 'sso.auth', 'permission:intro.update'])->post("admin/update-intro", [IntroProfileController::class, "updateIntro"]);
 
 Route::middleware([Cors::class, 'sso.auth', 'sso.role:admin'])->prefix('admin')->group(function () {
-  // Permissions catalog (CRUD)
+  // Permissions catalog (static routes first, parameterized last)
   Route::get("permissions", [PermissionController::class, "getAvailablePermissions"]);
   Route::post("permissions", [PermissionController::class, "createPermission"]);
-  Route::put("permissions/{id}", [PermissionController::class, "updatePermission"]);
-  Route::delete("permissions/{id}", [PermissionController::class, "deletePermission"]);
 
   // Role permissions
   Route::get("permissions/roles", [PermissionController::class, "getRolePermissions"]);
@@ -72,12 +70,14 @@ Route::middleware([Cors::class, 'sso.auth', 'sso.role:admin'])->prefix('admin')-
   Route::get("permissions/user-override", [PermissionController::class, "getUserPermissions"])->name('permissions.user-override');
   Route::put("permissions/user-override", [PermissionController::class, "updateUserPermissions"]);
 
-  // SSO sync
+  // SSO sync & users
   Route::post("permissions/sync", [PermissionController::class, "syncRoles"]);
   Route::get("permissions/sync-status", [PermissionController::class, "getSyncStatus"]);
+  Route::get("permissions/users", [PermissionController::class, "getSsoUsers"]);
 
-  // User search
-  Route::get("permissions/search-users", [PermissionController::class, "searchUsers"]);
+  // Parameterized routes last (to avoid capturing static paths like "user-override" as {id})
+  Route::put("permissions/{id}", [PermissionController::class, "updatePermission"]);
+  Route::delete("permissions/{id}", [PermissionController::class, "deletePermission"]);
 });
 
 Route::middleware([Cors::class, 'sso.auth', 'permission:projects.create'])->post("admin/projects", [ProjectController::class, "store"]);

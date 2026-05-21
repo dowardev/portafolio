@@ -15,6 +15,8 @@ return [
 
     'client_id' => env('SSO_CLIENT_ID', 'main-app'),
 
+    'client_secret' => env('SSO_CLIENT_SECRET', ''),
+
     'role_mappings' => [
         'admin' => ['slug' => 'admin'],
     ],

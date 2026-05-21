@@ -7,7 +7,8 @@ export interface GroupedPermission<T = any> {
 }
 
 export function usePermissionsGrouped() {
-  function groupPermissions<T extends { module: string; action: string; description?: string | null }>(permissions: T[]): GroupedPermission<T>[] {
+  function groupPermissions<T extends { module: string; action: string; description?: string | null }>(permissions: T[] | undefined | null): GroupedPermission<T>[] {
+    if (!permissions || !Array.isArray(permissions)) return []
     const groups: Record<string, T[]> = {}
 
     for (const perm of permissions) {

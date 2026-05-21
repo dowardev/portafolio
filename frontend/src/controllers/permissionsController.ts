@@ -8,9 +8,10 @@ export interface PermissionWithDescription {
   description: string | null
 }
 
-export interface SearchUserResult {
-  id: string
+export interface SsoUser {
+  id: number
   name: string
+  user: string
   email: string
 }
 
@@ -51,8 +52,8 @@ export interface UserPermissions {
 
 export function usePermissionsController() {
   async function getAvailablePermissions(): Promise<PermissionWithDescription[]> {
-    const response = await getApiConnector().get<PermissionWithDescription[]>('admin/permissions')
-    return response
+    const response = await getApiConnector().get<{ permissions: PermissionWithDescription[] }>('admin/permissions')
+    return response.permissions
   }
 
   async function createPermission(params: { slug: string; module: string; action: string; description?: string }): Promise<void> {
@@ -99,14 +100,12 @@ export function usePermissionsController() {
     })
   }
 
-  async function searchUsers(params: { query: string }): Promise<SearchUserResult[]> {
-    const { query } = params
-    if (query.length < 2) return []
-
-    const response = await getApiConnector().get<{ users: SearchUserResult[] }>(
-      'admin/permissions/search-users',
-      { params: { q: query } }
-    )
+  async function getSsoUsers(params?: { search?: string }): Promise<SsoUser[]> {
+    const search = params?.search
+    const url = search
+      ? 'admin/permissions/users?search=' + encodeURIComponent(search)
+      : 'admin/permissions/users'
+    const response = await getApiConnector().get<{ users: SsoUser[] }>(url)
     return response.users
   }
 
@@ -129,7 +128,7 @@ export function usePermissionsController() {
     updateRolePermissions,
     getUserPermissions,
     updateUserPermissions,
-    searchUsers,
+    getSsoUsers,
     getSyncStatus,
     syncRoles,
   }

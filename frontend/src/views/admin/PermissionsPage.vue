@@ -11,9 +11,6 @@
 
     <ion-content>
       <ion-segment v-model="activeTab" @ionChange="tabChanged">
-        <ion-segment-button value="permissions">
-          <ion-label>Permisos</ion-label>
-        </ion-segment-button>
         <ion-segment-button value="roles">
           <ion-label>Roles</ion-label>
         </ion-segment-button>
@@ -24,38 +21,6 @@
           <ion-label>SSO</ion-label>
         </ion-segment-button>
       </ion-segment>
-
-      <!-- Tab: Permissions Catalog -->
-      <div v-if="activeTab === 'permissions'" class="tab-content">
-        <ion-button @click="openCreateModal" :disabled="saving">
-          <ion-icon slot="start" :icon="addCircle"></ion-icon>
-          Agregar Permiso
-        </ion-button>
-
-        <div v-for="group in groupedPermissions" :key="group.module" class="permission-group">
-          <ion-list-header class="module-header">
-            <ion-label>
-              {{ group.label }}
-              <ion-badge color="medium">{{ group.permissions.length }}</ion-badge>
-            </ion-label>
-          </ion-list-header>
-
-          <ion-item v-for="perm in group.permissions" :key="perm.id">
-            <ion-label>
-              <h2>{{ getPermissionLabel(perm) }}</h2>
-              <p>{{ perm.slug }}</p>
-            </ion-label>
-            <ion-buttons slot="end">
-              <ion-button @click="openEditModal(perm)">
-                <ion-icon :icon="pencil"></ion-icon>
-              </ion-button>
-              <ion-button @click="deletePermission(perm)" color="danger">
-                <ion-icon :icon="trash"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-item>
-        </div>
-      </div>
 
       <!-- Tab: Roles -->
       <div v-if="activeTab === 'roles'" class="tab-content">
@@ -101,9 +66,38 @@
         </ion-button>
       </div>
 
-      <!-- Tab: Users -->
-      <div v-if="activeTab === 'users'" class="tab-content">
-        <UserSearchInput @selected="onUserSelected" />
+  <!-- Tab: Users -->
+  <div v-if="activeTab === 'users'" class="tab-content">
+    <ion-item>
+      <ion-label position="stacked">Buscar usuario</ion-label>
+      <ion-input v-model="userSearchQuery" placeholder="Nombre o email..." debounce="300" @ionInput="searchSsoUsers"></ion-input>
+    </ion-item>
+
+    <div v-if="loadingUsers" class="loading-container">
+      <ion-spinner name="lines"></ion-spinner>
+      <p>Cargando usuarios...</p>
+    </div>
+
+    <ion-list v-else-if="ssoUsers.length > 0" class="users-list">
+      <ion-item
+        v-for="user in ssoUsers"
+        :key="user.id"
+        :button="true"
+        :detail="true"
+        :class="{ 'selected-user': selectedUser?.id === String(user.id) }"
+        @click="selectSsoUser(user)"
+      >
+        <ion-icon slot="start" :icon="personOutline" color="primary"></ion-icon>
+        <ion-label>
+          <h2>{{ user.name }}</h2>
+          <p>{{ user.email }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <div v-else class="empty-container">
+      <p>No se encontraron usuarios</p>
+    </div>
 
         <div v-if="currentUserPermissions.length > 0">
           <div v-for="group in groupedUserPermissions" :key="group.module" class="permission-group">
@@ -114,30 +108,24 @@
               </ion-label>
             </ion-list-header>
 
-            <ion-item v-for="perm in group.permissions" :key="perm.slug">
-              <ion-select
+            <ion-item
+              v-for="perm in group.permissions"
+              :key="perm.slug"
+              button
+              @click="openPermPopover($event, perm.slug)"
+            >
+              <ion-icon
                 slot="start"
-                :value="perm.type"
-                @ionChange="(e: any) => updateUserOverride(perm.slug, e.detail.value)"
-                :disabled="saving"
-              >
-                <ion-select-option :value="null">
-                  <ion-icon :icon="removeCircleOutline" slot="start"></ion-icon>
-                  Heredado
-                </ion-select-option>
-                <ion-select-option value="grant">
-                  <ion-icon :icon="checkmarkCircle" slot="start" color="success"></ion-icon>
-                  Permitir
-                </ion-select-option>
-                <ion-select-option value="deny">
-                  <ion-icon :icon="closeCircle" slot="start" color="danger"></ion-icon>
-                  Denegar
-                </ion-select-option>
-              </ion-select>
+                :icon="perm.type === 'grant' ? checkmarkCircle : perm.type === 'deny' ? closeCircle : removeCircleOutline"
+                :color="perm.type === 'grant' ? 'success' : perm.type === 'deny' ? 'danger' : 'medium'"
+              />
               <ion-label>
                 <h3>{{ getPermissionLabel(perm) }}</h3>
                 <p>{{ perm.slug }}</p>
               </ion-label>
+              <ion-note slot="end">
+                {{ perm.type === 'grant' ? 'Permitir' : perm.type === 'deny' ? 'Denegar' : 'Heredado' }}
+              </ion-note>
             </ion-item>
           </div>
 
@@ -178,28 +166,71 @@
         </div>
       </div>
     </ion-content>
+
+      <ion-popover
+        :is-open="permPopover.open"
+        :event="permPopover.event"
+        @did-dismiss="permPopover.open = false"
+        side="bottom"
+      >
+        <ion-content>
+          <ion-list>
+            <ion-item
+              button
+              @mouseenter="permDescription = 'El permiso se decide según los roles del usuario'"
+              @click="selectPermOverride(null); permPopover.open = false"
+            >
+              <ion-icon slot="start" :icon="removeCircleOutline" color="medium" />
+              <ion-label>Heredado</ion-label>
+              <ion-badge v-if="currentPermType === null" slot="end" color="medium">●</ion-badge>
+            </ion-item>
+            <ion-item
+              button
+              @mouseenter="permDescription = 'Fuerza el permiso como concedido, sin importar los roles'"
+              @click="selectPermOverride('grant'); permPopover.open = false"
+            >
+              <ion-icon slot="start" :icon="checkmarkCircle" color="success" />
+              <ion-label>Permitir</ion-label>
+              <ion-badge v-if="currentPermType === 'grant'" slot="end" color="success">●</ion-badge>
+            </ion-item>
+            <ion-item
+              button
+              @mouseenter="permDescription = 'Fuerza el permiso como denegado, sin importar los roles'"
+              @click="selectPermOverride('deny'); permPopover.open = false"
+            >
+              <ion-icon slot="start" :icon="closeCircle" color="danger" />
+              <ion-label>Denegar</ion-label>
+              <ion-badge v-if="currentPermType === 'deny'" slot="end" color="danger">●</ion-badge>
+            </ion-item>
+          </ion-list>
+          <ion-item class="perm-description">
+            <ion-label>
+              <p>{{ permDescription }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-content>
+      </ion-popover>
   </ion-page>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
   IonContent, IonSegment, IonSegmentButton, IonLabel, IonList, IonItem,
-  IonButton, IonIcon, IonSelect, IonSelectOption, IonCheckbox, toastController,
-  IonInput, IonListHeader, IonBadge, modalController
+  IonButton, IonIcon, IonSelect, IonSelectOption, IonCheckbox,
+  toastController, IonInput, IonListHeader, IonBadge, IonSpinner, IonNote, IonPopover
 } from '@ionic/vue'
-import { shield, addCircle, pencil, trash, save, sync as syncIcon, syncOutline, checkmarkCircle, closeCircle, removeCircleOutline } from 'ionicons/icons'
-import { usePermissionsController, type PermissionWithDescription, type RolePermissions, type SyncStatus, type UserPermissions } from '@/controllers/permissionsController'
+import { save, sync as syncIcon, syncOutline, checkmarkCircle, closeCircle, removeCircleOutline, personOutline } from 'ionicons/icons'
+import { usePermissionsController, type RolePermissions, type SyncStatus, type UserPermissions, type SsoUser } from '@/controllers/permissionsController'
+import { useUserStore } from '@/store/userStore'
 import { usePermissionsGrouped } from '@/composables/usePermissionsGrouped'
-import PermissionFormModal from '@/components/admin/PermissionFormModal.vue'
-import UserSearchInput from '@/components/admin/UserSearchInput.vue'
-import type { SearchUserResult } from '@/controllers/permissionsController'
 
+const userStore = useUserStore()
 const controller = usePermissionsController()
 const { groupPermissions, getPermissionLabel } = usePermissionsGrouped()
 
-const activeTab = ref('permissions')
+const activeTab = ref('roles')
 const saving = ref(false)
 
 const selectedRole = ref('admin')
@@ -207,14 +238,18 @@ const availableRoles = ref<{slug: string; name: string}[]>([])
 const rolePermissions = ref<RolePermissions>({})
 const originalPermissions = ref<RolePermissions>({})
 
-const selectedUser = ref<SearchUserResult | null>(null)
+const selectedUser = ref<SsoUser | null>(null)
 const userPermissions = ref<UserPermissions>({})
+const ssoUsers = ref<SsoUser[]>([])
+const loadingUsers = ref(false)
+const userSearchQuery = ref('')
 
-const permissions = ref<PermissionWithDescription[]>([])
+const permPopover = reactive({ open: false, event: Event })
+const currentPermSlug = ref('')
+const currentPermType = ref<string | null>(null)
+const permDescription = ref('El permiso se decide según los roles del usuario')
 
 const syncStatus = ref<SyncStatus>({ roles: [], last_sync: null })
-
-const groupedPermissions = computed(() => groupPermissions(permissions.value))
 
 const groupedRolePermissions = computed(() => {
   const perms = rolePermissions.value[selectedRole.value] || []
@@ -231,7 +266,7 @@ const groupedRolePermissions = computed(() => {
 
 const currentUserPermissions = computed(() => {
   if (!selectedUser.value) return []
-  return userPermissions.value[selectedUser.value.id] || []
+  return userPermissions.value[String(selectedUser.value.id)] || []
 })
 
 const groupedUserPermissions = computed(() => {
@@ -257,17 +292,57 @@ const changesCount = computed(() => {
   return current.filter((c, i) => c !== original[i]).length
 })
 
-function onUserSelected(user: SearchUserResult | null) {
+function selectSsoUser(user: SsoUser) {
   selectedUser.value = user
-  if (user) {
-    loadUserPermissions()
-  } else {
-    userPermissions.value = {}
+  loadUserPermissions()
+}
+
+function openPermPopover(event: Event, permSlug: string) {
+  if (saving.value || !selectedUser.value) return
+  const userPerms = userPermissions.value[String(selectedUser.value.id)]
+  const perm = userPerms?.find(p => p.slug === permSlug)
+  currentPermSlug.value = permSlug
+  currentPermType.value = perm?.type ?? null
+  permDescription.value = getPermDescription(currentPermType.value)
+  permPopover.event = event
+  permPopover.open = true
+}
+
+function selectPermOverride(type: string | null) {
+  updateUserOverride(currentPermSlug.value, type)
+}
+
+function getPermDescription(type: string | null): string {
+  switch (type) {
+    case 'grant': return 'Fuerza el permiso como concedido, sin importar los roles'
+    case 'deny': return 'Fuerza el permiso como denegado, sin importar los roles'
+    default: return 'El permiso se decide según los roles del usuario'
   }
 }
 
-async function loadPermissions() {
-  permissions.value = await controller.getAvailablePermissions()
+async function searchSsoUsers() {
+  loadingUsers.value = true
+  try {
+    const query = userSearchQuery.value.trim()
+    const users = await controller.getSsoUsers(query.length >= 2 ? { search: query } : undefined)
+    ssoUsers.value = users.filter(u => String(u.id) !== String(userStore.user?.id))
+  } catch {
+    ssoUsers.value = []
+  } finally {
+    loadingUsers.value = false
+  }
+}
+
+async function loadSsoUsers() {
+  loadingUsers.value = true
+  try {
+    const users = await controller.getSsoUsers()
+    ssoUsers.value = users.filter(u => String(u.id) !== String(userStore.user?.id))
+  } catch {
+    ssoUsers.value = []
+  } finally {
+    loadingUsers.value = false
+  }
 }
 
 async function loadRolePermissions() {
@@ -277,7 +352,7 @@ async function loadRolePermissions() {
 
 async function loadUserPermissions() {
   if (!selectedUser.value) return
-  userPermissions.value = await controller.getUserPermissions({ userSsoId: selectedUser.value.id })
+  userPermissions.value = await controller.getUserPermissions({ userSsoId: String(selectedUser.value.id) })
 }
 
 async function loadAvailableRoles() {
@@ -296,9 +371,8 @@ async function loadSyncStatus() {
 }
 
 function tabChanged() {
-  if (activeTab.value === 'permissions') loadPermissions()
   if (activeTab.value === 'roles') loadRolePermissions()
-  if (activeTab.value === 'users' && selectedUser.value) loadUserPermissions()
+  if (activeTab.value === 'users') loadSsoUsers()
   if (activeTab.value === 'sync') loadSyncStatus()
 }
 
@@ -310,7 +384,7 @@ function togglePermission(permSlug: string, enabled: boolean) {
 
 function updateUserOverride(permSlug: string, type: string | null) {
   if (!selectedUser.value) return
-  const userPerms = userPermissions.value[selectedUser.value.id]
+  const userPerms = userPermissions.value[String(selectedUser.value.id)]
   const perm = userPerms?.find((p) => p.slug === permSlug)
   if (perm) perm.type = type as 'grant' | 'deny' | null
 }
@@ -335,11 +409,11 @@ async function saveUserPermissions() {
   if (!selectedUser.value) return
   try {
     saving.value = true
-    const perms = userPermissions.value[selectedUser.value.id].map((p) => ({
+    const perms = userPermissions.value[String(selectedUser.value.id)].map((p) => ({
       slug: p.slug,
       type: p.type,
     }))
-    await controller.updateUserPermissions({ userSsoId: selectedUser.value.id, permissions: perms })
+    await controller.updateUserPermissions({ userSsoId: String(selectedUser.value.id), permissions: perms })
     showToast('Permisos de usuario guardados')
   } catch (e: any) {
     showToast(e.response?.data?.message || 'Error al guardar', 'danger')
@@ -360,96 +434,6 @@ async function doSync() {
   }
 }
 
-async function openCreateModal() {
-  const modal = await modalController.create({
-    component: PermissionFormModal,
-    componentProps: { 
-      permission: null,
-      availableModules: availableModules.value.map(r => r.slug.split('.')[0]).filter((v, i, a) => a.indexOf(v) === i)
-    }
-  })
-
-  modal.onDidDismiss().then(async (result) => {
-    if (result.data && result.data.length > 0) {
-      try {
-        saving.value = true
-        for (const perm of result.data) {
-          await controller.createPermission({
-            slug: perm.slug,
-            module: perm.module,
-            action: perm.action,
-            description: perm.description
-          })
-        }
-        await loadPermissions()
-        showToast(result.data.length === 1 ? 'Permiso creado' : `${result.data.length} permisos creados`)
-      } catch (e: any) {
-        showToast(e.response?.data?.message || 'Error al crear', 'danger')
-      } finally {
-        saving.value = false
-      }
-    }
-  })
-
-  await modal.present()
-}
-
-async function openEditModal(perm: PermissionWithDescription) {
-  const modal = await modalController.create({
-    component: PermissionFormModal,
-    componentProps: { permission: perm }
-  })
-
-  modal.onDidDismiss().then(async (result) => {
-    if (result.data) {
-      try {
-        saving.value = true
-        await controller.updatePermission({
-          id: perm.id,
-          slug: result.data.slug,
-          module: result.data.module,
-          action: result.data.action,
-          description: result.data.description
-        })
-        await loadPermissions()
-        showToast('Permiso actualizado')
-      } catch (e: any) {
-        showToast(e.response?.data?.message || 'Error al actualizar', 'danger')
-      } finally {
-        saving.value = false
-      }
-    }
-  })
-
-  await modal.present()
-}
-
-async function deletePermission(perm: PermissionWithDescription) {
-  const alert = await (await import('@ionic/vue')).alertController.create({
-    header: 'Eliminar Permiso',
-    message: `¿Eliminar "${getPermissionLabel(perm)}"?`,
-    buttons: [
-      { text: 'Cancelar', role: 'cancel' },
-      {
-        text: 'Eliminar',
-        handler: async () => {
-          try {
-            saving.value = true
-            await controller.deletePermission({ id: perm.id })
-            await loadPermissions()
-            showToast('Permiso eliminado')
-          } catch (e: any) {
-            showToast(e.response?.data?.message || 'Error al eliminar', 'danger')
-          } finally {
-            saving.value = false
-          }
-        },
-      },
-    ],
-  })
-  await alert.present()
-}
-
 function formatLastSync(timestamp: string | null): string {
   if (!timestamp) return 'Nunca'
   const date = new Date(timestamp)
@@ -466,14 +450,11 @@ function formatLastSync(timestamp: string | null): string {
 }
 
 async function showToast(message: string, color: string = 'success') {
-  const toast = await toastController.create({
-    message, duration: 2000, color
-  })
+  const toast = await toastController.create({ message, duration: 2000, color })
   await toast.present()
 }
 
 onMounted(() => {
-  loadPermissions()
   loadAvailableRoles()
   loadRolePermissions()
   loadSyncStatus()
@@ -498,5 +479,36 @@ onMounted(() => {
 .last-sync {
   color: var(--ion-color-medium);
   margin: 16px 0;
+}
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+  color: var(--ion-color-medium);
+}
+.empty-container {
+  text-align: center;
+  padding: 32px;
+  color: var(--ion-color-medium);
+}
+.selected-user {
+  --background: var(--ion-color-light);
+}
+.users-list {
+  margin-top: 8px;
+}
+.perm-description {
+  --background: var(--ion-color-light);
+  --color: var(--ion-color-medium);
+  --inner-padding-top: 8px;
+  --inner-padding-bottom: 8px;
+  --inner-padding-start: 16px;
+  --inner-padding-end: 16px;
+}
+.perm-description p {
+  font-size: 12px;
+  font-style: italic;
+  margin: 0;
 }
 </style>

@@ -1,5 +1,61 @@
 # Changelog
 
+## 18.6.0 - 2026-05-21
+
+### Features
+
+- **SSO client_credentials grant**: Added server-to-server OAuth2 authentication via `SsoApiService`. The portfolio backend can now obtain tokens from the SSO server using `client_credentials` grant type, enabling secure API calls to fetch user data and sync roles without user interaction.
+  - `backend/app/Services/SsoApiService.php` — new service handling client_credentials token requests (cached for 55 minutes) and SSO API calls (getUsers, getRoles)
+  - `backend/config/sso.php` — new configuration file for SSO client credentials (base_url, client_id, client_secret)
+
+- **User permission overrides**: Added per-user permission management with grant/deny/inherit controls.
+  - `PermissionController::getUserPermissions()` — returns all permissions with user override status (`grant`, `deny`, or `null` for inherited)
+  - `PermissionController::updateUserPermissions()` — batch updates user permission overrides in a transaction
+  - Backend ensures users with no overrides still get a full permission list (all `null` types)
+
+- **Permissions management UI redesign**: Replaced the previous modal-based permissions editor with a tabbed interface featuring role and user management.
+  - Three tabs: Roles (checkbox-based), Users (search + ion-popover override picker), SSO (sync status)
+  - Role permissions: grouped by module with enabled/total badge, save with change count indicator
+  - User permissions: searchable SSO user list with inline filter, ion-popover for grant/deny/inherit selection with hover descriptions and selected-state badge
+  - User list filters out the currently logged-in user (normalizes both SsoUser.id and User.id to strings for comparison)
+  - `selected-user` highlight styling for the active user
+
+- **SSO user search endpoint**: `GET admin/permissions/users` with optional `?search=` query parameter, proxied through `SsoApiService` to the SSO server's `/api/users` endpoint.
+
+- **SSO role sync UI**: Added sync status display showing roles from SSO with protected badges and last-sync timestamp. Manual sync trigger button.
+
+- **Backend route ordering fix**: Reordered `admin/permissions` routes so static paths (`user-override`, `roles`, `sync`, `users`) are registered before the parameterized `{id}` routes, preventing `user-override` from being captured as the `{id}` parameter (which caused `findOrFail(0)` errors).
+
+### Removed
+
+- **Deleted `PermissionFormModal.vue`**: Replaced by inline ion-popover override picker on the users tab.
+- **Deleted `UserSearchInput.vue`**: Replaced by inline search input with debounced filtering on the users tab.
+
+### Changed
+
+- **`permissionsController.ts`**: Replaced the previous controller implementation with a comprehensive set of typed API methods for permissions CRUD, role permissions, user overrides, SSO user search, and sync management. Updated endpoint names (sso-users → users).
+
+- **`PermissionController.php`**: Refactored to support user permission overrides, SSO user proxying, and role sync. Changed `int $id` to `string $id` in update/delete methods with explicit cast (Laravel 12 passes route params as strings). Added fallback for users with no overrides.
+
+- **`usePermissionsGrouped.ts`**: Made null-safe to handle permission entries without descriptions.
+
+### Affected Files
+
+- Added:
+  - `backend/app/Services/SsoApiService.php`
+  - `backend/config/sso.php`
+- Modified:
+  - `backend/app/Http/Controllers/Admin/PermissionController.php`
+  - `backend/routes/api.php`
+  - `frontend/src/composables/usePermissionsGrouped.ts`
+  - `frontend/src/controllers/permissionsController.ts`
+  - `frontend/src/views/admin/PermissionsPage.vue`
+- Deleted:
+  - `frontend/src/components/admin/PermissionFormModal.vue`
+  - `frontend/src/components/admin/UserSearchInput.vue`
+
+---
+
 ## 18.5.3 - 2026-05-17
 
 ### Fixed
