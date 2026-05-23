@@ -15,7 +15,22 @@
               :key="index"
               class="stack-item"
             >
-              <img :src="item.image" :alt="item.name" />
+              <template v-if="isLineIconName(item.iconName)">
+                <Lineicons
+                  :icon="getIconComponent(item.iconName)"
+                  :color="'var(--ion-color-primary)'"
+                  :size="36"
+                />
+              </template>
+
+              <ion-icon
+                v-else
+                :icon="getIconSvg(item.iconName)"
+                :style="{
+                  fontSize: '36px',
+                  color: 'var(--ion-color-primary)',
+                }"
+              ></ion-icon>
             </div>
           </div>
         </ion-col>
@@ -45,11 +60,20 @@
               v-for="(technology, index) in category.technologies"
               :key="index"
             >
+              <template v-if="isLineIconName(technology.iconName)">
+                <Lineicons
+                  :icon="getIconComponent(technology.iconName)"
+                  color="var(--ion-color-primary)"
+                  :size="24"
+                />
+              </template>
+
               <ion-icon
-                :icon="getIconByName(technology.iconName)"
+                v-else
+                :icon="getIconSvg(technology.iconName)"
                 :style="{
                   fontSize: '24px',
-                  color: getIconColor(technology.iconName),
+                  color: 'var(--ion-color-primary)',
                 }"
               ></ion-icon>
             </ion-col>
@@ -71,36 +95,46 @@ import {
   IonIcon,
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
-import * as ionicons from "ionicons/icons";
-import { useIconColors } from "@/composables/useIconColors";
-import type { StackItem, SkillCategory } from "@/services/types";
-import IntroController from "@/controllers/introController";
+import { Lineicons } from "@lineiconshq/vue-lineicons";
+import type { StackItem } from "@/services/types";
+import StackController from "@/controllers/stackController";
 import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
+import type { SkillsCategoryItem } from "@/store/skillsCategoriesStore";
+import {
+  getIonIconSvg,
+  getLineIconComponent,
+  isLineIcon,
+} from "@/composables/iconsIndex";
 
-const { getIconColor } = useIconColors();
-const introController = new IntroController();
+const stackController = new StackController();
 const skillsCategoriesController = new SkillsCategoriesController();
 
 const stackItems = ref<StackItem[]>([]);
-const skillCategories = ref<SkillCategory[]>([]);
+const skillCategories = ref<SkillsCategoryItem[]>([]);
 
 onMounted(async () => {
   try {
-    const [introData, skillsData] = await Promise.all([
-      introController.loadIntro(),
+    const [stackData, skillsData] = await Promise.all([
+      stackController.loadStack(),
       skillsCategoriesController.loadSkillsCategories(),
     ]);
-    stackItems.value = introData.stack || [];
+    stackItems.value = stackData || [];
     skillCategories.value = skillsData || [];
   } catch (error) {
     console.error("Error loading categories data:", error);
   }
 });
 
-function getIconByName(iconName: string) {
-  if (!iconName) return ionicons.helpCircleOutline;
-  const icon = ionicons[iconName as keyof typeof ionicons];
-  return icon || ionicons.helpCircleOutline;
+function isLineIconName(name: string): boolean {
+  return isLineIcon(name);
+}
+
+function getIconSvg(name: string): string | undefined {
+  return getIonIconSvg(name);
+}
+
+function getIconComponent(name: string): object | undefined {
+  return getLineIconComponent(name);
 }
 </script>
 
@@ -120,10 +154,5 @@ function getIconByName(iconName: string) {
   align-items: center;
   width: 50px;
   height: 50px;
-}
-
-.stack-item img {
-  max-width: 100%;
-  max-height: 100%;
 }
 </style>

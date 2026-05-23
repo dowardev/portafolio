@@ -1,4 +1,5 @@
-export type Theme = "light" | "nord" | "gruvbox";
+export type ConcreteTheme = "light" | "nord" | "gruvbox" | "catppuccin-latte" | "catppuccin-macchiato";
+export type Theme = ConcreteTheme | "auto";
 
 export type StatusPost = "active" | "inactive" | "draft";
 
@@ -14,13 +15,13 @@ export type PostFields =
   | "status";
 
 export interface StackItem {
-  id: string;
+  id?: string;
   name: string;
-  image: string;
+  iconName: string;
 }
 
 export interface SkillCategory {
-  id: string;
+  id?: string;
   name: string;
   technologies: Array<{
     iconName: string;

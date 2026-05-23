@@ -4,7 +4,21 @@
 
     <div class="main-icons">
       <div v-for="icon in mainIcons" :key="icon.name" class="main-icon">
-        <img :src="icon.svg" :alt="icon.name" />
+        <template v-if="isLineIconName(icon.iconName)">
+          <Lineicons
+            :icon="getLineIconComponent(icon.iconName)"
+            color="var(--ion-color-primary)"
+            :size="iconSizeNum"
+          />
+        </template>
+        <ion-icon
+          v-else
+          :icon="getIonIconSvg(icon.iconName)"
+          :style="{
+            fontSize: iconSize,
+            color: 'var(--ion-color-primary)',
+          }"
+        />
         <span class="icon-label">{{ icon.name }}</span>
       </div>
     </div>
@@ -26,10 +40,16 @@
 <script lang="ts" setup>
 // imports
 import { ref, onMounted, nextTick, computed, watch } from "vue";
+import { Lineicons } from "@lineiconshq/vue-lineicons";
+import {
+  getIonIconSvg,
+  getLineIconComponent,
+  isLineIcon,
+} from "@/composables/iconsIndex";
 // end
 
 // types and interfaces
-type MainIcon = { name: string; svg: string };
+type MainIcon = { name: string; iconName: string };
 type BackgroundTech = { name: string };
 type Position = {
   name: string;
@@ -81,6 +101,18 @@ const titleMargin = computed(
 );
 // end computed
 
+// vars and const
+const iconSizeNum = computed(
+  () => Math.max(36, Math.min(72, height * 0.18)),
+);
+// end vars and const
+
+// helper functions
+function isLineIconName(name: string): boolean {
+  return isLineIcon(name);
+}
+// end helper functions
+
 // onMounted
 onMounted(async () => {
   await nextTick();
@@ -121,7 +153,7 @@ onMounted(async () => {
 
     const placed: { x: number; y: number }[] = [];
 
-    techPositions.value = props.backgroundTechs.map((t, i) => {
+    techPositions.value = backgroundTechs.map((t, i) => {
       const maxTextWidth = t.name.length * 9;
       let x: number | undefined,
         y: number | undefined,
@@ -253,7 +285,7 @@ watch(
 
       const placed: { x: number; y: number }[] = [];
 
-      techPositions.value = props.backgroundTechs.map((t, i) => {
+      techPositions.value = backgroundTechs.map((t, i) => {
         const maxTextWidth = t.name.length * 9;
         let x: number | undefined,
           y: number | undefined,
@@ -405,11 +437,7 @@ watch(
   gap: 6px;
 }
 
-.main-icon img {
-  width: v-bind(iconSize);
-  height: v-bind(iconSize);
-  object-fit: contain;
-}
+
 
 .icon-label {
   color: var(--ion-color-primary);

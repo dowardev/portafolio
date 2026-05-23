@@ -42,7 +42,6 @@
           <StackEditor
             :model-value="stackData"
             @update:model-value="stackData = $event"
-            @update:files="updateStackFiles"
           />
         </ion-col>
       </ion-row>
@@ -68,7 +67,7 @@ import {
   IonToolbar,
   alertController,
 } from "@ionic/vue";
-import { ref, reactive, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import StackEditor from "../editors/StackEditor.vue";
 import StackController from "@/controllers/stackController";
@@ -83,7 +82,6 @@ const router = useRouter();
 const saving = ref(false);
 
 const stackData = ref<StackItem[]>([]);
-const pendingFiles = reactive<Record<number, File>>({});
 
 onMounted(async () => {
   try {
@@ -93,12 +91,6 @@ onMounted(async () => {
     console.error("Error loading stack:", error);
   }
 });
-
-function updateStackFiles(fileMap: Record<number, File>) {
-  Object.keys(fileMap).forEach(key => {
-    pendingFiles[Number(key)] = fileMap[Number(key)];
-  });
-}
 
 async function handleSave() {
   const canCreate = can({ permission: 'stacks.create' });
@@ -113,12 +105,10 @@ async function handleSave() {
     for (const stack of stackData.value) {
       if (stack.id) {
         if (!canUpdate) continue;
-        const file = pendingFiles[stack.id];
-        await stackController.updateStack(stack.id, stack, file);
+        await stackController.updateStack(stack.id, stack);
       } else {
         if (!canCreate) continue;
-        const file = pendingFiles[stackData.value.indexOf(stack)];
-        await stackController.addStack(stack, file);
+        await stackController.addStack(stack);
       }
     }
     await stackController.loadStack();

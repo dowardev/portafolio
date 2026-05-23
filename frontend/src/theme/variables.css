@@ -3,8 +3,10 @@ http://ionicframework.com/docs/theming/ */
 
 /* themes */
 @import url("./light.css");
-/* @import url("./gruvbox.css");
-@import url("./nord.css"); */
+@import url("./gruvbox.css");
+@import url("./nord.css");
+@import url("./catppuccin-latte.css");
+@import url("./catppuccin-macchiato.css");
 @import url("./styles/tippy-themes.css");
 @import url("./styles/scrollbar.css");
 

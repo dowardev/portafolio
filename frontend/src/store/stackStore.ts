@@ -1,11 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-
-interface StackItem {
-  id?: string;
-  name: string;
-  image: string;
-}
+import type { StackItem } from "@/services/types";
 
 export const useStackStore = defineStore("stack", () => {
   const stack = ref<StackItem[]>([]);
