@@ -1,5 +1,76 @@
 # Changelog
 
+## 18.7.0 - 2026-05-23
+
+### Features
+
+- **Stack icon-only system**: Replaced image uploads with `icon_id` foreign key to `icons` table. Stack editor now uses IconSelector modal instead of file input/preview. TechCloudBackground renders icons dynamically via Lineicons/ion-icon. Removed 4 static SVG assets.
+  - New migration: `2026_05_22_000000_update_stacks_table.php`
+  - `StackController.php`, `Stack.php` — icon_name lookup, BelongsTo relationship
+  - `stackController.ts`, `StackEditor.vue`, `AdminStackPage.vue` — no file arguments
+  - `TechCloudBackground.vue`, `SkillsPage.vue`, `HomeTemplate2.vue` — dynamic icon rendering
+  - Deleted: `ionicframework-icon.svg`, `laravel-2.svg`, `mariadb-icon.svg`, `vue-js-1.svg`
+
+- **Auto theme selector**: Added "Automático" mode with 3 `ion-select` dropdowns (main, light theme, dark theme). `resolveAutoTheme()` detects `prefers-color-scheme` to select the effective theme automatically.
+  - `ThemeComponente.vue` — 3-select UI for main/light/dark theme
+  - `systemController.ts` — `resolveAutoTheme()` method
+  - `systemService.ts` — resolved params for classList operations
+  - `systemStore.ts` — default lightTheme/darkTheme options
+  - `types.ts`, `interfaces.ts` — `ConcreteTheme` type, `Theme` union expanded
+
+- **Catppuccin themes**: Added Catppuccin Latte (light) and Macchiato (dark) with maroon primary accent. Theme list expanded from 3 to 5.
+  - New: `catppuccin-latte.css`, `catppuccin-macchiato.css`
+  - `variables.css` — imports for both themes
+  - `utils/types.ts` — theme type union expanded
+
+### Fixed
+
+- **Theme switching engine repair**: Replaced fragile inline style manipulation with `data-blur` attribute on `<body>` plus CSS-driven states. Unified `changeTheme()` method that atomically updates store, applies theme, and persists. Menu accent color fixed from `--ion-color-secondary` to `--ion-color-primary`.
+  - `systemService.ts` — simplified to `body.setAttribute("data-blur")` pattern
+  - `MenuComponent.vue`, `MenuItem.vue` — changed accent to `--ion-color-primary`
+  - `App.vue` — fixed `oldTheme` reference to use fresh default object
+  - `light.css`, `gruvbox.css`, `nord.css` — added `--background-contrast`, `[data-blur]` selectors
+  - `variables.css` — uncommented gruvbox/nord CSS imports
+
+### Affected Files
+
+- Added:
+  - `backend/database/migrations/2026_05_22_000000_update_stacks_table.php`
+  - `frontend/src/theme/catppuccin-latte.css`
+  - `frontend/src/theme/catppuccin-macchiato.css`
+- Modified:
+  - `backend/app/Http/Controllers/Admin/StackController.php`
+  - `backend/app/Models/Stack.php`
+  - `frontend/src/App.vue`
+  - `frontend/src/components/menu/MenuComponent.vue`
+  - `frontend/src/components/menu/MenuItem.vue`
+  - `frontend/src/components/theme/ThemeComponente.vue`
+  - `frontend/src/components/common/TechCloudBackground.vue`
+  - `frontend/src/controllers/stackController.ts`
+  - `frontend/src/controllers/systemController.ts`
+  - `frontend/src/services/systemService.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/store/stackStore.ts`
+  - `frontend/src/store/systemStore.ts`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/theme/variables.css`
+  - `frontend/src/theme/light.css`
+  - `frontend/src/theme/gruvbox.css`
+  - `frontend/src/theme/nord.css`
+  - `frontend/src/utils/interfaces.ts`
+  - `frontend/src/utils/types.ts`
+  - `frontend/src/views/admin/PermissionsPage.vue`
+  - `frontend/src/views/admin/editors/StackEditor.vue`
+  - `frontend/src/views/admin/sections/AdminStackPage.vue`
+  - `frontend/src/views/presentation/categories/SkillsPage.vue`
+- Deleted:
+  - `frontend/src/assets/otros/ionicframework-icon.svg`
+  - `frontend/src/assets/otros/laravel-2.svg`
+  - `frontend/src/assets/otros/mariadb-icon.svg`
+  - `frontend/src/assets/otros/vue-js-1.svg`
+
+---
+
 ## 18.6.0 - 2026-05-21
 
 ### Features
