@@ -1,74 +1,83 @@
-# AGENTS.md - SSO Server
+# AGENTS.md - Portafolio (dowar-blog)
 
 ## Project Structure
 
-Monorepo with two workspaces:
-- `back/` — Laravel 12 backend (PHP 8.2+)
-- `front/` — Ionic Vue 8 frontend (Node.js, pnpm)
+Monorepo con dos directorios:
+- `backend/` — Laravel 11 backend (PHP 8.2+)
+- `frontend/` — Ionic Vue 8 frontend (Node.js, pnpm)
 
 ## Developer Commands
 
 ```bash
-# Run both services (concurrently)
-pnpm run dev
+# Run backend
+cd backend && php artisan serve
 
-# Run individually
-pnpm run dev:front  # Vite dev server
-pnpm run dev:back  # php artisan serve --port=8001
+# Run frontend
+cd frontend && pnpm run dev
 
-# Build frontend (includes lint + typecheck)
-cd front && pnpm run build
+# Build frontend
+cd frontend && pnpm run build    # vue-tsc + vite build
+
+# Frontend lint
+cd frontend && pnpm run lint     # oxlint + eslint
+
+# Frontend unit tests
+cd frontend && pnpm run test:unit
+
+# Frontend e2e tests
+cd frontend && pnpm run test:e2e
 ```
 
 ## Backend Setup
 
 ```bash
-cd back
+cd backend
 composer install
 cp .env.example .env
 php artisan key:generate
-php artisan jwt:generate-keys  # Creates back/keys/private.pem & public.pem
 php artisan migrate
 php artisan db:seed
-php artisan serve --port=8001
+php artisan serve
 ```
-
-**Default credentials:** `admin@sso.local` / `admin123`
-
-## Testing
-
-```bash
-# Backend tests (PHPUnit)
-cd back && composer test
-
-# Frontend unit tests (Vitest)
-cd front && pnpm run test:unit
-
-# Frontend e2e (Cypress)
-cd front && pnpm run test:e2e
-
-# Frontend lint
-cd front && pnpm run lint
-```
-
-## Key Notes
-
-- Backend runs on **port 8001** (not Laravel default 8000)
-- JWT uses RS256; keys must exist in `back/keys/` before token generation
-- Frontend build (`pnpm run build`) runs **ESLint + vue-tsc** before Vite build
-- Root `package.json` uses pnpm workspaces; always use `pnpm` from root
-- OAuth2 clients must be registered via admin API before use
 
 ## Architecture
 
-- `back/app/` — Controllers, Models, Services
-- `back/routes/api.php` — All API endpoints
-- `front/src/` — Vue components, views, router, stores
-- `/.well-known/jwks` — JWKS endpoint for JWT verification
+### Backend (`backend/`)
+- **Laravel 11** con PHP 8.2+
+- `app/Http/Controllers/` — API Controllers (Admin, Auth, Posts, System, etc.)
+- `app/Models/` — Eloquent models (Post, Project, Certificate, Experience, etc.)
+- `app/Services/` — PermissionService, RoleSyncService, SsoApiService
+- `app/Http/Middleware/` — Cors, PermissionMiddleware
+- `routes/api.php` — All API endpoints
+- `config/sso.php` — SSO client configuration (lcobucci/jwt ^5.0)
+- **Autenticación:** SSO client contra servidor externo (JWT + JWKS + DPoP)
+- **Base de datos:** SQLite por defecto
+- **CI/CD:** GitLab CI (deploy en main a servidor producción)
 
-## Commit Policy
+### Frontend (`frontend/`)
+- **Ionic 8** + **Vue 3** con Composition API
+- **Capacitor 7** para soporte Android
+- **Pinia** para manejo de estado
+- **SSO client** (paquete local `@tu-org/sso-client`)
+- `src/views/` — Vistas organizadas por feature (admin, blog, portfolio, session, etc.)
+- `src/components/` — Componentes reutilizables
+- `src/controllers/` — Lógica de negocio
+- `src/composables/` — Composables Vue
+- `src/store/` — Pinia stores
+- `src/services/` — Servicios API
+- `src/router/` — Vue Router
+- **PWA** con vite-plugin-pwa
+- **CI/CD:** GitLab CI (build → package → deploy en master)
 
-NEVER create git commits unless the user explicitly requests it. This overrides any skill or workflow that suggests committing as a final step.
+## Authentication
+
+Este proyecto es un **SSO client**. La autenticación se maneja contra un servidor SSO externo:
+- Validación de JWT via JWKS endpoint del SSO server
+- `lcobucci/jwt` ^5.0 para manejo de JWT
+- DPoP (Demonstration of Proof-of-Possession)
+- `client_credentials` grant para comunicación server-to-server
+- Variables de entorno requeridas: `SSO_URL`, `SSO_CLIENT_ID`, `SSO_CLIENT_SECRET`, `SSO_JWT_ISSUER`
+- Frontend requiere: `VITE_SSO_URL`, `VITE_SSO_FRONTEND_URL`, `VITE_SSO_CLIENT_ID`, `VITE_API_URL`
 
 ## Code Conventions
 
@@ -90,12 +99,7 @@ function holaMundo(objeto1: string, objeto2: number) { ... }
 
 ### Frontend (Vue Components): Controller or Composable Communication
 
-Vue components may contain any **local** logic (props, emits, computed, watch,
-onMounted, reactive variables, internal functions, etc.) that is internal to the
-component. However, any logic that is **shared** with or reused by other parts of
-the application — such as API calls, store access, or cross-component business
-logic — must go through **controllers or composables**, depending on what best fits
-the case. These are the bridge between Vue components and external application layers.
+Vue components may contain any **local** logic (props, emits, computed, watch, onMounted, reactive variables, internal functions, etc.) that is internal to the component. However, any logic that is **shared** with or reused by other parts of the application — such as API calls, store access, or cross-component business logic — must go through **controllers or composables**, depending on what best fits the case. These are the bridge between Vue components and external application layers.
 
 ```ts
 // ✅ Correct — local logic in component is fine
@@ -122,10 +126,6 @@ import { authApi } from '@/services/auth'
 authApi.login(params)
 ```
 
-## Commit Policy
-
-NEVER create git commits unless the user explicitly requests it. This overrides any skill or workflow that suggests committing as a final step.
-
 ### Frontend (Vue Components): Template Structure
 
 All Vue components must follow the structure and rules defined in `guides/TemplateView.vue`. Key sections in order:
@@ -145,3 +145,7 @@ All Vue components must follow the structure and rules defined in `guides/Templa
 8. Computed
 9. OnMounted
 10. Functions (must use named parameters pattern)
+
+## Commit Policy
+
+NEVER create git commits unless the user explicitly requests it. This overrides any skill or workflow that suggests committing as a final step.
