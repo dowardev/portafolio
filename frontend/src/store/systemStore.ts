@@ -1,15 +1,12 @@
 import { Theme } from "@/utils/interfaces";
 import { DesignMode } from "@/utils/types";
 import { defineStore } from "pinia";
-import { reactive, ref, watch } from "vue";
-
-// controllers
-// import SystemController from "@/composables/useSystem";
+import { reactive, ref } from "vue";
 
 export const useSystemStore = defineStore("system", () => {
-  // const systemController = new SystemController();
   const theme = ref({
     selected: "light",
+    options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" },
   } as Theme);
   const update = ref(false);
   const loader = ref<{ status: boolean; color: string }>({
@@ -27,16 +24,6 @@ export const useSystemStore = defineStore("system", () => {
     stack: "",
     timestamp: "",
     comments: "",
-  });
-
-  watch(theme, async (newValue, oldValue) => {
-    if (
-      oldValue.selected != newValue.selected ||
-      oldValue.options?.blur != newValue.options?.blur
-    ) {
-      // await systemController.storeThemeSelected({ theme: theme.value });
-      // systemController.applyTheme({ newTheme: newValue, oldTheme: oldValue });
-    }
   });
 
   function getThemeSelected(): Theme {

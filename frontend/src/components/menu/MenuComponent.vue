@@ -214,14 +214,14 @@
                               </ion-item>
 
                               <!-- dark button desktop-->
-                              <!-- <ion-item
-                        id="open-modal-theme-component"
-                        lines="none"
-                        button
-                      >
-                        <ion-icon slot="start" :icon="brushOutline"></ion-icon>
-                        <ion-label>Tema</ion-label>
-                      </ion-item> -->
+                              <ion-item
+                                id="open-modal-theme-component"
+                                lines="none"
+                                button
+                              >
+                                <ion-icon slot="start" :icon="brushOutline"></ion-icon>
+                                <ion-label>Tema</ion-label>
+                              </ion-item>
 
                               <!-- new features -->
                               <div
@@ -368,6 +368,7 @@ import {
   documentsOutline,
   personOutline,
   cogOutline,
+  brushOutline,
   cashOutline,
   libraryOutline,
   library,
@@ -503,7 +504,7 @@ function updateApp() {
 
 <style scoped>
 .menu-option-selected {
-  border-left: 6px solid var(--ion-color-secondary);
+  border-left: 6px solid var(--ion-color-primary);
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
   transition: border-left 0.4s ease-in-out;
@@ -515,7 +516,7 @@ function updateApp() {
 }
 
 .menu-option-selected > ion-item > ion-label {
-  color: var(--ion-color-secondary);
+  color: var(--ion-color-primary);
   transition: color 0.4s ease-in-out;
 }
 </style>

@@ -13,7 +13,6 @@ class CleanHomepageImages extends Command
 
     private array $folders = [
         'homepage',
-        'homepage/stack',
         'homepage/skills',
         'homepage/experience',
         'homepage/experience/tech',
@@ -84,12 +83,6 @@ class CleanHomepageImages extends Command
         }
         if ($homepage->photo_url) {
             $urls[] = $this->pathFromUrl($homepage->photo_url);
-        }
-
-        foreach ($homepage->stack ?? [] as $item) {
-            if (!empty($item['image'])) {
-                $urls[] = $this->pathFromUrl($item['image']);
-            }
         }
 
         foreach ($homepage->skill_categories ?? [] as $category) {

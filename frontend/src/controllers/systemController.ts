@@ -1,6 +1,5 @@
-import { FeedbackParams, Toast } from "@/services/interfaces";
+import { FeedbackParams, Toast, Theme } from "@/utils/interfaces";
 import { toastController } from "@ionic/vue";
-import { Theme } from "../services/interfaces";
 import { useSystemStore } from "../store/systemStore";
 import { wb } from "@/main";
 
@@ -9,7 +8,7 @@ import ErrorController from "./errorController";
 
 // services
 import SystemService from "@/services/systemService";
-import { DesignMode } from "@/utils/types";
+import { ConcreteTheme, DesignMode } from "@/utils/types";
 
 export default class SystemController {
   systemService = new SystemService();
@@ -22,7 +21,7 @@ export default class SystemController {
     try {
       const theme = (await this.systemService.getTheme()) ?? {
         selected: "light",
-        options: { blur: false },
+        options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" },
       };
       this.systemStore.updateThemeSelected({ theme });
     } catch (error) {
@@ -30,20 +29,36 @@ export default class SystemController {
     }
   }
 
-  getTheme(): Theme | void {
+  getTheme(): Theme {
     try {
       return this.systemStore.getThemeSelected();
     } catch (error) {
-      return this.errorController.handleError({ error });
+      this.errorController.handleError({ error });
+      return { selected: "light", options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" } };
     }
+  }
+
+  resolveAutoTheme(params: { theme: Theme }): ConcreteTheme {
+    const { theme } = params;
+    if (theme.selected !== "auto") return theme.selected as ConcreteTheme;
+
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (prefersDark) {
+      return theme.options?.darkTheme ?? "catppuccin-macchiato";
+    }
+    return theme.options?.lightTheme ?? "light";
   }
 
   applyTheme(params: { newTheme: Theme; oldTheme: Theme }): void {
     try {
       const { newTheme, oldTheme } = params;
+      const resolvedTheme = this.resolveAutoTheme({ theme: newTheme });
+      const resolvedOldTheme = this.resolveAutoTheme({ theme: oldTheme });
       this.systemService.applyTheme({
         theme: newTheme,
+        resolvedSelected: resolvedTheme,
         currentTheme: oldTheme,
+        resolvedCurrentSelected: resolvedOldTheme,
       });
     } catch (error) {
       return this.errorController.handleError({ error });
@@ -63,6 +78,17 @@ export default class SystemController {
     try {
       const { theme } = params;
       this.systemStore.updateThemeSelected({ theme });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
+  }
+
+  async changeTheme(params: { newTheme: Theme; oldTheme: Theme }): Promise<void> {
+    try {
+      const { newTheme, oldTheme } = params;
+      this.systemStore.updateThemeSelected({ theme: newTheme });
+      this.applyTheme({ newTheme, oldTheme });
+      await this.storeThemeSelected({ theme: newTheme });
     } catch (error) {
       return this.errorController.handleError({ error });
     }

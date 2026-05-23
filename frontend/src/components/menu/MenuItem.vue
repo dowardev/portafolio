@@ -82,7 +82,7 @@ function handleClick() {
 
 <style scoped>
 .menu-option-selected {
-  border-left: 6px solid var(--ion-color-secondary);
+  border-left: 6px solid var(--ion-color-primary);
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
   transition: border-left 0.4s ease-in-out;
@@ -94,7 +94,7 @@ function handleClick() {
 }
 
 .menu-option-selected > ion-item > ion-label {
-  color: var(--ion-color-secondary);
+  color: var(--ion-color-primary);
   transition: color 0.4s ease-in-out;
 }
 </style>

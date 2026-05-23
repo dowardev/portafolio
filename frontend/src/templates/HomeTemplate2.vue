@@ -248,18 +248,12 @@
             <TechCloudBackground
               title="My Categorías"
               :height="isMobile ? 350 : 600"
-              :main-icons="[
-                { name: 'Vue', svg: vueIcon },
-                { name: 'Ionic', svg: ionicIcon },
-                { name: 'Laravel', svg: laravelIcon },
-                { name: 'MariaDb', svg: mariadbIcon },
-              ]"
-              :icon-size="isMobile ? 36 : 50"
+              :main-icons="mainIcons"
               :background-techs="filteredBackgroundTechs"
-              bg-color="#ffffff"
-              title-color="#000000"
-              label-color="var(--ion-text-color-step-400)"
-              icon-label-color="#000000"
+bg-color="var(--background-contrast)"
+title-color="var(--ion-text-color)"
+label-color="var(--ion-text-color-step-400)"
+icon-label-color="var(--ion-text-color)"
             />
           </ion-col>
         </ion-row>
@@ -404,6 +398,7 @@ import IntroController from "@/controllers/introController";
 import ProjectsController from "@/controllers/projectsController";
 import ExperienceController from "@/controllers/experienceController";
 import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
+import StackController from "@/controllers/stackController";
 import FreelancePlatformController from "@/controllers/freelancePlatformController";
 import FreelanceCommentController from "@/controllers/freelanceCommentController";
 
@@ -412,10 +407,7 @@ import FinalSection from "@/views/presentation/sections/FinalSection.vue";
 import ProjectCard from "@/components/projects/ProjectCard.vue";
 import ExperienceCard from "@/components/experience/ExperienceCard.vue";
 
-import vueIcon from "@/assets/otros/vue-js-1.svg";
-import mariadbIcon from "@/assets/otros/mariadb-icon.svg";
-import ionicIcon from "@/assets/otros/ionicframework-icon.svg";
-import laravelIcon from "@/assets/otros/laravel-2.svg";
+
 import defaultLogo from "@/assets/portafolio/logo_dowar_2.1.png";
 import defaultPhoto from "@/assets/portafolio/foto_perfil.jpg";
 import { getIconByName } from "@/composables/iconsIndex";
@@ -428,6 +420,7 @@ const introController = new IntroController();
 const projectsController = new ProjectsController();
 const experienceController = new ExperienceController();
 const skillsCategoriesController = new SkillsCategoriesController();
+const stackController = new StackController();
 const freelancePlatformController = new FreelancePlatformController();
 const freelanceCommentController = new FreelanceCommentController();
 
@@ -502,6 +495,14 @@ const backgroundTechs = computed(() => {
 });
 
 const filteredBackgroundTechs = computed(() => backgroundTechs.value);
+
+const mainIcons = computed(() => {
+  const stacks = stackController.stack.value;
+  return stacks.map((s) => {
+    const label = getIconByName(s.iconName)?.label || s.iconName;
+    return { name: label, iconName: s.iconName };
+  });
+});
 
 const displayLimit = computed(() => (isTablet.value ? 4 : 3));
 
@@ -613,6 +614,7 @@ onMounted(async () => {
     projectsController.loadPublicProjects(),
     experienceController.loadPublicExperiences(),
     skillsCategoriesController.loadSkillsCategories(),
+    stackController.loadStack(),
     freelancePlatformController.loadFreelancePlatforms(),
     freelanceCommentController.loadFreelanceComments(),
   ]);

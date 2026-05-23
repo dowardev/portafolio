@@ -94,4 +94,16 @@
   --wallpaper-opacity: 0.2;
   --blur-color-opacity: 0.2;
   --blur: 30px;
+
+  --background-contrast: #434c5e;
+  --card-shadow-light: rgba(0, 0, 0, 0.02);
+  --card-shadow-heavy: rgba(0, 0, 0, 0.3);
+  --card-shadow-subtle: rgba(0, 0, 0, 0.1);
+}
+
+.nord:not([data-blur]) {
+  --blur: 0px;
+  --wallpaper-main-content: none;
+  --blur-color-opacity: 0;
+  --wallpaper-opacity: 1;
 }

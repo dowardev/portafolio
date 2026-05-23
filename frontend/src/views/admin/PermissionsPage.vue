@@ -10,7 +10,7 @@
     </ion-header>
 
     <ion-content>
-      <ion-segment v-model="activeTab" @ionChange="tabChanged">
+      <ion-segment v-model="activeTab" @ion-change="tabChanged">
         <ion-segment-button value="roles">
           <ion-label>Roles</ion-label>
         </ion-segment-button>
@@ -26,7 +26,7 @@
       <div v-if="activeTab === 'roles'" class="tab-content">
         <ion-item>
           <ion-label>Rol:</ion-label>
-          <ion-select v-model="selectedRole" @ionChange="loadRolePermissions">
+          <ion-select v-model="selectedRole" @ion-change="loadRolePermissions">
             <ion-select-option v-for="role in availableRoles" :key="role.slug" :value="role.slug">
               {{ role.name }} ({{ role.slug }})
             </ion-select-option>
@@ -45,8 +45,8 @@
             <ion-checkbox
               slot="start"
               :checked="perm.enabled"
-              @ionChange="(e: any) => togglePermission(perm.slug, e.detail.checked)"
               :disabled="saving"
+              @ion-change="(e: any) => togglePermission(perm.slug, e.detail.checked)"
             ></ion-checkbox>
             <ion-label>
               <h3>{{ getPermissionLabel(perm) }}</h3>
@@ -57,9 +57,9 @@
 
         <ion-button
           expand="block"
-          @click="saveRolePermissions"
           :disabled="!hasChanges || saving"
           class="save-btn"
+          @click="saveRolePermissions"
         >
           <ion-icon slot="start" :icon="save"></ion-icon>
           Guardar Cambios {{ changesCount > 0 ? `(${changesCount})` : '' }}
@@ -70,7 +70,7 @@
   <div v-if="activeTab === 'users'" class="tab-content">
     <ion-item>
       <ion-label position="stacked">Buscar usuario</ion-label>
-      <ion-input v-model="userSearchQuery" placeholder="Nombre o email..." debounce="300" @ionInput="searchSsoUsers"></ion-input>
+      <ion-input v-model="userSearchQuery" placeholder="Nombre o email..." debounce="300" @ion-input="searchSsoUsers"></ion-input>
     </ion-item>
 
     <div v-if="loadingUsers" class="loading-container">
@@ -131,9 +131,9 @@
 
           <ion-button
             expand="block"
-            @click="saveUserPermissions"
             :disabled="saving"
             class="save-btn"
+            @click="saveUserPermissions"
           >
             <ion-icon slot="start" :icon="save"></ion-icon>
             Guardar Permisos de Usuario
@@ -159,7 +159,7 @@
             Última sincronización: {{ formatLastSync(syncStatus.last_sync) }}
           </p>
 
-          <ion-button @click="doSync" :disabled="saving">
+          <ion-button :disabled="saving" @click="doSync">
             <ion-icon slot="start" :icon="saving ? syncIcon : syncOutline"></ion-icon>
             {{ saving ? 'Sincronizando...' : 'Sincronizar ahora' }}
           </ion-button>
@@ -170,8 +170,8 @@
       <ion-popover
         :is-open="permPopover.open"
         :event="permPopover.event"
-        @did-dismiss="permPopover.open = false"
         side="bottom"
+        @did-dismiss="permPopover.open = false"
       >
         <ion-content>
           <ion-list>

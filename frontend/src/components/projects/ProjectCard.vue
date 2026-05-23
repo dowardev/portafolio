@@ -61,14 +61,14 @@
                     :key="technologyIndex"
                   >
                     <IconRenderer
-                      :name="technology.iconName"
-                      :color="getIconColor(technology.iconName)"
-                      size="18px"
                       v-tooltip="{
                         content: getTechLabel({ iconName: technology.iconName }),
                         trigger: 'mouseenter',
                         touch: 'hold',
                       }"
+                      :name="technology.iconName"
+                      :color="getIconColor(technology.iconName)"
+                      size="18px"
                     />
                   </template>
                 </div>

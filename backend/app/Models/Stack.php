@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Stack extends Model
 {
@@ -11,7 +12,12 @@ class Stack extends Model
 
     protected $fillable = [
         'name',
-        'img',
+        'icon_id',
         'sort_order',
     ];
+
+    public function icon(): BelongsTo
+    {
+        return $this->belongsTo(Icon::class);
+    }
 }

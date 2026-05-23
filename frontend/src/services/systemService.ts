@@ -15,6 +15,7 @@ import {
   UploadImage,
   Theme,
 } from "../utils/interfaces";
+import { ConcreteTheme } from "../utils/types";
 
 export default class SystemService {
   async getTheme(): Promise<Theme> {
@@ -22,44 +23,22 @@ export default class SystemService {
     return JSON.parse(theme);
   }
 
-  applyTheme(params: { theme: Theme; currentTheme: Theme }): void {
-    const theme = params.theme;
-    const currentTheme = params.currentTheme;
+  applyTheme(params: {
+    theme: Theme;
+    resolvedSelected: ConcreteTheme;
+    currentTheme: Theme;
+    resolvedCurrentSelected: ConcreteTheme;
+  }): void {
+    const { theme, resolvedSelected, currentTheme, resolvedCurrentSelected } = params;
 
-    document
-      .getElementsByTagName("body")[0]
-      .classList.remove(currentTheme.selected);
-    document.getElementsByTagName("body")[0].classList.add(theme.selected);
+    const body = document.getElementsByTagName("body")[0];
+    body.classList.remove(resolvedCurrentSelected);
+    body.classList.add(resolvedSelected);
 
-    const themeClass = document.querySelector<HTMLElement>(
-      `.${theme.selected}`,
-    );
     if (!theme.options || !theme.options.blur) {
-      themeClass!.style.setProperty("--blur", "0px");
-      themeClass!.style.setProperty("--wallpaper-main-content", "none");
-      themeClass!.style.setProperty("--blur-color-opacity", "0");
-      themeClass!.style.setProperty("--wallpaper-opacity", "1");
-      themeClass!.style.setProperty("--wallpaper-opacity", "1");
+      body.removeAttribute("data-blur");
     } else {
-      const blurValue = getComputedStyle(
-        document.documentElement,
-      ).getPropertyValue("--blur");
-      const backgroundImage = getComputedStyle(
-        document.documentElement,
-      ).getPropertyValue("--wallpaper-main-content");
-      const blurColorOpacity = getComputedStyle(
-        document.documentElement,
-      ).getPropertyValue("--blur-color-opacity");
-      const wallpaperOpacity = getComputedStyle(
-        document.documentElement,
-      ).getPropertyValue("--wallpaper-opacity");
-      themeClass!.style.setProperty("--blur", blurValue);
-      themeClass!.style.setProperty(
-        "--wallpaper-main-content",
-        backgroundImage,
-      );
-      themeClass!.style.setProperty("--blur-color-opacity", blurColorOpacity);
-      themeClass!.style.setProperty("--wallpaper-opacity", wallpaperOpacity);
+      body.setAttribute("data-blur", "true");
     }
   }
 

@@ -95,7 +95,10 @@ onMounted(async () => {
 
   await systemController.loadThemeSelected();
   const theme = systemController.getTheme();
-  systemController.applyTheme({ newTheme: theme, oldTheme: theme });
+  systemController.applyTheme({
+    newTheme: theme,
+    oldTheme: { selected: "light", options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" } },
+  });
 
   if ("serviceWorker" in navigator && wb) {
     wb.addEventListener("waiting", () => {

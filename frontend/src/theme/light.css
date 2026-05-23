@@ -137,36 +137,55 @@
 
 .light {
   /* primary hover */
-  --ion-color-base: var(--ion-color-primary-background-hover);
-  --ion-color-base-rgb: var(--ion-color-primary-background-hover-rgb);
-  --ion-color-contrast: var(--ion-color-primary-background-hover-contrast);
-  --ion-color-contrast-rgb: var(
+  --ion-color-primary-background-hover-base: var(--ion-color-primary-background-hover);
+  --ion-color-primary-background-hover-base-rgb: var(--ion-color-primary-background-hover-rgb);
+  --ion-color-primary-background-hover-contrast: var(--ion-color-primary-background-hover-contrast);
+  --ion-color-primary-background-hover-contrast-rgb: var(
     --ion-color-primary-background-hover-contrast-rgb
   );
-  --ion-color-shade: var(--ion-color-primary-background-hover-shade);
-  --ion-color-tint: var(--ion-color-primary-background-hover-tint);
+  --ion-color-primary-background-hover-shade: var(--ion-color-primary-background-hover-shade);
+  --ion-color-primary-background-hover-tint: var(--ion-color-primary-background-hover-tint);
 
   /* secondary hover */
-  --ion-color-base: var(--ion-color-secondary-background-hover);
-  --ion-color-base-rgb: var(--ion-color-secondary-background-hover-rgb);
-  --ion-color-contrast: var(--ion-color-secondary-background-hover-contrast);
-  --ion-color-contrast-rgb: var(
+  --ion-color-secondary-background-hover-base: var(--ion-color-secondary-background-hover);
+  --ion-color-secondary-background-hover-base-rgb: var(--ion-color-secondary-background-hover-rgb);
+  --ion-color-secondary-background-hover-contrast: var(--ion-color-secondary-background-hover-contrast);
+  --ion-color-secondary-background-hover-contrast-rgb: var(
     --ion-color-secondary-background-hover-contrast-rgb
   );
-  --ion-color-shade: var(--ion-color-secondary-background-hover-shade);
-  --ion-color-tint: var(--ion-color-secondary-background-hover-tint);
+  --ion-color-secondary-background-hover-shade: var(--ion-color-secondary-background-hover-shade);
+  --ion-color-secondary-background-hover-tint: var(--ion-color-secondary-background-hover-tint);
 
   /* danger hover */
-  --ion-color-base: var(--ion-color-danger-background-hover);
-  --ion-color-base-rgb: var(--ion-color-danger-background-hover-rgb);
-  --ion-color-contrast: var(--ion-color-danger-background-hover-contrast);
-  --ion-color-contrast-rgb: var(
+  --ion-color-danger-background-hover-base: var(--ion-color-danger-background-hover);
+  --ion-color-danger-background-hover-base-rgb: var(--ion-color-danger-background-hover-rgb);
+  --ion-color-danger-background-hover-contrast: var(--ion-color-danger-background-hover-contrast);
+  --ion-color-danger-background-hover-contrast-rgb: var(
     --ion-color-danger-background-hover-contrast-rgb
   );
-  --ion-color-shade: var(--ion-color-danger-background-hover-shade);
-  --ion-color-tint: var(--ion-color-danger-background-hover-tint);
+  --ion-color-danger-background-hover-shade: var(--ion-color-danger-background-hover-shade);
+  --ion-color-danger-background-hover-tint: var(--ion-color-danger-background-hover-tint);
 
   --card-shadow-light: rgba(0, 0, 0, 0.02);
   --card-shadow-heavy: rgba(27, 31, 35, 0.15);
   --card-shadow-subtle: rgba(0, 0, 0, 0.05);
+
+  --background-contrast: #ffffff;
+
+  --ion-background-light-color: #f6f5f4;
+  --ion-background-light-color-rgb: 246, 245, 244;
+  --ion-background-dark-color: #e8e8e8;
+  --ion-background-dark-color-rgb: 232, 232, 232;
+
+  --wallpaper-main-content: none;
+  --wallpaper-opacity: 1;
+  --blur-color-opacity: 0;
+  --blur: 0px;
+}
+
+.light[data-blur] {
+  --blur: 0px;
+  --wallpaper-main-content: none;
+  --blur-color-opacity: 0;
+  --wallpaper-opacity: 1;
 }

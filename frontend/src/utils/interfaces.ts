@@ -1,4 +1,5 @@
 import {
+  ConcreteTheme,
   EmailFilterOption,
   Theme as ThemeType,
   UserFilterOption,
@@ -331,7 +332,7 @@ export interface System {
 
 export interface Theme {
   selected: ThemeType;
-  options?: { blur?: boolean };
+  options?: { blur?: boolean; lightTheme?: ConcreteTheme; darkTheme?: ConcreteTheme };
 }
 
 export interface FilterAdminPanelOptions {
