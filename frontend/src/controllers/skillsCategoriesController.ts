@@ -60,100 +60,116 @@ export default class SkillsCategoriesController {
   }
 
   async addSkillsCategory(skillsCategory: SkillsCategoryItem): Promise<boolean> {
-    try {
-      const formData = new FormData();
-      formData.append("name", skillsCategory.name);
-      if (skillsCategory.sort_order !== undefined) {
-        formData.append("sort_order", String(skillsCategory.sort_order));
-      }
-      if (skillsCategory.technologies) {
-        formData.append("technologies", JSON.stringify(skillsCategory.technologies));
-      }
-
-      await getApiConnector().post<SkillsCategoryResponse>(
-        "admin/skills-categories",
-        formData,
-      );
-
-      await this.loadSkillsCategories();
-
+    const ok = await this.addSkillsCategorySave(skillsCategory);
+    if (ok) {
+      await this.reloadSkillsCategories();
       const toast = await this.toastController.presentToast({
         message: "Categoría de skills agregada correctamente",
         duration: 2000,
         color: "success",
       });
       await toast.present();
-      return true;
-    } catch (error) {
-      console.error("Error adding skills category:", error);
+    } else {
       const toast = await this.toastController.presentToast({
         message: "Error al agregar la categoría de skills",
         duration: 2000,
         color: "danger",
       });
       await toast.present();
+    }
+    return ok;
+  }
+
+  async addSkillsCategorySave(skillsCategory: SkillsCategoryItem): Promise<boolean> {
+    try {
+      const payload: Record<string, unknown> = {
+        name: skillsCategory.name,
+        icon_name: skillsCategory.iconName || null,
+      };
+      if (skillsCategory.sort_order !== undefined) {
+        payload.sort_order = skillsCategory.sort_order;
+      }
+
+      await getApiConnector().post<SkillsCategoryResponse>(
+        "admin/skills-categories",
+        payload,
+      );
+      return true;
+    } catch (error) {
+      console.error("Error adding skills category:", error);
       return false;
     }
   }
 
-async deleteSkillsCategory(id: number): Promise<boolean> {
-try {
-      await getApiConnector().delete(`admin/skills-categories/${id}`);
-
-await this.reloadSkillsCategories();
-
+  async deleteSkillsCategory(id: number): Promise<boolean> {
+    const ok = await this.deleteSkillsCategorySave(id);
+    if (ok) {
+      await this.reloadSkillsCategories();
       const toast = await this.toastController.presentToast({
         message: "Categoría de skills eliminada correctamente",
         duration: 2000,
         color: "success",
       });
       await toast.present();
-      return true;
-    } catch (error) {
-      console.error("Error deleting skills category:", error);
+    } else {
       const toast = await this.toastController.presentToast({
         message: "Error al eliminar la categoría de skills",
         duration: 2000,
         color: "danger",
       });
       await toast.present();
+    }
+    return ok;
+  }
+
+  async deleteSkillsCategorySave(id: number): Promise<boolean> {
+    try {
+      await getApiConnector().delete(`admin/skills-categories/${id}`);
+      return true;
+    } catch (error) {
+      console.error("Error deleting skills category:", error);
       return false;
     }
   }
 
   async updateSkillsCategory(id: number, skillsCategory: SkillsCategoryItem): Promise<boolean> {
-    try {
-      const formData = new FormData();
-      formData.append("name", skillsCategory.name);
-      if (skillsCategory.sort_order !== undefined) {
-        formData.append("sort_order", String(skillsCategory.sort_order));
-      }
-      if (skillsCategory.technologies) {
-        formData.append("technologies", JSON.stringify(skillsCategory.technologies));
-      }
-
-      await getApiConnector().post<SkillsCategoryResponse>(
-        `admin/skills-categories/${id}`,
-        formData,
-      );
-
-      await this.loadSkillsCategories();
-
+    const ok = await this.updateSkillsCategorySave(id, skillsCategory);
+    if (ok) {
+      await this.reloadSkillsCategories();
       const toast = await this.toastController.presentToast({
         message: "Categoría de skills actualizada correctamente",
         duration: 2000,
         color: "success",
       });
       await toast.present();
-      return true;
-    } catch (error) {
-      console.error("Error updating skills category:", error);
+    } else {
       const toast = await this.toastController.presentToast({
         message: "Error al actualizar la categoría de skills",
         duration: 2000,
         color: "danger",
       });
       await toast.present();
+    }
+    return ok;
+  }
+
+  async updateSkillsCategorySave(id: number, skillsCategory: SkillsCategoryItem): Promise<boolean> {
+    try {
+      const payload: Record<string, unknown> = {
+        name: skillsCategory.name,
+        icon_name: skillsCategory.iconName || null,
+      };
+      if (skillsCategory.sort_order !== undefined) {
+        payload.sort_order = skillsCategory.sort_order;
+      }
+
+      await getApiConnector().post<SkillsCategoryResponse>(
+        `admin/skills-categories/${id}`,
+        payload,
+      );
+      return true;
+    } catch (error) {
+      console.error("Error updating skills category:", error);
       return false;
     }
   }

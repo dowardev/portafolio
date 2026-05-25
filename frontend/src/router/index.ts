@@ -24,7 +24,6 @@ import ProjectsEditor from "@/views/admin/editors/ProjectsEditor.vue";
 import ExperienceListPage from "@/views/admin/sections/ExperienceListPage.vue";
 import ExperienceEditor from "@/views/admin/editors/ExperienceEditor.vue";
 import SkillsCategoriesListPage from "@/views/admin/sections/SkillsCategoriesListPage.vue";
-import CategoriesEditor from "@/views/admin/editors/SkillsEditor.vue";
 import CertificatesListPage from "@/views/admin/sections/CertificatesListPage.vue";
 import CertificatesEditor from "@/views/admin/editors/CertificatesEditor.vue";
 import FreelancePlatformsListPage from "@/views/admin/sections/FreelancePlatformsListPage.vue";
@@ -74,8 +73,6 @@ const routeGuards: Record<string, RouteGuard> = {
   ExperienceEditPage: { permissions: ['experiences.update'] },
   ExperienceNewPage: { permissions: ['experiences.create'] },
   SkillsCategoriesListPage: { permissions: ['skills-categories.create', 'skills-categories.update', 'skills-categories.delete'] },
-  SkillsCategoriesEditPage: { permissions: ['skills-categories.update'] },
-  SkillsCategoriesNewPage: { permissions: ['skills-categories.create'] },
   CertificatesListPage: { permissions: ['certificates.create', 'certificates.update', 'certificates.delete'] },
   CertificateEditPage: { permissions: ['certificates.update'] },
   CertificateNewPage: { permissions: ['certificates.create'] },
@@ -229,16 +226,6 @@ const routes: Array<RouteRecordRaw> = [
     path: "/admin-panel/skills-categories",
     name: "SkillsCategoriesListPage",
     component: SkillsCategoriesListPage,
-  },
-  {
-    path: "/admin-panel/skills-categories/new",
-    name: "SkillsCategoriesNewPage",
-    component: CategoriesEditor,
-  },
-  {
-    path: "/admin-panel/skills-categories/edit/:index",
-    name: "SkillsCategoriesEditPage",
-    component: CategoriesEditor,
   },
   {
     path: "/admin-panel/certificates",

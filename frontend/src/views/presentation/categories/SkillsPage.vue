@@ -56,13 +56,10 @@
 
         <ion-card-content>
           <ion-row style="text-align: center">
-            <ion-col
-              v-for="(technology, index) in category.technologies"
-              :key="index"
-            >
-              <template v-if="isLineIconName(technology.iconName)">
+            <ion-col v-if="category.iconName">
+              <template v-if="isLineIconName(category.iconName)">
                 <Lineicons
-                  :icon="getIconComponent(technology.iconName)"
+                  :icon="getIconComponent(category.iconName)"
                   color="var(--ion-color-primary)"
                   :size="24"
                 />
@@ -70,7 +67,7 @@
 
               <ion-icon
                 v-else
-                :icon="getIconSvg(technology.iconName)"
+                :icon="getIconSvg(category.iconName)"
                 :style="{
                   fontSize: '24px',
                   color: 'var(--ion-color-primary)',

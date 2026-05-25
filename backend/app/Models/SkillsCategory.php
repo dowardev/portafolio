@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SkillsCategory extends Model
 {
@@ -12,17 +12,14 @@ class SkillsCategory extends Model
 
     protected $fillable = [
         'name',
+        'sort_order',
+        'icon_id',
     ];
 
     protected $table = 'categories_skills';
 
-    public function technologies(): BelongsToMany
+    public function icon(): BelongsTo
     {
-        return $this->belongsToMany(
-            Icon::class,
-            'category_skills_tech',
-            'category_id',
-            'icon_id'
-        );
+        return $this->belongsTo(Icon::class);
     }
 }

@@ -483,13 +483,10 @@ const categories = computed(() => skillsCategoriesController.skillsCategories.va
 const backgroundTechs = computed(() => {
   const techs: { name: string }[] = [];
   categories.value.forEach((cat) => {
-    cat.technologies?.forEach((tech) => {
-      const iconName = tech.iconName;
-      if (iconName) {
-        const label = getIconByName(iconName)?.label || iconName;
-        techs.push({ name: label });
-      }
-    });
+    if (cat.iconName) {
+      const label = getIconByName(cat.iconName)?.label || cat.iconName;
+      techs.push({ name: label });
+    }
   });
   return techs;
 });
