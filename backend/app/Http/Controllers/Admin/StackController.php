@@ -76,7 +76,7 @@ class StackController extends Controller
                 $icon = Icon::create(['name' => $request->icon_name]);
             }
             $data['icon_id'] = $icon->id;
-        } elseif ($request->has('icon_name') && $request->icon_name === null) {
+        } elseif ($request->has('icon_name') && ($request->icon_name === null || $request->icon_name === '')) {
             $data['icon_id'] = null;
         }
 

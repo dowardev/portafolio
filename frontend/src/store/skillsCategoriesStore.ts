@@ -1,16 +1,11 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-export interface SkillsCategoryTechItem {
-  id?: string;
-  iconName: string;
-}
-
 export interface SkillsCategoryItem {
   id?: number;
   name: string;
   sort_order?: number;
-  technologies: SkillsCategoryTechItem[];
+  iconName?: string;
 }
 
 export const useSkillsCategoriesStore = defineStore("skillsCategories", () => {

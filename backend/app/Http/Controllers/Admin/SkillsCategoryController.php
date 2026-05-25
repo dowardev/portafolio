@@ -12,18 +12,14 @@ class SkillsCategoryController extends Controller
 {
     public function index()
     {
-        $categories = SkillsCategory::with('technologies')->get();
+        $categories = SkillsCategory::with('icon')->get();
 
         $skillsCategoriesData = $categories->map(function ($category) {
             return [
                 'id' => $category->id,
                 'name' => $category->name,
-                'technologies' => $category->technologies->map(function ($tech) {
-                    return [
-                        'id' => $tech->id,
-                        'iconName' => $tech->name,
-                    ];
-                }),
+                'sort_order' => $category->sort_order,
+                'iconName' => $category->icon?->name,
             ];
         });
 
@@ -32,45 +28,55 @@ class SkillsCategoryController extends Controller
 
     public function store(Request $request)
     {
-        $name = $request->get('name') ?? $request->input('name');
-
-        if (empty($name)) {
-            return response()->json(['error' => 'El nombre es requerido'], 422);
-        }
-
-        $category = SkillsCategory::create([
-            'name' => $name,
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
         ]);
 
-        $technologiesData = $request->input('technologies', []);
-        if (is_string($technologiesData)) {
-            $technologiesData = json_decode($technologiesData, true) ?? [];
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
         }
-        $this->syncTechnologies($category, $technologiesData);
 
-        return response()->json(['skillsCategory' => $category]);
+        $data = $request->only(['name', 'sort_order']);
+
+        if ($request->filled('icon_name')) {
+            $icon = Icon::where('name', $request->icon_name)->first();
+            if (!$icon) {
+                $icon = Icon::create(['name' => $request->icon_name]);
+            }
+            $data['icon_id'] = $icon->id;
+        }
+
+        $category = SkillsCategory::create($data);
+
+        return response()->json(['skillsCategory' => $category->load('icon')]);
     }
 
     public function update(Request $request, $id)
     {
-        $name = $request->get('name') ?? $request->input('name');
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+        ]);
 
-        if (empty($name)) {
-            return response()->json(['error' => 'El nombre es requerido'], 422);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
         $category = SkillsCategory::findOrFail($id);
+        $data = $request->only(['name', 'sort_order']);
 
-        $category->name = $name;
-        $category->save();
-
-        $technologiesData = $request->input('technologies', []);
-        if (is_string($technologiesData)) {
-            $technologiesData = json_decode($technologiesData, true) ?? [];
+        if ($request->filled('icon_name')) {
+            $icon = Icon::where('name', $request->icon_name)->first();
+            if (!$icon) {
+                $icon = Icon::create(['name' => $request->icon_name]);
+            }
+            $data['icon_id'] = $icon->id;
+        } elseif ($request->has('icon_name') && ($request->icon_name === null || $request->icon_name === '')) {
+            $data['icon_id'] = null;
         }
-        $this->syncTechnologies($category, $technologiesData);
 
-        return response()->json(['skillsCategory' => $category]);
+        $category->update($data);
+
+        return response()->json(['skillsCategory' => $category->load('icon')]);
     }
 
     public function destroy($id)
@@ -79,36 +85,5 @@ class SkillsCategoryController extends Controller
         $category->delete();
 
         return response()->json(['success' => true]);
-    }
-
-    private function syncTechnologies($category, array $technologiesData): void
-    {
-        $iconIds = [];
-
-        foreach ($technologiesData as $techData) {
-            if (isset($techData['id']) && $techData['id']) {
-                $icon = Icon::find($techData['id']);
-                if ($icon) {
-                    $icon->name = $techData['name'] ?? $icon->name;
-                    $icon->save();
-                    $iconIds[] = $icon->id;
-                }
-            } elseif (isset($techData['iconName'])) {
-                $icon = Icon::where('name', $techData['iconName'])->first();
-                if (!$icon) {
-                    $icon = Icon::create([
-                        'name' => $techData['iconName'],
-                    ]);
-                }
-                $iconIds[] = $icon->id;
-            } elseif (isset($techData['name'])) {
-                $icon = Icon::create([
-                    'name' => $techData['name'],
-                ]);
-                $iconIds[] = $icon->id;
-            }
-        }
-
-        $category->technologies()->sync($iconIds);
     }
 }

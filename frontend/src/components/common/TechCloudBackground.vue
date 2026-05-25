@@ -39,7 +39,7 @@
 
 <script lang="ts" setup>
 // imports
-import { ref, onMounted, nextTick, computed, watch } from "vue";
+import { ref, onMounted, onUnmounted, nextTick, computed, watch } from "vue";
 import { Lineicons } from "@lineiconshq/vue-lineicons";
 import {
   getIonIconSvg,
@@ -75,8 +75,8 @@ const props = defineProps<{
 
 // main (runtime defaults and derived vars)
 const title = props.title ?? "My Categorías";
-const mainIcons = props.mainIcons ?? [];
-const backgroundTechs = props.backgroundTechs ?? [];
+const mainIcons = computed(() => props.mainIcons ?? []);
+const backgroundTechs = computed(() => props.backgroundTechs ?? []);
 const height = props.height ?? 340;
 const bgColor = props.bgColor ?? "#16161a";
 const titleColor = props.titleColor ?? "#ffffff";
@@ -111,267 +111,111 @@ const iconSizeNum = computed(
 function isLineIconName(name: string): boolean {
   return isLineIcon(name);
 }
+
+function recalcLayout() {
+  const el = container.value;
+  if (!el) return;
+  if (backgroundTechs.value.length === 0) {
+    techPositions.value = [];
+    return;
+  }
+  const iconsEl = el.querySelector<HTMLElement>(".main-icons");
+  const titleEl = el.querySelector<HTMLElement>(".section-title");
+  if (!iconsEl || !titleEl) return;
+  const w = el.offsetWidth;
+  const h = el.offsetHeight;
+  if (w === 0 || h === 0) return;
+  const iconsRect = iconsEl.getBoundingClientRect();
+  const titleRect = titleEl.getBoundingClientRect();
+  const containerRect = el.getBoundingClientRect();
+  const pad = 30;
+  const excludeLeft = iconsRect.left - containerRect.left - pad;
+  const excludeRight = iconsRect.right - containerRect.left + pad;
+  const excludeTop = titleRect.top - containerRect.top - 10;
+  const excludeBottom = iconsRect.bottom - containerRect.top + 10;
+  const hasLeftSpace = excludeLeft > 80;
+  const hasRightSpace = w - excludeRight > 80;
+  const hasTopSpace = excludeTop > 20;
+  const hasBottomSpace = h - excludeBottom > 20;
+  const tooClose = (x: number, y: number, placed: { x: number; y: number }[]) =>
+    placed.some((p) => Math.abs(p.x - x) < 110 && Math.abs(p.y - y) < 26);
+  const placed: { x: number; y: number }[] = [];
+  techPositions.value = backgroundTechs.value.map((t, i) => {
+    const maxTextWidth = t.name.length * 9;
+    let x: number | undefined, y: number | undefined, tries = 0;
+    const zones: string[] = [];
+    if (hasLeftSpace && hasTopSpace) zones.push("top-left");
+    if (hasRightSpace && hasTopSpace) zones.push("top-right");
+    if (hasLeftSpace && hasBottomSpace) zones.push("bottom-left");
+    if (hasRightSpace && hasBottomSpace) zones.push("bottom-right");
+    if (hasTopSpace) zones.push("top-center");
+    if (hasBottomSpace) zones.push("bottom-center");
+    const zone = zones.length ? zones[i % zones.length] : "top-center";
+    do {
+      switch (zone) {
+        case "top-left":
+          x = 10 + Math.random() * Math.max(0, excludeLeft - maxTextWidth - 10);
+          y = 10 + Math.random() * Math.max(0, excludeTop - 20);
+          break;
+        case "top-right":
+          x = Math.min(excludeRight + 10 + Math.random() * Math.max(0, w - excludeRight - maxTextWidth - 30), w - maxTextWidth - 30);
+          y = 10 + Math.random() * Math.max(0, excludeTop - 20);
+          break;
+        case "bottom-left":
+          x = 10 + Math.random() * Math.max(0, excludeLeft - maxTextWidth - 10);
+          y = excludeBottom + 10 + Math.random() * Math.max(0, h - excludeBottom - 30);
+          break;
+        case "bottom-right":
+          x = Math.min(excludeRight + 10 + Math.random() * Math.max(0, w - excludeRight - maxTextWidth - 30), w - maxTextWidth - 30);
+          y = excludeBottom + 10 + Math.random() * Math.max(0, h - excludeBottom - 30);
+          break;
+        case "top-center":
+          x = 10 + Math.random() * Math.max(0, w - maxTextWidth - 20);
+          y = 10 + Math.random() * Math.max(0, excludeTop - 20);
+          break;
+        case "bottom-center":
+          x = 10 + Math.random() * Math.max(0, w - maxTextWidth - 20);
+          y = excludeBottom + 10 + Math.random() * Math.max(0, h - excludeBottom - 30);
+          break;
+      }
+      tries++;
+    } while (tries < 60 && (x === undefined || y === undefined || tooClose(x, y, placed)));
+    placed.push({ x: x ?? 0, y: y ?? 0 });
+    return { name: t.name, x: x ?? 0, y: y ?? 0, size: 11 + Math.random() * 5, opacity: 1 } as Position;
+  });
+}
 // end helper functions
 
 // onMounted
+const resizeObserver = new ResizeObserver(() => {
+  recalcLayout();
+});
+
 onMounted(async () => {
   await nextTick();
 
-  const calcPositions = () => {
-    const el = container.value;
-    if (!el) return;
-
-    const iconsEl = el.querySelector<HTMLElement>(".main-icons");
-    const titleEl = el.querySelector<HTMLElement>(".section-title");
-    if (!iconsEl || !titleEl) return;
-
-    const w = el.offsetWidth;
-    const h = el.offsetHeight;
-    if (w === 0 || h === 0) return;
-
-    const iconsRect = iconsEl.getBoundingClientRect();
-    const titleRect = titleEl.getBoundingClientRect();
-    const containerRect = el.getBoundingClientRect();
-
-    const pad = 30;
-    const excludeLeft = iconsRect.left - containerRect.left - pad;
-    const excludeRight = iconsRect.right - containerRect.left + pad;
-    const excludeTop = titleRect.top - containerRect.top - 10;
-    const excludeBottom = iconsRect.bottom - containerRect.top + 10;
-
-    const hasLeftSpace = excludeLeft > 80;
-    const hasRightSpace = w - excludeRight > 80;
-    const hasTopSpace = excludeTop > 20;
-    const hasBottomSpace = h - excludeBottom > 20;
-
-    // accepts a lightweight placed array (only x/y required)
-    const tooClose = (
-      x: number,
-      y: number,
-      placed: { x: number; y: number }[],
-    ) => placed.some((p) => Math.abs(p.x - x) < 110 && Math.abs(p.y - y) < 26);
-
-    const placed: { x: number; y: number }[] = [];
-
-    techPositions.value = backgroundTechs.map((t, i) => {
-      const maxTextWidth = t.name.length * 9;
-      let x: number | undefined,
-        y: number | undefined,
-        tries = 0;
-
-      const zones: string[] = [];
-      if (hasLeftSpace && hasTopSpace) zones.push("top-left");
-      if (hasRightSpace && hasTopSpace) zones.push("top-right");
-      if (hasLeftSpace && hasBottomSpace) zones.push("bottom-left");
-      if (hasRightSpace && hasBottomSpace) zones.push("bottom-right");
-      if (hasTopSpace) zones.push("top-center");
-      if (hasBottomSpace) zones.push("bottom-center");
-
-      const zone = zones.length ? zones[i % zones.length] : "top-center";
-      // FIX:mejorar
-      do {
-        switch (zone) {
-          case "top-left":
-            x =
-              10 + Math.random() * Math.max(0, excludeLeft - maxTextWidth - 10);
-            y = 10 + Math.random() * Math.max(0, excludeTop - 20);
-            break;
-          case "top-right":
-            x = Math.min(
-              excludeRight +
-                10 +
-                Math.random() *
-                  Math.max(0, w - excludeRight - maxTextWidth - 30),
-              w - maxTextWidth - 30,
-            );
-            y = 10 + Math.random() * Math.max(0, excludeTop - 20);
-            break;
-          case "bottom-left":
-            x =
-              10 + Math.random() * Math.max(0, excludeLeft - maxTextWidth - 10);
-            y =
-              excludeBottom +
-              10 +
-              Math.random() * Math.max(0, h - excludeBottom - 30);
-            break;
-          case "bottom-right":
-            x = Math.min(
-              excludeRight +
-                10 +
-                Math.random() *
-                  Math.max(0, w - excludeRight - maxTextWidth - 30),
-              w - maxTextWidth - 30,
-            );
-            y =
-              excludeBottom +
-              10 +
-              Math.random() * Math.max(0, h - excludeBottom - 30);
-            break;
-          case "top-center":
-            x = 10 + Math.random() * Math.max(0, w - maxTextWidth - 20);
-            y = 10 + Math.random() * Math.max(0, excludeTop - 20);
-            break;
-          case "bottom-center":
-            x = 10 + Math.random() * Math.max(0, w - maxTextWidth - 20);
-            y =
-              excludeBottom +
-              10 +
-              Math.random() * Math.max(0, h - excludeBottom - 30);
-            break;
-        }
-        tries++;
-      } while (
-        tries < 60 &&
-        (x === undefined || y === undefined || tooClose(x, y, placed))
-      );
-
-      placed.push({ x: x ?? 0, y: y ?? 0 });
-      return {
-        name: t.name,
-        x: x ?? 0,
-        y: y ?? 0,
-        size: 11 + Math.random() * 5,
-        // Force full opacity for floating labels so they render solid (no faded look)
-        opacity: 1,
-      } as Position;
-    });
-
-    obs.disconnect();
-  };
-
-  const obs = new ResizeObserver(calcPositions);
-  if (container.value) obs.observe(container.value);
+  if (container.value) resizeObserver.observe(container.value);
 });
+
+onUnmounted(() => resizeObserver.disconnect());
 
 watch(
   () => props.backgroundTechs,
-  async (newVal) => {
-    if (!newVal || newVal.length === 0) {
-      return;
-    }
+  async () => {
     await nextTick();
-    const calcPositionsOnly = () => {
-      const el = container.value;
-      if (!el) return;
-
-      const iconsEl = el.querySelector<HTMLElement>(".main-icons");
-      const titleEl = el.querySelector<HTMLElement>(".section-title");
-      if (!iconsEl || !titleEl) return;
-
-      const w = el.offsetWidth;
-      const h = el.offsetHeight;
-      if (w === 0 || h === 0) return;
-
-      const iconsRect = iconsEl.getBoundingClientRect();
-      const titleRect = titleEl.getBoundingClientRect();
-      const containerRect = el.getBoundingClientRect();
-
-      const pad = 30;
-      const excludeLeft = iconsRect.left - containerRect.left - pad;
-      const excludeRight = iconsRect.right - containerRect.left + pad;
-      const excludeTop = titleRect.top - containerRect.top - 10;
-      const excludeBottom = iconsRect.bottom - containerRect.top + 10;
-
-      const hasLeftSpace = excludeLeft > 80;
-      const hasRightSpace = w - excludeRight > 80;
-      const hasTopSpace = excludeTop > 20;
-      const hasBottomSpace = h - excludeBottom > 20;
-
-      const tooClose = (
-        x: number,
-        y: number,
-        placed: { x: number; y: number }[],
-      ) => placed.some((p) => Math.abs(p.x - x) < 110 && Math.abs(p.y - y) < 26);
-
-      const placed: { x: number; y: number }[] = [];
-
-      techPositions.value = backgroundTechs.map((t, i) => {
-        const maxTextWidth = t.name.length * 9;
-        let x: number | undefined,
-          y: number | undefined,
-          tries = 0;
-
-        const zones: string[] = [];
-        if (hasLeftSpace && hasTopSpace) zones.push("top-left");
-        if (hasRightSpace && hasTopSpace) zones.push("top-right");
-        if (hasLeftSpace && hasBottomSpace) zones.push("bottom-left");
-        if (hasRightSpace && hasBottomSpace) zones.push("bottom-right");
-        if (hasTopSpace) zones.push("top-center");
-        if (hasBottomSpace) zones.push("bottom-center");
-
-        const zone = zones.length ? zones[i % zones.length] : "top-center";
-
-        do {
-          switch (zone) {
-            case "top-left":
-              x =
-                10 + Math.random() * Math.max(0, excludeLeft - maxTextWidth - 10);
-              y = 10 + Math.random() * Math.max(0, excludeTop - 20);
-              break;
-            case "top-right":
-              x = Math.min(
-                excludeRight +
-                  10 +
-                  Math.random() *
-                    Math.max(0, w - excludeRight - maxTextWidth - 30),
-                w - maxTextWidth - 30,
-              );
-              y = 10 + Math.random() * Math.max(0, excludeTop - 20);
-              break;
-            case "bottom-left":
-              x =
-                10 + Math.random() * Math.max(0, excludeLeft - maxTextWidth - 10);
-              y =
-                excludeBottom +
-                10 +
-                Math.random() * Math.max(0, h - excludeBottom - 30);
-              break;
-            case "bottom-right":
-              x = Math.min(
-                excludeRight +
-                  10 +
-                  Math.random() *
-                    Math.max(0, w - excludeRight - maxTextWidth - 30),
-                w - maxTextWidth - 30,
-              );
-              y =
-                excludeBottom +
-                10 +
-                Math.random() * Math.max(0, h - excludeBottom - 30);
-              break;
-            case "top-center":
-              x = 10 + Math.random() * Math.max(0, w - maxTextWidth - 20);
-              y = 10 + Math.random() * Math.max(0, excludeTop - 20);
-              break;
-            case "bottom-center":
-              x = 10 + Math.random() * Math.max(0, w - maxTextWidth - 20);
-              y =
-                excludeBottom +
-                10 +
-                Math.random() * Math.max(0, h - excludeBottom - 30);
-              break;
-          }
-          tries++;
-        } while (
-          tries < 60 &&
-          (x === undefined || y === undefined || tooClose(x, y, placed))
-        );
-
-        placed.push({ x: x ?? 0, y: y ?? 0 });
-        return {
-          name: t.name,
-          x: x ?? 0,
-          y: y ?? 0,
-          size: 11 + Math.random() * 5,
-          opacity: 1,
-        } as Position;
-      });
-    };
-    calcPositionsOnly();
+    recalcLayout();
   },
-  { deep: true, immediate: true },
+  { deep: true, immediate: true, flush: 'post' },
 );
-// end onMounted
+
+watch(
+  () => props.mainIcons,
+  async () => {
+    await nextTick();
+    recalcLayout();
+  },
+  { flush: 'post' },
+);
 </script>
 
 <style scoped>
@@ -436,8 +280,6 @@ watch(
   align-items: center;
   gap: 6px;
 }
-
-
 
 .icon-label {
   color: var(--ion-color-primary);

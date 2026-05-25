@@ -35,20 +35,36 @@ export default class StackController {
     }
   }
 
+  async reloadStack(): Promise<StackItem[]> {
+    this.stackStore.setStack([]);
+    this.stackStore.setLoading(true);
+    try {
+      const data = await getApiConnector().get<StacksResponse>("stacks");
+      this.stackStore.setStack(data.stacks || []);
+      return data.stacks || [];
+    } catch (error) {
+      console.error("Error reloading stack:", error);
+      this.stackStore.setStack([]);
+      return [];
+    } finally {
+      this.stackStore.setLoading(false);
+    }
+  }
+
   get stack() {
     return storeToRefs(this.stackStore).stack;
   }
 
   async addStack(stack: StackItem): Promise<boolean> {
     try {
-      const payload: Record<string, unknown> = { name: stack.name };
-      if (stack.iconName) {
-        payload.icon_name = stack.iconName;
-      }
+      const payload: Record<string, unknown> = {
+        name: stack.name,
+        icon_name: stack.iconName || null,
+      };
 
       await getApiConnector().post<StackResponse>("admin/stacks", payload);
 
-      await this.loadStack();
+      await this.reloadStack();
 
       const toast = await this.toastController.presentToast({
         message: "Stack agregado correctamente",
@@ -73,7 +89,7 @@ export default class StackController {
     try {
       await getApiConnector().delete(`admin/stacks/${id}`);
 
-      await this.loadStack();
+      await this.reloadStack();
 
       const toast = await this.toastController.presentToast({
         message: "Stack eliminado correctamente",
@@ -96,14 +112,14 @@ export default class StackController {
 
   async updateStack(id: string, stack: StackItem): Promise<boolean> {
     try {
-      const payload: Record<string, unknown> = { name: stack.name };
-      if (stack.iconName) {
-        payload.icon_name = stack.iconName;
-      }
+      const payload: Record<string, unknown> = {
+        name: stack.name,
+        icon_name: stack.iconName || null,
+      };
 
       await getApiConnector().post<StackResponse>(`admin/stacks/${id}`, payload);
 
-      await this.loadStack();
+      await this.reloadStack();
 
       const toast = await this.toastController.presentToast({
         message: "Stack actualizado correctamente",
