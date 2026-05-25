@@ -16,18 +16,18 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('icons', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('pack_name')->default('lineicons');
+            $table->timestamps();
+        });
+
         Schema::create('socials', function (Blueprint $table) {
             $table->id();
             $table->string('platform');
             $table->string('url');
             $table->foreignId('icon_id')->nullable()->constrained('icons')->onDelete('cascade');
-            $table->timestamps();
-        });
-
-        Schema::create('icons', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('pack_name')->default('lineicons');
             $table->timestamps();
         });
 

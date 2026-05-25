@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
       "is_email_verified" => true,
       "password" => bcrypt("123"),
     ]);
-    User::factory(10)->create();
-    Post::factory(20)->create();
+    // User::factory(10)->create();
+    // Post::factory(20)->create();
   }
 }

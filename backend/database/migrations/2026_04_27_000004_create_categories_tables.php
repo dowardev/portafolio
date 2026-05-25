@@ -14,7 +14,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('categories_skills_tech', function (Blueprint $table) {
+        Schema::create('category_skills_tech', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained('categories_skills')->onDelete('cascade');
             $table->foreignId('icon_id')->constrained('icons')->onDelete('cascade');
@@ -24,7 +24,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('categories_skills_tech');
+        Schema::dropIfExists('category_skills_tech');
         Schema::dropIfExists('categories_skills');
     }
 };
