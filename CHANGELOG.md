@@ -1,5 +1,61 @@
 # Changelog
 
+## 18.8.0 - 2026-05-26
+
+### Features
+
+- **Seed data button in admin panel**: Added centralized "Datos de prueba" button (DEV mode only) in AdminHomeMenu that opens a modal with checkboxes to select which sections to seed with test data. Uses `@faker-js/faker` to generate realistic random data for all 8 sections.
+  - `seedController.ts` — new controller with seed logic for Info, Stack, Skills Categories, Experience, Projects, Certificates, Freelance Platforms, and Freelance Comments
+  - `AdminHomeMenu.vue` — added bug icon item (visible only in DEV) with modal containing section checkboxes, "Select all" toggle, and seed button with loading spinner
+  - `assertSuccess()` helper — verifies boolean return values from all `add*` controller methods and throws on failure for accurate error reporting via toasts
+  - Sections seeded in dependency order (info → stack → categories → experience → projects → certificates → platforms → comments)
+  - Per-section progress toasts (✅/❌) and final summary toast
+
+- **Homepage modular endpoints refactor**: Split monolithic homepage data endpoint into dedicated controllers per entity. `SkillsCategoryController` now handles its own CRUD with icon relationship support. `TechCloudBackground.vue` simplified to use dynamic icon rendering. Removed `SkillsEditor.vue` (merged into `SkillsCategoriesListPage.vue`).
+  - `SkillsCategoryController.php` — expanded with full CRUD, icon_name lookup/creation, sort_order support
+  - `SkillsCategory.php` — added `icon()` BelongsTo relationship, `icon_id` and `sort_order` to fillable
+  - `SkillsCategoriesListPage.vue` — complete rewrite with inline icon selector, grid layout, and save-in-bulk pattern
+  - `TechCloudBackground.vue` — removed static icon mapping, now renders icons from store data
+  - New migration: `2026_05_25_071855_update_skills_categories_add_icon.php` — adds `icon_id` and `sort_order` to `categories_skills`
+
+### Fixed
+
+- **Skills categories creation failure**: The migration adding `icon_id` to `categories_skills` was pending and never executed. `SkillsCategory::create()` failed with "Column not found: icon_id" because the column didn't exist in the database. Migration has now been run successfully.
+
+- **Freelance comments creation failure (NOT NULL constraint)**: The `freelance_comments` table had `platform_id` as a required foreign key with no nullable option, but neither the model's `$fillable` nor the seed data included it. This caused a SQL constraint violation on every insert. Fix: made `platform_id` nullable via migration and added it to `$fillable`.
+  - New migration: `2026_05_26_235831_fix_freelance_comments_table.php` — makes `platform_id` nullable, renames column `nullable` → `text`
+
+- **Freelance comments `text` column name bug**: The original migration created the text column as `$table->text('nullable')` instead of `$table->text('text')`. The model referenced `'text'` in `$fillable` which pointed to a non-existent column, so the text field was never saved. Fixed by renaming the column from `nullable` to `text`.
+  - `FreelanceComment.php` — added `platform_id` to `$fillable`
+
+- **Migration order for icons/socials**: Reordered icon and social creation in seeders to ensure icons exist before socials reference them. Fixed `category_skills_tech` table name and added `HasFactory` trait to User model.
+
+### Affected Files
+
+- Added:
+  - `frontend/src/controllers/seedController.ts`
+  - `docs/superpowers/specs/2026-05-26-seed-data-button-design.md`
+  - `backend/database/migrations/2026_05_26_235831_fix_freelance_comments_table.php`
+  - `backend/database/migrations/2026_05_25_071855_update_skills_categories_add_icon.php`
+- Modified:
+  - `frontend/src/views/admin/AdminHomeMenu.vue`
+  - `frontend/src/views/admin/sections/SkillsCategoriesListPage.vue`
+  - `frontend/src/components/common/TechCloudBackground.vue`
+  - `frontend/src/controllers/skillsCategoriesController.ts`
+  - `frontend/src/controllers/stackController.ts`
+  - `frontend/src/store/skillsCategoriesStore.ts`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/views/presentation/categories/SkillsPage.vue`
+  - `frontend/src/router/index.ts`
+  - `backend/app/Http/Controllers/Admin/SkillsCategoryController.php`
+  - `backend/app/Http/Controllers/Admin/StackController.php`
+  - `backend/app/Models/SkillsCategory.php`
+  - `backend/app/Models/FreelanceComment.php`
+- Deleted:
+  - `frontend/src/views/admin/editors/SkillsEditor.vue`
+
+---
+
 ## 18.7.0 - 2026-05-23
 
 ### Features
