@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use TuOrg\SsoServer\Facades\SsoAuth;
 
-class AuthController extends Controller
+class SsoController extends Controller
 {
     public function user(Request $request)
     {

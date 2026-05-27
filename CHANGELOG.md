@@ -1,5 +1,45 @@
 # Changelog
 
+## 18.8.1 - 2026-05-27
+
+### Removed
+
+- **Local auth code from backend**: Removed all remnants of the legacy local authentication system after migrating to SSO. Auth is now 100% handled by the `tu-org/sso-server` package and the external SSO server.
+
+  - **User model and factory**: Deleted `User.php` model and `UserFactory.php`. The `users` table is no longer needed — SSO provides user data via `SsoAuth::user()`.
+  - **AuthController renamed**: Renamed `AuthController.php` to `SsoController.php` to reflect its SSO-only purpose.
+  - **Database cleanup**: New migration `drop_local_auth_schema` removes:
+    - `users` table (and all its local auth columns: `password`, `email_verified_at`, `remember_token`, `is_email_verified`, `is_admin`, `role`, `is_user_disabled`, `image_id`)
+    - `personal_access_tokens` table (Sanctum tokens, unused with SSO)
+    - `feedbacks.user_id` column and FK (was unused — controller reads `user_id` from request body, never queried)
+  - **Dead routes removed**: Deleted broken `verifyAccount`/`verifyNewEmail` routes from `web.php` (methods never existed in `AuthController`).
+  - **Unused imports cleaned**: Removed `AuthController` import from `api.php`, `Auth` facade import from `FeedbackController.php`.
+  - **Post model simplified**: Removed unused `Notifiable` trait.
+  - **Seeder simplified**: Removed legacy `User::create()` call from `DatabaseSeeder.php`.
+  - **Auth config simplified**: Removed `passwords` and `password_timeout` sections from `config/auth.php`.
+  - **Environment cleanup**: Removed `BCRYPT_ROUNDS` and simplified `SESSION_DRIVER` to `array` (API is stateless, no DB sessions needed).
+
+### Affected Files
+
+- Renamed:
+  - `backend/app/Http/Controllers/AuthController.php` → `backend/app/Http/Controllers/SsoController.php`
+- Added:
+  - `backend/database/migrations/2026_05_27_000001_drop_local_auth_schema.php`
+- Deleted:
+  - `backend/app/Models/User.php`
+  - `backend/database/factories/UserFactory.php`
+- Modified:
+  - `backend/.env.example`
+  - `backend/app/Http/Controllers/FeedbackController.php`
+  - `backend/app/Models/Feedback.php`
+  - `backend/app/Models/Post.php`
+  - `backend/config/auth.php`
+  - `backend/database/seeders/DatabaseSeeder.php`
+  - `backend/routes/api.php`
+  - `backend/routes/web.php`
+
+---
+
 ## 18.8.0 - 2026-05-26
 
 ### Features
