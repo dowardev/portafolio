@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ErrorReportController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\PostsController;
