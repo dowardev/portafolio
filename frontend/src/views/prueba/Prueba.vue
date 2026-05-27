@@ -104,7 +104,7 @@ const contentBlocks = computed(() => {
       processedSegment = processedSegment.replace(/<!--[\s\S]*?-->/g, "");
 
       // Process blockquotes
-      const blockquoteRegex = /^(?:\>\s+.*(?:\n|$))+/gm;
+      const blockquoteRegex = /^(?:>\s+.*(?:\n|$))+/gm;
       let blockquoteMatch;
       while (
         (blockquoteMatch = blockquoteRegex.exec(processedSegment)) !== null

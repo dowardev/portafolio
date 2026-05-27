@@ -12,6 +12,7 @@ class FreelanceComment extends Model
     protected $table = 'freelance_comments';
 
     protected $fillable = [
+        'platform_id',
         'title',
         'text',
         'rating',

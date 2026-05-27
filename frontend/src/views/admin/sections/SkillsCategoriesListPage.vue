@@ -58,6 +58,7 @@
     </div>
 
     <template v-else>
+      <ion-grid>
       <ion-row class="ion-justify-content-center">
         <ion-col size="4">
           <ion-list>
