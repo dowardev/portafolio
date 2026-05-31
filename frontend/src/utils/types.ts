@@ -1,4 +1,4 @@
-export type ConcreteTheme = "light" | "nord" | "gruvbox" | "catppuccin-latte" | "catppuccin-macchiato";
+export type ConcreteTheme = "light" | "nord" | "gruvbox" | "catppuccin-latte" | "catppuccin-macchiato" | "cyberpunk-light";
 export type Theme = ConcreteTheme | "auto";
 
 export type EmailFilterOption = "all" | "verified" | "unverified";
