@@ -462,19 +462,19 @@ function scrollToSection(href: string) {
 }
 
 .bp-section-projects {
-  min-height: 90dvh;
+  height: 100dvh;
 }
 
 .bp-section-skills {
-  min-height: 55dvh;
+  height: 100dvh;
 }
 
 .bp-section-experience {
-  min-height: 80dvh;
+  height: 100dvh;
 }
 
 .bp-section-collaboration {
-  min-height: 80dvh;
+  height: 100dvh;
 }
 
 @media (min-width: 900px) {
@@ -574,19 +574,19 @@ function scrollToSection(href: string) {
   }
 
   .bp-section-projects {
-    min-height: 100dvh;
+    height: 100dvh;
   }
 
   .bp-section-skills {
-    min-height: 45dvh;
+    height: 100dvh;
   }
 
   .bp-section-experience {
-    min-height: 90dvh;
+    height: 100dvh;
   }
 
   .bp-section-collaboration {
-    min-height: 90dvh;
+    height: 100dvh;
   }
 
   .footer-inner {
