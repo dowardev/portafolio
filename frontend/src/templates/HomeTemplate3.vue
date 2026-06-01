@@ -42,11 +42,11 @@
             <p class="projects-sub">Selección de trabajos destacados</p>
           </div>
 
-          <div class="projects-list">
-            <ProjectsList3
-              v-for="project in mockProjects"
-              :key="project.name"
-              v-bind="project"
+          <div class="projects-grid">
+            <ProjectCard3
+              v-for="card in mockProjectCards"
+              :key="card.name"
+              v-bind="card"
             />
           </div>
         </div>
@@ -71,8 +71,8 @@
               <h2 class="projects-heading">Experiencia</h2>
               <p class="projects-sub">Trayectoria profesional</p>
           </div>
-          <div class="projects-list">
-            <ProjectsList3
+          <div class="projects-grid">
+            <ProjectCard3
               v-for="exp in mockExperience"
               :key="exp.name"
               v-bind="exp"
@@ -101,8 +101,8 @@
               </a>
             </div>
 
-          <div class="projects-list">
-            <ProjectsList3
+          <div class="projects-grid">
+            <ProjectCard3
               v-for="comment in mockComments"
               :key="comment.name"
               v-bind="comment"
@@ -136,7 +136,7 @@ import {
 } from "@ionic/vue"
 
 import HeroSection3 from "@/views/presentation/sections/HeroSection3.vue"
-import ProjectsList3 from "@/components/projects/ProjectsList3.vue"
+import ProjectCard3 from "@/components/projects/ProjectCard3.vue"
 import TechCloudBackground from "@/components/common/TechCloudBackground.vue"
 import MetricsBar3 from "@/components/common/MetricsBar3.vue"
 
@@ -145,13 +145,14 @@ const currentYear = computed(() => new Date().getFullYear())
 const mockName = "Ben Mills"
 const mockRoles = ["Developer", "UI/UX Designer", "Creative Thinker"]
 
-const mockProjects = [
+const mockProjectCards = [
   {
     source: "Upwork",
     name: "E-Commerce Platform",
     iconName: "serverOutline",
     description: "Full-stack e-commerce redesign with real-time inventory management and payment integration.",
     url: "#",
+    variant: "a",
     technologies: [
       { iconName: "logoVue", name: "Vue" },
       { iconName: "logoNodejs", name: "Node" },
@@ -165,6 +166,7 @@ const mockProjects = [
     iconName: "terminalOutline",
     description: "Analytics dashboard for client relationship management with real-time reporting.",
     url: "#",
+    variant: "b",
     technologies: [
       { iconName: "logoReact", name: "React" },
       { iconName: "logoPython", name: "Python" },
@@ -177,10 +179,37 @@ const mockProjects = [
     iconName: "compassOutline",
     description: "Conversational AI platform with multi-language support and real-time translation.",
     url: "#",
+    variant: "c",
     technologies: [
       { iconName: "logoPython", name: "Python" },
       { iconName: "logoFirebase", name: "Firebase" },
       { iconName: "logoAngular", name: "Angular" },
+    ],
+  },
+  {
+    source: "Freelance",
+    name: "Portfolio Website",
+    iconName: "globeOutline",
+    description: "Personal portfolio with blog, CMS, and multi-theme support built with Laravel + Ionic.",
+    url: "#",
+    variant: "d",
+    technologies: [
+      { iconName: "logoLaravel", name: "Laravel" },
+      { iconName: "logoVue", name: "Vue" },
+      { iconName: "logoIonic", name: "Ionic" },
+    ],
+  },
+  {
+    source: "Open Source",
+    name: "CLI Toolkit",
+    iconName: "terminalOutline",
+    description: "Collection of CLI utilities for project scaffolding, code generation, and automation.",
+    url: "#",
+    variant: "e",
+    technologies: [
+      { iconName: "logoNodejs", name: "Node" },
+      { iconName: "logoPython", name: "Python" },
+      { iconName: "logoDocker", name: "Docker" },
     ],
   },
 ]
@@ -384,9 +413,9 @@ function scrollToSection(href: string) {
   letter-spacing: 0.02em;
 }
 
-.projects-list {
-  display: flex;
-  flex-direction: column;
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1px;
   background: #e5e5e5;
   border: 1px solid #e5e5e5;
@@ -421,7 +450,7 @@ function scrollToSection(href: string) {
 
 .projects-inner,
 .projects-header,
-.projects-list,
+.projects-grid,
 .platforms-row {
   position: relative;
   z-index: 1;
@@ -450,22 +479,27 @@ function scrollToSection(href: string) {
 
 .bp-section-hero {
   height: 100dvh;
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .bp-section-projects {
   height: 100dvh;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .bp-section-skills {
   height: 100dvh;
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .bp-section-experience {
   height: 100dvh;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .bp-section-collaboration {
   height: 100dvh;
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .template3-footer {
@@ -514,6 +548,10 @@ function scrollToSection(href: string) {
 
   .bp-section {
     padding: 1.5rem 1rem;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
   }
 
   .bp-section-projects {
