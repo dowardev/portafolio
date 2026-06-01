@@ -365,13 +365,10 @@ function scrollToSection(href: string) {
   display: none;
 }
 
-@keyframes ht3-led-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
 .projects-header {
   margin-bottom: 2rem;
+  border-left: 4px solid #111;
+  padding-left: 1rem;
 }
 
 .projects-inner {
@@ -386,19 +383,6 @@ function scrollToSection(href: string) {
   font-weight: 700;
   color: #111;
   margin: 0 0 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.projects-heading::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--ion-color-primary, #1a1a1a);
-  flex-shrink: 0;
-  animation: ht3-led-pulse 2s ease-in-out infinite;
 }
 
 .projects-sub {
