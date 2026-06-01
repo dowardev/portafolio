@@ -149,41 +149,38 @@ const mockProjects = [
   {
     source: "Upwork",
     name: "E-Commerce Platform",
-    iconName: "serverOutline",
     description: "Full-stack e-commerce redesign with real-time inventory management and payment integration.",
     url: "#",
     index: 1,
     technologies: [
-      { iconName: "logoVue", name: "Vue" },
-      { iconName: "logoNodejs", name: "Node" },
-      { iconName: "logoJavascript", name: "JS" },
-      { iconName: "logoAmazon", name: "AWS" },
+      { name: "Vue" },
+      { name: "Node" },
+      { name: "JS" },
+      { name: "AWS" },
     ],
   },
   {
     source: "Workana",
     name: "CRM Dashboard",
-    iconName: "terminalOutline",
     description: "Analytics dashboard for client relationship management with real-time reporting.",
     url: "#",
     index: 2,
     technologies: [
-      { iconName: "logoReact", name: "React" },
-      { iconName: "logoPython", name: "Python" },
-      { iconName: "logoDocker", name: "Docker" },
+      { name: "React" },
+      { name: "Python" },
+      { name: "Docker" },
     ],
   },
   {
     source: "Penglabs",
     name: "AI Chat Platform",
-    iconName: "compassOutline",
     description: "Conversational AI platform with multi-language support and real-time translation.",
     url: "#",
     index: 3,
     technologies: [
-      { iconName: "logoPython", name: "Python" },
-      { iconName: "logoFirebase", name: "Firebase" },
-      { iconName: "logoAngular", name: "Angular" },
+      { name: "Python" },
+      { name: "Firebase" },
+      { name: "Angular" },
     ],
   },
 ]
@@ -212,45 +209,42 @@ const mockExperience = [
   {
     source: "Full-time",
     name: "Senior Full-Stack Developer",
-    iconName: "codeSlashOutline",
     description: "Arquitectura y desarrollo de aplicaciones web full-stack con Vue 3, Node.js y Docker.",
     url: "#",
     startDate: "2022-01",
     endDate: undefined,
     index: 1,
     technologies: [
-      { iconName: "logoVue", name: "Vue" },
-      { iconName: "logoNodejs", name: "Node" },
-      { iconName: "logoDocker", name: "Docker" },
+      { name: "Vue" },
+      { name: "Node" },
+      { name: "Docker" },
     ],
   },
   {
     source: "Remoto",
     name: "UI/UX Designer",
-    iconName: "colorPaletteOutline",
     description: "Diseño e implementación de interfaces de usuario para aplicaciones SaaS.",
     url: "#",
     startDate: "2020-06",
     endDate: "2021-12",
     index: 2,
     technologies: [
-      { iconName: "logoSass", name: "Sass" },
-      { iconName: "logoReact", name: "React" },
+      { name: "Sass" },
+      { name: "React" },
     ],
   },
   {
     source: "Híbrido",
     name: "Frontend Developer",
-    iconName: "phonePortraitOutline",
     description: "Desarrollo de aplicaciones móviles híbridas con Ionic y Angular.",
     url: "#",
     startDate: "2018-03",
     endDate: "2020-05",
     index: 3,
     technologies: [
-      { iconName: "logoJavascript", name: "JS" },
-      { iconName: "logoAngular", name: "Angular" },
-      { iconName: "logoIonic", name: "Ionic" },
+      { name: "JS" },
+      { name: "Angular" },
+      { name: "Ionic" },
     ],
   },
 ]
@@ -264,7 +258,6 @@ const mockComments = [
   {
     source: "Upwork",
     name: "Excelente trabajo",
-    iconName: "chatbubblesOutline",
     description: "Profesional y dedicado. Entregó todo a tiempo con calidad excepcional.",
     url: "#",
     rating: 5,
@@ -274,7 +267,6 @@ const mockComments = [
   {
     source: "Workana",
     name: "Muy recomendable",
-    iconName: "chatbubblesOutline",
     description: "Gran comunicación y resultados impresionantes. Volvería a trabajar con él.",
     url: "#",
     rating: 5,
@@ -284,7 +276,6 @@ const mockComments = [
   {
     source: "Fiverr",
     name: "Profesional top",
-    iconName: "chatbubblesOutline",
     description: "Resolvió problemas complejos con soluciones elegantes. Un placer colaborar.",
     url: "#",
     rating: 4,
@@ -395,10 +386,10 @@ function scrollToSection(href: string) {
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1px;
-  background: #e5e5e5;
-  border: 1px solid #e5e5e5;
+  background: #d0d5dd;
+  border: 1px solid #d0d5dd;
   border-radius: 0;
   overflow: hidden;
 }
@@ -450,36 +441,37 @@ function scrollToSection(href: string) {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, #bbb 1px, transparent 1px);
-  background-size: 24px 24px;
-  opacity: 0.6;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
 }
 
 .bp-section-hero {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.02);
+  background: #f8f9fb;
 }
 
 .bp-section-projects {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.05);
+  background: #f0f2f5;
 }
 
 .bp-section-skills {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.02);
+  background: #f8f9fb;
 }
 
 .bp-section-experience {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.04);
+  background: #f3f4f7;
 }
 
 .bp-section-collaboration {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.05);
+  background: #f0f2f5;
 }
 
 .template3-footer {

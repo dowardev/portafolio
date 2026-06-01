@@ -1,80 +1,50 @@
 <template>
   <div class="project-card">
-    <div class="project-header">
-      <span class="header-source">{{ source }}</span>
-      <span class="header-hex">// {{ hexCode }}</span>
-    </div>
+    <div class="card-number">// {{ formattedIndex }}</div>
 
-      <!-- Modo comentario -->
     <template v-if="rating != null">
-      <div class="project-main project-main--comment">
-        <div class="project-visual comment-visual">
-          <div class="project-icon-wrapper">
-            <ion-icon :icon="projectIcon" class="project-icon" />
+      <div class="card-content">
+        <div class="card-source">{{ source }}</div>
+        <div class="card-name">{{ name }}</div>
+        <p class="card-desc">{{ description }}</p>
+        <div class="card-footer">
+          <div class="stars-inline">
+            <ion-icon
+              v-for="n in rating"
+              :key="'f' + n"
+              :icon="starIcon"
+              class="star-filled"
+            />
+            <ion-icon
+              v-for="n in (5 - rating)"
+              :key="'e' + n"
+              :icon="starOutlineIcon"
+              class="star-empty"
+            />
           </div>
-          <span class="project-name">{{ name }}</span>
+          <a :href="url" target="_blank" class="card-arrow" rel="noopener noreferrer">
+            <ion-icon :icon="arrowForward" />
+          </a>
         </div>
-        <p class="comment-text">{{ description }}</p>
-      </div>
-
-      <div class="tech-grid tech-grid--stars">
-        <div class="stars-item">
-          <ion-icon
-            v-for="n in rating"
-            :key="'f' + n"
-            :icon="starIcon"
-            class="star-filled"
-          />
-          <ion-icon
-            v-for="n in (5 - rating)"
-            :key="'e' + n"
-            :icon="starOutlineIcon"
-            class="star-empty"
-          />
-        </div>
-
-        <a
-          :href="url"
-          target="_blank"
-          class="project-link"
-          rel="noopener noreferrer"
-        >
-          <ion-icon :icon="arrowForward" />
-        </a>
       </div>
     </template>
 
-    <!-- Modo proyecto -->
     <template v-else>
-      <div class="project-main">
-        <div class="project-visual">
-          <div class="project-icon-wrapper">
-            <ion-icon :icon="projectIcon" class="project-icon" />
+      <div class="card-content">
+        <div class="card-source">{{ source }}</div>
+        <div class="card-name">{{ name }}</div>
+        <p class="card-desc">{{ description }}</p>
+        <div v-if="dateText" class="card-dates">{{ dateText }}</div>
+        <div class="card-footer">
+          <div class="tags-inline">
+            <span v-for="tech in technologies" :key="tech.name" class="card-tag">
+              {{ tech.name }}
+            </span>
           </div>
-          <span class="project-name">{{ name }}</span>
-          <span v-if="dateText" class="project-dates">{{ dateText }}</span>
+          <a :href="url" target="_blank" class="card-arrow" rel="noopener noreferrer">
+            <ion-icon :icon="arrowForward" />
+          </a>
         </div>
-        <p class="project-description">{{ description }}</p>
-      </div>
-
-      <div class="tech-grid">
-        <div
-          v-for="tech in technologies"
-          :key="tech.name"
-          class="tech-item"
-        >
-          <ion-icon :icon="getIcon(tech.iconName)" class="tech-icon" />
-          <span class="tech-label">{{ tech.name }}</span>
-        </div>
-
-        <a
-          :href="url"
-          target="_blank"
-          class="project-link"
-          rel="noopener noreferrer"
-        >
-          <ion-icon :icon="arrowForward" />
-        </a>
       </div>
     </template>
   </div>
@@ -83,20 +53,17 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { IonIcon } from "@ionic/vue"
-import { arrowForward, chatbubblesOutline, star, starOutline } from "ionicons/icons"
-import { getIconByName } from "@/composables/iconsIndex"
+import { arrowForward, star, starOutline } from "ionicons/icons"
 import { format, parseISO, isValid } from "date-fns"
 import { es } from "date-fns/locale"
 
 interface Technology {
-  iconName: string
   name: string
 }
 
 interface ProjectCard3Props {
   source: string
   name: string
-  iconName: string
   description: string
   url: string
   technologies: Technology[]
@@ -111,14 +78,8 @@ const props = defineProps<ProjectCard3Props>()
 const starIcon = computed(() => star)
 const starOutlineIcon = computed(() => starOutline)
 
-const projectIcon = computed(() => {
-  if (props.rating != null) return chatbubblesOutline
-  const found = getIconByName(props.iconName)
-  return found?.icon || arrowForward
-})
-
-const hexCode = computed(() => {
-  return '0x' + String(props.index).padStart(2, '0')
+const formattedIndex = computed(() => {
+  return String(props.index).padStart(2, '0')
 })
 
 const dateText = computed(() => {
@@ -143,270 +104,165 @@ const dateText = computed(() => {
 
   return `${startFormatted} - ${endFormatted}`
 })
-
-function getIcon(iconName: string) {
-  const found = getIconByName(iconName)
-  return found?.icon || arrowForward
-}
 </script>
 
 <style scoped>
 .project-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid #d0d5dd;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.5);
-  border-top: 2px solid #111;
-  aspect-ratio: 1;
-  min-height: 0;
-  overflow: hidden;
   border-radius: 0;
+  min-height: 0;
 }
 
-.project-header {
-  flex-shrink: 0;
+.project-card::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 14px;
+  height: 14px;
+  border-top: 2px solid #111;
+  border-left: 2px solid #111;
+}
+
+.project-card::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 14px;
+  height: 14px;
+  border-bottom: 2px solid #111;
+  border-right: 2px solid #111;
+}
+
+.card-number {
+  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #00b8d9;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+}
+
+.card-content {
+  flex: 1;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid #f0f0f0;
+  flex-direction: column;
 }
 
-.header-source {
+.card-source {
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
   font-size: 0.55rem;
   font-weight: 600;
-  color: #888;
+  color: #999;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  margin-bottom: 0.35rem;
 }
 
-.header-hex {
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.5rem;
-  font-weight: 400;
-  color: #bbb;
-  letter-spacing: 0.04em;
-}
-
-.project-main {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 1.5rem;
-  position: relative;
-}
-
-.project-visual {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  transition: opacity 0.25s ease;
-}
-
-.project-description {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.card-name {
   font-family: var(--font-family-primary, "Rubik", sans-serif);
-  font-size: 0.8rem;
-  line-height: 1.6;
-  color: #555;
-  text-align: center;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  pointer-events: none;
-}
-
-.project-main:hover .project-visual {
-  opacity: 0;
-}
-
-.project-main--comment:hover .project-visual {
-  opacity: 1;
-}
-
-.project-main:hover .project-description {
-  opacity: 1;
-}
-
-.comment-text {
-  font-family: var(--font-family-primary, "Rubik", sans-serif);
-  font-size: 0.8rem;
-  line-height: 1.6;
-  color: #555;
-  text-align: center;
-  margin: 0.75rem 0 0;
-  padding: 0;
-}
-
-.project-icon-wrapper {
-  width: 52px;
-  height: 52px;
-  border-radius: 0;
-  background: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.project-icon {
-  font-size: 1.6rem;
-  color: #333;
-}
-
-.project-name {
-  font-family: var(--font-family-primary, "Rubik", sans-serif);
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #111;
-  text-align: center;
   line-height: 1.3;
+  margin-bottom: 0.35rem;
 }
 
-.project-dates {
+.card-desc {
+  font-family: var(--font-family-primary, "Rubik", sans-serif);
+  font-size: 0.7rem;
+  color: #777;
+  margin: 0 0 0.5rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.card-dates {
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
   font-size: 0.5rem;
-  font-weight: 500;
   color: #aaa;
+  margin-bottom: 0.5rem;
   letter-spacing: 0.04em;
 }
 
-.tech-grid {
-  flex-shrink: 0;
+.card-footer {
   display: flex;
-  border-top: 1px solid #e5e5e5;
-}
-
-.tech-grid--stars {
-  display: flex;
-}
-
-.tech-grid--stars .stars-item {
-  flex: 1;
-  border-right: none;
-}
-
-.tech-grid--stars .project-link {
-  flex: 0 0 60px;
-}
-
-.tech-item {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  flex: 1 1 0;
-  padding: 0.5rem;
-  border-left: 1px solid #e5e5e5;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: auto;
 }
 
-.tech-item:first-child {
-  border-left: none;
+.tags-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
 }
 
-.tech-icon {
-  font-size: 1.1rem;
-  color: #444;
-}
-
-.tech-label {
+.card-tag {
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.55rem;
-  font-weight: 500;
-  color: #777;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  font-size: 0.5rem;
+  color: #555;
+  background: #f0f0f0;
+  padding: 0.15rem 0.45rem;
+  letter-spacing: 0.02em;
 }
 
-.project-link {
-  flex: 0 0 60px;
+.stars-inline {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border-left: 1px solid #e5e5e5;
-  color: #333;
-  text-decoration: none;
-  font-size: 1.6rem;
-  transition: background 0.25s ease, color 0.25s ease;
-}
-
-.project-link:hover {
-  background: #111;
-  color: #fff;
-}
-
-.stars-item {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  width: fit-content;
-  padding: 0.5rem;
-  border-right: 1px solid #e5e5e5;
+  gap: 0.2rem;
 }
 
 .star-filled {
-  font-size: 1rem;
-  color: var(--ion-color-primary);
+  font-size: 0.85rem;
+  color: #111;
 }
 
 .star-empty {
-  font-size: 1rem;
-  color: #d4d4d4;
+  font-size: 0.85rem;
+  color: #ddd;
+}
+
+.card-arrow {
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  color: #555;
+  text-decoration: none;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.card-arrow:hover {
+  color: #111;
 }
 
 @media (max-width: 768px) {
-  .project-icon-wrapper {
-    width: 44px;
-    height: 44px;
-  }
-
-  .project-icon {
-    font-size: 1.3rem;
-  }
-
-  .project-name {
-    font-size: 1rem;
-  }
-
-  .project-main {
-    padding: 0.75rem 1rem;
-  }
-
-  .project-description {
-    font-size: 0.7rem;
+  .project-card {
     padding: 1rem;
   }
 
-  .tech-grid {
-    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)) 50px;
+  .card-number {
+    font-size: 0.55rem;
+    margin-bottom: 0.5rem;
   }
 
-  .tech-item {
-    padding: 0.4rem;
-  }
-
-  .tech-icon {
+  .card-name {
     font-size: 0.95rem;
   }
 
-  .tech-label {
-    font-size: 0.5rem;
+  .card-desc {
+    font-size: 0.65rem;
   }
 
-  .project-link {
-    font-size: 1.4rem;
+  .card-tag {
+    font-size: 0.45rem;
+    padding: 0.1rem 0.35rem;
   }
 }
 </style>
