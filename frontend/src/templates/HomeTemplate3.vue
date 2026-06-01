@@ -39,7 +39,7 @@
         <div class="projects-inner">
           <div class="projects-header">
             <h2 class="projects-heading">Estilos de cards (preview temporal)</h2>
-            <p class="projects-sub">Selecciona el que más te guste — A, B o C</p>
+            <p class="projects-sub">Selecciona el que más te guste — A, B, C, D, E o F</p>
           </div>
 
           <div class="preview-variants">
@@ -62,6 +62,27 @@
               <ProjectCard3
                 v-bind="previewCard"
                 variant="c"
+              />
+            </div>
+            <div class="preview-col">
+              <span class="preview-label">ESTILO D</span>
+              <ProjectCard3
+                v-bind="previewCard"
+                variant="d"
+              />
+            </div>
+            <div class="preview-col">
+              <span class="preview-label">ESTILO E</span>
+              <ProjectCard3
+                v-bind="previewCard"
+                variant="e"
+              />
+            </div>
+            <div class="preview-col">
+              <span class="preview-label">ESTILO F</span>
+              <ProjectCard3
+                v-bind="previewCard"
+                variant="f"
               />
             </div>
           </div>
