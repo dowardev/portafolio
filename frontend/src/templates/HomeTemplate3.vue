@@ -304,7 +304,11 @@ const navItems = [
 
 function scrollToSection(href: string) {
   const el = document.querySelector(href)
-  el?.scrollIntoView({ behavior: "smooth" })
+  if (!el) return
+  const header = document.querySelector<HTMLElement>(".template3-header")
+  const headerHeight = header?.getBoundingClientRect().height ?? 0
+  const top = el.getBoundingClientRect().top + window.scrollY - headerHeight
+  window.scrollTo({ top, behavior: "smooth" })
 }
 </script>
 
@@ -320,7 +324,6 @@ function scrollToSection(href: string) {
   --padding-bottom: 0;
   --padding-start: 1.25rem;
   --padding-end: 1.25rem;
-  --min-height: 64px;
 }
 
 .header-logo {
@@ -458,7 +461,7 @@ function scrollToSection(href: string) {
 }
 
 .bp-section-hero {
-  min-height: 100dvh;
+  height: 100dvh;
 }
 
 .bp-section-projects {
