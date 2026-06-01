@@ -1,6 +1,6 @@
 <template>
-  <div class="project-card" :class="`card-variant-${variant}`">
-    <div class="project-badge">{{ badgeText }}</div>
+  <div class="project-card">
+    <div class="project-badge" :style="badgeStyle">{{ badgeText }}</div>
 
       <!-- Modo comentario -->
     <template v-if="rating != null">
@@ -99,11 +99,11 @@ interface ProjectCard3Props {
   startDate?: string
   endDate?: string
   rating?: number
-  variant?: 'a' | 'b' | 'c' | 'd' | 'e' | 'f'
+  badgeColor?: string
 }
 
 const props = withDefaults(defineProps<ProjectCard3Props>(), {
-  variant: 'a',
+  badgeColor: '#111',
 })
 
 const starIcon = computed(() => star)
@@ -114,6 +114,10 @@ const projectIcon = computed(() => {
   const found = getIconByName(props.iconName)
   return found?.icon || arrowForward
 })
+
+const badgeStyle = computed(() => ({
+  backgroundColor: props.badgeColor,
+}))
 
 const badgeText = computed(() => {
   if (!props.startDate) return props.source
@@ -151,7 +155,8 @@ function getIcon(iconName: string) {
 .project-card {
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.5);
+  border-top: 2px solid #111;
   aspect-ratio: 1;
   min-height: 0;
   overflow: hidden;
@@ -341,193 +346,6 @@ function getIcon(iconName: string) {
 .star-empty {
   font-size: 1rem;
   color: #d4d4d4;
-}
-
-/* Variant A: Acento sutil */
-.card-variant-a {
-  background: #fafafa;
-  border-top: 3px solid #111;
-}
-
-.card-variant-a .project-badge {
-  background: transparent;
-  color: #111;
-  width: 100%;
-  padding: 0.5rem 0.7rem;
-  align-self: auto;
-  font-weight: 700;
-  font-size: 0.6rem;
-}
-
-/* Variant B: Brackets puros */
-.card-variant-b {
-  background: transparent;
-  border: 1px solid #e5e5e5;
-}
-
-.card-variant-b .project-badge {
-  background: transparent;
-  color: #999;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.5rem;
-  font-weight: 400;
-}
-
-.card-variant-b .project-icon-wrapper {
-  background: transparent;
-}
-
-/* Variant C: Ventana con acento */
-.card-variant-c {
-  background: rgba(255, 255, 255, 0.4);
-  border: 1px solid #bbb;
-}
-
-.card-variant-c .project-badge {
-  background: #3b82f6;
-  color: #fff;
-  font-size: 0.5rem;
-  padding: 0.25rem 0.6rem;
-}
-
-/* Variant D: Bloque de datos */
-.card-variant-d {
-  background: transparent;
-  border: none;
-}
-
-.card-variant-d .project-badge {
-  background: transparent;
-  color: #888;
-  padding: 0.3rem 0.7rem 0.5rem;
-  font-size: 0.5rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  border-bottom: 1px solid #bbb;
-  width: 100%;
-  align-self: auto;
-}
-
-.card-variant-d .project-icon-wrapper {
-  background: transparent;
-  border: 1px solid #e5e5e5;
-}
-
-/* Variant E: Corners blueprint */
-.card-variant-e {
-  background: transparent;
-  border: none;
-  position: relative;
-}
-
-.card-variant-e::before {
-  content: "+";
-  position: absolute;
-  font-size: 18px;
-  font-weight: 700;
-  color: #555;
-  background: #fff;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  top: -10px;
-  left: -10px;
-}
-
-.card-variant-e::after {
-  content: "+";
-  position: absolute;
-  font-size: 18px;
-  font-weight: 700;
-  color: #555;
-  background: #fff;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  top: -10px;
-  right: -10px;
-}
-
-.card-variant-e .project-badge {
-  background: transparent;
-  color: #888;
-  padding: 0.5rem 0.7rem 0.3rem;
-  font-size: 0.5rem;
-  font-weight: 500;
-}
-
-.card-variant-e .project-icon-wrapper {
-  background: transparent;
-}
-
-.card-variant-e .project-link::before {
-  content: "+";
-  position: absolute;
-  font-size: 18px;
-  font-weight: 700;
-  color: #555;
-  background: #fff;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  bottom: -10px;
-  right: -10px;
-}
-
-.card-variant-e .project-link {
-  position: relative;
-}
-
-.card-variant-e .tech-grid::after {
-  content: "+";
-  position: absolute;
-  font-size: 18px;
-  font-weight: 700;
-  color: #555;
-  background: #fff;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  bottom: -10px;
-  left: -10px;
-}
-
-.card-variant-e .tech-grid {
-  position: relative;
-}
-
-/* Variant F: Split horizontal */
-.card-variant-f {
-  background: transparent;
-  border: none;
-  border-top: 1px solid #bbb;
-  border-left: 4px solid #111;
-  padding-left: 1rem;
-}
-
-.card-variant-f .project-badge {
-  background: transparent;
-  color: #888;
-  padding: 0.3rem 0.5rem 0.3rem 0;
-  font-size: 0.5rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-}
-
-.card-variant-f .project-icon-wrapper {
-  background: transparent;
 }
 
 @media (max-width: 768px) {

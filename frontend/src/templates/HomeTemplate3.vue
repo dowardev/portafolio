@@ -44,7 +44,7 @@
 
           <div class="projects-grid">
             <ProjectCard3
-              v-for="card in mockProjectCards"
+              v-for="card in mockProjects"
               :key="card.name"
               v-bind="card"
             />
@@ -145,14 +145,29 @@ const currentYear = computed(() => new Date().getFullYear())
 const mockName = "Ben Mills"
 const mockRoles = ["Developer", "UI/UX Designer", "Creative Thinker"]
 
-const mockProjectCards = [
+const sourceColors: Record<string, string> = {
+  "Upwork": "#14a800",
+  "Workana": "#1a8cd8",
+  "Penglabs": "#ff6b35",
+  "Full-time": "#1a1a1a",
+  "Remoto": "#6b46c1",
+  "Híbrido": "#0891b2",
+  "Fiverr": "#1dbf73",
+  "default": "#111",
+}
+
+function getBadgeColor(source: string): string {
+  return sourceColors[source] || sourceColors.default
+}
+
+const mockProjects = [
   {
     source: "Upwork",
     name: "E-Commerce Platform",
     iconName: "serverOutline",
     description: "Full-stack e-commerce redesign with real-time inventory management and payment integration.",
     url: "#",
-    variant: "a",
+    badgeColor: getBadgeColor("Upwork"),
     technologies: [
       { iconName: "logoVue", name: "Vue" },
       { iconName: "logoNodejs", name: "Node" },
@@ -166,7 +181,7 @@ const mockProjectCards = [
     iconName: "terminalOutline",
     description: "Analytics dashboard for client relationship management with real-time reporting.",
     url: "#",
-    variant: "b",
+    badgeColor: getBadgeColor("Workana"),
     technologies: [
       { iconName: "logoReact", name: "React" },
       { iconName: "logoPython", name: "Python" },
@@ -179,37 +194,11 @@ const mockProjectCards = [
     iconName: "compassOutline",
     description: "Conversational AI platform with multi-language support and real-time translation.",
     url: "#",
-    variant: "c",
+    badgeColor: getBadgeColor("Penglabs"),
     technologies: [
       { iconName: "logoPython", name: "Python" },
       { iconName: "logoFirebase", name: "Firebase" },
       { iconName: "logoAngular", name: "Angular" },
-    ],
-  },
-  {
-    source: "Freelance",
-    name: "Portfolio Website",
-    iconName: "globeOutline",
-    description: "Personal portfolio with blog, CMS, and multi-theme support built with Laravel + Ionic.",
-    url: "#",
-    variant: "d",
-    technologies: [
-      { iconName: "logoLaravel", name: "Laravel" },
-      { iconName: "logoVue", name: "Vue" },
-      { iconName: "logoIonic", name: "Ionic" },
-    ],
-  },
-  {
-    source: "Open Source",
-    name: "CLI Toolkit",
-    iconName: "terminalOutline",
-    description: "Collection of CLI utilities for project scaffolding, code generation, and automation.",
-    url: "#",
-    variant: "e",
-    technologies: [
-      { iconName: "logoNodejs", name: "Node" },
-      { iconName: "logoPython", name: "Python" },
-      { iconName: "logoDocker", name: "Docker" },
     ],
   },
 ]
@@ -243,6 +232,7 @@ const mockExperience = [
     url: "#",
     startDate: "2022-01",
     endDate: undefined,
+    badgeColor: getBadgeColor("Full-time"),
     technologies: [
       { iconName: "logoVue", name: "Vue" },
       { iconName: "logoNodejs", name: "Node" },
@@ -257,6 +247,7 @@ const mockExperience = [
     url: "#",
     startDate: "2020-06",
     endDate: "2021-12",
+    badgeColor: getBadgeColor("Remoto"),
     technologies: [
       { iconName: "logoSass", name: "Sass" },
       { iconName: "logoReact", name: "React" },
@@ -270,6 +261,7 @@ const mockExperience = [
     url: "#",
     startDate: "2018-03",
     endDate: "2020-05",
+    badgeColor: getBadgeColor("Híbrido"),
     technologies: [
       { iconName: "logoJavascript", name: "JS" },
       { iconName: "logoAngular", name: "Angular" },
@@ -291,6 +283,7 @@ const mockComments = [
     description: "Profesional y dedicado. Entregó todo a tiempo con calidad excepcional.",
     url: "#",
     rating: 5,
+    badgeColor: getBadgeColor("Upwork"),
     technologies: [],
   },
   {
@@ -300,6 +293,7 @@ const mockComments = [
     description: "Gran comunicación y resultados impresionantes. Volvería a trabajar con él.",
     url: "#",
     rating: 5,
+    badgeColor: getBadgeColor("Workana"),
     technologies: [],
   },
   {
@@ -309,6 +303,7 @@ const mockComments = [
     description: "Resolvió problemas complejos con soluciones elegantes. Un placer colaborar.",
     url: "#",
     rating: 4,
+    badgeColor: getBadgeColor("Fiverr"),
     technologies: [],
   },
 ]
@@ -323,7 +318,7 @@ const navItems = [
 const contentRef = ref()
 
 function scrollToSection(href: string) {
-  const el = document.querySelector(href)
+  const el = document.querySelector(href) as HTMLElement
   if (!el || !contentRef.value) return
   contentRef.value.$el.scrollToPoint(0, el.offsetTop, 500)
 }
@@ -479,27 +474,27 @@ function scrollToSection(href: string) {
 
 .bp-section-hero {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.02);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .bp-section-projects {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.10);
 }
 
 .bp-section-skills {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.02);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .bp-section-experience {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .bp-section-collaboration {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.10);
 }
 
 .template3-footer {
