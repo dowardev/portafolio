@@ -1,5 +1,5 @@
 <template>
-  <div class="project-card">
+  <div class="project-card" :class="`card-variant-${variant}`">
     <div class="project-badge">{{ badgeText }}</div>
 
       <!-- Modo comentario -->
@@ -99,9 +99,12 @@ interface ProjectCard3Props {
   startDate?: string
   endDate?: string
   rating?: number
+  variant?: 'a' | 'b' | 'c'
 }
 
-const props = defineProps<ProjectCard3Props>()
+const props = withDefaults(defineProps<ProjectCard3Props>(), {
+  variant: 'a',
+})
 
 const starIcon = computed(() => star)
 const starOutlineIcon = computed(() => starOutline)
@@ -338,6 +341,53 @@ function getIcon(iconName: string) {
 .star-empty {
   font-size: 1rem;
   color: #d4d4d4;
+}
+
+/* Variant A: Acento sutil */
+.card-variant-a {
+  background: #fafafa;
+  border-top: 3px solid #111;
+}
+
+.card-variant-a .project-badge {
+  background: transparent;
+  color: #111;
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  align-self: auto;
+  font-weight: 700;
+  font-size: 0.6rem;
+}
+
+/* Variant B: Brackets puros */
+.card-variant-b {
+  background: transparent;
+  border: 1px solid #e5e5e5;
+}
+
+.card-variant-b .project-badge {
+  background: transparent;
+  color: #999;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.5rem;
+  font-weight: 400;
+}
+
+.card-variant-b .project-icon-wrapper {
+  background: transparent;
+}
+
+/* Variant C: Ventana con acento */
+.card-variant-c {
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid #bbb;
+}
+
+.card-variant-c .project-badge {
+  background: #3b82f6;
+  color: #fff;
+  font-size: 0.5rem;
+  padding: 0.25rem 0.6rem;
 }
 
 @media (max-width: 768px) {

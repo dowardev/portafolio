@@ -38,6 +38,37 @@
       <section id="projects" class="bp-section bp-section-projects">
         <div class="projects-inner">
           <div class="projects-header">
+            <h2 class="projects-heading">Estilos de cards (preview temporal)</h2>
+            <p class="projects-sub">Selecciona el que más te guste — A, B o C</p>
+          </div>
+
+          <div class="preview-variants">
+            <div class="preview-col">
+              <span class="preview-label">ESTILO A</span>
+              <ProjectCard3
+                v-bind="previewCard"
+                variant="a"
+              />
+            </div>
+            <div class="preview-col">
+              <span class="preview-label">ESTILO B</span>
+              <ProjectCard3
+                v-bind="previewCard"
+                variant="b"
+              />
+            </div>
+            <div class="preview-col">
+              <span class="preview-label">ESTILO C</span>
+              <ProjectCard3
+                v-bind="previewCard"
+                variant="c"
+              />
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="projects-header">
             <h2 class="projects-heading">Proyectos recientes</h2>
             <p class="projects-sub">Selección de trabajos destacados</p>
           </div>
@@ -141,6 +172,20 @@ import TechCloudBackground from "@/components/common/TechCloudBackground.vue"
 import MetricsBar3 from "@/components/common/MetricsBar3.vue"
 
 const currentYear = computed(() => new Date().getFullYear())
+
+const previewCard = {
+  source: "Upwork",
+  name: "E-Commerce Platform",
+  iconName: "serverOutline",
+  description: "Full-stack e-commerce redesign with real-time inventory management and payment integration.",
+  url: "#",
+  technologies: [
+    { iconName: "logoVue", name: "Vue" },
+    { iconName: "logoNodejs", name: "Node" },
+    { iconName: "logoJavascript", name: "JS" },
+    { iconName: "logoAmazon", name: "AWS" },
+  ],
+}
 
 const mockName = "Ben Mills"
 const mockRoles = ["Developer", "UI/UX Designer", "Creative Thinker"]
@@ -541,6 +586,38 @@ function scrollToSection(href: string) {
   .footer-inner {
     padding: 1rem 1.5rem;
   }
+}
+
+/* Preview card comparison */
+.preview-variants {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: #e5e5e5;
+  border: 1px solid #e5e5e5;
+  margin-bottom: 2rem;
+}
+
+.preview-col {
+  position: relative;
+}
+
+.preview-label {
+  position: absolute;
+  top: -1.75rem;
+  left: 0;
+  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
+  font-size: 0.55rem;
+  font-weight: 600;
+  color: #999;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section-divider {
+  height: 1px;
+  background: #bbb;
+  margin: 2rem 0;
 }
 
 /* TEMPORAL: diagnostic section colors */
