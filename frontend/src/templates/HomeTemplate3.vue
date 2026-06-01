@@ -53,15 +53,8 @@
       </section>
 
       <section id="skills" class="bp-section bp-section-skills">
-          <TechCloudBackground
-            title="Skills"
-            :height="320"
-            :main-icons="mockMainIcons"
-            :background-techs="mockBackgroundTechs"
-            bg-color="#fafafa"
-            title-color="#111"
-            label-color="#ccc"
-            icon-label-color="#111"
+          <SkillsSection3
+            :categories="mockSkillCategories"
           />
         </section>
 
@@ -137,7 +130,7 @@ import {
 
 import HeroSection3 from "@/views/presentation/sections/HeroSection3.vue"
 import ProjectCard3 from "@/components/projects/ProjectCard3.vue"
-import TechCloudBackground from "@/components/common/TechCloudBackground.vue"
+import SkillsSection3 from "@/components/common/SkillsSection3.vue"
 import MetricsBar3 from "@/components/common/MetricsBar3.vue"
 
 const currentYear = computed(() => new Date().getFullYear())
@@ -185,24 +178,19 @@ const mockProjects = [
   },
 ]
 
-const mockMainIcons = [
-  { name: "Vue", iconName: "logoVue" },
-  { name: "React", iconName: "logoReact" },
-  { name: "Node", iconName: "logoNodejs" },
-  { name: "Laravel", iconName: "logoLaravel" },
-]
-
-const mockBackgroundTechs = [
-  { name: "TypeScript" },
-  { name: "Python" },
-  { name: "Docker" },
-  { name: "AWS" },
-  { name: "Firebase" },
-  { name: "Sass" },
-  { name: "Ionic" },
-  { name: "Git" },
-  { name: "CSS" },
-  { name: "HTML" },
+const mockSkillCategories = [
+  {
+    name: "Frontend",
+    skills: ["Vue", "React", "TypeScript", "Sass", "Ionic", "CSS", "HTML"],
+  },
+  {
+    name: "Backend",
+    skills: ["Node", "Python", "Laravel", "Firebase"],
+  },
+  {
+    name: "DevOps & Tools",
+    skills: ["Docker", "AWS", "Git"],
+  },
 ]
 
 const mockExperience = [
@@ -387,11 +375,7 @@ function scrollToSection(href: string) {
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  background: #d0d5dd;
-  border: 1px solid #d0d5dd;
-  border-radius: 0;
-  overflow: hidden;
+  gap: 1rem;
 }
 
 .platforms-row {

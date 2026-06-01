@@ -8,7 +8,7 @@
         <div class="card-name">{{ name }}</div>
         <p class="card-desc">{{ description }}</p>
         <div class="card-footer">
-          <div class="stars-inline">
+          <div class="stars-inline" aria-hidden="true">
             <ion-icon
               v-for="n in rating"
               :key="'f' + n"
@@ -22,7 +22,7 @@
               class="star-empty"
             />
           </div>
-          <a :href="url" target="_blank" class="card-arrow" rel="noopener noreferrer">
+          <a :href="url" target="_blank" class="card-arrow" rel="noopener noreferrer" aria-label="Ver proyecto">
             <ion-icon :icon="arrowForward" />
           </a>
         </div>
@@ -41,7 +41,7 @@
               {{ tech.name }}
             </span>
           </div>
-          <a :href="url" target="_blank" class="card-arrow" rel="noopener noreferrer">
+          <a :href="url" target="_blank" class="card-arrow" rel="noopener noreferrer" aria-label="Ver proyecto">
             <ion-icon :icon="arrowForward" />
           </a>
         </div>
@@ -116,6 +116,12 @@ const dateText = computed(() => {
   flex-direction: column;
   border-radius: 0;
   min-height: 0;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
 }
 
 .project-card::before {
@@ -127,6 +133,11 @@ const dateText = computed(() => {
   height: 14px;
   border-top: 2px solid #111;
   border-left: 2px solid #111;
+  transition: transform 0.25s ease;
+}
+
+.project-card:hover::before {
+  transform: translate(-6px, -6px);
 }
 
 .project-card::after {
@@ -138,13 +149,18 @@ const dateText = computed(() => {
   height: 14px;
   border-bottom: 2px solid #111;
   border-right: 2px solid #111;
+  transition: transform 0.25s ease;
+}
+
+.project-card:hover::after {
+  transform: translate(6px, 6px);
 }
 
 .card-number {
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #00b8d9;
+  color: #0097a7;
   letter-spacing: 0.04em;
   margin-bottom: 0.75rem;
 }
@@ -157,9 +173,9 @@ const dateText = computed(() => {
 
 .card-source {
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.55rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: #999;
+  color: #5a5a5a;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 0.35rem;
@@ -176,17 +192,17 @@ const dateText = computed(() => {
 
 .card-desc {
   font-family: var(--font-family-primary, "Rubik", sans-serif);
-  font-size: 0.7rem;
-  color: #777;
+  font-size: 0.85rem;
+  color: #4a4a4a;
   margin: 0 0 0.5rem;
-  line-height: 1.5;
+  line-height: 1.6;
   flex: 1;
 }
 
 .card-dates {
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.5rem;
-  color: #aaa;
+  font-size: 0.65rem;
+  color: #6b6b6b;
   margin-bottom: 0.5rem;
   letter-spacing: 0.04em;
 }
@@ -207,10 +223,10 @@ const dateText = computed(() => {
 
 .card-tag {
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.5rem;
+  font-size: 0.65rem;
   color: #555;
-  background: #f0f0f0;
-  padding: 0.15rem 0.45rem;
+  background: #e8e8e8;
+  padding: 0.2rem 0.5rem;
   letter-spacing: 0.02em;
 }
 
@@ -226,7 +242,7 @@ const dateText = computed(() => {
 
 .star-empty {
   font-size: 0.85rem;
-  color: #ddd;
+  color: #bbb;
 }
 
 .card-arrow {
@@ -248,7 +264,7 @@ const dateText = computed(() => {
   }
 
   .card-number {
-    font-size: 0.55rem;
+    font-size: 0.65rem;
     margin-bottom: 0.5rem;
   }
 
@@ -257,12 +273,12 @@ const dateText = computed(() => {
   }
 
   .card-desc {
-    font-size: 0.65rem;
+    font-size: 0.8rem;
   }
 
   .card-tag {
-    font-size: 0.45rem;
-    padding: 0.1rem 0.35rem;
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
   }
 }
 </style>
