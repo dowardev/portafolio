@@ -1,6 +1,9 @@
 <template>
   <div class="project-card">
-    <div class="project-badge" :style="badgeStyle">{{ badgeText }}</div>
+    <div class="project-header">
+      <span class="header-source">{{ source }}</span>
+      <span class="header-hex">// {{ hexCode }}</span>
+    </div>
 
       <!-- Modo comentario -->
     <template v-if="rating != null">
@@ -49,6 +52,7 @@
             <ion-icon :icon="projectIcon" class="project-icon" />
           </div>
           <span class="project-name">{{ name }}</span>
+          <span v-if="dateText" class="project-dates">{{ dateText }}</span>
         </div>
         <p class="project-description">{{ description }}</p>
       </div>
@@ -99,12 +103,10 @@ interface ProjectCard3Props {
   startDate?: string
   endDate?: string
   rating?: number
-  badgeColor?: string
+  index: number
 }
 
-const props = withDefaults(defineProps<ProjectCard3Props>(), {
-  badgeColor: '#3b82f6',
-})
+const props = defineProps<ProjectCard3Props>()
 
 const starIcon = computed(() => star)
 const starOutlineIcon = computed(() => starOutline)
@@ -115,17 +117,15 @@ const projectIcon = computed(() => {
   return found?.icon || arrowForward
 })
 
-const badgeStyle = computed(() => ({
-  backgroundColor: props.badgeColor,
-}))
+const hexCode = computed(() => {
+  return '0x' + String(props.index).padStart(2, '0')
+})
 
-const badgeText = computed(() => {
-  if (!props.startDate) return props.source
+const dateText = computed(() => {
+  if (!props.startDate) return ''
 
   const capitalize = (s: string) =>
     s ? s.charAt(0).toUpperCase() + s.slice(1) : s
-
-  let dateRange: string
 
   const startDate = parseISO(props.startDate)
   const startFormatted = isValid(startDate)
@@ -133,16 +133,15 @@ const badgeText = computed(() => {
     : props.startDate
 
   if (!props.endDate) {
-    dateRange = `${startFormatted} - Actual`
-  } else {
-    const endDate = parseISO(props.endDate)
-    const endFormatted = isValid(endDate)
-      ? capitalize(format(endDate, "MMM yyyy", { locale: es }))
-      : props.endDate
-    dateRange = `${startFormatted} - ${endFormatted}`
+    return `${startFormatted} - Actual`
   }
 
-  return `${props.source} · ${dateRange}`
+  const endDate = parseISO(props.endDate)
+  const endFormatted = isValid(endDate)
+    ? capitalize(format(endDate, "MMM yyyy", { locale: es }))
+    : props.endDate
+
+  return `${startFormatted} - ${endFormatted}`
 })
 
 function getIcon(iconName: string) {
@@ -163,19 +162,30 @@ function getIcon(iconName: string) {
   border-radius: 0;
 }
 
-.project-badge {
+.project-header {
   flex-shrink: 0;
-  align-self: flex-start;
-  background: #111;
-  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.header-source {
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
   font-size: 0.55rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  color: #888;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.3rem 0.7rem;
-  border-radius: 0;
-  line-height: 1.2;
+}
+
+.header-hex {
+  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
+  font-size: 0.5rem;
+  font-weight: 400;
+  color: #bbb;
+  letter-spacing: 0.04em;
 }
 
 .project-main {
@@ -259,6 +269,14 @@ function getIcon(iconName: string) {
   color: #111;
   text-align: center;
   line-height: 1.3;
+}
+
+.project-dates {
+  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
+  font-size: 0.5rem;
+  font-weight: 500;
+  color: #aaa;
+  letter-spacing: 0.04em;
 }
 
 .tech-grid {
@@ -349,11 +367,6 @@ function getIcon(iconName: string) {
 }
 
 @media (max-width: 768px) {
-  .project-badge {
-    font-size: 0.5rem;
-    padding: 0.25rem 0.6rem;
-  }
-
   .project-icon-wrapper {
     width: 44px;
     height: 44px;

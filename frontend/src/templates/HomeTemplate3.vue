@@ -145,8 +145,6 @@ const currentYear = computed(() => new Date().getFullYear())
 const mockName = "Ben Mills"
 const mockRoles = ["Developer", "UI/UX Designer", "Creative Thinker"]
 
-const mockBadgeColor = "#3b82f6"
-
 const mockProjects = [
   {
     source: "Upwork",
@@ -154,7 +152,7 @@ const mockProjects = [
     iconName: "serverOutline",
     description: "Full-stack e-commerce redesign with real-time inventory management and payment integration.",
     url: "#",
-    badgeColor: mockBadgeColor,
+    index: 1,
     technologies: [
       { iconName: "logoVue", name: "Vue" },
       { iconName: "logoNodejs", name: "Node" },
@@ -168,7 +166,7 @@ const mockProjects = [
     iconName: "terminalOutline",
     description: "Analytics dashboard for client relationship management with real-time reporting.",
     url: "#",
-    badgeColor: mockBadgeColor,
+    index: 2,
     technologies: [
       { iconName: "logoReact", name: "React" },
       { iconName: "logoPython", name: "Python" },
@@ -181,7 +179,7 @@ const mockProjects = [
     iconName: "compassOutline",
     description: "Conversational AI platform with multi-language support and real-time translation.",
     url: "#",
-    badgeColor: mockBadgeColor,
+    index: 3,
     technologies: [
       { iconName: "logoPython", name: "Python" },
       { iconName: "logoFirebase", name: "Firebase" },
@@ -219,7 +217,7 @@ const mockExperience = [
     url: "#",
     startDate: "2022-01",
     endDate: undefined,
-    badgeColor: mockBadgeColor,
+    index: 1,
     technologies: [
       { iconName: "logoVue", name: "Vue" },
       { iconName: "logoNodejs", name: "Node" },
@@ -234,7 +232,7 @@ const mockExperience = [
     url: "#",
     startDate: "2020-06",
     endDate: "2021-12",
-    badgeColor: mockBadgeColor,
+    index: 2,
     technologies: [
       { iconName: "logoSass", name: "Sass" },
       { iconName: "logoReact", name: "React" },
@@ -248,7 +246,7 @@ const mockExperience = [
     url: "#",
     startDate: "2018-03",
     endDate: "2020-05",
-    badgeColor: mockBadgeColor,
+    index: 3,
     technologies: [
       { iconName: "logoJavascript", name: "JS" },
       { iconName: "logoAngular", name: "Angular" },
@@ -270,7 +268,7 @@ const mockComments = [
     description: "Profesional y dedicado. Entregó todo a tiempo con calidad excepcional.",
     url: "#",
     rating: 5,
-    badgeColor: mockBadgeColor,
+    index: 1,
     technologies: [],
   },
   {
@@ -280,7 +278,7 @@ const mockComments = [
     description: "Gran comunicación y resultados impresionantes. Volvería a trabajar con él.",
     url: "#",
     rating: 5,
-    badgeColor: mockBadgeColor,
+    index: 2,
     technologies: [],
   },
   {
@@ -290,7 +288,7 @@ const mockComments = [
     description: "Resolvió problemas complejos con soluciones elegantes. Un placer colaborar.",
     url: "#",
     rating: 4,
-    badgeColor: mockBadgeColor,
+    index: 3,
     technologies: [],
   },
 ]
