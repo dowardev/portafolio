@@ -38,128 +38,21 @@
       <section id="projects" class="bp-section bp-section-projects">
         <div class="projects-inner">
           <div class="projects-header">
-            <h2 class="projects-heading">Estilos de cards (preview temporal)</h2>
-            <p class="projects-sub">Selecciona el que más te guste — A, B, C, D, E o F</p>
-          </div>
-
-          <div class="preview-variants">
-            <div class="preview-col">
-              <span class="preview-label">ESTILO A</span>
-              <ProjectCard3
-                v-bind="previewCard"
-                variant="a"
-              />
-            </div>
-            <div class="preview-col">
-              <span class="preview-label">ESTILO B</span>
-              <ProjectCard3
-                v-bind="previewCard"
-                variant="b"
-              />
-            </div>
-            <div class="preview-col">
-              <span class="preview-label">ESTILO C</span>
-              <ProjectCard3
-                v-bind="previewCard"
-                variant="c"
-              />
-            </div>
-            <div class="preview-col">
-              <span class="preview-label">ESTILO D</span>
-              <ProjectCard3
-                v-bind="previewCard"
-                variant="d"
-              />
-            </div>
-            <div class="preview-col">
-              <span class="preview-label">ESTILO E</span>
-              <ProjectCard3
-                v-bind="previewCard"
-                variant="e"
-              />
-            </div>
-            <div class="preview-col">
-              <span class="preview-label">ESTILO F</span>
-              <ProjectCard3
-                v-bind="previewCard"
-                variant="f"
-              />
-            </div>
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="layout-section">
-            <h3 class="layout-heading">LAYOUT LISTA</h3>
-            <p class="layout-sub">Proyectos como filas — sin contenedor card</p>
-            <div class="preview-lista">
-              <div v-for="p in mockProjects" :key="p.name" class="lista-row">
-                <span class="lista-source">{{ p.source }}</span>
-                <strong class="lista-name">{{ p.name }}</strong>
-                <p class="lista-desc">{{ p.description }}</p>
-                <div class="lista-techs">
-                  <span v-for="t in p.technologies" :key="t.name" class="lista-tech">{{ t.name }}</span>
-                </div>
-                <a :href="p.url" class="lista-arrow">→</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="layout-section">
-            <h3 class="layout-heading">LAYOUT RECTANGULAR</h3>
-            <p class="layout-sub">Cards horizontales — aspect-ratio 2.5/1</p>
-            <div class="preview-rectangular">
-              <div v-for="p in mockProjects" :key="p.name" class="rect-card">
-                <div class="rect-visual">
-                  <div class="rect-source">{{ p.source }}</div>
-                  <strong class="rect-name">{{ p.name }}</strong>
-                  <p class="rect-desc">{{ p.description }}</p>
-                </div>
-                <div class="rect-techs">
-                  <span v-for="t in p.technologies" :key="t.name" class="rect-tech">{{ t.name }}</span>
-                </div>
-                <a :href="p.url" class="rect-arrow">→</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="layout-section">
-            <h3 class="layout-heading">LAYOUT MASONRY</h3>
-            <p class="layout-sub">Cards con altura variable según contenido</p>
-            <div class="preview-masonry">
-              <div v-for="(p, i) in mockProjects" :key="p.name" class="masonry-item" :class="`masonry-h-${(i % 3) + 1}`">
-                <span class="masonry-source">{{ p.source }}</span>
-                <strong class="masonry-name">{{ p.name }}</strong>
-                <p class="masonry-desc">{{ p.description }}</p>
-                <div class="masonry-techs">
-                  <span v-for="t in p.technologies" :key="t.name" class="masonry-tech">{{ t.name }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="projects-header">
             <h2 class="projects-heading">Proyectos recientes</h2>
             <p class="projects-sub">Selección de trabajos destacados</p>
           </div>
 
-            <div class="projects-grid">
-              <ProjectCard3
-                v-for="project in mockProjects"
-                :key="project.name"
-                v-bind="project"
-              />
-            </div>
+          <div class="projects-list">
+            <ProjectsList3
+              v-for="project in mockProjects"
+              :key="project.name"
+              v-bind="project"
+            />
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section id="skills" class="bp-section bp-section-skills">
+      <section id="skills" class="bp-section bp-section-skills">
           <TechCloudBackground
             title="Skills"
             :height="320"
@@ -177,16 +70,16 @@
             <div class="projects-header">
               <h2 class="projects-heading">Experiencia</h2>
               <p class="projects-sub">Trayectoria profesional</p>
-            </div>
-            <div class="projects-grid">
-              <ProjectCard3
-                v-for="exp in mockExperience"
-                :key="exp.name"
-                v-bind="exp"
-              />
-            </div>
           </div>
-        </section>
+          <div class="projects-list">
+            <ProjectsList3
+              v-for="exp in mockExperience"
+              :key="exp.name"
+              v-bind="exp"
+            />
+          </div>
+        </div>
+      </section>
 
         <section id="collaboration" class="bp-section bp-section-collaboration">
           <div class="projects-inner">
@@ -208,13 +101,13 @@
               </a>
             </div>
 
-            <div class="projects-grid">
-              <ProjectCard3
-                v-for="comment in mockComments"
-                :key="comment.name"
-                v-bind="comment"
-              />
-            </div>
+          <div class="projects-list">
+            <ProjectsList3
+              v-for="comment in mockComments"
+              :key="comment.name"
+              v-bind="comment"
+            />
+          </div>
           </div>
         </section>
 
@@ -243,25 +136,11 @@ import {
 } from "@ionic/vue"
 
 import HeroSection3 from "@/views/presentation/sections/HeroSection3.vue"
-import ProjectCard3 from "@/components/projects/ProjectCard3.vue"
+import ProjectsList3 from "@/components/projects/ProjectsList3.vue"
 import TechCloudBackground from "@/components/common/TechCloudBackground.vue"
 import MetricsBar3 from "@/components/common/MetricsBar3.vue"
 
 const currentYear = computed(() => new Date().getFullYear())
-
-const previewCard = {
-  source: "Upwork",
-  name: "E-Commerce Platform",
-  iconName: "serverOutline",
-  description: "Full-stack e-commerce redesign with real-time inventory management and payment integration.",
-  url: "#",
-  technologies: [
-    { iconName: "logoVue", name: "Vue" },
-    { iconName: "logoNodejs", name: "Node" },
-    { iconName: "logoJavascript", name: "JS" },
-    { iconName: "logoAmazon", name: "AWS" },
-  ],
-}
 
 const mockName = "Ben Mills"
 const mockRoles = ["Developer", "UI/UX Designer", "Creative Thinker"]
@@ -505,9 +384,9 @@ function scrollToSection(href: string) {
   letter-spacing: 0.02em;
 }
 
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+.projects-list {
+  display: flex;
+  flex-direction: column;
   gap: 1px;
   background: #e5e5e5;
   border: 1px solid #e5e5e5;
@@ -542,7 +421,7 @@ function scrollToSection(href: string) {
 
 .projects-inner,
 .projects-header,
-.projects-grid,
+.projects-list,
 .platforms-row {
   position: relative;
   z-index: 1;
@@ -587,12 +466,6 @@ function scrollToSection(href: string) {
 
 .bp-section-collaboration {
   height: 100dvh;
-}
-
-@media (min-width: 900px) {
-  .projects-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 
 .template3-footer {
@@ -664,316 +537,4 @@ function scrollToSection(href: string) {
   }
 }
 
-/* Preview card comparison */
-.preview-variants {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: #e5e5e5;
-  border: 1px solid #e5e5e5;
-  margin-bottom: 2rem;
-}
-
-.preview-col {
-  position: relative;
-}
-
-.preview-label {
-  position: absolute;
-  top: -1.75rem;
-  left: 0;
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.55rem;
-  font-weight: 600;
-  color: #999;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.section-divider {
-  height: 1px;
-  background: #bbb;
-  margin: 2rem 0;
-}
-
-/* Layout sections */
-.layout-section {
-  margin-bottom: 1rem;
-}
-
-.layout-heading {
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: #111;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin: 0 0 0.25rem;
-}
-
-.layout-sub {
-  font-family: var(--font-family-primary, "Rubik", sans-serif);
-  font-size: 0.75rem;
-  color: #888;
-  margin: 0 0 1.25rem;
-}
-
-/* Layout Lista */
-.preview-lista {
-  display: flex;
-  flex-direction: column;
-}
-
-.lista-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.lista-row:last-child {
-  border-bottom: none;
-}
-
-.lista-source {
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.5rem;
-  font-weight: 600;
-  color: #999;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  flex-shrink: 0;
-  width: 80px;
-}
-
-.lista-name {
-  font-family: var(--font-family-primary, "Rubik", sans-serif);
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #111;
-  flex-shrink: 0;
-  width: 130px;
-}
-
-.lista-desc {
-  font-family: var(--font-family-primary, "Rubik", sans-serif);
-  font-size: 0.7rem;
-  color: #888;
-  margin: 0;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.lista-techs {
-  display: flex;
-  gap: 0.3rem;
-  flex-shrink: 0;
-}
-
-.lista-tech {
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.5rem;
-  color: #aaa;
-  border: 1px solid #d4d4d4;
-  padding: 0.1rem 0.35rem;
-  letter-spacing: 0.04em;
-}
-
-.lista-arrow {
-  font-size: 1.2rem;
-  color: #333;
-  text-decoration: none;
-  flex-shrink: 0;
-  width: 30px;
-  text-align: center;
-}
-
-/* Layout Rectangular */
-.preview-rectangular {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  background: #e5e5e5;
-}
-
-.rect-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: #fff;
-  aspect-ratio: 2.5 / 1;
-}
-
-.rect-visual {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.rect-source {
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.5rem;
-  font-weight: 600;
-  color: #999;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.rect-name {
-  font-family: var(--font-family-primary, "Rubik", sans-serif);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #111;
-}
-
-.rect-desc {
-  font-family: var(--font-family-primary, "Rubik", sans-serif);
-  font-size: 0.7rem;
-  color: #888;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.rect-techs {
-  display: flex;
-  gap: 0.3rem;
-  flex-shrink: 0;
-}
-
-.rect-tech {
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.5rem;
-  color: #aaa;
-  border: 1px solid #d4d4d4;
-  padding: 0.1rem 0.35rem;
-  letter-spacing: 0.04em;
-}
-
-.rect-arrow {
-  font-size: 1.4rem;
-  color: #333;
-  text-decoration: none;
-  flex-shrink: 0;
-  width: 40px;
-  text-align: center;
-}
-
-/* Layout Masonry */
-.preview-masonry {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: #e5e5e5;
-}
-
-.masonry-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  padding: 1rem;
-  background: #fff;
-}
-
-.masonry-h-1 {
-  height: 180px;
-}
-
-.masonry-h-2 {
-  height: 260px;
-}
-
-.masonry-h-3 {
-  height: 200px;
-}
-
-.masonry-source {
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.5rem;
-  font-weight: 600;
-  color: #999;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.masonry-name {
-  font-family: var(--font-family-primary, "Rubik", sans-serif);
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #111;
-  text-align: center;
-}
-
-.masonry-desc {
-  font-family: var(--font-family-primary, "Rubik", sans-serif);
-  font-size: 0.65rem;
-  color: #888;
-  text-align: center;
-  margin: 0;
-}
-
-.masonry-techs {
-  display: flex;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.masonry-tech {
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.45rem;
-  color: #aaa;
-  border: 1px solid #d4d4d4;
-  padding: 0.1rem 0.3rem;
-}
-
-@media (max-width: 768px) {
-  .lista-row {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .lista-source,
-  .lista-name {
-    width: auto;
-  }
-
-  .lista-desc {
-    white-space: normal;
-    width: 100%;
-  }
-
-  .rect-card {
-    flex-wrap: wrap;
-    padding: 0.75rem 1rem;
-    aspect-ratio: auto;
-    min-height: 0;
-  }
-
-  .preview-masonry {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .masonry-h-1,
-  .masonry-h-2,
-  .masonry-h-3 {
-    height: auto;
-    min-height: 120px;
-  }
-}
-
-/* TEMPORAL: diagnostic section colors */
-.bp-section-hero { background: rgba(255, 0, 0, 0.08); }
-.bp-section-projects { background: rgba(0, 0, 255, 0.08); }
-.bp-section-skills { background: rgba(0, 255, 0, 0.08); }
-.bp-section-experience { background: rgba(255, 255, 0, 0.1); }
-.bp-section-collaboration { background: rgba(255, 0, 255, 0.08); }
 </style>
