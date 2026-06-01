@@ -35,15 +35,12 @@
         </div>
       </section>
 
-      <SectionDivider3>
-        <div class="bp-divider"></div>
-
-        <section id="projects" class="bp-section bp-section-projects">
-          <div class="projects-inner">
-            <div class="projects-header">
-              <h2 class="projects-heading">Proyectos recientes</h2>
-              <p class="projects-sub">Selección de trabajos destacados</p>
-            </div>
+      <section id="projects" class="bp-section bp-section-projects">
+        <div class="projects-inner">
+          <div class="projects-header">
+            <h2 class="projects-heading">Proyectos recientes</h2>
+            <p class="projects-sub">Selección de trabajos destacados</p>
+          </div>
 
             <div class="projects-grid">
               <ProjectCard3
@@ -54,8 +51,6 @@
             </div>
           </div>
         </section>
-
-        <div class="bp-divider"></div>
 
         <section id="skills" class="bp-section bp-section-skills">
           <TechCloudBackground
@@ -69,8 +64,6 @@
             icon-label-color="#111"
           />
         </section>
-
-        <div class="bp-divider"></div>
 
         <section id="experience" class="bp-section bp-section-experience">
           <div class="projects-inner">
@@ -87,8 +80,6 @@
             </div>
           </div>
         </section>
-
-        <div class="bp-divider"></div>
 
         <section id="collaboration" class="bp-section bp-section-collaboration">
           <div class="projects-inner">
@@ -119,7 +110,6 @@
             </div>
           </div>
         </section>
-      </SectionDivider3>
 
       <ion-footer class="ion-no-border template3-footer">
         <div class="footer-inner">
@@ -147,7 +137,6 @@ import {
 
 import HeroSection3 from "@/views/presentation/sections/HeroSection3.vue"
 import ProjectCard3 from "@/components/projects/ProjectCard3.vue"
-import SectionDivider3 from "@/components/common/SectionDivider3.vue"
 import TechCloudBackground from "@/components/common/TechCloudBackground.vue"
 import MetricsBar3 from "@/components/common/MetricsBar3.vue"
 
@@ -305,10 +294,8 @@ const navItems = [
 function scrollToSection(href: string) {
   const el = document.querySelector(href)
   if (!el) return
-  const header = document.querySelector<HTMLElement>(".template3-header")
-  const headerHeight = header?.getBoundingClientRect().height ?? 0
-  const top = el.getBoundingClientRect().top + window.scrollY - headerHeight
-  window.scrollTo({ top, behavior: "smooth" })
+  const content = document.querySelector("ion-content")
+  content?.scrollToPoint(0, el.offsetTop - 20, 500)
 }
 </script>
 
@@ -484,48 +471,6 @@ function scrollToSection(href: string) {
   .projects-grid {
     grid-template-columns: repeat(3, 1fr);
   }
-}
-
-.bp-divider {
-  position: relative;
-  height: 0;
-  border-top: 1px solid #bbb;
-}
-
-.bp-divider::before {
-  content: "+";
-  position: absolute;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1;
-  color: #555;
-  z-index: 2;
-  background: #fff;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  top: -13px;
-  left: -13px;
-}
-
-.bp-divider::after {
-  content: "+";
-  position: absolute;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1;
-  color: #555;
-  z-index: 2;
-  background: #fff;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  top: -13px;
-  right: -13px;
 }
 
 .template3-footer {

@@ -63,11 +63,11 @@ const bottomLinks = computed(() => [
 
 <style scoped>
 .hero-root {
-  min-height: 100dvh;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6rem 2rem 4rem;
+  padding: 4rem 2rem 2rem;
   box-sizing: border-box;
 }
 
@@ -150,7 +150,7 @@ const bottomLinks = computed(() => [
 
 @media (max-width: 768px) {
   .hero-root {
-    padding: 5rem 1.5rem 3rem;
+    padding: 3rem 1.5rem 1.5rem;
   }
 
   .hero-title {

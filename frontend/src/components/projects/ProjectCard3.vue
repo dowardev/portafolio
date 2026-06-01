@@ -168,11 +168,6 @@ function getIcon(iconName: string) {
   padding: 0.3rem 0.7rem;
   border-radius: 0;
   line-height: 1.2;
-  transition: transform 0.15s ease;
-}
-
-.project-card:hover .project-badge {
-  transform: translateX(2px);
 }
 
 .project-main {
@@ -343,19 +338,6 @@ function getIcon(iconName: string) {
 .star-empty {
   font-size: 1rem;
   color: #d4d4d4;
-}
-
-@keyframes ht3-glitch-skew {
-  0% { transform: skew(0deg); }
-  20% { transform: skew(-1deg); }
-  40% { transform: skew(0.5deg); }
-  60% { transform: skew(-0.3deg); }
-  80% { transform: skew(0.8deg); }
-  100% { transform: skew(0deg); }
-}
-
-.project-card:hover {
-  animation: ht3-glitch-skew 0.3s ease-in-out 2;
 }
 
 @media (max-width: 768px) {
