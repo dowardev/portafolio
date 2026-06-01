@@ -103,7 +103,7 @@ interface ProjectCard3Props {
 }
 
 const props = withDefaults(defineProps<ProjectCard3Props>(), {
-  badgeColor: '#111',
+  badgeColor: '#3b82f6',
 })
 
 const starIcon = computed(() => star)

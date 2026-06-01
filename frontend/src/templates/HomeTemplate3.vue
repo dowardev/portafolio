@@ -145,20 +145,7 @@ const currentYear = computed(() => new Date().getFullYear())
 const mockName = "Ben Mills"
 const mockRoles = ["Developer", "UI/UX Designer", "Creative Thinker"]
 
-const sourceColors: Record<string, string> = {
-  "Upwork": "#14a800",
-  "Workana": "#1a8cd8",
-  "Penglabs": "#ff6b35",
-  "Full-time": "#1a1a1a",
-  "Remoto": "#6b46c1",
-  "Híbrido": "#0891b2",
-  "Fiverr": "#1dbf73",
-  "default": "#111",
-}
-
-function getBadgeColor(source: string): string {
-  return sourceColors[source] || sourceColors.default
-}
+const mockBadgeColor = "#3b82f6"
 
 const mockProjects = [
   {
@@ -167,7 +154,7 @@ const mockProjects = [
     iconName: "serverOutline",
     description: "Full-stack e-commerce redesign with real-time inventory management and payment integration.",
     url: "#",
-    badgeColor: getBadgeColor("Upwork"),
+    badgeColor: mockBadgeColor,
     technologies: [
       { iconName: "logoVue", name: "Vue" },
       { iconName: "logoNodejs", name: "Node" },
@@ -181,7 +168,7 @@ const mockProjects = [
     iconName: "terminalOutline",
     description: "Analytics dashboard for client relationship management with real-time reporting.",
     url: "#",
-    badgeColor: getBadgeColor("Workana"),
+    badgeColor: mockBadgeColor,
     technologies: [
       { iconName: "logoReact", name: "React" },
       { iconName: "logoPython", name: "Python" },
@@ -194,7 +181,7 @@ const mockProjects = [
     iconName: "compassOutline",
     description: "Conversational AI platform with multi-language support and real-time translation.",
     url: "#",
-    badgeColor: getBadgeColor("Penglabs"),
+    badgeColor: mockBadgeColor,
     technologies: [
       { iconName: "logoPython", name: "Python" },
       { iconName: "logoFirebase", name: "Firebase" },
@@ -232,7 +219,7 @@ const mockExperience = [
     url: "#",
     startDate: "2022-01",
     endDate: undefined,
-    badgeColor: getBadgeColor("Full-time"),
+    badgeColor: mockBadgeColor,
     technologies: [
       { iconName: "logoVue", name: "Vue" },
       { iconName: "logoNodejs", name: "Node" },
@@ -247,7 +234,7 @@ const mockExperience = [
     url: "#",
     startDate: "2020-06",
     endDate: "2021-12",
-    badgeColor: getBadgeColor("Remoto"),
+    badgeColor: mockBadgeColor,
     technologies: [
       { iconName: "logoSass", name: "Sass" },
       { iconName: "logoReact", name: "React" },
@@ -261,7 +248,7 @@ const mockExperience = [
     url: "#",
     startDate: "2018-03",
     endDate: "2020-05",
-    badgeColor: getBadgeColor("Híbrido"),
+    badgeColor: mockBadgeColor,
     technologies: [
       { iconName: "logoJavascript", name: "JS" },
       { iconName: "logoAngular", name: "Angular" },
@@ -283,7 +270,7 @@ const mockComments = [
     description: "Profesional y dedicado. Entregó todo a tiempo con calidad excepcional.",
     url: "#",
     rating: 5,
-    badgeColor: getBadgeColor("Upwork"),
+    badgeColor: mockBadgeColor,
     technologies: [],
   },
   {
@@ -293,7 +280,7 @@ const mockComments = [
     description: "Gran comunicación y resultados impresionantes. Volvería a trabajar con él.",
     url: "#",
     rating: 5,
-    badgeColor: getBadgeColor("Workana"),
+    badgeColor: mockBadgeColor,
     technologies: [],
   },
   {
@@ -303,7 +290,7 @@ const mockComments = [
     description: "Resolvió problemas complejos con soluciones elegantes. Un placer colaborar.",
     url: "#",
     rating: 4,
-    badgeColor: getBadgeColor("Fiverr"),
+    badgeColor: mockBadgeColor,
     technologies: [],
   },
 ]
@@ -474,27 +461,27 @@ function scrollToSection(href: string) {
 
 .bp-section-hero {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .bp-section-projects {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.10);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .bp-section-skills {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .bp-section-experience {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .bp-section-collaboration {
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.10);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .template3-footer {
