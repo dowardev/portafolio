@@ -5,10 +5,8 @@
         <ion-buttons slot="start">
           <ion-menu-button class="mobile-menu-trigger" :auto-hide="false" color="dark" />
           <a class="header-logo" href="#" @click.prevent="scrollToSection('#hero')">
-          <a class="header-logo" href="#" @click.prevent="scrollToSection('#hero')">
             <img src="@/assets/portafolio/logo_dowar_2.1.png" alt="dowardev" class="logo-img" />
             <span class="logo-text">dowardev</span>
-          </a>
           </a>
         </ion-buttons>
 
@@ -33,6 +31,10 @@
           :roles="mockRoles"
         />
       </section>
+
+      <div class="metrics-wrapper">
+        <MetricsBar3 />
+      </div>
 
       <SectionDivider3>
         <div class="bp-divider"></div>
@@ -148,6 +150,7 @@ import HeroSection3 from "@/views/presentation/sections/HeroSection3.vue"
 import ProjectCard3 from "@/components/projects/ProjectCard3.vue"
 import SectionDivider3 from "@/components/common/SectionDivider3.vue"
 import TechCloudBackground from "@/components/common/TechCloudBackground.vue"
+import MetricsBar3 from "@/components/common/MetricsBar3.vue"
 
 const currentYear = computed(() => new Date().getFullYear())
 
@@ -363,6 +366,11 @@ function scrollToSection(href: string) {
   display: none;
 }
 
+@keyframes ht3-led-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
 .projects-header {
   margin-bottom: 2rem;
 }
@@ -379,6 +387,19 @@ function scrollToSection(href: string) {
   font-weight: 700;
   color: #111;
   margin: 0 0 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.projects-heading::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ion-color-primary, #1a1a1a);
+  flex-shrink: 0;
+  animation: ht3-led-pulse 2s ease-in-out infinite;
 }
 
 .projects-sub {
@@ -424,6 +445,14 @@ function scrollToSection(href: string) {
   border-color: #111;
 }
 
+.projects-inner,
+.projects-header,
+.projects-grid,
+.platforms-row {
+  position: relative;
+  z-index: 1;
+}
+
 .bp-section {
   padding: 2.5rem 2rem;
   display: flex;
@@ -431,6 +460,18 @@ function scrollToSection(href: string) {
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
+  position: relative;
+}
+
+.bp-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .bp-section-hero {
@@ -516,6 +557,18 @@ function scrollToSection(href: string) {
   color: #999;
   margin: 0;
   letter-spacing: 0.02em;
+}
+
+.metrics-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 0 2rem 3rem;
+}
+
+@media (max-width: 768px) {
+  .metrics-wrapper {
+    padding: 0 1rem 2rem;
+  }
 }
 
 @media (max-width: 768px) {
