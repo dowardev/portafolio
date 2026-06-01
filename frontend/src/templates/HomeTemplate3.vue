@@ -27,8 +27,8 @@
     <ion-content ref="contentRef">
       <section id="hero" class="bp-section bp-section-hero">
         <HeroSection3
-          :name="mockName"
-          :roles="mockRoles"
+          :name="name"
+          :roles="roles"
         />
         <div class="metrics-wrapper">
           <MetricsBar3 />
@@ -44,8 +44,8 @@
 
           <div class="projects-grid">
             <ProjectCard3
-              v-for="card in mockProjects"
-              :key="card.name"
+              v-for="card in projectCards"
+              :key="'proj-' + card.index"
               v-bind="card"
             />
           </div>
@@ -66,8 +66,8 @@
           </div>
           <div class="projects-grid">
             <ProjectCard3
-              v-for="exp in mockExperience"
-              :key="exp.name"
+              v-for="exp in experienceCards"
+              :key="'exp-' + exp.index"
               v-bind="exp"
             />
           </div>
@@ -83,7 +83,7 @@
 
             <div class="platforms-row">
               <a
-                v-for="p in mockFreelancePlatforms"
+                v-for="p in freelancePlatforms"
                 :key="p.id"
                 :href="p.url"
                 target="_blank"
@@ -96,8 +96,8 @@
 
           <div class="projects-grid">
             <ProjectCard3
-              v-for="comment in mockComments"
-              :key="comment.name"
+              v-for="comment in commentCards"
+              :key="'cmt-' + comment.index"
               v-bind="comment"
             />
           </div>
@@ -107,7 +107,7 @@
       <ion-footer class="ion-no-border template3-footer">
         <div class="footer-inner">
           <p class="footer-text">
-            &copy; {{ currentYear }} {{ mockName }}.
+            &copy; {{ currentYear }} {{ name }}.
           </p>
         </div>
       </ion-footer>
@@ -116,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { computed, ref, onMounted } from "vue"
 import {
   IonButton,
   IonButtons,
@@ -128,55 +128,70 @@ import {
   IonToolbar,
 } from "@ionic/vue"
 
+import IntroController from "@/controllers/introController"
+import ProjectsController from "@/controllers/projectsController"
+import ExperienceController from "@/controllers/experienceController"
+import FreelancePlatformController from "@/controllers/freelancePlatformController"
+import FreelanceCommentController from "@/controllers/freelanceCommentController"
+import { getIconByName } from "@/composables/iconsIndex"
+
 import HeroSection3 from "@/views/presentation/sections/HeroSection3.vue"
 import ProjectCard3 from "@/components/projects/ProjectCard3.vue"
 import SkillsSection3 from "@/components/common/SkillsSection3.vue"
 import MetricsBar3 from "@/components/common/MetricsBar3.vue"
 
+const introController = new IntroController()
+const projectsController = new ProjectsController()
+const experienceController = new ExperienceController()
+const freelancePlatformController = new FreelancePlatformController()
+const freelanceCommentController = new FreelanceCommentController()
+
 const currentYear = computed(() => new Date().getFullYear())
 
-const mockName = "Ben Mills"
-const mockRoles = ["Developer", "UI/UX Designer", "Creative Thinker"]
+const introData = computed(() => introController.data.value || { name: null, tags: [], description: null, socials: [], logoUrl: null, photoUrl: null, showContactForm: { socials: false, freelance: false } })
+const name = computed(() => introData.value.name || "...")
+const roles = computed(() => (introData.value.tags || []).map(t => t.name))
 
-const mockProjects = [
-  {
-    source: "Upwork",
-    name: "E-Commerce Platform",
-    description: "Full-stack e-commerce redesign with real-time inventory management and payment integration.",
-    url: "#",
-    index: 1,
-    technologies: [
-      { name: "Vue" },
-      { name: "Node" },
-      { name: "JS" },
-      { name: "AWS" },
-    ],
-  },
-  {
-    source: "Workana",
-    name: "CRM Dashboard",
-    description: "Analytics dashboard for client relationship management with real-time reporting.",
-    url: "#",
-    index: 2,
-    technologies: [
-      { name: "React" },
-      { name: "Python" },
-      { name: "Docker" },
-    ],
-  },
-  {
-    source: "Penglabs",
-    name: "AI Chat Platform",
-    description: "Conversational AI platform with multi-language support and real-time translation.",
-    url: "#",
-    index: 3,
-    technologies: [
-      { name: "Python" },
-      { name: "Firebase" },
-      { name: "Angular" },
-    ],
-  },
-]
+const projectCards = computed(() =>
+  (projectsController.projects.value || []).map((p, i) => ({
+    source: p.source?.name,
+    name: p.title,
+    description: p.details?.description || "",
+    url: p.source?.url || "#",
+    index: i + 1,
+    technologies: (p.technologies || []).map(t => ({
+      name: getIconByName(t.iconName)?.label || t.iconName
+    }))
+  }))
+)
+
+const experienceCards = computed(() =>
+  (experienceController.experiences.value || []).map((e, i) => ({
+    name: e.title,
+    description: e.details?.description || "",
+    url: e.details?.website || "#",
+    startDate: e.startDate,
+    endDate: e.endDate || undefined,
+    index: i + 1,
+    technologies: (e.technologies || []).map(t => ({
+      name: getIconByName(t.iconName)?.label || t.iconName
+    }))
+  }))
+)
+
+const freelancePlatforms = computed(() =>
+  freelancePlatformController.freelancePlatforms.value || []
+)
+
+const commentCards = computed(() =>
+  (freelanceCommentController.freelanceComments.value || []).map((c, i) => ({
+    name: c.title,
+    description: c.text || "",
+    rating: c.rating || 0,
+    index: i + 1,
+    technologies: [],
+  }))
+)
 
 const mockSkillCategories = [
   {
@@ -190,85 +205,6 @@ const mockSkillCategories = [
   {
     name: "DevOps & Tools",
     skills: ["Docker", "AWS", "Git"],
-  },
-]
-
-const mockExperience = [
-  {
-    source: "Full-time",
-    name: "Senior Full-Stack Developer",
-    description: "Arquitectura y desarrollo de aplicaciones web full-stack con Vue 3, Node.js y Docker.",
-    url: "#",
-    startDate: "2022-01",
-    endDate: undefined,
-    index: 1,
-    technologies: [
-      { name: "Vue" },
-      { name: "Node" },
-      { name: "Docker" },
-    ],
-  },
-  {
-    source: "Remoto",
-    name: "UI/UX Designer",
-    description: "Diseño e implementación de interfaces de usuario para aplicaciones SaaS.",
-    url: "#",
-    startDate: "2020-06",
-    endDate: "2021-12",
-    index: 2,
-    technologies: [
-      { name: "Sass" },
-      { name: "React" },
-    ],
-  },
-  {
-    source: "Híbrido",
-    name: "Frontend Developer",
-    description: "Desarrollo de aplicaciones móviles híbridas con Ionic y Angular.",
-    url: "#",
-    startDate: "2018-03",
-    endDate: "2020-05",
-    index: 3,
-    technologies: [
-      { name: "JS" },
-      { name: "Angular" },
-      { name: "Ionic" },
-    ],
-  },
-]
-
-const mockFreelancePlatforms = [
-  { id: "1", name: "Upwork", image: "", url: "#" },
-  { id: "2", name: "Workana", image: "", url: "#" },
-]
-
-const mockComments = [
-  {
-    source: "Upwork",
-    name: "Excelente trabajo",
-    description: "Profesional y dedicado. Entregó todo a tiempo con calidad excepcional.",
-    url: "#",
-    rating: 5,
-    index: 1,
-    technologies: [],
-  },
-  {
-    source: "Workana",
-    name: "Muy recomendable",
-    description: "Gran comunicación y resultados impresionantes. Volvería a trabajar con él.",
-    url: "#",
-    rating: 5,
-    index: 2,
-    technologies: [],
-  },
-  {
-    source: "Fiverr",
-    name: "Profesional top",
-    description: "Resolvió problemas complejos con soluciones elegantes. Un placer colaborar.",
-    url: "#",
-    rating: 4,
-    index: 3,
-    technologies: [],
   },
 ]
 
@@ -286,6 +222,16 @@ function scrollToSection(href: string) {
   if (!el || !contentRef.value) return
   contentRef.value.$el.scrollToPoint(0, el.offsetTop, 500)
 }
+
+onMounted(async () => {
+  await Promise.all([
+    introController.loadIntro(),
+    projectsController.loadPublicProjects(),
+    experienceController.loadPublicExperiences(),
+    freelancePlatformController.loadFreelancePlatforms(),
+    freelanceCommentController.loadFreelanceComments(),
+  ])
+})
 </script>
 
 <style scoped>

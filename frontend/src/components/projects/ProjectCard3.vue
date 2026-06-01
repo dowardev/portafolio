@@ -4,7 +4,7 @@
 
     <template v-if="rating != null">
       <div class="card-content">
-        <div class="card-source">{{ source }}</div>
+        <div v-if="source" class="card-source">{{ source }}</div>
         <div class="card-name">{{ name }}</div>
         <p class="card-desc">{{ description }}</p>
         <div class="card-footer">
@@ -22,7 +22,7 @@
               class="star-empty"
             />
           </div>
-          <a :href="url" target="_blank" class="card-arrow" rel="noopener noreferrer" aria-label="Ver proyecto">
+          <a v-if="url" :href="url" target="_blank" class="card-arrow" rel="noopener noreferrer" aria-label="Ver proyecto">
             <ion-icon :icon="arrowForward" />
           </a>
         </div>
@@ -31,7 +31,7 @@
 
     <template v-else>
       <div class="card-content">
-        <div class="card-source">{{ source }}</div>
+        <div v-if="source" class="card-source">{{ source }}</div>
         <div class="card-name">{{ name }}</div>
         <p class="card-desc">{{ description }}</p>
         <div v-if="dateText" class="card-dates">{{ dateText }}</div>
@@ -41,7 +41,7 @@
               {{ tech.name }}
             </span>
           </div>
-          <a :href="url" target="_blank" class="card-arrow" rel="noopener noreferrer" aria-label="Ver proyecto">
+          <a v-if="url" :href="url" target="_blank" class="card-arrow" rel="noopener noreferrer" aria-label="Ver proyecto">
             <ion-icon :icon="arrowForward" />
           </a>
         </div>
@@ -62,10 +62,10 @@ interface Technology {
 }
 
 interface ProjectCard3Props {
-  source: string
+  source?: string
   name: string
   description: string
-  url: string
+  url?: string
   technologies: Technology[]
   startDate?: string
   endDate?: string
