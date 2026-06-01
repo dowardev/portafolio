@@ -24,7 +24,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content>
+    <ion-content ref="contentRef">
       <section id="hero" class="bp-section bp-section-hero">
         <HeroSection3
           :name="mockName"
@@ -123,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import {
   IonButton,
   IonButtons,
@@ -291,11 +291,12 @@ const navItems = [
   { label: "CONTACTO", href: "#collaboration" },
 ]
 
+const contentRef = ref()
+
 function scrollToSection(href: string) {
   const el = document.querySelector(href)
-  if (!el) return
-  const content = document.querySelector("ion-content")
-  content?.scrollToPoint(0, el.offsetTop - 20, 500)
+  if (!el || !contentRef.value) return
+  contentRef.value.$el.scrollToPoint(0, el.offsetTop, 500)
 }
 </script>
 
@@ -541,4 +542,11 @@ function scrollToSection(href: string) {
     padding: 1rem 1.5rem;
   }
 }
+
+/* TEMPORAL: diagnostic section colors */
+.bp-section-hero { background: rgba(255, 0, 0, 0.08); }
+.bp-section-projects { background: rgba(0, 0, 255, 0.08); }
+.bp-section-skills { background: rgba(0, 255, 0, 0.08); }
+.bp-section-experience { background: rgba(255, 255, 0, 0.1); }
+.bp-section-collaboration { background: rgba(255, 0, 255, 0.08); }
 </style>
