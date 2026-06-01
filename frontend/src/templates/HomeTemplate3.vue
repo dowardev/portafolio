@@ -30,11 +30,10 @@
           :name="mockName"
           :roles="mockRoles"
         />
+        <div class="metrics-wrapper">
+          <MetricsBar3 />
+        </div>
       </section>
-
-      <div class="metrics-wrapper">
-        <MetricsBar3 />
-      </div>
 
       <SectionDivider3>
         <div class="bp-divider"></div>
@@ -467,9 +466,9 @@ function scrollToSection(href: string) {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
+  background-image: radial-gradient(circle, #bbb 1px, transparent 1px);
   background-size: 24px 24px;
-  opacity: 0.4;
+  opacity: 0.6;
   pointer-events: none;
   z-index: 0;
 }
@@ -562,12 +561,13 @@ function scrollToSection(href: string) {
 .metrics-wrapper {
   display: flex;
   justify-content: center;
-  padding: 0 2rem 3rem;
+  padding: 0;
+  margin-top: 2rem;
 }
 
 @media (max-width: 768px) {
   .metrics-wrapper {
-    padding: 0 1rem 2rem;
+    margin-top: 1.5rem;
   }
 }
 
