@@ -53,6 +53,9 @@ const categories = props.categories ?? []
   border: 1px solid #d0d5dd;
   padding: 1.25rem;
   border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -91,6 +94,41 @@ const categories = props.categories ?? []
 
 .skill-card:hover::after {
   transform: translate(4px, 4px);
+}
+
+.card-number {
+  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0097a7;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+}
+
+.card-category {
+  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #5a5a5a;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: auto;
+}
+
+.card-tag {
+  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
+  font-size: 0.65rem;
+  color: #555;
+  background: #e8e8e8;
+  padding: 0.2rem 0.5rem;
+  letter-spacing: 0.02em;
 }
 
 .skill-card:last-child:nth-child(odd) {
@@ -135,10 +173,11 @@ const categories = props.categories ?? []
 
   .card-number {
     font-size: 0.65rem;
+    margin-bottom: 0.5rem;
   }
 
   .card-category {
-    font-size: 0.5rem;
+    font-size: 0.6rem;
   }
 
   .card-tag {
