@@ -390,7 +390,7 @@ async function openModalApps() {
 }
 
 .menu3-title {
-  font-family: "Courier New", Courier, ui-monospace, monospace;
+  font-family: var(--font-family-mono, "Courier New", Courier, ui-monospace, monospace);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -413,7 +413,7 @@ async function openModalApps() {
 }
 
 .menu3-user-name {
-  font-family: "OpenSans-Medium", sans-serif;
+  font-family: var(--font-family-primary, "OpenSans-Medium", sans-serif);
   font-size: 0.85rem;
   color: #1a1a1a;
 }
@@ -428,7 +428,7 @@ async function openModalApps() {
 .menu3-register-btn {
   flex: 1;
   padding: 0.5rem 0.75rem;
-  font-family: "OpenSans-Medium", sans-serif;
+  font-family: var(--font-family-mono, "Courier New", Courier, ui-monospace, monospace);
   font-size: 0.7rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -474,7 +474,7 @@ async function openModalApps() {
 }
 
 .section-text {
-  font-family: "Courier New", Courier, ui-monospace, monospace;
+  font-family: var(--font-family-mono, "Courier New", Courier, ui-monospace, monospace);
   font-size: 0.6rem;
   letter-spacing: 0.15em;
   color: #999;
@@ -502,7 +502,7 @@ async function openModalApps() {
 }
 
 .menu3-accordion-trigger .item3-label {
-  font-family: "OpenSans-Medium", sans-serif;
+  font-family: var(--font-family-mono, "Courier New", Courier, ui-monospace, monospace);
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -511,7 +511,7 @@ async function openModalApps() {
 }
 
 .menu3-accordion-trigger .item3-index {
-  font-family: "Courier New", Courier, ui-monospace, monospace;
+  font-family: var(--font-family-mono, "Courier New", Courier, ui-monospace, monospace);
   font-size: 0.7rem;
   letter-spacing: 0.05em;
   color: #999;
@@ -569,7 +569,7 @@ async function openModalApps() {
 }
 
 .logout-label {
-  font-family: "OpenSans-Medium", sans-serif;
+  font-family: var(--font-family-mono, "Courier New", Courier, ui-monospace, monospace);
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;

@@ -110,7 +110,7 @@ function handleClick() {
 }
 
 .item3-label {
-  font-family: "OpenSans-Medium", sans-serif;
+  font-family: var(--font-family-mono, "Courier New", Courier, ui-monospace, monospace);
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -132,7 +132,7 @@ function handleClick() {
 }
 
 .item3-index {
-  font-family: "Courier New", Courier, ui-monospace, monospace;
+  font-family: var(--font-family-mono, "Courier New", Courier, ui-monospace, monospace);
   font-size: 0.7rem;
   letter-spacing: 0.05em;
   color: #999;
