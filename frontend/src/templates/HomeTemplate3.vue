@@ -20,6 +20,35 @@
           >
             {{ item.label }}
           </ion-button>
+          <ion-button
+            id="mobile-nav-trigger"
+            class="mobile-nav-trigger"
+            fill="clear"
+            color="dark"
+          >
+            <ion-icon :icon="menuOutline" slot="icon-only" />
+          </ion-button>
+          <ion-popover
+            trigger="mobile-nav-trigger"
+            trigger-action="click"
+            :show-backdrop="false"
+            :dismiss-on-select="true"
+            side="bottom"
+            alignment="start"
+          >
+            <ion-content class="mobile-nav-popover">
+              <ion-item
+                v-for="item in navItems"
+                :key="item.label"
+                button
+                lines="none"
+                class="mobile-nav-item"
+                @click="scrollToSection(item.href)"
+              >
+                <ion-label>{{ item.label }}</ion-label>
+              </ion-item>
+            </ion-content>
+          </ion-popover>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -121,10 +150,15 @@ import {
   IonContent,
   IonFooter,
   IonHeader,
+  IonIcon,
+  IonItem,
+  IonLabel,
   IonMenuButton,
   IonPage,
+  IonPopover,
   IonToolbar,
 } from "@ionic/vue"
+import { menuOutline } from "ionicons/icons"
 
 import IntroController from "@/controllers/introController"
 import ProjectsController from "@/controllers/projectsController"
@@ -290,6 +324,31 @@ onMounted(async () => {
 
 .mobile-menu-trigger {
   display: none;
+}
+
+.mobile-nav-trigger {
+  display: none;
+}
+
+.mobile-nav-popover {
+  --background: #f8f9fb;
+}
+
+.mobile-nav-item {
+  --background: transparent;
+  --color: #333;
+  --min-height: 2.75rem;
+  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  --padding-start: 1.25rem;
+}
+
+.mobile-nav-item:hover {
+  --background: #111;
+  --color: #fff;
 }
 
 .projects-header {
@@ -481,6 +540,10 @@ onMounted(async () => {
 
   .mobile-menu-trigger {
     display: block;
+  }
+
+  .mobile-nav-trigger {
+    display: inline-flex;
   }
 
   .nav-button {
