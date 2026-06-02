@@ -38,7 +38,7 @@ const categories = props.categories ?? []
 <style scoped>
 .skills-section {
   width: 100%;
-  max-width: 600px;
+  max-width: 900px;
 }
 
 .skills-grid {
@@ -99,38 +99,25 @@ const categories = props.categories ?? []
   max-width: 50%;
 }
 
-.card-number {
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #0097a7;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.5rem;
-}
+@media (prefers-reduced-motion: reduce) {
+  .skill-card {
+    transition: none;
+  }
 
-.card-category {
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.55rem;
-  font-weight: 600;
-  color: #5a5a5a;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 0.75rem;
-}
+  .skill-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
 
-.card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
+  .skill-card::before,
+  .skill-card::after {
+    transition: none;
+  }
 
-.card-tag {
-  font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.65rem;
-  color: #555;
-  background: #f0f0f0;
-  padding: 0.2rem 0.5rem;
-  letter-spacing: 0.02em;
+  .skill-card:hover::before,
+  .skill-card:hover::after {
+    transform: none;
+  }
 }
 
 @media (max-width: 768px) {

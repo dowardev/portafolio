@@ -3,9 +3,9 @@
     <ion-header class="ion-no-border template3-header" mode="ios">
       <ion-toolbar class="header-toolbar">
         <ion-buttons slot="start">
-          <ion-menu-button class="mobile-menu-trigger" :auto-hide="false" color="dark" />
+          <ion-menu-button class="mobile-menu-trigger" :auto-hide="false" color="dark" menu="mainMenu" aria-label="Abrir menú" />
           <a class="header-logo" href="#" @click.prevent="scrollToSection('#hero')">
-            <img src="@/assets/portafolio/logo_dowar_2.1.png" alt="dowardev" class="logo-img" />
+            <img src="@/assets/portafolio/logo_dowar_2.1.png" alt="dowardev" class="logo-img" width="36" height="36" />
             <span class="logo-text">dowardev</span>
           </a>
         </ion-buttons>
@@ -30,9 +30,6 @@
           :name="name"
           :roles="roles"
         />
-        <div class="metrics-wrapper">
-          <MetricsBar3 />
-        </div>
       </section>
 
       <section id="projects" class="bp-section bp-section-projects">
@@ -59,12 +56,12 @@
         </section>
 
         <section id="experience" class="bp-section bp-section-experience">
-          <div class="projects-inner">
-            <div class="projects-header">
-              <h2 class="projects-heading">Experiencia</h2>
-              <p class="projects-sub">Trayectoria profesional</p>
+          <div class="section-inner">
+            <div class="section-header">
+              <h2 class="section-heading">Experiencia</h2>
+              <p class="section-sub">Trayectoria profesional</p>
           </div>
-          <div class="projects-grid">
+          <div class="section-grid">
             <ProjectCard3
               v-for="exp in experienceCards"
               :key="'exp-' + exp.index"
@@ -75,10 +72,10 @@
       </section>
 
         <section id="collaboration" class="bp-section bp-section-collaboration">
-          <div class="projects-inner">
-            <div class="projects-header">
-              <h2 class="projects-heading">Trabajemos juntos</h2>
-              <p class="projects-sub">Lo que dicen mis clientes</p>
+          <div class="section-inner">
+            <div class="section-header">
+              <h2 class="section-heading">Trabajemos juntos</h2>
+              <p class="section-sub">Lo que dicen mis clientes</p>
             </div>
 
             <div class="platforms-row">
@@ -94,7 +91,7 @@
               </a>
             </div>
 
-          <div class="projects-grid">
+          <div class="section-grid">
             <ProjectCard3
               v-for="comment in commentCards"
               :key="'cmt-' + comment.index"
@@ -104,6 +101,8 @@
           </div>
         </section>
 
+      </ion-content>
+
       <ion-footer class="ion-no-border template3-footer">
         <div class="footer-inner">
           <p class="footer-text">
@@ -111,8 +110,7 @@
           </p>
         </div>
       </ion-footer>
-    </ion-content>
-  </ion-page>
+    </ion-page>
 </template>
 
 <script setup lang="ts">
@@ -138,7 +136,6 @@ import { getIconByName } from "@/composables/iconsIndex"
 import HeroSection3 from "@/views/presentation/sections/HeroSection3.vue"
 import ProjectCard3 from "@/components/projects/ProjectCard3.vue"
 import SkillsSection3 from "@/components/common/SkillsSection3.vue"
-import MetricsBar3 from "@/components/common/MetricsBar3.vue"
 
 const introController = new IntroController()
 const projectsController = new ProjectsController()
@@ -286,6 +283,11 @@ onMounted(async () => {
   --ripple-color: transparent;
 }
 
+.nav-button:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
 .mobile-menu-trigger {
   display: none;
 }
@@ -318,6 +320,40 @@ onMounted(async () => {
   letter-spacing: 0.02em;
 }
 
+.section-inner {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.section-header {
+  margin-bottom: 2rem;
+  border-left: 4px solid #111;
+  padding-left: 1rem;
+}
+
+.section-heading {
+  font-family: var(--font-family-primary, "Rubik", sans-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 0.5rem;
+}
+
+.section-sub {
+  font-family: var(--font-family-primary, "Rubik", sans-serif);
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -326,6 +362,7 @@ onMounted(async () => {
 
 .platforms-row {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
   margin-bottom: 2rem;
@@ -349,9 +386,17 @@ onMounted(async () => {
   border-color: #111;
 }
 
+.platform-link:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
 .projects-inner,
 .projects-header,
 .projects-grid,
+.section-inner,
+.section-header,
+.section-grid,
 .platforms-row {
   position: relative;
   z-index: 1;
@@ -385,23 +430,31 @@ onMounted(async () => {
 }
 
 .bp-section-projects {
-  height: 100dvh;
+  min-height: 100dvh;
+  height: auto;
   background: #f0f2f5;
+  scroll-margin-top: 56px;
 }
 
 .bp-section-skills {
-  height: 100dvh;
+  min-height: 100dvh;
+  height: auto;
   background: #f8f9fb;
+  scroll-margin-top: 56px;
 }
 
 .bp-section-experience {
-  height: 100dvh;
+  min-height: 100dvh;
+  height: auto;
   background: #f3f4f7;
+  scroll-margin-top: 56px;
 }
 
 .bp-section-collaboration {
-  height: 100dvh;
+  min-height: 100dvh;
+  height: auto;
   background: #f0f2f5;
+  scroll-margin-top: 56px;
 }
 
 .template3-footer {
@@ -421,19 +474,6 @@ onMounted(async () => {
   letter-spacing: 0.02em;
 }
 
-.metrics-wrapper {
-  display: flex;
-  justify-content: center;
-  padding: 0;
-  margin-top: 2rem;
-}
-
-@media (max-width: 768px) {
-  .metrics-wrapper {
-    margin-top: 1.5rem;
-  }
-}
-
 @media (max-width: 768px) {
   .logo-text {
     font-size: 0.75rem;
@@ -441,6 +481,10 @@ onMounted(async () => {
 
   .mobile-menu-trigger {
     display: block;
+  }
+
+  .nav-button {
+    display: none;
   }
 
   .header-toolbar {
@@ -456,20 +500,12 @@ onMounted(async () => {
     grid-template-columns: 1fr;
   }
 
-  .bp-section-projects {
-    height: 100dvh;
+  .section-grid {
+    grid-template-columns: 1fr;
   }
 
-  .bp-section-skills {
-    height: 100dvh;
-  }
-
-  .bp-section-experience {
-    height: 100dvh;
-  }
-
-  .bp-section-collaboration {
-    height: 100dvh;
+  .platforms-row {
+    gap: 0.75rem;
   }
 
   .footer-inner {

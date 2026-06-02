@@ -35,6 +35,7 @@ interface HeroSection3Props {
 const props = defineProps<HeroSection3Props>()
 
 const activeRoleIndex = ref(0)
+const prefersReducedMotion = ref(false)
 let roleInterval: ReturnType<typeof setInterval> | null = null
 
 function advanceRole() {
@@ -42,7 +43,10 @@ function advanceRole() {
 }
 
 onMounted(() => {
-  roleInterval = setInterval(advanceRole, 2800)
+  prefersReducedMotion.value = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  if (!prefersReducedMotion.value) {
+    roleInterval = setInterval(advanceRole, 2800)
+  }
 })
 
 onUnmounted(() => {
@@ -56,8 +60,8 @@ const maxRoleChars = computed(() => {
 })
 
 const bottomLinks = computed(() => [
-  { label: "E-COMM REDESIGN CASE STUDY", href: "#projects" },
-  { label: "UI SNAPSHOTS", href: "#snapshots" },
+  { label: "PROYECTOS", href: "#projects" },
+  { label: "CONTACTO", href: "#collaboration" },
 ])
 </script>
 
@@ -90,6 +94,7 @@ const bottomLinks = computed(() => [
   margin: 0;
   line-height: 1.15;
   letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 .hero-name {
@@ -101,6 +106,7 @@ const bottomLinks = computed(() => [
   display: inline-block;
   overflow: hidden;
   vertical-align: bottom;
+  max-width: 100%;
 }
 
 .role-text {
@@ -132,11 +138,11 @@ const bottomLinks = computed(() => [
 
 .hero-link {
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #666;
+  color: #444;
   text-decoration: none;
   padding-bottom: 0.25rem;
   border-bottom: 1.5px solid transparent;
@@ -148,13 +154,39 @@ const bottomLinks = computed(() => [
   color: #111;
 }
 
+.hero-link:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .role-fade-enter-active,
+  .role-fade-leave-active {
+    transition: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+}
+
 @media (max-width: 768px) {
   .hero-root {
     padding: 3rem 1.5rem 1.5rem;
   }
 
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
+  }
+
+  .role-wrapper {
+    min-width: 0;
+  }
+
+  .role-text {
+    white-space: normal;
   }
 
   .hero-links {
@@ -162,13 +194,19 @@ const bottomLinks = computed(() => [
   }
 
   .hero-link {
-    font-size: 0.65rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 1.75rem;
   }
 }
 
 @media (max-width: 400px) {
   .hero-title {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 }
 </style>

@@ -8,6 +8,7 @@
         <div class="card-name">{{ name }}</div>
         <p class="card-desc">{{ description }}</p>
         <div class="card-footer">
+          <span class="sr-only">Calificación: {{ rating }} de 5</span>
           <div class="stars-inline" aria-hidden="true">
             <ion-icon
               v-for="n in rating"
@@ -197,6 +198,10 @@ const dateText = computed(() => {
   margin: 0 0 0.5rem;
   line-height: 1.6;
   flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .card-dates {
@@ -256,6 +261,44 @@ const dateText = computed(() => {
 
 .card-arrow:hover {
   color: #111;
+}
+
+.card-arrow:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card {
+    transition: none;
+  }
+
+  .project-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .project-card::before,
+  .project-card::after {
+    transition: none;
+  }
+
+  .project-card:hover::before,
+  .project-card:hover::after {
+    transform: none;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (max-width: 768px) {
