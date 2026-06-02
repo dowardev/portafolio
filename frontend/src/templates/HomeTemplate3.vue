@@ -226,14 +226,17 @@ const commentCards = computed(() =>
 
 const mockSkillCategories = [
   {
+    iconName: "logoVue",
     name: "Frontend",
     skills: ["Vue", "React", "TypeScript", "Sass", "Ionic", "CSS", "HTML"],
   },
   {
+    iconName: "logoLaravel",
     name: "Backend",
     skills: ["Node", "Python", "Laravel", "Firebase"],
   },
   {
+    iconName: "logoDocker",
     name: "DevOps & Tools",
     skills: ["Docker", "AWS", "Git"],
   },

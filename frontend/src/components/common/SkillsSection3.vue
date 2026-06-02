@@ -7,7 +7,10 @@
         class="skill-card"
       >
         <div class="card-number">// {{ String(i + 1).padStart(2, '0') }}</div>
-        <div class="card-category">{{ cat.name }}</div>
+        <div class="card-category">
+            <IconRenderer v-if="cat.iconName" :name="cat.iconName" size="16px" class="card-cat-icon" />
+            {{ cat.name }}
+          </div>
         <div class="card-tags">
           <span
             v-for="skill in cat.skills"
@@ -21,8 +24,11 @@
 </template>
 
 <script setup lang="ts">
+import IconRenderer from "@/components/IconRenderer.vue"
+
 interface SkillsCategory {
   name: string
+  iconName?: string
   skills: string[]
 }
 
@@ -106,6 +112,9 @@ const categories = props.categories ?? []
 }
 
 .card-category {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
   font-size: 0.7rem;
   font-weight: 600;
@@ -113,6 +122,12 @@ const categories = props.categories ?? []
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 0.5rem;
+}
+
+.card-cat-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .card-tags {
