@@ -78,11 +78,18 @@
         </div>
       </section>
 
-      <section id="skills" class="bp-section bp-section-skills">
-          <SkillsSection3
-            :categories="mockSkillCategories"
-          />
-        </section>
+<section id="skills" class="bp-section bp-section-skills">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2 class="section-heading">Skills</h2>
+      <p class="section-sub">Tecnologías y herramientas</p>
+    </div>
+
+    <SkillsSection3
+      :categories="mockSkillCategories"
+    />
+  </div>
+</section>
 
         <section id="experience" class="bp-section bp-section-experience">
           <div class="section-inner">
@@ -143,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue"
+import { computed, ref, onMounted, onUnmounted } from "vue"
 import {
   IonButton,
   IonButtons,
@@ -179,12 +186,17 @@ const freelanceCommentController = new FreelanceCommentController()
 
 const currentYear = computed(() => new Date().getFullYear())
 
+const isMobile = ref(window.innerWidth <= 768)
+function onResize() {
+  isMobile.value = window.innerWidth <= 768
+}
+
 const introData = computed(() => introController.data.value || { name: null, tags: [], description: null, socials: [], logoUrl: null, photoUrl: null, showContactForm: { socials: false, freelance: false } })
 const name = computed(() => introData.value.name || "...")
 const roles = computed(() => (introData.value.tags || []).map(t => t.name))
 
 const projectCards = computed(() =>
-  (projectsController.projects.value || []).map((p, i) => ({
+  (projectsController.projects.value || []).slice(0, isMobile.value ? 3 : 6).map((p, i) => ({
     source: p.source?.name,
     name: p.title,
     description: p.details?.description || "",
@@ -197,7 +209,7 @@ const projectCards = computed(() =>
 )
 
 const experienceCards = computed(() =>
-  (experienceController.experiences.value || []).map((e, i) => ({
+  (experienceController.experiences.value || []).slice(0, isMobile.value ? 3 : 6).map((e, i) => ({
     name: e.title,
     description: e.details?.description || "",
     url: e.details?.website || "#",
@@ -215,7 +227,7 @@ const freelancePlatforms = computed(() =>
 )
 
 const commentCards = computed(() =>
-  (freelanceCommentController.freelanceComments.value || []).map((c, i) => ({
+  (freelanceCommentController.freelanceComments.value || []).slice(0, isMobile.value ? 3 : 6).map((c, i) => ({
     name: c.title,
     description: c.text || "",
     rating: c.rating || 0,
@@ -258,6 +270,7 @@ function scrollToSection(href: string) {
 }
 
 onMounted(async () => {
+  window.addEventListener("resize", onResize)
   await Promise.all([
     introController.loadIntro(),
     projectsController.loadPublicProjects(),
@@ -265,6 +278,10 @@ onMounted(async () => {
     freelancePlatformController.loadFreelancePlatforms(),
     freelanceCommentController.loadFreelanceComments(),
   ])
+})
+
+onUnmounted(() => {
+  window.removeEventListener("resize", onResize)
 })
 </script>
 
@@ -412,13 +429,13 @@ onMounted(async () => {
 
 .section-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 

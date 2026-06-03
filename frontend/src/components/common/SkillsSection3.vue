@@ -6,11 +6,11 @@
         :key="i"
         class="skill-card"
       >
+        <div v-if="cat.iconName" class="card-hero-icon">
+          <IconRenderer :name="cat.iconName" size="48px" />
+        </div>
         <div class="card-number">// {{ String(i + 1).padStart(2, '0') }}</div>
-        <div class="card-category">
-            <IconRenderer v-if="cat.iconName" :name="cat.iconName" size="16px" class="card-cat-icon" />
-            {{ cat.name }}
-          </div>
+        <div class="card-category">{{ cat.name }}</div>
         <div class="card-tags">
           <span
             v-for="skill in cat.skills"
@@ -44,12 +44,11 @@ const categories = props.categories ?? []
 <style scoped>
 .skills-section {
   width: 100%;
-  max-width: 900px;
 }
 
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
@@ -61,6 +60,8 @@ const categories = props.categories ?? []
   border-radius: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   min-height: 0;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
@@ -102,19 +103,32 @@ const categories = props.categories ?? []
   transform: translate(4px, 4px);
 }
 
+.card-hero-icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #d0d5dd;
+  padding: 2px;
+  margin-bottom: 0.75rem;
+  transition: transform 0.25s ease;
+}
+
+.skill-card:hover .card-hero-icon {
+  transform: scale(1.08);
+}
+
 .card-number {
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
   font-size: 0.75rem;
   font-weight: 700;
   color: #0097a7;
   letter-spacing: 0.04em;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.35rem;
 }
 
 .card-category {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
   font-family: var(--font-family-mono, "Courier New", Courier, monospace);
   font-size: 0.7rem;
   font-weight: 600;
@@ -124,17 +138,12 @@ const categories = props.categories ?? []
   margin-bottom: 0.5rem;
 }
 
-.card-cat-icon {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-
 .card-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
   margin-top: auto;
+  justify-content: center;
 }
 
 .card-tag {
@@ -144,12 +153,6 @@ const categories = props.categories ?? []
   background: #e8e8e8;
   padding: 0.2rem 0.5rem;
   letter-spacing: 0.02em;
-}
-
-.skill-card:last-child:nth-child(odd) {
-  grid-column: 1 / -1;
-  justify-self: center;
-  max-width: 50%;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -171,6 +174,14 @@ const categories = props.categories ?? []
   .skill-card:hover::after {
     transform: none;
   }
+
+  .card-hero-icon {
+    transition: none;
+  }
+
+  .skill-card:hover .card-hero-icon {
+    transform: none;
+  }
 }
 
 @media (max-width: 768px) {
@@ -178,17 +189,19 @@ const categories = props.categories ?? []
     grid-template-columns: 1fr;
   }
 
-  .skill-card:last-child:nth-child(odd) {
-    max-width: 100%;
-  }
-
   .skill-card {
     padding: 1rem;
   }
 
+  .card-hero-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 0.5rem;
+  }
+
   .card-number {
     font-size: 0.65rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
   }
 
   .card-category {
