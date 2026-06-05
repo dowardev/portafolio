@@ -2,7 +2,13 @@
   <div
     class="menu-item3"
     :class="{ active: isActive, 'is-disabled': disabled }"
+    :tabindex="disabled ? -1 : 0"
+    role="button"
+    :aria-disabled="disabled"
+    :aria-label="label"
     @click="handleClick"
+    @keydown.enter="handleClick"
+    @keydown.space.prevent="handleClick"
   >
     <div class="item3-indicator"></div>
 
@@ -89,7 +95,7 @@ function handleClick() {
 }
 
 .menu-item3.active {
-  background: #fafafa;
+  background: #f0f0f0;
 }
 
 .menu-item3.active .item3-indicator {
@@ -135,7 +141,7 @@ function handleClick() {
   font-family: var(--font-family-mono, "Courier New", Courier, ui-monospace, monospace);
   font-size: 0.7rem;
   letter-spacing: 0.05em;
-  color: #999;
+  color: #6B7280;
   flex-shrink: 0;
   min-width: 2.5rem;
   text-align: right;
@@ -155,5 +161,17 @@ function handleClick() {
 
 .menu-item3:active .item3-arrow {
   transform: translateX(5px);
+}
+
+.menu-item3:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-item3,
+  .item3-arrow {
+    transition: none;
+  }
 }
 </style>

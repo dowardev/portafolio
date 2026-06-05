@@ -7,18 +7,27 @@
           <Transition name="role-fade" mode="out-in">
             <span :key="currentRole" class="role-text">{{ currentRole }}</span>
           </Transition>
-        </span>.
+        </span>
       </h1>
 
-      <div class="hero-links">
+      <div v-if="bottomLinks.length > 0" class="hero-links">
         <a
-          v-for="link in bottomLinks"
+          v-for="link in linkTags"
           :key="link.label"
           :href="link.href"
+          target="_blank"
+          rel="noopener noreferrer"
           class="hero-link"
         >
           {{ link.label }}
         </a>
+        <span
+          v-for="link in textTags"
+          :key="link.label"
+          class="hero-link hero-link--text"
+        >
+          {{ link.label }}
+        </span>
       </div>
     </div>
   </section>
@@ -27,9 +36,15 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue"
 
+interface NavLink {
+  label: string
+  href: string | null
+}
+
 interface HeroSection3Props {
   name: string
   roles: string[]
+  navLinks?: NavLink[]
 }
 
 const props = defineProps<HeroSection3Props>()
@@ -59,10 +74,15 @@ const maxRoleChars = computed(() => {
   return Math.max(...props.roles.map((r: string) => r.length)) + 1
 })
 
-const bottomLinks = computed(() => [
-  { label: "PROYECTOS", href: "#projects" },
-  { label: "CONTACTO", href: "#collaboration" },
-])
+const bottomLinks = computed<NavLink[]>(() => {
+  if (props.navLinks && props.navLinks.length > 0) {
+    return props.navLinks
+  }
+  return []
+})
+
+const linkTags = computed(() => bottomLinks.value.filter((l): l is NavLink & { href: string } => !!l.href))
+const textTags = computed(() => bottomLinks.value.filter((l): l is NavLink & { href: null } => !l.href))
 </script>
 
 <style scoped>
@@ -159,6 +179,17 @@ const bottomLinks = computed(() => [
   outline-offset: 2px;
 }
 
+.hero-link--text {
+  cursor: default;
+  border-bottom-color: transparent;
+  color: #888;
+}
+
+.hero-link--text:hover {
+  border-bottom-color: transparent;
+  color: #888;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .role-fade-enter-active,
   .role-fade-leave-active {
@@ -200,13 +231,13 @@ const bottomLinks = computed(() => [
 
 @media (max-width: 480px) {
   .hero-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 }
 
 @media (max-width: 400px) {
   .hero-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 }
 </style>

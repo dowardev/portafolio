@@ -3,19 +3,15 @@
     <ion-header class="ion-no-border">
       <ion-toolbar class="menu3-toolbar">
         <div class="menu3-header-content">
-          <span class="menu3-title">SYSTEM</span>
+          <span class="menu3-title">{{ user?.name?.toUpperCase() || 'SYSTEM' }}</span>
         </div>
       </ion-toolbar>
     </ion-header>
 
     <ion-content class="menu3-content-area">
       <div class="menu3-scroll">
-        <!-- User info or login -->
-        <div v-if="user" class="menu3-user-area">
-          <span class="menu3-user-name">{{ user.name }}</span>
-        </div>
-
-        <div v-else class="menu3-login-area">
+        <!-- Login/Register -->
+        <div v-if="!user" class="menu3-login-area">
           <button class="menu3-login-btn" @click="redirectToSSO('login')">
             INICIAR SESIÓN
           </button>
@@ -34,7 +30,6 @@
             label="PRESENTACIÓN"
             :index="1"
           />
-          <div class="menu3-item-sep"></div>
 
           <MenuItem3
             target-route-name="PostsPage"
@@ -42,7 +37,6 @@
             label="BLOG"
             :index="2"
           />
-          <div class="menu3-item-sep"></div>
 
           <MenuItem3
             target-route-name="PoliciesPage"
@@ -55,9 +49,7 @@
         <!-- User section -->
         <template v-if="user">
           <div class="menu3-section-title">
-            <span class="section-line"></span>
             <span class="section-text">USUARIO</span>
-            <span class="section-line"></span>
           </div>
 
           <MenuItem3
@@ -71,9 +63,7 @@
         <!-- Admin section -->
         <template v-if="isAdmin">
           <div class="menu3-section-title">
-            <span class="section-line"></span>
             <span class="section-text">ADMIN</span>
-            <span class="section-line"></span>
           </div>
 
           <MenuItem3
@@ -82,7 +72,6 @@
             label="PANEL ADMIN"
             :index="5"
           />
-          <div class="menu3-item-sep"></div>
 
           <MenuItem3
             target-route-name="UsersPage"
@@ -92,85 +81,82 @@
           />
         </template>
 
-        <!-- More options accordion -->
-        <div class="menu3-accordion-wrapper">
-          <ion-accordion-group @ion-change="onAccordionChange">
-            <ion-accordion value="more">
-              <ion-item slot="header" lines="none" class="menu3-accordion-trigger">
-                <span class="item3-label">MÁS OPCIONES</span>
-                <span class="item3-index">—</span>
-                <span class="item3-arrow" :class="{ rotated: accordionOpen }">&#8250;</span>
-              </ion-item>
+        <!-- Bottom section: accordion + logout -->
+        <div class="menu3-bottom-section">
+          <div class="menu3-accordion-wrapper">
+            <ion-accordion-group @ion-change="onAccordionChange">
+              <ion-accordion value="more">
+                <ion-item slot="header" lines="none" class="menu3-accordion-trigger">
+                  <span class="item3-label">MÁS OPCIONES</span>
+                  <span class="item3-index">—</span>
+                  <span class="item3-arrow" :class="{ rotated: accordionOpen }">&#8250;</span>
+                </ion-item>
 
-              <div slot="content" class="menu3-accordion-inner">
-                <MenuItem3
-                  label="TEMA"
-                  :index="7"
-                  :active-routes="[]"
-                  @click="modalTheme.open = true"
-                />
-                <div class="menu3-item-sep"></div>
+                <div slot="content" class="menu3-accordion-inner">
+                  <MenuItem3
+                    label="TEMA"
+                    :index="7"
+                    :active-routes="[]"
+                    @click="modalTheme.open = true"
+                  />
 
-                <MenuItem3
-                  label="CONTRIBUIR"
-                  :index="8"
-                  :active-routes="[]"
-                  @click="modalContribute.open = true"
-                />
-                <div class="menu3-item-sep"></div>
+                  <MenuItem3
+                    label="CONTRIBUIR"
+                    :index="8"
+                    :active-routes="[]"
+                    @click="modalContribute.open = true"
+                  />
 
-                <MenuItem3
-                  label="CÓDIGO FUENTE"
-                  :index="9"
-                  :active-routes="[]"
-                  :close-menu-on-click="false"
-                  @click="sourcePopoverOpen = true"
-                />
-                <div class="menu3-item-sep"></div>
+                  <MenuItem3
+                    label="CÓDIGO FUENTE"
+                    :index="9"
+                    :active-routes="[]"
+                    :close-menu-on-click="false"
+                    @click="sourcePopoverOpen = true"
+                  />
 
-                <MenuItem3
-                  label="COMENTARIOS"
-                  :index="10"
-                  :active-routes="[]"
-                  @click="modalComments.open = true"
-                />
-                <div class="menu3-item-sep"></div>
+                  <MenuItem3
+                    label="COMENTARIOS"
+                    :index="10"
+                    :active-routes="[]"
+                    @click="modalComments.open = true"
+                  />
 
-                <MenuItem3
-                  label="NOVEDADES"
-                  :index="11"
-                  :active-routes="[]"
-                  @click="openChangelog()"
-                />
-                <div class="menu3-item-sep"></div>
+                  <MenuItem3
+                    label="NOVEDADES"
+                    :index="11"
+                    :active-routes="[]"
+                    @click="openChangelog()"
+                  />
 
-                <MenuItem3
-                  label="MÁS APPS"
-                  :index="12"
-                  :active-routes="[]"
-                  @click="openModalApps()"
-                />
-              </div>
-            </ion-accordion>
-          </ion-accordion-group>
-        </div>
+                  <MenuItem3
+                    label="MÁS APPS"
+                    :index="12"
+                    :active-routes="[]"
+                    @click="openModalApps()"
+                  />
+                </div>
+              </ion-accordion>
+            </ion-accordion-group>
+          </div>
 
-        <!-- Logout -->
-        <div v-if="user" class="menu3-logout-area">
-          <div class="menu3-divider-line"></div>
+          <!-- Logout -->
+          <div v-if="user" class="menu3-logout-area">
+            <div class="menu3-divider-line"></div>
 
-          <div
-            class="menu3-logout-btn"
-            :class="{ disabled: spinners.buttonLogout }"
-            @click="logout()"
-          >
-            <span v-if="spinners.buttonLogout" class="logout-spinner">
-              <ion-spinner name="crescent" color="dark" />
-            </span>
-            <span v-else class="logout-icon">
-              <ion-icon :icon="logOutOutline" />
-            </span>
-            <span class="logout-label">CERRAR SESIÓN</span>
+            <div
+              class="menu3-logout-btn"
+              :class="{ disabled: spinners.buttonLogout }"
+              @click="logout()"
+            >
+              <span v-if="spinners.buttonLogout" class="logout-spinner">
+                <ion-spinner name="crescent" color="dark" />
+              </span>
+              <span v-else class="logout-icon">
+                <ion-icon :icon="logOutOutline" />
+              </span>
+              <span class="logout-label">CERRAR SESIÓN</span>
+            </div>
           </div>
         </div>
       </div>
@@ -324,7 +310,7 @@ async function loadUser() {
   try {
     await userController.loadUser()
     const u = userController.getUser()
-    user.value = u
+    user.value = u ?? null
     isAdmin.value = userController.hasRole({ slug: "admin" })
   } catch {
     user.value = null
@@ -386,7 +372,6 @@ async function openModalApps() {
   display: flex;
   align-items: center;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid #d4d4d4;
 }
 
 .menu3-title {
@@ -406,16 +391,6 @@ async function openModalApps() {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-}
-
-.menu3-user-area {
-  padding: 1rem 1.25rem 0.5rem;
-}
-
-.menu3-user-name {
-  font-family: var(--font-family-primary, "OpenSans-Medium", sans-serif);
-  font-size: 0.85rem;
-  color: #1a1a1a;
 }
 
 .menu3-login-area {
@@ -446,7 +421,7 @@ async function openModalApps() {
 
 .menu3-divider-line {
   height: 0;
-  border-top: 1px solid #d4d4d4;
+  border-top: 1px dashed #d4d4d4;
   margin: 0 1.25rem;
 }
 
@@ -456,35 +431,28 @@ async function openModalApps() {
 
 .menu3-item-sep {
   height: 0;
-  border-top: 1px solid #d4d4d4;
+  border-top: 1px dashed #d4d4d4;
   margin: 0 1.25rem;
 }
 
 .menu3-section-title {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.25rem 0.25rem;
-}
-
-.section-line {
-  flex: 1;
-  height: 0;
-  border-top: 1px solid #d4d4d4;
+  padding: 0.5rem 1.25rem 0.15rem;
 }
 
 .section-text {
   font-family: var(--font-family-mono, "Courier New", Courier, ui-monospace, monospace);
   font-size: 0.6rem;
   letter-spacing: 0.15em;
-  color: #999;
+  color: #6B7280;
   text-transform: uppercase;
-  white-space: nowrap;
+}
+
+.menu3-bottom-section {
+  margin-top: auto;
+  border-top: 1px dashed #d4d4d4;
 }
 
 .menu3-accordion-wrapper {
-  border-top: 1px solid #d4d4d4;
-  margin-top: auto;
 }
 
 .menu3-accordion-trigger {
@@ -514,7 +482,7 @@ async function openModalApps() {
   font-family: var(--font-family-mono, "Courier New", Courier, ui-monospace, monospace);
   font-size: 0.7rem;
   letter-spacing: 0.05em;
-  color: #999;
+  color: #6B7280;
   flex-shrink: 0;
   min-width: 2.5rem;
   text-align: right;
@@ -537,7 +505,6 @@ async function openModalApps() {
 }
 
 .menu3-logout-area {
-  margin-top: auto;
   padding-bottom: 1rem;
 }
 
@@ -579,5 +546,22 @@ async function openModalApps() {
 .menu3-popover-item {
   --background: #ffffff;
   --background-hover: #f5f5f5;
+}
+
+.menu3-accordion-trigger:focus-visible,
+.menu3-logout-btn:focus-visible,
+.menu3-login-btn:focus-visible,
+.menu3-register-btn:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu3-accordion-trigger .item3-arrow,
+  .menu3-logout-btn,
+  .menu3-login-btn,
+  .menu3-register-btn {
+    transition: none;
+  }
 }
 </style>

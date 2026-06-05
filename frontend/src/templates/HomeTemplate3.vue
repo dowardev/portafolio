@@ -26,7 +26,7 @@
             fill="clear"
             color="dark"
           >
-            <ion-icon :icon="menuOutline" slot="icon-only" />
+            <ion-icon slot="icon-only" :icon="menuOutline" />
           </ion-button>
           <ion-popover
             trigger="mobile-nav-trigger"
@@ -58,6 +58,7 @@
         <HeroSection3
           :name="name"
           :roles="roles"
+          :nav-links="heroNavLinks"
         />
       </section>
 
@@ -194,6 +195,11 @@ function onResize() {
 const introData = computed(() => introController.data.value || { name: null, tags: [], description: null, socials: [], logoUrl: null, photoUrl: null, showContactForm: { socials: false, freelance: false } })
 const name = computed(() => introData.value.name || "...")
 const roles = computed(() => (introData.value.tags || []).map(t => t.name))
+
+const heroNavLinks = computed(() => {
+  const tags = introData.value.tags || []
+  return tags.map(t => ({ label: t.name.toUpperCase(), href: t.url || null }))
+})
 
 const projectCards = computed(() =>
   (projectsController.projects.value || []).slice(0, isMobile.value ? 3 : 6).map((p, i) => ({
