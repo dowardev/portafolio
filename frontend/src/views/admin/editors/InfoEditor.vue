@@ -460,18 +460,12 @@ function handleReorder(reorderEvent: CustomEvent<ReorderEventDetail>) {
 }
 
 function saveReorder() {
-  const originalTags = props.tags || []
-  const reorderedTags = localTags.value.map((localTag, index) => {
-    const original = originalTags.find(t => t.id === Number(localTag.id) || t.name === localTag.label)
-    return {
-      id: original?.id,
-      name: localTag.label,
-      url: original?.url,
-      sort_order: index,
-    }
-  })
-  emit("update:tags", reorderedTags)
-  isReorderModalOpen.value = false
+  const reorderedTags = localTags.value.map((localTag, index) => ({
+    name: localTag.label,
+    sort_order: index,
+  }));
+  emit("update:tags", reorderedTags);
+  isReorderModalOpen.value = false;
 }
 
 function updateShowContactForm(key: "socials" | "freelance", value: boolean) {

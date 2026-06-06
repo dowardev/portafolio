@@ -6,8 +6,7 @@
         menu-id="mainMenu"
         style="--side-max-width: 300px"
       >
-        <MenuComponent3 v-if="resolvedTheme === 'cyberpunk-light'" />
-        <MenuComponent v-else />
+        <MenuComponent></MenuComponent>
       </ion-menu>
 
       <ion-router-outlet id="main" :animated="!disableAnimation" />
@@ -41,12 +40,9 @@ import {
 import { closeOutline } from "ionicons/icons";
 import { computed, onMounted, ref, watch } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
-import MenuComponent3 from "./components/menu/MenuComponent3.vue";
 import { useRouter, useRoute } from "vue-router";
 import { Storage } from "@ionic/storage";
 import { wb } from "./main";
-import { useSystemStore } from "@/store/systemStore";
-import { Theme } from "@/utils/interfaces";
 
 // interface
 import { DesignMode } from "./utils/types";
@@ -54,9 +50,6 @@ import { DesignMode } from "./utils/types";
 // controllers
 import SystemController from "./controllers/systemController";
 const systemController = new SystemController();
-
-// store
-const systemStore = useSystemStore();
 
 // store
 const store = new Storage();
@@ -94,11 +87,6 @@ const disableAnimation = computed(() => {
   const wasOnTargetRoute = routes.includes(previousRoute.value);
 
   return isTargetRoute && wasOnTargetRoute;
-});
-
-const resolvedTheme = computed(() => {
-  const theme = systemStore.getThemeSelected() as Theme;
-  return systemController.resolveAutoTheme({ theme });
 });
 
 // mounted
