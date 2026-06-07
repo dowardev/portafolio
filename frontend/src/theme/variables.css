@@ -7,6 +7,7 @@ http://ionicframework.com/docs/theming/ */
 @import url("./nord.css");
 @import url("./catppuccin-latte.css");
 @import url("./catppuccin-macchiato.css");
+@import url("./cyberpunk-light.css");
 @import url("./styles/tippy-themes.css");
 @import url("./styles/scrollbar.css");
 
@@ -32,6 +33,18 @@ http://ionicframework.com/docs/theming/ */
 @font-face {
   font-family: "Comfortaa-Light";
   src: url("@/assets/fonts/comfortaa/Comfortaa-Light.ttf");
+}
+@font-face {
+  font-family: "Rubik-Regular";
+  src: url("@/assets/fonts/rubik/static/Rubik-Regular.ttf");
+}
+@font-face {
+  font-family: "Rubik-Medium";
+  src: url("@/assets/fonts/rubik/static/Rubik-Medium.ttf");
+}
+@font-face {
+  font-family: "Rubik-Bold";
+  src: url("@/assets/fonts/rubik/static/Rubik-Bold.ttf");
 }
 
 /* text */
