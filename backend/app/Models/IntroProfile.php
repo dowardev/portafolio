@@ -14,6 +14,7 @@ class IntroProfile extends Model
 
     protected $fillable = [
         'name',
+        'username',
         'description',
         'logo_url',
         'photo_url',

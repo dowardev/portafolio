@@ -21,6 +21,15 @@
       </ion-item>
 
       <ion-item lines="full">
+        <ion-label position="stacked">Username</ion-label>
+        <ion-input
+          :value="username"
+          placeholder="@usuario"
+          @ion-input="emit('update:username', $event.detail.value || '')"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="full">
         <ion-label position="stacked">Descripción</ion-label>
         <ion-textarea
           :value="description"
@@ -278,6 +287,7 @@ interface TagItem {
 
 const props = defineProps<{
   name: string;
+  username: string;
   description: string;
   tags: TagItem[];
   socials: SocialItem[];
@@ -286,6 +296,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   "update:name": [value: string];
+  "update:username": [value: string];
   "update:description": [value: string];
   "update:tags": [value: TagItem[]];
   "update:socials": [value: SocialItem[]];

@@ -58,11 +58,13 @@
           <InfoEditor
             ref="infoEditorRef"
             :name="formData.name"
+            :username="formData.username"
             :description="formData.description"
             :tags="formData.tags"
             :socials="formData.socials"
             :show-contact-form="formData.showContactForm"
             @update:name="formData.name = $event"
+            @update:username="formData.username = $event"
             @update:description="formData.description = $event"
             @update:tags="formData.tags = $event"
             @update:socials="formData.socials = $event"
@@ -115,6 +117,7 @@ const saving = ref(false);
 
 const formData = reactive({
   name: "",
+  username: "",
   tags: [] as TagItem[],
   description: "",
   socials: [] as Array<{ platform: string; url: string; iconName: string }>,
@@ -171,6 +174,7 @@ async function handleSave() {
     await introController.saveIntro(
       {
         name: formData.name,
+        username: formData.username,
         tags: formData.tags,
         description: formData.description,
         socials: formData.socials,
@@ -192,6 +196,7 @@ async function handleSave() {
 onMounted(async () => {
   const data = await introController.loadIntro();
   formData.name = data.name || "";
+  formData.username = data.username || "";
   formData.tags = data.tags || [];
   formData.description = data.description || "";
   formData.socials = data.socials || [];

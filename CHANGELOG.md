@@ -1,5 +1,34 @@
 # Changelog
 
+## 18.9.0 - 2026-06-07
+
+### Features
+
+- **Username field for intro profile**: Added a `username` field to the `IntroProfile` model, allowing users to display a custom username (e.g. @handle) in the portfolio header instead of the profile name.
+- `IntroProfile.php` — added `username` to `$fillable`
+- `IntroProfileController.php` — added `username` to create, read, and update operations
+- New migration: `2026_06_07_000000_add_username_to_intro_profiles_table.php` — adds nullable `username` column after `name`
+- `introController.ts` — added `username` to `IntroData` interface, load fallback, and save payload
+- `InfoEditor.vue` — added username input field with `@usuario` placeholder
+- `AdminInfoPage.vue` — wired username v-model binding and form data
+- `HomeTemplate3.vue` — header logo text now displays `username` (falls back to `name`), header logo image uses `logoUrl` from intro data with static asset fallback
+- `seedController.ts` — added default `@juanperez` username to seed data
+
+### Affected Files
+
+- Added:
+  - `backend/database/migrations/2026_06_07_000000_add_username_to_intro_profiles_table.php`
+- Modified:
+  - `backend/app/Http/Controllers/Admin/IntroProfileController.php`
+  - `backend/app/Models/IntroProfile.php`
+  - `frontend/src/controllers/introController.ts`
+  - `frontend/src/controllers/seedController.ts`
+  - `frontend/src/templates/HomeTemplate3.vue`
+  - `frontend/src/views/admin/editors/InfoEditor.vue`
+  - `frontend/src/views/admin/sections/AdminInfoPage.vue`
+
+---
+
 ## 18.8.1 - 2026-05-27
 
 ### Removed
