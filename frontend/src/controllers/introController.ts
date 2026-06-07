@@ -7,6 +7,7 @@ import type { HttpClient } from "@tu-org/sso-client";
 
 export interface IntroData {
   name: string | null;
+  username: string | null;
   tags: TagItem[];
   description: string | null;
   socials: Array<{ platform: string; url: string; iconName: string }>;
@@ -32,6 +33,7 @@ export default class IntroController {
       console.error("Error loading intro:", error);
       return {
         name: null,
+        username: null,
         tags: [],
         description: null,
         socials: [],
@@ -47,6 +49,7 @@ export default class IntroController {
       const formData = new FormData();
       formData.append("intro", JSON.stringify({
         name: intro.name,
+        username: intro.username,
         tags: intro.tags,
         description: intro.description,
         socials: intro.socials,

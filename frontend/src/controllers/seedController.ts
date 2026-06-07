@@ -182,6 +182,7 @@ export default class SeedController {
     try {
       await this.introController.saveIntro({
         name: "Juan Pérez",
+        username: "@juanperez",
         tags: this.generateTags(),
         description: "Desarrollador Full-Stack con más de 5 años de experiencia en el desarrollo de aplicaciones web y móviles. Especializado en Vue.js, Laravel y bases de datos relacionales.",
         socials: [

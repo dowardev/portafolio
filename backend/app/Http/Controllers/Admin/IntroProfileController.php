@@ -82,6 +82,7 @@ class IntroProfileController extends Controller
     {
         $introProfile = IntroProfile::firstOrCreate(['id' => 1], [
             'name' => null,
+            'username' => null,
             'description' => null,
             'logo_url' => null,
             'photo_url' => null,
@@ -109,6 +110,7 @@ class IntroProfileController extends Controller
 
         return response()->json([
             'name' => $introProfile->name,
+            'username' => $introProfile->username,
             'tags' => $tags,
             'description' => $introProfile->description,
             'socials' => $socials,
@@ -127,6 +129,7 @@ class IntroProfileController extends Controller
     {
         $introProfile = IntroProfile::firstOrCreate(['id' => 1], [
             'name' => null,
+            'username' => null,
             'description' => null,
             'logo_url' => null,
             'photo_url' => null,
@@ -167,6 +170,9 @@ class IntroProfileController extends Controller
 
         if (isset($intro['name'])) {
             $introProfile->name = $intro['name'];
+        }
+        if (array_key_exists('username', $intro)) {
+            $introProfile->username = $intro['username'];
         }
         if (isset($intro['description'])) {
             $introProfile->description = $intro['description'];
