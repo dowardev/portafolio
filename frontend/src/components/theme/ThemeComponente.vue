@@ -103,7 +103,7 @@ const systemController = new SystemController();
 // end main
 
 // vars and const
-const availableThemes: ConcreteTheme[] = ["light", "nord", "gruvbox", "catppuccin-latte", "catppuccin-macchiato"];
+const availableThemes: ConcreteTheme[] = ["light", "nord", "gruvbox", "catppuccin-latte", "catppuccin-macchiato", "cyberpunk-light"];
 const pageTitle = "Selector de tema";
 const currentTheme = computed(() => systemController.getTheme());
 // end vars and const
