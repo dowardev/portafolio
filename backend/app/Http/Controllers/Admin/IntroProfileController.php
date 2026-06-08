@@ -116,6 +116,8 @@ class IntroProfileController extends Controller
             'socials' => $socials,
             'logoUrl' => $introProfile->logo_url ? asset($introProfile->logo_url) : null,
             'photoUrl' => $introProfile->photo_url ? asset($introProfile->photo_url) : null,
+            'showFooter' => (bool) ($introProfile->show_footer ?? true),
+            'footerContent' => $introProfile->footer_content,
             'showContactForm' => is_array($introProfile->show_contact_form)
                 ? $introProfile->show_contact_form
                 : [
@@ -168,6 +170,24 @@ class IntroProfileController extends Controller
             $intro = json_decode($intro, true) ?? [];
         }
 
+        $showFooter = array_key_exists('showFooter', $intro) ? (bool) $intro['showFooter'] : $introProfile->show_footer;
+        $hasFooterContent = array_key_exists('footerContent', $intro);
+        $footerContent = $hasFooterContent ? $intro['footerContent'] : $introProfile->footer_content;
+
+        if ($hasFooterContent && $showFooter && empty(trim((string) ($footerContent ?? '')))) {
+            return response()->json([
+                'message' => 'El contenido del footer es requerido cuando el footer está visible',
+                'errors' => ['footerContent' => ['El contenido del footer es requerido']],
+            ], 422);
+        }
+
+        if ($hasFooterContent && mb_strlen((string) ($footerContent ?? '')) > 1000) {
+            return response()->json([
+                'message' => 'El contenido del footer no puede exceder 1000 caracteres',
+                'errors' => ['footerContent' => ['El contenido del footer no puede exceder 1000 caracteres']],
+            ], 422);
+        }
+
         if (isset($intro['name'])) {
             $introProfile->name = $intro['name'];
         }
@@ -181,6 +201,14 @@ class IntroProfileController extends Controller
             $introProfile->show_contact_form = $intro['showContactForm'];
         } elseif (isset($intro['show_contact_form'])) {
             $introProfile->show_contact_form = $intro['show_contact_form'];
+        }
+
+        if (isset($intro['showFooter'])) {
+            $introProfile->show_footer = $intro['showFooter'];
+        }
+
+        if (array_key_exists('footerContent', $intro)) {
+            $introProfile->footer_content = $intro['footerContent'];
         }
 
         $introProfile->save();

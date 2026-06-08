@@ -13,6 +13,8 @@ export interface IntroData {
   socials: Array<{ platform: string; url: string; iconName: string }>;
   logoUrl: string | null;
   photoUrl: string | null;
+  showFooter: boolean;
+  footerContent: string | null;
   showContactForm: {
     socials: boolean;
     freelance: boolean;
@@ -39,6 +41,8 @@ export default class IntroController {
         socials: [],
         logoUrl: null,
         photoUrl: null,
+        showFooter: true,
+        footerContent: null,
         showContactForm: { socials: false, freelance: false },
       };
     }
@@ -53,6 +57,8 @@ export default class IntroController {
         tags: intro.tags,
         description: intro.description,
         socials: intro.socials,
+        showFooter: intro.showFooter,
+        footerContent: intro.footerContent,
         showContactForm: intro.showContactForm,
       }));
 

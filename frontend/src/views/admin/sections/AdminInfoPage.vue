@@ -62,12 +62,16 @@
             :description="formData.description"
             :tags="formData.tags"
             :socials="formData.socials"
+            :show-footer="formData.showFooter"
+            :footer-content="formData.footerContent"
             :show-contact-form="formData.showContactForm"
             @update:name="formData.name = $event"
             @update:username="formData.username = $event"
             @update:description="formData.description = $event"
             @update:tags="formData.tags = $event"
             @update:socials="formData.socials = $event"
+            @update:show-footer="formData.showFooter = $event"
+            @update:footer-content="formData.footerContent = $event"
             @update:show-contact-form="formData.showContactForm = $event"
             @file-change="handleFileChange"
           />
@@ -123,6 +127,8 @@ const formData = reactive({
   socials: [] as Array<{ platform: string; url: string; iconName: string }>,
   logoUrl: null as string | null,
   photoUrl: null as string | null,
+  showFooter: true,
+  footerContent: null as string | null,
   showContactForm: { socials: false, freelance: false },
 });
 
@@ -180,6 +186,8 @@ async function handleSave() {
         socials: formData.socials,
         logoUrl: formData.logoUrl,
         photoUrl: formData.photoUrl,
+        showFooter: formData.showFooter,
+        footerContent: formData.footerContent,
         showContactForm: formData.showContactForm,
       },
       {
@@ -202,6 +210,8 @@ onMounted(async () => {
   formData.socials = data.socials || [];
   formData.logoUrl = data.logoUrl;
   formData.photoUrl = data.photoUrl;
+  formData.showFooter = data.showFooter ?? true;
+  formData.footerContent = data.footerContent ?? null;
   formData.showContactForm = data.showContactForm || { socials: false, freelance: false };
 });
 </script>
