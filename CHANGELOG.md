@@ -1,5 +1,36 @@
 # Changelog
 
+## 18.10.0 - 2026-06-08
+
+### Features
+
+- **Customizable footer for intro profile**: Added `show_footer` toggle and `footer_content` custom text fields to the intro profile, allowing users to control footer visibility and provide personalized footer text instead of the default copyright notice.
+
+  - Migration: `2026_06_07_000001_add_footer_to_intro_profiles_table.php` — adds `show_footer` (boolean, default true) and `footer_content` (text, nullable) columns
+  - `IntroProfile.php` — added `show_footer` and `footer_content` to `$fillable`, `show_footer` cast to boolean
+  - `IntroProfileController.php` — exposed `showFooter`/`footerContent` in API responses; added server-side validation (required when visible, max 1000 chars); wired save logic
+  - `introController.ts` — added `showFooter`/`footerContent` to `IntroData` interface and defaults
+  - `introStore.ts` — added `showFooter`/`footerContent` to store state and `setData`
+  - `InfoEditor.vue` — added toggle for "Mostrar footer" and textarea for custom content with validation rules
+  - `AdminInfoPage.vue` — wired new props and form bindings
+  - `HomeTemplate3.vue` — footer now conditionally renders based on `showFooter`; displays `footerContent` when available, falls back to default copyright
+
+### Affected Files
+
+- Added:
+  - `backend/database/migrations/2026_06_07_000001_add_footer_to_intro_profiles_table.php`
+- Modified:
+  - `.gitignore`
+  - `backend/app/Http/Controllers/Admin/IntroProfileController.php`
+  - `backend/app/Models/IntroProfile.php`
+  - `frontend/src/controllers/introController.ts`
+  - `frontend/src/store/introStore.ts`
+  - `frontend/src/templates/HomeTemplate3.vue`
+  - `frontend/src/views/admin/editors/InfoEditor.vue`
+  - `frontend/src/views/admin/sections/AdminInfoPage.vue`
+
+---
+
 ## 18.9.0 - 2026-06-07
 
 ### Features

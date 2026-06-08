@@ -14,4 +14,7 @@ node_modules/
 Thumbs.db
 vendor/
 /.worktrees
-/.opencode/
+
+.opencode/plans/
+.opencode/plans/skills
+.opencode/plans/summary.md

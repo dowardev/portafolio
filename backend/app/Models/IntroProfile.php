@@ -19,10 +19,13 @@ class IntroProfile extends Model
         'logo_url',
         'photo_url',
         'show_contact_form',
+        'show_footer',
+        'footer_content',
     ];
 
     protected $casts = [
         'show_contact_form' => 'boolean',
+        'show_footer' => 'boolean',
     ];
 
     public function tags(): BelongsToMany

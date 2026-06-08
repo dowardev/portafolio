@@ -141,9 +141,12 @@
 
       </ion-content>
 
-      <ion-footer class="ion-no-border template3-footer">
+      <ion-footer v-if="introData.showFooter" class="ion-no-border template3-footer">
         <div class="footer-inner">
-          <p class="footer-text">
+          <p class="footer-text" v-if="introData.footerContent">
+            {{ introData.footerContent }}
+          </p>
+          <p class="footer-text" v-else>
             &copy; {{ currentYear }} {{ name }}.
           </p>
         </div>
@@ -193,7 +196,7 @@ function onResize() {
   isMobile.value = window.innerWidth <= 768
 }
 
-const introData = computed(() => introController.data.value || { name: null, username: null, tags: [], description: null, socials: [], logoUrl: null, photoUrl: null, showContactForm: { socials: false, freelance: false } })
+const introData = computed(() => introController.data.value || { name: null, username: null, tags: [], description: null, socials: [], logoUrl: null, photoUrl: null, showFooter: true, footerContent: null, showContactForm: { socials: false, freelance: false } })
 const name = computed(() => introData.value.name || "...")
 const username = computed(() => introData.value.username || name.value)
 const roles = computed(() => (introData.value.tags || []).map(t => t.name))

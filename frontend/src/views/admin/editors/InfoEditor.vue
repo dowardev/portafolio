@@ -203,6 +203,32 @@
           "
         ></ion-toggle>
       </ion-item>
+
+      <ion-item lines="full">
+        <ion-label>Mostrar footer</ion-label>
+
+        <ion-toggle
+          slot="end"
+          :checked="showFooter"
+          @ion-change="emit('update:show-footer', $event.detail.checked)"
+        ></ion-toggle>
+      </ion-item>
+
+      <ion-item v-if="showFooter" lines="full">
+        <ion-label position="stacked">Contenido del footer</ion-label>
+        <ion-textarea
+          :value="footerContent"
+          :rows="3"
+          placeholder="Texto personalizado (reemplaza el © por defecto)"
+          :error-text="v$.footerContent.$errors[0]?.$message.toString()"
+          :class="{
+            'ion-invalid': v$.footerContent.$invalid && v$.footerContent.$dirty,
+            'ion-touched': v$.footerContent.$dirty,
+          }"
+          @ion-input="emit('update:footer-content', $event.detail.value || '')"
+          @ion-blur="v$.footerContent.$touch()"
+        ></ion-textarea>
+      </ion-item>
     </ion-card>
   </ion-list>
 
@@ -291,6 +317,8 @@ const props = defineProps<{
   description: string;
   tags: TagItem[];
   socials: SocialItem[];
+  showFooter: boolean;
+  footerContent: string | null;
   showContactForm: { socials: boolean; freelance: boolean };
 }>();
 
@@ -300,6 +328,8 @@ const emit = defineEmits<{
   "update:description": [value: string];
   "update:tags": [value: TagItem[]];
   "update:socials": [value: SocialItem[]];
+  "update:show-footer": [value: boolean];
+  "update:footer-content": [value: string];
   "update:show-contact-form": [value: { socials: boolean; freelance: boolean }];
   "file-change": [payload: { file: File; type: "logo" | "photo" }];
 }>();
@@ -391,12 +421,23 @@ const rules = {
       },
     }),
   },
+  footerContent: {
+    required: helpers.withMessage(
+      "El contenido del footer es requerido cuando está visible",
+      (val: string | null) => !props.showFooter || (val !== null && val.trim().length > 0),
+    ),
+    maxLength: helpers.withMessage(
+      "El contenido del footer no puede exceder 1000 caracteres",
+      maxLength(1000),
+    ),
+  },
 };
 
 const v$ = useVuelidate(rules, {
   name: computed(() => props.name),
   description: computed(() => props.description),
   tags: computed(() => props.tags),
+  footerContent: computed(() => props.footerContent),
 });
 
 function createLocalTags(): LocalTag[] {
