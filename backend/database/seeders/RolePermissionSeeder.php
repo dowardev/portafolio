@@ -34,12 +34,15 @@ class RolePermissionSeeder extends Seeder
             ['slug' => 'stacks.create', 'module' => 'stacks', 'action' => 'create', 'description' => 'Crear tecnologías del stack'],
             ['slug' => 'stacks.update', 'module' => 'stacks', 'action' => 'update', 'description' => 'Editar tecnologías del stack'],
             ['slug' => 'stacks.delete', 'module' => 'stacks', 'action' => 'delete', 'description' => 'Eliminar tecnologías del stack'],
-            ['slug' => 'skills-categories.create', 'module' => 'skills-categories', 'action' => 'create', 'description' => 'Crear categorías de skills'],
-            ['slug' => 'skills-categories.update', 'module' => 'skills-categories', 'action' => 'update', 'description' => 'Editar categorías de skills'],
-            ['slug' => 'skills-categories.delete', 'module' => 'skills-categories', 'action' => 'delete', 'description' => 'Eliminar categorías de skills'],
+            ['slug' => 'techs.create', 'module' => 'techs', 'action' => 'create', 'description' => 'Crear tecnologías'],
+            ['slug' => 'techs.update', 'module' => 'techs', 'action' => 'update', 'description' => 'Editar tecnologías'],
+            ['slug' => 'techs.delete', 'module' => 'techs', 'action' => 'delete', 'description' => 'Eliminar tecnologías'],
         ];
 
         Permission::upsert($permissions, ['slug'], ['module', 'action', 'description']);
+
+        // Limpiar permisos huérfanos del modelo anterior skills-categories
+        Permission::where('slug', 'like', 'skills-categories.%')->delete();
 
         // Poblar permisos por rol
         // Nota: Los permisos del admin se usan para la UI del panel de admin.
@@ -56,7 +59,7 @@ class RolePermissionSeeder extends Seeder
             'intro.update',
             'posts.create', 'posts.update', 'posts.delete',
             'projects.create', 'projects.update', 'projects.delete',
-            'skills-categories.create', 'skills-categories.update', 'skills-categories.delete',
+            'techs.create', 'techs.update', 'techs.delete',
             'stacks.create', 'stacks.update', 'stacks.delete',
         ];
 
@@ -72,7 +75,7 @@ class RolePermissionSeeder extends Seeder
             'intro.update',
             'posts.create', 'posts.update',
             'projects.create', 'projects.update',
-            'skills-categories.create', 'skills-categories.update',
+            'techs.create', 'techs.update',
             'stacks.create', 'stacks.update',
         ];
 

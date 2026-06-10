@@ -1,5 +1,135 @@
 # Changelog
 
+## 19.0.0 - 2026-06-09
+
+### Breaking Changes
+
+- **Unified skills editor with stack+tech model**: Replaced the old skills categories structure (many-to-many via pivot) with a unified stacks → techs (one-to-many) model. The `categories_skills` table has been renamed to `techs` with a required `stack_id` foreign key.
+
+  - Migration: `2026_06_08_000001_rename_categories_skills_to_techs.php` — renames table and adds `stack_id` column
+  - `TechController.php` — replaces `SkillsCategoryController` with tech CRUD under stacks (stack_id required)
+  - `Tech.php` — new model replacing `SkillsCategory` (belongs to Stack, belongs to Icon)
+  - `backend/routes/api.php` — consolidated stack/tech admin routes with permissions
+  - `StackController.php` — `show()` endpoint now returns stack with nested techs
+  - `Icon.php` — added `techs()` hasMany relationship
+  - `Stack.php` — added `techs()` hasMany relationship
+  - `RolePermissionSeeder.php` — cleaned orphan `skills-categories.*` permissions
+
+### Added
+
+- **Skills unified editor**: New `SkillsEditorPage.vue` that handles both create and edit modes via route params. Single stack form with inline tech management, per-element saving (no batch), and Vuelidate validation (stack name required, at least 1 tech required, tech names required).
+- **Skills list page**: New `SkillsListPage.vue` showing stacks with icon, name, tech count, edit/delete actions, and create button.
+- **Icon selector component**: New reusable `IconSelectorContent.vue` component extracted for use in the skills editor.
+- **Tech controller**: New `techController.ts` and `techStore.ts` for tech CRUD with Pinia state management.
+- **Stack `createStack` method**: Added to `stackController.ts` returning the created stack item with ID.
+- **Seed data integration**: `seedController.ts` now generates 3 stacks (Frontend, Backend, DevOps) with 3 techs each, properly associated via `stack_id`.
+
+### Changed
+
+- **Admin panel routes**: Replaced single `/admin-panel/skills` route with 3 routes: list (`SkillsListPage`), new (`SkillsNewPage`), and edit (`SkillsEditPage`).
+- **Admin menu**: Replaced separate "Stack" and "Techs" entries with single "Skills" entry in both menu and seed modal.
+- **Home templates**: `HomeTemplate2.vue` and `HomeTemplate3.vue` updated to consume stacks with nested techs from `GET /stacks`.
+- **Skills page**: Updated to load techs from stacks instead of duplicate data.
+- **Permissions**: Updated route guards to use specific permissions per action (create/update).
+
+### Removed
+
+- `SkillsCategoryController.php` — replaced by `TechController.php`
+- `SkillsCategory.php` — replaced by `Tech.php`
+- `skillsCategoriesController.ts` — replaced by `techController.ts`
+- `skillsCategoriesStore.ts` — replaced by `techStore.ts`
+- `SkillsCategoriesListPage.vue` — replaced by `SkillsListPage.vue`
+- `AdminStackPage.vue` — replaced by new skills editor
+- `StackEditor.vue` — replaced by inline tech management in `SkillsEditorPage.vue`
+
+### Affected Files
+
+- Added:
+  - `backend/app/Http/Controllers/Admin/TechController.php`
+  - `backend/app/Models/Tech.php`
+  - `backend/database/migrations/2026_06_08_000001_rename_categories_skills_to_techs.php`
+  - `frontend/src/components/common/IconSelectorContent.vue`
+  - `frontend/src/controllers/techController.ts`
+  - `frontend/src/store/techStore.ts`
+  - `frontend/src/views/admin/sections/SkillsEditorPage.vue`
+  - `frontend/src/views/admin/sections/SkillsListPage.vue`
+- Renamed:
+  - `SkillsCategoryController.php` → `TechController.php`
+  - `SkillsCategory.php` → `Tech.php`
+- Modified:
+  - `backend/app/Http/Controllers/Admin/StackController.php`
+  - `backend/app/Models/Icon.php`
+  - `backend/app/Models/Stack.php`
+  - `backend/database/seeders/RolePermissionSeeder.php`
+  - `backend/routes/api.php`
+  - `frontend/src/composables/usePermissionsGrouped.ts`
+  - `frontend/src/controllers/seedController.ts`
+  - `frontend/src/controllers/stackController.ts`
+  - `frontend/src/router/index.ts`
+  - `frontend/src/services/types.ts`
+  - `frontend/src/templates/HomeTemplate2.vue`
+  - `frontend/src/templates/HomeTemplate3.vue`
+  - `frontend/src/views/admin/AdminEditorPage.vue`
+  - `frontend/src/views/admin/AdminHomeMenu.vue`
+  - `frontend/src/views/admin/editors/ExperienceEditor.vue`
+  - `frontend/src/views/admin/editors/ProjectsEditor.vue`
+  - `frontend/src/views/presentation/categories/SkillsPage.vue`
+- Deleted:
+  - `frontend/src/controllers/skillsCategoriesController.ts`
+  - `frontend/src/store/skillsCategoriesStore.ts`
+  - `frontend/src/views/admin/editors/StackEditor.vue`
+  - `frontend/src/views/admin/sections/AdminStackPage.vue`
+  - `frontend/src/views/admin/sections/SkillsCategoriesListPage.vue`
+
+---
+
+## 19.1.0 - 2026-06-10
+
+### Bug Fixes
+
+- **StackController::show() response normalization**: Fixed inconsistent response format where `show()` returned the raw Eloquent model while `index()` returned a mapped array. Now both endpoints return the same structure with `id`, `name`, `iconName`, `sort_order`, and nested `techs` with `stackId`.
+- **Tech controller update validation**: Changed `stack_id` from `required` to `sometimes` on `update()` so techs can be edited without resending their stack association.
+- **Stale menu route references**: Replaced old `SkillsCategoriesListPage`/`EditPage`/`NewPage` route names with `SkillsListPage`/`NewPage`/`EditPage` in both `MenuComponent.vue` and `MenuComponent3.vue`.
+
+### Architecture
+
+- **SkillsEditorPage moved to controller-based API access**: Replaced all direct `getApiConnector()` calls in `SkillsEditorPage.vue` with `StackController` and `TechController` methods, aligning with the project convention that components must not call API services directly.
+- **seedController moved to controller-based API access**: Replaced `getApiConnector()` call in `seedSkills()` with `TechController.createTech()`, following the same architecture convention.
+
+### Added
+
+- **StackController.getStack()**: New method to load a single stack with techs by ID, returning a normalized `StackItem`.
+- **StackController.updateStackSave()**: New no-toast variant of update for use in composite save workflows.
+- **TechController.createTech()**: New method that creates a tech and returns the created entity, enabling use in seed and editor workflows.
+
+### Refactored
+
+- **TechItem type deduplication**: Removed duplicate `TechItem` interface from `techStore.ts` and consolidated to a single source of truth in `services/types.ts`. The store now re-exports the canonical type.
+
+### Cleanup
+
+- Removed unused `IonNote` import from `SkillsListPage.vue`.
+- Removed unused `StackResponse` interface, `watch` import, and `ref="nameInput"` from `SkillsEditorPage.vue`.
+- Removed unused `StackItem` type import from `seedController.ts`.
+- Code style cleanup in controller methods (semicolons, conditional `stack_id` guard, return `data.stack` directly).
+
+### Affected Files
+
+- Modified:
+  - `backend/app/Http/Controllers/Admin/StackController.php`
+  - `backend/app/Http/Controllers/Admin/TechController.php`
+  - `frontend/src/controllers/stackController.ts`
+  - `frontend/src/controllers/techController.ts`
+  - `frontend/src/controllers/seedController.ts`
+  - `frontend/src/store/techStore.ts`
+  - `frontend/src/views/admin/sections/SkillsEditorPage.vue`
+  - `frontend/src/views/admin/sections/SkillsListPage.vue`
+  - `frontend/src/views/presentation/categories/SkillsPage.vue`
+  - `frontend/src/components/menu/MenuComponent.vue`
+  - `frontend/src/components/menu/MenuComponent3.vue`
+
+---
+
 ## 18.10.0 - 2026-06-08
 
 ### Features

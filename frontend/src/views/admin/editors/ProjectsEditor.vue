@@ -5,7 +5,7 @@
         <ion-buttons slot="start">
           <ion-back-button
             text=""
-            default-href="/admin-panel/skills-categories"
+            default-href="/admin-panel/projects"
           ></ion-back-button>
         </ion-buttons>
 

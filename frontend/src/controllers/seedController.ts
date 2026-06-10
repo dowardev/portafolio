@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 import { ToastController } from "./toastController"
 import StackController from "./stackController"
-import SkillsCategoriesController from "./skillsCategoriesController"
+import TechController from "./techController"
 import ExperienceController from "./experienceController"
 import ProjectsController from "./projectsController"
 import CertificatesController from "./certificatesController"
@@ -9,12 +9,11 @@ import FreelancePlatformController from "./freelancePlatformController"
 import FreelanceCommentController from "./freelanceCommentController"
 import IntroController from "./introController"
 import SystemController from "./systemController"
-import type { StackItem, ExperienceItem, ProjectItem, CertificateItem, FreelancePlatform, FreelanceComment, TechnologyItem, TagItem } from "@/services/types"
+import type { ExperienceItem, ProjectItem, CertificateItem, FreelancePlatform, FreelanceComment, TechnologyItem, TagItem } from "@/services/types"
 
 export type SeedSection =
   | "info"
-  | "stack"
-  | "skills-categories"
+  | "skills"
   | "experience"
   | "projects"
   | "certificates"
@@ -47,7 +46,7 @@ export default class SeedController {
   private toastController = new ToastController()
   private systemController = new SystemController()
   private stackController = new StackController()
-  private skillsCategoriesController = new SkillsCategoriesController()
+  private techController = new TechController()
   private experienceController = new ExperienceController()
   private projectsController = new ProjectsController()
   private certificatesController = new CertificatesController()
@@ -65,24 +64,36 @@ export default class SeedController {
     return names.map((name) => ({ iconName: name.toLowerCase() }))
   }
 
-  private generateStacks(): StackItem[] {
-    const techs = [
-      "Vue.js", "React", "Laravel", "TypeScript", "Node.js",
+  private generateSkills(): Array<{ name: string; iconName: string; techs: Array<{ name: string; iconName: string }> }> {
+    return [
+      {
+        name: "Frontend",
+        iconName: "logoVue",
+        techs: [
+          { name: "Vue.js", iconName: "logoVue" },
+          { name: "React", iconName: "logoReact" },
+          { name: "TypeScript", iconName: "logoTypescript" },
+        ],
+      },
+      {
+        name: "Backend",
+        iconName: "logoLaravel",
+        techs: [
+          { name: "Laravel", iconName: "logoLaravel" },
+          { name: "Node.js", iconName: "logoNodejs" },
+          { name: "Python", iconName: "logoPython" },
+        ],
+      },
+      {
+        name: "DevOps",
+        iconName: "logoDocker",
+        techs: [
+          { name: "Docker", iconName: "logoDocker" },
+          { name: "Kubernetes", iconName: "logoKubernetes" },
+          { name: "PostgreSQL", iconName: "logoSql" },
+        ],
+      },
     ]
-    return techs.map((name) => ({
-      name,
-      iconName: name === "Vue.js" ? "logoVue" : name === "React" ? "logoReact" : name === "Laravel" ? "logoLaravel" : name === "TypeScript" ? "logoJavascript" : "logoNode",
-    }))
-  }
-
-  private generateSkillsCategories(): Array<{ name: string; iconName: string }> {
-    const categories = [
-      "Frontend", "Backend", "DevOps", "Bases de Datos", "Testing",
-    ]
-    return categories.map((name) => ({
-      name,
-      iconName: this.pickIcon(),
-    }))
   }
 
   private generateExperiences(): ExperienceItem[] {
@@ -207,32 +218,28 @@ export default class SeedController {
     if (!ok) throw new Error(`Error al crear ${label}`)
   }
 
-  private async seedStack(): Promise<SeedSectionInfo> {
-    const result: SeedSectionInfo = { section: "stack", label: "Stack", success: false, count: 0 }
+  private async seedSkills(): Promise<SeedSectionInfo> {
+    const result: SeedSectionInfo = { section: "skills", label: "Skills", success: false, count: 0 }
     try {
-      const stacks = this.generateStacks()
+      const stacks = this.generateSkills()
+      let totalCount = 0
       for (const stack of stacks) {
-        const ok = await this.stackController.addStack(stack)
-        this.assertSuccess({ ok, label: "stack" })
+        const created = await this.stackController.createStack({ name: stack.name, iconName: stack.iconName })
+        if (!created?.id) throw new Error("Error al crear stack")
+        for (const tech of stack.techs) {
+          const techCreated = await this.techController.createTech({
+            tech: {
+              name: tech.name,
+              iconName: tech.iconName,
+              stackId: Number(created.id),
+            },
+          })
+          if (!techCreated) throw new Error("Error al crear tech")
+          totalCount++
+        }
       }
       result.success = true
-      result.count = stacks.length
-    } catch {
-      result.success = false
-    }
-    return result
-  }
-
-  private async seedSkillsCategories(): Promise<SeedSectionInfo> {
-    const result: SeedSectionInfo = { section: "skills-categories", label: "Categorías", success: false, count: 0 }
-    try {
-      const categories = this.generateSkillsCategories()
-      for (const cat of categories) {
-        const ok = await this.skillsCategoriesController.addSkillsCategorySave(cat)
-        this.assertSuccess({ ok, label: "categoría" })
-      }
-      result.success = true
-      result.count = categories.length
+      result.count = totalCount
     } catch {
       result.success = false
     }
@@ -322,8 +329,7 @@ export default class SeedController {
   private getSeedMethod(section: SeedSection): () => Promise<SeedSectionInfo> {
     const map: Record<SeedSection, () => Promise<SeedSectionInfo>> = {
       "info": () => this.seedInfo(),
-      "stack": () => this.seedStack(),
-      "skills-categories": () => this.seedSkillsCategories(),
+      "skills": () => this.seedSkills(),
       "experience": () => this.seedExperience(),
       "projects": () => this.seedProjects(),
       "certificates": () => this.seedCertificates(),

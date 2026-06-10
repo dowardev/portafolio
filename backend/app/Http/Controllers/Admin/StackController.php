@@ -12,7 +12,7 @@ class StackController extends Controller
 {
     public function index()
     {
-        $stacks = Stack::with('icon')->orderBy('sort_order', 'asc')->get();
+        $stacks = Stack::with('icon', 'techs.icon')->orderBy('sort_order', 'asc')->get();
 
         $stacksData = $stacks->map(function ($stack) {
             return [
@@ -20,6 +20,14 @@ class StackController extends Controller
                 'name' => $stack->name,
                 'iconName' => $stack->icon?->name,
                 'sort_order' => $stack->sort_order,
+                'techs' => $stack->techs->sortBy('sort_order')->map(function ($tech) {
+                    return [
+                        'id' => $tech->id,
+                        'name' => $tech->name,
+                        'iconName' => $tech->icon?->name,
+                        'sort_order' => $tech->sort_order,
+                    ];
+                })->values()->all(),
             ];
         });
 
@@ -53,8 +61,25 @@ class StackController extends Controller
 
     public function show($id)
     {
-        $stack = Stack::with('icon')->findOrFail($id);
-        return response()->json(['stack' => $stack]);
+        $stack = Stack::with('icon', 'techs.icon')->findOrFail($id);
+
+        return response()->json([
+            'stack' => [
+                'id' => $stack->id,
+                'name' => $stack->name,
+                'iconName' => $stack->icon?->name,
+                'sort_order' => $stack->sort_order,
+                'techs' => $stack->techs->sortBy('sort_order')->map(function ($tech) {
+                    return [
+                        'id' => $tech->id,
+                        'name' => $tech->name,
+                        'iconName' => $tech->icon?->name,
+                        'stackId' => $tech->stack_id,
+                        'sort_order' => $tech->sort_order,
+                    ];
+                })->values()->all(),
+            ],
+        ]);
     }
 
     public function update(Request $request, $id)

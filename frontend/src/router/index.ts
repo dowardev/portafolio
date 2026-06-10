@@ -23,7 +23,8 @@ import ProjectsListPage from "@/views/admin/sections/ProjectsListPage.vue";
 import ProjectsEditor from "@/views/admin/editors/ProjectsEditor.vue";
 import ExperienceListPage from "@/views/admin/sections/ExperienceListPage.vue";
 import ExperienceEditor from "@/views/admin/editors/ExperienceEditor.vue";
-import SkillsCategoriesListPage from "@/views/admin/sections/SkillsCategoriesListPage.vue";
+import SkillsListPage from "@/views/admin/sections/SkillsListPage.vue";
+import SkillsEditorPage from "@/views/admin/sections/SkillsEditorPage.vue";
 import CertificatesListPage from "@/views/admin/sections/CertificatesListPage.vue";
 import CertificatesEditor from "@/views/admin/editors/CertificatesEditor.vue";
 import FreelancePlatformsListPage from "@/views/admin/sections/FreelancePlatformsListPage.vue";
@@ -72,7 +73,9 @@ const routeGuards: Record<string, RouteGuard> = {
   ExperienceListPage: { permissions: ['experiences.create', 'experiences.update', 'experiences.delete'] },
   ExperienceEditPage: { permissions: ['experiences.update'] },
   ExperienceNewPage: { permissions: ['experiences.create'] },
-  SkillsCategoriesListPage: { permissions: ['skills-categories.create', 'skills-categories.update', 'skills-categories.delete'] },
+  SkillsListPage: { permissions: ['stacks.create', 'stacks.update', 'stacks.delete', 'techs.create', 'techs.update', 'techs.delete'] },
+  SkillsNewPage: { permissions: ['stacks.create', 'techs.create'] },
+  SkillsEditPage: { permissions: ['stacks.update', 'techs.update'] },
   CertificatesListPage: { permissions: ['certificates.create', 'certificates.update', 'certificates.delete'] },
   CertificateEditPage: { permissions: ['certificates.update'] },
   CertificateNewPage: { permissions: ['certificates.create'] },
@@ -223,9 +226,19 @@ const routes: Array<RouteRecordRaw> = [
     component: ExperienceEditor,
   },
   {
-    path: "/admin-panel/skills-categories",
-    name: "SkillsCategoriesListPage",
-    component: SkillsCategoriesListPage,
+    path: "/admin-panel/skills",
+    name: "SkillsListPage",
+    component: SkillsListPage,
+  },
+  {
+    path: "/admin-panel/skills/new",
+    name: "SkillsNewPage",
+    component: SkillsEditorPage,
+  },
+  {
+    path: "/admin-panel/skills/edit/:id",
+    name: "SkillsEditPage",
+    component: SkillsEditorPage,
   },
   {
     path: "/admin-panel/certificates",
@@ -313,9 +326,9 @@ const adminRoutes = [
   "ExperienceListPage",
   "ExperienceEditPage",
   "ExperienceNewPage",
-  "SkillsCategoriesListPage",
-  "SkillsCategoriesEditPage",
-  "SkillsCategoriesNewPage",
+  "SkillsListPage",
+  "SkillsNewPage",
+  "SkillsEditPage",
   "CertificatesListPage",
   "CertificateEditPage",
   "CertificateNewPage",

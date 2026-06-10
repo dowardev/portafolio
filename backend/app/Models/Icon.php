@@ -30,4 +30,9 @@ class Icon extends Model
     {
         return $this->hasMany(Social::class);
     }
+
+    public function techs(): HasMany
+    {
+        return $this->hasMany(Tech::class);
+    }
 }

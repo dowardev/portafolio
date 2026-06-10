@@ -397,7 +397,6 @@ import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import IntroController from "@/controllers/introController";
 import ProjectsController from "@/controllers/projectsController";
 import ExperienceController from "@/controllers/experienceController";
-import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
 import StackController from "@/controllers/stackController";
 import FreelancePlatformController from "@/controllers/freelancePlatformController";
 import FreelanceCommentController from "@/controllers/freelanceCommentController";
@@ -419,7 +418,6 @@ const isIOS = isPlatform("ios");
 const introController = new IntroController();
 const projectsController = new ProjectsController();
 const experienceController = new ExperienceController();
-const skillsCategoriesController = new SkillsCategoriesController();
 const stackController = new StackController();
 const freelancePlatformController = new FreelancePlatformController();
 const freelanceCommentController = new FreelanceCommentController();
@@ -478,15 +476,22 @@ watch(fullGreeting, (newVal) => {
   }
 });
 
-const categories = computed(() => skillsCategoriesController.skillsCategories.value);
+const stacks = computed(() => stackController.stack.value);
+
 
 const backgroundTechs = computed(() => {
   const techs: { name: string }[] = [];
-  categories.value.forEach((cat) => {
-    if (cat.iconName) {
-      const label = getIconByName(cat.iconName)?.label || cat.iconName;
+  stacks.value.forEach((stack) => {
+    if (stack.iconName) {
+      const label = getIconByName(stack.iconName)?.label || stack.iconName;
       techs.push({ name: label });
     }
+    (stack.techs || []).forEach((tech) => {
+      if (tech.iconName) {
+        const label = getIconByName(tech.iconName)?.label || tech.iconName;
+        techs.push({ name: label });
+      }
+    });
   });
   return techs;
 });
@@ -610,7 +615,6 @@ onMounted(async () => {
     introController.loadIntro(),
     projectsController.loadPublicProjects(),
     experienceController.loadPublicExperiences(),
-    skillsCategoriesController.loadSkillsCategories(),
     stackController.loadStack(),
     freelancePlatformController.loadFreelancePlatforms(),
     freelanceCommentController.loadFreelanceComments(),

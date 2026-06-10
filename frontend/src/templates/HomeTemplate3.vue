@@ -88,7 +88,7 @@
     </div>
 
     <SkillsSection3
-      :categories="mockSkillCategories"
+      :categories="skillCategories"
     />
   </div>
 </section>
@@ -143,10 +143,10 @@
 
       <ion-footer v-if="introData.showFooter" class="ion-no-border template3-footer">
         <div class="footer-inner">
-          <p class="footer-text" v-if="introData.footerContent">
+          <p v-if="introData.footerContent" class="footer-text">
             {{ introData.footerContent }}
           </p>
-          <p class="footer-text" v-else>
+          <p v-else class="footer-text">
             &copy; {{ currentYear }} {{ name }}.
           </p>
         </div>
@@ -177,6 +177,7 @@ import ProjectsController from "@/controllers/projectsController"
 import ExperienceController from "@/controllers/experienceController"
 import FreelancePlatformController from "@/controllers/freelancePlatformController"
 import FreelanceCommentController from "@/controllers/freelanceCommentController"
+import StackController from "@/controllers/stackController"
 import { getIconByName } from "@/composables/iconsIndex"
 
 import HeroSection3 from "@/views/presentation/sections/HeroSection3.vue"
@@ -188,6 +189,7 @@ const projectsController = new ProjectsController()
 const experienceController = new ExperienceController()
 const freelancePlatformController = new FreelancePlatformController()
 const freelanceCommentController = new FreelanceCommentController()
+const stackController = new StackController()
 
 const currentYear = computed(() => new Date().getFullYear())
 
@@ -248,23 +250,13 @@ const commentCards = computed(() =>
   }))
 )
 
-const mockSkillCategories = [
-  {
-    iconName: "logoVue",
-    name: "Frontend",
-    skills: ["Vue", "React", "TypeScript", "Sass", "Ionic", "CSS", "HTML"],
-  },
-  {
-    iconName: "logoLaravel",
-    name: "Backend",
-    skills: ["Node", "Python", "Laravel", "Firebase"],
-  },
-  {
-    iconName: "logoDocker",
-    name: "DevOps & Tools",
-    skills: ["Docker", "AWS", "Git"],
-  },
-]
+const skillCategories = computed(() =>
+  (stackController.stack.value || []).map((stack) => ({
+    iconName: stack.iconName,
+    name: stack.name,
+    skills: (stack.techs || []).map((tech) => tech.name),
+  }))
+)
 
 const navItems = [
   { label: "PROYECTOS", href: "#projects" },
@@ -289,6 +281,7 @@ onMounted(async () => {
     experienceController.loadPublicExperiences(),
     freelancePlatformController.loadFreelancePlatforms(),
     freelanceCommentController.loadFreelanceComments(),
+    stackController.loadStack(),
   ])
 })
 

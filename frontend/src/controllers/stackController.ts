@@ -3,7 +3,6 @@ import { storeToRefs } from "pinia";
 import { ToastController } from "./toastController";
 import { getApiConnector } from "@/apiConnector";
 import type { StackItem } from "@/services/types";
-import type { HttpClient } from "@tu-org/sso-client";
 
 interface StacksResponse {
   stacks: StackItem[];
@@ -51,6 +50,17 @@ export default class StackController {
     }
   }
 
+  async getStack(params: { id: string }): Promise<StackItem | null> {
+    const { id } = params;
+    try {
+      const data = await getApiConnector().get<StackResponse>(`stacks/${id}`);
+      return data.stack;
+    } catch (error) {
+      console.error("Error loading stack:", error);
+      return null;
+    }
+  }
+
   get stack() {
     return storeToRefs(this.stackStore).stack;
   }
@@ -85,6 +95,21 @@ export default class StackController {
     }
   }
 
+  async createStack(stack: StackItem): Promise<StackItem | null> {
+    try {
+      const payload: Record<string, unknown> = {
+        name: stack.name,
+        icon_name: stack.iconName || null,
+      };
+      const response = await getApiConnector().post<StackResponse>("admin/stacks", payload);
+      await this.reloadStack();
+      return response.stack;
+    } catch (error) {
+      console.error("Error creating stack:", error);
+      return null;
+    }
+  }
+
   async deleteStack(id: string): Promise<boolean> {
     try {
       await getApiConnector().delete(`admin/stacks/${id}`);
@@ -106,6 +131,21 @@ export default class StackController {
         color: "danger",
       });
       await toast.present();
+      return false;
+    }
+  }
+
+  async updateStackSave(params: { id: string; stack: StackItem }): Promise<boolean> {
+    const { id, stack } = params;
+    try {
+      const payload: Record<string, unknown> = {
+        name: stack.name,
+        icon_name: stack.iconName || null,
+      };
+      await getApiConnector().post<StackResponse>(`admin/stacks/${id}`, payload);
+      return true;
+    } catch (error) {
+      console.error("Error updating stack:", error);
       return false;
     }
   }

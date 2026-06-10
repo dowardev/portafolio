@@ -145,7 +145,6 @@ import type { SeedSection } from "@/controllers/seedController";
 import {
   personOutline,
   codeSlashOutline,
-  barChartOutline,
   briefcaseOutline,
   folderOutline,
   ribbonOutline,
@@ -175,8 +174,7 @@ interface SeedSectionItem {
 
 const seedSections: SeedSectionItem[] = [
   { id: "info", label: "Info", icon: personOutline, color: "#5B8DEF" },
-  { id: "stack", label: "Stack", icon: codeSlashOutline, color: "#4ECB71" },
-  { id: "skills-categories", label: "Categorías", icon: barChartOutline, color: "#F5A623" },
+  { id: "skills", label: "Skills", icon: codeSlashOutline, color: "#4ECB71" },
   { id: "experience", label: "Experiencia", icon: briefcaseOutline, color: "#2DD4BF" },
   { id: "projects", label: "Proyectos", icon: folderOutline, color: "#8B5CF6" },
   { id: "certificates", label: "Certificados", icon: ribbonOutline, color: "#D4A843" },
@@ -241,20 +239,12 @@ const menuItems: MenuItem[] = [
     permissions: ['intro.update'],
   },
   {
-    section: "stack",
-    label: "Stack",
+    section: "skills",
+    label: "Skills",
     icon: codeSlashOutline,
-    route: "/admin-panel/stack",
+    route: "/admin-panel/skills",
     color: "#4ECB71",
-    permissions: ['stacks.create', 'stacks.update', 'stacks.delete'],
-  },
-  {
-    section: "categories",
-    label: "Categorías",
-    icon: barChartOutline,
-    route: "/admin-panel/skills-categories",
-    color: "#F5A623",
-    permissions: ['skills-categories.create', 'skills-categories.update', 'skills-categories.delete'],
+    permissions: ['stacks.create', 'stacks.update', 'stacks.delete', 'techs.create', 'techs.update', 'techs.delete'],
   },
   {
     section: "experience",
