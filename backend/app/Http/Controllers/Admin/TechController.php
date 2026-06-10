@@ -3,40 +3,42 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\SkillsCategory;
+use App\Models\Tech;
 use App\Models\Icon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SkillsCategoryController extends Controller
+class TechController extends Controller
 {
     public function index()
     {
-        $categories = SkillsCategory::with('icon')->get();
+        $techs = Tech::with('icon', 'stack')->orderBy('sort_order', 'asc')->get();
 
-        $skillsCategoriesData = $categories->map(function ($category) {
+        $techsData = $techs->map(function ($tech) {
             return [
-                'id' => $category->id,
-                'name' => $category->name,
-                'sort_order' => $category->sort_order,
-                'iconName' => $category->icon?->name,
+                'id' => $tech->id,
+                'name' => $tech->name,
+                'iconName' => $tech->icon?->name,
+                'stackId' => $tech->stack_id,
+                'sort_order' => $tech->sort_order,
             ];
         });
 
-        return response()->json(['skillsCategories' => $skillsCategoriesData]);
+        return response()->json(['techs' => $techsData]);
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
+            'stack_id' => 'required|exists:stacks,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $data = $request->only(['name', 'sort_order']);
+        $data = $request->only(['name', 'sort_order', 'stack_id']);
 
         if ($request->filled('icon_name')) {
             $icon = Icon::where('name', $request->icon_name)->first();
@@ -46,23 +48,24 @@ class SkillsCategoryController extends Controller
             $data['icon_id'] = $icon->id;
         }
 
-        $category = SkillsCategory::create($data);
+        $tech = Tech::create($data);
 
-        return response()->json(['skillsCategory' => $category->load('icon')]);
+        return response()->json(['tech' => $tech->load('icon', 'stack')]);
     }
 
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
+            'stack_id' => 'sometimes|exists:stacks,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
 
-        $category = SkillsCategory::findOrFail($id);
-        $data = $request->only(['name', 'sort_order']);
+        $tech = Tech::findOrFail($id);
+        $data = $request->only(['name', 'sort_order', 'stack_id']);
 
         if ($request->filled('icon_name')) {
             $icon = Icon::where('name', $request->icon_name)->first();
@@ -74,15 +77,15 @@ class SkillsCategoryController extends Controller
             $data['icon_id'] = null;
         }
 
-        $category->update($data);
+        $tech->update($data);
 
-        return response()->json(['skillsCategory' => $category->load('icon')]);
+        return response()->json(['tech' => $tech->load('icon', 'stack')]);
     }
 
     public function destroy($id)
     {
-        $category = SkillsCategory::findOrFail($id);
-        $category->delete();
+        $tech = Tech::findOrFail($id);
+        $tech->delete();
 
         return response()->json(['success' => true]);
     }

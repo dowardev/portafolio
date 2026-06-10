@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue"
 import IconRenderer from "@/components/IconRenderer.vue"
 
 interface SkillsCategory {
@@ -38,7 +39,7 @@ interface SkillsSection3Props {
 
 const props = defineProps<SkillsSection3Props>()
 
-const categories = props.categories ?? []
+const categories = computed(() => props.categories ?? [])
 </script>
 
 <style scoped>

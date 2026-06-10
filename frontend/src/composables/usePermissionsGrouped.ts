@@ -27,7 +27,7 @@ export function usePermissionsGrouped() {
       freelance: 'Plataformas Freelance',
       'freelance-comments': 'Comentarios Freelance',
       stacks: 'Stack Tecnológico',
-      'skills-categories': 'Categorías de Skills'
+      'techs': 'Tecnologías'
     }
 
     return Object.entries(groups).map(([module, perms]) => ({
@@ -56,7 +56,7 @@ export function usePermissionsGrouped() {
       freelance: 'plataformas freelance',
       'freelance-comments': 'comentarios freelance',
       stacks: 'tecnologías del stack',
-      'skills-categories': 'categorías de skills'
+      'techs': 'tecnologías'
     }
     const module = moduleLabels[permission.module] || permission.module
     return `${action} ${module}`

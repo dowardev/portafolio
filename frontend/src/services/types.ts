@@ -18,6 +18,16 @@ export interface StackItem {
   id?: string;
   name: string;
   iconName: string;
+  sort_order?: number;
+  techs?: TechItem[];
+}
+
+export interface TechItem {
+  id?: number;
+  name: string;
+  iconName?: string;
+  stackId?: number | null;
+  sort_order?: number;
 }
 
 export interface SkillCategory {

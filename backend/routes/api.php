@@ -11,7 +11,7 @@ use App\Http\Controllers\Admin\FreelancePlatformController;
 use App\Http\Controllers\Admin\FreelanceCommentController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\StackController;
-use App\Http\Controllers\Admin\SkillsCategoryController;
+use App\Http\Controllers\Admin\TechController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Middleware\Cors;
 use Illuminate\Support\Facades\Route;
@@ -41,7 +41,7 @@ Route::middleware([Cors::class])->group(function () {
   Route::get("freelance-platforms", [FreelancePlatformController::class, "index"]);
   Route::get("freelance-comments", [FreelanceCommentController::class, "index"]);
   Route::get("stacks", [StackController::class, "index"]);
-  Route::get("skills-categories", [SkillsCategoryController::class, "index"]);
+  Route::get("techs", [TechController::class, "index"]);
   Route::get("posts/{date}/{filter}", [PostsController::class, "getPosts"]);
   Route::get("post-dates", [PostsController::class, "getPostsDates"]);
   Route::get("post/{id}", [PostsController::class, "getPost"]);
@@ -103,6 +103,6 @@ Route::middleware([Cors::class, 'sso.auth', 'permission:stacks.create'])->post("
 Route::middleware([Cors::class, 'sso.auth', 'permission:stacks.update'])->post("admin/stacks/{id}", [StackController::class, "update"]);
 Route::middleware([Cors::class, 'sso.auth', 'permission:stacks.delete'])->delete("admin/stacks/{id}", [StackController::class, "destroy"]);
 
-Route::middleware([Cors::class, 'sso.auth', 'permission:skills-categories.create'])->post("admin/skills-categories", [SkillsCategoryController::class, "store"]);
-Route::middleware([Cors::class, 'sso.auth', 'permission:skills-categories.update'])->post("admin/skills-categories/{id}", [SkillsCategoryController::class, "update"]);
-Route::middleware([Cors::class, 'sso.auth', 'permission:skills-categories.delete'])->delete("admin/skills-categories/{id}", [SkillsCategoryController::class, "destroy"]);
+Route::middleware([Cors::class, 'sso.auth', 'permission:techs.create'])->post("admin/techs", [TechController::class, "store"]);
+Route::middleware([Cors::class, 'sso.auth', 'permission:techs.update'])->post("admin/techs/{id}", [TechController::class, "update"]);
+Route::middleware([Cors::class, 'sso.auth', 'permission:techs.delete'])->delete("admin/techs/{id}", [TechController::class, "destroy"]);

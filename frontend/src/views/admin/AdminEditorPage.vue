@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <AdminInfoPage v-if="$route.params.section === 'info'" />
-    <AdminStackPage v-if="$route.params.section === 'stack'" />
+    <SkillsEditorPage v-if="$route.params.section === 'skills'" />
   </ion-page>
 </template>
 
@@ -9,5 +9,5 @@
 import { IonPage } from "@ionic/vue";
 
 import AdminInfoPage from "./sections/AdminInfoPage.vue";
-import AdminStackPage from "./sections/AdminStackPage.vue";
+import SkillsEditorPage from "./sections/SkillsEditorPage.vue";
 </script>

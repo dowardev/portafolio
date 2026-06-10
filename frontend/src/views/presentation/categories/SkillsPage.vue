@@ -94,9 +94,9 @@ import {
 import { ref, onMounted } from "vue";
 import { Lineicons } from "@lineiconshq/vue-lineicons";
 import type { StackItem } from "@/services/types";
+import type { TechItem } from "@/services/types";
 import StackController from "@/controllers/stackController";
-import SkillsCategoriesController from "@/controllers/skillsCategoriesController";
-import type { SkillsCategoryItem } from "@/store/skillsCategoriesStore";
+import TechController from "@/controllers/techController";
 import {
   getIonIconSvg,
   getLineIconComponent,
@@ -104,19 +104,19 @@ import {
 } from "@/composables/iconsIndex";
 
 const stackController = new StackController();
-const skillsCategoriesController = new SkillsCategoriesController();
+const techController = new TechController();
 
 const stackItems = ref<StackItem[]>([]);
-const skillCategories = ref<SkillsCategoryItem[]>([]);
+const skillCategories = ref<TechItem[]>([]);
 
 onMounted(async () => {
   try {
-    const [stackData, skillsData] = await Promise.all([
+    const [stackData, techData] = await Promise.all([
       stackController.loadStack(),
-      skillsCategoriesController.loadSkillsCategories(),
+      techController.loadTechs(),
     ]);
     stackItems.value = stackData || [];
-    skillCategories.value = skillsData || [];
+    skillCategories.value = techData || [];
   } catch (error) {
     console.error("Error loading categories data:", error);
   }
