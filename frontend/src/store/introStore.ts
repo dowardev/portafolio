@@ -20,6 +20,7 @@ export const useIntroStore = defineStore("intro", () => {
 
   const data = reactive({
     name: "",
+    username: null as string | null,
     tags: [] as TagItem[],
     description: "",
     socials: [] as SocialItem[],
@@ -32,6 +33,7 @@ export const useIntroStore = defineStore("intro", () => {
 
   function setData(newData: {
     name: string | null;
+    username: string | null;
     tags: TagItem[];
     description: string | null;
     socials: SocialItem[];
@@ -42,6 +44,7 @@ export const useIntroStore = defineStore("intro", () => {
     showContactForm: { socials: boolean; freelance: boolean };
   }) {
     data.name = newData.name || "";
+    data.username = newData.username ?? null;
     data.tags = newData.tags || [];
     data.description = newData.description || "";
     data.socials = newData.socials || [];

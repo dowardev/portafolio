@@ -12,7 +12,6 @@
 </ion-header>
 
 <ion-content>
-  <!-- theme selector -->
   <ion-row>
     <ion-col size="12">
       <ion-card>
@@ -20,45 +19,28 @@
           <ion-select
             label="Tema"
             interface="popover"
-            :value="currentTheme.selected"
-            @ion-change="onMainThemeChange({ event: $event })"
+            :value="currentTemplate"
+            @ion-change="onTemplateChange({ event: $event })"
           >
-            <ion-select-option value="auto">Automático</ion-select-option>
-            <ion-select-option
-              v-for="themeName in availableThemes"
-              :key="themeName"
-              :value="themeName"
-            >{{ themeName }}</ion-select-option>
+            <ion-select-option value="template1">Template 1</ion-select-option>
+            <ion-select-option value="template2">Template 2</ion-select-option>
+            <ion-select-option value="template3">Template 3</ion-select-option>
           </ion-select>
         </ion-item>
 
-        <ion-item v-if="currentTheme.selected === 'auto'" class="transparent">
+        <ion-item class="transparent">
           <ion-select
-            label="Tema claro"
+            label="Variante"
             interface="popover"
-            :value="currentTheme.options?.lightTheme ?? 'light'"
-            @ion-change="onLightThemeChange({ event: $event })"
+            :value="currentVariant"
+            :disabled="currentTemplate !== 'template2'"
+            @ion-change="onVariantChange({ event: $event })"
           >
             <ion-select-option
-              v-for="themeName in availableThemes"
-              :key="themeName"
-              :value="themeName"
-            >{{ themeName }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item v-if="currentTheme.selected === 'auto'" class="transparent">
-          <ion-select
-            label="Tema oscuro"
-            interface="popover"
-            :value="currentTheme.options?.darkTheme ?? 'catppuccin-macchiato'"
-            @ion-change="onDarkThemeChange({ event: $event })"
-          >
-            <ion-select-option
-              v-for="themeName in availableThemes"
-              :key="themeName"
-              :value="themeName"
-            >{{ themeName }}</ion-select-option>
+              v-for="v in availableVariants"
+              :key="v"
+              :value="v"
+            >{{ v }}</ion-select-option>
           </ion-select>
         </ion-item>
       </ion-card>
@@ -68,7 +50,6 @@
 </template>
 
 <script setup lang="ts">
-// imports
 import {
   IonButton,
   IonButtons,
@@ -86,79 +67,58 @@ import {
   modalController,
 } from "@ionic/vue";
 import { chevronBackOutline } from "ionicons/icons";
-import { ConcreteTheme } from "../../services/types";
+import { ConcreteTheme, HomeTemplate } from "@/utils/types";
 import { Theme } from "@/utils/interfaces";
-import { computed } from "vue";
-// end imports
+import { computed, ref } from "vue";
 
-// controllers
 import SystemController from "@/controllers/systemController";
 const systemController = new SystemController();
-// end controllers
 
-// interface and types imports
-// end interface and types imports
-
-// main
-// end main
-
-// vars and const
-const availableThemes: ConcreteTheme[] = ["light", "nord", "gruvbox", "catppuccin-latte", "catppuccin-macchiato", "cyberpunk-light"];
+const availableVariants: ConcreteTheme[] = ["light", "nord", "gruvbox", "catppuccin-latte", "catppuccin-macchiato"];
 const pageTitle = "Selector de tema";
 const currentTheme = computed(() => systemController.getTheme());
-// end vars and const
+const currentTemplate = computed(() => currentTheme.value.template);
+const currentVariant = computed(() => currentTheme.value.variant);
 
-// watch
-// end
+const savedVariant = ref<ConcreteTheme>(currentTheme.value.variant);
 
-// computed
-// end computed
-
-// onmounted
-// end onmounted
-
-// functions
 function closeModal(): void {
   modalController.dismiss();
 }
 
-async function onMainThemeChange(params: { event: CustomEvent }): Promise<void> {
+async function onTemplateChange(params: { event: CustomEvent }): Promise<void> {
   const { event } = params;
-  const value = event.detail.value;
-  const oldTheme = JSON.parse(
-    JSON.stringify(systemController.getTheme()),
-  ) as Theme;
+  const template = event.detail.value as HomeTemplate;
+  const oldTheme = JSON.parse(JSON.stringify(currentTheme.value)) as Theme;
+
+  let variant = oldTheme.variant;
+  if (template !== "template2") {
+    savedVariant.value = variant;
+    variant = "light";
+  } else {
+    variant = savedVariant.value !== "light" ? savedVariant.value : variant;
+  }
+
   const newTheme: Theme = {
     ...oldTheme,
-    selected: value,
+    selected: variant,
+    template,
+    variant,
   };
   await systemController.changeTheme({ newTheme, oldTheme });
 }
 
-async function onLightThemeChange(params: { event: CustomEvent }): Promise<void> {
+async function onVariantChange(params: { event: CustomEvent }): Promise<void> {
   const { event } = params;
-  const value = event.detail.value;
-  const oldTheme = JSON.parse(
-    JSON.stringify(systemController.getTheme()),
-  ) as Theme;
-  const newTheme: Theme = {
-    ...oldTheme,
-    options: { ...oldTheme.options, lightTheme: value },
-  };
-  await systemController.changeTheme({ newTheme, oldTheme });
-}
+  const variant = event.detail.value as ConcreteTheme;
+  const oldTheme = JSON.parse(JSON.stringify(currentTheme.value)) as Theme;
+  savedVariant.value = variant;
 
-async function onDarkThemeChange(params: { event: CustomEvent }): Promise<void> {
-  const { event } = params;
-  const value = event.detail.value;
-  const oldTheme = JSON.parse(
-    JSON.stringify(systemController.getTheme()),
-  ) as Theme;
   const newTheme: Theme = {
     ...oldTheme,
-    options: { ...oldTheme.options, darkTheme: value },
+    selected: variant,
+    variant,
   };
   await systemController.changeTheme({ newTheme, oldTheme });
 }
-// end functions
 </script>

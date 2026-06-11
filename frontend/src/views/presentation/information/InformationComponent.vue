@@ -3,43 +3,43 @@
     <ion-col class="info-sec" size-xs="12" size-md="6" size-xl="6">
       <ion-row>
         <ion-col :class="{ center: screenSize.preset == 'xs' }">
-          <h1 v-if="homeData.name">{{ homeData.name }}</h1>
+          <h1 v-if="introData?.name">{{ introData.name }}</h1>
         </ion-col>
       </ion-row>
 
-      <ion-row v-if="homeData.tags && homeData.tags.length > 0">
+      <ion-row v-if="introData?.tags && introData.tags.length > 0">
         <ion-col>
           <div :class="{ center: screenSize.preset == 'xs' }">
             <ion-chip
-              v-for="(tag, index) in homeData.tags"
-              :key="index"
+              v-for="tag in introData.tags"
+              :key="tag.id || tag.name"
               color="primary"
-              >{{ tag }}</ion-chip
+              >{{ tag.name }}</ion-chip
             >
           </div>
         </ion-col>
       </ion-row>
 
-      <ion-row v-if="homeData.description">
+      <ion-row v-if="introData?.description">
         <ion-col size-xs="12">
           <p
             :style="{
               textAlign: screenSize.preset == 'xs' ? 'center' : 'initial',
             }"
           >
-            {{ homeData.description }}
+            {{ introData.description }}
           </p>
         </ion-col>
       </ion-row>
 
       <ion-row
-        v-if="homeData.socials && homeData.socials.length > 0"
+        v-if="introData?.socials && introData.socials.length > 0"
         class="center"
       >
         <ion-col :class="{ center: screenSize.preset == 'xs' }">
           <div class="social-buttons">
             <ion-button
-              v-for="social in homeData.socials"
+              v-for="social in introData.socials"
               :key="social.platform"
               :href="social.url"
               target="_blank"
@@ -53,7 +53,7 @@
 
             <!-- form contact -->
             <ion-button
-              v-if="homeData.showContactForm?.socials"
+              v-if="introData?.showContactForm?.socials"
               fill="clear"
               @click="openContactModal()"
             >
@@ -72,15 +72,15 @@
       style="display: flex"
     >
       <div>
-        <ion-row v-if="homeData.photoUrl">
+        <ion-row v-if="introData?.photoUrl">
           <ion-col style="display: flex" class="ion-justify-content-center">
-            <img :src="homeData.photoUrl" alt="" class="img-perfil" />
+            <img :src="introData.photoUrl" alt="" class="img-perfil" />
           </ion-col>
         </ion-row>
 
-        <ion-row v-if="homeData.logoUrl">
+        <ion-row v-if="introData?.logoUrl">
           <ion-col>
-            <img :src="homeData.logoUrl" class="img-logo" />
+            <img :src="introData.logoUrl" class="img-logo" />
           </ion-col>
         </ion-row>
       </div>
@@ -356,17 +356,16 @@ import ContactModal from "../../../components/modals/contact/ContactModal.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";
-import IntroController from "@/controllers/introController";
 const systemController = new SystemController();
-const introController = new IntroController();
 // end controllser
 
-// services
-import type { HomePageData } from "@/services/types";
+import type { IntroData } from "@/controllers/introController";
 
-// images
-import defaultPhoto from "@/assets/portafolio/foto_perfil.jpg";
-import defaultLogo from "@/assets/portafolio/dowar.png";
+interface Props {
+  introData?: IntroData | null;
+}
+
+defineProps<Props>();
 
 // vars
 const defaultColorFill = "#777777";
@@ -439,70 +438,13 @@ function getSocialIcon(iconName: string): any {
   return logoLinkedin;
 }
 
-// homepage data
-const homeData = ref<HomePageData>({
-  name: "Gonzalo Ponce",
-  tags: ["Full-Stack Developer", "Blogger"],
-  description:
-    "Desarrollador Full-Stack con mas de 5 años de experiencia en el desarrollo de aplicaciones multiplataforma.",
-  socials: [],
-  logoUrl: null,
-  photoUrl: null,
-  stack: [],
-  skillCategories: [],
-  experience: [],
-  projects: [],
-  certificates: [],
-  freelance: [],
-  freelancePlatforms: [],
-  freelanceComments: [],
-  showContactForm: {
-    socials: false,
-    freelance: false,
-  },
-});
 // end vars
 
 // mounted()
-onMounted(async () => {
+onMounted(() => {
   useBackButton(10, () => {
     alertExitApp();
   });
-
-  // cargar datos de homepage
-  try {
-    const data = await introController.loadIntro();
-    console.log("Homepage data loaded:", data);
-    console.log("Socials data:", data.socials);
-    if (data) {
-      homeData.value = {
-        name: data.name || homeData.value.name,
-        tags: data.tags?.length ? data.tags : homeData.value.tags,
-        description: data.description || homeData.value.description,
-        socials: data.socials || [],
-        logoUrl: data.logoUrl,
-        photoUrl: data.photoUrl,
-        stack: data.stack || [],
-        skillCategories: data.skillCategories || [],
-        showContactForm: data.showContactForm || {
-          socials: false,
-          freelance: false,
-        },
-      };
-      console.log("HomeData socials after load:", homeData.value.socials);
-      if (homeData.value.socials && homeData.value.socials.length > 0) {
-        homeData.value.socials.forEach((s: any, i: number) => {
-          const icon = getSocialIcon(s.iconName);
-          console.log(
-            `Social[${i}]: platform="${s.platform}", iconName="${s.iconName}", icon=`,
-            icon,
-          );
-        });
-      }
-    }
-  } catch (error) {
-    console.error("Error loading homepage data:", error);
-  }
 });
 
 // functions
@@ -559,27 +501,7 @@ async function openContactModal() {
   modal.present();
 }
 
-function convertToPlatforms(freelance: any[]) {
-  return freelance.map(item => ({
-    name: item.name,
-    image: item.image,
-    url: item.url,
-  }));
-}
 
-function convertToComments(freelance: any[]) {
-  const comments: any[] = [];
-  for (const item of freelance) {
-    if (item.comment) {
-      comments.push({
-        title: item.comment.title,
-        text: item.comment.text,
-        rating: item.comment.rating,
-      });
-    }
-  }
-  return comments;
-}
 </script>
 
 <style scoped>

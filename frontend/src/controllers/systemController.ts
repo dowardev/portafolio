@@ -8,7 +8,7 @@ import ErrorController from "./errorController";
 
 // services
 import SystemService from "@/services/systemService";
-import { ConcreteTheme, DesignMode } from "@/utils/types";
+import { ConcreteTheme, DesignMode, HomeTemplate } from "@/utils/types";
 
 export default class SystemController {
   systemService = new SystemService();
@@ -19,11 +19,32 @@ export default class SystemController {
 
   async loadThemeSelected(): Promise<void> {
     try {
-      const theme = (await this.systemService.getTheme()) ?? {
-        selected: "light",
-        options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" },
-      };
-      this.systemStore.updateThemeSelected({ theme });
+      const stored = await this.systemService.getTheme();
+      if (stored && stored.selected) {
+        const storedTheme = stored as any;
+        const resolved = storedTheme.selected !== "auto"
+          ? storedTheme.selected
+          : (storedTheme.options?.lightTheme ?? "light");
+
+        const template: HomeTemplate = storedTheme.template ?? (resolved === "cyberpunk-light" ? "template3" : "template2");
+        const variant: ConcreteTheme = storedTheme.variant ?? (resolved === "cyberpunk-light" ? "light" : resolved === "auto" ? (storedTheme.options?.lightTheme ?? "light") : resolved);
+
+        const theme: Theme = {
+          selected: storedTheme.selected,
+          template,
+          variant,
+          options: storedTheme.options ?? { blur: false, lightTheme: "light" as ConcreteTheme, darkTheme: "catppuccin-macchiato" as ConcreteTheme },
+        };
+        this.systemStore.updateThemeSelected({ theme });
+      } else {
+        const defaultTheme: Theme = {
+          selected: "light",
+          template: "template2",
+          variant: "light",
+          options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" },
+        };
+        this.systemStore.updateThemeSelected({ theme: defaultTheme });
+      }
     } catch (error) {
       return this.errorController.handleError({ error });
     }
@@ -34,7 +55,12 @@ export default class SystemController {
       return this.systemStore.getThemeSelected();
     } catch (error) {
       this.errorController.handleError({ error });
-      return { selected: "light", options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" } };
+      return {
+        selected: "light",
+        template: "template2",
+        variant: "light",
+        options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" },
+      };
     }
   }
 
@@ -54,11 +80,15 @@ export default class SystemController {
       const { newTheme, oldTheme } = params;
       const resolvedTheme = this.resolveAutoTheme({ theme: newTheme });
       const resolvedOldTheme = this.resolveAutoTheme({ theme: oldTheme });
+
+      const cssTheme = newTheme.template === "template2" ? resolvedTheme : "light";
+      const oldCssTheme = oldTheme.template === "template2" ? resolvedOldTheme : "light";
+
       this.systemService.applyTheme({
         theme: newTheme,
-        resolvedSelected: resolvedTheme,
+        resolvedSelected: cssTheme,
         currentTheme: oldTheme,
-        resolvedCurrentSelected: resolvedOldTheme,
+        resolvedCurrentSelected: oldCssTheme,
       });
     } catch (error) {
       return this.errorController.handleError({ error });
@@ -78,6 +108,42 @@ export default class SystemController {
     try {
       const { theme } = params;
       this.systemStore.updateThemeSelected({ theme });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
+  }
+
+  getTemplate(): HomeTemplate {
+    try {
+      return this.systemStore.getTemplate();
+    } catch (error) {
+      this.errorController.handleError({ error });
+      return "template2";
+    }
+  }
+
+  setTemplate(params: { template: HomeTemplate }): void {
+    try {
+      const { template } = params;
+      this.systemStore.setTemplate({ template });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
+  }
+
+  getVariant(): ConcreteTheme {
+    try {
+      return this.systemStore.getVariant();
+    } catch (error) {
+      this.errorController.handleError({ error });
+      return "light";
+    }
+  }
+
+  setVariant(params: { variant: ConcreteTheme }): void {
+    try {
+      const { variant } = params;
+      this.systemStore.setVariant({ variant });
     } catch (error) {
       return this.errorController.handleError({ error });
     }

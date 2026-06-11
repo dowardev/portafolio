@@ -1,6 +1,7 @@
 import {
   ConcreteTheme,
   EmailFilterOption,
+  HomeTemplate,
   Theme as ThemeType,
   UserFilterOption,
   UserRolFilterOption,
@@ -332,6 +333,8 @@ export interface System {
 
 export interface Theme {
   selected: ThemeType;
+  template: HomeTemplate;
+  variant: ConcreteTheme;
   options?: { blur?: boolean; lightTheme?: ConcreteTheme; darkTheme?: ConcreteTheme };
 }
 
