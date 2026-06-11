@@ -6,7 +6,7 @@
         menu-id="mainMenu"
         style="--side-max-width: 300px"
       >
-        <MenuComponent3 v-if="resolvedTheme === 'cyberpunk-light'" />
+        <MenuComponent3 v-if="currentTemplate === 'template3'" />
         <MenuComponent v-else />
       </ion-menu>
 
@@ -46,7 +46,6 @@ import { useRouter, useRoute } from "vue-router";
 import { Storage } from "@ionic/storage";
 import { wb } from "./main";
 import { useSystemStore } from "@/store/systemStore";
-import { Theme } from "@/utils/interfaces";
 
 // interface
 import { DesignMode } from "./utils/types";
@@ -96,10 +95,7 @@ const disableAnimation = computed(() => {
   return isTargetRoute && wasOnTargetRoute;
 });
 
-const resolvedTheme = computed(() => {
-  const theme = systemStore.getThemeSelected() as Theme;
-  return systemController.resolveAutoTheme({ theme });
-});
+const currentTemplate = computed(() => systemStore.getTemplate());
 
 // mounted
 onMounted(async () => {
@@ -109,7 +105,7 @@ onMounted(async () => {
   const theme = systemController.getTheme();
   systemController.applyTheme({
     newTheme: theme,
-    oldTheme: { selected: "light", options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" } },
+    oldTheme: { selected: "light", template: "template2", variant: "light", options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" } },
   });
 
   if ("serviceWorker" in navigator && wb) {

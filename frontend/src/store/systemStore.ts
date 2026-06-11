@@ -1,12 +1,14 @@
 import { Theme } from "@/utils/interfaces";
-import { DesignMode } from "@/utils/types";
+import { DesignMode, HomeTemplate, ConcreteTheme } from "@/utils/types";
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
 
 export const useSystemStore = defineStore("system", () => {
   const theme = ref({
     selected: "light",
-    options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" },
+    template: "template2" as HomeTemplate,
+    variant: "light" as ConcreteTheme,
+    options: { blur: false, lightTheme: "light" as ConcreteTheme, darkTheme: "catppuccin-macchiato" as ConcreteTheme },
   } as Theme);
   const update = ref(false);
   const loader = ref<{ status: boolean; color: string }>({
@@ -33,6 +35,24 @@ export const useSystemStore = defineStore("system", () => {
   function updateThemeSelected(params: { theme: Theme }): void {
     const { theme: themeData } = params;
     theme.value = themeData;
+  }
+
+  function getTemplate(): HomeTemplate {
+    return theme.value.template;
+  }
+
+  function setTemplate(params: { template: HomeTemplate }): void {
+    const { template } = params;
+    theme.value.template = template;
+  }
+
+  function getVariant(): ConcreteTheme {
+    return theme.value.variant;
+  }
+
+  function setVariant(params: { variant: ConcreteTheme }): void {
+    const { variant } = params;
+    theme.value.variant = variant;
   }
 
   function toggleUpdateOption() {
@@ -71,6 +91,10 @@ export const useSystemStore = defineStore("system", () => {
     theme,
     getThemeSelected,
     updateThemeSelected,
+    getTemplate,
+    setTemplate,
+    getVariant,
+    setVariant,
     toggleUpdateOption,
     update,
     loader,

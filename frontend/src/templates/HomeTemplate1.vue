@@ -1,4 +1,5 @@
 <template>
+  <ion-page>
   <ion-header class="ion-no-border" mode="ios">
     <ion-toolbar>
       <ion-buttons slot="start" :mode="designPlatform">
@@ -51,7 +52,7 @@
       <section id="contact">
         <ion-row class="snap-section ion-align-items-center ion-justify-content-center" style="display: flex">
           <ion-col size-xs="12" size-md="8" size-lg="6">
-            <InformationComponent v-bind="$props" />
+            <InformationComponent :intro-data="introData" />
           </ion-col>
         </ion-row>
       </section>
@@ -60,7 +61,7 @@
         <ion-row class="snap-section ion-justify-content-center" style="display: flex">
           <ion-col size-xs="12" size-md="8" size-lg="6">
             <div style="height: 81dvh">
-              <SkillsPage v-bind="$props" />
+              <SkillsPage />
             </div>
           </ion-col>
         </ion-row>
@@ -74,7 +75,7 @@
                 <ion-label>Experiencia reciente</ion-label>
                 <ion-button @click="$router.push({ name: 'ExperiencePage' })">Ver todo</ion-button>
               </ion-list-header>
-              <ExperienceComponent v-bind="$props" />
+              <ExperienceComponent />
             </ion-list>
           </ion-col>
         </ion-row>
@@ -88,7 +89,7 @@
                 <ion-label>Últimos proyectos</ion-label>
                 <ion-button @click="$router.push({ name: 'PortfolioPage' })">Ver todo</ion-button>
               </ion-list-header>
-              <ProjectsComponent v-bind="$props" />
+              <ProjectsComponent />
             </ion-list>
           </ion-col>
         </ion-row>
@@ -102,7 +103,7 @@
                 <ion-label>Certificados recientes</ion-label>
                 <ion-button @click="$router.push({ name: 'CertificatesPage' })">Ver todo</ion-button>
               </ion-list-header>
-              <CertificatesComponent v-bind="$props" />
+              <CertificatesComponent />
             </ion-list>
           </ion-col>
         </ion-row>
@@ -111,12 +112,17 @@
       <section id="final" class="snap-section">
         <ion-row class="snap-section ion-justify-content-center" style="display: flex">
           <ion-col size-xs="12" size-md="8" size-lg="6">
-            <FinalSection v-bind="$props" />
+            <FinalSection
+  :freelance-platforms="freelancePlatforms"
+  :freelance-comments="freelanceComments"
+  :show-contact-form="showContactForm"
+/>
           </ion-col>
         </ion-row>
       </section>
     </div>
   </ion-content>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
@@ -130,6 +136,7 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
+  IonPage,
   IonSegment,
   IonSegmentButton,
   IonRow,
@@ -140,16 +147,20 @@ import {
   IonButton,
 } from "@ionic/vue";
 import { isPlatform } from "@ionic/vue";
-import type { HomePageData } from "@/services/types";
-
-// declare component props so $props contains the passed template data
-const props = defineProps<Partial<HomePageData>>();
 
 import SystemController from "@/controllers/systemController";
 const systemController = new SystemController();
 
+import IntroController from "@/controllers/introController";
+import FreelancePlatformController from "@/controllers/freelancePlatformController";
+import FreelanceCommentController from "@/controllers/freelanceCommentController";
+
+const introController = new IntroController();
+const freelancePlatformController = new FreelancePlatformController();
+const freelanceCommentController = new FreelanceCommentController();
+
 import InformationComponent from "@/views/presentation/information/InformationComponent.vue";
-import CategoriesPage from "@/views/presentation/categories/SkillsPage.vue";
+import SkillsPage from "@/views/presentation/categories/SkillsPage.vue";
 import ExperienceComponent from "@/views/presentation/experience/ExperienceComponent.vue";
 import ProjectsComponent from "@/views/presentation/projects/ProjectsComponent.vue";
 import CertificatesComponent from "@/views/presentation/certificates/CertificatesComponent.vue";
@@ -165,14 +176,25 @@ const isLargeScreen = computed(() => {
   return preset === 'md' || preset === 'lg' || preset === 'xl' || preset === 'xxl';
 });
 
+const introData = computed(() => introController.data.value);
+const freelancePlatforms = computed(() => freelancePlatformController.freelancePlatforms?.value || []);
+const freelanceComments = computed(() => freelanceCommentController.freelanceComments?.value || []);
+const showContactForm = computed(() => introController.showContactForm);
+
 let observer: IntersectionObserver | null = null;
 
-onMounted(() => {
+onMounted(async () => {
   useBackButton(10, () => {
     alertExitApp();
   });
 
   setupIntersectionObserver();
+
+  await Promise.all([
+    introController.loadIntro(),
+    freelancePlatformController.loadFreelancePlatforms(),
+    freelanceCommentController.loadFreelanceComments(),
+  ]);
 });
 
 onUnmounted(() => {
