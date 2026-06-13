@@ -526,7 +526,7 @@ async function saveUserData() {
       message: "Datos actualizados",
     });
   } catch (e) {
-    if (e.message == "Email already selected") {
+    if (e instanceof Error && e.message == "Email already selected") {
       await systemController.presentToast({
         message: "Correo ya en uso",
         color: "warning",
@@ -550,20 +550,22 @@ async function presentAlertEmail() {
   await alert.present();
 }
 
-async function getImageBase64(e) {
+async function getImageBase64(e: Event) {
   return new Promise((resolve) => {
-    const file = e.target.files[0];
+    const target = e.target as HTMLInputElement
+    const file = target.files?.[0]
     const reader = new FileReader();
-    reader.onload = async (e) => {
-      const fileData = e.target.result;
+    reader.onload = async (ev: ProgressEvent<FileReader>) => {
+      const fileData = (ev.target as FileReader).result;
       resolve(fileData);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(file!);
   });
 }
 
-async function uploadUserImage(e) {
-  if (!e.target.files[0]) return;
+async function uploadUserImage(e: Event) {
+  const target = e.target as HTMLInputElement
+  if (!target.files?.[0]) return;
   spinners.value.uploadImage = true;
   const image = await getImageBase64(e);
 
@@ -645,7 +647,7 @@ async function deleteUserAccount() {
       });
       location.reload();
     } catch (e) {
-      if (e.message == "Wrong password") {
+      if (e instanceof Error && e.message == "Wrong password") {
         await systemController.presentToast({
           message: "Contraseña incorrecta",
           color: "danger",

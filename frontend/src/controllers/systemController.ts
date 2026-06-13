@@ -176,7 +176,7 @@ export default class SystemController {
     }
   }
 
-  async getImageURL(params: { name: string }): Promise<{ url: string } | void> {
+  async getImageURL(params: { name: string }): Promise<{ url: string }> {
     try {
       const { name } = params;
       return await this.systemService.getImageURL({ name });
@@ -187,7 +187,7 @@ export default class SystemController {
 
   async presentAlertConfirmation(params: {
     message: string;
-  }): Promise<boolean | void> {
+  }): Promise<boolean> {
     try {
       const { message } = params;
       return await this.systemService.presentAlertConfirmation({ message });
@@ -198,7 +198,7 @@ export default class SystemController {
 
   async presentLoading(params: {
     message: string;
-  }): Promise<HTMLIonLoadingElement | void> {
+  }): Promise<HTMLIonLoadingElement> {
     try {
       const { message } = params;
       return await this.systemService.presentLoading({ message });
@@ -296,7 +296,7 @@ export default class SystemController {
     }
   }
 
-  getScreenSize(): { width: number; height: number; preset: string } | void {
+  getScreenSize(): { width: number; height: number; preset: string } {
     try {
       return this.systemStore.screenSize;
     } catch (error) {

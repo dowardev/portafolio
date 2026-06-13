@@ -368,7 +368,8 @@ async function handleSave() {
     nameTouched.value = true;
 
     const item = localItem.value as FreelanceComment;
-    const payload = {
+    const payload: FreelanceComment = {
+      id: item.id,
       title: item.title,
       text: item.text,
       rating: item.rating,
@@ -381,7 +382,7 @@ async function handleSave() {
       } else if (freelanceId.value) {
         await freelanceCommentController.updateFreelanceComment(Number(freelanceId.value), payload);
       }
-      router.push(freelanceType.value === "platform" ? "/admin-panel/freelance-platform" : "/admin-panel/freelance-comments");
+      router.push("/admin-panel/freelance-comments");
     } finally {
       saving.value = false;
     }

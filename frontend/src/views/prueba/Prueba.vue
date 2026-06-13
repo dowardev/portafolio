@@ -89,11 +89,9 @@ const contentBlocks = computed(() => {
 
         const [_, lang, code] = match;
         blocks.push({
-          type: CardCode,
+          type: 'div' as any,
           props: {
-            cardContent: code.trim(),
-            cardTitle: lang || "Code",
-            border: false,
+            innerHTML: `<pre><code>${code.trim()}</code></pre>`,
           },
         });
       }
@@ -124,13 +122,9 @@ const contentBlocks = computed(() => {
           .join("<br />");
 
         blocks.push({
-          type: CardsAlert,
+          type: 'div' as any,
           props: {
-            cardContent: blockquoteContent,
-            cardTitle: "Nota",
-            border: false,
-            icon: informationOutline,
-            color: "success",
+            innerHTML: `<blockquote>${blockquoteContent}</blockquote>`,
           },
         });
 

@@ -6,7 +6,7 @@ import { alertCircleOutline, closeOutline } from "ionicons/icons";
 import { getApiConnector } from "@/apiConnector";
 
 export default class ErrorController {
-  handleError(params: { error: unknown }) {
+  handleError(params: { error: unknown }): never {
     const { error } = params;
 
     if (error instanceof AxiosError) {

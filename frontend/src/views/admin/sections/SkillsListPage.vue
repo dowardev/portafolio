@@ -62,7 +62,7 @@
                       </div>
                     </template>
 
-                    <div slot="start" v-else class="stack-icon-placeholder">
+                    <div v-else slot="start" class="stack-icon-placeholder">
                       <ion-icon :icon="codeSlashOutline" />
                     </div>
 
@@ -138,7 +138,7 @@ import {
   getIonIconSvg,
   getLineIconComponent,
   isLineIcon,
-} from "@/composables/iconsIndex";
+} from "@/utils/iconsIndex";
 import StackController from "@/controllers/stackController";
 import type { StackItem } from "@/services/types";
 

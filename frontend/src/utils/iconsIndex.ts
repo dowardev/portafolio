@@ -12,10 +12,10 @@ export interface UnifiedIconConfig {
 
 import {
   allIcons as ioniconsAll,
-} from "./iconConfig";
+} from "@/config/iconConfig";
 import {
   allLineIcons as lineiconsAll,
-} from "./lineiconsConfig";
+} from "@/config/lineiconsConfig";
 
 export function getUnifiedIcons(): UnifiedIconConfig[] {
   const ionicons: UnifiedIconConfig[] = ioniconsAll.map((icon) => ({

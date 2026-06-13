@@ -154,7 +154,7 @@ function scrollActiveSectionIntoView() {
   if (!isInView) {
     // Add padding to avoid edge positioning
     const padding = 10;
-    const scrollTop = activeElement.offsetTop - container.offsetTop - padding;
+    const scrollTop = (activeElement as HTMLElement).offsetTop - container.offsetTop - padding;
 
     container.scrollTo({
       top: scrollTop,

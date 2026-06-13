@@ -409,7 +409,7 @@ import ExperienceCard from "@/components/experience/ExperienceCard.vue";
 
 import defaultLogo from "@/assets/portafolio/logo_dowar_2.1.png";
 import defaultPhoto from "@/assets/portafolio/foto_perfil.jpg";
-import { getIconByName } from "@/composables/iconsIndex";
+import { getIconByName } from "@/utils/iconsIndex";
 import { linkOutline } from "ionicons/icons";
 
 const router = useRouter();

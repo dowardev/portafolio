@@ -89,7 +89,7 @@ const errorController = new ErrorController();
 
 // components
 import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
-import { StatusPost } from "@/services/types";
+import type { StatusPost } from "@/controllers/postController";
 
 // vars
 const router = useRouter();

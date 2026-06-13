@@ -6,13 +6,14 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
-import { useSystemStore } from "@/store/systemStore"
+
+// controllers
+import SystemController from "@/controllers/systemController"
+const systemController = new SystemController()
 
 import HomeTemplate1 from "@/templates/HomeTemplate1.vue"
 import HomeTemplate2 from "@/templates/HomeTemplate2.vue"
 import HomeTemplate3 from "@/templates/HomeTemplate3.vue"
 
-const systemStore = useSystemStore()
-
-const currentTemplate = computed(() => systemStore.getTemplate())
+const currentTemplate = computed(() => systemController.getTemplate())
 </script>

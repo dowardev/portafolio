@@ -4,7 +4,7 @@ import { toastController } from "@ionic/vue";
 import ErrorController from "./errorController";
 
 // interface
-import { Toast } from "@/services/interfaces";
+import { Toast } from "@/utils/interfaces";
 
 export class ToastController {
   private errorController = new ErrorController();

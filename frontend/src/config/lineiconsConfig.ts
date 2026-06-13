@@ -102,7 +102,7 @@ import {
   BehanceOutlined,
   DropboxOutlined,
   FlickrOutlined,
-InstagramLogotypeOutlined,
+ InstagramLogotypeOutlined,
   FacebookMessengerOutlined,
   BloggerOutlined,
   AwsOutlined,

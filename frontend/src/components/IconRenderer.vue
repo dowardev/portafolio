@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { IonIcon } from "@ionic/vue";
 import { Lineicons } from "@lineiconshq/vue-lineicons";
-import { getIconByName } from "@/composables/iconsIndex";
+import { getIconByName } from "@/utils/iconsIndex";
 
 const props = defineProps<{
   name: string;

@@ -233,7 +233,7 @@ import { required, helpers } from "@vuelidate/validators";
 import PreviewModal from "./PreviewModal.vue";
 import { useRouter } from "vue-router";
 import { ref, watch } from "vue";
-import { StatusPost } from "@/services/types";
+import type { StatusPost } from "@/controllers/postController";
 
 // components
 import OptionsEditorComponent from "../../../../src/views/blog/editor/OptionsEditorComponent.vue";

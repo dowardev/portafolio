@@ -171,6 +171,7 @@ import { ref } from "vue";
 const pageTitle = "Políticas";
 const policiesSegment = ref("privacy");
 const designPlatform = isPlatform("ios") ? "ios" : "md";
+const modeDesignElements = isPlatform("ios") ? "ios" : ("md" as "md" | "ios");
 </script>
 
 <style scoped>

@@ -342,7 +342,7 @@ onMounted(async () => {
       startDate: "",
       endDate: undefined,
       technologies: [],
-      source: { img: "", name: "", url: "" },
+      source: { name: "", url: "" },
       details: { description: "", website: "" },
     };
   } else if (projectIndex.value !== undefined) {

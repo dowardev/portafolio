@@ -45,7 +45,6 @@ import MenuComponent3 from "./components/menu/MenuComponent3.vue";
 import { useRouter, useRoute } from "vue-router";
 import { Storage } from "@ionic/storage";
 import { wb } from "./main";
-import { useSystemStore } from "@/store/systemStore";
 
 // interface
 import { DesignMode } from "./utils/types";
@@ -53,9 +52,6 @@ import { DesignMode } from "./utils/types";
 // controllers
 import SystemController from "./controllers/systemController";
 const systemController = new SystemController();
-
-// store
-const systemStore = useSystemStore();
 
 // store
 const store = new Storage();
@@ -95,7 +91,7 @@ const disableAnimation = computed(() => {
   return isTargetRoute && wasOnTargetRoute;
 });
 
-const currentTemplate = computed(() => systemStore.getTemplate());
+const currentTemplate = computed(() => systemController.getTemplate());
 
 // mounted
 onMounted(async () => {

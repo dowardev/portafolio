@@ -70,7 +70,7 @@
   <div v-if="activeTab === 'users'" class="tab-content">
     <ion-item>
       <ion-label position="stacked">Buscar usuario</ion-label>
-      <ion-input v-model="userSearchQuery" placeholder="Nombre o email..." debounce="300" @ion-input="searchSsoUsers"></ion-input>
+      <ion-input v-model="userSearchQuery" placeholder="Nombre o email..." :debounce="300" @ion-input="searchSsoUsers"></ion-input>
     </ion-item>
 
     <div v-if="loadingUsers" class="loading-container">
@@ -84,7 +84,7 @@
         :key="user.id"
         :button="true"
         :detail="true"
-        :class="{ 'selected-user': selectedUser?.id === String(user.id) }"
+        :class="{ 'selected-user': String(selectedUser?.id) === String(user.id) }"
         @click="selectSsoUser(user)"
       >
         <ion-icon slot="start" :icon="personOutline" color="primary"></ion-icon>
@@ -222,13 +222,11 @@ import {
   toastController, IonInput, IonListHeader, IonBadge, IonSpinner, IonNote, IonPopover
 } from '@ionic/vue'
 import { save, sync as syncIcon, syncOutline, checkmarkCircle, closeCircle, removeCircleOutline, personOutline } from 'ionicons/icons'
-import { usePermissionsController, type RolePermissions, type SyncStatus, type UserPermissions, type SsoUser } from '@/controllers/permissionsController'
-import { useUserStore } from '@/store/userStore'
-import { usePermissionsGrouped } from '@/composables/usePermissionsGrouped'
+import { usePermissionsController, groupPermissions, getPermissionLabel, type RolePermissions, type SyncStatus, type UserPermissions, type SsoUser } from '@/controllers/permissionsController'
+import UserController from '@/controllers/userController'
 
-const userStore = useUserStore()
+const userController = new UserController()
 const controller = usePermissionsController()
-const { groupPermissions, getPermissionLabel } = usePermissionsGrouped()
 
 const activeTab = ref('roles')
 const saving = ref(false)
@@ -244,7 +242,7 @@ const ssoUsers = ref<SsoUser[]>([])
 const loadingUsers = ref(false)
 const userSearchQuery = ref('')
 
-const permPopover = reactive({ open: false, event: Event })
+const permPopover = reactive<{ open: boolean; event: Event | null }>({ open: false, event: null })
 const currentPermSlug = ref('')
 const currentPermType = ref<string | null>(null)
 const permDescription = ref('El permiso se decide según los roles del usuario')
@@ -325,7 +323,7 @@ async function searchSsoUsers() {
   try {
     const query = userSearchQuery.value.trim()
     const users = await controller.getSsoUsers(query.length >= 2 ? { search: query } : undefined)
-    ssoUsers.value = users.filter(u => String(u.id) !== String(userStore.user?.id))
+    ssoUsers.value = users.filter(u => String(u.id) !== String(userController.getCurrentUserId()))
   } catch {
     ssoUsers.value = []
   } finally {
@@ -337,7 +335,7 @@ async function loadSsoUsers() {
   loadingUsers.value = true
   try {
     const users = await controller.getSsoUsers()
-    ssoUsers.value = users.filter(u => String(u.id) !== String(userStore.user?.id))
+    ssoUsers.value = users.filter(u => String(u.id) !== String(userController.getCurrentUserId()))
   } catch {
     ssoUsers.value = []
   } finally {

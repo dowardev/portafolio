@@ -1,4 +1,4 @@
-import { FeedbackParams } from "../services/interfaces";
+import { FeedbackParams } from "@/utils/interfaces";
 import { getApiConnector } from "@/apiConnector";
 
 import ErrorController from "./errorController";

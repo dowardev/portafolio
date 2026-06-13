@@ -152,6 +152,7 @@ import { storeToRefs } from "pinia";
 
 import type { ProjectItem } from "@/services/types";
 import { usePermissionGuard } from "@/composables/usePermissionGuard";
+import { addOutline, bugOutline, folderOutline, trashOutline } from "ionicons/icons";
 
 const { guard } = usePermissionGuard();
 const router = useRouter();

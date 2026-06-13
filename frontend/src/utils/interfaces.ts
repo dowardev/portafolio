@@ -6,7 +6,7 @@ import {
   UserFilterOption,
   UserRolFilterOption,
 } from "@/utils/types";
-import { filterPostOptions, PostFields, StatusPost } from "./types";
+import { filterPostOptions, PostFields, StatusPost } from "@/services/types";
 
 // feedback
 export interface Feedback {
@@ -55,7 +55,7 @@ export interface GetPostsServer {
 export interface CreatePost {
   title: Post["title"];
   content: Post["content"];
-  coverId: Post["cover"]["id"];
+  coverId?: number;
   images: string[];
   status: StatusPost;
 }

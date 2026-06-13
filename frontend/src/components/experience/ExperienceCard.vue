@@ -113,7 +113,7 @@ import {
   informationCircleOutline,
   helpCircleOutline,
 } from "ionicons/icons";
-import { getIconByName as getUnifiedIcon, getIonIconSvg } from "@/composables/iconsIndex";
+import { getIconByName as getUnifiedIcon, getIonIconSvg } from "@/utils/iconsIndex";
 import IconRenderer from "@/components/IconRenderer.vue";
 
 const { getIconColor } = useIconColors();
