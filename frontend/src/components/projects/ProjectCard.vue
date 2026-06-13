@@ -137,7 +137,7 @@ import {
 import type { ProjectItem } from "@/services/types";
 import { vTooltip } from "@/directives/tooltip";
 import { useIconColors } from "@/composables/useIconColors";
-import { getIconByName as getUnifiedIcon, getIonIconSvg } from "@/composables/iconsIndex";
+import { getIconByName as getUnifiedIcon, getIonIconSvg } from "@/utils/iconsIndex";
 import IconRenderer from "@/components/IconRenderer.vue";
 // end imports
 

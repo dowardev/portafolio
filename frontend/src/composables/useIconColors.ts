@@ -1,4 +1,4 @@
-import { getIconColor as getColor } from "./iconsIndex";
+import { getIconColor as getColor } from "@/utils/iconsIndex";
 
 const defaultColor = "#888888";
 

@@ -7,15 +7,16 @@ import {
 import { usePostStore } from "../store/postStore";
 import { storeToRefs } from "pinia";
 import { Post, UpdatePost } from "../utils/interfaces";
-import { filterPostOptions, PostFields } from "@/services/types";
+import { StatusPost, filterPostOptions, PostFields } from "@/services/types";
 import { getApiConnector } from "@/apiConnector";
-import type { HttpClient } from "@tu-org/sso-client";
 
 // controllers
 import ErrorController from "./errorController";
 
 // services
 // import PostService from "../services/postService";
+
+export type { StatusPost, filterPostOptions, PostFields }
 
 export default class PostController {
   private postStore = usePostStore();
@@ -51,12 +52,12 @@ export default class PostController {
     const { status } = params;
 
     try {
-      const dates = await getApiConnector().get(
+      const response = await getApiConnector().get<string[]>(
         "post-dates",
         { params: { status } },
       );
 
-      this.postStore.updateDates({ dates });
+      this.postStore.updateDates({ dates: response });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -78,17 +79,17 @@ export default class PostController {
     }
   }
 
-  getPost(params: { id: number }): void | Post {
+  getPost(params: { id: number }): Post | undefined {
     try {
       const id = params.id;
-      const post = this.postStore.getPost({ id });
+      const post = this.postStore.getPost({ id: id.toString() });
       return post ? post : undefined;
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
   }
 
-  getPosts(): Post[] | void {
+  getPosts(): Post[] | undefined {
     try {
       const posts = this.postStore.getPosts();
       return posts ? posts : undefined;
@@ -123,7 +124,7 @@ export default class PostController {
 
   async searchPosts(params: {
     search: string;
-  }): Promise<void | { id: string; title: string }[]> {
+  }): Promise<{ id: string; title: string }[]> {
     const search = params.search;
 
     try {
@@ -159,7 +160,7 @@ export default class PostController {
 
   async updateCover(params: {
     image: File;
-  }): Promise<{ id: string; path: string; name: string } | void> {
+  }): Promise<{ id: string; path: string; name: string }> {
     try {
       const { image } = params;
       const formData = new FormData();
@@ -167,7 +168,7 @@ export default class PostController {
       formData.append("type", "post");
 
       const serverResponse = await getApiConnector().post<{
-        data: { image: { id: string; path: string; name: string } };
+        data: { image: { id: string; url: string; name: string } };
       }>("upload-image", formData);
 
       const id = serverResponse.data.image.id;
@@ -193,7 +194,7 @@ export default class PostController {
   async uploadImage(params: {
     image: File;
     type: string;
-  }): Promise<Image | void> {
+  }): Promise<Image> {
     const { image, type } = params;
     try {
       const formData = new FormData();
@@ -201,12 +202,12 @@ export default class PostController {
       formData.append("type", type);
 
       const serverResponse = await getApiConnector().post<{
-        data: { image: { id: string; url: string } };
+        data: { image: { id: string; url: string; name: string } };
       }>("upload-image", formData);
 
       const id = serverResponse.data.image.id;
       const url = serverResponse.data.image.url;
-      const name = serverResponse.data;
+      const name = serverResponse.data.image.name;
 
       return { id, url, name };
     } catch (error: unknown) {

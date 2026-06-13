@@ -153,7 +153,7 @@ async function confirmDelete(index: number) {
   if (!(await guard({ permission: 'certificates.delete' }))) {
     return;
   }
-  const cert = certificates[index];
+  const cert = certificates.value[index];
   if (!cert?.id) return;
 
   const alert = await alertController.create({

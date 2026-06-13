@@ -2,6 +2,7 @@ import SystemService from "@/services/systemService";
 import { storeToRefs } from "pinia";
 import {
   ICustomError,
+  MyPermissionsResponse,
   User,
 } from "../utils/interfaces";
 import { getSSOClient } from "@/ssoClientAccessor";
@@ -20,14 +21,14 @@ export default class UserController {
   async uploadImage(params: {
     image: File;
     type: string;
-  }): Promise<{ id: string; path: string; name: string } | void> {
+  }): Promise<{ id: string; path: string; name: string }> {
     const { image, type } = params;
     try {
-      const { id, path, name } = await this.systemService.uploadImage({
+      const { id, url, name } = await this.systemService.uploadImage({
         image,
         type,
       });
-      return { id: id ?? "", path: path ?? "", name: name ?? "" };
+      return { id: id ?? "", path: url ?? "", name: name ?? "" };
     } catch (error) {
       return this.errorController.handleError({ error });
     }
@@ -91,12 +92,16 @@ export default class UserController {
     }
   }
 
-  getUser(): User | void {
+  getUser(): User | undefined {
     try {
       return this.userRefs.user.value ?? undefined;
     } catch (error) {
       return this.errorController.handleError({ error });
     }
+  }
+
+  getCurrentUserId(): string | undefined {
+    return this.userRefs.user.value?.id
   }
 
   async recoverPassword(params: { email: string }) {

@@ -104,7 +104,7 @@ import { computed, ref } from "vue";
 import { Lineicons } from "@lineiconshq/vue-lineicons";
 import {
   getIconsBySourceAndType,
-} from "@/composables/iconsIndex";
+} from "@/utils/iconsIndex";
 import SystemController from "@/controllers/systemController";
 import { DesignMode } from "@/utils/types";
 

@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from "vue";
-import { User } from "@/services/interfaces";
+import { User } from "@/utils/interfaces";
 import { copyOutline } from "ionicons/icons";
 import { IonButton, IonCard, IonCardContent, IonChip, IonCol, IonIcon, IonLabel, IonList, IonRow, toastController } from "@ionic/vue";
 

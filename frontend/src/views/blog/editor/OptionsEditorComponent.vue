@@ -206,7 +206,7 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import { IonButton, IonCard, IonCol, IonIcon, IonItem, IonLabel, IonRow, IonText, IonToggle } from "@ionic/vue";
-import { StatusPost } from "@/services/types";
+import type { StatusPost } from "@/controllers/postController";
 import { trashOutline } from "ionicons/icons";
 
 // components
@@ -237,8 +237,8 @@ const emits = defineEmits([
 const deletePostAction = ref<true | false | "confirm">(false);
 const cover = ref({ name: props.cover.name, file: new File([], "") });
 const postStatus = ref<StatusPost>(props.postStatus as StatusPost);
-const cardDeleteRef = ref<typeof CardOptionsExpand>(null);
-const cardPostStatusRef = ref<typeof CardOptionsExpand>(null);
+const cardDeleteRef = ref<InstanceType<typeof CardOptionsExpand> | null>(null);
+const cardPostStatusRef = ref<InstanceType<typeof CardOptionsExpand> | null>(null);
 const cardPostStatusProperties = reactive({
   hover: false,
   expanded: false,

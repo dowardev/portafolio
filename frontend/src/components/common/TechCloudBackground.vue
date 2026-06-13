@@ -45,7 +45,7 @@ import {
   getIonIconSvg,
   getLineIconComponent,
   isLineIcon,
-} from "@/composables/iconsIndex";
+} from "@/utils/iconsIndex";
 // end
 
 // types and interfaces

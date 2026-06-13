@@ -101,7 +101,7 @@ import {
   getIonIconSvg,
   getLineIconComponent,
   isLineIcon,
-} from "@/composables/iconsIndex";
+} from "@/utils/iconsIndex";
 
 const stackController = new StackController();
 const techController = new TechController();

@@ -184,7 +184,7 @@ async function confirmDelete(index: number) {
   if (!(await guard({ permission: 'experiences.delete' }))) {
     return;
   }
-  const exp = experiences[index];
+  const exp = experiences.value[index];
   if (!exp?.id) return;
 
   const alert = await alertController.create({

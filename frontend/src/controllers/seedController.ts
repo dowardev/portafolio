@@ -203,6 +203,8 @@ export default class SeedController {
         ],
         logoUrl: null,
         photoUrl: null,
+        showFooter: true,
+        footerContent: null,
         showContactForm: { socials: true, freelance: true },
       })
       result.success = true

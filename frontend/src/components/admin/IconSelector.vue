@@ -220,7 +220,7 @@ import {
   getIonIconSvg,
   getLineIconComponent,
   isLineIcon,
-} from "@/composables/iconsIndex";
+} from "@/utils/iconsIndex";
 import { Lineicons } from "@lineiconshq/vue-lineicons";
 
 const systemController = new SystemController();

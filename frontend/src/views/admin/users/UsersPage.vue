@@ -379,7 +379,7 @@
                   <ion-button
                     fill="clear"
                     expand="block"
-                    @click="cardOptionsEnableUserRef?.toggleExpand()"
+                    @click="(cardOptionsEnableUserRef as any)?.toggleExpand()"
                   >
                     No
                   </ion-button>
@@ -444,7 +444,7 @@
                     fill="clear"
                     expand="block"
                     color="primary"
-                    @click="cardOptionsDisableUserRef?.toggleExpand()"
+                    @click="(cardOptionsDisableUserRef as any)?.toggleExpand()"
                   >
                     No
                   </ion-button>
@@ -512,7 +512,7 @@
                     fill="clear"
                     expand="block"
                     color="primary"
-                    @click="cardOptionsDeleUserRef?.toggleExpand()"
+                    @click="(cardOptionsDeleUserRef as any)?.toggleExpand()"
                   >
                     No
                   </ion-button>
@@ -734,7 +734,7 @@ import {
   AdminDeleteUserAccount,
   FilterAdminPanelOptions,
   User,
-} from "@/services/interfaces";
+} from "@/utils/interfaces";
 import { DesignMode } from "@/utils/types";
 
 // controllers

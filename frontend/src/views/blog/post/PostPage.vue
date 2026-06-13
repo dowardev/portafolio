@@ -184,7 +184,7 @@ const errorController = new ErrorController();
 // const
 const route = useRoute();
 const router = useRouter();
-const postId = route.params.id as string;
+const postId = Number(route.params.id);
 const spinners = ref({ buttonUpdate: false, buttonDelete: false });
 const indexContent = ref<Array<{ name: string; id: string; type: string }>>([]);
 let headings: NodeListOf<HTMLElement> | [] = [];

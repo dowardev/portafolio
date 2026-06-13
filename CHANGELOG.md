@@ -1,5 +1,43 @@
 # Changelog
 
+## 19.0.2 - 2026-06-13
+
+### Fixed
+
+- **113 TypeScript errors resolved** across 28 frontend files: broken imports (`@/services/interfaces` → `@/utils/interfaces`), missing type exports (`filterPostOptions`, `PostFields`, `StatusPost`), missing `MyPermissionsResponse` import
+- **54 TS2339/TS2322/TS2769 errors** resolved by adding `never` return type to `ErrorController.handleError()` and removing `| void` from 12 controller method return type annotations
+- **Various type fixes**: missing ionicons imports, `icon: object` → `icon: string` in AdminHomeMenu, snake_case API fields in `projectsController`, `coverId` optional in `CreatePost`, fixed `debounce` binding in PermissionsPage, file type casts in AdminInfoPage, ref typing for component templates, `Event` type annotations in UserProfileComponent
+- **Missing components handled**: Replaced `CardCode`/`CardsAlert` with inline HTML in Prueba.vue, removed invalid `img` property in ProjectsEditor.vue
+
+### Added
+
+- **`frontend/src/guides/TemplateView.vue`**: New Vue component template guide with standard structure (ion-page, ion-header, ion-content with comment-delimited sections, organized script setup)
+
+### Note
+
+- 8 SSO-related TypeScript errors remain (`loadUsers`, `updateUserStatus`, `deleteUserAccount`, `updateUserAccount`, `saveUserData`) — pending SSO integration
+- Lint errors (147 pre-existing) unchanged
+
+## 19.0.1 - 2026-06-12
+
+### Changed
+
+- **Reorganized icon configuration files**: Moved `iconConfig.ts` and `lineiconsConfig.ts` from `composables/` to `config/` directory as pure data configuration files
+- **Relocated unified icon index**: Moved `iconsIndex.ts` from `composables/` to `utils/` directory as utility functions
+- **Migrated permission grouping utilities**: Moved `groupPermissions` and `getPermissionLabel` from `usePermissionsGrouped.ts` composable to `permissionsController.ts` as exported utility functions
+- **Updated import paths**: Updated all 29 files referencing the old composable locations to use the new `@/config/`, `@/utils/`, and `@/controllers/` paths
+
+### Added
+
+- **`getCurrentUserId()` method**: Added to `UserController` for accessing the current user ID without directly accessing the Pinia store
+
+### Removed
+
+- `composables/iconConfig.ts` — replaced by `config/iconConfig.ts`
+- `composables/lineiconsConfig.ts` — replaced by `config/lineiconsConfig.ts`
+- `composables/iconsIndex.ts` — replaced by `utils/iconsIndex.ts`
+- `composables/usePermissionsGrouped.ts` — logic migrated to `controllers/permissionsController.ts`
+
 ## 19.0.0 - 2026-06-09
 
 ### Breaking Changes

@@ -191,8 +191,8 @@ async function handleSave() {
         showContactForm: formData.showContactForm,
       },
       {
-        logo: files.logo || undefined,
-        photo: files.photo || undefined,
+        logo: files.logo as File,
+        photo: files.photo as File,
       }
     );
     router.push("/admin-panel");

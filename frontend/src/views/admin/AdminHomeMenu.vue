@@ -168,7 +168,7 @@ const selectedSections = ref<Set<SeedSection>>(new Set());
 interface SeedSectionItem {
   id: SeedSection;
   label: string;
-  icon: object;
+  icon: string;
   color: string;
 }
 
@@ -222,7 +222,7 @@ async function handleSeed() {
 interface MenuItem {
   section: string;
   label: string;
-  icon: object;
+  icon: string;
   route: string;
   color: string;
   role?: string;

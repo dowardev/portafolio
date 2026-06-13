@@ -60,7 +60,7 @@ import { defineComponent, ref } from "vue";
 import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
 import { CreatePost } from "../../../utils/interfaces";
 import { useRouter } from "vue-router";
-import { StatusPost } from "@/services/types";
+import type { StatusPost } from "@/controllers/postController";
 import {
   chevronBackOutline,
   optionsOutline,
@@ -81,7 +81,7 @@ const content = ref("");
 const images = Array<string>();
 const editorRef = ref<InstanceType<typeof EditorComponent>>();
 const pageTitle = "Editor";
-const coverId = ref("");
+const coverId = ref<number | undefined>(undefined);
 const status = ref<StatusPost>("draft");
 const title = ref("");
 const isVisibleEditorSettings = ref(true);
@@ -90,7 +90,7 @@ const isVisibleEditorSettings = ref(true);
 async function save(params: {
   title: string;
   content: string;
-  coverId: string;
+  coverId: number | undefined;
   status: StatusPost;
 }): Promise<void> {
   const { title, content, coverId, status } = params;
@@ -164,8 +164,8 @@ async function uploadCover(params: { image: File }): Promise<{ id: string }> {
     const { id } = await postController.updateCover({ image });
     return { id };
   } catch (e) {
-    errorController.openToastError(e);
-    throw new Error(e);
+    errorController.openToastError({ error: e as Error });
+    throw e;
   }
 }
 
@@ -204,7 +204,7 @@ async function setData(params: {
   if (coverData.size > 0) {
     try {
       const response = await uploadCover({ image: coverData });
-      coverId.value = response.id;
+      coverId.value = Number(response.id);
     } catch (e) {
       console.error(e);
       errorController.openToastError({ error: e as Error });

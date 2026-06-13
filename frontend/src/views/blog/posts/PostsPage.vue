@@ -364,7 +364,7 @@ const systemController = new SystemController();
 const errorController = new ErrorController();
 
 // components
-import { filterPostOptions } from "@/services/types";
+import type { filterPostOptions } from "@/controllers/postController";
 import { CardOptionsExpand } from "ionic-extra-components";
 
 // vars
@@ -644,11 +644,11 @@ function updatecurrentPage(): void {
   postController.updateCurrentPage({ currentPage: currentPage.value });
 }
 
-function openPostLoader(params: { id: string; color?: string }) {
+function openPostLoader(params: { id: number | string; color?: string }) {
   const { id, color = "primary" } = params;
   postProgress.value.status = true;
   postProgress.value.color = color;
-  postProgress.value.id = id;
+  postProgress.value.id = id.toString();
   systemController.enableLoader({ color });
 }
 

@@ -9,8 +9,8 @@ interface ProjectApiResponse {
   id: string;
   img: string;
   title: string;
-  startDate?: string;
-  endDate?: string;
+  start_date?: string;
+  end_date?: string;
   status: "progress" | "indeterminate" | "finished";
   description?: string;
   website?: string;

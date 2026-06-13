@@ -262,7 +262,7 @@ import {
   getLineIconComponent,
   isLineIcon,
   getIconByName,
-} from "@/composables/iconsIndex";
+} from "@/utils/iconsIndex";
 import { ToastController } from "@/controllers/toastController";
 import StackController from "@/controllers/stackController";
 import TechController from "@/controllers/techController";

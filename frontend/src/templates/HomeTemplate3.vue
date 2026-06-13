@@ -178,7 +178,7 @@ import ExperienceController from "@/controllers/experienceController"
 import FreelancePlatformController from "@/controllers/freelancePlatformController"
 import FreelanceCommentController from "@/controllers/freelanceCommentController"
 import StackController from "@/controllers/stackController"
-import { getIconByName } from "@/composables/iconsIndex"
+import { getIconByName } from "@/utils/iconsIndex"
 
 import HeroSection3 from "@/views/presentation/sections/HeroSection3.vue"
 import ProjectCard3 from "@/components/projects/ProjectCard3.vue"
