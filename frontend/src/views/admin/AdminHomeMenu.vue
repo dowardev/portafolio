@@ -278,22 +278,30 @@ const menuItems: MenuItem[] = [
     color: "#EC4899",
     permissions: ['freelance.create', 'freelance.update', 'freelance.delete'],
   },
-  {
-    section: "freelance-comment",
-    label: "Comentarios Freelance",
-    icon: chatbubblesOutline,
-    route: "/admin-panel/freelance-comments",
-    color: "#8B5CF6",
-    permissions: ['freelance-comments.create', 'freelance-comments.update', 'freelance-comments.delete'],
-  },
-  {
-    section: "permissions",
-    label: "Permisos",
-    icon: keyOutline,
-    route: "/admin-panel/permissions",
-    color: "#EF4444",
-    role: 'admin',
-  },
+{
+            section: "freelance-comment",
+            label: "Comentarios Freelance",
+            icon: chatbubblesOutline,
+            route: "/admin-panel/freelance-comments",
+            color: "#8B5CF6",
+            permissions: ['freelance-comments.create', 'freelance-comments.update', 'freelance-comments.delete'],
+          },
+{
+  section: "sso-user-management",
+  label: "Usuarios",
+  icon: peopleOutline,
+  route: import.meta.env.VITE_SSO_FRONTEND_URL + '/admin/users?sso_client_id=' + import.meta.env.VITE_SSO_CLIENT_ID,
+  color: "#6366F1",
+  role: 'admin',
+},
+          {
+            section: "permissions",
+            label: "Permisos",
+            icon: keyOutline,
+            route: "/admin-panel/permissions",
+            color: "#EF4444",
+            role: 'admin',
+          },
 ];
 
 async function navigate(target: string, item: MenuItem) {
@@ -316,6 +324,12 @@ async function navigate(target: string, item: MenuItem) {
       buttons: ['OK'],
     });
     await alert.present();
+    return;
+  }
+
+  // Handle external URLs (starting with http)
+  if (target.startsWith('http')) {
+    window.open(target, '_blank', 'noopener,noreferrer');
     return;
   }
 

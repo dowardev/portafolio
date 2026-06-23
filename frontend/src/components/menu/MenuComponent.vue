@@ -2,14 +2,14 @@
   <ion-page>
     <ion-header class="ion-no-border" mode="ios">
       <ion-toolbar style="--background: var(--ion-background-color)">
-        <!-- user logged -->
-        <ion-item
-          v-if="userController.getUser()?.id"
-          lines="none"
-          class="transparent"
-        >
-          <ion-label>{{ userController.getUser()?.name }}</ion-label>
-        </ion-item>
+<!-- user logged -->
+<ion-item
+  v-if="userController.getUser()?.id"
+  lines="none"
+  class="transparent"
+>
+  <ion-label>{{ userController.getUser()?.name }}</ion-label>
+</ion-item>
 
         <!-- no logged -->
         <ion-item
@@ -82,19 +82,19 @@
                 <ion-label> Usuario </ion-label>
               </ion-item-divider>
 
-              <div class="ion-padding-bottom">
-                <MenuItem
-                  v-if="userController.getUser()?.id"
-                  target-route-name="UserPanelPage"
-                  :active-routes="['UserPanelPage']"
-                  :icon-outline="personOutline"
-                  :icon-filled="person"
-                  label="Panel usuario"
-                  :disabled="spinners.buttonUserPanel"
-                  :loading="spinners.buttonUserPanel"
-                  transparent
-                />
-              </div>
+<div class="ion-padding-bottom">
+<MenuItem
+  v-if="userController.getUser()?.id"
+  :active-routes="['UserPanelPage']"
+  :icon-outline="personOutline"
+  :icon-filled="person"
+  label="Panel usuario"
+  :disabled="spinners.buttonUserPanel"
+  :loading="spinners.buttonUserPanel"
+  transparent
+  @click="overrideSSOProfile"
+/>
+</div>
             </section>
 
             <ion-item-divider>
@@ -486,6 +486,11 @@ async function logout() {
     console.error(error);
     location.reload();
   }
+}
+
+function overrideSSOProfile() {
+  const ssoFrontendUrl = import.meta.env.VITE_SSO_FRONTEND_URL || 'http://localhost:8101';
+  window.open(`${ssoFrontendUrl}/user/profile/limited`, '_blank', 'noopener,noreferrer');
 }
 
 async function openModalApps() {

@@ -2,7 +2,7 @@
 
 ## Project Structure
 
-Monorepo con dos directorios:
+Monorepo with two directories:
 - `backend/` — Laravel 11 backend (PHP 8.2+)
 - `frontend/` — Ionic Vue 8 frontend (Node.js, pnpm)
 
@@ -50,34 +50,34 @@ php artisan serve
 - `app/Http/Middleware/` — Cors, PermissionMiddleware
 - `routes/api.php` — All API endpoints
 - `config/sso.php` — SSO client configuration (lcobucci/jwt ^5.0)
-- **Autenticación:** SSO client contra servidor externo (JWT + JWKS + DPoP)
-- **Base de datos:** SQLite por defecto
-- **CI/CD:** GitLab CI (deploy en main a servidor producción)
+- **Authentication:** SSO client against external server (JWT + JWKS + DPoP)
+- **Database:** SQLite by default
+- **CI/CD:** GitLab CI (deploy on main to production server)
 
 ### Frontend (`frontend/`)
-- **Ionic 8** + **Vue 3** con Composition API
-- **Capacitor 7** para soporte Android
-- **Pinia** para manejo de estado
-- **SSO client** (paquete local `@tu-org/sso-client`)
-- `src/views/` — Vistas organizadas por feature (admin, blog, portfolio, session, etc.)
-- `src/components/` — Componentes reutilizables
-- `src/controllers/` — Lógica de negocio
-- `src/composables/` — Composables Vue
+- **Ionic 8** + **Vue 3** with Composition API
+- **Capacitor 7** for Android support
+- **Pinia** for state management
+- **SSO client** (local package `@tu-org/sso-client`)
+- `src/views/` — Views organized by feature (admin, blog, portfolio, session, etc.)
+- `src/components/` — Reusable components
+- `src/controllers/` — Business logic
+- `src/composables/` — Vue composables
 - `src/store/` — Pinia stores
-- `src/services/` — Servicios API
+- `src/services/` — API services
 - `src/router/` — Vue Router
-- **PWA** con vite-plugin-pwa
-- **CI/CD:** GitLab CI (build → package → deploy en master)
+- **PWA** with vite-plugin-pwa
+- **CI/CD:** GitLab CI (build → package → deploy on master)
 
 ## Authentication
 
-Este proyecto es un **SSO client**. La autenticación se maneja contra un servidor SSO externo:
-- Validación de JWT via JWKS endpoint del SSO server
-- `lcobucci/jwt` ^5.0 para manejo de JWT
+This project is an **SSO client**. Authentication is handled against an external SSO server:
+- JWT validation via JWKS endpoint of the SSO server
+- `lcobucci/jwt` ^5.0 for JWT handling
 - DPoP (Demonstration of Proof-of-Possession)
-- `client_credentials` grant para comunicación server-to-server
-- Variables de entorno requeridas: `SSO_URL`, `SSO_CLIENT_ID`, `SSO_CLIENT_SECRET`, `SSO_JWT_ISSUER`
-- Frontend requiere: `VITE_SSO_URL`, `VITE_SSO_FRONTEND_URL`, `VITE_SSO_CLIENT_ID`, `VITE_API_URL`
+- `client_credentials` grant for server-to-server communication
+- Required environment variables: `SSO_URL`, `SSO_CLIENT_ID`, `SSO_CLIENT_SECRET`, `SSO_JWT_ISSUER`
+- Frontend requires: `VITE_SSO_URL`, `VITE_SSO_FRONTEND_URL`, `VITE_SSO_CLIENT_ID`, `VITE_API_URL`
 
 ## Code Conventions
 
@@ -118,7 +118,7 @@ const { login } = useAuth()
 login(params)
 
 // ❌ Wrong — component accesses store directly
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/store/auth'
 const store = useAuthStore()
 
 // ❌ Wrong — component calls API service directly
@@ -128,23 +128,149 @@ authApi.login(params)
 
 ### Frontend (Vue Components): Template Structure
 
-All Vue components must follow the structure and rules defined in `guides/TemplateView.vue`. Key sections in order:
+There are two distinct template patterns depending on the file type: **Pages** (route-level views) and **Components** (reusable UI blocks). Both must follow the numbered section structure in the script.
 
-**Template:**
-- `<ion-page>` as root with `<ion-header>` and `<ion-content>`
-- Content, modals, popovers, and alerts in dedicated comment-delimited sections
+#### Pages (`src/views/`)
 
-**Script (`<script lang="ts" setup>`):**
-1. Imports (ionic/vue/ionicons)
-2. Controllers / Composables
-3. Components
-4. Interface and types imports
-5. Main (props, emits, etc.)
-6. Vars and const
-7. Watch
-8. Computed
-9. OnMounted
-10. Functions (must use named parameters pattern)
+Pages are route-level views. Root element is `<ion-page>` with `<ion-header>` and `<ion-content>`.
+Reference: `guides/TemplatePage.vue`
+
+```vue
+<template>
+  <ion-page>
+    <ion-header>...</ion-header>
+    <ion-content>
+      <ion-grid>
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="4"><!-- content --></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+    <!-- popovers -->
+    <!-- alerts -->
+    <!-- modals -->
+  </ion-page>
+</template>
+```
+
+#### Components (`src/views/**/components/` or `src/components/`)
+
+Components are reusable blocks. NO `<ion-page>`, NO `<ion-header>`, NO `<ion-content>`.
+Reference: `guides/TemplateComponent.vue`
+
+```vue
+<template>
+  <!-- No ion-page — this is a reusable component -->
+  <ion-list class="transparent">
+    <ion-card>
+      <ion-item lines="full" class="transparent">...</ion-item>
+    </ion-card>
+  </ion-list>
+</template>
+```
+
+**Script (`<script lang="ts" setup>`) — same numbered section structure for both:**
+
+```ts
+<script setup lang="ts>
+// 1. Imports (ionic/vue/ionicons)
+//    - Vue: ref, computed, watch, onMounted, etc.
+//    - Ionicons: addOutline, chevronBackOutline, etc.
+//    - Utilities: date-fns, messages, db, etc.
+//    - Ionic: IonButton, IonContent, IonDatetime, etc.
+//    - Local packages: @/utils/..., @/store/..., etc.
+import { ref, computed, onMounted } from 'vue'
+import { addOutline } from 'ionicons/icons'
+import { format } from 'date-fns'
+import { IonButton, IonContent, IonDatetime } from '@ionic/vue'
+
+// 2. Controllers / Composables
+//    - Import and instantiate controllers/composables
+import { AuthController } from '@/controllers/authController'
+const authController = new AuthController()
+
+// 3. Components
+//    - Import child Vue components
+import ChildComponent from '@/components/ChildComponent.vue'
+
+// 4. Interface and types imports
+//    - ONLY types/interfaces (import type)
+import type { User, EventItem } from '@/store/userStore'
+import type { ViewCalendar } from '@/store/calendarStore'
+
+// 5. Main (props, emits, etc.)
+defineProps<{ items: Item[] }>()
+defineEmits<{ update: [value: string] }>()
+
+// 6. Vars and const
+const isOpen = ref(false)
+const loading = ref(false)
+
+// 7. Watch
+watch(() => props.items, (val) => { /* ... */ })
+
+// 8. Computed
+const filtered = computed(() => items.value.filter(...))
+
+// 9. OnMounted
+onMounted(() => { loadData() })
+
+// 10. Functions (named parameters pattern)
+function loadData(params: { force?: boolean }) { /* ... */ }
+</script>
+```
+
+**Rules:**
+- Each section **must** have its numbered comment (`// 1.`, `// 2.`, etc.)
+- Section 1 groups **all** value imports (no types)
+- Section 4 is **exclusively** `import type`
+- ⚠️ **Ionic imports go in section 1**, never in section 4
+
+### Frontend (Vue Components): Controller vs Composable Decision
+
+Determines when to use a **controller** vs a **composable**:
+
+| Scenario | Use | Example |
+|-----------|------|---------|
+| Pure business logic (CRUD, calculations, rules) | Controller | `accountsController.getAccounts()` |
+| Reactive state + logic (ref, computed, watch) | Composable | `useAccountSelection({ items, getAccountId })` |
+| Pinia store access + logic | Controller or Composable | `budgetDayStore.saveBudgetData()` in controller |
+| Shared logic across multiple components | Composable | `useAttachments`, `useDatePicker` |
+| Operations that do NOT need Vue state | Controller | `budgetEntriesController.getEntries()` |
+| Operations that DO need reactive state | Composable | `useDeleteConfirm({ onConfirm })` |
+
+**General rule:** If you need `ref`, `computed`, `watch`, or `onMounted` → **composable**.
+If you only need pure functions or data access → **controller**.
+
+---
+
+### Frontend (Vue Components): Ionic Imports
+
+All Vue components that use Ionic components in their template **must explicitly import** those components in **section 1** (`// 1. Imports (ionic/vue/ionicons)`) of the script.
+
+```ts
+// ✅ Correct — imports what the template uses in section 1
+import { IonButton, IonContent, IonDatetime, IonPopover } from '@ionic/vue'
+
+// ❌ Incorrect — uses IonDatetime in template but does not import it
+// (TypeScript cannot infer types: $el is never, methods reset/confirm/cancel do not exist)
+
+// ❌ Incorrect — importing Ionic in section 4 (types)
+```
+
+> Ionic Vue registers components globally via `app.use(IonicVue)`, but TypeScript needs the import in **section 1** to correctly infer types (e.g. `InstanceType<typeof IonDatetime>`, access to `$el`, methods like `reset()`, `confirm()`, `cancel()`).
+
+### Frontend (Ionic): Ionic-First Layout
+
+Prefer Ionic layout utilities over custom CSS:
+
+- `ion-grid` / `ion-row` / `ion-col` for responsive layout (never manual flexbox for page layout)
+- Utility classes: `ion-padding-*`, `ion-margin-*`, `ion-text-*`, `ion-justify-content-*`, `ion-align-items-*`
+- `ion-list` with `ion-item` for forms instead of `<div>` with CSS
+- `ion-card` for cards
+- Modals: `ion-modal` with `ion-header` + `ion-content`
+- Popovers: `ion-popover` with `ion-content`
+- Do NOT use `<div>` with manual styles when an equivalent Ionic component exists
 
 ## Commit Policy
 
