@@ -1,5 +1,23 @@
 # Changelog
 
+## 19.0.3 - 2026-06-22
+
+### Changed
+
+- **AGENTS.md**: Translated to English, added Pages vs Components template distinction, Controller vs Composable decision guide, Ionic imports rules, and Ionic-First layout guidelines
+- **Menu components** (`MenuComponent.vue`, `MenuComponent3.vue`): Removed duplicate `openSSOProfile` function, updated `overrideSSOProfile` to point to `/user/profile/limited` endpoint
+- **AdminHomeMenu.vue**: Updated user management menu item with `peopleOutline` icon, dynamic route with `sso_client_id` query parameter, and admin role-based access
+
+### Added
+
+- **Template guides**: Replaced monolithic `TemplateView.vue` with separate `TemplatePage.vue` (for route-level views) and `TemplateComponent.vue` (for reusable components)
+- **AGENTS.md**: Controller vs Composable decision matrix, numbered section structure for Vue components, explicit Ionic import rules
+
+### Removed
+
+- **Duplicate code**: Removed `openSSOProfile()` function from both menu components (consolidated into `overrideSSOProfile()`)
+- **Old template files**: Deleted `frontend/src/guides/TemplateView.vue` and `guides/TemplateView.vue`
+
 ## 19.0.2 - 2026-06-13
 
 ### Fixed

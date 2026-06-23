@@ -2,9 +2,9 @@
   <ion-page class="menu3-page">
     <ion-header class="ion-no-border">
       <ion-toolbar class="menu3-toolbar">
-        <div class="menu3-header-content">
-          <span class="menu3-title">{{ user?.name?.toUpperCase() || 'SYSTEM' }}</span>
-        </div>
+<div class="menu3-header-content">
+  <span class="menu3-title">{{ user?.name?.toUpperCase() || 'SYSTEM' }}</span>
+</div>
       </ion-toolbar>
     </ion-header>
 
@@ -52,12 +52,12 @@
             <span class="section-text">USUARIO</span>
           </div>
 
-          <MenuItem3
-            target-route-name="UserPanelPage"
-            :active-routes="['UserPanelPage']"
-            label="PANEL USUARIO"
-            :index="4"
-          />
+<MenuItem3
+  :active-routes="['UserPanelPage']"
+  label="PANEL USUARIO"
+  :index="4"
+  @click="overrideSSOProfile"
+/>
         </template>
 
         <!-- Admin section -->
@@ -332,6 +332,11 @@ async function logout() {
   } catch {
     location.reload()
   }
+}
+
+function overrideSSOProfile() {
+  const ssoFrontendUrl = import.meta.env.VITE_SSO_FRONTEND_URL || 'http://localhost:8101';
+  window.open(`${ssoFrontendUrl}/user/profile/limited`, '_blank', 'noopener,noreferrer');
 }
 
 function onAccordionChange(event: CustomEvent) {
