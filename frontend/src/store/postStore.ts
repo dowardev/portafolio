@@ -1,30 +1,12 @@
 import { defineStore } from "pinia";
-import { Post } from "../utils/interfaces";
-import { formatISO } from "date-fns/formatISO";
 import { ref } from "vue";
-
-interface PostState {
-  posts: Array<Post>;
-  dates: Array<string>;
-  currentPage: string | undefined;
-}
+import type { Post } from "../utils/interfaces";
 
 export const usePostStore = defineStore("post", () => {
   const posts = ref<Post[]>([]);
   const dates = ref<string[]>([]);
   const currentPage = ref<string | undefined>(undefined);
-
-  function formatDates() {
-    const datesResult = Array<string>();
-    dates.value.forEach((element: any) => {
-      datesResult.push(
-        formatISO(new Date(element), {
-          representation: "date",
-        }).replaceAll("/", "-"),
-      );
-    });
-    return datesResult;
-  }
+  const postsCache = ref<Map<string, Post[]>>(new Map());
 
   function getPosts() {
     return posts.value;
@@ -40,22 +22,12 @@ export const usePostStore = defineStore("post", () => {
 
   function addPost(params: { post: Post }) {
     const { post } = params;
+    const index = posts.value.findIndex((p) => p.id == post.id);
 
-    if (posts.value.length == 0) posts.value = [post];
-    else {
-      let exists = false as boolean;
-      posts.value.forEach((element) => {
-        if (element.id == post.id) exists = true;
-      });
-
-      if (exists == false) posts.value.push(post);
-
-      if (exists == true) {
-        posts.value = posts.value.map((element) => {
-          if (element.id == post.id) element = { ...element, ...post };
-          return element;
-        });
-      }
+    if (index === -1) {
+      posts.value.push(post);
+    } else {
+      posts.value[index] = { ...posts.value[index], ...post };
     }
   }
 
@@ -75,17 +47,35 @@ export const usePostStore = defineStore("post", () => {
   function updatePost(params: Post) {
     const post = params;
     posts.value = posts.value.map((element) => {
-      if (element.id == post.id || post.id == post.id)
-        element = { ...element, ...post };
+      if (element.id == post.id) return { ...element, ...post };
       return element;
     });
+  }
+
+  function getCachedPosts(params: { key: string }): Post[] | undefined {
+    const { key } = params
+    return postsCache.value.get(key)
+  }
+
+  function setCachedPosts(params: { key: string; posts: Post[] }) {
+    const { key, posts: postsToCache } = params
+    postsCache.value.set(key, postsToCache)
+  }
+
+  function hasCachedPosts(params: { key: string }): boolean {
+    const { key } = params
+    return postsCache.value.has(key)
+  }
+
+  function clearCache() {
+    postsCache.value = new Map()
   }
 
   return {
     posts,
     dates,
     currentPage,
-    formatDates,
+    postsCache,
     getPosts,
     getPost,
     addPost,
@@ -93,5 +83,9 @@ export const usePostStore = defineStore("post", () => {
     updateDates,
     updateCurrentPage,
     updatePost,
+    getCachedPosts,
+    setCachedPosts,
+    hasCachedPosts,
+    clearCache,
   };
 });

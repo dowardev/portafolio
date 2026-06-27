@@ -1,5 +1,6 @@
 <template>
-  <ion-header class="ion-no-border" mode="ios">
+  <ion-page>
+    <ion-header class="ion-no-border" mode="ios">
     <ion-toolbar class="container-page">
       <ion-buttons slot="start" :mode="designPlatform">
         <ion-menu-button menu="mainMenu"></ion-menu-button>
@@ -8,7 +9,7 @@
       <ion-title>{{ pageTitle }}</ion-title>
 
       <ion-buttons slot="end" :mode="designPlatform">
-        <!-- <DateSelectorComponent></DateSelectorComponent> -->
+        <DateSelectorComponent :loading="dateLoading"></DateSelectorComponent>
         <ion-button
           v-if="userController.hasRole({ slug: 'admin' })"
           fill="clear"
@@ -25,11 +26,11 @@
           ></ion-spinner>
         </ion-button>
 
-        <ion-button @click="previousDate()">
+        <ion-button fill="clear" @click="previousDate()">
           <ion-icon :icon="chevronBackOutline"></ion-icon>
         </ion-button>
 
-        <ion-button @click="nextDate()">
+        <ion-button fill="clear" @click="nextDate()">
           <ion-icon :icon="chevronForwardOutline"></ion-icon>
         </ion-button>
 
@@ -49,7 +50,7 @@
 
   <ion-content>
     <!-- posts -->
-    <section v-if="postController.getPosts()!.length > 0">
+    <section v-if="posts.length > 0">
       <ion-row class="ion-justify-content-center" style="display: flex">
         <ion-col size-xs="12" size-md="8" size-lg="4">
           <div
@@ -121,7 +122,7 @@
     <!-- end posts -->
 
     <!-- no posts -->
-    <section v-if="postController.getPosts()!.length == 0 && loadFinished">
+    <section v-if="posts.length == 0 && loadFinished">
       <div class="center">
         <ion-item lines="none">
           <ion-icon slot="start" :icon="banOutline" color="danger"></ion-icon>
@@ -130,16 +131,22 @@
       </div>
     </section>
 
-    <!-- loading posts -->
-    <section
-      v-if="postController.getPosts()!.length == 0 && loadFinished == false"
-    >
-      <ion-row>
-        <ion-col size="12" class="center" style="height: 91dvh">
-          <ion-item style="width: 20dvw; display: flex" lines="none">
-            <ion-label>Cargando, por favor espere</ion-label>
-            <ion-spinner name="dots"></ion-spinner>
-          </ion-item>
+    <!-- loading skeleton -->
+    <section v-if="posts.length == 0 && !loadFinished">
+      <ion-row class="ion-justify-content-center">
+        <ion-col size-xs="12" size-md="8" size-lg="4">
+          <div v-for="n in 5" :key="n" class="ion-justify-content-center" style="display: flex">
+            <ion-card class="card-post no-shadow">
+              <ion-card-content>
+                <ion-item lines="none" class="transparent">
+                  <ion-skeleton-text animated style="width: 80%; height: 24px"></ion-skeleton-text>
+                </ion-item>
+                <ion-item lines="none" class="transparent">
+                  <ion-skeleton-text animated style="width: 40%; height: 16px"></ion-skeleton-text>
+                </ion-item>
+              </ion-card-content>
+            </ion-card>
+          </div>
         </ion-col>
       </ion-row>
     </section>
@@ -333,11 +340,12 @@
     :buttons="alertDeletePostButtons"
     @did-dismiss="isAlertDeletePostOpen = false"
   ></ion-alert>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonAlert, IonButton, IonButtons, IonCard, IonCardContent, IonChip, IonCol, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonModal, IonPopover, IonRadio, IonRadioGroup, IonRow, IonSearchbar, IonSpinner, IonTitle, IonToolbar, isPlatform } from "@ionic/vue";
-import { computed, reactive, ref, watch } from "vue";
+import { IonAlert, IonButton, IonButtons, IonCard, IonCardContent, IonChip, IonCol, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenuButton, IonModal, IonPage, IonPopover, IonRadio, IonRadioGroup, IonRow, IonSearchbar, IonSkeletonText, IonSpinner, IonTitle, IonToolbar, isPlatform } from "@ionic/vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import {
@@ -366,6 +374,7 @@ const errorController = new ErrorController();
 // components
 import type { filterPostOptions } from "@/controllers/postController";
 import { CardOptionsExpand } from "ionic-extra-components";
+import DateSelectorComponent from "@/components/posts/DateSelectorComponent.vue";
 
 // vars
 const pageTitle = ref("Blog");
@@ -378,10 +387,12 @@ const route = useRoute();
 const router = useRouter();
 const isOpenSearchModal = ref(false);
 const loadFinished = ref(false);
+const navigating = ref(false);
+const dateLoading = ref(false);
 const searchResult = ref(Array<{ id: string; title: string }>());
 const currentPage = ref("");
-let dates = reactive([] as Array<string>);
-const index = ref();
+const dates = computed(() => postController.dates.value ?? []);
+const index = ref(-1);
 const currentPageIndex = ref(0);
 const popOverMainOPtions = ref({
   isOpen: false,
@@ -424,10 +435,12 @@ const cardDeletePostOptions = reactive({ expanded: false, hover: false });
 // end vars
 
 // computed
+const posts = computed(() => postController.getPosts() ?? []);
 const filterPosts = computed(() => {
   const posts = postController.getPosts()!;
+  const currentPage = postController.getCurrentPage();
   const result = posts.filter(
-    (post) => post.createdAt!.split("T")[0] == postController.getCurrentPage(),
+    (post) => post.createdAt!.split("T")[0] == currentPage,
   );
   return result;
 });
@@ -435,19 +448,13 @@ const filterPosts = computed(() => {
 
 // watch
 watch(
-  () => postController.getDates(),
-  (newValue) => {
-    dates = newValue as any;
-  },
-);
-watch(
   () => postController.getCurrentPage(),
   (newValue) => {
-    currentPage.value = newValue as string;
+    currentPage.value = newValue ?? "";
   },
 );
 watch(
-  () => dates,
+  dates,
   (newValue) => {
     index.value = newValue.indexOf(currentPage.value);
     currentPageIndex.value = index.value;
@@ -455,14 +462,29 @@ watch(
 );
 
 // load posts
+onMounted(async () => {
+  const routeDate = route.params.date as string | undefined;
+  if (routeDate && routeDate !== '') {
+    await loadContent({ status: filter.selected });
+  } else {
+    navigating.value = true;
+    await loadContent({ status: filter.selected });
+    const page = postController.getCurrentPage();
+    if (page) {
+      await router.replace({ name: "PostsPage", params: { date: page } });
+    }
+    navigating.value = false;
+  }
+})
+
 watch(
-  () => route.path,
-  (newPath) => {
-    if (newPath === "/blog") {
+  () => route.params.date as string | undefined,
+  (newDate) => {
+    if (navigating.value) return;
+    if (newDate && newDate !== '') {
       loadContent({ status: filter.selected });
     }
   },
-  { immediate: true },
 );
 // end watch
 
@@ -474,6 +496,7 @@ async function addPost(): Promise<void> {
 }
 
 async function refreshContent(): Promise<void> {
+  postController.clearCache()
   await loadContent({ status: filter.selected });
 }
 
@@ -482,28 +505,46 @@ async function loadContent(params: {
 }): Promise<void> {
   const { status } = params;
   loadFinished.value = false;
+  dateLoading.value = true;
   openPostLoader({ id: "" });
 
   try {
-    await getPostsDates({ status });
+    const routeDate = route.params.date as string | undefined;
+    if (routeDate && routeDate !== '') {
+      await Promise.all([
+        getPostsDates({ status }),
+        postController.loadPosts({
+          date: routeDate,
+          filter: status,
+          fields: ["id", "title", "cover", "created_at", "status"],
+        }),
+      ]);
 
-    let dates: undefined | string[] = undefined;
-    dates = postController.getDates()!;
-    if (dates == undefined) return;
+      const datesArray = postController.getDates()!;
+      if (datesArray == undefined) return;
 
-    let currentPage = "";
-    currentPage = loadData({ dates });
-    postController.updateCurrentPage({ currentPage });
+      currentPage.value = loadData({ dates: datesArray });
+      postController.updateCurrentPage({ currentPage: currentPage.value });
+    } else {
+      await getPostsDates({ status });
 
-    await postController.loadPosts({
-      date: currentPage,
-      filter: status,
-      fields: ["id", "title", "cover", "created_at", "status"],
-    });
+      const datesArray = postController.getDates()!;
+      if (datesArray == undefined) return;
+
+      currentPage.value = loadData({ dates: datesArray });
+      postController.updateCurrentPage({ currentPage: currentPage.value });
+
+      await postController.loadPosts({
+        date: currentPage.value,
+        filter: status,
+        fields: ["id", "title", "cover", "created_at", "status"],
+      });
+    }
   } catch (error: any) {
     console.error(error.message);
   } finally {
     loadFinished.value = true;
+    dateLoading.value = false;
     closePostLoader();
   }
 }
@@ -523,13 +564,17 @@ async function getPostsDates(params: {
 }
 
 function loadData(params: { dates: Array<string> }): string {
-  if (route.params.date != undefined) {
-    currentPage.value = params.dates.filter((element) => {
-      if (element == route.params.date) return element;
-    })[0];
+  const routeDate = route.params.date as string | undefined;
+  let targetDate = "";
+  if (routeDate && routeDate !== '') {
+    targetDate = params.dates.filter((element) => {
+      if (element == routeDate) return element;
+    })[0] ?? params.dates[0];
   } else {
-    currentPage.value = params.dates[0];
+    targetDate = params.dates[0];
   }
+  currentPage.value = targetDate;
+  currentPageIndex.value = params.dates.indexOf(targetDate);
   return currentPage.value;
 }
 
@@ -577,66 +622,84 @@ async function deletePost(params: { id: number }) {
 }
 
 function closeModalSearchPosts() {
-  // (modalSearchPosts as any).$el.dismiss(null, "cancel");
+  isOpenSearchModal.value = false;
+}
+
+async function navigateToDate(params: { dateIndex: number }): Promise<void> {
+  const { dateIndex } = params;
+  const newDate = dates.value[dateIndex];
+
+  if (!newDate) return;
+
+  currentPage.value = newDate;
+  currentPageIndex.value = dateIndex;
+  updatecurrentPage();
+  loadFinished.value = false;
+  postController.clearPosts();
+  navigating.value = true;
+
+  try {
+    await Promise.all([
+      postController.loadPosts({
+        date: currentPage.value,
+        filter: filter.selected,
+        fields: ["id", "title", "cover", "created_at", "status"],
+      }),
+      router.replace({ name: "PostsPage", params: { date: currentPage.value } }),
+    ]);
+
+    preloadAdjacentDates();
+  } catch (e) {
+    console.error(e);
+    errorController.openToastError({ error: e as Error });
+    throw e;
+  } finally {
+    loadFinished.value = true;
+    navigating.value = false;
+  }
 }
 
 async function nextDate(): Promise<void> {
   const newDateIndex = +currentPageIndex.value + 1;
-
-  if (newDateIndex >= dates.length) return;
-
-  // console.log({ old: currentPage.value, new: dates[newDateIndex], dates });
-  currentPage.value = dates[newDateIndex];
-  currentPageIndex.value = newDateIndex;
-
-  updatecurrentPage();
-  // emits("currentPageChange");
-
-  try {
-    await postController.loadPosts({
-      date: currentPage.value,
-    });
-  } catch (e) {
-    console.error(e);
-    errorController.openToastError({ error: e as Error });
-    throw e;
-  }
+  if (newDateIndex >= dates.value.length) return;
+  await navigateToDate({ dateIndex: newDateIndex });
 }
 
 async function previousDate(): Promise<void> {
   const newDateIndex = +currentPageIndex.value - 1;
-
   if (newDateIndex < 0) return;
-
-  currentPage.value = dates[newDateIndex];
-  currentPageIndex.value = newDateIndex;
-
-  updatecurrentPage();
-
-  try {
-    await postController.loadPosts({
-      date: currentPage.value,
-    });
-  } catch (e) {
-    console.error(e);
-    errorController.openToastError({ error: e as Error });
-    throw e;
-  }
+  await navigateToDate({ dateIndex: newDateIndex });
 }
 
 async function selectDate(params: { date: string }): Promise<void> {
   const date = params.date;
-  currentPageIndex.value = dates.indexOf(date);
-  updatecurrentPage();
+  const dateIndex = dates.value.indexOf(date);
+  if (dateIndex === -1) return;
+  await navigateToDate({ dateIndex });
+}
 
-  try {
-    await postController.loadPosts({
-      date: currentPage.value,
-    });
-  } catch (e) {
-    console.error(e);
-    errorController.openToastError({ error: e as Error });
-    throw e;
+function preloadAdjacentDates(): void {
+  const nextIndex = currentPageIndex.value + 1;
+  const prevIndex = currentPageIndex.value - 1;
+
+  if (nextIndex < dates.value.length) {
+    const nextDate = dates.value[nextIndex];
+    postController.loadPosts({
+      date: nextDate,
+      filter: filter.selected,
+      fields: ["id", "title", "cover", "created_at", "status"],
+      preload: true,
+    }).catch(() => {});
+  }
+
+  if (prevIndex >= 0) {
+    const prevDate = dates.value[prevIndex];
+    postController.loadPosts({
+      date: prevDate,
+      filter: filter.selected,
+      fields: ["id", "title", "cover", "created_at", "status"],
+      preload: true,
+    }).catch(() => {});
   }
 }
 

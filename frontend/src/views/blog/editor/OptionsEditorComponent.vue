@@ -142,7 +142,7 @@
   </ion-row>
 
   <!-- delete post button -->
-  <ion-row v-if="$route.name == 'UpdatePostPage'">
+  <ion-row v-if="props.showDelete">
     <ion-col size="12">
       <CardOptionsExpand
         ref="cardDeleteRef"
@@ -227,6 +227,7 @@ const props = defineProps({
     required: false,
   },
   view: { type: String as () => "editor" | "preview", default: "editor" },
+  showDelete: { type: Boolean, default: false },
 });
 const emits = defineEmits([
   "cover-change",
