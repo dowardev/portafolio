@@ -71,12 +71,7 @@ class PostsController extends Controller
       $posts = $query->get();
 
       if ($posts->isEmpty()) {
-        return response()->json(
-          [
-            "message" => "No posts",
-          ],
-          200
-        );
+        return response()->json(["posts" => []], 200);
       }
 
       $result = [];
@@ -149,9 +144,7 @@ class PostsController extends Controller
       $dates = array_unique($dates);
       $dates = array_values($dates);
 
-      $datesObject = (object) $dates;
-
-      return response()->json($datesObject, 200);
+      return response()->json($dates, 200);
     } catch (Exception $e) {
       return response()->json(
         [

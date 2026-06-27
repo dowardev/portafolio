@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="rootEl"
     :class="{
       indexContent: props.autoHideContent,
     }"
@@ -81,15 +82,25 @@ const props = defineProps({
 const emits = defineEmits(["elementId"]);
 const activeSection = ref("");
 const indexContainer = ref<HTMLElement | null>(null);
+const rootEl = ref<HTMLElement | null>(null);
 let observer: IntersectionObserver;
+let scrollContainer: HTMLElement | null = null;
 
 onMounted(() => {
   observer = createObserver();
+  scrollContainer = findScrollContainer();
+  if (scrollContainer) {
+    scrollContainer.addEventListener("scroll", onContentScroll);
+    onContentScroll();
+  }
 });
 
 onUnmounted(() => {
   if (observer) {
     observer.disconnect();
+  }
+  if (scrollContainer) {
+    scrollContainer.removeEventListener("scroll", onContentScroll);
   }
 });
 
@@ -97,6 +108,14 @@ watch(
   () => props.indexContent,
   () => {
     observer = createObserver();
+    if (scrollContainer) {
+      scrollContainer.removeEventListener("scroll", onContentScroll);
+    }
+    scrollContainer = findScrollContainer();
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", onContentScroll);
+      onContentScroll();
+    }
   }
 );
 
@@ -115,7 +134,7 @@ function createObserver() {
     },
     {
       threshold: 0.2,
-      rootMargin: "-10% 0px -70% 0px",
+      rootMargin: "-5% 0px -50% 0px",
     }
   );
 
@@ -129,6 +148,39 @@ function createObserver() {
   }, 100);
 
   return observer;
+}
+
+function findScrollContainer(): HTMLElement | null {
+  let el: HTMLElement | null = rootEl.value;
+  while (el && el.tagName !== "ION-CONTENT") {
+    el = el.parentElement;
+  }
+  if (!el) return null;
+
+  const shadow = el.shadowRoot;
+  if (!shadow) return null;
+
+  return shadow.querySelector(".inner-scroll");
+}
+
+function onContentScroll(): void {
+  if (!scrollContainer || props.indexContent.length === 0) return;
+
+  const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+  const atBottom = scrollTop + clientHeight >= scrollHeight - 50;
+  const atTop = scrollTop <= 50;
+
+  if (atTop) {
+    const firstSection = props.indexContent[0];
+    if (activeSection.value !== firstSection.id) {
+      updateActiveSection(firstSection.id);
+    }
+  } else if (atBottom) {
+    const lastSection = props.indexContent[props.indexContent.length - 1];
+    if (activeSection.value !== lastSection.id) {
+      updateActiveSection(lastSection.id);
+    }
+  }
 }
 
 function updateActiveSection(id: string) {

@@ -22,27 +22,71 @@ export default class PostController {
   private postStore = usePostStore();
   private postRefs = storeToRefs(this.postStore);
   private errorController = new ErrorController();
+  private pendingRequests = new Map<string, Promise<void>>();
+
+  private getCacheKey(params: { date: string; filter?: filterPostOptions }): string {
+    const { date, filter } = params
+    return `${date}_${filter ?? 'active'}`
+  }
 
   async loadPosts(params: {
     date: string;
     filter?: filterPostOptions;
     fields?: PostFields[];
+    preload?: boolean;
   }) {
-    const { date, filter, fields } = params;
+    const { date, filter, fields, preload } = params;
+    const cacheKey = this.getCacheKey({ date, filter: filter ?? 'active' })
+
+    if (this.pendingRequests.has(cacheKey)) {
+      return this.pendingRequests.get(cacheKey)
+    }
+
+    const cached = this.postStore.getCachedPosts({ key: cacheKey })
+    if (cached) {
+      if (!preload) {
+        this.postStore.setPosts({ posts: cached })
+      }
+      return Promise.resolve()
+    }
+
+    const promise = this.fetchPosts({ date, filter, fields, preload })
+    this.pendingRequests.set(cacheKey, promise)
+
+    try {
+      await promise
+    } finally {
+      this.pendingRequests.delete(cacheKey)
+    }
+  }
+
+  async fetchPosts(params: {
+    date: string;
+    filter?: filterPostOptions;
+    fields?: PostFields[];
+    preload?: boolean;
+  }) {
+    const { date, filter, fields, preload } = params;
+    const cacheKey = this.getCacheKey({ date, filter: filter ?? 'active' })
+
     try {
       const serverResponse = await getApiConnector().get(
         `posts/${date}/${filter}`,
         { params: { fields } },
       );
-      const responseData = serverResponse as { posts: PostServerResponse[] };
+      const responseData = serverResponse as { posts?: PostServerResponse[] };
+      const postsData = responseData.posts ?? [];
 
       const posts = await Promise.all(
-        responseData.posts.map(async (post: PostServerResponse) => {
+        postsData.map(async (post: PostServerResponse) => {
           return this.formatPostResponse({ response: post });
         }),
       );
 
-      this.postStore.setPosts({ posts });
+      this.postStore.setCachedPosts({ key: cacheKey, posts })
+      if (!preload) {
+        this.postStore.setPosts({ posts });
+      }
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -98,8 +142,21 @@ export default class PostController {
     }
   }
 
+  get dates() {
+    return this.postRefs.dates;
+  }
+
   getDates(): Array<string> | undefined {
     return this.postRefs.dates ? this.postRefs.dates.value : undefined;
+  }
+
+  clearCache() {
+    this.postStore.clearCache()
+    this.pendingRequests = new Map()
+  }
+
+  clearPosts() {
+    this.postStore.setPosts({ posts: [] })
   }
 
   getCurrentPage(): string | undefined {
@@ -128,12 +185,10 @@ export default class PostController {
     const search = params.search;
 
     try {
-      // const result = await this.postService.searchPosts({
-      //   search,
-      // });
-      //
-      // return result;
-      return [];
+      const response = await getApiConnector().get<{ posts: { id: string; title: string }[] }>(
+        `search-posts/${encodeURIComponent(search)}`,
+      );
+      return response.posts ?? [];
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }

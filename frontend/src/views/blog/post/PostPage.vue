@@ -1,5 +1,6 @@
 <template>
-  <ion-header :translucent="true" class="ion-no-border" mode="ios">
+  <ion-page>
+    <ion-header :translucent="true" class="ion-no-border" mode="ios">
     <ion-toolbar class="container-page">
       <ion-buttons slot="start">
         <ion-button @click="$router.go(-1)">
@@ -9,7 +10,7 @@
 
       <!-- title -->
       <ion-title class="fade-in-title">
-        {{ postController.getPost({ id: postId })?.title }}
+        {{ post?.title }}
       </ion-title>
 
       <!-- mobile options -->
@@ -42,48 +43,34 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content
-    v-if="postController.getPost({ id: postId }) != undefined"
-    :fullscreen="true"
-  >
-    <ion-row class="ion-justify-content-center" style="display: flex">
-      <ion-col size-md="8" size-xl="6">
-        <ion-row>
-          <ion-col style="display: flex" class="ion-justify-content-center">
-            <img
-              style="width: 500px"
-              :src="postController.getPost({ id: postId })?.cover?.url"
-              alt=""
-            />
-          </ion-col>
-        </ion-row>
+  <ion-content :fullscreen="true" class="ion-padding">
+    <!-- loading skeleton -->
+    <div v-if="post == undefined" class="skeleton-container">
+      <ion-skeleton-text animated style="width: 100%; max-width: 500px; height: 280px; border-radius: 8px; margin: 0 auto"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 60%; height: 32px; margin: 16px auto 0"></ion-skeleton-text>
+      <ion-skeleton-text animated v-for="n in 6" :key="n" style="width: 80%; height: 16px; margin: 8px auto 0"></ion-skeleton-text>
+    </div>
 
-        <ion-header collapse="condense" mode="ios">
-          <ion-toolbar>
-            <ion-title size="large">
-              <div style="text-wrap: auto">
-                {{ postController.getPost({ id: postId })?.title }}
-              </div></ion-title
-            >
-          </ion-toolbar>
-        </ion-header>
+    <!-- post content -->
+    <div v-if="post != undefined" class="post-wrapper">
+      <div v-if="post?.cover?.url" class="post-cover">
+        <img
+          :src="post?.cover?.url"
+          alt=""
+        />
+      </div>
 
-        <!-- content -->
-        <ion-row>
-          <ion-col>
-            <article id="content-container" ref="indexRef">
-              <MarkdownViewer
-                :content="postController.getPost({ id: postId })!.content ?? ''"
-              />
-            </article>
-          </ion-col>
-        </ion-row>
-      </ion-col>
-    </ion-row>
+      <!-- content -->
+      <article id="content-container" ref="indexRef" class="post-content" @click="openImagePreview">
+        <MarkdownViewer
+          :content="post?.content ?? ''"
+        />
+      </article>
+    </div>
 
     <!-- Floating index -->
     <indexContentComponent
-      v-if="isPlatform('desktop')"
+      v-if="isPlatform('desktop') && post != undefined"
       id="pr2"
       class="floating-index"
       :index-content="indexContent"
@@ -137,6 +124,7 @@
       </ion-item>
     </ion-content>
   </ion-popover>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
@@ -150,8 +138,10 @@ import {
   IonIcon,
   IonItem,
   IonLabel,
+  IonPage,
   IonPopover,
   IonRow,
+  IonSkeletonText,
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
@@ -163,12 +153,13 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useRoute, useRouter } from "vue-router";
-import { h, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref } from "vue";
 import indexContentComponent from "./indexContentComponent.vue";
 import { isPlatform, modalController } from "@ionic/vue";
 
 // components
 import modalIndexContent from "./modalIndexContent.vue";
+import ImageModal from "@/components/image-modal/ImageModal.vue";
 import MarkdownViewer from "@/components/markdown-viewer/MarkdownViewer.vue";
 
 // controllers
@@ -185,13 +176,11 @@ const errorController = new ErrorController();
 const route = useRoute();
 const router = useRouter();
 const postId = Number(route.params.id);
+const post = computed(() => postController.getPost({ id: postId }));
 const spinners = ref({ buttonUpdate: false, buttonDelete: false });
 const indexContent = ref<Array<{ name: string; id: string; type: string }>>([]);
-let headings: NodeListOf<HTMLElement> | [] = [];
 const indexRef = ref<HTMLElement | null>(null);
 const popoverMainOptions = ref({ open: false, event: null as Event | null });
-const scrollPosition = ref(0);
-const showTitle = ref(false);
 const alertButtonsDeletePost = [
   {
     text: "Cancelar",
@@ -210,13 +199,6 @@ const isOpenAlertDeletePost = ref(false);
 onMounted(async () => {
   await start();
 });
-
-watch(
-  () => scrollPosition.value,
-  (newValue) => {
-    showTitle.value = newValue > 0;
-  },
-);
 
 // functions
 async function start(): Promise<void> {
@@ -245,20 +227,18 @@ async function getPost(): Promise<void> {
 }
 
 function generarIndexContent(): void {
-  if (indexRef.value) {
-    headings = indexRef.value.querySelectorAll(
-      "h1:not(ion-card *), h2:not(ion-card *), h3:not(ion-card *), h4:not(ion-card *), h5:not(ion-card *), h6:not(ion-card *)",
-    );
-  } else {
-    headings = [];
-  }
+  if (!indexRef.value) return;
+
+  const headings = indexRef.value.querySelectorAll(
+    "h1:not(ion-card *), h2:not(ion-card *), h3:not(ion-card *), h4:not(ion-card *), h5:not(ion-card *), h6:not(ion-card *)",
+  );
 
   indexContent.value = [];
   headings.forEach((heading, index) => {
     const id = `heading-${index}`;
     heading.id = id;
     indexContent.value.push({
-      name: heading.textContent || "",
+      name: heading.textContent ?? "",
       id,
       type: heading.tagName.toLowerCase(),
     });
@@ -312,6 +292,21 @@ async function openModalIndexContent(): Promise<void> {
   }
 }
 
+async function openImagePreview(event: MouseEvent): Promise<void> {
+  const target = event.target as HTMLElement;
+  const img = target.closest("img");
+  if (!img || !img.src) return;
+
+  if (img.closest(".post-cover")) return;
+
+  const modal = await modalController.create({
+    component: ImageModal,
+    componentProps: { src: img.src },
+    cssClass: "image-modal",
+  });
+  await modal.present();
+}
+
 function enableLoader(params: { color: string }) {
   const { color } = params;
   systemController.enableLoader({ color });
@@ -327,38 +322,47 @@ function disableLoader() {
   color: red !important;
 }
 
-.content-layout {
-  /* position: relative; */
+.skeleton-container {
   display: flex;
-  justify-content: center;
-  width: 90%;
-  /* margin: 0 auto; */
+  flex-direction: column;
+  align-items: center;
+  min-height: 400px;
+}
+
+.post-wrapper {
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.post-cover img {
+  max-width: 100%;
+  height: auto;
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.post-content {
+  width: 100%;
 }
 
 .floating-index {
   position: fixed;
   right: 22px;
-  top: 16%;
+  top: 120px;
   width: 230px;
   overflow-y: auto;
   z-index: 100;
 }
 
-/* #pr { */
-/* width: 66%; */
-/* max-width: 900px; */
-/* margin: 0 auto; */
-/* padding: 0 20px; */
-/* } */
-
-/* Hide floating index on mobile */
 @media (max-width: 768px) {
-  .main-content {
-    margin-right: 0;
-  }
-
   .floating-index {
     display: none;
+  }
+
+  .post-wrapper {
+    padding: 0 16px;
   }
 }
 </style>

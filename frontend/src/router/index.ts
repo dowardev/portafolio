@@ -156,7 +156,7 @@ const routes: Array<RouteRecordRaw> = [
     component: UpdatePostPage,
   },
   {
-    path: "/blog",
+    path: "/blog/:date?",
     name: "PostsPage",
     component: PostsPage,
   },

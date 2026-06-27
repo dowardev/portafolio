@@ -101,6 +101,7 @@
                 :cover="cover"
                 :disable-u-i="props.disableUI"
                 :post-status="props.postStatus"
+                :show-delete="props.showDelete"
                 @cover-change="(setCover({ file: $event }), emitData())"
                 @status-change="setPostStatus({ status: $event })"
                 @delete-post="deletePost()"
@@ -182,6 +183,7 @@
           :cover="cover"
           :disable-u-i="props.disableUI"
           :post-status="props.postStatus"
+          :show-delete="props.showDelete"
           @cover-change="setCover({ file: $event })"
           @status-change="setPostStatus({ status: $event })"
           @delete-post="deletePost()"
@@ -257,6 +259,7 @@ const props = defineProps({
     default: "active",
     required: false,
   },
+  showDelete: { type: Boolean, default: false },
 });
 const emits = defineEmits([
   "updateData",
@@ -266,7 +269,6 @@ const emits = defineEmits([
 ]);
 const modeDesignElements = isPlatform("ios") ? "ios" : ("md" as "md" | "ios");
 useVuelidate();
-modeDesignElements;
 
 const postTitle = ref(props.title);
 const postContent = ref(props.content);
@@ -305,7 +307,7 @@ watch(
 watch(
   () => props.content,
   (newVal) => {
-    postContent.value += newVal;
+    postContent.value = newVal;
   },
 );
 

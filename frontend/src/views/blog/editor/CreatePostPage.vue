@@ -18,8 +18,8 @@
         <ion-button
           fill="clear"
           color="primary"
-          :disabled="!validateData() || systemController.getLoader().status"
-          @click="save({ title, content, coverId, status })"
+          :disabled="!isFormValid || systemController.getLoader().status"
+          @click="save()"
         >
           <ion-icon slot="start" :icon="saveOutline"></ion-icon>
         </ion-button>
@@ -40,6 +40,7 @@
       ref="editorRef"
       :content="content"
       :disable-u-i="systemController.getLoader().status"
+      :show-delete="false"
       @upload-image="uploadImage($event)"
       @update-data="
         setData({
@@ -55,30 +56,34 @@
 </template>
 
 <script setup lang="ts">
+// 1. Imports (ionic/vue/ionicons)
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from "@ionic/vue";
-import { defineComponent, ref } from "vue";
-import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
-import { CreatePost } from "../../../utils/interfaces";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
-import type { StatusPost } from "@/controllers/postController";
 import {
   chevronBackOutline,
   optionsOutline,
   saveOutline,
 } from "ionicons/icons";
 
-// controllers
-import PostController from "../../../controllers/postController";
-import SystemController from "../../../controllers/systemController";
-import ErrorController from "@/controllers/errorController";
-const postController = new PostController();
-const systemController = new SystemController();
-const errorController = new ErrorController();
+// 2. Controllers / Composables
+import { usePostEditor } from "@/composables/usePostEditor";
+const { postController, systemController, errorController, uploadCover } = usePostEditor();
 
-// vars
+// 3. Components
+import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
+
+// 4. Interface and types imports
+import type { StatusPost } from "@/controllers/postController";
+import type { CreatePost } from "../../../utils/interfaces";
+
+// 5. Main (props, emits)
+// (none)
+
+// 6. Vars and const
 const router = useRouter();
 const content = ref("");
-const images = Array<string>();
+const images = ref<string[]>([]);
 const editorRef = ref<InstanceType<typeof EditorComponent>>();
 const pageTitle = "Editor";
 const coverId = ref<number | undefined>(undefined);
@@ -86,23 +91,27 @@ const status = ref<StatusPost>("draft");
 const title = ref("");
 const isVisibleEditorSettings = ref(true);
 
-// functions
-async function save(params: {
-  title: string;
-  content: string;
-  coverId: number | undefined;
-  status: StatusPost;
-}): Promise<void> {
-  const { title, content, coverId, status } = params;
+// 7. Watch
+// (none)
+
+// 8. Computed
+const isFormValid = computed(() => !!(title.value && content.value));
+
+// 9. OnMounted
+// (none)
+
+// 10. Functions
+async function save(): Promise<void> {
+  if (!isFormValid.value) return;
   openLoader({ color: "primary" });
 
   try {
     await createPost({
-      title,
-      content,
-      coverId,
-      images,
-      status,
+      title: title.value,
+      content: content.value,
+      coverId: coverId.value,
+      images: images.value,
+      status: status.value,
     });
     await systemController.presentToast({ message: "Post agregado" });
     router.go(-1);
@@ -113,43 +122,29 @@ async function save(params: {
   }
 }
 
-async function createPost({
-  title,
-  content,
-  coverId,
-  images,
-  status,
-}: CreatePost): Promise<void> {
+async function createPost(params: CreatePost): Promise<void> {
   try {
-    await postController.createPost({
-      title,
-      content,
-      coverId,
-      images,
-      status,
-    });
+    await postController.createPost(params);
   } catch (e) {
     errorController.openToastError({ error: e as Error });
   }
 }
 
 async function uploadImage(e: File): Promise<void> {
-  const image = e;
   openLoader({ color: "primary" });
 
   try {
     const { id: idImage, url: urlImage } = await postController.uploadImage({
-      image,
+      image: e,
       type: "post",
     });
 
-    // const api = await getImageURL({ name: imageName! });
     content.value =
       '<div class="center"><img src="' +
       urlImage +
       '" style="width:80%"/></div>';
 
-    if (idImage) images.push(idImage);
+    if (idImage) images.value.push(idImage);
   } catch (e) {
     console.error(e);
     errorController.openToastError({ error: e as Error });
@@ -158,33 +153,8 @@ async function uploadImage(e: File): Promise<void> {
   }
 }
 
-async function uploadCover(params: { image: File }): Promise<{ id: string }> {
-  const { image } = params;
-  try {
-    const { id } = await postController.updateCover({ image });
-    return { id };
-  } catch (e) {
-    errorController.openToastError({ error: e as Error });
-    throw e;
-  }
-}
-
-// function clearInputs() {
-//   (editorRef.value as any).clearInputs();
-// }
-
 async function getImageURL(params: { name: string }): Promise<string> {
-  const { name } = params;
-  return (await systemController.getImageURL({ name })).url;
-}
-
-async function openLoader(params: { color: string }): Promise<void> {
-  const { color } = params;
-  systemController.enableLoader({ color });
-}
-
-function closeLoader(): void {
-  systemController.disableLoader();
+  return (await systemController.getImageURL(params)).url;
 }
 
 async function setData(params: {
@@ -221,10 +191,11 @@ function openEditorSettings() {
   isVisibleEditorSettings.value = true;
 }
 
-function validateData() {
-  if (!title.value || !content.value) {
-    return false;
-  }
-  return true;
+function openLoader(params: { color: string }): void {
+  systemController.enableLoader({ color: params.color });
+}
+
+function closeLoader(): void {
+  systemController.disableLoader();
 }
 </script>
