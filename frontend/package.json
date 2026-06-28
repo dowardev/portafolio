@@ -43,6 +43,7 @@
     "pinia": "^2.3.1",
     "swiper": "^11.2.2",
     "tippy.js": "^6.3.7",
+    "@unhead/vue": "^1.11.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "workbox-window": "^7.3.0"

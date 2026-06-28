@@ -12,9 +12,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\SystemController;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use TuOrg\SsoServer\Facades\SsoAuth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PostsController extends Controller
 {
@@ -36,7 +38,9 @@ class PostsController extends Controller
 
     $allowedFields = [
       "id",
+      "slug",
       "title",
+      "description",
       "content",
       "created_at",
       "updated_at",
@@ -162,7 +166,9 @@ class PostsController extends Controller
 
     $allowedFields = [
       "id",
+      "slug",
       "title",
+      "description",
       "content",
       "created_at",
       "updated_at",
@@ -236,6 +242,88 @@ class PostsController extends Controller
     }
   }
 
+  public function getPostBySlug(Request $request, $slug)
+  {
+    $requestedFields = $request->input("data.fields", ["all"]);
+
+    $allowedFields = [
+      "id",
+      "slug",
+      "title",
+      "description",
+      "content",
+      "created_at",
+      "updated_at",
+      "status",
+      "cover",
+    ];
+
+    try {
+      if (in_array("all", $requestedFields) || empty($requestedFields)) {
+        $requestedFields = $allowedFields;
+      } else {
+        $validFields = array_intersect($requestedFields, $allowedFields);
+
+        if (empty($validFields)) {
+          return response()->json(
+            [
+              "message" => "No valid fields requested",
+            ],
+            400
+          );
+        }
+
+        $requestedFields = $validFields;
+      }
+
+      $post = Post::with("cover")->where("slug", $slug)->first();
+
+      if (!$post) {
+        return response()->json(
+          [
+            "message" => "Post not found",
+          ],
+          404
+        );
+      }
+
+      $postData = [];
+
+      foreach ($requestedFields as $field) {
+        if ($field === "cover") {
+          if ($post->cover) {
+            $disk = Storage::disk($post->cover->path);
+            $postData["cover"] = [
+              "id" => $post->cover->id,
+              "name" => $post->cover->name,
+              "url" => URL::to(
+                Storage::disk($post->cover->path)->url($post->cover->name)
+              ),
+            ];
+          } else {
+            $postData["cover"] = null;
+          }
+        } else {
+          $postData[$field] = $post->$field;
+        }
+      }
+
+      return response()->json(
+        ["post" => $postData],
+        200,
+        [],
+        JSON_UNESCAPED_SLASHES
+      );
+    } catch (Exception $e) {
+      return response()->json(
+        [
+          "message" => $e->getMessage(),
+        ],
+        $e->getCode() ?: 500
+      );
+    }
+  }
+
     public function createPost(Request $request)
     {
     $title = $request->title;
@@ -249,7 +337,8 @@ class PostsController extends Controller
     $status = $request->status;
 
     $validator = Validator::make($request->all(), [
-      "title" => "required",
+      "title" => "required|unique:posts,title",
+      "description" => "nullable|string|max:300",
       "content" => "required",
       "status" => "required",
       "coverId" => "integer|nullable",
@@ -266,6 +355,8 @@ class PostsController extends Controller
 
     $post = Post::create([
       "title" => $title,
+      "slug" => Str::slug($title),
+      "description" => $request->description ?? null,
       "content" => $content,
       "cover_id" => $cover_id ?? null,
       "status" => $status,
@@ -299,7 +390,7 @@ class PostsController extends Controller
   public function searchPost(Request $request)
   {
     $search = $request->search;
-    $query = Post::select("id", "title")
+    $query = Post::select("id", "title", "slug")
       ->where("title", "like", "%" . $search . "%")
       ->get();
 
@@ -313,9 +404,16 @@ class PostsController extends Controller
 
   public function updatePost(Request $request)
   {
+    $id = intval($request->id);
+
     $validator = Validator::make($request->all(), [
       "id" => "required|integer",
-      "title" => "required|string",
+      "title" => [
+        "required",
+        "string",
+        Rule::unique("posts", "title")->ignore($id),
+      ],
+      "description" => "nullable|string|max:300",
       "content" => "required|string",
       "coverId" => "integer|nullable",
       "images" => "array|nullable",
@@ -327,7 +425,6 @@ class PostsController extends Controller
       return response()->json(["errors" => $validator->errors()], 400);
     }
 
-    $id = intval($request->id);
     $title = $request->title;
     $content = $request->content;
     $cover_id = $request->has("coverId") ? intval($request->coverId) : null;
@@ -339,6 +436,8 @@ class PostsController extends Controller
 
     Post::where("id", "=", $id)->update([
       "title" => $title,
+      "slug" => Str::slug($title),
+      "description" => $request->description ?? null,
       "content" => $content,
       "status" => $request->status,
     ]);

@@ -119,11 +119,11 @@ async function getPost(): Promise<void> {
   openLoader({ color: "primary" });
 
   try {
-    await postController.loadPost({
+    await postController.loadPostById({
       id: post.value.id!,
     });
 
-    const postResponse = postController.getPost({
+    const postResponse = postController.getPostById({
       id: post.value.id!,
     })!;
     const title = postResponse.title ?? "";

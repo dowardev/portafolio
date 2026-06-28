@@ -7,7 +7,9 @@ export type filterPostOptions = "all" | "active" | "inactive" | "draft";
 
 export type PostFields =
   | "id"
+  | "slug"
   | "title"
+  | "description"
   | "content"
   | "created_at"
   | "updated_at"

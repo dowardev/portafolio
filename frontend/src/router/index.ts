@@ -161,7 +161,7 @@ const routes: Array<RouteRecordRaw> = [
     component: PostsPage,
   },
   {
-    path: "/blog/post/:id",
+    path: "/blog/post/:slug",
     name: "PostPage",
     component: PostPage,
   },

@@ -12,12 +12,15 @@ export const usePostStore = defineStore("post", () => {
     return posts.value;
   }
 
-  function getPost(params: { id: string }): Post {
-    const id = params.id;
-    const post = posts.value.filter((element) => {
-      return (element as any).id == id;
-    });
-    return post[0];
+  function getPost(params: { id?: string | number; slug?: string }): Post | undefined {
+    const { id, slug } = params;
+    if (id !== undefined) {
+      return posts.value.find((p) => p.id == id);
+    }
+    if (slug !== undefined) {
+      return posts.value.find((p) => p.slug === slug);
+    }
+    return undefined;
   }
 
   function addPost(params: { post: Post }) {

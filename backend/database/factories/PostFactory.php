@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 class PostFactory extends Factory
 {
   private static array $pendingImageIds = [];
+  private static array $usedTitles = [];
 
   public function configure(): static
   {
@@ -38,7 +39,7 @@ class PostFactory extends Factory
   {
     $timestamp = mt_rand(strtotime("2024-01-01"), time());
     $randomDate = date("Y-m-d H:i:s", $timestamp);
-    $title = $this->generateTitle();
+    $title = $this->generateUniqueTitle();
 
     $extraImages = Image::factory()
       ->count(mt_rand(2, 4))
@@ -53,11 +54,24 @@ class PostFactory extends Factory
 
     return [
       "title" => $title,
+      "slug" => Str::slug($title),
+      "description" => $this->faker->sentence(12),
       "content" => $this->generateMarkdownContent($title, $extraUrls),
       "cover_id" => Image::factory()->disk("posts_images")->create()->id,
       "created_at" => $randomDate,
       "status" => "active",
     ];
+  }
+
+  private function generateUniqueTitle(): string
+  {
+    $attempts = 0;
+    do {
+      $title = $this->generateTitle();
+      $attempts++;
+    } while (in_array($title, self::$usedTitles) && $attempts < 100);
+    self::$usedTitles[] = $title;
+    return $title;
   }
 
   private function generateTitle(): string
