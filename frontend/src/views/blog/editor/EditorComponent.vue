@@ -42,6 +42,28 @@
                 </ion-col>
               </ion-row>
 
+              <!-- description -->
+              <ion-row>
+                <ion-col>
+                  <ion-textarea
+                    label="Descripción (SEO)"
+                    label-placement="floating"
+                    fill="solid"
+                    :value="postDescription"
+                    :maxlength="300"
+                    :counter="true"
+                    :rows="3"
+                    placeholder="Breve descripción para previsualizaciones en redes sociales (máx 300 caracteres)"
+                    :disabled="props.disableUI"
+                    @ion-input="
+                      postDescription = $event.target.value as string;
+                      emitData();
+                    "
+                  >
+                  </ion-textarea>
+                </ion-col>
+              </ion-row>
+
               <!-- content -->
               <ion-row v-show="viewMode == 'editor'">
                 <ion-col
@@ -212,6 +234,7 @@ import {
   IonPopover,
   IonRow,
   IonSpinner,
+  IonTextarea,
   IonTitle,
   IonToolbar,
   isPlatform,
@@ -246,6 +269,7 @@ import MarkdownViewer from "@/components/markdown-viewer/MarkdownViewer.vue";
 const router = useRouter();
 const props = defineProps({
   title: { default: "", type: String },
+  description: { default: "", type: String },
   content: { default: "", type: String },
   cover: {
     default() {
@@ -271,6 +295,7 @@ const modeDesignElements = isPlatform("ios") ? "ios" : ("md" as "md" | "ios");
 useVuelidate();
 
 const postTitle = ref(props.title);
+const postDescription = ref(props.description);
 const postContent = ref(props.content);
 const cover = ref({ name: props.cover.name, file: new File([], "") });
 const messageError = {
@@ -305,6 +330,12 @@ watch(
   },
 );
 watch(
+  () => props.description,
+  (newVal) => {
+    postDescription.value = newVal;
+  },
+);
+watch(
   () => props.content,
   (newVal) => {
     postContent.value = newVal;
@@ -317,10 +348,12 @@ defineExpose({
 });
 function emitData(): void {
   const title = postTitle.value;
+  const description = postDescription.value;
   const content = postContent.value;
   const coverFile = cover.value.file;
   emits("updateData", {
     title,
+    description,
     content,
     cover: coverFile,
     status: postStatus.value,

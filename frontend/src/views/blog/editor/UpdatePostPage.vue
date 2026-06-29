@@ -40,6 +40,7 @@
       v-if="contentLoaded"
       ref="editorRef"
       :title="post.title"
+      :description="post.description"
       :content="post.content"
       :cover="{ name: post.cover.name }"
       :disable-u-i="systemController.getLoader().status"
@@ -49,6 +50,7 @@
       @update-data="
         setData2({
           title: $event.title,
+          description: $event.description,
           content: $event.content,
           cover: $event.cover,
           status: $event.status,
@@ -96,6 +98,7 @@ const isVisibleEditorSettings = ref(isPlatform("desktop") ? true : false);
 const post = ref({
   id: parseInt(route.params.id as string) as number | undefined,
   title: "",
+  description: "",
   content: "",
   cover: { id: 0, name: "" },
   status: "draft" as StatusPost,
@@ -127,12 +130,13 @@ async function getPost(): Promise<void> {
       id: post.value.id!,
     })!;
     const title = postResponse.title ?? "";
+    const description = postResponse.description ?? "";
     const content = postResponse.content ?? "";
     const coverId = postResponse.cover?.id ?? undefined;
     const coverName = postResponse.cover?.name ?? undefined;
     const postStatus = postResponse.status;
 
-    setData({ title, content, coverId, coverName, status: postStatus });
+    setData({ title, description, content, coverId, coverName, status: postStatus });
     contentLoaded.value = true;
   } catch (e) {
     console.error(e);
@@ -144,12 +148,14 @@ async function getPost(): Promise<void> {
 
 function setData(data: {
   title: string;
+  description?: string;
   content: string;
   coverId: number | undefined;
   coverName: string | undefined;
   status: StatusPost;
 }): void {
   post.value.title = data.title;
+  post.value.description = data.description ?? "";
   post.value.content = data.content;
   post.value.cover = {
     id: data.coverId ?? 0,
@@ -170,6 +176,7 @@ async function save(): Promise<void> {
       post: {
         id: post.value.id!,
         title: post.value.title,
+        description: post.value.description,
         content: post.value.content,
         coverId: post.value.cover.id,
         images: post.value.newImages,
@@ -243,17 +250,20 @@ async function deletePost(params: { id: number }): Promise<void> {
 
 async function setData2(params: {
   title: string;
+  description?: string;
   content: string;
   cover: File;
   status: StatusPost;
 }): Promise<void> {
   const {
     title: titleData,
+    description: descriptionData,
     content: contentData,
     cover: coverData,
     status: statusData,
   } = params;
   post.value.title = titleData;
+  post.value.description = descriptionData ?? "";
   post.value.content = contentData;
   if (coverData.size > 0) {
     try {

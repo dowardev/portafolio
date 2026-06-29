@@ -219,7 +219,7 @@ export default class PostController {
   }
 
   async updatePost(params: { post: UpdatePost }): Promise<void> {
-    const { id, title, content, coverId, images, imagesRemoved, status } =
+    const { id, title, description, content, coverId, images, imagesRemoved, status } =
       params.post;
 
     try {
@@ -228,6 +228,7 @@ export default class PostController {
           coverId,
           content,
           title,
+          description,
           id,
           imagesRemoved,
           status,
@@ -262,9 +263,9 @@ export default class PostController {
 
   async createPost(params: CreatePost) {
     try {
-      const { title, content, coverId, images, status } = params;
+      const { title, description, content, coverId, images, status } = params;
 
-      await getApiConnector().post("create-post", { title, content, coverId, images, status });
+      await getApiConnector().post("create-post", { title, description, content, coverId, images, status });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
