@@ -78,7 +78,10 @@ $post = $data['post'];
 $title = htmlspecialchars($post['title'] ?? '', ENT_QUOTES, 'UTF-8');
 $description = htmlspecialchars($post['description'] ?? '', ENT_QUOTES, 'UTF-8');
 $imageUrl = htmlspecialchars($post['cover']['url'] ?? '', ENT_QUOTES, 'UTF-8');
-$siteUrl = 'https://dowar.xyz';
+
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$siteUrl = "$protocol://$host";
 $postUrl = $siteUrl . '/blog/post/' . htmlspecialchars($slug, ENT_QUOTES, 'UTF-8');
 $content = $post['content'] ?? '';
 ?>
