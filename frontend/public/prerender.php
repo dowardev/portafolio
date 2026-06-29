@@ -51,7 +51,8 @@ if (!$isBot) {
 }
 
 // Llamar a la API de Laravel
-$apiUrl = 'https://api.dowar.xyz/api/post-by-slug/' . urlencode($slug);
+$apiBaseUrl = getenv('API_URL') ?: 'https://api.dowar.xyz';
+$apiUrl = rtrim($apiBaseUrl, '/') . '/api/post-by-slug/' . urlencode($slug);
 $apiResponse = @file_get_contents($apiUrl, false, stream_context_create([
   'http' => [
     'method' => 'GET',
