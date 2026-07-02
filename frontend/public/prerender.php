@@ -8,7 +8,7 @@ $matches = [];
 $isPostRoute = preg_match('#^/blog/post/([a-z0-9\-]+)$#', $path, $matches);
 
 if (!$isPostRoute) {
-  return false;
+    return false;
 }
 
 $slug = $matches[1];
@@ -40,14 +40,14 @@ $botPatterns = [
 
 $isBot = false;
 foreach ($botPatterns as $pattern) {
-  if (stripos($userAgent, $pattern) !== false) {
-    $isBot = true;
-    break;
-  }
+    if (stripos($userAgent, $pattern) !== false) {
+        $isBot = true;
+        break;
+    }
 }
 
 if (!$isBot) {
-  return false;
+    return false;
 }
 
 // Descubrir API URL desde seo-settings, con fallback a env var
@@ -70,17 +70,17 @@ $ogSiteName = 'Dowar Blog';
 $twitterHandle = '';
 
 if ($seoResponse !== false) {
-  $seoSettings = json_decode($seoResponse, true);
-  if ($seoSettings) {
-    if (!empty($seoSettings['adminApiUrl'])) {
-      $apiBaseUrl = $seoSettings['adminApiUrl'];
+    $seoSettings = json_decode($seoResponse, true);
+    if ($seoSettings) {
+        if (!empty($seoSettings['adminApiUrl'])) {
+            $apiBaseUrl = $seoSettings['adminApiUrl'];
+        }
+        $siteTitle = $seoSettings['siteTitle'] ?? $siteTitle;
+        $siteDescription = $seoSettings['siteDescription'] ?? $siteDescription;
+        $siteImageUrl = $seoSettings['siteImageUrl'] ?? $siteImageUrl;
+        $ogSiteName = $seoSettings['ogSiteName'] ?? $ogSiteName;
+        $twitterHandle = $seoSettings['twitterHandle'] ?? $twitterHandle;
     }
-    $siteTitle = $seoSettings['siteTitle'] ?? $siteTitle;
-    $siteDescription = $seoSettings['siteDescription'] ?? $siteDescription;
-    $siteImageUrl = $seoSettings['siteImageUrl'] ?? $siteImageUrl;
-    $ogSiteName = $seoSettings['ogSiteName'] ?? $ogSiteName;
-    $twitterHandle = $seoSettings['twitterHandle'] ?? $twitterHandle;
-  }
 }
 
 // Llamar a la API de Laravel para el post
@@ -94,17 +94,17 @@ $apiResponse = @file_get_contents($apiUrl, false, stream_context_create([
 ]));
 
 if ($apiResponse === false) {
-  http_response_code(502);
-  echo '<html><body><h1>Error</h1></body></html>';
-  exit;
+    http_response_code(502);
+    echo '<html><body><h1>Error</h1></body></html>';
+    exit;
 }
 
 $data = json_decode($apiResponse, true);
 
 if (!$data || !isset($data['post'])) {
-  http_response_code(404);
-  echo '<html><body><h1>Not Found</h1></body></html>';
-  exit;
+    http_response_code(404);
+    echo '<html><body><h1>Not Found</h1></body></html>';
+    exit;
 }
 
 $post = $data['post'];
@@ -139,15 +139,15 @@ $content = $post['content'] ?? '';
   <meta name="twitter:title" content="<?= $title ?>">
   <meta name="twitter:description" content="<?= $description ?>">
   <meta name="twitter:image" content="<?= $imageUrl ?>">
-  <?php if ($twitterHandle): ?>
+  <?php if ($twitterHandle) { ?>
   <meta name="twitter:site" content="<?= htmlspecialchars($twitterHandle, ENT_QUOTES, 'UTF-8') ?>">
-  <?php endif; ?>
+  <?php } ?>
 </head>
 <body>
   <h1><?= $title ?></h1>
-  <?php if ($imageUrl): ?>
+  <?php if ($imageUrl) { ?>
     <img src="<?= $imageUrl ?>" alt="<?= $title ?>" style="max-width:100%">
-  <?php endif; ?>
+  <?php } ?>
   <p><?= $description ?></p>
   <p><a href="<?= $postUrl ?>">Leer artículo completo</a></p>
 </body>
