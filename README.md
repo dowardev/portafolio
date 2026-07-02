@@ -94,20 +94,6 @@ SEO-friendly implementation for blog posts with social media sharing support.
 | `GET` | `/api/post-dates?status=active` | List post dates |
 | `GET` | `/api/search-posts/{search}` | Search posts by title |
 
-### Deploy Configuration
-
-The `prerender.php` reads the API URL from an environment variable (set in `.htaccess`):
-
-```apache
-# Production (default in .htaccess)
-SetEnv API_URL "https://api.dowar.xyz"
-
-# Staging (change in subdomain's .htaccess)
-SetEnv API_URL "https://api-staging.dowar.xyz"
-```
-
-No code changes needed between environments — the fallback is `https://api.dowar.xyz`.
-
 ---
 
 ## Prerequisites

@@ -1,8 +1,5 @@
 RewriteEngine On
 
-# Variable API_URL para prerender.php
-SetEnv API_URL "https://api.dowar.xyz"
-
 # Si la request es una ruta de post y es bot, pasar a prerender.php
 RewriteCond %{REQUEST_URI} ^/blog/post/[a-z0-9\-]+$ [NC]
 RewriteCond %{HTTP_USER_AGENT} "facebookexternalhit|Facebot|Twitterbot|Twitter|WhatsApp|Googlebot|LinkedInBot|Slackbot|Discordbot|TelegramBot|Pinterestbot|Slurp|DuckDuckBot|Applebot|baiduspider|yandexbot|semrushbot|ahrefsbot|dotbot" [NC]

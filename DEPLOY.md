@@ -114,10 +114,35 @@ Place this in your public directory (where index.html is located):
 
 ```apache
 RewriteEngine On
+
+# API URL for prerender.php (change for staging overrides)
+SetEnv API_URL "https://api.yourdomain.com"
+
+# Social media bots → prerender.php (full HTML with OG/Twitter meta tags)
+RewriteCond %{REQUEST_URI} ^/blog/post/[a-z0-9\-]+$ [NC]
+RewriteCond %{HTTP_USER_AGENT} "facebookexternalhit|Facebot|Twitterbot|Twitter|WhatsApp|Googlebot|LinkedInBot|Slackbot|Discordbot|TelegramBot|Pinterestbot|Slurp|DuckDuckBot|Applebot|baiduspider|yandexbot|semrushbot|ahrefsbot|dotbot" [NC]
+RewriteRule ^blog/post/([a-z0-9\-]+)$ /prerender.php?slug=$1 [L,QSA]
+
+# SPA fallback (serve index.html for any non-file route)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.html [L]
 ```
+
+### SEO Prerendering
+
+Social media crawlers (Facebook, Twitter, LinkedIn, WhatsApp, Google) do not execute JavaScript. The `.htaccess` rules redirect known bot user agents to `prerender.php`, which fetches the post data from the Laravel API and generates a full HTML page with Open Graph and Twitter Card meta tags.
+
+The `prerender.php` reads the API URL from the `API_URL` environment variable (set via `SetEnv` in `.htaccess`). The fallback is `https://api.yourdomain.com`.
+
+Configure per environment:
+
+| Environment | `.htaccess` SetEnv |
+|-------------|-------------------|
+| Production | `SetEnv API_URL "https://api.dowar.xyz"` |
+| Staging | `SetEnv API_URL "https://api-staging.dowar.xyz"` |
+
+The site URL (used for `og:url`) is auto-detected from `HTTP_HOST`, so no additional configuration is needed per domain.
 
 ### Nginx
 
@@ -148,6 +173,8 @@ After enabling SSL, update your `.env` files to use `https://` instead of `http:
 - [ ] SSO URLs updated to production domains
 - [ ] SSL/HTTPS enabled
 - [ ] Rewrite rules working (no 404 when navigating)
+- [ ] Bot detection `.htaccess` rules uploaded (for SEO prerendering)
+- [ ] `SetEnv API_URL` configured for correct environment
 - [ ] Test authentication flow
 - [ ] Check application logs for errors
 

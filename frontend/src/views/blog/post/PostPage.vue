@@ -168,10 +168,12 @@ import SystemController from "@/controllers/systemController";
 import UserController from "@/controllers/userController";
 import PostController from "@/controllers/postController";
 import ErrorController from "@/controllers/errorController";
+import SeoSettingsController from "@/controllers/seoSettingsController";
 const systemController = new SystemController();
 const userController = new UserController();
 const postController = new PostController();
 const errorController = new ErrorController();
+const seoSettingsController = new SeoSettingsController();
 
 // const
 const route = useRoute();
@@ -197,20 +199,24 @@ const alertButtonsDeletePost = [
 ];
 const isOpenAlertDeletePost = ref(false);
 
+const global = seoSettingsController.data
+
 useHead({
-  title: () => post.value?.title ?? 'Dowar Blog',
+  title: () => post.value?.title ?? global.siteTitle ?? 'Dowar Blog',
   meta: () => {
     if (!post.value) return []
     return [
       { property: 'og:title', content: post.value.title },
-      { property: 'og:description', content: post.value.description ?? '' },
-      { property: 'og:image', content: post.value.cover?.url ?? '' },
+      { property: 'og:description', content: post.value.description || global.siteDescription || '' },
+      { property: 'og:image', content: post.value.cover?.url || global.siteImageUrl || '' },
       { property: 'og:url', content: window.location.href },
       { property: 'og:type', content: 'article' },
+      { property: 'og:site_name', content: global.ogSiteName || '' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: post.value.title },
-      { name: 'twitter:description', content: post.value.description ?? '' },
-      { name: 'twitter:image', content: post.value.cover?.url ?? '' },
+      { name: 'twitter:description', content: post.value.description || global.siteDescription || '' },
+      { name: 'twitter:image', content: post.value.cover?.url || global.siteImageUrl || '' },
+      { name: 'twitter:site', content: global.twitterHandle || '' },
     ]
   },
 })
