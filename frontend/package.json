@@ -1,6 +1,6 @@
 {
   "name": "dowar-blog",
-  "version": "19.0.3",
+  "version": "19.2.0",
   "private": true,
   "description": "An Ionic project",
   "type": "module",
@@ -43,6 +43,7 @@
     "pinia": "^2.3.1",
     "swiper": "^11.2.2",
     "tippy.js": "^6.3.7",
+    "@unhead/vue": "^1.11.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "workbox-window": "^7.3.0"

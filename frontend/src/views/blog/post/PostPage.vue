@@ -156,6 +156,7 @@ import { useRoute, useRouter } from "vue-router";
 import { computed, onMounted, ref } from "vue";
 import indexContentComponent from "./indexContentComponent.vue";
 import { isPlatform, modalController } from "@ionic/vue";
+import { useHead } from "@unhead/vue";
 
 // components
 import modalIndexContent from "./modalIndexContent.vue";
@@ -167,16 +168,18 @@ import SystemController from "@/controllers/systemController";
 import UserController from "@/controllers/userController";
 import PostController from "@/controllers/postController";
 import ErrorController from "@/controllers/errorController";
+import SeoSettingsController from "@/controllers/seoSettingsController";
 const systemController = new SystemController();
 const userController = new UserController();
 const postController = new PostController();
 const errorController = new ErrorController();
+const seoSettingsController = new SeoSettingsController();
 
 // const
 const route = useRoute();
 const router = useRouter();
-const postId = Number(route.params.id);
-const post = computed(() => postController.getPost({ id: postId }));
+const postSlug = route.params.slug as string;
+const post = computed(() => postController.getPost({ slug: postSlug }));
 const spinners = ref({ buttonUpdate: false, buttonDelete: false });
 const indexContent = ref<Array<{ name: string; id: string; type: string }>>([]);
 const indexRef = ref<HTMLElement | null>(null);
@@ -195,6 +198,28 @@ const alertButtonsDeletePost = [
   },
 ];
 const isOpenAlertDeletePost = ref(false);
+
+const global = seoSettingsController.data
+
+useHead({
+  title: () => post.value?.title ?? global.siteTitle ?? 'Dowar Blog',
+  meta: () => {
+    if (!post.value) return []
+    return [
+      { property: 'og:title', content: post.value.title },
+      { property: 'og:description', content: post.value.description || global.siteDescription || '' },
+      { property: 'og:image', content: post.value.cover?.url || global.siteImageUrl || '' },
+      { property: 'og:url', content: window.location.href },
+      { property: 'og:type', content: 'article' },
+      { property: 'og:site_name', content: global.ogSiteName || '' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: post.value.title },
+      { name: 'twitter:description', content: post.value.description || global.siteDescription || '' },
+      { name: 'twitter:image', content: post.value.cover?.url || global.siteImageUrl || '' },
+      { name: 'twitter:site', content: global.twitterHandle || '' },
+    ]
+  },
+})
 
 onMounted(async () => {
   await start();
@@ -216,8 +241,8 @@ async function getPost(): Promise<void> {
 
   try {
     await postController.loadPost({
-      id: postId,
-      fields: ["id", "title", "cover", "created_at", "content"],
+      slug: postSlug,
+      fields: ["id", "slug", "title", "description", "cover", "created_at", "content"],
     });
   } catch (e: any) {
     console.error(e);
@@ -247,7 +272,8 @@ function generarIndexContent(): void {
 
 async function updatePost(): Promise<void> {
   enableLoader({ color: "primary" });
-  await router.push({ name: "UpdatePostPage", params: { id: postId } });
+  if (!post.value) return;
+  await router.push({ name: "UpdatePostPage", params: { id: post.value.id } });
   disableLoader();
 }
 
@@ -255,7 +281,8 @@ async function deletePost(): Promise<void> {
   enableLoader({ color: "danger" });
 
   try {
-    await postController.deletePost({ id: postId });
+    if (!post.value) return;
+    await postController.deletePost({ id: post.value.id });
     spinners.value.buttonDelete = false;
     router.go(-1);
   } catch (e) {

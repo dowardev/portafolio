@@ -31,6 +31,7 @@ import FreelancePlatformsListPage from "@/views/admin/sections/FreelancePlatform
 import FreelanceCommentsListPage from "@/views/admin/sections/FreelanceCommentsListPage.vue";
 import FreelanceEditor from "@/views/admin/editors/FreelanceEditor.vue";
 import PermissionsPage from "@/views/admin/PermissionsPage.vue";
+import SeoSettingsPage from "@/views/admin/sections/SeoSettingsPage.vue";
 
 import { getSSOClient } from "@/ssoClientAccessor";
 import UserController from "@/controllers/userController";
@@ -88,6 +89,7 @@ const routeGuards: Record<string, RouteGuard> = {
   UsersPage: { roles: ['admin'] },
   PermissionsPage: { roles: ['admin'] },
   AdminEditorPage: { roles: ['admin', 'editor'] },
+  SeoSettingsPage: { permissions: ['seo.update'] },
 };
 
 function canAccessRoute(params: { guard: RouteGuard; userController: UserController }): boolean {
@@ -161,7 +163,7 @@ const routes: Array<RouteRecordRaw> = [
     component: PostsPage,
   },
   {
-    path: "/blog/post/:id",
+    path: "/blog/post/:slug",
     name: "PostPage",
     component: PostPage,
   },
@@ -194,6 +196,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/admin-panel/permissions",
     name: "PermissionsPage",
     component: PermissionsPage,
+  },
+  {
+    path: "/admin-panel/seo",
+    name: "SeoSettingsPage",
+    component: SeoSettingsPage,
   },
   {
     path: "/admin-panel/projects",
@@ -340,6 +347,7 @@ const adminRoutes = [
   "FreelanceCommentNewPage",
   "UsersPage",
   "PermissionsPage",
+  "SeoSettingsPage",
 ];
 
 const authorizedRoutes = ["UserPanelPage", "AuthCallbackPage"];

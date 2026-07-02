@@ -153,6 +153,7 @@ import {
   chatbubblesOutline,
   bugOutline,
   closeOutline,
+  searchOutline,
 } from "ionicons/icons";
 
 const router = useRouter();
@@ -301,6 +302,14 @@ const menuItems: MenuItem[] = [
             route: "/admin-panel/permissions",
             color: "#EF4444",
             role: 'admin',
+          },
+          {
+            section: "seo",
+            label: "SEO",
+            icon: searchOutline,
+            route: "/admin-panel/seo",
+            color: "#10B981",
+            permissions: ['seo.update'],
           },
 ];
 

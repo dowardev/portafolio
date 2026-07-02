@@ -1,6 +1,8 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
+import { createHead } from "@unhead/vue";
+const head = createHead();
 
 import { IonicVue } from "@ionic/vue";
 
@@ -63,7 +65,7 @@ if ("serviceWorker" in navigator) {
 }
 export { wb };
 
-const app = createApp(App).use(IonicVue).use(pinia).use(router);
+const app = createApp(App).use(IonicVue).use(pinia).use(router).use(head);
 app.directive("tooltip", vTooltip);
 app.directive("section-reveal", vSectionReveal);
 

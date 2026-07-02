@@ -29,7 +29,9 @@ export interface FeedbackParams {
 // posts
 export interface Post {
   id: number;
+  slug?: string;
   title: string;
+  description?: string;
   content?: string;
   createdAt: string;
   updatedAt?: string;
@@ -54,6 +56,7 @@ export interface GetPostsServer {
 
 export interface CreatePost {
   title: Post["title"];
+  description?: Post["description"];
   content: Post["content"];
   coverId?: number;
   images: string[];
@@ -63,6 +66,7 @@ export interface CreatePost {
 export interface UpdatePost {
   id: number;
   title: string;
+  description?: string;
   content: string;
   coverId: number | undefined;
   images: string[];
@@ -78,6 +82,7 @@ export interface PostServerResponse {
   post: {
     id: number;
     title: string;
+    description?: string;
     content: string;
     created_at: string;
     updated_at: string;

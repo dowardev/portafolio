@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Post extends Model
 {
   use HasFactory;
-  protected $fillable = ["title", "content", "cover_id", "status"];
+  protected $fillable = ["title", "slug", "description", "content", "cover_id", "status"];
 
   public function cover()
   {

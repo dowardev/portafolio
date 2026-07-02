@@ -107,7 +107,23 @@ export default class PostController {
     }
   }
 
-  async loadPost(params: { id: number | string; fields?: PostFields[] }) {
+  async loadPost(params: { slug: string; fields?: PostFields[] }) {
+    const { slug, fields } = params;
+
+    try {
+      const serverResponse = await getApiConnector().get<PostServerResponse>(
+        `post-by-slug/${slug}`,
+        { params: { fields } },
+      );
+      const post = this.formatPostResponse({ response: serverResponse.post });
+
+      this.postStore.addPost({ post });
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
+    }
+  }
+
+  async loadPostById(params: { id: number; fields?: PostFields[] }) {
     const { id, fields } = params;
 
     try {
@@ -123,11 +139,19 @@ export default class PostController {
     }
   }
 
-  getPost(params: { id: number }): Post | undefined {
+  getPost(params: { slug: string }): Post | undefined {
     try {
-      const id = params.id;
-      const post = this.postStore.getPost({ id: id.toString() });
-      return post ? post : undefined;
+      const { slug } = params;
+      return this.postStore.getPost({ slug });
+    } catch (error: unknown) {
+      return this.errorController.handleError({ error });
+    }
+  }
+
+  getPostById(params: { id: number }): Post | undefined {
+    try {
+      const { id } = params;
+      return this.postStore.getPost({ id });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -181,11 +205,11 @@ export default class PostController {
 
   async searchPosts(params: {
     search: string;
-  }): Promise<{ id: string; title: string }[]> {
+  }): Promise<{ id: string; title: string; slug: string }[]> {
     const search = params.search;
 
     try {
-      const response = await getApiConnector().get<{ posts: { id: string; title: string }[] }>(
+      const response = await getApiConnector().get<{ posts: { id: string; title: string; slug: string }[] }>(
         `search-posts/${encodeURIComponent(search)}`,
       );
       return response.posts ?? [];
@@ -195,7 +219,7 @@ export default class PostController {
   }
 
   async updatePost(params: { post: UpdatePost }): Promise<void> {
-    const { id, title, content, coverId, images, imagesRemoved, status } =
+    const { id, title, description, content, coverId, images, imagesRemoved, status } =
       params.post;
 
     try {
@@ -204,6 +228,7 @@ export default class PostController {
           coverId,
           content,
           title,
+          description,
           id,
           imagesRemoved,
           status,
@@ -238,9 +263,9 @@ export default class PostController {
 
   async createPost(params: CreatePost) {
     try {
-      const { title, content, coverId, images, status } = params;
+      const { title, description, content, coverId, images, status } = params;
 
-      await getApiConnector().post("create-post", { title, content, coverId, images, status });
+      await getApiConnector().post("create-post", { title, description, content, coverId, images, status });
     } catch (error: unknown) {
       return this.errorController.handleError({ error });
     }
@@ -276,7 +301,9 @@ export default class PostController {
 
     return {
       id: response.id,
+      slug: response.slug,
       title: response.title,
+      description: response.description,
       content: response.content,
       createdAt: response.created_at,
       updatedAt: response.updated_at,

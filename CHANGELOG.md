@@ -1,5 +1,59 @@
 # Changelog
 
+## 19.2.0 - 2026-07-01
+
+### Added
+
+- **SEO settings admin panel**: Manage global Open Graph and Twitter meta tags from the admin panel
+- **Prerender via API**: `prerender.php` now generates complete HTML with meta tags from Laravel API
+- **Configurable API URL**: `prerender.php` respects `API_URL` from `.htaccess` environment variable
+- **Auto-detected host**: `prerender.php` is now portable with automatic `HTTP_HOST` detection
+- **Description field**: Post editor now includes a description field (max 300 chars) for SEO
+
+### Changed
+
+- **Prerender PHP formatting**: Code updated to PSR-12 indentation standards
+
+### Documentation
+
+- **README updated**: Added SEO section covering slugs, OG/Twitter tags, and prerendering
+
+## 19.1.0 - 2026-06-28
+
+### Added
+
+- **Open Graph & Twitter Cards**: Meta tags dinámicos (`og:title`, `og:description`, `og:image`, `twitter:card`, etc.) en PostPage.vue via `@unhead/vue`
+- **Prerendering PHP**: `prerender.php` para detectar bots y generar HTML completo con meta tags desde la API de Laravel
+- **.htaccess con bot detection**: Rewrites para redirigir bots de redes sociales/Facebook/Twitter/WhatsApp/Googlebot a `prerender.php`, humanos reciben SPA normal
+- **Slug en posts**: Nuevo campo `slug` único auto-generado desde título, URLs de posts migradas a `/blog/post/:slug` para mejor SEO
+- **ImageModal.vue**: Nuevo componente para vista previa de imágenes con zoom y pan
+- **DateSelectorComponent.vue**: Navegador de meses/años con caché para cargar posts por fecha
+- **Navegación por fecha persistente**: Parámetro `date` en URL del blog para linkeable y persistente navegación
+- **Blog post search via API**: Búsqueda funcional con llamada API real
+- **Admin user management**: CRUD de usuarios con roles, filtros, búsqueda, paginación y desactivación de cuentas
+
+### Changed
+
+- **Post URLs**: `/blog/post/:id` → `/blog/post/:slug`, todos los links actualizados en PostsPage, PostPage, y search
+- **PostController (frontend)**: Métodos migrados a slug (`loadPost({slug})`, `getPost({slug})`), añadidos `loadPostById`/`getPostById` para editor
+- **postStore.ts**: `getPost` acepta `id` o `slug`
+- **PostsController (backend)**: Nuevo endpoint `GET /post-by-slug/{slug}`, slug auto-generado en create/update
+- **PostFactory + PostSeeder**: Títulos únicos, slugs auto-generados, imágenes reales del pool (`backend/resources/images-pool/*.jpg`)
+- **Blog post header**: ion-page wrapper añadido a PostsPage y PostPage para estructura correcta
+- **AdminHomeMenu.vue**: User management menu item con `peopleOutline` icon y route dinámica
+- **Menú components**: `openSSOProfile` duplicado removido de ambos menús, consolidado en `overrideSSOProfile`
+
+### Fixed
+
+- **Blog post search**: Modal close handler, API call ahora retorna resultados reales
+- **PostPage header**: Fade-in title animation correcta, estructura ion-header mejorada
+
+### Added (backend)
+
+- `backend/database/migrations/2026_06_28_003833_add_description_to_posts_table.php` — campo `description` (max 300 chars)
+- `backend/database/migrations/2026_06_28_075544_add_slug_and_unique_title_to_posts_table.php` — campo `slug` (unique) + título unique
+- `backend/resources/images-pool/` — 20 imágenes reales para seed de posts
+
 ## 19.0.3 - 2026-06-22
 
 ### Changed

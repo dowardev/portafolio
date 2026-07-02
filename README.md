@@ -64,6 +64,38 @@ Access the production application at: [Production App](https://dowar.xyz)
 
 ---
 
+## SEO (Blog Posts)
+
+SEO-friendly implementation for blog posts with social media sharing support.
+
+### Features
+
+- **Slug-based URLs**: `/blog/post/{slug}` instead of numeric IDs (ej: `/blog/post/guia-completa-de-laravel`)
+- **Open Graph meta tags**: `og:title`, `og:description`, `og:image`, `og:url` for Facebook, LinkedIn, WhatsApp
+- **Twitter Cards**: `summary_large_image` with title, description, and cover image
+- **Prerendering for bots**: Apache serves full HTML with meta tags to social media crawlers (Facebook, Twitter, LinkedIn, etc.)
+
+### Implementation
+
+| Component | Technology |
+|-----------|------------|
+| Dynamic meta tags (SPA) | `@unhead/vue` in `PostPage.vue` |
+| Server-side prerendering | `prerender.php` + `.htaccess` bot detection |
+| Slug endpoint | `GET /api/post-by-slug/{slug}` |
+| SEO description | `posts.description` column (max 300 chars) |
+
+### API Endpoints (Blog)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/posts/{date}/{status}` | List posts by date |
+| `GET` | `/api/post/{id}` | Get post by ID |
+| `GET` | `/api/post-by-slug/{slug}` | Get post by slug (SEO) |
+| `GET` | `/api/post-dates?status=active` | List post dates |
+| `GET` | `/api/search-posts/{search}` | Search posts by title |
+
+---
+
 ## Prerequisites
 
 - Node.js LTS

@@ -70,7 +70,7 @@
                 <div
                   style="display: flex; cursor: pointer"
                   class="ion-justify-content-between"
-                  @click="openPost({ id: post.id })"
+                  @click="openPost({ slug: post.slug })"
                 >
                   <div style="display: flex" class="ion-align-items-center">
                     <span>
@@ -188,7 +188,7 @@
         v-for="result in searchResult"
         :key="result.id"
         button
-        @click="openPostSearch({ id: result.id })"
+        @click="openPostSearch({ slug: result.slug })"
       >
         <ion-label>{{ result.title }}</ion-label>
       </ion-item>
@@ -389,7 +389,7 @@ const isOpenSearchModal = ref(false);
 const loadFinished = ref(false);
 const navigating = ref(false);
 const dateLoading = ref(false);
-const searchResult = ref(Array<{ id: string; title: string }>());
+const searchResult = ref(Array<{ id: string; title: string; slug: string }>());
 const currentPage = ref("");
 const dates = computed(() => postController.dates.value ?? []);
 const index = ref(-1);
@@ -516,7 +516,7 @@ async function loadContent(params: {
         postController.loadPosts({
           date: routeDate,
           filter: status,
-          fields: ["id", "title", "cover", "created_at", "status"],
+          fields: ["id", "slug", "title", "cover", "created_at", "status"],
         }),
       ]);
 
@@ -537,7 +537,7 @@ async function loadContent(params: {
       await postController.loadPosts({
         date: currentPage.value,
         filter: status,
-        fields: ["id", "title", "cover", "created_at", "status"],
+        fields: ["id", "slug", "title", "cover", "created_at", "status"],
       });
     }
   } catch (error: any) {
@@ -587,16 +587,17 @@ async function searchPosts(params: { search: string }): Promise<void> {
   searchResult.value = searchResultResponse;
 }
 
-async function openPostSearch(params: { id: string }): Promise<void> {
-  const id = params.id;
-  await router.push({ name: "PostPage", params: { id } });
+async function openPostSearch(params: { slug: string }): Promise<void> {
+  const { slug } = params;
+  await router.push({ name: "PostPage", params: { slug } });
   closeModalSearchPosts();
 }
 
-async function openPost(params: { id: number }) {
-  const { id } = params;
-  openPostLoader({ id });
-  await router.push({ name: "PostPage", params: { id } });
+async function openPost(params: { slug?: string }) {
+  const { slug } = params;
+  if (!slug) return;
+  openPostLoader({ id: slug });
+  await router.push({ name: "PostPage", params: { slug } });
   closePostLoader();
 }
 
@@ -643,7 +644,7 @@ async function navigateToDate(params: { dateIndex: number }): Promise<void> {
       postController.loadPosts({
         date: currentPage.value,
         filter: filter.selected,
-        fields: ["id", "title", "cover", "created_at", "status"],
+        fields: ["id", "slug", "title", "cover", "created_at", "status"],
       }),
       router.replace({ name: "PostsPage", params: { date: currentPage.value } }),
     ]);

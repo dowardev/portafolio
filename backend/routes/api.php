@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\StackController;
 use App\Http\Controllers\Admin\TechController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\SeoSettingsController;
 use App\Http\Middleware\Cors;
 use Illuminate\Support\Facades\Route;
 
@@ -45,7 +46,9 @@ Route::middleware([Cors::class])->group(function () {
   Route::get("posts/{date}/{filter}", [PostsController::class, "getPosts"]);
   Route::get("post-dates", [PostsController::class, "getPostsDates"]);
   Route::get("post/{id}", [PostsController::class, "getPost"]);
+  Route::get("post-by-slug/{slug}", [PostsController::class, "getPostBySlug"]);
   Route::get("search-posts/{search}", [PostsController::class, "searchPost"]);
+  Route::get("seo-settings", [SeoSettingsController::class, "getSettings"]);
 });
 
 Route::middleware([Cors::class, 'sso.auth'])->get('my-permissions', \App\Http\Controllers\MyPermissionsController::class);
@@ -106,3 +109,5 @@ Route::middleware([Cors::class, 'sso.auth', 'permission:stacks.delete'])->delete
 Route::middleware([Cors::class, 'sso.auth', 'permission:techs.create'])->post("admin/techs", [TechController::class, "store"]);
 Route::middleware([Cors::class, 'sso.auth', 'permission:techs.update'])->post("admin/techs/{id}", [TechController::class, "update"]);
 Route::middleware([Cors::class, 'sso.auth', 'permission:techs.delete'])->delete("admin/techs/{id}", [TechController::class, "destroy"]);
+
+Route::middleware([Cors::class, 'sso.auth', 'permission:seo.update'])->post("admin/seo-settings", [SeoSettingsController::class, "updateSettings"]);

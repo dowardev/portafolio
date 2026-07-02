@@ -45,13 +45,30 @@ import MenuComponent3 from "./components/menu/MenuComponent3.vue";
 import { useRouter, useRoute } from "vue-router";
 import { Storage } from "@ionic/storage";
 import { wb } from "./main";
+import { useSeoMeta } from "@unhead/vue";
 
 // interface
 import { DesignMode } from "./utils/types";
 
 // controllers
 import SystemController from "./controllers/systemController";
+import SeoSettingsController from "./controllers/seoSettingsController";
 const systemController = new SystemController();
+const seoSettingsController = new SeoSettingsController();
+
+useSeoMeta({
+  title: () => seoSettingsController.data.siteTitle ?? 'Dowar Blog',
+  ogTitle: () => seoSettingsController.data.siteTitle ?? 'Dowar Blog',
+  ogDescription: () => seoSettingsController.data.siteDescription ?? '',
+  ogImage: () => seoSettingsController.data.siteImageUrl ?? '',
+  ogUrl: () => window.location.href,
+  ogSiteName: () => seoSettingsController.data.ogSiteName ?? undefined,
+  twitterCard: 'summary_large_image',
+  twitterTitle: () => seoSettingsController.data.siteTitle ?? 'Dowar Blog',
+  twitterDescription: () => seoSettingsController.data.siteDescription ?? '',
+  twitterImage: () => seoSettingsController.data.siteImageUrl ?? '',
+  robots: () => seoSettingsController.data.robotsIndex ? 'index, follow' : 'noindex, nofollow',
+})
 
 // store
 const store = new Storage();
@@ -113,6 +130,8 @@ onMounted(async () => {
   systemController.setDesignMode({ mode: designMode.value });
   updateScreenSize();
   window.addEventListener("resize", updateScreenSize);
+
+  await seoSettingsController.loadSettings();
 });
 
 function createFirstCookie() {

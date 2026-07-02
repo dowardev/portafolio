@@ -45,6 +45,7 @@
       @update-data="
         setData({
           title: $event.title,
+          description: $event.description,
           content: $event.content,
           cover: $event.cover,
           status: $event.status,
@@ -89,6 +90,7 @@ const pageTitle = "Editor";
 const coverId = ref<number | undefined>(undefined);
 const status = ref<StatusPost>("draft");
 const title = ref("");
+const description = ref("");
 const isVisibleEditorSettings = ref(true);
 
 // 7. Watch
@@ -108,6 +110,7 @@ async function save(): Promise<void> {
   try {
     await createPost({
       title: title.value,
+      description: description.value,
       content: content.value,
       coverId: coverId.value,
       images: images.value,
@@ -159,17 +162,20 @@ async function getImageURL(params: { name: string }): Promise<string> {
 
 async function setData(params: {
   title: string;
+  description?: string;
   content: string;
   cover: File;
   status: StatusPost;
 }): Promise<void> {
   const {
     title: titleData,
+    description: descriptionData,
     content: contentData,
     cover: coverData,
     status: statusData,
   } = params;
   title.value = titleData;
+  description.value = descriptionData ?? "";
   content.value = contentData;
   if (coverData.size > 0) {
     try {
