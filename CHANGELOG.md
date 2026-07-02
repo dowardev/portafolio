@@ -1,5 +1,23 @@
 # Changelog
 
+## 19.2.0 - 2026-07-01
+
+### Added
+
+- **SEO settings admin panel**: Manage global Open Graph and Twitter meta tags from the admin panel
+- **Prerender via API**: `prerender.php` now generates complete HTML with meta tags from Laravel API
+- **Configurable API URL**: `prerender.php` respects `API_URL` from `.htaccess` environment variable
+- **Auto-detected host**: `prerender.php` is now portable with automatic `HTTP_HOST` detection
+- **Description field**: Post editor now includes a description field (max 300 chars) for SEO
+
+### Changed
+
+- **Prerender PHP formatting**: Code updated to PSR-12 indentation standards
+
+### Documentation
+
+- **README updated**: Added SEO section covering slugs, OG/Twitter tags, and prerendering
+
 ## 19.1.0 - 2026-06-28
 
 ### Added
