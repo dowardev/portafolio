@@ -32,4 +32,7 @@ npm-debug.log*
 /www
 
 .env
+.env.local
+.env.*.local
+.env.development
 .env.production

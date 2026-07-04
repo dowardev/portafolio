@@ -34,11 +34,35 @@ cd frontend && pnpm run test:e2e
 cd backend
 composer install
 cp .env.example .env
-php artisan key:generate
+cp .env.development.example .env.development
+php artisan key:generate          # rellena APP_KEY en .env
 php artisan migrate
 php artisan db:seed
 php artisan serve
 ```
+
+## Variables de entorno (Backend)
+
+Laravel carga los archivos en este orden (de menor a mayor prioridad):
+- `.env`                    → siempre, base común a todos los entornos
+- `.env.[environment]`      → solo cuando `APP_ENV=environment`
+  - `.env.development`     → `APP_ENV=local` (desarrollo)
+  - `.env.testing`         → `APP_ENV=testing` (PHPUnit)
+  - `.env.production`      → `APP_ENV=production` (deploy)
+- `.env.local`             → override local (gitignored)
+
+Solo `.env` raíz contiene valores comunes. Lo específico de cada entorno
+vive en su `.env.[environment]`.
+
+### Plantillas commiteables
+
+- `backend/.env.example`                    → `cp .env.example .env`
+- `backend/.env.development.example`        → `cp .env.development.example .env.development`
+- `backend/.env.production.example`         → `cp .env.production.example .env.production`
+- `backend/.env.testing.example`            → `cp .env.testing.example .env.testing`
+
+Los archivos `.env.development`, `.env.production` y `.env.testing` están
+gitignored para que cada desarrollador mantenga sus valores locales reales.
 
 ## Architecture
 
@@ -78,6 +102,25 @@ This project is an **SSO client**. Authentication is handled against an external
 - `client_credentials` grant for server-to-server communication
 - Required environment variables: `SSO_URL`, `SSO_CLIENT_ID`, `SSO_CLIENT_SECRET`, `SSO_JWT_ISSUER`
 - Frontend requires: `VITE_SSO_URL`, `VITE_SSO_FRONTEND_URL`, `VITE_SSO_CLIENT_ID`, `VITE_API_URL`
+
+## Variables de entorno (Frontend)
+
+Vite carga los archivos en este orden (de menor a mayor prioridad):
+- `.env`                  → siempre (en todos los modos)
+- `.env.[mode]`           → solo cuando coincide el modo (dev/prod/staging)
+- `.env.[mode].local`     → override local (gitignored)
+
+Solo se exponen al cliente las variables con prefijo `VITE_`.
+Reiniciar Vite tras editar cualquier archivo `.env.*`.
+
+### Plantillas commiteables
+
+- `frontend/.env.development.example` → `cp .env.development.example .env.development`
+- `frontend/.env.production.example`  → `cp .env.production.example .env.production`
+- `frontend/.env.example`             → `cp .env.example .env.local`
+
+Los archivos `.env.development` y `.env.production` están en `.gitignore`
+para que cada desarrollador mantenga sus valores locales reales.
 
 ## Code Conventions
 
