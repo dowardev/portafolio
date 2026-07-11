@@ -271,6 +271,25 @@ ionic cap open android
 
 ---
 
+## Production Deploy
+
+See [DEPLOY.md](DEPLOY.md) for complete deploy instructions and [backend/DEPLOYMENT_CHECKLIST.md](backend/DEPLOYMENT_CHECKLIST.md) for detailed checklist.
+
+**Production domains:**
+| Service | URL |
+|---------|-----|
+| Frontend | `https://dowar.xyz` |
+| Backend API | `https://api.dowar.xyz` |
+| SSO Server | `https://sso.dowar.xyz` |
+
+**Basic steps:**
+1. Configure DNS, SSL, and server (see checklist)
+2. On server: `cp .env.production.example .env.production` and complete real values
+3. Deploy SSO Server at `sso.dowar.xyz`
+4. GitLab CI/CD deploys automatically when pushing a semantic tag (`git push origin v1.0.0`). See [DEPLOY.md §9](DEPLOY.md#9-gitlab-cicd-auto-deploy-manual-alternative)
+
+---
+
 ## Useful Commands
 
 ```bash

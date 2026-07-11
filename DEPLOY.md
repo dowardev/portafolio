@@ -3,6 +3,10 @@
 This guide covers deploying the Portfolio application on traditional hosting (shared hosting, VPS, or dedicated server).
 
 > **Note:** These instructions assume your local development environment is ready. The server only needs to serve the compiled files.
+>
+> Deploy can be done **manually** (SSH/FTP, documented here) or **automatically** via GitLab CI/CD with tags (see section 9).
+>
+> For a detailed step-by-step checklist, see [backend/DEPLOYMENT_CHECKLIST.md](backend/DEPLOYMENT_CHECKLIST.md).
 
 ---
 
@@ -28,10 +32,10 @@ composer install --no-dev --optimize-autoloader
 
 ### 2. Configure Environment
 
-Create the `backend/.env` file from the example and configure it with production values:
+Create the `backend/.env.production` file from the example and configure it with production values:
 
 ```bash
-cp .env.example .env
+cp .env.production.example .env.production
 ```
 
 | Variable | Description | Example |
@@ -39,7 +43,7 @@ cp .env.example .env
 | `APP_NAME` | Application name | `Portfolio` |
 | `APP_ENV` | Environment | `production` |
 | `APP_DEBUG` | Debug mode (false in prod) | `false` |
-| `APP_URL` | Backend URL | `https://api.yourdomain.com` |
+| `APP_URL` | Backend URL | `https://api.dowar.xyz` |
 | `DB_CONNECTION` | Database driver | `mysql` |
 | `DB_HOST` | MySQL host | `[mysql_host_from_provider]` |
 | `DB_PORT` | MySQL port | `3306` |
@@ -53,9 +57,9 @@ cp .env.example .env
 | `MAIL_USERNAME` | SMTP user | `[your_email@example.com]` |
 | `MAIL_PASSWORD` | SMTP password | `[your_password]` |
 | `MAIL_ENCRYPTION` | Encryption (tls/ssl) | `tls` |
-| `MAIL_FROM_ADDRESS` | Sender email | `noreply@yourdomain.com` |
+| `MAIL_FROM_ADDRESS` | Sender email | `noreply@dowar.xyz` |
 | `MAIL_FROM_NAME` | Sender name | `Portfolio` |
-| `SSO_URL` | SSO Server API URL | `https://sso.yourdomain.com/api` |
+| `SSO_URL` | SSO Server API URL | `https://sso.dowar.xyz/api` |
 
 ### 3. Upload Files
 
@@ -81,13 +85,17 @@ php artisan view:cache
 
 ### 1. Configure Environment
 
-Create the `frontend/.env` file with production values:
+Create the `frontend/.env.production` file from the example:
+
+```bash
+cp .env.production.example .env.production
+```
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `VITE_API_URL` | Laravel backend URL | `https://api.yourdomain.com/api` |
-| `VITE_SSO_URL` | SSO Server API URL | `https://sso.yourdomain.com/api` |
-| `VITE_SSO_FRONTEND_URL` | SSO web frontend URL | `https://sso.yourdomain.com` |
+| `VITE_API_URL` | Laravel backend URL | `https://api.dowar.xyz/api` |
+| `VITE_SSO_URL` | SSO Server API URL | `https://sso.dowar.xyz/api` |
+| `VITE_SSO_FRONTEND_URL` | SSO web frontend URL | `https://sso.dowar.xyz` |
 | `VITE_SSO_CLIENT_ID` | Client ID registered in SSO | `main-app` |
 
 ### 2. Build for Production
@@ -116,7 +124,7 @@ Place this in your public directory (where index.html is located):
 RewriteEngine On
 
 # API URL for prerender.php (change for staging overrides)
-SetEnv API_URL "https://api.yourdomain.com"
+SetEnv API_URL "https://api.dowar.xyz"
 
 # Social media bots → prerender.php (full HTML with OG/Twitter meta tags)
 RewriteCond %{REQUEST_URI} ^/blog/post/[a-z0-9\-]+$ [NC]
@@ -133,7 +141,7 @@ RewriteRule . /index.html [L]
 
 Social media crawlers (Facebook, Twitter, LinkedIn, WhatsApp, Google) do not execute JavaScript. The `.htaccess` rules redirect known bot user agents to `prerender.php`, which fetches the post data from the Laravel API and generates a full HTML page with Open Graph and Twitter Card meta tags.
 
-The `prerender.php` reads the API URL from the `API_URL` environment variable (set via `SetEnv` in `.htaccess`). The fallback is `https://api.yourdomain.com`.
+The `prerender.php` reads the API URL from the `API_URL` environment variable (set via `SetEnv` in `.htaccess`). The fallback is `https://api.dowar.xyz`.
 
 Configure per environment:
 
@@ -143,6 +151,8 @@ Configure per environment:
 | Staging | `SetEnv API_URL "https://api-staging.dowar.xyz"` |
 
 The site URL (used for `og:url`) is auto-detected from `HTTP_HOST`, so no additional configuration is needed per domain.
+
+> **Note:** `.env.production` is not committed. It is generated on the server from `.env.production.example`.
 
 ### Nginx
 
@@ -160,7 +170,7 @@ location / {
 
 Enable HTTPS through your hosting panel (most providers offer free Let's Encrypt certificates) or manually configure your SSL certificate.
 
-After enabling SSL, update your `.env` files to use `https://` instead of `http://`.
+After enabling SSL, update your `.env.production` files to use `https://` instead of `http://`.
 
 ---
 
@@ -188,7 +198,7 @@ Make sure rewrite rules are correctly configured in your `.htaccess` or server c
 
 ### Database connection error
 
-Verify your database credentials in `backend/.env`. Contact your hosting provider for the correct database host.
+Verify your database credentials in `backend/.env.production`. Contact your hosting provider for the correct database host.
 
 ### Assets not loading
 
@@ -196,7 +206,7 @@ Verify that frontend files are in the correct public directory and that paths in
 
 ### SSO authentication not working
 
-Verify that `VITE_SSO_URL` and `SSO_URL` point to the production SSO server in your `.env` files.
+Verify that `VITE_SSO_URL` and `SSO_URL` point to the production SSO server in your `.env.production` files.
 
 ---
 
@@ -204,7 +214,50 @@ Verify that `VITE_SSO_URL` and `SSO_URL` point to the production SSO server in y
 
 | Service | Development | Production |
 |---------|-------------|------------|
-| Frontend | `[direccion]:[puerto]` | `https://yourdomain.com` |
-| Backend API | `[direccion]:[puerto]` | `https://api.yourdomain.com` |
-| SSO Server | `[direccion]:[puerto]` | `https://sso.yourdomain.com` |
-| SSO Frontend | `[direccion]:[puerto]` | `https://sso.yourdomain.com` |
+| Frontend | `http://localhost:8100` | `https://dowar.xyz` |
+| Backend API | `http://localhost:8000` | `https://api.dowar.xyz` |
+| SSO Server | `http://localhost:8001` | `https://sso.dowar.xyz` |
+| SSO Frontend | `http://localhost:8101` | `https://sso.dowar.xyz` |
+
+---
+
+## 9. GitLab CI/CD Auto-Deploy (manual alternative)
+
+The `.gitlab-ci.yml` files in `backend/` and `frontend/` enable automatic deploy when pushing a semantic tag.
+
+### Prerequisites
+
+Configure these variables in **GitLab → Settings → CI/CD → Variables**:
+
+| Variable | Value | Protected | Masked |
+|----------|-------|-----------|--------|
+| `SSH_PRIVATE_KEY` | Server SSH private key | ✅ | ✅ |
+| `SSH_HOST` | `195.179.236.189` | ✅ | ✅ |
+| `SSH_PORT` | `65002` | ✅ | ✅ |
+| `SSH_USER` | `u902881280` | ✅ | ✅ |
+| `DEPLOY_PATH_BACKEND` | `/home/u902881280/public_html/blog-backend` | ✅ | ❌ |
+| `DEPLOY_PATH_FRONTEND` | `/home/u902881280/public_html` | ✅ | ❌ |
+| `VITE_API_URL` | `https://api.dowar.xyz/api/` | ✅ | ❌ |
+
+### Deploy trigger
+
+```bash
+git tag -a v1.0.0 -m "Release 1.0.0"
+git push origin v1.0.0
+```
+
+The pipeline runs **only on tags** matching `vX.Y.Z`:
+
+- **Backend**: `test` → `deploy` (git pull + php artisan migrate)
+- **Frontend**: `lint` → `test` → `build` → `package` → `deploy` (uploads compressed `dist/`)
+
+Normal pushes to `main`/`master` **do not trigger deploy**. Only semantic tags.
+
+### Pipeline sequence (frontend)
+
+```mermaid
+graph LR
+    L[lint] --> T[test] --> B[build] --> P[package] --> D[deploy]
+```
+
+If any stage fails (`lint`, `test`, `build`), the pipeline stops and won't deploy.
