@@ -76,7 +76,7 @@ gitignored para que cada desarrollador mantenga sus valores locales reales.
 - `config/sso.php` — SSO client configuration (lcobucci/jwt ^5.0)
 - **Authentication:** SSO client against external server (JWT + JWKS + DPoP)
 - **Database:** SQLite by default
-- **CI/CD:** GitLab CI (deploy on main to production server)
+- **CI/CD:** GitLab CI (unified in root `.gitlab-ci.yml`, tag-based deploy on `v*`)
 
 ### Frontend (`frontend/`)
 - **Ionic 8** + **Vue 3** with Composition API
@@ -91,7 +91,6 @@ gitignored para que cada desarrollador mantenga sus valores locales reales.
 - `src/services/` — API services
 - `src/router/` — Vue Router
 - **PWA** with vite-plugin-pwa
-- **CI/CD:** GitLab CI (build → package → deploy on master)
 
 ## Authentication
 

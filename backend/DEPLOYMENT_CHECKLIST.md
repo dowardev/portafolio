@@ -591,6 +591,22 @@ php artisan tinker --execute="config('app.sso_url')"
 
 ---
 
+## 12. GitLab CI/CD (Auto-Deploy Alternativo)
+
+Los archivos `.gitlab-ci.yml` en `backend/` y `frontend/` permiten deploy automático en lugar del proceso manual.
+
+### Cómo funciona
+1. Pushear un tag semántico: `git tag -a v1.0.0 -m "Release" && git push origin v1.0.0`
+2. GitLab CI ejecuta pipeline: lint → test → build → package → deploy
+3. Solo tags `vX.Y.Z` disparan deploy (pushes normales no)
+
+### Variables necesarias en GitLab UI
+`SSH_PRIVATE_KEY`, `SSH_HOST`, `SSH_PORT`, `SSH_USER`, `DEPLOY_PATH_BACKEND`, `DEPLOY_PATH_FRONTEND`, `VITE_API_URL`
+
+> Ver [DEPLOY.md §9](../DEPLOY.md#9-gitlab-cicd-auto-deploy-alternativa-a-manual) para detalles completos.
+
+---
+
 ## Contacto y Soporte
 
 Para reportar problemas o sugerencias, abrir un issue en:
