@@ -232,12 +232,12 @@ Configure these variables in **GitLab → Settings → CI/CD → Variables**:
 | Variable | Value | Protected | Masked |
 |----------|-------|-----------|--------|
 | `SSH_PRIVATE_KEY` | Server SSH private key | ✅ | ✅ |
-| `SSH_HOST` | `195.179.236.189` | ✅ | ✅ |
-| `SSH_PORT` | `65002` | ✅ | ✅ |
-| `SSH_USER` | `u902881280` | ✅ | ✅ |
-| `DEPLOY_PATH_BACKEND` | `/home/u902881280/public_html/blog-backend` | ✅ | ❌ |
-| `DEPLOY_PATH_FRONTEND` | `/home/u902881280/public_html` | ✅ | ❌ |
-| `VITE_API_URL` | `https://api.dowar.xyz/api/` | ✅ | ❌ |
+| `SSH_HOST` | `your-server.com` | ✅ | ✅ |
+| `SSH_PORT` | `22` | ✅ | ✅ |
+| `SSH_USER` | `your-ssh-user` | ✅ | ✅ |
+| `DEPLOY_PATH_BACKEND` | `/home/your-user/path/to/backend` | ✅ | ❌ |
+| `DEPLOY_PATH_FRONTEND` | `/home/your-user/path/to/frontend` | ✅ | ❌ |
+| `VITE_API_URL` | `https://api.yourdomain.com/api/` | ✅ | ❌ |
 
 ### Deploy trigger
 
