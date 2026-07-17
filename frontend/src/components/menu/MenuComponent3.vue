@@ -236,7 +236,9 @@ import {
   menuController,
   modalController,
 } from "@ionic/vue"
-import { onMounted, ref } from "vue"
+import { computed, ref } from "vue"
+import { storeToRefs } from "pinia"
+import { useUserStore } from "@/store/userStore"
 import { logOutOutline } from "ionicons/icons"
 
 import MenuItem3 from "./MenuItem3.vue"
@@ -245,9 +247,11 @@ import DonationsComponent from "@/components/menu/donations/Donations.vue"
 import FeedbackComponent from "@/components/feedback/FeedbackComponent.vue"
 import AppsComponent from "@/components/menu/apps/Apps.vue"
 
-import UserController from "@/controllers/userController"
-import { User } from "@/utils/interfaces"
 import { getSSOClient } from "@/ssoClientAccessor"
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+const isAdmin = computed(() => userStore.roles.includes('admin'))
 
 const ADMIN_PAGES = [
   "PanelAdminPage",
@@ -287,10 +291,6 @@ const PRESENTATION_PAGES = [
 
 const BLOG_PAGES = ["PostsPage", "PostPage"]
 
-const userController = new UserController()
-
-const user = ref<null | User>(null)
-const isAdmin = ref(false)
 const spinners = ref({
   buttonLogout: false,
 })
@@ -301,22 +301,6 @@ const accordionOpen = ref(false)
 const modalTheme = ref({ open: false })
 const modalContribute = ref({ open: false })
 const modalComments = ref({ open: false })
-
-onMounted(async () => {
-  await loadUser()
-})
-
-async function loadUser() {
-  try {
-    await userController.loadUser()
-    const u = userController.getUser()
-    user.value = u ?? null
-    isAdmin.value = userController.hasRole({ slug: "admin" })
-  } catch {
-    user.value = null
-    isAdmin.value = false
-  }
-}
 
 async function redirectToSSO(page: "login" | "register") {
   await getSSOClient().loginWithRedirect({

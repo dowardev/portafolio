@@ -4,16 +4,16 @@
       <ion-toolbar style="--background: var(--ion-background-color)">
 <!-- user logged -->
 <ion-item
-  v-if="userController.getUser()?.id"
+  v-if="user?.id"
   lines="none"
   class="transparent"
 >
-  <ion-label>{{ userController.getUser()?.name }}</ion-label>
+  <ion-label>{{ user?.name }}</ion-label>
 </ion-item>
 
         <!-- no logged -->
         <ion-item
-          v-if="!userController.getUser()?.id"
+          v-if="!user?.id"
           class="transparent"
           lines="none"
         >
@@ -33,14 +33,14 @@
       <div style="display: flex; flex-direction: column; height: 100%">
         <div>
           <ion-item-group>
-            <section v-if="userController.getUser()?.id">
+            <section v-if="user?.id">
               <ion-item-divider>
                 <ion-label> Administración </ion-label>
               </ion-item-divider>
 
               <div class="ion-padding-bottom">
                 <MenuItem
-                  v-if="userController.hasRole({ slug: 'admin' })"
+                  v-if="userController.isAdmin"
                   target-route-name="PanelAdminPage"
                   :active-routes="ADMIN_PAGES"
                   :icon-outline="cogOutline"
@@ -52,7 +52,7 @@
                 />
 
                 <MenuItem
-                  v-if="userController.getUser()?.id"
+                  v-if="user?.id"
                   target-route-name="UsersPage"
                   :active-routes="['UsersPage']"
                   :icon-outline="peopleOutline"
@@ -64,7 +64,7 @@
                 />
 
                 <!-- <MenuItem -->
-                <!--   v-if="userController.getUser()?.id" -->
+                <!--   v-if="user?.id" -->
                 <!--   target-route-name="UserPanelPage" -->
                 <!--   :active-routes="['UserPanelPage']" -->
                 <!--   :icon-outline="documentsOutline" -->
@@ -77,14 +77,14 @@
               </div>
             </section>
 
-            <section v-if="userController.getUser()?.id">
+            <section v-if="user?.id">
               <ion-item-divider>
                 <ion-label> Usuario </ion-label>
               </ion-item-divider>
 
 <div class="ion-padding-bottom">
 <MenuItem
-  v-if="userController.getUser()?.id"
+  v-if="user?.id"
   :active-routes="['UserPanelPage']"
   :icon-outline="personOutline"
   :icon-filled="person"
@@ -287,7 +287,7 @@
         <div style="margin-top: auto">
           <!-- logout -->
           <ion-item
-            v-if="userController.getUser()?.id"
+            v-if="user?.id"
             :disabled="spinners.buttonLogout"
             button
             lines="none"
@@ -359,7 +359,9 @@ import {
   menuController,
   modalController,
 } from "@ionic/vue";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
+import { storeToRefs } from "pinia";
+import { useUserStore } from "@/store/userStore";
 import {
   logOutOutline,
   thumbsUpOutline,
@@ -436,6 +438,8 @@ const BLOG_PAGES = ["PostsPage", "PostPage"];
 
 const userController = new UserController();
 const systemController = new SystemController();
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 
 const router = useRouter();
 const spinners = ref({
@@ -451,12 +455,8 @@ const windowSize = ref({
 const modalContribute = ref({ open: false });
 const modalComments = ref({ open: false });
 
-// mounted
-onMounted(async () => {
-  await getUser();
-  window.addEventListener("resize", () => {
-    windowSize.value.width = window.innerWidth;
-  });
+window.addEventListener("resize", () => {
+  windowSize.value.width = window.innerWidth;
 });
 
 // functions
@@ -472,10 +472,6 @@ async function redirectToSSO(page: "login" | "register") {
     screenHint: page,
     redirectUri: `${window.location.origin}/auth/callback`,
   });
-}
-
-async function getUser() {
-  await userController.loadUser();
 }
 
 async function logout() {

@@ -11,7 +11,7 @@
       <ion-buttons slot="end" :mode="designPlatform">
         <DateSelectorComponent :loading="dateLoading"></DateSelectorComponent>
         <ion-button
-          v-if="userController.hasRole({ slug: 'admin' })"
+          v-if="userController.isAdmin"
           fill="clear"
           @click="addPost()"
         >
@@ -80,7 +80,7 @@
                 </div>
 
                 <div
-                  v-if="userController.hasRole({ slug: 'admin' })"
+                  v-if="userController.isAdmin"
                   class="ion-padding-top ion-justify-content-end"
                   style="display: flex; height: 46px"
                 >
@@ -228,7 +228,7 @@
       >
 
       <!-- filter -->
-      <ion-list v-if="userController.hasRole({ slug: 'admin' })">
+      <ion-list v-if="userController.isAdmin">
         <ion-list-header>
           <ion-label>Filtro</ion-label>
         </ion-list-header>

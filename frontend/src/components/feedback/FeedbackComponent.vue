@@ -161,11 +161,13 @@ import { required, helpers, email, minLength } from "@vuelidate/validators";
 import { LoadButton } from "ionic-extra-components";
 
 // controllers
-import UserController from "@/controllers/userController";
 import SystemController from "@/controllers/systemController";
 import { FeedbackParams } from "@/utils/interfaces";
 import FeedbackController from "@/controllers/feedbackController";
-const userController = new UserController();
+import { storeToRefs } from "pinia";
+import { useUserStore } from "@/store/userStore";
+const userStore = useUserStore();
+const { user } = storeToRefs(userStore);
 const systemController = new SystemController();
 const feedbackController = new FeedbackController();
 // end controllers
@@ -220,28 +222,19 @@ const buttonSendProps = reactive({ status: false, fill: "clear" });
 // end vars
 
 // mounted
-onMounted(async () => {
-  await getUser();
+onMounted(() => {
+  const u = userStore.user;
+  if (u) {
+    form.id = u.id ?? "";
+    form.name = u.name ?? "";
+    form.email = u.email ?? "";
+  }
 });
 // end mounted
 
 // funtions
 function closeModal() {
   emit("dismiss");
-}
-
-async function getUser() {
-  try {
-    await userController.loadUser();
-    console.log(userController.getUser());
-
-    form.id = userController.getUser()!.id!;
-    form.name = userController.getUser()!.name!;
-    form.email = userController.getUser()!.email!;
-  } catch (e) {
-    console.error(e);
-    return;
-  }
 }
 
 async function sendFeedback(params: FeedbackParams) {

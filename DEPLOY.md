@@ -70,14 +70,29 @@ Upload the entire `backend/` folder to your hosting. Common paths:
 
 ### 4. Run Migrations
 
+**Important:** The production environment uses `CACHE_STORE=database`, `QUEUE_CONNECTION=database`, and `SESSION_DRIVER=database`. These require the `cache`, `jobs`, and `sessions` tables.
+
 Run these commands on your hosting (via SSH, terminal, or hosting panel):
 
 ```bash
+# Generate optional table migrations (one-time)
+php artisan cache:table    # Required for CACHE_STORE=database
+php artisan queue:table    # Required for QUEUE_CONNECTION=database
+php artisan session:table  # Required for SESSION_DRIVER=database (if used)
+
+# Run all migrations (including optional tables)
 php artisan migrate --force
+
+# Verify everything is migrated
+php artisan migrate:status
+
+# Cache for production
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 ```
+
+> **Note:** If `php artisan migrate` fails with "Table 'cache' doesn't exist", it means `cache:table` was not executed. The `post-autoload-dump` Composer hook runs `migrate --force` automatically on `composer install`, but `cache:table` and `queue:table` must be run manually the first time.
 
 ---
 
@@ -178,7 +193,8 @@ After enabling SSL, update your `.env.production` files to use `https://` instea
 
 - [ ] Backend files uploaded to hosting
 - [ ] Frontend files uploaded to public directory
-- [ ] Database configured and migrations executed
+- [ ] Database configured and migrations executed (`php artisan migrate:status` all "Ran")
+- [ ] Optional cache/queue/session table migrations generated (`cache:table`, `queue:table`, `session:table` if needed)
 - [ ] Environment variables configured for production
 - [ ] SSO URLs updated to production domains
 - [ ] SSL/HTTPS enabled
@@ -207,6 +223,16 @@ Verify that frontend files are in the correct public directory and that paths in
 ### SSO authentication not working
 
 Verify that `VITE_SSO_URL` and `SSO_URL` point to the production SSO server in your `.env.production` files.
+
+### Table 'cache' doesn't exist
+
+The `CACHE_STORE=database` driver requires the `cache` table. Run:
+```bash
+php artisan cache:table && php artisan migrate --force
+```
+Same applies for `queue:table` (`QUEUE_CONNECTION=database`) and `session:table` (`SESSION_DRIVER=database`).
+
+See [section 2.4](#4-run-migrations) for details.
 
 ---
 

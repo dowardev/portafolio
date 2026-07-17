@@ -45,7 +45,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
       '@tu-org/sso-client': path.resolve(
         __dirname,
-        '../../sso-client/packages/sso-client/src/index.ts',
+        '../../sso/packages/sso-client/src/index.ts',
       ),
     },
   },

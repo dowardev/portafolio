@@ -22,7 +22,7 @@
 
       <!-- desktop options -->
       <ion-buttons v-if="isPlatform('desktop')" slot="end">
-        <section v-if="userController.hasRole({ slug: 'admin' })">
+        <section v-if="userController.isAdmin">
           <ion-button fill="clear" @click="updatePost()">
             <ion-icon :icon="createOutline"></ion-icon>
           </ion-button>
@@ -104,7 +104,7 @@
 
       <!-- update -->
       <ion-item
-        v-if="userController.hasRole({ slug: 'admin' })"
+        v-if="userController.isAdmin"
         lines="full"
         button
         @click="updatePost()"
@@ -114,7 +114,7 @@
       </ion-item>
       <!-- delete -->
       <ion-item
-        v-if="userController.hasRole({ slug: 'admin' })"
+        v-if="userController.isAdmin"
         lines="full"
         button
         @click="deletePost()"

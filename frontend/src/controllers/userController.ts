@@ -12,6 +12,73 @@ import ErrorController from "./errorController";
 
 import { useUserStore } from "@/store/userStore";
 
+type IdentityStatus = 'loaded' | 'unauthenticated';
+interface IdentityResult {
+  status: IdentityStatus;
+  user?: User;
+  roles?: string[];
+  permissions?: Record<string, boolean>;
+}
+
+let _identityPromise: Promise<IdentityResult> | null = null;
+
+async function loadIdentitySafely(): Promise<IdentityResult> {
+  if (_identityPromise) return _identityPromise;
+
+  _identityPromise = (async (): Promise<IdentityResult> => {
+    const ssoClient = getSSOClient();
+
+    if (!ssoClient.isAuthenticated) {
+      return { status: 'unauthenticated' };
+    }
+
+    let user: User | null = null;
+    try {
+      user = await ssoClient.getUser();
+    } catch {
+      return { status: 'unauthenticated' };
+    }
+
+    if (!user) {
+      return { status: 'unauthenticated' };
+    }
+
+    try {
+      const response = await getApiConnector().get<MyPermissionsResponse>(
+        'my-permissions',
+      );
+
+      if (!ssoClient.isAuthenticated) {
+        return { status: 'unauthenticated' };
+      }
+
+      return {
+        status: 'loaded',
+        user,
+        roles: response.roles,
+        permissions: response.permissions,
+      };
+    } catch (error) {
+      const errCtrl = new ErrorController();
+      const ce = errCtrl.getError({ error });
+      const isAuthError =
+        ce.status === 401 ||
+        ce.errorDetail === 'Unauthenticated.' ||
+        ce.errorDetail === 'Token no proporcionado';
+      if (isAuthError) {
+        return { status: 'unauthenticated' };
+      }
+      throw error;
+    }
+  })();
+
+  try {
+    return await _identityPromise;
+  } finally {
+    _identityPromise = null;
+  }
+}
+
 export default class UserController {
   private systemService = new SystemService();
   private errorController = new ErrorController();
@@ -56,31 +123,44 @@ export default class UserController {
   }
 
   async loadUser() {
+    this.userStore.setLoadState('loading');
+
     try {
-      const ssoUser = await getSSOClient().getUser();
-      if (ssoUser) this.updateUserProps({ user: ssoUser });
-      if (!this.userStore.permissionsLoaded) {
-        await this.loadPermissions();
-      }
-    } catch (e: unknown) {
-      const customError = this.errorController.getError({ error: e });
-      
-      const isAuthError = 
-        customError.errorDetail === "Unauthenticated." || 
-        customError.errorDetail === "Token no proporcionado";
-      const isNetworkError = 
-        customError.message === "No response received from server" ||
-        customError.message.includes("Network Error") ||
-        !customError.status;
+      const identity = await loadIdentitySafely();
 
-      if (import.meta.env.DEV && isNetworkError) {
-        console.warn("[DEV] Backend no disponible - operando en modo offline");
+      if (identity.status === 'unauthenticated') {
+        this.userStore.setLoadState('unauthenticated');
+        return;
       }
 
-      if (!isAuthError && !isNetworkError) {
-        throw customError;
+      if (identity.user) {
+        this.updateUserProps({ user: identity.user });
       }
+      this.userStore.updateUserLoggedProp(true);
+      this.userStore.setPermissions({
+        roles: identity.roles ?? [],
+        permissions: identity.permissions ?? {},
+      });
+      this.userStore.setLoadState('loaded');
+    } catch (error) {
+      this.userStore.setLoadState('idle');
+      const ce = this.errorController.getError({ error });
+      const isNetworkError =
+        ce.message === 'No response received from server' ||
+        ce.message.includes('Network Error') ||
+        !ce.status;
+      if (isNetworkError && import.meta.env.DEV) {
+        console.warn('[DEV] Backend no disponible - operando en modo offline');
+        return;
+      }
+      throw ce;
     }
+  }
+
+  async refreshIdentity(): Promise<void> {
+    _identityPromise = null;
+    this.userStore.setLoadState('idle');
+    await this.loadUser();
   }
 
   updateUserProps(params: { user: User }) {
@@ -101,7 +181,7 @@ export default class UserController {
   }
 
   getCurrentUserId(): string | undefined {
-    return this.userRefs.user.value?.id
+    return this.userRefs.user.value?.id;
   }
 
   async recoverPassword(params: { email: string }) {
@@ -128,9 +208,13 @@ export default class UserController {
     try {
       await getSSOClient().resendEmailVerification(params.email);
     } catch (e: unknown) {
-      if (typeof e === "object" && e !== null && "errorDetail" in e) {
+      if (typeof e === 'object' && e !== null && 'errorDetail' in e) {
         const customError = e as ICustomError;
-        if (customError.errorDetail != "Unauthenticated." && customError.errorDetail != "Token no proporcionado") throw customError;
+        if (
+          customError.errorDetail != 'Unauthenticated.' &&
+          customError.errorDetail != 'Token no proporcionado'
+        )
+          throw customError;
       } else {
         throw e;
       }
@@ -138,15 +222,30 @@ export default class UserController {
   }
 
   async logout() {
+    _identityPromise = null;
     await getSSOClient().logout();
     this.userStore.logout();
   }
 
   async loadPermissions(): Promise<void> {
     try {
-      const response = await getApiConnector().get<MyPermissionsResponse>('my-permissions');
-      this.userStore.setPermissions({ roles: response.roles, permissions: response.permissions });
+      const response = await getApiConnector().get<MyPermissionsResponse>(
+        'my-permissions',
+      );
+      this.userStore.setPermissions({
+        roles: response.roles,
+        permissions: response.permissions,
+      });
     } catch (error) {
+      const ce = this.errorController.getError({ error });
+      const isAuthError =
+        ce.status === 401 ||
+        ce.errorDetail === 'Unauthenticated.' ||
+        ce.errorDetail === 'Token no proporcionado';
+      if (isAuthError) {
+        this.userStore.clearPermissions();
+        return;
+      }
       console.error('[loadPermissions] Error loading permissions:', error);
       return this.errorController.handleError({ error });
     }
@@ -155,6 +254,10 @@ export default class UserController {
   async refreshPermissions(): Promise<void> {
     this.userStore.clearPermissions();
     await this.loadPermissions();
+  }
+
+  get isAdmin(): boolean {
+    return this.userStore.isAdmin;
   }
 
   hasPermission(params: { slug: string }): boolean {
