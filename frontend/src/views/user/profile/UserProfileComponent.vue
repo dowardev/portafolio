@@ -399,8 +399,10 @@ import userAvatar from "../../../assets/otros/user.png";
 import SystemController from "@/controllers/systemController";
 import UserController from "@/controllers/userController";
 import ErrorController from "@/controllers/errorController";
-const systemController = new SystemController();
+import { useUserStore } from "@/store/userStore";
+
 const userController = new UserController();
+const userStore = useUserStore();
 const errorController = new ErrorController();
 
 // vars
@@ -493,19 +495,24 @@ const modalInfoProfile = ref({ open: false });
 const modalDeleteAccount = ref({ open: false });
 
 // mounted
-onMounted(async () => {
-  await loadUser();
+onMounted(() => {
+  loadUserFromStore();
   oldEmail.value = form.value.email!;
   emits("content-loaded");
 });
 
-async function loadUser() {
-  await userController.loadUser();
+function loadUserFromStore() {
+  const u = userStore.user;
+  if (u) {
+    form.value.name = u.name ?? "";
+    form.value.user = u.user ?? "";
+    form.value.email = u.email ?? "";
+  }
+}
 
-  form.value.name = userController.getUser()?.name!;
-  form.value.user = userController.getUser()?.user!;
-  form.value.email = userController.getUser()?.email!;
-  userImage.value = userController.getUser()?.toString()!;
+async function loadUser() {
+  await userController.refreshIdentity();
+  loadUserFromStore();
 }
 
 async function saveUserData() {
@@ -521,7 +528,7 @@ async function saveUserData() {
 
   try {
     await userController.saveUserData({ name, user, email, imageId });
-    loadUser();
+    await loadUser();
     await systemController.presentToast({
       message: "Datos actualizados",
     });

@@ -92,6 +92,37 @@ gitignored para que cada desarrollador mantenga sus valores locales reales.
 - `src/router/` — Vue Router
 - **PWA** with vite-plugin-pwa
 
+#### Identity Layer (Reflow de Autenticación + Autorización)
+
+Una sola fuente de verdad para "quién soy y qué puedo hacer". Las vistas
+leen reactivamente del store; nadie hace HTTP directamente para identidad.
+
+**Arquitectura:**
+
+```
+main.ts → ssoClient.init()
+        → new UserController().loadUser()  // único bootstrap
+        → app.mount('#app')
+```
+
+- `loadUser()` usa `loadIdentitySafely()` (módulo-level, deduplicado):
+  1. Checkea `getSSOClient().isAuthenticated` (sin HTTP)
+  2. Si `true`, lee `getUser()` (cached del SSO Client)
+  3. Si hay sesión, pide `my-permissions` al backend Laravel
+  4. Si 401 → silencioso (estado `unauthenticated`)
+  5. Se escribe en `userStore` con loadState: `idle|loading|loaded|unauthenticated`
+
+**Vistas:** leen de `useUserStore()` via `storeToRefs`, no hacen HTTP.
+`UserController` tiene `refreshIdentity()` para refrescos explícitos.
+
+**Archivos clave:**
+- `src/controllers/userController.ts` — `loadIdentitySafely()`, `refreshIdentity()`
+- `src/store/userStore.ts` — `loadState` reactivo
+- `src/main.ts` — bootstrap + condiciona SW a `import.meta.env.PROD`
+- `src/components/menu/MenuComponent*.vue` — leen del store, sin `onMounted` HTTP
+- `src/views/user/profile/UserProfileComponent.vue` — `loadUserFromStore()` + `refreshIdentity()`
+- `src/components/feedback/FeedbackComponent.vue` — lee del store en `onMounted`
+
 ## Authentication
 
 This project is an **SSO client**. Authentication is handled against an external SSO server:

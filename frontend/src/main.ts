@@ -29,8 +29,9 @@ import "@ionic/vue/css/display.css";
 import "./theme/variables.css";
 
 // pinia - propio del portafolio
-import { createPinia } from "pinia";
+import { createPinia, setActivePinia } from "pinia";
 const pinia = createPinia();
+setActivePinia(pinia);
 
 // storage
 import { Storage } from "@ionic/storage";
@@ -45,30 +46,11 @@ const ssoClient = new SSOClient({
   clientId: import.meta.env.VITE_SSO_CLIENT_ID,
   apiBaseUrl: import.meta.env.VITE_API_URL,
 });
-await ssoClient.init();
-export { ssoClient };
-
-import { setHttpClient } from "@/apiConnector";
-import { setSSOClient } from "@/ssoClientAccessor";
-setHttpClient(ssoClient.http);
-setSSOClient(ssoClient);
 
 // Sincronizar estado SSO con la store local del portafolio
 import { useUserStore } from "@/store/userStore";
 
-// service worker
-import { Workbox } from "workbox-window";
-let wb: Workbox | null = null;
-if ("serviceWorker" in navigator) {
-  wb = new Workbox("/sw.js");
-  wb.register();
-}
-export { wb };
-
-const app = createApp(App).use(IonicVue).use(pinia).use(router).use(head);
-app.directive("tooltip", vTooltip);
-app.directive("section-reveal", vSectionReveal);
-
+// Registrar listener ANTES de init() para capturar la emisión inicial del estado de autenticación
 ssoClient.onAuthStateChange((state) => {
   const userStore = useUserStore();
   if (state.isAuthenticated && state.user) {
@@ -79,6 +61,32 @@ ssoClient.onAuthStateChange((state) => {
     userStore.updateUserLoggedProp(false);
   }
 });
+
+await ssoClient.init();
+export { ssoClient };
+
+import { setHttpClient } from "@/apiConnector";
+import { setSSOClient } from "@/ssoClientAccessor";
+import UserController from "@/controllers/userController";
+setHttpClient(ssoClient.http);
+setSSOClient(ssoClient);
+
+// Bootstrap: cargar identidad una sola vez tras init.
+// Los menús y el router leen reactivamente del store, no hacen HTTP.
+new UserController().loadUser().catch(() => {});
+
+// service worker (solo produccion — en dev no hay /sw.js)
+import { Workbox } from "workbox-window";
+let wb: Workbox | null = null;
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  wb = new Workbox("/sw.js");
+  wb.register();
+}
+export { wb };
+
+const app = createApp(App).use(IonicVue).use(pinia).use(router).use(head);
+app.directive("tooltip", vTooltip);
+app.directive("section-reveal", vSectionReveal);
 
 router.isReady().then(() => {
   app.mount("#app");

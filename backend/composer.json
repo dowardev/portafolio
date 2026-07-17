@@ -7,7 +7,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "/home/dowardev/Documentos/programacion/sso-client/packages/sso-server"
+            "url": "/home/dowardev/Documentos/programacion/sso/packages/sso-server"
         }
     ],
     "require": {
@@ -40,7 +40,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan migrate --force --no-interaction"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

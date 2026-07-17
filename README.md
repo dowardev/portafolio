@@ -174,32 +174,59 @@ For complete SSO Server details, see the SSO Server documentation.
 
 ---
 
+## Quick Start
+
+```bash
+# Automated setup (recommended)
+./setup.sh
+
+# Manual: see sections below
+```
+
 ## Installation
 
-### 1. SSO Server (First)
+### 0. Prerequisites
+
+- PHP 8.2+, Composer, MySQL
+- Node.js LTS, pnpm
+- SSO Server running (see [SSO Server](#sso-server-external-service))
+
+### 1. Automated Setup (recommended)
+
+```bash
+./setup.sh
+```
+
+The script runs all manual steps: `composer install`, `.env` creation, `key:generate`, **migrations** (including `cache`, `jobs`, `sessions` tables), and `pnpm install`.
+
+### 2. Manual Setup
+
+#### SSO Server (First)
 
 Make sure the SSO Server is running. For setup instructions, consult the SSO Server documentation.
 
-### 2. Backend
+#### Backend
 
 ```bash
 cd backend
 
-# Install dependencies
+# Install dependencies (runs migrations automatically via post-install hook)
 composer install
 
 # Configure environment
 cp .env.example .env
 php artisan key:generate
 
-# Run migrations
+# Run migrations (cache, jobs, sessions tables)
 php artisan migrate
 
 # Start server
 php artisan serve --port=8000
 ```
 
-### 3. Frontend
+> **Note:** The `cache`, `jobs`, and `sessions` database tables are required if `CACHE_STORE=database`, `QUEUE_CONNECTION=database`, or `SESSION_DRIVER=database`. Run `php artisan cache:table`, `php artisan queue:table`, or `php artisan session:table` if those migrations are missing, then `php artisan migrate`.
+
+#### Frontend
 
 ```bash
 cd frontend
@@ -293,10 +320,16 @@ See [DEPLOY.md](DEPLOY.md) for complete deploy instructions and [backend/DEPLOYM
 ## Useful Commands
 
 ```bash
+# Setup
+./setup.sh                      # Full setup (composer, .env, migrations, pnpm)
+
 # Backend
 php artisan route:list          # List registered routes
 php artisan config:clear        # Clear configuration cache
 php artisan migrate             # Run migrations
+php artisan migrate:status      # Check migration status
+php artisan cache:table         # Generate cache table migration (if needed)
+php artisan queue:table         # Generate jobs table migration (if needed)
 
 # Frontend
 ionic build                     # Production build

@@ -905,7 +905,7 @@ async function updateUserStatus(params: { id: string; status: boolean }) {
 }
 
 async function handleUpdateUserStatus(params: { id: string; status: boolean }) {
-  if (!userController.hasRole({ slug: 'admin' })) {
+  if (!userController.isAdmin) {
     const alert = await alertController.create({
       header: 'Sin permisos',
       message: 'Solo los administradores pueden cambiar el estado de usuarios. Contacta al administrador.',
@@ -972,7 +972,7 @@ async function deleteUser(params: AdminDeleteUserAccount) {
 }
 
 async function handleDeleteUser(params: AdminDeleteUserAccount) {
-  if (!userController.hasRole({ slug: 'admin' })) {
+  if (!userController.isAdmin) {
     const alert = await alertController.create({
       header: 'Sin permisos',
       message: 'Solo los administradores pueden eliminar usuarios. Contacta al administrador.',
@@ -1035,7 +1035,7 @@ async function handleCreateUserAccount(params: {
   email: string;
   password: string;
 }) {
-  if (!userController.hasRole({ slug: 'admin' })) {
+  if (!userController.isAdmin) {
     const alert = await alertController.create({
       header: 'Sin permisos',
       message: 'Solo los administradores pueden crear usuarios. Contacta al administrador.',
@@ -1135,7 +1135,7 @@ async function handleUpdateUserAccount(params: {
   user: string;
   email: string;
 }) {
-  if (!userController.hasRole({ slug: 'admin' })) {
+  if (!userController.isAdmin) {
     const alert = await alertController.create({
       header: 'Sin permisos',
       message: 'Solo los administradores pueden actualizar usuarios. Contacta al administrador.',
