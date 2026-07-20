@@ -60,54 +60,53 @@
       </ion-button>
     </ion-list-header>
 
-    <ion-card class="shadow1">
-      <ion-card-content>
-        <div
-          v-for="(linkItem, linkIndex) in tags"
-          :key="linkIndex"
-          class="link-item"
+    <ion-card
+      v-for="(linkItem, linkIndex) in tags"
+      :key="linkIndex"
+      class="shadow1"
+    >
+      <ion-item lines="full">
+        <ion-input
+          label="Nombre"
+          label-placement="floating"
+          :value="linkItem.name"
+          :error-text="getLinkError({ index: linkIndex, field: 'name' })"
+          :class="{
+            'ion-invalid': hasLinkError({ index: linkIndex, field: 'name' }),
+            'ion-touched': touched[linkIndex]?.name,
+          }"
+          @ion-input="updateLink({ index: linkIndex, field: 'name', value: $event.detail.value || '' })"
+          @ion-blur="touchLinkField({ index: linkIndex, field: 'name' })"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="full">
+        <ion-input
+          label="URL"
+          label-placement="floating"
+          :value="linkItem.url"
+          :error-text="getLinkError({ index: linkIndex, field: 'url' })"
+          :class="{
+            'ion-invalid': hasLinkError({ index: linkIndex, field: 'url' }),
+            'ion-touched': touched[linkIndex]?.url,
+          }"
+          @ion-input="updateLink({ index: linkIndex, field: 'url', value: $event.detail.value || '' })"
+          @ion-blur="touchLinkField({ index: linkIndex, field: 'url' })"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-button
+          slot="end"
+          fill="clear"
+          color="danger"
+          size="small"
+          @click="removeLink(linkIndex)"
         >
-          <ion-item lines="full">
-            <ion-input
-              label="Nombre"
-              label-placement="floating"
-              :value="linkItem.name"
-              :error-text="getLinkError({ index: linkIndex, field: 'name' })"
-              :class="{
-                'ion-invalid': hasLinkError({ index: linkIndex, field: 'name' }),
-                'ion-touched': touched[linkIndex]?.name,
-              }"
-              @ion-input="updateLink({ index: linkIndex, field: 'name', value: $event.detail.value || '' })"
-              @ion-blur="touchLinkField({ index: linkIndex, field: 'name' })"
-            ></ion-input>
-          </ion-item>
-
-          <ion-item lines="full">
-            <ion-input
-              label="URL"
-              label-placement="floating"
-              :value="linkItem.url"
-              :error-text="getLinkError({ index: linkIndex, field: 'url' })"
-              :class="{
-                'ion-invalid': hasLinkError({ index: linkIndex, field: 'url' }),
-                'ion-touched': touched[linkIndex]?.url,
-              }"
-              @ion-input="updateLink({ index: linkIndex, field: 'url', value: $event.detail.value || '' })"
-              @ion-blur="touchLinkField({ index: linkIndex, field: 'url' })"
-            ></ion-input>
-          </ion-item>
-
-          <div class="link-actions">
-            <ion-button
-              fill="clear"
-              color="danger"
-              @click="removeLink(linkIndex)"
-            >
-              <ion-icon :icon="trashOutline"></ion-icon>
-            </ion-button>
-          </div>
-        </div>
-      </ion-card-content>
+          <ion-icon slot="start" :icon="trashOutline"></ion-icon>
+          Eliminar
+        </ion-button>
+      </ion-item>
     </ion-card>
   </ion-list>
 
@@ -233,14 +232,20 @@
   </ion-list>
 
   <ion-modal :is-open="isReorderModalOpen" @did-dismiss="onReorderDismiss">
-    <ion-header>
+    <ion-header class="ion-no-border" mode="ios">
       <ion-toolbar>
-        <ion-title>Reordenar etiquetas</ion-title>
-        <ion-buttons slot="end">
-          <ion-button fill="clear" @click="closeReorderModal">
-            Cerrar
+        <ion-buttons slot="start">
+          <ion-button @click="closeReorderModal">
+            <ion-icon :icon="closeOutline"></ion-icon>
           </ion-button>
-          <ion-button color="primary" @click="saveReorder">Guardar</ion-button>
+        </ion-buttons>
+
+        <ion-title>Reordenar etiquetas</ion-title>
+
+        <ion-buttons slot="end">
+          <ion-button color="primary" @click="saveReorder">
+            <ion-icon slot="icon-only" :icon="saveOutline"></ion-icon>
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -263,7 +268,6 @@ import {
   IonButton,
   IonButtons,
   IonCard,
-  IonCardContent,
   IonContent,
   IonHeader,
   IonIcon,
@@ -281,7 +285,7 @@ import {
   IonToggle,
   IonToolbar,
 } from "@ionic/vue";
-import { addOutline, closeOutline, reorderThreeOutline, linkOutline, trashOutline } from "ionicons/icons";
+import { addOutline, closeOutline, reorderThreeOutline, linkOutline, saveOutline, trashOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { helpers, maxLength, minLength, required, url } from "@vuelidate/validators";
 import { computed, reactive, ref, onMounted } from "vue";
@@ -554,18 +558,5 @@ onMounted(() => {
 }
 input[type="file"] {
   margin-top: 8px;
-}
-.link-item {
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--ion-color-light-shade);
-}
-.link-item:last-of-type {
-  border-bottom: none;
-}
-.link-actions {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 8px;
 }
 </style>
