@@ -1,5 +1,19 @@
 # Changelog
 
+## 19.3.0 - 2026-07-21
+
+### Added
+
+- **Template 3 is the new default**: the portfolio now ships with `template3` as the default template (blueprint-style cards, refined typography, mobile-first animations).
+- **Redesigned InfoEditor tags cards**: the tag editor now uses a card-based layout matching the `IconSelector` pattern, with a consistent reorder modal across the admin UI.
+- **Idempotent seeder with "Vaciar" button**: the post/project seeder can be run repeatedly without creating duplicates, and exposes a "Vaciar" action to clear seeded data on demand.
+
+### Fixed
+
+- **Card animations on mobile**: added `:active` fallback so the hover lift and shadow effects on `ProjectCard3` and `SkillsSection3` also trigger on touch devices.
+- **Tag reorder modal empty on first open**: `localTags` is now synced via `watch` instead of `onMounted`, so the modal renders populated the first time it opens.
+- **Template 3 placeholders**: removed the stray `'...'` placeholder text shown in the `name` and `username` fields.
+
 ## 19.2.0 - 2026-07-01
 
 ### Added

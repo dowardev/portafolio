@@ -6,7 +6,6 @@
           <ion-menu-button class="mobile-menu-trigger" :auto-hide="false" color="dark" menu="mainMenu" aria-label="Abrir menú" />
           <a class="header-logo" href="#" @click.prevent="scrollToSection('#hero')">
             <img v-if="headerLogoUrl" :src="headerLogoUrl" alt="logo" class="logo-img" width="36" height="36" />
-            <img v-else src="@/assets/portafolio/logo_dowar_2.1.png" alt="logo" class="logo-img" width="36" height="36" />
             <span class="logo-text">{{ username }}</span>
           </a>
         </ion-buttons>
@@ -199,8 +198,8 @@ function onResize() {
 }
 
 const introData = computed(() => introController.data.value || { name: null, username: null, tags: [], description: null, socials: [], logoUrl: null, photoUrl: null, showFooter: true, footerContent: null, showContactForm: { socials: false, freelance: false } })
-const name = computed(() => introData.value.name || "...")
-const username = computed(() => introData.value.username || name.value)
+const name = computed(() => introData.value.name || "")
+const username = computed(() => introData.value.username || introData.value.name || "")
 const roles = computed(() => (introData.value.tags || []).map(t => t.name))
 const headerLogoUrl = computed(() => introData.value.logoUrl || null)
 

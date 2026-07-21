@@ -6,7 +6,7 @@ import { reactive, ref } from "vue";
 export const useSystemStore = defineStore("system", () => {
   const theme = ref({
     selected: "light",
-    template: "template2" as HomeTemplate,
+    template: "template3" as HomeTemplate,
     variant: "light" as ConcreteTheme,
     options: { blur: false, lightTheme: "light" as ConcreteTheme, darkTheme: "catppuccin-macchiato" as ConcreteTheme },
   } as Theme);
