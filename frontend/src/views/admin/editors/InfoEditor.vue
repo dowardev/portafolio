@@ -288,7 +288,7 @@ import {
 import { addOutline, closeOutline, reorderThreeOutline, linkOutline, saveOutline, trashOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { helpers, maxLength, minLength, required, url } from "@vuelidate/validators";
-import { computed, reactive, ref, onMounted } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import IconSelector from "@/components/admin/IconSelector.vue";
 
 interface SocialItem {
@@ -542,11 +542,18 @@ async function handleSubmit(): Promise<boolean> {
   return isValid;
 }
 
-defineExpose({ handleSubmit });
+// 7. Watch
+watch(
+  () => props.tags,
+  () => {
+    if (!isReorderModalOpen.value) {
+      localTags.value = createLocalTags();
+    }
+  },
+  { deep: true, immediate: true },
+);
 
-onMounted(() => {
-  localTags.value = createLocalTags();
-});
+defineExpose({ handleSubmit });
 </script>
 
 <style scoped>
