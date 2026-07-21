@@ -67,7 +67,8 @@ const categories = computed(() => props.categories ?? [])
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.skill-card:hover {
+.skill-card:hover,
+.skill-card:active {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
@@ -84,7 +85,8 @@ const categories = computed(() => props.categories ?? [])
   transition: transform 0.25s ease;
 }
 
-.skill-card:hover::before {
+.skill-card:hover::before,
+.skill-card:active::before {
   transform: translate(-4px, -4px);
 }
 
@@ -100,7 +102,8 @@ const categories = computed(() => props.categories ?? [])
   transition: transform 0.25s ease;
 }
 
-.skill-card:hover::after {
+.skill-card:hover::after,
+.skill-card:active::after {
   transform: translate(4px, 4px);
 }
 
@@ -116,7 +119,8 @@ const categories = computed(() => props.categories ?? [])
   transition: transform 0.25s ease;
 }
 
-.skill-card:hover .card-hero-icon {
+.skill-card:hover .card-hero-icon,
+.skill-card:active .card-hero-icon {
   transform: scale(1.08);
 }
 
@@ -161,7 +165,8 @@ const categories = computed(() => props.categories ?? [])
     transition: none;
   }
 
-  .skill-card:hover {
+  .skill-card:hover,
+  .skill-card:active {
     transform: none;
     box-shadow: none;
   }
@@ -172,7 +177,9 @@ const categories = computed(() => props.categories ?? [])
   }
 
   .skill-card:hover::before,
-  .skill-card:hover::after {
+  .skill-card:hover::after,
+  .skill-card:active::before,
+  .skill-card:active::after {
     transform: none;
   }
 
@@ -180,7 +187,8 @@ const categories = computed(() => props.categories ?? [])
     transition: none;
   }
 
-  .skill-card:hover .card-hero-icon {
+  .skill-card:hover .card-hero-icon,
+  .skill-card:active .card-hero-icon {
     transform: none;
   }
 }
