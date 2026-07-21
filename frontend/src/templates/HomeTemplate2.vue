@@ -7,6 +7,7 @@
             <ion-col size="12">
               <div class="header-content">
                 <div
+                  v-if="introData?.logoUrl"
                   class="avatar-container"
                   :class="{
                     'avatar-visible': showAvatar,
@@ -14,10 +15,7 @@
                   }"
                 >
                   <ion-avatar>
-              <img
-                  alt="Logo"
-                  :src="introData?.logoUrl || defaultLogo"
-                />
+                    <img alt="Logo" :src="introData?.logoUrl" />
                   </ion-avatar>
                 </div>
 
@@ -95,13 +93,10 @@
               size-lg="10"
               style="display: flex; flex-direction: column"
             >
-              <div class="profile-photo-container scale-in-item" :class="{ 'is-visible': heroReady }" style="--delay: 0ms">
+              <div v-if="introData?.photoUrl" class="profile-photo-container scale-in-item" :class="{ 'is-visible': heroReady }" style="--delay: 0ms">
                 <div class="gradient-ring">
                   <ion-avatar class="profile-avatar">
-            <img
-                  alt="Foto de perfil"
-                  :src="introData?.photoUrl || defaultPhoto"
-                />
+                    <img alt="Foto de perfil" :src="introData?.photoUrl" />
                   </ion-avatar>
                 </div>
               </div>
@@ -407,8 +402,7 @@ import ProjectCard from "@/components/projects/ProjectCard.vue";
 import ExperienceCard from "@/components/experience/ExperienceCard.vue";
 
 
-import defaultLogo from "@/assets/portafolio/logo_dowar_2.1.png";
-import defaultPhoto from "@/assets/portafolio/foto_perfil.jpg";
+
 import { getIconByName } from "@/utils/iconsIndex";
 import { linkOutline } from "ionicons/icons";
 

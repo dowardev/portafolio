@@ -96,16 +96,32 @@
             <div class="ion-padding-top ion-text-center">
               <ion-button
                 color="warning"
-                :disabled="seeding || selectedSections.size === 0"
+                :disabled="busy || selectedSections.size === 0"
+                class="ion-margin-end"
                 @click="handleSeed"
               >
                 <ion-spinner
-                  v-if="seeding"
+                  v-if="busy && seedBusy"
                   slot="start"
                   name="crescent"
                 />
                 <ion-icon v-else slot="start" :icon="bugOutline" />
-                Sembrar datos de prueba
+                Sembrar
+              </ion-button>
+
+              <ion-button
+                color="danger"
+                fill="outline"
+                :disabled="busy || selectedSections.size === 0"
+                @click="handleClear"
+              >
+                <ion-spinner
+                  v-if="busy && !seedBusy"
+                  slot="start"
+                  name="crescent"
+                />
+                <ion-icon v-else slot="start" :icon="trashOutline" />
+                Vaciar
               </ion-button>
             </div>
           </ion-col>
@@ -154,6 +170,7 @@ import {
   bugOutline,
   closeOutline,
   searchOutline,
+  trashOutline,
 } from "ionicons/icons";
 
 const router = useRouter();
@@ -163,7 +180,8 @@ const seedController = new SeedController();
 const isDev = import.meta.env.DEV;
 
 const showSeedModal = ref(false);
-const seeding = ref(false);
+const busy = ref(false);
+const seedBusy = ref(false);
 const selectedSections = ref<Set<SeedSection>>(new Set());
 
 interface SeedSectionItem {
@@ -207,16 +225,33 @@ function toggleAll() {
 }
 
 async function handleSeed() {
-  if (selectedSections.value.size === 0 || seeding.value) return
+  if (selectedSections.value.size === 0 || busy.value) return
 
-  seeding.value = true
+  busy.value = true
+  seedBusy.value = true
   try {
     await seedController.seedSections({
       sections: Array.from(selectedSections.value),
     })
     showSeedModal.value = false
   } finally {
-    seeding.value = false
+    busy.value = false
+    seedBusy.value = false
+  }
+}
+
+async function handleClear() {
+  if (selectedSections.value.size === 0 || busy.value) return
+
+  busy.value = true
+  seedBusy.value = false
+  try {
+    await seedController.clearSections({
+      sections: Array.from(selectedSections.value),
+    })
+    showSeedModal.value = false
+  } finally {
+    busy.value = false
   }
 }
 

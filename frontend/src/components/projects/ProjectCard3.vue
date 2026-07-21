@@ -125,6 +125,11 @@ const dateText = computed(() => {
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
 }
 
+.project-card:active {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
 .project-card::before {
   content: "";
   position: absolute;
@@ -141,6 +146,10 @@ const dateText = computed(() => {
   transform: translate(-6px, -6px);
 }
 
+.project-card:active::before {
+  transform: translate(-3px, -3px);
+}
+
 .project-card::after {
   content: "";
   position: absolute;
@@ -155,6 +164,10 @@ const dateText = computed(() => {
 
 .project-card:hover::after {
   transform: translate(6px, 6px);
+}
+
+.project-card:active::after {
+  transform: translate(3px, 3px);
 }
 
 .card-number {
@@ -273,7 +286,8 @@ const dateText = computed(() => {
     transition: none;
   }
 
-  .project-card:hover {
+  .project-card:hover,
+  .project-card:active {
     transform: none;
     box-shadow: none;
   }
@@ -284,7 +298,9 @@ const dateText = computed(() => {
   }
 
   .project-card:hover::before,
-  .project-card:hover::after {
+  .project-card:hover::after,
+  .project-card:active::before,
+  .project-card:active::after {
     transform: none;
   }
 }
