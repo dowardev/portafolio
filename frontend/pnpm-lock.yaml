@@ -45,8 +45,8 @@ importers:
         specifier: ^0.0.4
         version: 0.0.4(react@19.2.5)(vue@3.5.33(typescript@5.9.3))
       '@tu-org/sso-client':
-        specifier: file:../../sso-client/packages/sso-client
-        version: file:../../sso-client/packages/sso-client
+        specifier: file:../../sso/packages/sso-client
+        version: '@dowardev/sso-client@file:../../sso/packages/sso-client'
       '@unhead/vue':
         specifier: ^1.11.0
         version: 1.11.20(vue@3.5.33(typescript@5.9.3))
@@ -755,6 +755,9 @@ packages:
 
   '@cypress/xvfb@1.2.4':
     resolution: {integrity: sha512-skbBzPggOVYCbnGgV+0dmBdW/s77ZkAOXIC1knS8NagwDjBrNC1LuXtQJeiN6l+m7lzmHtaoUw/ctJKdqkG57Q==}
+
+  '@dowardev/sso-client@file:../../sso/packages/sso-client':
+    resolution: {directory: ../../sso/packages/sso-client, type: directory}
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -1616,9 +1619,6 @@ packages:
   '@trickfilm400/rollup-plugin-off-main-thread@3.0.0-pre1':
     resolution: {integrity: sha512-/67zpWDBLV+oYAEL682s1ktXL0HgqX76f6gaVGkGnVZlBbm1zd0v4Bz8MFF2GGhoX9rvfq3KSQHubFHwa6w6/Q==}
     engines: {node: '>=12'}
-
-  '@tu-org/sso-client@file:../../sso-client/packages/sso-client':
-    resolution: {directory: ../../sso-client/packages/sso-client, type: directory}
 
   '@types/esrecurse@4.3.1':
     resolution: {integrity: sha512-xJBAbDifo5hpffDBuHl0Y8ywswbiAp/Wi7Y/GtAgSlZyIABppyurxVueOPE8LUQOxdlgi6Zqce7uoEpqNTeiUw==}
@@ -2817,6 +2817,7 @@ packages:
 
   ionic-extra-components@0.12.3:
     resolution: {integrity: sha512-8qsrIJcoejwtbbUfW/wvd92cuTvNMrUq3L+T1YS/wbHvc3TaSMIJD+ef5k0xB+aqv6CT9jx4OKqnytru1Bybhw==}
+    deprecated: ⚠️ This package has been renamed to @dowar/ionic-extra-vue. See https://gitlab.com/dowardev/ionic-extra-components for migration instructions.
     peerDependencies:
       '@ionic/vue': ^8.4.3
       ionicons: ^7.0.0
@@ -5061,6 +5062,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@dowardev/sso-client@file:../../sso/packages/sso-client':
+    dependencies:
+      axios: 1.16.0
+    transitivePeerDependencies:
+      - debug
+
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
 
@@ -5690,12 +5697,6 @@ snapshots:
       json5: 2.2.3
       magic-string: 0.30.21
       string.prototype.matchall: 4.0.12
-
-  '@tu-org/sso-client@file:../../sso-client/packages/sso-client':
-    dependencies:
-      axios: 1.16.0
-    transitivePeerDependencies:
-      - debug
 
   '@types/esrecurse@4.3.1': {}
 

@@ -36,6 +36,7 @@ cache:
 # Setup composer comun: composer:2.8 + COMPOSER_HOME fijado
 .composer_setup:
   before_script:
+    - cd backend
     - export COMPOSER_HOME="$CI_PROJECT_DIR/backend/.composer"
     - composer install --prefer-dist --no-progress --no-interaction
 
