@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 class RoleSyncService
 {
     private string $ssoUrl;
+
     private int $ttl;
 
     public function __construct()
@@ -26,6 +27,7 @@ class RoleSyncService
     public function syncRoles(): array
     {
         Cache::forget('sso_roles');
+
         return $this->getRoles();
     }
 
@@ -34,12 +36,14 @@ class RoleSyncService
         if (Cache::has('sso_roles')) {
             return Cache::get('sso_roles_synced_at');
         }
+
         return null;
     }
 
     public function getRoleSlugs(): array
     {
         $roles = $this->getRoles();
+
         return array_filter(array_map(function ($role) {
             return $role['slug'] ?? $role->slug ?? null;
         }, $roles));
@@ -55,6 +59,7 @@ class RoleSyncService
         if ($response->successful()) {
             $roles = $response->json('data', []);
             Cache::put('sso_roles_synced_at', now()->toIso8601String(), $this->ttl);
+
             return $roles;
         }
 

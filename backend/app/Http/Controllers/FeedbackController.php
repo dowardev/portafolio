@@ -7,22 +7,22 @@ use Illuminate\Http\Request;
 
 class FeedbackController extends Controller
 {
-  public function createFeedback(Request $request)
-  {
-    $user_id = null;
+    public function createFeedback(Request $request)
+    {
+        $user_id = null;
 
-    $user_id = $request->userId;
-    $name = $request->name;
-    $email = $request->email;
-    $description = $request->description;
-    $contact_me = $request->contactMe;
+        $user_id = $request->userId;
+        $name = $request->name;
+        $email = $request->email;
+        $description = $request->description;
+        $contact_me = $request->contactMe;
 
-    Feedback::create([
-      "user_id" => $user_id,
-      "name" => $name,
-      "email" => $email,
-      "description" => $description,
-      "contact_me" => $contact_me,
-    ]);
-  }
+        Feedback::create([
+            'user_id' => $user_id,
+            'name' => $name,
+            'email' => $email,
+            'description' => $description,
+            'contact_me' => $contact_me,
+        ]);
+    }
 }

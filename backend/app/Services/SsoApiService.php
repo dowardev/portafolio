@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Log;
 class SsoApiService
 {
     private string $ssoUrl;
+
     private string $clientId;
+
     private string $clientSecret;
 
     public function __construct()
@@ -23,7 +25,7 @@ class SsoApiService
     {
         $token = $this->getAccessToken();
 
-        if (!$token) {
+        if (! $token) {
             return [];
         }
 
@@ -47,11 +49,12 @@ class SsoApiService
                         'user' => $user['user'] ?? '',
                         'email' => $user['email'] ?? '',
                     ];
-                })->filter(fn($u) => $u['id'])->values()->toArray();
+                })->filter(fn ($u) => $u['id'])->values()->toArray();
             }
 
             if ($response->status() === 401) {
                 $this->clearAccessToken();
+
                 return $this->getUsers($search, $perPage);
             }
 
@@ -60,7 +63,7 @@ class SsoApiService
                 'body' => $response->body(),
             ]);
         } catch (\Exception $e) {
-            Log::error('SSO API users request exception: ' . $e->getMessage());
+            Log::error('SSO API users request exception: '.$e->getMessage());
         }
 
         return [];
@@ -82,6 +85,7 @@ class SsoApiService
     {
         if (empty($this->clientSecret)) {
             Log::error('SSO_CLIENT_SECRET not configured');
+
             return null;
         }
 
@@ -101,7 +105,7 @@ class SsoApiService
                 'body' => $response->body(),
             ]);
         } catch (\Exception $e) {
-            Log::error('SSO client_credentials token request exception: ' . $e->getMessage());
+            Log::error('SSO client_credentials token request exception: '.$e->getMessage());
         }
 
         return null;

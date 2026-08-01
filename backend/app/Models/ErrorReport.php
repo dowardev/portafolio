@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ErrorReport extends Model
 {
-  use HasFactory;
-  protected $fillable = ["message", "stack", "timestamp", "comments"];
+    use HasFactory;
+
+    protected $fillable = ['message', 'stack', 'timestamp', 'comments'];
 }

@@ -16,7 +16,7 @@ class PermissionMiddleware
 
     public function handle(Request $request, Closure $next, string $permission): Response
     {
-        if (!SsoAuth::isAuthenticated()) {
+        if (! SsoAuth::isAuthenticated()) {
             return response()->json(['error' => 'No autenticado'], 401);
         }
 
@@ -53,7 +53,7 @@ class PermissionMiddleware
             ->where('permission_slug', $permission)
             ->exists();
 
-        if (!$hasPermission) {
+        if (! $hasPermission) {
             return response()->json(['error' => 'No tienes el permiso requerido'], 403);
         }
 

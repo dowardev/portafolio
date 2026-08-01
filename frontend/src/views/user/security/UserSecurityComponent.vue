@@ -305,7 +305,7 @@ async function saveUserPassword() {
     await systemController.presentToast({
       message: "Contraseña actualizada",
     });
-  } catch (e: any) {
+  } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
     spinners.value.saveUserPassword = false;
     if (e.message == "Wrong password") {
       await systemController.presentToast({

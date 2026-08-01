@@ -37,6 +37,7 @@ class PermissionService
     public function hasPermission(string $permissionSlug): bool
     {
         $permissions = $this->getUserPermissions();
+
         return $permissions[$permissionSlug] ?? false;
     }
 
@@ -48,12 +49,14 @@ class PermissionService
                 return true;
             }
         }
+
         return false;
     }
 
     public function getUserRoleSlugs(): array
     {
         $roles = SsoAuth::roles();
+
         return $this->extractRoleSlugs($roles);
     }
 
@@ -71,7 +74,7 @@ class PermissionService
 
     private function getCachedPermissions(array $roleSlugs, ?string $userId): ?array
     {
-        if (!$userId || empty($roleSlugs)) {
+        if (! $userId || empty($roleSlugs)) {
             return null;
         }
 
@@ -80,7 +83,7 @@ class PermissionService
 
     private function cachePermissions(array $roleSlugs, ?string $userId, array $permissions): void
     {
-        if (!$userId || empty($roleSlugs)) {
+        if (! $userId || empty($roleSlugs)) {
             return;
         }
 
@@ -91,7 +94,7 @@ class PermissionService
     {
         if (in_array('admin', $roleSlugs)) {
             return Permission::pluck('slug')
-                ->mapWithKeys(fn($s) => [$s => true])
+                ->mapWithKeys(fn ($s) => [$s => true])
                 ->toArray();
         }
 
@@ -108,11 +111,12 @@ class PermissionService
             if ($override && $override->type === 'deny') {
                 return [$slug => false];
             }
+
             return [$slug => true];
         })->toArray();
 
         foreach ($overrides as $slug => $override) {
-            if ($override->type === 'grant' && !isset($permissions[$slug])) {
+            if ($override->type === 'grant' && ! isset($permissions[$slug])) {
                 $permissions[$slug] = true;
             }
         }

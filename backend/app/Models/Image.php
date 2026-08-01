@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Image extends Model
 {
-  use HasFactory;
+    use HasFactory;
 
-  protected $fillable = ["name", "path"];
+    protected $fillable = ['name', 'path'];
 
-  public function posts()
-  {
-    return $this->hasMany(Post::class, "cover_id");
-  }
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'cover_id');
+    }
 }

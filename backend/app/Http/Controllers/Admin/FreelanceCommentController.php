@@ -12,6 +12,7 @@ class FreelanceCommentController extends Controller
     public function index()
     {
         $comments = FreelanceComment::orderBy('id', 'desc')->get();
+
         return response()->json(['freelanceComments' => $comments]);
     }
 
@@ -62,6 +63,7 @@ class FreelanceCommentController extends Controller
     public function show($id)
     {
         $comment = FreelanceComment::with('platform')->findOrFail($id);
+
         return response()->json(['freelanceComment' => $comment]);
     }
 }

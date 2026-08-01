@@ -13,6 +13,7 @@ trait ExtractsRoleSlugs
         if (is_array($roles)) {
             return array_filter(array_map(function ($role) {
                 $roleArr = is_object($role) ? (array) $role : $role;
+
                 return $roleArr['slug'] ?? null;
             }, $roles));
         }

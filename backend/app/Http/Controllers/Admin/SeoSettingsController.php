@@ -93,9 +93,9 @@ class SeoSettingsController extends Controller
         if ($request->hasFile('siteImage')) {
             $oldPath = $settings->site_image_path ? $this->pathFromUrl($settings->site_image_path) : null;
             $file = $request->file('siteImage');
-            $filename = uniqid() . time() . '.' . $file->getClientOriginalExtension();
-            Storage::disk('public')->put('seo/' . $filename, file_get_contents($file));
-            $settings->site_image_path = 'storage/seo/' . $filename;
+            $filename = uniqid().time().'.'.$file->getClientOriginalExtension();
+            Storage::disk('public')->put('seo/'.$filename, file_get_contents($file));
+            $settings->site_image_path = 'storage/seo/'.$filename;
             if ($oldPath && Storage::disk('public')->exists($oldPath)) {
                 Storage::disk('public')->delete($oldPath);
             }
@@ -118,6 +118,7 @@ class SeoSettingsController extends Controller
             if (str_starts_with($path, 'storage/')) {
                 return substr($path, 8);
             }
+
             return $path;
         }
 

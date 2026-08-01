@@ -13,6 +13,7 @@ class FreelancePlatformController extends Controller
     public function index()
     {
         $freelances = FreelancePlatform::orderBy('id', 'desc')->get();
+
         return response()->json(['freelancePlatforms' => $freelances]);
     }
 
@@ -30,9 +31,9 @@ class FreelancePlatformController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
-            Storage::disk('public')->put('homepage/freelance/' . $fileName, file_get_contents($file));
-            $data['image'] = url('api/serve-image?path=homepage/freelance/' . $fileName);
+            $fileName = uniqid().time().'.'.$this->getExtensionFromMime($file);
+            Storage::disk('public')->put('homepage/freelance/'.$fileName, file_get_contents($file));
+            $data['image'] = url('api/serve-image?path=homepage/freelance/'.$fileName);
         }
 
         $freelance = FreelancePlatform::create($data);
@@ -54,7 +55,7 @@ class FreelancePlatformController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            if (!empty($freelance->image)) {
+            if (! empty($freelance->image)) {
                 $oldImagePath = $this->pathFromUrl($freelance->image);
                 if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
                     Storage::disk('public')->delete($oldImagePath);
@@ -62,9 +63,9 @@ class FreelancePlatformController extends Controller
             }
 
             $file = $request->file('image');
-            $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
-            Storage::disk('public')->put('homepage/freelance/' . $fileName, file_get_contents($file));
-            $data['image'] = url('api/serve-image?path=homepage/freelance/' . $fileName);
+            $fileName = uniqid().time().'.'.$this->getExtensionFromMime($file);
+            Storage::disk('public')->put('homepage/freelance/'.$fileName, file_get_contents($file));
+            $data['image'] = url('api/serve-image?path=homepage/freelance/'.$fileName);
         }
 
         $freelance->update($data);
@@ -76,7 +77,7 @@ class FreelancePlatformController extends Controller
     {
         $freelance = FreelancePlatform::findOrFail($id);
 
-        if (!empty($freelance->image)) {
+        if (! empty($freelance->image)) {
             $oldImagePath = $this->pathFromUrl($freelance->image);
             if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
                 Storage::disk('public')->delete($oldImagePath);
@@ -91,6 +92,7 @@ class FreelancePlatformController extends Controller
     public function show($id)
     {
         $freelance = FreelancePlatform::findOrFail($id);
+
         return response()->json(['freelancePlatform' => $freelance]);
     }
 
@@ -104,13 +106,17 @@ class FreelancePlatformController extends Controller
             'image/webp' => 'webp',
             'image/svg+xml' => 'svg',
         ];
+
         return $extensions[$mimeType] ?? 'jpg';
     }
 
     private function pathFromUrl($url)
     {
-        if (!$url) return null;
+        if (! $url) {
+            return null;
+        }
         $parsed = parse_url($url);
+
         return ltrim($parsed['path'] ?? '', '/');
     }
 }

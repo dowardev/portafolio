@@ -3,11 +3,6 @@ import { User } from "../utils/interfaces";
 import userAvatar from "@/assets/otros/user.png";
 import { ref, computed } from "vue";
 
-interface UserState {
-  user: User;
-  isLogged: boolean;
-}
-
 export const useUserStore = defineStore("user", () => {
   const user = ref<undefined | User>(undefined);
   const isLogged = ref<boolean>(false);

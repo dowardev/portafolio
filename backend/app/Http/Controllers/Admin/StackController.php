@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Stack;
 use App\Models\Icon;
+use App\Models\Stack;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -48,7 +48,7 @@ class StackController extends Controller
 
         if ($request->filled('icon_name')) {
             $icon = Icon::where('name', $request->icon_name)->first();
-            if (!$icon) {
+            if (! $icon) {
                 $icon = Icon::create(['name' => $request->icon_name]);
             }
             $data['icon_id'] = $icon->id;
@@ -97,7 +97,7 @@ class StackController extends Controller
 
         if ($request->filled('icon_name')) {
             $icon = Icon::where('name', $request->icon_name)->first();
-            if (!$icon) {
+            if (! $icon) {
                 $icon = Icon::create(['name' => $request->icon_name]);
             }
             $data['icon_id'] = $icon->id;

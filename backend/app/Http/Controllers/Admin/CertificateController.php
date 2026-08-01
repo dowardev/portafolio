@@ -13,6 +13,7 @@ class CertificateController extends Controller
     public function index()
     {
         $certificates = Certificate::orderBy('id', 'desc')->get();
+
         return response()->json(['certificates' => $certificates]);
     }
 
@@ -30,9 +31,9 @@ class CertificateController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
-            Storage::disk('public')->put('homepage/certificates/' . $fileName, file_get_contents($file));
-            $data['img'] = url('api/serve-image?path=homepage/certificates/' . $fileName);
+            $fileName = uniqid().time().'.'.$this->getExtensionFromMime($file);
+            Storage::disk('public')->put('homepage/certificates/'.$fileName, file_get_contents($file));
+            $data['img'] = url('api/serve-image?path=homepage/certificates/'.$fileName);
         }
 
         $certificate = Certificate::create($data);
@@ -43,6 +44,7 @@ class CertificateController extends Controller
     public function show($id)
     {
         $certificate = Certificate::findOrFail($id);
+
         return response()->json(['certificate' => $certificate]);
     }
 
@@ -60,7 +62,7 @@ class CertificateController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
-            if (!empty($certificate->img)) {
+            if (! empty($certificate->img)) {
                 $oldImagePath = $this->pathFromUrl($certificate->img);
                 if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
                     Storage::disk('public')->delete($oldImagePath);
@@ -68,9 +70,9 @@ class CertificateController extends Controller
             }
 
             $file = $request->file('image');
-            $fileName = uniqid() . time() . '.' . $this->getExtensionFromMime($file);
-            Storage::disk('public')->put('homepage/certificates/' . $fileName, file_get_contents($file));
-            $data['img'] = url('api/serve-image?path=homepage/certificates/' . $fileName);
+            $fileName = uniqid().time().'.'.$this->getExtensionFromMime($file);
+            Storage::disk('public')->put('homepage/certificates/'.$fileName, file_get_contents($file));
+            $data['img'] = url('api/serve-image?path=homepage/certificates/'.$fileName);
         }
 
         $certificate->update($data);
@@ -82,7 +84,7 @@ class CertificateController extends Controller
     {
         $certificate = Certificate::findOrFail($id);
 
-        if (!empty($certificate->img)) {
+        if (! empty($certificate->img)) {
             $oldImagePath = $this->pathFromUrl($certificate->img);
             if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
                 Storage::disk('public')->delete($oldImagePath);
@@ -104,13 +106,17 @@ class CertificateController extends Controller
             'image/webp' => 'webp',
             'image/svg+xml' => 'svg',
         ];
+
         return $extensions[$mimeType] ?? 'jpg';
     }
 
     private function pathFromUrl($url)
     {
-        if (!$url) return null;
+        if (! $url) {
+            return null;
+        }
         $parsed = parse_url($url);
+
         return ltrim($parsed['path'] ?? '', '/');
     }
 }

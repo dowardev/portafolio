@@ -35,11 +35,12 @@ class MyPermissionsController extends Controller
                 if ($override && $override->type === 'deny') {
                     return [$slug => false];
                 }
+
                 return [$slug => true];
             });
 
         foreach ($overrides as $slug => $override) {
-            if ($override->type === 'grant' && !$permissions->has($slug)) {
+            if ($override->type === 'grant' && ! $permissions->has($slug)) {
                 $permissions[$slug] = true;
             }
         }

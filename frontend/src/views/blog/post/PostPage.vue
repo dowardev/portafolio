@@ -48,7 +48,7 @@
     <div v-if="post == undefined" class="skeleton-container">
       <ion-skeleton-text animated style="width: 100%; max-width: 500px; height: 280px; border-radius: 8px; margin: 0 auto"></ion-skeleton-text>
       <ion-skeleton-text animated style="width: 60%; height: 32px; margin: 16px auto 0"></ion-skeleton-text>
-      <ion-skeleton-text animated v-for="n in 6" :key="n" style="width: 80%; height: 16px; margin: 8px auto 0"></ion-skeleton-text>
+      <ion-skeleton-text v-for="n in 6" :key="n" animated style="width: 80%; height: 16px; margin: 8px auto 0"></ion-skeleton-text>
     </div>
 
     <!-- post content -->

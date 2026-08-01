@@ -3,7 +3,6 @@ import { storeToRefs } from "pinia";
 import type { TagItem } from "@/services/types";
 import { ToastController } from "./toastController";
 import { getApiConnector } from "@/apiConnector";
-import type { HttpClient } from "@tu-org/sso-client";
 
 export interface IntroData {
   name: string | null;

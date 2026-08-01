@@ -53,8 +53,8 @@
                     label="Título del sitio"
                     label-placement="stacked"
                     :value="form.siteTitle"
-                    @ion-input="form.siteTitle = $event.detail.value ?? ''"
                     placeholder="Dowar Blog"
+                    @ion-input="form.siteTitle = $event.detail.value ?? ''"
                   />
                   <SeoHelpButton slot="end" message="Título que aparece en pestañas del navegador y como og:title por defecto en todas las páginas" />
                 </ion-item>
@@ -64,11 +64,11 @@
                     label="Descripción del sitio"
                     label-placement="stacked"
                     :value="form.siteDescription"
-                    @ion-input="form.siteDescription = $event.detail.value ?? ''"
                     placeholder="Blog personal de tecnología y desarrollo"
                     :maxlength="500"
                     :counter="true"
                     auto-grow
+                    @ion-input="form.siteDescription = $event.detail.value ?? ''"
                   />
                   <SeoHelpButton slot="end" message="Descripción por defecto del sitio. Se usa como og:description cuando un post no tiene descripción propia. Recomendado: 150-160 caracteres." />
                 </ion-item>
@@ -78,8 +78,8 @@
                     label="Keywords (separadas por comas)"
                     label-placement="stacked"
                     :value="form.siteKeywords"
-                    @ion-input="form.siteKeywords = $event.detail.value ?? ''"
                     placeholder="blog, tecnología, desarrollo"
+                    @ion-input="form.siteKeywords = $event.detail.value ?? ''"
                   />
                   <SeoHelpButton slot="end" message="Palabras clave separadas por comas. Ej: blog, tecnología, vue, laravel" />
                 </ion-item>
@@ -89,9 +89,9 @@
                     label="Idioma (lang)"
                     label-placement="stacked"
                     :value="form.langCode"
-                    @ion-input="form.langCode = $event.detail.value ?? 'es'"
                     placeholder="es"
                     maxlength="10"
+                    @ion-input="form.langCode = $event.detail.value ?? 'es'"
                   />
                   <SeoHelpButton slot="end" message="Código de idioma para el atributo html lang. Ej: es para español, en para inglés" />
                 </ion-item>
@@ -110,8 +110,8 @@
                     label="og:site_name"
                     label-placement="stacked"
                     :value="form.ogSiteName"
-                    @ion-input="form.ogSiteName = $event.detail.value ?? ''"
                     placeholder="Dowar Blog"
+                    @ion-input="form.ogSiteName = $event.detail.value ?? ''"
                   />
                   <SeoHelpButton slot="end" message="Nombre del sitio que aparece en previsualizaciones de Facebook, LinkedIn, Discord, etc" />
                 </ion-item>
@@ -121,8 +121,8 @@
                     label="Twitter handle (@usuario)"
                     label-placement="stacked"
                     :value="form.twitterHandle"
-                    @ion-input="form.twitterHandle = $event.detail.value ?? ''"
                     placeholder="@dowar"
+                    @ion-input="form.twitterHandle = $event.detail.value ?? ''"
                   />
                   <SeoHelpButton slot="end" message="Tu usuario de Twitter con @. Aparece en la tarjeta de previsualización de Twitter" />
                 </ion-item>
@@ -156,7 +156,7 @@
                       size="small"
                       @click="removeImage"
                     >
-                      <ion-icon :icon="trashOutline" slot="start" />
+                      <ion-icon slot="start" :icon="trashOutline" />
                       Eliminar
                     </ion-button>
                   </div>
@@ -186,8 +186,8 @@
                     label="Canonical base URL"
                     label-placement="stacked"
                     :value="form.canonicalBase"
-                    @ion-input="form.canonicalBase = $event.detail.value ?? ''"
                     placeholder="https://dowar.xyz"
+                    @ion-input="form.canonicalBase = $event.detail.value ?? ''"
                   />
                   <SeoHelpButton slot="end" message="URL base canónica sin slash final. Usada para construir URLs absolutas en meta tags canonical y og:url" />
                 </ion-item>
@@ -197,8 +197,8 @@
                     label="API URL para prerender (admin_api_url)"
                     label-placement="stacked"
                     :value="form.adminApiUrl"
-                    @ion-input="form.adminApiUrl = $event.detail.value ?? ''"
                     placeholder="https://api.dowar.xyz"
+                    @ion-input="form.adminApiUrl = $event.detail.value ?? ''"
                   />
                   <SeoHelpButton slot="end" message="URL del backend Laravel que prerender.php usará. Si está vacío, usa la variable de entorno API_URL del servidor" />
                 </ion-item>

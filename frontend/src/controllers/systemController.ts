@@ -1,4 +1,4 @@
-import { FeedbackParams, Toast, Theme } from "@/utils/interfaces";
+import { Toast, Theme } from "@/utils/interfaces";
 import { toastController } from "@ionic/vue";
 import { useSystemStore } from "../store/systemStore";
 import { wb } from "@/main";
@@ -21,6 +21,7 @@ export default class SystemController {
     try {
       const stored = await this.systemService.getTheme();
       if (stored && stored.selected) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const storedTheme = stored as any;
         const resolved = storedTheme.selected !== "auto"
           ? storedTheme.selected
@@ -87,7 +88,7 @@ export default class SystemController {
       this.systemService.applyTheme({
         theme: newTheme,
         resolvedSelected: cssTheme,
-        currentTheme: oldTheme,
+        _currentTheme: oldTheme,
         resolvedCurrentSelected: oldCssTheme,
       });
     } catch (error) {
@@ -289,11 +290,7 @@ export default class SystemController {
   }
 
   getdesignMode(): DesignMode {
-    try {
-      return this.systemStore.getDesignMode() || "md";
-    } catch (error) {
-      return "md";
-    }
+    return this.systemStore.getDesignMode() || "md";
   }
 
   getScreenSize(): { width: number; height: number; preset: string } {

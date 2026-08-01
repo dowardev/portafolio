@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Image;
+use App\Models\Post;
 use App\Models\PostImage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Storage;
@@ -10,263 +11,267 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
+ * @extends Factory<Post>
  */
 class PostFactory extends Factory
 {
-  private static array $pendingImageIds = [];
-  private static array $usedTitles = [];
+    private static array $pendingImageIds = [];
 
-  public function configure(): static
-  {
-    return $this->afterCreating(function ($post) {
-      $imageIds = array_shift(self::$pendingImageIds) ?? [];
-      foreach ($imageIds as $imageId) {
-        PostImage::create([
-          "post_id" => $post->id,
-          "image_id" => $imageId,
+    private static array $usedTitles = [];
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function ($post) {
+            $imageIds = array_shift(self::$pendingImageIds) ?? [];
+            foreach ($imageIds as $imageId) {
+                PostImage::create([
+                    'post_id' => $post->id,
+                    'image_id' => $imageId,
+                ]);
+            }
+        });
+    }
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition()
+    {
+        $timestamp = mt_rand(strtotime('2024-01-01'), time());
+        $randomDate = date('Y-m-d H:i:s', $timestamp);
+        $title = $this->generateUniqueTitle();
+
+        $extraImages = Image::factory()
+            ->count(mt_rand(2, 4))
+            ->disk('posts_images')
+            ->create();
+        $extraIds = $extraImages->pluck('id')->toArray();
+        $extraUrls = $extraImages->map(function ($img) {
+            return URL::to(Storage::disk($img->path)->url($img->name));
+        })->toArray();
+
+        self::$pendingImageIds[] = $extraIds;
+
+        return [
+            'title' => $title,
+            'slug' => Str::slug($title),
+            'description' => $this->faker->sentence(12),
+            'content' => $this->generateMarkdownContent($title, $extraUrls),
+            'cover_id' => Image::factory()->disk('posts_images')->create()->id,
+            'created_at' => $randomDate,
+            'status' => 'active',
+        ];
+    }
+
+    private function generateUniqueTitle(): string
+    {
+        $attempts = 0;
+        do {
+            $title = $this->generateTitle();
+            $attempts++;
+        } while (in_array($title, self::$usedTitles) && $attempts < 100);
+        self::$usedTitles[] = $title;
+
+        return $title;
+    }
+
+    private function generateTitle(): string
+    {
+        $templates = [
+            'Guía completa de {{topic}}',
+            'Cómo {{action}} en {{year}}',
+            '{{topic}}: Todo lo que necesitas saber',
+            'Los mejores consejos para {{action}}',
+            '{{topic}} desde cero: Introducción práctica',
+            'Por qué {{topic}} está cambiando {{industry}}',
+            '{{number}} razones para aprender {{topic}}',
+            'Comparativa: {{topic}} vs {{alternative}}',
+            'Errores comunes al {{action}} y cómo evitarlos',
+            '{{topic}} avanzado: Técnicas y patrones',
+        ];
+
+        $template = $this->faker->randomElement($templates);
+        $topic = $this->faker->randomElement([
+            'Laravel', 'Vue.js', 'TypeScript', 'Docker', 'PHP 8',
+            'Desarrollo Web', 'APIs REST', 'Bases de Datos', 'SQL',
+            'Git', 'Linux', 'AWS', 'Testing', 'CI/CD', 'Python',
+            'JavaScript', 'Node.js', 'React', 'Tailwind CSS', 'MySQL',
         ]);
-      }
-    });
-  }
+        $alternative = $this->faker->randomElement([
+            'React', 'Angular', 'Svelte', 'Express', 'Symfony',
+            'MongoDB', 'PostgreSQL', 'Redis', 'Figma', 'Alpine.js',
+        ]);
+        $action = $this->faker->randomElement([
+            'crear una API REST', 'optimizar consultas SQL',
+            'desplegar en producción', 'automatizar tu workflow',
+            'mejorar el rendimiento', 'escribir tests unitarios',
+            'configurar Docker', 'gestionar dependencias',
+            'desarrollar con TDD', 'hacer deploy continuo',
+        ]);
+        $number = $this->faker->randomElement(['5', '7', '10', '12', '15']);
+        $industry = $this->faker->randomElement([
+            'el desarrollo web', 'la nube', 'el backend',
+            'la industria tech', 'el ecosistema PHP',
+        ]);
+        $year = $this->faker->randomElement(['2024', '2025', '2026']);
 
-  /**
-   * Define the model's default state.
-   *
-   * @return array<string, mixed>
-   */
-  public function definition()
-  {
-    $timestamp = mt_rand(strtotime("2024-01-01"), time());
-    $randomDate = date("Y-m-d H:i:s", $timestamp);
-    $title = $this->generateUniqueTitle();
+        $replacements = compact('topic', 'alternative', 'action', 'number', 'industry', 'year');
 
-    $extraImages = Image::factory()
-      ->count(mt_rand(2, 4))
-      ->disk("posts_images")
-      ->create();
-    $extraIds = $extraImages->pluck("id")->toArray();
-    $extraUrls = $extraImages->map(function ($img) {
-      return URL::to(Storage::disk($img->path)->url($img->name));
-    })->toArray();
+        $title = $template;
+        foreach ($replacements as $key => $value) {
+            $title = str_replace('{{'.$key.'}}', (string) $value, $title);
+        }
 
-    self::$pendingImageIds[] = $extraIds;
-
-    return [
-      "title" => $title,
-      "slug" => Str::slug($title),
-      "description" => $this->faker->sentence(12),
-      "content" => $this->generateMarkdownContent($title, $extraUrls),
-      "cover_id" => Image::factory()->disk("posts_images")->create()->id,
-      "created_at" => $randomDate,
-      "status" => "active",
-    ];
-  }
-
-  private function generateUniqueTitle(): string
-  {
-    $attempts = 0;
-    do {
-      $title = $this->generateTitle();
-      $attempts++;
-    } while (in_array($title, self::$usedTitles) && $attempts < 100);
-    self::$usedTitles[] = $title;
-    return $title;
-  }
-
-  private function generateTitle(): string
-  {
-    $templates = [
-      "Guía completa de {{topic}}",
-      "Cómo {{action}} en {{year}}",
-      "{{topic}}: Todo lo que necesitas saber",
-      "Los mejores consejos para {{action}}",
-      "{{topic}} desde cero: Introducción práctica",
-      "Por qué {{topic}} está cambiando {{industry}}",
-      "{{number}} razones para aprender {{topic}}",
-      "Comparativa: {{topic}} vs {{alternative}}",
-      "Errores comunes al {{action}} y cómo evitarlos",
-      "{{topic}} avanzado: Técnicas y patrones",
-    ];
-
-    $template = $this->faker->randomElement($templates);
-    $topic = $this->faker->randomElement([
-      "Laravel", "Vue.js", "TypeScript", "Docker", "PHP 8",
-      "Desarrollo Web", "APIs REST", "Bases de Datos", "SQL",
-      "Git", "Linux", "AWS", "Testing", "CI/CD", "Python",
-      "JavaScript", "Node.js", "React", "Tailwind CSS", "MySQL",
-    ]);
-    $alternative = $this->faker->randomElement([
-      "React", "Angular", "Svelte", "Express", "Symfony",
-      "MongoDB", "PostgreSQL", "Redis", "Figma", "Alpine.js",
-    ]);
-    $action = $this->faker->randomElement([
-      "crear una API REST", "optimizar consultas SQL",
-      "desplegar en producción", "automatizar tu workflow",
-      "mejorar el rendimiento", "escribir tests unitarios",
-      "configurar Docker", "gestionar dependencias",
-      "desarrollar con TDD", "hacer deploy continuo",
-    ]);
-    $number = $this->faker->randomElement(["5", "7", "10", "12", "15"]);
-    $industry = $this->faker->randomElement([
-      "el desarrollo web", "la nube", "el backend",
-      "la industria tech", "el ecosistema PHP",
-    ]);
-    $year = $this->faker->randomElement(["2024", "2025", "2026"]);
-
-    $replacements = compact("topic", "alternative", "action", "number", "industry", "year");
-
-    $title = $template;
-    foreach ($replacements as $key => $value) {
-      $title = str_replace("{{" . $key . "}}", (string) $value, $title);
+        return $title;
     }
 
-    return $title;
-  }
-
-  private function imageTag(string $url): string
-  {
-    return '<div class="center"><img src="' . $url . '" style="width:80%"/></div>';
-  }
-
-  private function generateMarkdownContent(string $title, array $imageUrls = []): string
-  {
-    $imageIndex = 0;
-    $totalImages = count($imageUrls);
-
-    $nextImage = function () use ($imageUrls, &$imageIndex) {
-      if ($imageIndex < count($imageUrls)) {
-        $url = $imageUrls[$imageIndex];
-        $imageIndex++;
-        return "\n\n" . $this->imageTag($url) . "\n\n";
-      }
-      return "";
-    };
-
-    $maybeImage = function () use ($nextImage) {
-      return mt_rand(0, 1) ? $nextImage() : "";
-    };
-
-    $paragraphs = $this->faker->randomElements([
-      $this->generateParagraph(),
-      $this->generateParagraph(),
-      $this->generateParagraph(),
-      $this->generateParagraph(),
-      $this->generateParagraph(),
-      $this->generateParagraph(),
-    ], $this->faker->numberBetween(3, 6));
-
-    $intro = "# " . $title . "\n\n";
-    $intro .= $this->faker->paragraph(3) . "\n\n";
-    $intro .= $this->faker->paragraph(4) . "\n\n";
-
-    $body = "";
-
-    // Sección 1
-    $body .= "## " . $this->faker->randomElement([
-      "Introducción", "Contexto", "¿Qué es esto?",
-      "Primeros pasos", "Antes de empezar", "Fundamentos",
-    ]) . "\n\n";
-    $body .= $this->faker->paragraph(4) . "\n\n";
-    $body .= $this->faker->paragraph(3) . "\n\n";
-    $body .= $this->generateCodeBlock() . "\n\n";
-    $body .= $this->faker->paragraph(3) . "\n\n";
-
-    $body .= $maybeImage();
-
-    // Sección 2
-    $body .= "## " . $this->faker->randomElement([
-      "Instalación y configuración", "Puesta en marcha",
-      "Conceptos clave", "Arquitectura", "Implementación",
-      "Estructura del proyecto",
-    ]) . "\n\n";
-    $body .= $this->faker->paragraph(4) . "\n\n";
-    $body .= $this->generateList() . "\n\n";
-
-    $body .= $maybeImage();
-
-    // Subsección
-    $body .= "### " . $this->faker->randomElement([
-      "Pasos detallados", "Ejemplo práctico", "Caso de uso",
-      "Consideraciones importantes", "Mejores prácticas",
-      "Errores frecuentes",
-    ]) . "\n\n";
-    $body .= $this->faker->paragraph(3) . "\n\n";
-    $body .= $this->generateBlockquote() . "\n\n";
-    $body .= $this->generateCodeBlock() . "\n\n";
-
-    $body .= $maybeImage();
-
-    // Sección 3
-    $body .= "## " . $this->faker->randomElement([
-      "Optimización y buenas prácticas", "Consejos avanzados",
-      "Comparativa de enfoques", "Solución de problemas",
-      "Alternativas disponibles", "Próximos pasos",
-    ]) . "\n\n";
-    $body .= $this->faker->paragraph(4) . "\n\n";
-    $body .= $this->generateList() . "\n\n";
-    $body .= $this->faker->paragraph(3) . "\n\n";
-
-    $body .= $maybeImage();
-
-    // Sección inline code y links
-    $body .= "### " . $this->faker->randomElement([
-      "Detalles técnicos", "Referencias", "Recursos útiles",
-      "Lecturas recomendadas", "Documentación oficial",
-    ]) . "\n\n";
-    $body .= $this->faker->paragraph(3) . " ";
-    $body .= "Puedes consultar la documentación oficial en ";
-    $body .= $this->generateLink() . " para más información.\n\n";
-    $body .= "Recuerda ejecutar `" . $this->faker->randomElement([
-      "composer install", "npm run build", "php artisan migrate",
-      "docker-compose up -d", "git push origin main",
-      "pnpm run dev", "php artisan serve",
-    ]) . "` para continuar.\n\n";
-
-    // Conclusión
-    $body .= "## " . $this->faker->randomElement([
-      "Conclusión", "Resumen final", "Para cerrar",
-      "¿Qué sigue?", "Reflexiones finales",
-    ]) . "\n\n";
-    $body .= $this->faker->paragraph(4) . "\n\n";
-    $body .= $this->generateBlockquote() . "\n\n";
-    $body .= "---\n\n";
-
-    // Insert remaining images before extra paragraphs
-    while ($imageIndex < $totalImages) {
-      $body .= $nextImage();
+    private function imageTag(string $url): string
+    {
+        return '<div class="center"><img src="'.$url.'" style="width:80%"/></div>';
     }
 
-    $body .= $this->faker->paragraph(2) . "\n\n";
+    private function generateMarkdownContent(string $title, array $imageUrls = []): string
+    {
+        $imageIndex = 0;
+        $totalImages = count($imageUrls);
 
-    // Párrafos adicionales
-    foreach ($paragraphs as $paragraph) {
-      $body .= $paragraph . "\n\n";
+        $nextImage = function () use ($imageUrls, &$imageIndex) {
+            if ($imageIndex < count($imageUrls)) {
+                $url = $imageUrls[$imageIndex];
+                $imageIndex++;
+
+                return "\n\n".$this->imageTag($url)."\n\n";
+            }
+
+            return '';
+        };
+
+        $maybeImage = function () use ($nextImage) {
+            return mt_rand(0, 1) ? $nextImage() : '';
+        };
+
+        $paragraphs = $this->faker->randomElements([
+            $this->generateParagraph(),
+            $this->generateParagraph(),
+            $this->generateParagraph(),
+            $this->generateParagraph(),
+            $this->generateParagraph(),
+            $this->generateParagraph(),
+        ], $this->faker->numberBetween(3, 6));
+
+        $intro = '# '.$title."\n\n";
+        $intro .= $this->faker->paragraph(3)."\n\n";
+        $intro .= $this->faker->paragraph(4)."\n\n";
+
+        $body = '';
+
+        // Sección 1
+        $body .= '## '.$this->faker->randomElement([
+            'Introducción', 'Contexto', '¿Qué es esto?',
+            'Primeros pasos', 'Antes de empezar', 'Fundamentos',
+        ])."\n\n";
+        $body .= $this->faker->paragraph(4)."\n\n";
+        $body .= $this->faker->paragraph(3)."\n\n";
+        $body .= $this->generateCodeBlock()."\n\n";
+        $body .= $this->faker->paragraph(3)."\n\n";
+
+        $body .= $maybeImage();
+
+        // Sección 2
+        $body .= '## '.$this->faker->randomElement([
+            'Instalación y configuración', 'Puesta en marcha',
+            'Conceptos clave', 'Arquitectura', 'Implementación',
+            'Estructura del proyecto',
+        ])."\n\n";
+        $body .= $this->faker->paragraph(4)."\n\n";
+        $body .= $this->generateList()."\n\n";
+
+        $body .= $maybeImage();
+
+        // Subsección
+        $body .= '### '.$this->faker->randomElement([
+            'Pasos detallados', 'Ejemplo práctico', 'Caso de uso',
+            'Consideraciones importantes', 'Mejores prácticas',
+            'Errores frecuentes',
+        ])."\n\n";
+        $body .= $this->faker->paragraph(3)."\n\n";
+        $body .= $this->generateBlockquote()."\n\n";
+        $body .= $this->generateCodeBlock()."\n\n";
+
+        $body .= $maybeImage();
+
+        // Sección 3
+        $body .= '## '.$this->faker->randomElement([
+            'Optimización y buenas prácticas', 'Consejos avanzados',
+            'Comparativa de enfoques', 'Solución de problemas',
+            'Alternativas disponibles', 'Próximos pasos',
+        ])."\n\n";
+        $body .= $this->faker->paragraph(4)."\n\n";
+        $body .= $this->generateList()."\n\n";
+        $body .= $this->faker->paragraph(3)."\n\n";
+
+        $body .= $maybeImage();
+
+        // Sección inline code y links
+        $body .= '### '.$this->faker->randomElement([
+            'Detalles técnicos', 'Referencias', 'Recursos útiles',
+            'Lecturas recomendadas', 'Documentación oficial',
+        ])."\n\n";
+        $body .= $this->faker->paragraph(3).' ';
+        $body .= 'Puedes consultar la documentación oficial en ';
+        $body .= $this->generateLink()." para más información.\n\n";
+        $body .= 'Recuerda ejecutar `'.$this->faker->randomElement([
+            'composer install', 'npm run build', 'php artisan migrate',
+            'docker-compose up -d', 'git push origin main',
+            'pnpm run dev', 'php artisan serve',
+        ])."` para continuar.\n\n";
+
+        // Conclusión
+        $body .= '## '.$this->faker->randomElement([
+            'Conclusión', 'Resumen final', 'Para cerrar',
+            '¿Qué sigue?', 'Reflexiones finales',
+        ])."\n\n";
+        $body .= $this->faker->paragraph(4)."\n\n";
+        $body .= $this->generateBlockquote()."\n\n";
+        $body .= "---\n\n";
+
+        // Insert remaining images before extra paragraphs
+        while ($imageIndex < $totalImages) {
+            $body .= $nextImage();
+        }
+
+        $body .= $this->faker->paragraph(2)."\n\n";
+
+        // Párrafos adicionales
+        foreach ($paragraphs as $paragraph) {
+            $body .= $paragraph."\n\n";
+        }
+
+        return $intro.$body;
     }
 
-    return $intro . $body;
-  }
+    private function generateParagraph(): string
+    {
+        $templates = [
+            '> '.$this->faker->sentence()."\n\n",
+            'Para más información, visita '.$this->generateLink().".\n\n",
+            'Un ejemplo de `'.$this->faker->word().'` sería: '.$this->faker->sentence()."\n\n",
+            $this->faker->paragraph(3)."\n\n",
+            'Es importante recordar que **'.$this->faker->sentence().'** '.$this->faker->sentence(4)."\n\n",
+            '> **Consejo:** '.$this->faker->sentence(6)."\n\n",
+        ];
 
-  private function generateParagraph(): string
-  {
-    $templates = [
-      "> " . $this->faker->sentence() . "\n\n",
-      "Para más información, visita " . $this->generateLink() . ".\n\n",
-      "Un ejemplo de `" . $this->faker->word() . "` sería: " . $this->faker->sentence() . "\n\n",
-      $this->faker->paragraph(3) . "\n\n",
-      "Es importante recordar que **" . $this->faker->sentence() . "** " . $this->faker->sentence(4) . "\n\n",
-      "> **Consejo:** " . $this->faker->sentence(6) . "\n\n",
-    ];
+        return $this->faker->randomElement($templates);
+    }
 
-    return $this->faker->randomElement($templates);
-  }
+    private function generateCodeBlock(): string
+    {
+        $lang = $this->faker->randomElement(['php', 'javascript', 'typescript', 'bash', 'python', 'json', 'yaml', 'sql', 'dockerfile', 'vue']);
 
-  private function generateCodeBlock(): string
-  {
-    $lang = $this->faker->randomElement(["php", "javascript", "typescript", "bash", "python", "json", "yaml", "sql", "dockerfile", "vue"]);
-
-    $snippets = [
-      "php" => '<?php
+        $snippets = [
+            'php' => '<?php
 
 namespace App\\Services;
 
@@ -289,7 +294,7 @@ class ExampleService
         return $result;
     }
 }',
-      "javascript" => 'const fetchData = async (url, options = {}) => {
+            'javascript' => 'const fetchData = async (url, options = {}) => {
   try {
     const response = await fetch(url, {
       method: options.method || "GET",
@@ -310,7 +315,7 @@ class ExampleService
     throw error;
   }
 };',
-      "typescript" => 'interface User {
+            'typescript' => 'interface User {
   id: number;
   name: string;
   email: string;
@@ -325,7 +330,7 @@ function formatUser(user: User): string {
 
 const users: User[] = await api.getUsers();
 users.forEach((user) => console.log(formatUser(user)));',
-      "bash" => '#!/bin/bash
+            'bash' => '#!/bin/bash
 
 # Deploy script
 set -euo pipefail
@@ -355,7 +360,7 @@ php artisan migrate --force
 php artisan optimize
 
 echo "Despliegue completado con éxito"',
-      "python" => 'from dataclasses import dataclass
+            'python' => 'from dataclasses import dataclass
 from typing import List, Optional
 
 
@@ -383,7 +388,7 @@ class TaskManager:
 
     def pending_tasks(self) -> List[Task]:
         return [t for t in self._tasks if not t.completed]',
-      "json" => '{
+            'json' => '{
   "name": "mi-proyecto",
   "version": "1.0.0",
   "description": "Descripción del proyecto",
@@ -400,7 +405,7 @@ class TaskManager:
     "vue-router": "^4.2.0"
   }
 }',
-      "sql" => '-- Obtener posts con su portada
+            'sql' => '-- Obtener posts con su portada
 SELECT
     p.id,
     p.title,
@@ -415,7 +420,7 @@ WHERE p.status = "active"
 GROUP BY p.id, p.title, p.status, i.path
 ORDER BY p.created_at DESC
 LIMIT 20;',
-      "yaml" => 'services:
+            'yaml' => 'services:
   app:
     image: nginx:alpine
     ports:
@@ -441,7 +446,7 @@ LIMIT 20;',
       DB_PASSWORD: "${DB_PASSWORD}"
     networks:
       - app-network',
-      "dockerfile" => 'FROM php:8.3-fpm-alpine
+            'dockerfile' => 'FROM php:8.3-fpm-alpine
 
 RUN apk add --no-cache \
     postgresql-dev \
@@ -464,7 +469,7 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 EXPOSE 9000
 
 CMD ["php-fpm"]',
-      "vue" => '<script setup lang="ts">
+            'vue' => '<script setup lang="ts">
 import { ref, computed } from "vue";
 import { useTaskStore } from "@/stores/taskStore";
 import TaskItem from "@/components/TaskItem.vue";
@@ -498,71 +503,71 @@ function addTask(): void {
     <TaskItem v-for="task in filteredTasks" :key="task.id" :task="task" />
   </div>
 </template>',
-    ];
+        ];
 
-    $code = $this->faker->randomElement($snippets);
+        $code = $this->faker->randomElement($snippets);
 
-    return "```" . $lang . "\n" . $code . "\n```";
-  }
+        return '```'.$lang."\n".$code."\n```";
+    }
 
-  private function generateList(): string
-  {
-    $items = $this->faker->randomElements(
-      [
-        "Planificar la arquitectura antes de escribir código",
-        "Escribir tests unitarios para cada funcionalidad",
-        "Usar control de versiones desde el día uno",
-        "Documentar las decisiones técnicas importantes",
-        "Realizar code reviews antes de mergear",
-        "Mantener las dependencias actualizadas",
-        "Configurar CI/CD desde el inicio del proyecto",
-        "Seguir los principios SOLID y patrones de diseño",
-        "Optimizar consultas a la base de datos",
-        "Implementar logging y monitoreo adecuados",
-      ],
-      $this->faker->numberBetween(3, 6),
-    );
+    private function generateList(): string
+    {
+        $items = $this->faker->randomElements(
+            [
+                'Planificar la arquitectura antes de escribir código',
+                'Escribir tests unitarios para cada funcionalidad',
+                'Usar control de versiones desde el día uno',
+                'Documentar las decisiones técnicas importantes',
+                'Realizar code reviews antes de mergear',
+                'Mantener las dependencias actualizadas',
+                'Configurar CI/CD desde el inicio del proyecto',
+                'Seguir los principios SOLID y patrones de diseño',
+                'Optimizar consultas a la base de datos',
+                'Implementar logging y monitoreo adecuados',
+            ],
+            $this->faker->numberBetween(3, 6),
+        );
 
-    return implode("\n", array_map(fn ($item) => "- " . $item, $items));
-  }
+        return implode("\n", array_map(fn ($item) => '- '.$item, $items));
+    }
 
-  private function generateBlockquote(): string
-  {
-    $quotes = [
-      "La simplicidad es la máxima sofisticación. — Leonardo da Vinci",
-      "Cualquier tonto puede escribir código que un ordenador entienda. Los buenos programadores escriben código que los humanos puedan entender. — Martin Fowler",
-      "Primero resuelve el problema, luego escribe el código. — John Johnson",
-      "El código es como el humor. Cuando tienes que explicarlo, es malo. — Cory House",
-      "La mejor manera de predecir el futuro es implementarlo. — Alan Kay",
-      "No es que no podamos ver la solución, es que no podemos ver el problema. — G. K. Chesterton",
-      "Hablar es barato, muéstrame el código. — Linus Torvalds",
-    ];
+    private function generateBlockquote(): string
+    {
+        $quotes = [
+            'La simplicidad es la máxima sofisticación. — Leonardo da Vinci',
+            'Cualquier tonto puede escribir código que un ordenador entienda. Los buenos programadores escriben código que los humanos puedan entender. — Martin Fowler',
+            'Primero resuelve el problema, luego escribe el código. — John Johnson',
+            'El código es como el humor. Cuando tienes que explicarlo, es malo. — Cory House',
+            'La mejor manera de predecir el futuro es implementarlo. — Alan Kay',
+            'No es que no podamos ver la solución, es que no podemos ver el problema. — G. K. Chesterton',
+            'Hablar es barato, muéstrame el código. — Linus Torvalds',
+        ];
 
-    return "> " . $this->faker->randomElement($quotes);
-  }
+        return '> '.$this->faker->randomElement($quotes);
+    }
 
-  private function generateLink(): string
-  {
-    $urls = [
-      "https://laravel.com/docs",
-      "https://vuejs.org/guide",
-      "https://www.php.net/manual",
-      "https://github.com/features/actions",
-      "https://docs.docker.com",
-      "https://www.typescriptlang.org/docs",
-      "https://tailwindcss.com/docs",
-      "https://nodejs.org/en/docs",
-    ];
+    private function generateLink(): string
+    {
+        $urls = [
+            'https://laravel.com/docs',
+            'https://vuejs.org/guide',
+            'https://www.php.net/manual',
+            'https://github.com/features/actions',
+            'https://docs.docker.com',
+            'https://www.typescriptlang.org/docs',
+            'https://tailwindcss.com/docs',
+            'https://nodejs.org/en/docs',
+        ];
 
-    $names = [
-      "la documentación oficial", "este artículo",
-      "la guía de referencia", "el repositorio en GitHub",
-      "este recurso", "la documentación completa",
-    ];
+        $names = [
+            'la documentación oficial', 'este artículo',
+            'la guía de referencia', 'el repositorio en GitHub',
+            'este recurso', 'la documentación completa',
+        ];
 
-    $url = $this->faker->randomElement($urls);
-    $name = $this->faker->randomElement($names);
+        $url = $this->faker->randomElement($urls);
+        $name = $this->faker->randomElement($names);
 
-    return "[" . $name . "](" . $url . ")";
-  }
+        return '['.$name.']('.$url.')';
+    }
 }

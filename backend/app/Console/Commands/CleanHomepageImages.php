@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 class CleanHomepageImages extends Command
 {
     protected $signature = 'homepage:clean-images {--dry-run : Show what would be deleted without actually deleting}';
+
     protected $description = 'Remove orphaned images from the homepage storage that are no longer in the database';
 
     private array $folders = [
@@ -28,22 +29,24 @@ class CleanHomepageImages extends Command
     public function handle(): int
     {
         $homepage = HomePage::first();
-        if (!$homepage) {
+        if (! $homepage) {
             $this->info('No homepage record found. Nothing to clean.');
+
             return Command::SUCCESS;
         }
 
         $dbUrls = $this->getAllDatabaseImageUrls($homepage);
-        $this->info('Found ' . count($dbUrls) . ' images in database.');
+        $this->info('Found '.count($dbUrls).' images in database.');
 
         $filePaths = $this->getAllFilePaths();
-        $this->info('Found ' . count($filePaths) . ' files in storage.');
+        $this->info('Found '.count($filePaths).' files in storage.');
 
         $orphaned = array_diff($filePaths, $dbUrls);
         $orphanCount = count($orphaned);
 
         if ($orphanCount === 0) {
             $this->info('No orphaned images found.');
+
             return Command::SUCCESS;
         }
 
@@ -54,11 +57,13 @@ class CleanHomepageImages extends Command
 
         if ($this->option('dry-run')) {
             $this->info("\nDry run: no files were deleted.");
+
             return Command::SUCCESS;
         }
 
-        if (!$this->confirm("Do you want to delete these {$orphanCount} file(s)?")) {
+        if (! $this->confirm("Do you want to delete these {$orphanCount} file(s)?")) {
             $this->info('Operation cancelled.');
+
             return Command::SUCCESS;
         }
 
@@ -87,54 +92,54 @@ class CleanHomepageImages extends Command
 
         foreach ($homepage->skill_categories ?? [] as $category) {
             foreach ($category['technologies'] ?? [] as $tech) {
-                if (!empty($tech['image'])) {
+                if (! empty($tech['image'])) {
                     $urls[] = $this->pathFromUrl($tech['image']);
                 }
             }
         }
 
         foreach ($homepage->experience ?? [] as $exp) {
-            if (!empty($exp['img'])) {
+            if (! empty($exp['img'])) {
                 $urls[] = $this->pathFromUrl($exp['img']);
             }
             foreach ($exp['technologies'] ?? [] as $tech) {
-                if (!empty($tech['source'])) {
+                if (! empty($tech['source'])) {
                     $urls[] = $this->pathFromUrl($tech['source']);
                 }
             }
         }
 
         foreach ($homepage->projects ?? [] as $project) {
-            if (!empty($project['img'])) {
+            if (! empty($project['img'])) {
                 $urls[] = $this->pathFromUrl($project['img']);
             }
-            if (!empty($project['source']['img'])) {
+            if (! empty($project['source']['img'])) {
                 $urls[] = $this->pathFromUrl($project['source']['img']);
             }
             foreach ($project['technologies'] ?? [] as $tech) {
-                if (!empty($tech['source'])) {
+                if (! empty($tech['source'])) {
                     $urls[] = $this->pathFromUrl($tech['source']);
                 }
             }
         }
 
         foreach ($homepage->certificates ?? [] as $cert) {
-            if (!empty($cert['img'])) {
+            if (! empty($cert['img'])) {
                 $urls[] = $this->pathFromUrl($cert['img']);
             }
             foreach ($cert['aptitudes'] ?? [] as $apt) {
-                if (!empty($apt['source'])) {
+                if (! empty($apt['source'])) {
                     $urls[] = $this->pathFromUrl($apt['source']);
                 }
             }
         }
 
         foreach ($homepage->freelance ?? [] as $platform) {
-            if (!empty($platform['image'])) {
+            if (! empty($platform['image'])) {
                 $urls[] = $this->pathFromUrl($platform['image']);
             }
             foreach ($platform['comments'] ?? [] as $comment) {
-                if (!empty($comment['image'])) {
+                if (! empty($comment['image'])) {
                     $urls[] = $this->pathFromUrl($comment['image']);
                 }
             }
@@ -149,6 +154,7 @@ class CleanHomepageImages extends Command
         if (str_starts_with($url, $baseUrl)) {
             return ltrim(str_replace($baseUrl, '', $url), '/');
         }
+
         return ltrim(str_replace(asset(''), '', $url), '/');
     }
 
@@ -159,6 +165,7 @@ class CleanHomepageImages extends Command
             $files = Storage::disk('public')->files($folder);
             $paths = array_merge($paths, $files);
         }
+
         return $paths;
     }
 }

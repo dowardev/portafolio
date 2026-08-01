@@ -3,7 +3,6 @@ import { storeToRefs } from "pinia";
 import type { FreelancePlatform } from "@/services/types";
 import { ToastController } from "./toastController";
 import { getApiConnector } from "@/apiConnector";
-import type { HttpClient } from "@tu-org/sso-client";
 
 interface FreelancePlatformsResponse {
   freelancePlatforms: FreelancePlatform[];

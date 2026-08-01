@@ -4,26 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Post extends Model
 {
-  use HasFactory;
-  protected $fillable = ["title", "slug", "description", "content", "cover_id", "status"];
+    use HasFactory;
 
-  public function cover()
-  {
-    return $this->belongsTo(Image::class, "cover_id");
-  }
+    protected $fillable = ['title', 'slug', 'description', 'content', 'cover_id', 'status'];
 
-  public function images(): HasMany
-  {
-    return $this->hasMany(PostImage::class, "post_id");
-  }
+    public function cover()
+    {
+        return $this->belongsTo(Image::class, 'cover_id');
+    }
 
-  public function image()
-  {
-    return $this->hasOne(Image::class);
-  }
+    public function images(): HasMany
+    {
+        return $this->hasMany(PostImage::class, 'post_id');
+    }
+
+    public function image()
+    {
+        return $this->hasOne(Image::class);
+    }
 }

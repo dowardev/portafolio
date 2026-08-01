@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Icon;
 use App\Models\IntroProfile;
-use App\Models\Tag;
 use App\Models\Social;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,6 +23,7 @@ class IntroProfileController extends Controller
             'image/webp' => 'webp',
             'image/x-icon' => 'ico',
         ];
+
         return $mimeToExt[$mime] ?? $file->getClientOriginalExtension();
     }
 
@@ -64,6 +65,7 @@ class IntroProfileController extends Controller
             if (str_starts_with($path, 'storage/')) {
                 $path = substr($path, 8);
             }
+
             return $path;
         }
 
@@ -123,7 +125,7 @@ class IntroProfileController extends Controller
                 : [
                     'socials' => (bool) ($introProfile->show_contact_form ?? false),
                     'freelance' => (bool) ($introProfile->show_contact_form ?? false),
-                  ],
+                ],
         ]);
     }
 
@@ -144,10 +146,10 @@ class IntroProfileController extends Controller
         if ($request->hasFile('logo')) {
             $oldLogo = $introProfile->logo_url ? $this->pathFromUrl($introProfile->logo_url) : null;
             $logo = $request->file('logo');
-            $logoName = uniqid() . time() . '.' . $this->getExtensionFromMime($logo);
-            Storage::disk('public')->put('intro_profiles/' . $logoName, file_get_contents($logo));
-            $introProfile->logo_url = 'storage/intro_profiles/' . $logoName;
-            $newImageUrls[] = 'intro_profiles/' . $logoName;
+            $logoName = uniqid().time().'.'.$this->getExtensionFromMime($logo);
+            Storage::disk('public')->put('intro_profiles/'.$logoName, file_get_contents($logo));
+            $introProfile->logo_url = 'storage/intro_profiles/'.$logoName;
+            $newImageUrls[] = 'intro_profiles/'.$logoName;
             if ($oldLogo && Storage::disk('public')->exists($oldLogo)) {
                 Storage::disk('public')->delete($oldLogo);
             }
@@ -156,10 +158,10 @@ class IntroProfileController extends Controller
         if ($request->hasFile('photo')) {
             $oldPhoto = $introProfile->photo_url ? $this->pathFromUrl($introProfile->photo_url) : null;
             $photo = $request->file('photo');
-            $photoName = uniqid() . time() . '.' . $this->getExtensionFromMime($photo);
-            Storage::disk('public')->put('intro_profiles/' . $photoName, file_get_contents($photo));
-            $introProfile->photo_url = 'storage/intro_profiles/' . $photoName;
-            $newImageUrls[] = 'intro_profiles/' . $photoName;
+            $photoName = uniqid().time().'.'.$this->getExtensionFromMime($photo);
+            Storage::disk('public')->put('intro_profiles/'.$photoName, file_get_contents($photo));
+            $introProfile->photo_url = 'storage/intro_profiles/'.$photoName;
+            $newImageUrls[] = 'intro_profiles/'.$photoName;
             if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
                 Storage::disk('public')->delete($oldPhoto);
             }
@@ -232,7 +234,7 @@ class IntroProfileController extends Controller
                     }
                 } else {
                     $tag = Tag::where('name', $tagName)->first();
-                    if (!$tag) {
+                    if (! $tag) {
                         $tag = Tag::create([
                             'name' => $tagName,
                             'url' => $tagUrl,

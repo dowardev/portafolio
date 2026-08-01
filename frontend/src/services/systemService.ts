@@ -29,7 +29,7 @@ export default class SystemService {
     currentTheme: Theme;
     resolvedCurrentSelected: ConcreteTheme;
   }): void {
-    const { theme, resolvedSelected, currentTheme, resolvedCurrentSelected } = params;
+    const { resolvedSelected, resolvedCurrentSelected } = params;
 
     const body = document.getElementsByTagName("body")[0];
     body.classList.remove(resolvedCurrentSelected);
@@ -158,16 +158,19 @@ export default class SystemService {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async storeDataOnLocalStorage(params: { key: string; value: any }) {
     const { key, value } = params;
     await storageInstance.set(key, value);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getDataFromLocalStorage(params: { key: string }): Promise<any> {
     const { key } = params;
     return await storageInstance.get(key);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   storeCookie(params: { key: string; value: any }) {
     const { key, value } = params;
 

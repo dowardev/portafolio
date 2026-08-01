@@ -21,7 +21,7 @@ return new class extends Migration
             $counter = 1;
 
             while (in_array($slug, $slugs)) {
-                $slug = $baseSlug . '-' . $counter;
+                $slug = $baseSlug.'-'.$counter;
                 $counter++;
             }
 

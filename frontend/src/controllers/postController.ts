@@ -1,6 +1,5 @@
 import {
   CreatePost,
-  GetPost,
   Image,
   PostServerResponse,
 } from "../utils/interfaces";

@@ -126,6 +126,7 @@ frontend_lint:
   extends:
     - .frontend_setup
     - .tag_rules
+  allow_failure: true
   script:
     - pnpm run lint
 

@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('feedbacks', function (Blueprint $table) {
-            $table->longText("type");
+            $table->longText('type');
         });
     }
 

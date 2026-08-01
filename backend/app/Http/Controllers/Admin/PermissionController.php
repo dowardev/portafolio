@@ -17,6 +17,7 @@ class PermissionController extends Controller
     private function parsePermissionSlug(string $slug): array
     {
         $parts = explode('.', $slug, 2);
+
         return [
             'slug' => $slug,
             'module' => $parts[0],
@@ -41,7 +42,7 @@ class PermissionController extends Controller
 
         $description = $request->input('description');
         if (empty($description)) {
-            $description = ucfirst($request->action) . ' ' . $request->module;
+            $description = ucfirst($request->action).' '.$request->module;
         }
 
         $permission = Permission::create(array_merge($validated, ['description' => $description]));
@@ -57,7 +58,7 @@ class PermissionController extends Controller
         $permission = Permission::findOrFail((int) $id);
 
         $validated = $request->validate([
-            'slug' => 'sometimes|string|max:100|unique:permissions,slug,' . $id,
+            'slug' => 'sometimes|string|max:100|unique:permissions,slug,'.$id,
             'module' => 'sometimes|string|max:50',
             'action' => 'sometimes|string|max:50',
             'description' => 'sometimes|string|max:255',
@@ -66,7 +67,7 @@ class PermissionController extends Controller
         $oldSlug = $permission->slug;
 
         try {
-            DB::transaction(function () use ($permission, $validated, $oldSlug, $request) {
+            DB::transaction(function () use ($permission, $validated, $oldSlug) {
                 $permission->update($validated);
 
                 if (isset($validated['slug']) && $validated['slug'] !== $oldSlug) {
@@ -135,9 +136,9 @@ class PermissionController extends Controller
         $allSlugs = Permission::pluck('slug')->toArray();
 
         $validated = $request->validate([
-            'role_slug' => 'required|string|in:' . implode(',', $roleSlugs),
+            'role_slug' => 'required|string|in:'.implode(',', $roleSlugs),
             'permission_slugs' => 'required|array',
-            'permission_slugs.*' => 'string|in:' . implode(',', $allSlugs),
+            'permission_slugs.*' => 'string|in:'.implode(',', $allSlugs),
         ]);
 
         try {
@@ -180,13 +181,14 @@ class PermissionController extends Controller
         foreach ($userPermissions as $userId => $userPerms) {
             $result[$userId] = $permissions->map(function ($perm) use ($userPerms) {
                 $override = $userPerms->firstWhere('permission_slug', $perm['slug']);
+
                 return array_merge($perm, [
                     'type' => $override?->type ?? null,
                 ]);
             })->toArray();
         }
 
-        if ($userSsoId && !isset($result[$userSsoId])) {
+        if ($userSsoId && ! isset($result[$userSsoId])) {
             $result[$userSsoId] = $permissions->map(function ($perm) {
                 return array_merge($perm, ['type' => null]);
             })->toArray();
