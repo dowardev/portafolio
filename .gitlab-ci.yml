@@ -97,7 +97,7 @@ backend_assets_build:
   script:
     - cd backend
     - pnpm install --frozen-lockfile
-    - npx vite build
+    - pnpm exec vite build
   artifacts:
     paths:
       - backend/public/build/
@@ -147,7 +147,7 @@ frontend_build:
     - .frontend_setup
     - .tag_rules
   script:
-    - npx vite build
+    - pnpm exec vite build
   artifacts:
     paths:
       - frontend/dist/
