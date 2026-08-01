@@ -19,3 +19,7 @@ vendor/
 .opencode/plans/
 .opencode/plans/skills
 .opencode/plans/summary.md
+
+# Local AI runtime state
+.atl/
+.codegraph/
