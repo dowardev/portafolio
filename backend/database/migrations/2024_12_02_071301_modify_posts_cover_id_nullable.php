@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->dropForeign('posts_cover_id_foreign');
+            $table->dropForeign(['cover_id']);
 
             $table->integer('cover_id')->unsigned()->nullable()->change();
 
@@ -30,13 +30,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            // Eliminar la clave foránea modificada
-            $table->dropForeign('posts_cover_id_foreign');
+            $table->dropForeign(['cover_id']);
 
-            // Revertir 'cover_id' a no nullable si es necesario
             $table->integer('cover_id')->unsigned()->nullable(false)->change();
 
-            // Restaurar la clave foránea original con 'onDelete' cascade
             $table
                 ->foreign('cover_id')
                 ->references('id')
