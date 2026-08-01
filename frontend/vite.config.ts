@@ -43,14 +43,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@tu-org/sso-client': path.resolve(
-        __dirname,
-        '../../sso/packages/sso-client/src/index.ts',
-      ),
     },
   },
   optimizeDeps: {
-    exclude: ['@tu-org/sso-client'],
+    exclude: [],
   },
   test: {
     globals: true,
