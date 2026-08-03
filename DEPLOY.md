@@ -274,8 +274,8 @@ git push origin v1.0.0
 
 The pipeline runs **only on tags** matching `vX.Y.Z`:
 
-- **Backend**: `test` → `deploy` (git pull + php artisan migrate)
-- **Frontend**: `lint` → `test` → `build` → `package` → `deploy` (uploads compressed `dist/`)
+- **Backend**: `lint` → `test` → `build` → `deploy` (tar+scp, runs `php artisan migrate --force`)
+- **Frontend**: `lint` → `test` → `build` → `deploy` → `post-deploy` → `rollback` (uploads compressed `dist/`)
 
 Normal pushes to `main`/`master` **do not trigger deploy**. Only semantic tags.
 
@@ -283,7 +283,7 @@ Normal pushes to `main`/`master` **do not trigger deploy**. Only semantic tags.
 
 ```mermaid
 graph LR
-    L[lint] --> T[test] --> B[build] --> P[package] --> D[deploy]
+    L[lint] --> T[test] --> B[build] --> D[deploy] --> PD[post-deploy] --> R[rollback]
 ```
 
-If any stage fails (`lint`, `test`, `build`), the pipeline stops and won't deploy.
+`rollback` is manual (`when: manual`), so it does not run automatically on success. The remaining stages are sequential: if `lint`, `test`, or `build` fails, the pipeline stops and won't deploy. `post-deploy` runs after a successful `deploy` and is itself followed only by the optional manual `rollback`.
