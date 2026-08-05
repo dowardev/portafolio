@@ -49,6 +49,7 @@ import { useSeoMeta } from "@unhead/vue";
 
 // interface
 import { DesignMode } from "./utils/types";
+import { DEFAULT_THEME } from "./utils/themeDefaults";
 
 // controllers
 import SystemController from "./controllers/systemController";
@@ -118,7 +119,7 @@ onMounted(async () => {
   const theme = systemController.getTheme();
   systemController.applyTheme({
     newTheme: theme,
-    oldTheme: { selected: "light", template: "template2", variant: "light", options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" } },
+    oldTheme: { ...DEFAULT_THEME },
   });
 
   if ("serviceWorker" in navigator && wb) {
