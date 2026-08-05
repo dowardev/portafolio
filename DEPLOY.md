@@ -277,7 +277,7 @@ The pipeline runs **only on tags** matching `vX.Y.Z`:
 - **Backend**: `lint` → `test` → `build` → `deploy` (tar+scp, runs `php artisan migrate --force`)
 - **Frontend**: `lint` → `test` → `build` → `deploy` → `post-deploy` → `rollback` (uploads compressed `dist/`)
 
-Normal pushes to `main`/`master` **do not trigger deploy**. Only semantic tags.
+Normal pushes to `main` **do not trigger deploy**. Only semantic tags.
 
 ### Validation deploys (dryrun)
 
