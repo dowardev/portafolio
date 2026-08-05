@@ -127,6 +127,23 @@ Upload the contents of `frontend/dist/` to your hosting public directory:
 - Shared hosting: `/home/[user]/public_html/`
 - The `index.html` and `assets/` folder must be directly accessible
 
+### Default Template (theme)
+
+The app-wide default template/theme is managed in a single place:
+
+- **File:** `frontend/src/utils/themeDefaults.ts` — constant `DEFAULT_THEME`
+- **What it controls:** which home template (`template1` | `template2` | `template3`) ships as the default, plus the selected variant and theme options
+
+To change the default (e.g. switch from `template3` to another template), edit only that constant and rebuild the frontend:
+
+```bash
+cd frontend
+# edit src/utils/themeDefaults.ts → change template: "template3" to the desired value
+pnpm run build
+```
+
+No other file needs to change: the store, controller, and `App.vue` all read from this constant. Existing users who already have a saved theme keep their choice; the default only affects clean installs / first visits.
+
 ---
 
 ## 4. Web Server Configuration
