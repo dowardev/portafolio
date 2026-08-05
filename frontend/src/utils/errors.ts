@@ -12,21 +12,21 @@ export function errorBuilder(params: {
 }
 
 class GraphQLError extends Error {
-  constructor(message: any) {
+  constructor(message: string) {
     super(message);
     this.name = "GraphQLError";
   }
 }
 
 class AuthError extends Error {
-  constructor(message: any) {
+  constructor(message: string) {
     super(message);
     this.name = "AuthError";
   }
 }
 
 class DefaultError extends Error {
-  constructor(message: any) {
+  constructor(message: string) {
     super(message);
     this.name = "Unknown Error";
   }

@@ -267,7 +267,7 @@ import { ToastController } from "@/controllers/toastController";
 import StackController from "@/controllers/stackController";
 import TechController from "@/controllers/techController";
 import IconSelectorContent from "@/components/common/IconSelectorContent.vue";
-import type { StackItem, TechItem } from "@/services/types";
+import type { TechItem } from "@/services/types";
 
 interface TechFormItem {
   _tempId: string;

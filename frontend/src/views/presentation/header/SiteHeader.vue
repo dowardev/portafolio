@@ -44,7 +44,7 @@ const props = defineProps({
   mainSegment: {
     type: String,
     required: true,
-    validator: (value: any) => {
+    validator: (value: string) => {
       return ["categories", "history", "portfolio"].includes(value);
     },
   },

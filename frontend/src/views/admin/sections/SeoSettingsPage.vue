@@ -236,7 +236,6 @@ import {
   IonLabel,
   IonList,
   IonMenuButton,
-  IonNote,
   IonPage,
   IonRow,
   IonSpinner,
@@ -247,8 +246,9 @@ import {
 } from "@ionic/vue";
 import { ref, reactive, onMounted } from "vue";
 import SeoSettingsController from "@/controllers/seoSettingsController";
+import type { SeoSettingsData } from "@/controllers/seoSettingsController";
 import SeoHelpButton from "@/components/admin/SeoHelpButton.vue";
-import { saveOutline, trashOutline, helpCircleOutline } from "ionicons/icons";
+import { saveOutline, trashOutline } from "ionicons/icons";
 
 const seoSettingsController = new SeoSettingsController();
 const saving = ref(false);
@@ -274,7 +274,7 @@ onMounted(async () => {
   applySettings(settings);
 });
 
-function applySettings(settings: Record<string, any>) {
+function applySettings(settings: SeoSettingsData) {
   form.siteTitle = settings.siteTitle ?? "";
   form.siteDescription = settings.siteDescription ?? "";
   form.siteKeywords = settings.siteKeywords ?? "";

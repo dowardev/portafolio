@@ -50,7 +50,7 @@ export interface UserPermissions {
   [userId: string]: UserPermissionOverride[]
 }
 
-export interface GroupedPermission<T = any> {
+export interface GroupedPermission<T = unknown> {
   module: string
   label: string
   permissions: T[]

@@ -1,8 +1,10 @@
+import type { Component } from "vue";
+
 export interface SectionConfig {
   id: string;
   title?: string;
-  component: any;
-  props?: Record<string, any>;
+  component: Component;
+  props?: Record<string, unknown>;
   routeName?: string;
   routeLabel?: string;
   height?: string;
@@ -26,12 +28,12 @@ export interface TemplateConfig {
 }
 
 export interface HomeTemplateData {
-  stack?: any[];
-  skillCategories?: any[];
-  experience?: any[];
-  projects?: any[];
-  certificates?: any[];
-  freelance?: any[];
+  stack?: unknown[];
+  skillCategories?: unknown[];
+  experience?: unknown[];
+  projects?: unknown[];
+  certificates?: unknown[];
+  freelance?: unknown[];
   showContactForm?: {
     socials?: boolean;
     freelance?: boolean;

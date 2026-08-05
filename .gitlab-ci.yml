@@ -5,7 +5,6 @@ stages:
   - test
   - build
   - deploy
-  - post-deploy
   - rollback
 
 variables:
@@ -126,7 +125,6 @@ frontend_lint:
   extends:
     - .frontend_setup
     - .tag_rules
-  allow_failure: true
   script:
     - pnpm run lint
 
@@ -136,7 +134,6 @@ frontend_test:
   extends:
     - .frontend_setup
     - .tag_rules
-  allow_failure: true
   script:
     - pnpm run test:unit
 
@@ -204,30 +201,6 @@ frontend_deploy:
         tar -xzf /tmp/frontend.tar.gz -C $DEPLOY_PATH_FRONTEND &&
         rm /tmp/frontend.tar.gz
       "
-
-post-deploy-backend:
-  stage: post-deploy
-  image: alpine:3.20
-  extends:
-    - .tag_rules
-  needs:
-    - backend_deploy
-  before_script:
-    - apk add --no-cache wget
-  script:
-    - wget -q -S --spider --timeout=30 --tries=3 "$HEALTHCHECK_URL_BACKEND"
-
-post-deploy-frontend:
-  stage: post-deploy
-  image: alpine:3.20
-  extends:
-    - .tag_rules
-  needs:
-    - frontend_deploy
-  before_script:
-    - apk add --no-cache wget
-  script:
-    - wget -q -S --spider --timeout=30 --tries=3 "$HEALTHCHECK_URL_FRONTEND"
 
 rollback_backend:
   stage: rollback

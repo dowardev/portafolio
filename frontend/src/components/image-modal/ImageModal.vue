@@ -75,7 +75,7 @@ import {
 import { addOutline, closeOutline, refreshOutline, removeOutline } from "ionicons/icons";
 import { computed, ref } from "vue";
 
-const props = defineProps<{ src: string }>();
+defineProps<{ src: string }>();
 
 const scale = ref(1);
 const translateX = ref(0);

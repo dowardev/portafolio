@@ -132,12 +132,10 @@ import {
   briefcaseOutline,
   informationCircleOutline,
   openOutline,
-  helpCircleOutline,
 } from "ionicons/icons";
 import type { ProjectItem } from "@/services/types";
 import { vTooltip } from "@/directives/tooltip";
 import { useIconColors } from "@/composables/useIconColors";
-import { getIconByName as getUnifiedIcon, getIonIconSvg } from "@/utils/iconsIndex";
 import IconRenderer from "@/components/IconRenderer.vue";
 // end imports
 
@@ -209,19 +207,6 @@ function checkTruncation() {
   if (titleRef.value) {
     isTitleTruncated.value = titleRef.value.scrollWidth > titleRef.value.clientWidth;
   }
-}
-
-function getIconByName({ source }: { source: string }) {
-  if (!source) return helpCircleOutline;
-  const iconData = getUnifiedIcon(source);
-  if (!iconData) return helpCircleOutline;
-  
-  if (iconData.source === "lineicons") {
-    return iconData.icon;
-  }
-  
-  const svgIcon = getIonIconSvg(source);
-  return svgIcon || helpCircleOutline;
 }
 
 function getTechLabel({ iconName }: { iconName: string }) {

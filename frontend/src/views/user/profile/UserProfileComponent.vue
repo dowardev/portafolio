@@ -380,11 +380,8 @@ import {
   helpers,
   email,
   maxLength,
-  minLength,
 } from "@vuelidate/validators";
 import {
-  eyeOutline,
-  eyeOffOutline,
   informationCircleOutline,
   manOutline,
   personOutline,
@@ -404,6 +401,7 @@ import { useUserStore } from "@/store/userStore";
 const userController = new UserController();
 const userStore = useUserStore();
 const errorController = new ErrorController();
+const systemController = new SystemController();
 
 // vars
 const emits = defineEmits(["content-loaded"]);
@@ -489,8 +487,6 @@ const rules = {
   },
 };
 const v$ = useVuelidate(rules, { form, formDeleteAccount });
-const profileCardSelected = ref(false);
-const deleteUserCardSelected = ref(false);
 const modalInfoProfile = ref({ open: false });
 const modalDeleteAccount = ref({ open: false });
 
@@ -557,24 +553,10 @@ async function presentAlertEmail() {
   await alert.present();
 }
 
-async function getImageBase64(e: Event) {
-  return new Promise((resolve) => {
-    const target = e.target as HTMLInputElement
-    const file = target.files?.[0]
-    const reader = new FileReader();
-    reader.onload = async (ev: ProgressEvent<FileReader>) => {
-      const fileData = (ev.target as FileReader).result;
-      resolve(fileData);
-    };
-    reader.readAsDataURL(file!);
-  });
-}
-
 async function uploadUserImage(e: Event) {
   const target = e.target as HTMLInputElement
   if (!target.files?.[0]) return;
   spinners.value.uploadImage = true;
-  const image = await getImageBase64(e);
 
   // try {
   //   const response = await userController.uploadImage({
@@ -665,19 +647,6 @@ async function deleteUserAccount() {
     } finally {
       spinners.value.deleteUserAccount = false;
     }
-  }
-}
-
-async function logout() {
-  try {
-    await logout();
-    const token = (document.cookie =
-      "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
-    // setUserToken({ token });
-    location.reload();
-  } catch (e) {
-    console.error(e);
-    errorController.openToastError({ error: e as Error });
   }
 }
 </script>

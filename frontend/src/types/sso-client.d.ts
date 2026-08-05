@@ -1,5 +1,6 @@
 declare module '@tu-org/sso-client' {
   import type { AxiosRequestConfig } from 'axios';
+  import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
 
   export interface Role {
     id: number;
@@ -68,7 +69,7 @@ declare module '@tu-org/sso-client' {
   export function createAuthGuard(
     ssoClient: SSOClient,
     options?: AuthGuardOptions
-  ): (to: any, from: any, next: any) => Promise<void>;
+  ): (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => Promise<void>;
 
   export class SSOClient {
     constructor(config: SSOConfig);

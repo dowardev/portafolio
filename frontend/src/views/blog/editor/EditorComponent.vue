@@ -241,22 +241,13 @@ import {
   modalController,
 } from "@ionic/vue";
 import {
-  saveOutline,
-  chevronBackOutline,
   imagesOutline,
   eyeOutline,
-  ellipsisVerticalOutline,
-  trashOutline,
-  optionsOutline,
   closeOutline,
-  arrowUndoCircleOutline,
-  arrowUndoOutline,
-  arrowRedoOutline,
 } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import PreviewModal from "./PreviewModal.vue";
-import { useRouter } from "vue-router";
 import { ref, watch } from "vue";
 import type { StatusPost } from "@/controllers/postController";
 
@@ -266,7 +257,6 @@ import MarkdownCreator from "@/components/markdown-creator/MarkdownCreator.vue";
 import MarkdownViewer from "@/components/markdown-viewer/MarkdownViewer.vue";
 
 // vars
-const router = useRouter();
 const props = defineProps({
   title: { default: "", type: String },
   description: { default: "", type: String },

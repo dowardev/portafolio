@@ -240,7 +240,7 @@ import { computed, ref, onMounted } from "vue";
 
 import { useRoute, useRouter } from "vue-router";
 
-import type { FreelancePlatform, FreelanceComment, FreelanceItem } from "@/services/types";
+import type { FreelancePlatform, FreelanceComment } from "@/services/types";
 
 import FreelancePlatformController from "@/controllers/freelancePlatformController";
 
@@ -436,7 +436,6 @@ function generateTestData() {
       url: "https://example.com",
     } as FreelancePlatform;
   } else {
-    const availablePlatforms = platforms.value;
     localItem.value = {
       id: crypto.randomUUID(),
       title: "Cliente de prueba",

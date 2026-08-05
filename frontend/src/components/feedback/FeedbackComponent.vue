@@ -161,14 +161,10 @@ import { required, helpers, email, minLength } from "@vuelidate/validators";
 import { LoadButton } from "ionic-extra-components";
 
 // controllers
-import SystemController from "@/controllers/systemController";
 import { FeedbackParams } from "@/utils/interfaces";
 import FeedbackController from "@/controllers/feedbackController";
-import { storeToRefs } from "pinia";
 import { useUserStore } from "@/store/userStore";
 const userStore = useUserStore();
-const { user } = storeToRefs(userStore);
-const systemController = new SystemController();
 const feedbackController = new FeedbackController();
 // end controllers
 

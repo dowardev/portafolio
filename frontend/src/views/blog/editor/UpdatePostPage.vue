@@ -82,7 +82,6 @@ import EditorComponent from "@/views/blog/editor/EditorComponent.vue";
 
 // 4. Interface and types imports
 import type { StatusPost } from "@/controllers/postController";
-import { UpdatePost } from "@/utils/interfaces";
 
 // 5. Main (props, emits)
 // (none)

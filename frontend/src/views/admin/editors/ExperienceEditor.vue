@@ -303,7 +303,7 @@ function handleTechAdd() {
 }
 
 function handleTechRemove(index: number) {
-  techs.value = techs.value.filter((_: any, i: number) => i !== index);
+  techs.value = techs.value.filter((_, i) => i !== index);
 }
 
 const localExperience = ref<ExperienceItem>({

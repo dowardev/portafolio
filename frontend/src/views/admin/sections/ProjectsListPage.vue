@@ -157,7 +157,7 @@ import { addOutline, bugOutline, folderOutline, trashOutline } from "ionicons/ic
 const { guard } = usePermissionGuard();
 const router = useRouter();
 const projectsController = new ProjectsController();
-const { projects, loading: projectsLoading } = storeToRefs(projectsController.projectsStore);
+const { projects } = storeToRefs(projectsController.projectsStore);
 
 const isDev = import.meta.env.DEV;
 

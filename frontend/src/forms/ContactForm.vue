@@ -136,7 +136,6 @@ import { onMounted, ref } from "vue";
 import { email, helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { watch } from "vue";
-import { faker } from "@faker-js/faker";
 
 // component props
 defineExpose({ getData });
@@ -150,13 +149,9 @@ const contactData = ref({
   email: "",
   description: "",
 });
-const spinners = ref({
-  sendMessage: false,
-});
 // end refs
 
 // vars
-const pageTitle = "Formulario de contacto";
 const messageError = {
   required: "Campo requerido",
 };
@@ -190,7 +185,7 @@ const v$ = useVuelidate(rules, { contactData });
 
 // life
 // watch
-watch(contactData.value, (newValue, oldValue) => {
+watch(contactData.value, () => {
   emits("formStatus", !v$.value.$invalid);
 });
 onMounted(() => {
@@ -209,12 +204,5 @@ function getData() {
       description: contactData.value.description,
     };
   } else return undefined;
-}
-
-function generateRandomData() {
-  contactData.value.name = faker.person.fullName();
-  contactData.value.subject = faker.lorem.words();
-  contactData.value.email = faker.internet.email();
-  contactData.value.description = faker.lorem.paragraph();
 }
 </script>

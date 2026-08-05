@@ -81,7 +81,6 @@ const height = props.height ?? 340;
 const bgColor = props.bgColor ?? "#16161a";
 const titleColor = props.titleColor ?? "#ffffff";
 const labelColor = props.labelColor ?? "#888888";
-const iconLabelColor = props.iconLabelColor ?? "#888888";
 
 const container = ref<HTMLElement | null>(null);
 const techPositions = ref<Position[]>([]);

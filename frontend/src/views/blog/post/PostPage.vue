@@ -132,7 +132,6 @@ import {
   IonAlert,
   IonButton,
   IonButtons,
-  IonCol,
   IonContent,
   IonHeader,
   IonIcon,
@@ -140,7 +139,6 @@ import {
   IonLabel,
   IonPage,
   IonPopover,
-  IonRow,
   IonSkeletonText,
   IonTitle,
   IonToolbar,
@@ -244,7 +242,7 @@ async function getPost(): Promise<void> {
       slug: postSlug,
       fields: ["id", "slug", "title", "description", "cover", "created_at", "content"],
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error(e);
   } finally {
     loading.dismiss();

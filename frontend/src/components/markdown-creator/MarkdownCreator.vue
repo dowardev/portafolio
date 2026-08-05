@@ -127,11 +127,10 @@ import {
   arrowUndoOutline,
   closeOutline,
   imageOutline,
-  saveOutline,
 } from "ionicons/icons";
 
 // vars
-const props = defineProps<{ content: string }>();
+defineProps<{ content: string }>();
 const emits = defineEmits(["image-upload", "update-content"]);
 const editorRef = ref<HTMLElement | null>(null);
 const history = ref<string[]>([]);

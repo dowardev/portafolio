@@ -258,7 +258,7 @@ const groupedRolePermissions = computed(() => {
   }))
   return groupPermissions(withDesc).map(g => ({
     ...g,
-    enabledCount: g.permissions.filter((p: any) => (p as any).enabled).length
+    enabledCount: g.permissions.filter((p) => p.enabled).length
   }))
 })
 
@@ -396,8 +396,9 @@ async function saveRolePermissions() {
     await controller.updateRolePermissions({ roleSlug: selectedRole.value, permissionSlugs: enabledSlugs })
     originalPermissions.value = JSON.parse(JSON.stringify(rolePermissions.value))
     showToast('Cambios guardados')
-  } catch (e: any) {
-    showToast(e.response?.data?.message || 'Error al guardar', 'danger')
+  } catch (e: unknown) {
+    const error = e as { response?: { data?: { message?: string } } }
+    showToast(error.response?.data?.message || 'Error al guardar', 'danger')
   } finally {
     saving.value = false
   }
@@ -413,8 +414,9 @@ async function saveUserPermissions() {
     }))
     await controller.updateUserPermissions({ userSsoId: String(selectedUser.value.id), permissions: perms })
     showToast('Permisos de usuario guardados')
-  } catch (e: any) {
-    showToast(e.response?.data?.message || 'Error al guardar', 'danger')
+  } catch (e: unknown) {
+    const error = e as { response?: { data?: { message?: string } } }
+    showToast(error.response?.data?.message || 'Error al guardar', 'danger')
   } finally {
     saving.value = false
   }
@@ -425,7 +427,8 @@ async function doSync() {
     saving.value = true
     syncStatus.value = await controller.syncRoles()
     showToast('Sincronización completada')
-  } catch (e: any) {
+  } catch (e: unknown) {
+    console.error(e)
     showToast('Error al sincronizar', 'danger')
   } finally {
     saving.value = false

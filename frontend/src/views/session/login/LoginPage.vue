@@ -134,12 +134,9 @@ import {
   IonSpinner,
   IonTitle,
   IonToolbar,
-  alertController,
   isPlatform,
 } from "@ionic/vue";
 import { reactive, ref } from "vue";
-import useVuelidate from "@vuelidate/core";
-import { required, helpers } from "@vuelidate/validators";
 import { useRouter } from "vue-router";
 
 // interface
@@ -149,11 +146,9 @@ import { ICustomError } from "@/utils/interfaces";
 import { getSSOClient } from "@/ssoClientAccessor";
 
 //controllers
-import SystemController from "../../../controllers/systemController";
 import UserController from "@/controllers/userController";
 import ErrorController from "@/controllers/errorController";
 import { ToastController } from "@/controllers/toastController";
-const systemController = new SystemController();
 const userController = new UserController();
 const errorController = new ErrorController();
 const toastController = new ToastController();
@@ -176,19 +171,6 @@ const spinners = ref({
   buttonCreateAccount: false,
 });
 
-const messageError = {
-  email: "Correo electrónico no valido",
-  required: "Campo requerido",
-};
-const rules = {
-  email: {
-    required: helpers.withMessage(messageError.required, required),
-  },
-  password: {
-    required: helpers.withMessage(messageError.required, required),
-  },
-};
-const v$ = useVuelidate(rules, form);
 const loginFormComponentRef = ref<typeof LoginFormComponent | null>(null);
 const formStatus = ref(false);
 const isOpenModalPasswordRecover = ref(false);
@@ -262,47 +244,6 @@ async function createAccount() {
   spinners.value.buttonCreateAccount = true;
   await router.push("/signup");
   spinners.value.buttonCreateAccount = false;
-}
-
-async function presentAlertRestorePassword(): Promise<{
-  email: string;
-  role: string;
-}> {
-  const alert = await alertController.create({
-    cssClass: "my-custom-class",
-    header: "Restauración de contraseña",
-    message:
-      "Te enviaremos un correo electrónico con las instrucciones para restablecer tu contraseña.",
-    inputs: [
-      {
-        name: "email",
-        id: "email",
-        placeholder: "Correo electrónico",
-        type: "email",
-      },
-    ],
-    buttons: [
-      {
-        text: "Cancelar",
-        role: "cancel",
-        cssClass: "secondary",
-        handler: () => {
-          // console.log("Confirm Cancel");
-        },
-      },
-      {
-        text: "Confirmar",
-        handler: () => {
-          // console.log(e);
-        },
-      },
-    ],
-  });
-
-  await alert.present();
-  const response = await alert.onDidDismiss();
-  if (response.data == undefined) return { email: "", role: "cancel" };
-  else return { email: response.data.values.email, role: response.role! };
 }
 
 async function openToastEmailConfirm() {

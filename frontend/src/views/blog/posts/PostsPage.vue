@@ -540,8 +540,8 @@ async function loadContent(params: {
         fields: ["id", "slug", "title", "cover", "created_at", "status"],
       });
     }
-  } catch (error: any) {
-    console.error(error.message);
+  } catch (error: unknown) {
+    console.error(error);
   } finally {
     loadFinished.value = true;
     dateLoading.value = false;
@@ -670,13 +670,6 @@ async function previousDate(): Promise<void> {
   const newDateIndex = +currentPageIndex.value - 1;
   if (newDateIndex < 0) return;
   await navigateToDate({ dateIndex: newDateIndex });
-}
-
-async function selectDate(params: { date: string }): Promise<void> {
-  const date = params.date;
-  const dateIndex = dates.value.indexOf(date);
-  if (dateIndex === -1) return;
-  await navigateToDate({ dateIndex });
 }
 
 function preloadAdjacentDates(): void {

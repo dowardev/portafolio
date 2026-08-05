@@ -285,7 +285,7 @@ import {
   IonToggle,
   IonToolbar,
 } from "@ionic/vue";
-import { addOutline, closeOutline, reorderThreeOutline, linkOutline, saveOutline, trashOutline } from "ionicons/icons";
+import { addOutline, closeOutline, reorderThreeOutline, saveOutline, trashOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import { helpers, maxLength, minLength, required, url } from "@vuelidate/validators";
 import { computed, reactive, ref, watch } from "vue";
@@ -463,12 +463,6 @@ function onFileChange(event: Event, type: "logo" | "photo") {
 function openFileDialog(type: "logo" | "photo") {
   const input = type === "logo" ? logoInputRef.value : photoInputRef.value;
   input?.click();
-}
-
-function removeTag(index: number) {
-  const newTags = [...props.tags];
-  newTags.splice(index, 1);
-  emit("update:tags", newTags);
 }
 
 function closeReorderModal() {

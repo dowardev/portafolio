@@ -917,9 +917,6 @@ async function handleUpdateUserStatus(params: { id: string; status: boolean }) {
 
   const { id, status } = params;
   const oldValue = !status;
-  const cardOptionsRef = status
-    ? cardOptionsDisableUserRef
-    : cardOptionsEnableUserRef;
   const toastMessage = status ? "Usuario habilitado" : "Usuario deshabilitado";
 
   // cardOptionsRef.value?.toggleExpand();

@@ -326,7 +326,7 @@ function handleTechAdd() {
 
 function handleTechRemove(index: number) {
   if (localProject.value && localProject.value.technologies) {
-    localProject.value.technologies = localProject.value.technologies.filter((_: any, i: number) => i !== index);
+    localProject.value.technologies = localProject.value.technologies.filter((_, i) => i !== index);
   }
 }
 
@@ -456,10 +456,6 @@ const endDateError = computed(() => {
 });
 
 // functions
-function updateTechFiles(files: Record<number, File>) {
-  pendingTechFiles = files;
-}
-
 function openFileDialog() {
   fileInput.value?.click();
 }

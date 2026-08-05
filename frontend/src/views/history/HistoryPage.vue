@@ -126,11 +126,8 @@ import {
   IonCardSubtitle,
   IonCardContent,
 } from "@ionic/vue";
-import { ref } from "vue";
 
-const emits = defineEmits(["scrollPosition"]);
 const edad = new Date().getFullYear() - new Date("1998-06-18").getFullYear();
-const mainDiv = ref();
 </script>
 
 <style>

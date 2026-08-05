@@ -101,7 +101,6 @@ import {
   IonSpinner,
   IonTitle,
   IonToolbar,
-  alertController,
 } from "@ionic/vue";
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";

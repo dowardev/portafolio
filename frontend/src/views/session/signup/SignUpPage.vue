@@ -126,7 +126,7 @@ const spinners = ref({
   buttonLogin: false,
 });
 
-const signUpFormComponentRef = ref(null);
+const signUpFormComponentRef = ref<InstanceType<typeof SignUpFormComponent> | null>(null);
 const formStatus = ref(false);
 
 // functions
@@ -154,24 +154,25 @@ async function register(params: {
     await alertConfirmaciónEmail({ email });
     await router.push("/login");
     clearInputs();
-  } catch (e: any) {
+  } catch (e: unknown) {
     spinners.value.buttonSignup = false;
-    if (e.message == "The email has already been selected") {
+    const error = e as Error;
+    if (error.message == "The email has already been selected") {
       await systemController.presentToast({
         message: "Correo ya en uso",
         color: "warning",
       });
       return;
     }
-    if (e.message == "The user has already been selected") {
+    if (error.message == "The user has already been selected") {
       await systemController.presentToast({
         message: "Usuario ya en uso",
         color: "warning",
       });
       return;
     }
-    console.error(e);
-    errorController.openToastError(e);
+    console.error(error);
+    errorController.openToastError({ error });
   }
 }
 
@@ -212,7 +213,7 @@ async function login() {
 }
 
 function fillTestData() {
-  (signUpFormComponentRef.value as any).generateRandomData();
+  signUpFormComponentRef.value?.generateRandomData();
 }
 </script>
 

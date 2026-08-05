@@ -111,9 +111,7 @@ import {
   arrowBackOutline,
   calendarOutline,
   informationCircleOutline,
-  helpCircleOutline,
 } from "ionicons/icons";
-import { getIconByName as getUnifiedIcon, getIonIconSvg } from "@/utils/iconsIndex";
 import IconRenderer from "@/components/IconRenderer.vue";
 
 const { getIconColor } = useIconColors();
@@ -133,19 +131,6 @@ const isIOS = isPlatform("ios");
 
 function toggleFlip() {
   isFlipped.value = !isFlipped.value;
-}
-
-function getIconByName(source: string) {
-  if (!source) return helpCircleOutline;
-  const iconData = getUnifiedIcon(source);
-  if (!iconData) return helpCircleOutline;
-  
-  if (iconData.source === "lineicons") {
-    return iconData.icon;
-  }
-  
-  const svgIcon = getIonIconSvg(source);
-  return svgIcon || helpCircleOutline;
 }
 
 function getTechLabel(iconName: string): string {

@@ -94,7 +94,7 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
-import { reactive, ref, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import * as ionicons from "ionicons/icons";
 
 import { DesignMode } from "@/utils/types";

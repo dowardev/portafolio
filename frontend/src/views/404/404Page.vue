@@ -54,22 +54,14 @@ import {
   IonToolbar,
 } from "@ionic/vue";
 import { banOutline } from "ionicons/icons";
-import { useRoute } from "vue-router";
 
 // controllers
-import SystemController from "@/controllers/systemController";
-const systemController = new SystemController();
 
-const route = useRoute();
 const pageTitle = "404";
-// const reportError = systemController.reportError;
 
 // functions
 function openReportError() {
-  const error404 = {
-    page: route,
-  };
-  // reportError({ error: error404, type: "error" });
+  // reportError({ error: { page: route }, type: "error" });
 }
 </script>
 

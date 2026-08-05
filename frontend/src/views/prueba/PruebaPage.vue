@@ -1,14 +1,13 @@
 <template>
-  <!-- <div v-for="(block, index) in contentBlocks" :key="index"> -->
-  <!--   <component :is="block.type" v-bind="block.props" /> -->
-  <!-- </div> -->
+  <div v-for="(block, index) in contentBlocks" :key="index">
+    <component :is="block.type" v-bind="block.props" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 // import CardCode from "@/components/cards/CardCode.vue";
 // import CardsAlert from "@/components/cards/CardAlert.vue";
-import { informationOutline } from "ionicons/icons";
 
 const props = defineProps({
   content: {
@@ -87,9 +86,9 @@ const contentBlocks = computed(() => {
           currentHtml = "";
         }
 
-        const [_, lang, code] = match;
+        const [, , code] = match;
         blocks.push({
-          type: 'div' as any,
+          type: "div",
           props: {
             innerHTML: `<pre><code>${code.trim()}</code></pre>`,
           },
@@ -122,7 +121,7 @@ const contentBlocks = computed(() => {
           .join("<br />");
 
         blocks.push({
-          type: 'div' as any,
+          type: "div",
           props: {
             innerHTML: `<blockquote>${blockquoteContent}</blockquote>`,
           },

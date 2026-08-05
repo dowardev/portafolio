@@ -297,7 +297,6 @@ import {
   IonIcon,
   IonItem,
   IonLabel,
-  IonListHeader,
   IonModal,
   IonPopover,
   IonRow,
@@ -310,7 +309,6 @@ import {
   mail,
   copyOutline,
   openOutline,
-  calendar,
   chatbox,
   logoFacebook,
   logoX,
@@ -347,7 +345,6 @@ import {
   logoPlaystation,
   logoTumblr,
   logoVk,
-  mailOutline,
 } from "ionicons/icons";
 import { App } from "@capacitor/app";
 
@@ -368,14 +365,9 @@ interface Props {
 defineProps<Props>();
 
 // vars
-const defaultColorFill = "#777777";
-const fillEmailContact = ref(defaultColorFill);
-const fillLinkedIn = ref(defaultColorFill);
-const fillContactForm = ref(defaultColorFill);
-const fillcalendly = ref(defaultColorFill);
 const screenSize = ref(systemController.getScreenSize());
 
-const socialIconsMap: Record<string, any> = {
+const socialIconsMap: Record<string, string> = {
   logoFacebook,
   logoX,
   logoTwitter,
@@ -414,7 +406,7 @@ const socialIconsMap: Record<string, any> = {
   chatbox,
 };
 
-function getSocialIcon(iconName: string): any {
+function getSocialIcon(iconName: string): string {
   if (!iconName) return logoLinkedin;
 
   // direct match

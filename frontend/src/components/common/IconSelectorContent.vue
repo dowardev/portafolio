@@ -108,7 +108,7 @@ import {
 import SystemController from "@/controllers/systemController";
 import { DesignMode } from "@/utils/types";
 
-const props = defineProps<{
+defineProps<{
   selectedIconName: string;
 }>();
 

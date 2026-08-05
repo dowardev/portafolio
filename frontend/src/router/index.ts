@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
 import NoFoundPage from "../views/404/404Page.vue";
-import Prueba from "@/views/prueba/Prueba.vue";
+import PruebaPage from "@/views/prueba/PruebaPage.vue";
 
 import HomePresentationPage from "@/views/presentation/HomePresentationPage.vue";
 import CategoriesPage from "@/views/presentation/categories/SkillsPage.vue";
@@ -109,7 +109,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/prueba",
     name: "PruebaPage",
-    component: Prueba,
+    component: PruebaPage,
   },
 
   {

@@ -103,7 +103,7 @@ const contentBlocks = computed(() => {
           currentHtml = "";
         }
 
-        const [_, lang, code] = match;
+        const [, lang, code] = match;
         blocks.push({
           type: CardCode,
           props: {

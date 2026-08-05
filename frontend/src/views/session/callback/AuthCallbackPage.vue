@@ -32,8 +32,8 @@ onMounted(async () => {
     await userController.loadUser();
     loading.value = false;
     router.replace("/");
-  } catch (e: any) {
-    error.value = e?.message || "Error en la autenticación";
+  } catch (e: unknown) {
+    error.value = e instanceof Error ? e.message : "Error en la autenticación";
     loading.value = false;
   }
 });

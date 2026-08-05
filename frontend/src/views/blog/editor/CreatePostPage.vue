@@ -156,10 +156,6 @@ async function uploadImage(e: File): Promise<void> {
   }
 }
 
-async function getImageURL(params: { name: string }): Promise<string> {
-  return (await systemController.getImageURL(params)).url;
-}
-
 async function setData(params: {
   title: string;
   description?: string;

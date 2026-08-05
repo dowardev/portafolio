@@ -243,9 +243,9 @@ import { logOutOutline } from "ionicons/icons"
 
 import MenuItem3 from "./MenuItem3.vue"
 import ThemeComponente from "@/components/theme/ThemeComponente.vue"
-import DonationsComponent from "@/components/menu/donations/Donations.vue"
+import DonationsComponent from "@/components/menu/donations/DonationsMenu.vue"
 import FeedbackComponent from "@/components/feedback/FeedbackComponent.vue"
-import AppsComponent from "@/components/menu/apps/Apps.vue"
+import AppsComponent from "@/components/menu/apps/AppsMenu.vue"
 
 import { getSSOClient } from "@/ssoClientAccessor"
 

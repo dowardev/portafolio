@@ -67,17 +67,15 @@
 
 <script setup lang="ts">
 import { IonCol, IonIcon, IonInput, IonRow } from "@ionic/vue";
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { manOutline, personOutline, mailOpenOutline } from "ionicons/icons";
 import useVuelidate from "@vuelidate/core";
 import {
   required,
   email,
   helpers,
-  minLength,
   maxLength,
 } from "@vuelidate/validators";
-import { faker } from "@faker-js/faker";
 
 // componente props
 const props = withDefaults(

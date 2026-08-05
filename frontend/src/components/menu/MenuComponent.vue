@@ -383,9 +383,8 @@ import {
   peopleOutline,
   people,
 } from "ionicons/icons";
-import AppsComponent from "./apps/Apps.vue";
-import DonationsComponent from "./donations/Donations.vue";
-import { useRouter } from "vue-router";
+import AppsComponent from "./apps/AppsMenu.vue";
+import DonationsComponent from "./donations/DonationsMenu.vue";
 
 // components
 import ThemeComponente from "@/components/theme/ThemeComponente.vue";
@@ -441,7 +440,6 @@ const systemController = new SystemController();
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
-const router = useRouter();
 const spinners = ref({
   buttonLogin: false,
   buttonSignup: false,
@@ -460,13 +458,6 @@ window.addEventListener("resize", () => {
 });
 
 // functions
-function openRoute(params: { route?: string; name?: string }) {
-  const { route, name } = params;
-  if (route) router.push(route);
-  if (name) router.push({ name });
-  menuController.close();
-}
-
 async function redirectToSSO(page: "login" | "register") {
   await getSSOClient().loginWithRedirect({
     screenHint: page,

@@ -227,7 +227,7 @@ function handleAdd() {
 }
 
 function handleRemove(index: number) {
-  aptitudes.value = aptitudes.value.filter((_: any, i: number) => i !== index);
+  aptitudes.value = aptitudes.value.filter((_, i) => i !== index);
 }
 
 const localCertificate = ref<CertificateItem | null>(null);
@@ -249,7 +249,7 @@ onMounted(async () => {
     const cert = certificates[certificateIndex.value];
     if (cert) {
       localCertificate.value = { ...cert };
-      aptitudes.value = (Array.isArray(cert.aptitudes) ? cert.aptitudes : []).map((apt: any) => ({
+      aptitudes.value = (Array.isArray(cert.aptitudes) ? cert.aptitudes : []).map((apt) => ({
         iconName: apt.type === 'icon' ? apt.source : '',
       }));
     }
