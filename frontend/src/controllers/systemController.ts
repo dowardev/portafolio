@@ -1,6 +1,7 @@
 import { Toast, Theme } from "@/utils/interfaces";
 import { toastController } from "@ionic/vue";
 import { useSystemStore } from "../store/systemStore";
+import { DEFAULT_THEME } from "@/utils/themeDefaults";
 import { wb } from "@/main";
 
 // controllers
@@ -27,7 +28,7 @@ export default class SystemController {
           ? storedTheme.selected
           : (storedTheme.options?.lightTheme ?? "light");
 
-        const template: HomeTemplate = storedTheme.template ?? (resolved === "cyberpunk-light" ? "template3" : "template2");
+        const template: HomeTemplate = storedTheme.template ?? DEFAULT_THEME.template;
         const variant: ConcreteTheme = storedTheme.variant ?? (resolved === "cyberpunk-light" ? "light" : resolved === "auto" ? (storedTheme.options?.lightTheme ?? "light") : resolved);
 
         const theme: Theme = {
@@ -38,13 +39,7 @@ export default class SystemController {
         };
         this.systemStore.updateThemeSelected({ theme });
       } else {
-        const defaultTheme: Theme = {
-          selected: "light",
-          template: "template2",
-          variant: "light",
-          options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" },
-        };
-        this.systemStore.updateThemeSelected({ theme: defaultTheme });
+        this.systemStore.updateThemeSelected({ theme: { ...DEFAULT_THEME } });
       }
     } catch (error) {
       return this.errorController.handleError({ error });
@@ -56,12 +51,7 @@ export default class SystemController {
       return this.systemStore.getThemeSelected();
     } catch (error) {
       this.errorController.handleError({ error });
-      return {
-        selected: "light",
-        template: "template2",
-        variant: "light",
-        options: { blur: false, lightTheme: "light", darkTheme: "catppuccin-macchiato" },
-      };
+      return { ...DEFAULT_THEME };
     }
   }
 
@@ -119,7 +109,7 @@ export default class SystemController {
       return this.systemStore.getTemplate();
     } catch (error) {
       this.errorController.handleError({ error });
-      return "template2";
+      return DEFAULT_THEME.template;
     }
   }
 
