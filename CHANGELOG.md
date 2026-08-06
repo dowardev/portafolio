@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 19.3.2 - 2026-08-05
+
 ### Fixed
 
 - **Template 3 default flash on clean install**: the default template is now defined in a single `DEFAULT_THEME` constant (`frontend/src/utils/themeDefaults.ts`) and used by the store, controller, and `App.vue`. Previously the store initialized with `template3` but `loadThemeSelected()` overwrote it with a hardcoded `template2` fallback, causing a visible flash from template 3 to template 2 on first load. Changing the default now requires editing only one file.
