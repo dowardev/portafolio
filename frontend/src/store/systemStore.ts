@@ -1,14 +1,13 @@
 import { Theme } from "@/utils/interfaces";
 import { DesignMode, HomeTemplate, ConcreteTheme } from "@/utils/types";
+import { DEFAULT_THEME } from "@/utils/themeDefaults";
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
 
 export const useSystemStore = defineStore("system", () => {
   const theme = ref({
-    selected: "light",
-    template: "template3" as HomeTemplate,
-    variant: "light" as ConcreteTheme,
-    options: { blur: false, lightTheme: "light" as ConcreteTheme, darkTheme: "catppuccin-macchiato" as ConcreteTheme },
+    ...DEFAULT_THEME,
+    options: { ...DEFAULT_THEME.options },
   } as Theme);
   const update = ref(false);
   const loader = ref<{ status: boolean; color: string }>({

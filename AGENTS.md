@@ -333,6 +333,18 @@ import { IonButton, IonContent, IonDatetime, IonPopover } from '@ionic/vue'
 
 > Ionic Vue registers components globally via `app.use(IonicVue)`, but TypeScript needs the import in **section 1** to correctly infer types (e.g. `InstanceType<typeof IonDatetime>`, access to `$el`, methods like `reset()`, `confirm()`, `cancel()`).
 
+### Frontend (Theme): Single Source of Truth
+
+The default theme/template lives in **one** constant: `DEFAULT_THEME` in `frontend/src/utils/themeDefaults.ts`.
+
+To change the app-wide default (template, selected variant, options), edit **only that file**. Never hardcode `template: "templateN"` or theme literals in stores, controllers, views, or services.
+
+- `systemStore` initializes its state from `DEFAULT_THEME`.
+- `systemController.loadThemeSelected()` falls back to `DEFAULT_THEME` when no theme is stored (clean install / cache miss).
+- `App.vue` uses `DEFAULT_THEME` for the initial `oldTheme` passed to `applyTheme`.
+
+> Why: previously the default was duplicated in 4+ places (store said `template3`, controller said `template2`), which caused a first-load flash: template 3 rendered for an instant, then the async `loadThemeSelected()` overwrote the store with `template2`.
+
 ### Frontend (Ionic): Ionic-First Layout
 
 Prefer Ionic layout utilities over custom CSS:
