@@ -16,11 +16,13 @@ import {
   Theme,
 } from "../utils/interfaces";
 import { ConcreteTheme } from "../utils/types";
+import { CONCRETE_THEMES } from "../utils/themeDefaults";
 
 export default class SystemService {
-  async getTheme(): Promise<Theme> {
+  async getTheme(): Promise<Theme | null> {
     const theme = await this.getDataFromLocalStorage({ key: "theme" });
-    return JSON.parse(theme);
+    if (theme === null || theme === undefined) return null;
+    return typeof theme === "string" ? JSON.parse(theme) : theme;
   }
 
   applyTheme(params: {
@@ -29,10 +31,13 @@ export default class SystemService {
     currentTheme: Theme;
     resolvedCurrentSelected: ConcreteTheme;
   }): void {
-    const { resolvedSelected, resolvedCurrentSelected } = params;
+    const { theme, resolvedSelected } = params;
 
     const body = document.getElementsByTagName("body")[0];
-    body.classList.remove(resolvedCurrentSelected);
+    // Remove every known variant class: the previous class may be unknown at
+    // call time (e.g. re-applying when OS scheme changes), so a whitelist
+    // sweep is safer than relying on the caller-provided old class.
+    body.classList.remove(...CONCRETE_THEMES);
     body.classList.add(resolvedSelected);
 
     if (!theme.options || !theme.options.blur) {
@@ -43,11 +48,12 @@ export default class SystemService {
   }
 
   async storeThemeSelected(params: { theme: Theme }): Promise<void> {
-    const theme = params.theme;
-    await this.storeDataOnLocalStorage({
-      key: "theme",
-      value: JSON.stringify(theme),
-    });
+    const { theme } = params;
+    // Store the object directly: @ionic/storage serializes once via localforage.
+    // Pre-stringifying caused double serialization, which IndexedDB returns
+    // raw on read (getItem does not deserialize), so the persisted theme was
+    // never restored after reload.
+    await this.storeDataOnLocalStorage({ key: "theme", value: theme });
   }
 
   async openToast(params: Toast): Promise<void> {

@@ -35,6 +35,7 @@ export default class SystemController {
           selected: storedTheme.selected,
           template,
           variant,
+          savedVariant: storedTheme.savedVariant,
           options: storedTheme.options ?? { blur: false, lightTheme: "light" as ConcreteTheme, darkTheme: "catppuccin-macchiato" as ConcreteTheme },
         };
         this.systemStore.updateThemeSelected({ theme });
@@ -78,7 +79,7 @@ export default class SystemController {
       this.systemService.applyTheme({
         theme: newTheme,
         resolvedSelected: cssTheme,
-        _currentTheme: oldTheme,
+        currentTheme: oldTheme,
         resolvedCurrentSelected: oldCssTheme,
       });
     } catch (error) {
@@ -135,6 +136,138 @@ export default class SystemController {
     try {
       const { variant } = params;
       this.systemStore.setVariant({ variant });
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
+  }
+
+  getThemeModalOpen(): boolean {
+    try {
+      return this.systemStore.getThemeModalOpen();
+    } catch (error) {
+      this.errorController.handleError({ error });
+      return false;
+    }
+  }
+
+  openThemeModal(): void {
+    try {
+      this.systemStore.openThemeModal();
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
+  }
+
+  closeThemeModal(): void {
+    try {
+      this.systemStore.closeThemeModal();
+    } catch (error) {
+      return this.errorController.handleError({ error });
+    }
+  }
+
+  /**
+   * Builds the next theme when the user changes the template.
+   * - Leaving template2 records the current variant in `savedVariant` (if not "light") and forces "light".
+   * - Entering template2 restores the saved variant when it exists and is not "light".
+   * - Switching between non-template2 templates keeps any previously saved variant.
+   */
+  buildThemeForTemplate(params: { currentTheme: Theme; template: HomeTemplate }): Theme {
+    const { currentTheme, template } = params;
+
+    let variant: ConcreteTheme = currentTheme.variant;
+    let savedVariant: ConcreteTheme | undefined = currentTheme.savedVariant;
+
+    if (template !== "template2") {
+      if (currentTheme.template === "template2") {
+        savedVariant = currentTheme.variant !== "light" ? currentTheme.variant : undefined;
+      }
+      variant = "light";
+    } else {
+      variant =
+        currentTheme.savedVariant && currentTheme.savedVariant !== "light"
+          ? currentTheme.savedVariant
+          : currentTheme.variant;
+      savedVariant = undefined;
+    }
+
+    return {
+      ...currentTheme,
+      selected: variant,
+      template,
+      variant,
+      savedVariant,
+    };
+  }
+
+  /**
+   * Builds the next theme when the user changes the variant.
+   * Records the chosen variant as `savedVariant` so it survives modal close/reopen.
+   */
+  buildThemeForVariant(params: { currentTheme: Theme; variant: ConcreteTheme }): Theme {
+    const { currentTheme, variant } = params;
+
+    return {
+      ...currentTheme,
+      selected: variant,
+      variant,
+      savedVariant: variant,
+    };
+  }
+
+  /**
+   * Builds the next theme when the user selects the "auto" mode.
+   * Keeps the current variant so switching back to a concrete variant restores it.
+   */
+  buildThemeForAuto(params: { currentTheme: Theme }): Theme {
+    const { currentTheme } = params;
+
+    return {
+      ...currentTheme,
+      selected: "auto",
+    };
+  }
+
+  /**
+   * Builds the next theme when the user changes the light theme used in "auto" mode.
+   */
+  buildThemeForAutoLightTheme(params: { currentTheme: Theme; lightTheme: ConcreteTheme }): Theme {
+    const { currentTheme, lightTheme } = params;
+
+    return {
+      ...currentTheme,
+      options: {
+        ...currentTheme.options,
+        lightTheme,
+      },
+    };
+  }
+
+  /**
+   * Builds the next theme when the user changes the dark theme used in "auto" mode.
+   */
+  buildThemeForAutoDarkTheme(params: { currentTheme: Theme; darkTheme: ConcreteTheme }): Theme {
+    const { currentTheme, darkTheme } = params;
+
+    return {
+      ...currentTheme,
+      options: {
+        ...currentTheme.options,
+        darkTheme,
+      },
+    };
+  }
+
+  /**
+   * Re-applies the theme when the OS color scheme changes (prefers-color-scheme).
+   * Only meaningful when the selected mode is "auto": concrete modes ignore it.
+   */
+  onSystemColorSchemeChange(): void {
+    try {
+      const theme = this.getTheme();
+      if (theme.selected === "auto") {
+        this.applyTheme({ newTheme: theme, oldTheme: theme });
+      }
     } catch (error) {
       return this.errorController.handleError({ error });
     }

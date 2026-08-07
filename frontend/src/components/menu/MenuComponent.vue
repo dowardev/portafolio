@@ -215,9 +215,9 @@
 
                               <!-- dark button desktop-->
                               <ion-item
-                                id="open-modal-theme-component"
                                 lines="none"
                                 button
+                                @click="systemController.openThemeModal()"
                               >
                                 <ion-icon slot="start" :icon="brushOutline"></ion-icon>
                                 <ion-label>Tema</ion-label>
@@ -313,11 +313,6 @@
       </div>
 
       <!-- modals -->
-      <!-- modal theme -->
-      <ion-modal trigger="open-modal-theme-component">
-        <ThemeComponente />
-      </ion-modal>
-
       <!-- modal contribute -->
       <ion-modal :is-open="modalContribute.open">
         <DonationsComponent />
@@ -387,7 +382,6 @@ import AppsComponent from "./apps/AppsMenu.vue";
 import DonationsComponent from "./donations/DonationsMenu.vue";
 
 // components
-import ThemeComponente from "@/components/theme/ThemeComponente.vue";
 import FeedbackComponent from "../feedback/FeedbackComponent.vue";
 
 // controllers

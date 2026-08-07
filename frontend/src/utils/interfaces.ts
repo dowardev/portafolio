@@ -340,6 +340,8 @@ export interface Theme {
   selected: ThemeType;
   template: HomeTemplate;
   variant: ConcreteTheme;
+  /** Variante recordada al salir de template2, para restaurarla al volver. */
+  savedVariant?: ConcreteTheme;
   options?: { blur?: boolean; lightTheme?: ConcreteTheme; darkTheme?: ConcreteTheme };
 }
 

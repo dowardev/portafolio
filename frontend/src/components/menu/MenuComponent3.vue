@@ -97,7 +97,7 @@
                     label="TEMA"
                     :index="7"
                     :active-routes="[]"
-                    @click="modalTheme.open = true"
+                    @click="systemController.openThemeModal()"
                   />
 
                   <MenuItem3
@@ -193,13 +193,6 @@
 
       <!-- Modals -->
       <ion-modal
-        :is-open="modalTheme.open"
-        @did-dismiss="modalTheme.open = false"
-      >
-        <ThemeComponente />
-      </ion-modal>
-
-      <ion-modal
         :is-open="modalContribute.open"
         @did-dismiss="modalContribute.open = false"
       >
@@ -242,12 +235,15 @@ import { useUserStore } from "@/store/userStore"
 import { logOutOutline } from "ionicons/icons"
 
 import MenuItem3 from "./MenuItem3.vue"
-import ThemeComponente from "@/components/theme/ThemeComponente.vue"
 import DonationsComponent from "@/components/menu/donations/DonationsMenu.vue"
 import FeedbackComponent from "@/components/feedback/FeedbackComponent.vue"
 import AppsComponent from "@/components/menu/apps/AppsMenu.vue"
 
 import { getSSOClient } from "@/ssoClientAccessor"
+
+// controllers
+import SystemController from "@/controllers/systemController"
+const systemController = new SystemController()
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
@@ -298,7 +294,6 @@ const spinners = ref({
 const sourcePopoverOpen = ref(false)
 const accordionOpen = ref(false)
 
-const modalTheme = ref({ open: false })
 const modalContribute = ref({ open: false })
 const modalComments = ref({ open: false })
 

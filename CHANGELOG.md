@@ -2,9 +2,25 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Theme "auto" mode**: the theme selector now offers an `Automático` option that follows the OS `prefers-color-scheme`, with independent selectors for the light and dark variants used on each side (`ThemeComponente.vue`). A `matchMedia` listener in `App.vue` re-applies the theme live when the system color scheme changes.
+- **Shared theme modal state**: the theme modal is now driven by a single `themeModalOpen` flag in `systemStore` (`openThemeModal` / `closeThemeModal` / `getThemeModalOpen`) and hoisted to `App.vue`, so it no longer unmounts and resets its form when the user switches templates inside it.
+- **Variant lists centralized**: `CONCRETE_THEMES`, `LIGHT_COMPATIBLE_THEMES`, and `DARK_COMPATIBLE_THEMES` are now exported from `frontend/src/utils/themeDefaults.ts` and consumed by the selector and the service, removing duplicated hardcoded arrays.
+- **Theme builder helpers**: `SystemController` exposes `buildThemeForTemplate`, `buildThemeForVariant`, `buildThemeForAuto`, `buildThemeForAutoLightTheme`, and `buildThemeForAutoDarkTheme`, centralizing the theme-construction logic previously inlined in the component.
+- **Theme unit tests**: added `systemController.theme.spec.ts` (resolveAutoTheme, applyTheme, savedVariant persistence, auto-mode helpers, changeTheme persistence) and `systemService.theme.spec.ts` ( IndexedDB/localStorage roundtrips, blur + css class application).
+
+### Changed
+
+- **Variants available only in Template 2**: non-template2 templates now show an explanatory note instead of a disabled dropdown, and the dropdown lists are sourced from `themeDefaults.ts`.
+
 ### Fixed
 
 - **Template 3 default flash on clean install**: the default template is now defined in a single `DEFAULT_THEME` constant (`frontend/src/utils/themeDefaults.ts`) and used by the store, controller, and `App.vue`. Previously the store initialized with `template3` but `loadThemeSelected()` overwrote it with a hardcoded `template2` fallback, causing a visible flash from template 3 to template 2 on first load. Changing the default now requires editing only one file.
+- **Theme not restored after reload**: `SystemService.storeThemeSelected` no longer pre-stringifies the theme; it stores the object directly and `getTheme` parses only when the stored value is a string (`systemService.ts`). The previous double serialization broke theme restoration under the IndexedDB driver.
+- **Theme lost on template switch**: `buildThemeForTemplate` records the current variant in a new `Theme.savedVariant` field when leaving Template 2 and restores it on return, instead of silently resetting to `light`; both menus now summon the selector through `openThemeModal()`.
+- **`applyTheme` css class leak**: `SystemService.applyTheme` now removes every known variant class via a whitelist sweep instead of relying on the caller-provided old class, which was unreliable when re-applying on OS color-scheme change.
+- **Controller `applyTheme` misnamed param**: `_currentTheme` was renamed to `currentTheme` to match what `SystemService.applyTheme` expects.
 
 ## 19.3.0 - 2026-07-21
 
