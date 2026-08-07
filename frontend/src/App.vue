@@ -13,6 +13,15 @@
       <ion-router-outlet id="main" :animated="!disableAnimation" />
     </ion-split-pane>
 
+    <!-- theme selector modal: lives outside the conditional menu so it never
+         unmounts when the template changes (template switch closed it before) -->
+    <ion-modal
+      :is-open="themeModalOpen"
+      @did-dismiss="systemController.closeThemeModal()"
+    >
+      <ThemeComponente />
+    </ion-modal>
+
     <!-- toast update -->
     <ion-toast
       message="Nueva actualización disponible, más detalles en la sección de novedades"
@@ -31,6 +40,7 @@
 <script setup lang="ts">
 import {
   IonApp,
+  IonModal,
   IonRouterOutlet,
   IonMenu,
   IonSplitPane,
@@ -42,6 +52,7 @@ import { closeOutline } from "ionicons/icons";
 import { computed, onMounted, ref, watch } from "vue";
 import MenuComponent from "./components/menu/MenuComponent.vue";
 import MenuComponent3 from "./components/menu/MenuComponent3.vue";
+import ThemeComponente from "./components/theme/ThemeComponente.vue";
 import { useRouter, useRoute } from "vue-router";
 import { Storage } from "@ionic/storage";
 import { wb } from "./main";
@@ -111,6 +122,8 @@ const disableAnimation = computed(() => {
 
 const currentTemplate = computed(() => systemController.getTemplate());
 
+const themeModalOpen = computed(() => systemController.getThemeModalOpen());
+
 // mounted
 onMounted(async () => {
   createFirstCookie();
@@ -121,6 +134,13 @@ onMounted(async () => {
     newTheme: theme,
     oldTheme: { ...DEFAULT_THEME },
   });
+
+  // Re-apply the theme when the OS color scheme changes (only meaningful in "auto" mode).
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", () => {
+      systemController.onSystemColorSchemeChange();
+    });
 
   if ("serviceWorker" in navigator && wb) {
     wb.addEventListener("waiting", () => {

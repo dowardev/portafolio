@@ -20,6 +20,7 @@ export const useSystemStore = defineStore("system", () => {
     height: window.innerHeight,
     preset: "",
   });
+  const themeModalOpen = ref(false);
   const errorReport = reactive({
     message: "",
     stack: "",
@@ -52,6 +53,18 @@ export const useSystemStore = defineStore("system", () => {
   function setVariant(params: { variant: ConcreteTheme }): void {
     const { variant } = params;
     theme.value.variant = variant;
+  }
+
+  function getThemeModalOpen(): boolean {
+    return themeModalOpen.value;
+  }
+
+  function openThemeModal(): void {
+    themeModalOpen.value = true;
+  }
+
+  function closeThemeModal(): void {
+    themeModalOpen.value = false;
   }
 
   function toggleUpdateOption() {
@@ -104,5 +117,9 @@ export const useSystemStore = defineStore("system", () => {
     screenSize,
     updateScreenSize,
     errorReport,
+    themeModalOpen,
+    getThemeModalOpen,
+    openThemeModal,
+    closeThemeModal,
   };
 });
