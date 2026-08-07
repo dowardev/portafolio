@@ -1,7 +1,8 @@
 {
   "name": "dowar-blog",
-  "version": "19.4.0",
+  "version": "19.4.1",
   "private": true,
+  "license": "GPL-3.0-or-later",
   "description": "An Ionic project",
   "type": "module",
   "scripts": {

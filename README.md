@@ -340,4 +340,4 @@ pnpm run dev                    # Development server
 
 ## License
 
-This project is developed under the GPL 3 license.
+This project is licensed under [GPL-3.0-or-later](./LICENSE).

@@ -13,6 +13,7 @@
 ### Changed
 
 - **Variants available only in Template 2**: non-template2 templates now show an explanatory note instead of a disabled dropdown, and the dropdown lists are sourced from `themeDefaults.ts`.
+- **Monorepo license standardized to GPL-3.0-or-later**: the whole repository (backend + frontend) now declares `GPL-3.0-or-later` via SPDX identifier, replacing the previous inconsistent mix (`backend/composer.json` said `MIT`, `frontend/package.json` had no `license` field, and the README used the ambiguous prose "GPL 3"). A verbatim GPLv3 `LICENSE` file was added at the repository root (copy of `frontend/LICENSE`), and `README.md` now links to it with the SPDX identifier. FSF-recommended `-or-later` suffix lets future GPL versions cover the code automatically.
 
 ### Fixed
 
