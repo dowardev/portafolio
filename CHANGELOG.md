@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 19.4.0 - 2026-08-06
+
 ### Added
 
 - **Theme "auto" mode**: the theme selector now offers an `Automático` option that follows the OS `prefers-color-scheme`, with independent selectors for the light and dark variants used on each side (`ThemeComponente.vue`). A `matchMedia` listener in `App.vue` re-applies the theme live when the system color scheme changes.
@@ -170,6 +172,9 @@
 - **Tech controller**: New `techController.ts` and `techStore.ts` for tech CRUD with Pinia state management.
 - **Stack `createStack` method**: Added to `stackController.ts` returning the created stack item with ID.
 - **Seed data integration**: `seedController.ts` now generates 3 stacks (Frontend, Backend, DevOps) with 3 techs each, properly associated via `stack_id`.
+- **StackController.getStack()**: New method to load a single stack with techs by ID, returning a normalized `StackItem`.
+- **StackController.updateStackSave()**: New no-toast variant of update for use in composite save workflows.
+- **TechController.createTech()**: New method that creates a tech and returns the created entity, enabling use in seed and editor workflows.
 
 ### Changed
 
@@ -221,16 +226,14 @@
   - `frontend/src/views/admin/editors/ExperienceEditor.vue`
   - `frontend/src/views/admin/editors/ProjectsEditor.vue`
   - `frontend/src/views/presentation/categories/SkillsPage.vue`
+  - `frontend/src/components/menu/MenuComponent.vue`
+  - `frontend/src/components/menu/MenuComponent3.vue`
 - Deleted:
   - `frontend/src/controllers/skillsCategoriesController.ts`
   - `frontend/src/store/skillsCategoriesStore.ts`
   - `frontend/src/views/admin/editors/StackEditor.vue`
   - `frontend/src/views/admin/sections/AdminStackPage.vue`
   - `frontend/src/views/admin/sections/SkillsCategoriesListPage.vue`
-
----
-
-## 19.1.0 - 2026-06-10
 
 ### Bug Fixes
 
@@ -243,12 +246,6 @@
 - **SkillsEditorPage moved to controller-based API access**: Replaced all direct `getApiConnector()` calls in `SkillsEditorPage.vue` with `StackController` and `TechController` methods, aligning with the project convention that components must not call API services directly.
 - **seedController moved to controller-based API access**: Replaced `getApiConnector()` call in `seedSkills()` with `TechController.createTech()`, following the same architecture convention.
 
-### Added
-
-- **StackController.getStack()**: New method to load a single stack with techs by ID, returning a normalized `StackItem`.
-- **StackController.updateStackSave()**: New no-toast variant of update for use in composite save workflows.
-- **TechController.createTech()**: New method that creates a tech and returns the created entity, enabling use in seed and editor workflows.
-
 ### Refactored
 
 - **TechItem type deduplication**: Removed duplicate `TechItem` interface from `techStore.ts` and consolidated to a single source of truth in `services/types.ts`. The store now re-exports the canonical type.
@@ -259,21 +256,6 @@
 - Removed unused `StackResponse` interface, `watch` import, and `ref="nameInput"` from `SkillsEditorPage.vue`.
 - Removed unused `StackItem` type import from `seedController.ts`.
 - Code style cleanup in controller methods (semicolons, conditional `stack_id` guard, return `data.stack` directly).
-
-### Affected Files
-
-- Modified:
-  - `backend/app/Http/Controllers/Admin/StackController.php`
-  - `backend/app/Http/Controllers/Admin/TechController.php`
-  - `frontend/src/controllers/stackController.ts`
-  - `frontend/src/controllers/techController.ts`
-  - `frontend/src/controllers/seedController.ts`
-  - `frontend/src/store/techStore.ts`
-  - `frontend/src/views/admin/sections/SkillsEditorPage.vue`
-  - `frontend/src/views/admin/sections/SkillsListPage.vue`
-  - `frontend/src/views/presentation/categories/SkillsPage.vue`
-  - `frontend/src/components/menu/MenuComponent.vue`
-  - `frontend/src/components/menu/MenuComponent3.vue`
 
 ---
 
