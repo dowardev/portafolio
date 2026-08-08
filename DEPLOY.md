@@ -4,7 +4,11 @@ This guide covers deploying the Portfolio application on traditional hosting (sh
 
 > **Note:** These instructions assume your local development environment is ready. The server only needs to serve the compiled files.
 >
-> Deploy can be done **manually** (SSH/FTP, documented here) or **automatically** via GitLab CI/CD with tags (see section 9).
+> Deploy can be done:
+>
+> - **Manually via SSH/FTP** (sections 2–7) — upload files, run migrations by hand
+> - **Automatically via GitLab CI/CD** on tags (section 9) — push a `vX.Y.Z` tag, the pipeline deploys
+> - **Manually via local script** (section 10) — runs the same deploy steps from your machine, no GitLab CI minutes consumed
 >
 > For a detailed step-by-step checklist, see [backend/DEPLOYMENT_CHECKLIST.md](backend/DEPLOYMENT_CHECKLIST.md).
 
@@ -21,7 +25,11 @@ This guide covers deploying the Portfolio application on traditional hosting (sh
 
 ---
 
-## 2. Backend Deployment
+## 2. Backend Deployment  (Manual Complete — Step by Step)
+
+> **This block (sections 2–7) is the MANUAL COMPLETE approach.**
+> You upload files yourself (scp/rsync/FTP/panel), SSH into the server, and run every command by hand.
+> Use for: first-time setup, no SSH from your machine, or step-by-step server debugging.
 
 ### 1. Install Dependencies
 
@@ -292,7 +300,7 @@ git push origin v1.0.0
 The pipeline runs **only on tags** matching `vX.Y.Z`:
 
 - **Backend**: `lint` → `test` → `build` → `deploy` (tar+scp, runs `php artisan migrate --force`)
-- **Frontend**: `lint` → `test` → `build` → `deploy` → `post-deploy` → `rollback` (uploads compressed `dist/`)
+- **Frontend**: `lint` → `test` → `build` → `deploy` → `rollback` (uploads compressed `dist/`)
 
 Normal pushes to `main` **do not trigger deploy**. Only semantic tags.
 
@@ -316,7 +324,116 @@ The pipeline accepts `vX.Y.Z`, `vX.Y.Z-alpha.N`, `vX.Y.Z-beta.N`,
 
 ```mermaid
 graph LR
-    L[lint] --> T[test] --> B[build] --> D[deploy] --> PD[post-deploy] --> R[rollback]
+    L[lint] --> T[test] --> B[build] --> D[deploy] --> R[rollback]
 ```
 
-`rollback` is manual (`when: manual`), so it does not run automatically on success. The remaining stages are sequential: if `lint`, `test`, or `build` fails, the pipeline stops and won't deploy. `post-deploy` runs after a successful `deploy` and is itself followed only by the optional manual `rollback`.
+`rollback` is manual (`when: manual`), so it does not run automatically on success. The remaining stages are sequential: if `lint`, `test`, or `build` fails, the pipeline stops and won't deploy.
+
+---
+
+## 10. Local Deploy Script (CI/CD bypass)  (Script Automatizado — Un Comando)
+
+> **Este bloque (sección 10) es el enfoque SCRIPT LOCAL.**
+> Corrés **un comando** en tu máquina (`./scripts/deploy.sh --tag vX.Y.Z`); el script hace **lint + tests → build → tar → scp → ssh-deploy** (los **mismos pasos** que el pipeline completo de GitLab CI: lint, test, build, deploy).
+> Usalo cuando: querés automatización sin depender de CI/CD, preferís deployar desde tu laptop, o necesitás controlar el deploy manualmente.
+
+El script `scripts/deploy.sh` reproduce el pipeline completo de `.gitlab-ci.yml` (lint → test → build → deploy) y lo corre localmente por SSH. **Por defecto corre lint y tests** antes de buildear — si fallan, el deploy se aborta y no sube errores a producción.
+
+Podés saltar los checks con `--skip-checks` (solo para emergencias / hotfixes controlados):
+
+```bash
+# Deploy normal: lint + tests + build + deploy (DEFAULT)
+./scripts/deploy.sh
+
+# Saltar lint+tests — ÚSALO BAJO TU RESPONSABILIDAD
+./scripts/deploy.sh --skip-checks
+```
+
+### Prerrequisitos
+
+- Mismo toolchain que desarrollo local: `php`, `composer`, `node`, `pnpm`
+- `scp` y `ssh` en `PATH`
+- Clave SSH privada del server en disco (ruta declarada en `.env`, opcional)
+- `SSH_USER` debe poder escribir en `DEPLOY_PATH_BACKEND` y `DEPLOY_PATH_FRONTEND` en el server
+
+### Setup
+
+Copiá la plantilla y completá tus datos del server:
+
+```bash
+cp .env.example .env
+# Editá .env y seteá SSH_HOST, SSH_PORT, SSH_USER,
+# DEPLOY_PATH_BACKEND, DEPLOY_PATH_FRONTEND
+# SSH_PRIVATE_KEY_PATH es opcional — por defecto ~/.ssh/id_rsa.
+# Descomentá solo si usás una ubicación distinta.
+```
+
+`.env` está en gitignore (root `.gitignore`: `.env.*`). La plantilla de ejemplo
+está commiteada como documentación.
+
+### Uso
+
+```bash
+# Deploy normal: lint + tests + build + deploy (DEFAULT)
+./scripts/deploy.sh
+
+# Saltar lint+tests — ÚSALO BAJO TU RESPONSABILIDAD
+./scripts/deploy.sh --skip-checks
+
+# Solo un lado
+./scripts/deploy.sh --backend
+./scripts/deploy.sh --frontend
+
+# Checkout de un tag y luego deploy
+./scripts/deploy.sh --tag v19.4.0
+
+# Imprime todos los comandos sin ejecutar scp/ssh — seguro para probar
+# sin credenciales y verificar que el wiring está bien
+./scripts/deploy.sh --dry-run
+```
+
+### Qué hace (1:1 con pipeline completo `.gitlab-ci.yml`)
+
+**Pre-deploy checks (lint + test) — igual que stages `lint` y `test` del CI:**
+
+- Backend: `vendor/bin/pint --test` + `php artisan test`
+- Frontend: `pnpm run lint` + `pnpm run test:unit`
+- Se aborta si fallan (usa `--skip-checks` para saltar)
+
+**Backend deploy** espeja `backend_deploy`:
+
+1. `composer install --no-dev --optimize-autoloader --no-interaction`
+2. `php artisan config:cache && php artisan route:cache`
+3. `tar -czf /tmp/backend.tar.gz` con la misma lista `--exclude` que el CI
+   (`.git`, `node_modules`, `vendor`, `.env*`, `storage/*`, `bootstrap/cache/*.php`)
+4. `scp` del tarball al server
+5. `ssh` al server: `tar -xzf` → `composer install --no-dev` →
+   `php artisan migrate --force` → `config:cache` → `route:cache` → cleanup
+
+**Frontend deploy** espeja `frontend_deploy`:
+
+1. `corepack enable && pnpm install --frozen-lockfile`
+2. `pnpm exec vite build`
+3. `tar -czf /tmp/frontend.tar.gz -C frontend/dist .`
+4. `scp` del tarball al server
+5. `ssh` al server: `tar -xzf` → cleanup
+
+### When to use this vs. CI
+
+| Scenario | Recommendation |
+|----------|---------------|
+| Routine release, CI minutes available | Push tag → CI (section 9) |
+| CI minutes exhausted, urgent release | `./scripts/deploy.sh --tag vX.Y.Z` |
+| Want to verify deploy wiring before CI picks up the tag | `./scripts/deploy.sh --dry-run` |
+| Debug a deploy-specific failure on your machine | `./scripts/deploy.sh --backend` to isolate |
+
+### Notes
+
+- The script does **not** run `php artisan cache:table`, `queue:table`, or
+  `session:table`. Those are one-time migrations; if they haven't been run on
+  the server yet, see [section 2.4](#4-run-migrations).
+- The server still needs a working `.env.production` (or `.env`) — the tarball
+  excludes `.env*` so server-side configuration is never overwritten.
+- No `dryrun`-style safety net beyond `--dry-run` itself — make sure you trust
+  the ref you're on before running without the flag.
+

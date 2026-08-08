@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Local deploy script**: new `scripts/deploy.sh` replicates CI pipeline (lint → tests → build → deploy) locally without GitLab CI minutes. Supports `--backend`, `--frontend`, `--all`, `--skip-checks`, `--dry-run`. Uses ssh-agent for authentication, builds production tarball in temp dir (no local vendor pollution), restores production vendor after deploy.
+- **Deploy documentation**: `DEPLOY.md` section 10 documents the script with comparison table (Manual Complete vs Script Automatizado vs CI/CD Automático), prerequisites, usage flags, and ssh-agent setup.
+- **Environment template**: `.env.example` with required SSH variables (`SSH_HOST`, `SSH_PORT`, `SSH_USER`, `DEPLOY_PATH_BACKEND`, `DEPLOY_PATH_FRONTEND`) and optional `SSH_PRIVATE_KEY_PATH`.
+
+### Changed
+
+- **Deploy script vendor hygiene**: auto-installs dev deps (pint, phpunit) only if missing for lint/tests; builds production tarball in isolated temp directory; runs `composer install --no-dev --optimize-autoloader` at end to leave vendor in production state.
+
 ## 19.4.0 - 2026-08-06
 
 ### Added
