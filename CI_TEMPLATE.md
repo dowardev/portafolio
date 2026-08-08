@@ -10,7 +10,7 @@ repositorio lo implementa con las adaptaciones de su stack.
 
 | Decisión | Valor | Justificación |
 |----------|-------|---------------|
-| Disparo | Tag semver con prereleases | `^v\d+\.\d+\.\d+(-(alpha\|beta\|rc)\.\d+)?$` — coherencia entre proyectos |
+| Disparo | Tag semver con prereleases + `dryrun` para validación | `^v\d+\.\d+\.\d+(-(alpha\|beta\|rc\|dryrun)\.\d+)?$` — coherencia entre proyectos |
 | `SSH_KNOWN_HOSTS` | CI var *masked* con el fingerprint | Sustituye a `ssh-keyscan` (MITM) |
 | `SSH_PRIVATE_KEY` | CI var *masked* | Nunca en el repo, nunca en logs |
 | `APP_KEY` (Laravel) | CI var *masked* *protected* | Elimina el hardcode del yml |
@@ -22,7 +22,6 @@ repositorio lo implementa con las adaptaciones de su stack.
 | Deploy | `tar + scp` (nunca `git pull` en el server) | El server no necesita git/node; idempotente |
 | Deploy Laravel | `composer install --no-dev --optimize-autoloader` + `migrate --force` + `config:cache` + `route:cache` | Estado de arte producción |
 | `--exclude` en el tar | `.env`, `.git`, `node_modules`, `vendor`, `storage/*`, `bootstrap/cache/*.php` | No sobreescribir secretos/estado del server |
-| Healthcheck | `post-deploy` con `wget --spider $HEALTHCHECK_URL`, `allow_failure: false` | El deploy falla si la URL no responde |
 | Rollback | Job `when: manual` que redepliega el tag anterior | Recuperación rápida sin tácticas del server |
 
 ---
@@ -37,7 +36,6 @@ stages:
   - test
   - build
   - deploy
-  - post-deploy    # healthcheck
   - rollback       # manual
 
 cache:
@@ -48,10 +46,10 @@ cache:
 
 # ---------- Templates reutilizables (jobs ocultos) ----------
 
-# Dispara solo en tags vX.Y.Z con prerelease opcional (-alpha.N | -beta.N | -rc.N)
+# Dispara solo en tags vX.Y.Z con prerelease opcional (-alpha.N | -beta.N | -rc.N | -dryrun.N)
 .tag_semver:
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)?$/'
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+(-(alpha|beta|rc|dryrun)\.\d+)?$/'
 
 # SSH con known_hosts explícito (NO ssh-keyscan)
 .ssh_setup:
@@ -107,16 +105,6 @@ deploy:
     - scp -P "$SSH_PORT" dist.tar.gz "$SSH_USER@$SSH_HOST:$DEPLOY_PATH"
     - ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "cd $DEPLOY_PATH && tar xzvf dist.tar.gz && rm dist.tar.gz"
 
-post-deploy:
-  stage: post-deploy
-  image: alpine
-  extends: [.tag_semver]
-  needs: [deploy]
-  before_script:
-    - apk add --no-cache wget
-  script:
-    - wget -q -S --spider "$HEALTHCHECK_URL"
-
 # Redespliega el tag anterior. Se ejecuta manualmente desde el pipeline del tag.
 rollback:
   stage: rollback
@@ -147,7 +135,6 @@ Configurar en **GitLab → Settings → CI/CD → Variables**. Marcadas **Protec
 | `SSH_PORT` | normal | todos | Puerto SSH |
 | `SSH_USER` | normal | todos | Usuario SSH |
 | `DEPLOY_PATH` | normal | todos | Ruta absoluta del deploy en el server |
-| `HEALTHCHECK_URL` | normal | todos | URL pública de la app para el healthcheck |
 | `APP_KEY` | masked + protected | Laravel | `php artisan key:generate --show` |
 | `VITE_API_URL` | normal | frontends Ionic | URL del backend para el build |
 | `VITE_SKIP_WAYFINDER` | normal | landing | `"1"` para saltar el plugin Wayfinder en CI |
@@ -178,7 +165,7 @@ Configurar en **GitLab → Settings → CI/CD → Variables**. Marcadas **Protec
 
 ### Monorepo Laravel + Ionic (portafolio, oneSpend)
 
-- Stages comunes `lint/test/build/deploy/post-deploy/rollback` con jobs
+- Stages comunes `lint/test/build/deploy/rollback` con jobs
   `backend_*` y `frontend_*` en cada stage
 - `backend_test`: `php:8.3-cli`, sqlite `:memory:`, `APP_KEY` desde CI var,
   `php artisan test --parallel`
@@ -204,4 +191,4 @@ y no son un deploy web. Revisitar cuando haya runners dedicados.
 - Templates ocultos con prefijo `.` y sustantivo (`tag_semver`, `ssh_setup`)
 - `extends:` con lista cuando hay varios templates
 - `needs:` explícito entre jobs dependientes
-- Un stage `post-deploy` con healthcheck y uno `rollback` manual en todos
+- Un job `rollback` manual en todos
