@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 19.5.0 - 2026-08-07
+
 ### Added
 
 - **Local deploy script**: new `scripts/deploy.sh` replicates CI pipeline (lint → tests → build → deploy) locally without GitLab CI minutes. Supports `--backend`, `--frontend`, `--all`, `--skip-checks`, `--dry-run`. Uses ssh-agent for authentication, builds production tarball in temp dir (no local vendor pollution), restores production vendor after deploy.
