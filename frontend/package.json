@@ -4,6 +4,7 @@
   "private": true,
   "license": "GPL-3.0-or-later",
   "description": "An Ionic project",
+  "packageManager": "pnpm@11.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

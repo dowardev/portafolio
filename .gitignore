@@ -24,3 +24,7 @@ vendor/
 .atl/
 .codegraph/
 .playwright-cli/
+scripts/deploy.conf
+.env
+scripts/deploy.conf
+scripts/deploy/.env
