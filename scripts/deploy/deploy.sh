@@ -577,10 +577,14 @@ deploy_fullstack() {
     run_cmd "Backend: cache config & routes" \
       "cd '$BUILD_DIR' && php artisan config:cache && php artisan route:cache"
 
+    # Disable glob expansion: without set -f, patterns like .env* expand
+    # against the CWD (repo root) and matching files slip into the tarball.
+    set -f
     EXCLUDES=""
     for excl in $BACKEND_ARTIFACT_EXCLUDES; do
       EXCLUDES="$EXCLUDES --exclude='$excl'"
     done
+    set +f
 
     run_cmd "Backend: create tarball" \
       "eval tar -czf '$TARBALL' $EXCLUDES -C '$BUILD_DIR' ."
@@ -643,10 +647,14 @@ deploy_single() {
   log_phase "DEPLOY"
 
   TARBALL="/tmp/deploy.tar.gz"
+  # Disable glob expansion: without set -f, patterns like .env* expand
+  # against the CWD and matching files slip into the tarball.
+  set -f
   EXCLUDES=""
   for excl in $ARTIFACT_EXCLUDES; do
     EXCLUDES="$EXCLUDES --exclude='$excl'"
   done
+  set +f
 
   run_cmd "Create deployment tarball" \
     "eval tar -czf '$TARBALL' $EXCLUDES ."
