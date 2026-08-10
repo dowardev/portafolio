@@ -22,6 +22,19 @@ echo ""
 echo "--- Frontend ---"
 cd frontend
 pnpm install
+# Verificar que el .env del frontend esté configurado. Vite hornea estos
+# valores en el bundle al compilar, así que sin el archivo configurado
+# (o con placeholders del example) la app rompe en producción.
+if [ ! -f .env.development ]; then
+    echo "  ADVERTENCIA: no se encontró frontend/.env.development"
+    echo "  Configúralo: cp .env.development.example .env.development"
+    echo "  y reemplaza VITE_API_URL / VITE_SSO_* por las URLs reales."
+fi
+if [ ! -f .env.production ]; then
+    echo "  ADVERTENCIA: no se encontró frontend/.env.production"
+    echo "  Configúralo antes de buildear: cp .env.production.example .env.production"
+    echo "  y reemplaza VITE_API_URL / VITE_SSO_* por las URLs reales."
+fi
 cd ..
 
 echo ""
