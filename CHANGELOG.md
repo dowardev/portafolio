@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+## 19.7.0 - 2026-08-10
+
+### Added
+
+- **CI frontend env file**: `frontend_build` and `rollback_frontend` now copy the `FRONTEND_ENV_FILE` CI/CD File variable into `frontend/.env.production` before building, so the pipeline compiles the frontend with the configured production URLs
+
+### Changed
+
+- **Setup script frontend env verification**: `setup.sh` now warns when `frontend/.env.development` or `frontend/.env.production` is missing, telling the user to copy the example and set the real URLs before building
+
+### Fixed
+
+- **Deploy glob expansion**: `scripts/deploy/deploy.sh` disables glob expansion while building tarball excludes, preventing local `.env` files from reaching the server and overwriting production config
+- **Remote storage directories**: remote deploy creates `storage/framework/{views,cache/data,sessions}` before `artisan`, fixing "Please provide a valid cache path"
+
 ## 19.6.0 - 2026-08-09
 
 ### Added
