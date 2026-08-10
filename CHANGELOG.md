@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## 19.6.0 - 2026-08-09
+
+### Added
+
+- **Unified deploy script**: new `scripts/deploy/deploy.sh` with safety checks, dry-run, and npm/composer version checks, replacing the previous ad-hoc scripts; optional setup script upload to the server (`SETUP_SCRIPT`)
+
+### Fixed
+
+- **Setup script APP_KEY preservation**: `setup.sh` now only generates `APP_KEY` when it is missing; previously `key:generate --force` regenerated it on every run, invalidating encrypted data
+
 ## 19.5.0 - 2026-08-07
 
 ### Added
