@@ -144,6 +144,7 @@ frontend_build:
     - .frontend_setup
     - .tag_rules
   script:
+    - cp "$FRONTEND_ENV_FILE" .env.production
     - pnpm exec vite build
   artifacts:
     paths:
@@ -259,6 +260,7 @@ rollback_frontend:
       git checkout "$PREVIOUS_TAG" -- frontend/
       cd frontend
       pnpm install --frozen-lockfile
+      cp "$FRONTEND_ENV_FILE" .env.production
       pnpm run build
       cd ..
       tar -czf /tmp/frontend-rollback.tar.gz -C frontend/dist .
