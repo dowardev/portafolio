@@ -9,7 +9,11 @@ echo "--- Backend ---"
 cd backend
 composer install
 cp -n .env.example .env 2>/dev/null || true
-php artisan key:generate --force
+if ! grep -qE "^APP_KEY=.+" .env 2>/dev/null; then
+    php artisan key:generate --force
+else
+    echo "  APP_KEY ya existe, se conserva"
+fi
 php artisan migrate --force --no-interaction
 cd ..
 
