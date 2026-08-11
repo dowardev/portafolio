@@ -616,6 +616,22 @@ EOF
     run_cmd "Frontend: pnpm install --frozen-lockfile" \
       "cd $FRONTEND_DIR && ensure_pnpm && pnpm install --frozen-lockfile"
 
+    # Fail fast: Vite bakes VITE_* values into the bundle at build time. A
+    # missing/empty VITE_SSO_FRONTEND_URL previously shipped a broken bundle
+    # that crashed at login (URL constructor TypeError in the SSO client), so
+    # abort before building rather than publishing another broken bundle.
+    local missing_env=0
+    for var in VITE_API_URL VITE_SSO_URL VITE_SSO_FRONTEND_URL VITE_SSO_CLIENT_ID; do
+      if ! grep -qE "^${var}=.+" "$FRONTEND_DIR/.env.production" 2>/dev/null; then
+        log_err "Frontend: $FRONTEND_DIR/.env.production is missing ${var} (empty or file absent)"
+        missing_env=1
+      fi
+    done
+    if [[ "$missing_env" != "0" ]]; then
+      log_err "Frontend: aborting deploy. Copy frontend/.env.production.example to frontend/.env.production and set the real URLs before building."
+      exit 1
+    fi
+
     run_cmd "Frontend: vite build" \
       "cd $FRONTEND_DIR && pnpm exec vite build"
 
