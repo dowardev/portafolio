@@ -2,11 +2,14 @@
 
 ## [Unreleased]
 
+## 19.8.0 - 2026-08-12
+
 ### Fixed
 
 - **`scripts/deploy/deploy.sh`**: deploy now aborts before building the frontend when `frontend/.env.production` is missing or empty for `VITE_API_URL`, `VITE_SSO_URL`, `VITE_SSO_FRONTEND_URL`, or `VITE_SSO_CLIENT_ID`. Vite bakes these values into the bundle, and a build without them previously shipped an app that crashed at login (`TypeError: URL constructor: is not a valid URL`)
 - **`setup.sh`**: production setup now writes `backend/.env` (instead of `backend/.env.production`) because Laravel always loads `.env`, while `.env.production` only loads with an external `APP_ENV=production` that shared hosting does not guarantee; `artisan --env=production` falls back to `.env` when `.env.production` does not exist. Header comments updated to match
 - **`scripts/deploy/deploy.conf`**: `BACKEND_ARTIFACT_EXCLUDES` now lists the `.env*` files explicitly instead of the `.env*` glob, so the committable templates (`.env.production.example`, etc.) still reach the server where `setup.sh` needs them
+- **`backend` SSO namespace**: corrected `TuOrg\SsoServer` → `Dowardev\SsoServer` in `MyPermissionsController.php`, `SsoController.php`, `PermissionMiddleware.php`, and `PermissionService.php`. The installed package is `dowardev/sso-server` (v0.1.0), but the imports pointed to the old `tu-org/sso-server` namespace, so PHP failed with `Class "TuOrg\SsoServer\Facades\SsoAuth" not found` → 500 on `/api/my-permissions` (login and panel)
 
 ## 19.7.0 - 2026-08-10
 
