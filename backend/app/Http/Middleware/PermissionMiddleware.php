@@ -8,7 +8,7 @@ use App\Traits\ExtractsRoleSlugs;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use TuOrg\SsoServer\Facades\SsoAuth;
+use Dowardev\SsoServer\Facades\SsoAuth;
 
 class PermissionMiddleware
 {

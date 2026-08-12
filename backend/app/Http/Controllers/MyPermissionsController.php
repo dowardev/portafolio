@@ -7,7 +7,7 @@ use App\Models\RolePermission;
 use App\Models\UserPermission;
 use App\Traits\ExtractsRoleSlugs;
 use Illuminate\Http\JsonResponse;
-use TuOrg\SsoServer\Facades\SsoAuth;
+use Dowardev\SsoServer\Facades\SsoAuth;
 
 class MyPermissionsController extends Controller
 {
