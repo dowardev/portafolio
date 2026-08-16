@@ -35,6 +35,14 @@
     </ion-header>
 
     <ion-content>
+      <AdminBreadcrumbs
+        :items="[
+          { label: 'Panel', to: { name: 'PanelAdminPage' } },
+          { label: 'Experiencia', to: { name: 'ExperienceListPage' } },
+          { label: isNew ? 'Nuevo' : 'Editar' },
+        ]"
+      />
+
       <div
         v-if="loading || !loaded"
         class="ion-text-center ion-padding"
@@ -257,6 +265,7 @@ import {
   IonTitle,
   IonToolbar,
   alertController,
+  onIonViewWillEnter,
 } from "@ionic/vue";
 import {
   trashOutline,
@@ -264,13 +273,14 @@ import {
   closeOutline,
   saveOutline,
 } from "ionicons/icons";
-import { computed, ref, onMounted } from "vue";
+import { computed, ref } from "vue";
 
 import { useRoute, useRouter } from "vue-router";
 
 import type { ExperienceItem } from "@/services/types";
 
 import IconSelector from "@/components/admin/IconSelector.vue";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 
 import ExperienceController from "@/controllers/experienceController";
 import { usePermissionGuard } from "@/composables/usePermissionGuard";
@@ -318,7 +328,28 @@ const localExperience = ref<ExperienceItem>({
 
 let pendingImageFile: File | null = null;
 
-onMounted(async () => {
+onIonViewWillEnter(async () => {
+  localExperience.value = {
+    id: "",
+    img: "",
+    title: "",
+    startDate: "",
+    endDate: undefined,
+    technologies: [],
+    details: { description: "", website: "" },
+  };
+  techs.value = [];
+  isCurrentJob.value = false;
+  pendingImageFile = null;
+  titleTouched.value = false;
+  imgTouched.value = false;
+  descriptionTouched.value = false;
+  endDateTouched.value = false;
+  fileName.value = "";
+  fileInput.value = null;
+  isPreviewOpen.value = false;
+  previewSrc.value = null;
+
   loading.value = true;
   const experiences = await experienceController.loadPublicExperiences();
   if (isNew.value) {

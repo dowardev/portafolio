@@ -17,19 +17,12 @@
     </ion-header>
 
     <ion-content>
-      <ion-grid>
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="4">
-            <ion-breadcrumbs>
-              <ion-breadcrumb>
-                <RouterLink :to="{ name: 'PanelAdminPage' }">Panel</RouterLink>
-              </ion-breadcrumb>
-
-              <ion-breadcrumb>Certificados</ion-breadcrumb>
-            </ion-breadcrumbs>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <AdminBreadcrumbs
+        :items="[
+          { label: 'Panel', to: { name: 'PanelAdminPage' } },
+          { label: 'Certificados' },
+        ]"
+      />
 
       <template v-if="certificates.length > 0">
         <ion-grid>
@@ -99,8 +92,6 @@
 
 <script setup lang="ts">
 import {
-  IonBreadcrumb,
-  IonBreadcrumbs,
   IonButton,
   IonButtons,
   IonCard,
@@ -129,6 +120,7 @@ import CertificatesController from "@/controllers/certificatesController";
 import { usePermissionGuard } from "@/composables/usePermissionGuard";
 
 import { storeToRefs } from "pinia";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 
 const { guard } = usePermissionGuard();
 const router = useRouter();

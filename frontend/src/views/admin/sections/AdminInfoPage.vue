@@ -37,20 +37,13 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content class="ion-padding">
-    <ion-grid>
-      <ion-row class="ion-justify-content-center">
-        <ion-col size="4">
-          <ion-breadcrumbs>
-            <ion-breadcrumb>
-              <RouterLink :to="{ name: 'PanelAdminPage' }">Panel</RouterLink>
-            </ion-breadcrumb>
-
-            <ion-breadcrumb>Info editor</ion-breadcrumb>
-          </ion-breadcrumbs>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+<ion-content class="ion-padding">
+      <AdminBreadcrumbs
+        :items="[
+          { label: 'Panel', to: { name: 'PanelAdminPage' } },
+          { label: 'Info editor' },
+        ]"
+      />
 
     <ion-grid>
       <ion-row class="ion-justify-content-center">
@@ -87,8 +80,6 @@ defineOptions({
   directives: { tooltip: vTooltip },
 });
 import {
-  IonBreadcrumb,
-  IonBreadcrumbs,
   IonButton,
   IonButtons,
   IonCol,
@@ -105,6 +96,7 @@ import {
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import InfoEditor from "../editors/InfoEditor.vue";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 import type { TagItem } from "@/services/types";
 import IntroController from "@/controllers/introController";
 import { usePermissionGuard } from "@/composables/usePermissionGuard";
@@ -190,8 +182,8 @@ async function handleSave() {
         showContactForm: formData.showContactForm,
       },
       {
-        logo: files.logo as File,
-        photo: files.photo as File,
+        logo: files.logo ?? undefined,
+        photo: files.photo ?? undefined,
       }
     );
     router.push("/admin-panel");

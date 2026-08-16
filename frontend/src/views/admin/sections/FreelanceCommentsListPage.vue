@@ -34,19 +34,12 @@
     </ion-header>
 
     <ion-content>
-      <ion-grid>
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="4">
-            <ion-breadcrumbs>
-              <ion-breadcrumb>
-                <RouterLink :to="{ name: 'PanelAdminPage' }">Panel</RouterLink>
-              </ion-breadcrumb>
-
-              <ion-breadcrumb>Comentarios</ion-breadcrumb>
-            </ion-breadcrumbs>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <AdminBreadcrumbs
+        :items="[
+          { label: 'Panel', to: { name: 'PanelAdminPage' } },
+          { label: 'Comentarios' },
+        ]"
+      />
 
       <template v-if="comments.length > 0">
         <ion-grid>
@@ -111,8 +104,6 @@
 
 <script lang="ts" setup>
 import {
-  IonBreadcrumb,
-  IonBreadcrumbs,
   IonButton,
   IonButtons,
   IonCard,
@@ -143,6 +134,7 @@ import {
 import { faker } from "@faker-js/faker";
 import FreelanceCommentController from "@/controllers/freelanceCommentController";
 import { usePermissionGuard } from "@/composables/usePermissionGuard";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 import type { FreelanceComment } from "@/services/types";
 
 const { guard } = usePermissionGuard();

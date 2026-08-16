@@ -17,18 +17,12 @@
     </ion-header>
 
     <ion-content>
-      <ion-grid>
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="12" size-md="8" size-lg="6">
-            <ion-breadcrumbs>
-              <ion-breadcrumb>
-                <RouterLink :to="{ name: 'PanelAdminPage' }">Panel</RouterLink>
-              </ion-breadcrumb>
-              <ion-breadcrumb>Skills</ion-breadcrumb>
-            </ion-breadcrumbs>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <AdminBreadcrumbs
+        :items="[
+          { label: 'Panel', to: { name: 'PanelAdminPage' } },
+          { label: 'Skills' },
+        ]"
+      />
 
       <div v-if="loading" class="ion-text-center ion-padding">
         <ion-spinner name="lines"></ion-spinner>
@@ -106,8 +100,6 @@
 import {
   IonButton,
   IonButtons,
-  IonBreadcrumb,
-  IonBreadcrumbs,
   IonCard,
   IonCol,
   IonContent,
@@ -130,32 +122,34 @@ import {
   codeSlashOutline,
   trashOutline,
 } from "ionicons/icons";
-import { ref, onMounted } from "vue";
+import { onMounted } from "vue";
+import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { Lineicons } from "@lineiconshq/vue-lineicons";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 import {
   getIconByName,
   getIonIconSvg,
   getLineIconComponent,
   isLineIcon,
 } from "@/utils/iconsIndex";
+import { useStackStore } from "@/store/stackStore";
 import StackController from "@/controllers/stackController";
 import type { StackItem } from "@/services/types";
 
+const stackStore = useStackStore();
+// Read reactively from the Pinia store: the editor reloads the store after
+// create/update (reloadStack), so this list updates automatically without
+// needing a manual page reload.
+const { stack: stacks, loading } = storeToRefs(stackStore);
 const stackController = new StackController();
 const router = useRouter();
 
-const loading = ref(true);
-const stacks = ref<StackItem[]>([]);
-
 onMounted(async () => {
   try {
-    const data = await stackController.loadStack();
-    stacks.value = data || [];
+    await stackController.loadStack();
   } catch (error) {
     console.error("Error loading stacks:", error);
-  } finally {
-    loading.value = false;
   }
 });
 
@@ -178,8 +172,8 @@ async function confirmDelete(stack: StackItem) {
         role: "destructive",
         handler: async () => {
           try {
+            // deleteStack reloads the store, so the list updates reactively.
             await stackController.deleteStack(stack.id!);
-            stacks.value = stacks.value.filter((s) => s.id !== stack.id);
           } catch (error) {
             console.error("Error deleting stack:", error);
           }

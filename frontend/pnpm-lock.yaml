@@ -45,8 +45,8 @@ importers:
         specifier: ^0.0.4
         version: 0.0.4(react@19.2.5)(vue@3.5.33(typescript@5.9.3))
       '@tu-org/sso-client':
-        specifier: npm:@dowardev/sso-client@^0.0.2
-        version: '@dowardev/sso-client@0.0.2'
+        specifier: npm:@dowardev/sso-client@^0.0.4
+        version: '@dowardev/sso-client@0.0.4'
       '@unhead/vue':
         specifier: ^1.11.0
         version: 1.11.20(vue@3.5.33(typescript@5.9.3))
@@ -756,8 +756,8 @@ packages:
   '@cypress/xvfb@1.2.4':
     resolution: {integrity: sha512-skbBzPggOVYCbnGgV+0dmBdW/s77ZkAOXIC1knS8NagwDjBrNC1LuXtQJeiN6l+m7lzmHtaoUw/ctJKdqkG57Q==}
 
-  '@dowardev/sso-client@0.0.2':
-    resolution: {integrity: sha512-ZshZrMB2UEmdE53cwfGdzWn/F6oiHZGkgRWC6/W/qDb6fEU4gevUsk3SQDrM43ZSAYHQlEIiFiVpoUt/6O0fig==}
+  '@dowardev/sso-client@0.0.4':
+    resolution: {integrity: sha512-RlXu+QD+pNgn/EanpEEqhaxpL0xzJQ6pz4qg6ft54hzuEWd3EtHQUKGUkZs+57MCVyO+W01+Ssb1aAUGSxvucQ==}
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -5062,7 +5062,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@dowardev/sso-client@0.0.2':
+  '@dowardev/sso-client@0.0.4':
     dependencies:
       axios: 1.16.0
     transitivePeerDependencies:

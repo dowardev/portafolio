@@ -35,6 +35,14 @@
     </ion-header>
 
     <ion-content>
+      <AdminBreadcrumbs
+        :items="[
+          { label: 'Panel', to: { name: 'PanelAdminPage' } },
+          { label: 'Certificados', to: { name: 'CertificatesListPage' } },
+          { label: isNew ? 'Nuevo' : 'Editar' },
+        ]"
+      />
+
       <div
         v-if="loading || !loaded"
         class="ion-text-center ion-padding"
@@ -177,6 +185,7 @@ import {
   IonTitle,
   IonToolbar,
   alertController,
+  onIonViewWillEnter,
 } from "@ionic/vue";
 import {
   trashOutline,
@@ -184,13 +193,14 @@ import {
   closeOutline,
   saveOutline,
 } from "ionicons/icons";
-import { computed, ref, onMounted } from "vue";
+import { computed, ref } from "vue";
 
 import { useRoute, useRouter } from "vue-router";
 
 import type { CertificateItem } from "@/services/types";
 
 import IconSelector from "@/components/admin/IconSelector.vue";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 
 import CertificatesController from "@/controllers/certificatesController";
 import { usePermissionGuard } from "@/composables/usePermissionGuard";
@@ -234,7 +244,18 @@ const localCertificate = ref<CertificateItem | null>(null);
 
 let pendingImageFile: File | null = null;
 
-onMounted(async () => {
+onIonViewWillEnter(async () => {
+  localCertificate.value = null;
+  aptitudes.value = [];
+  pendingImageFile = null;
+  titleTouched.value = false;
+  urlTouched.value = false;
+  imgTouched.value = false;
+  fileName.value = "";
+  fileInput.value = null;
+  isPreviewOpen.value = false;
+  previewSrc.value = null;
+
   loading.value = true;
   const certificates = await certificatesController.loadPublicCertificates();
   if (isNew.value) {

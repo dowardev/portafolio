@@ -47,7 +47,7 @@ export default class IntroController {
     }
   }
 
-  async saveIntro(intro: IntroData, files?: Record<string, File>): Promise<IntroData> {
+  async saveIntro(intro: IntroData, files?: Record<string, File | undefined>): Promise<IntroData> {
     try {
       const formData = new FormData();
       formData.append("intro", JSON.stringify({
@@ -62,8 +62,10 @@ export default class IntroController {
       }));
 
       if (files) {
-        Object.entries(files).forEach(([key, file]: [string, File]) => {
-          formData.append(key, file);
+        Object.entries(files).forEach(([key, file]) => {
+          if (file instanceof File) {
+            formData.append(key, file);
+          }
         });
       }
 

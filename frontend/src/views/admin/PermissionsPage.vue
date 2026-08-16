@@ -10,6 +10,13 @@
     </ion-header>
 
     <ion-content>
+      <AdminBreadcrumbs
+        :items="[
+          { label: 'Panel', to: { name: 'PanelAdminPage' } },
+          { label: 'Permisos' },
+        ]"
+      />
+
       <ion-segment v-model="activeTab" @ion-change="tabChanged">
         <ion-segment-button value="roles">
           <ion-label>Roles</ion-label>
@@ -224,6 +231,7 @@ import {
 import { save, sync as syncIcon, syncOutline, checkmarkCircle, closeCircle, removeCircleOutline, personOutline } from 'ionicons/icons'
 import { usePermissionsController, groupPermissions, getPermissionLabel, type RolePermissions, type SyncStatus, type UserPermissions, type SsoUser } from '@/controllers/permissionsController'
 import UserController from '@/controllers/userController'
+import AdminBreadcrumbs from '@/components/admin/AdminBreadcrumbs.vue'
 
 const userController = new UserController()
 const controller = usePermissionsController()

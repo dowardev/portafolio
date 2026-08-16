@@ -1,5 +1,5 @@
 <template>
-  <ion-button fill="clear" @click="openModal = true">
+  <ion-button fill="clear" @click="openSelectorModal">
     <template v-if="modelValue">
       <ion-icon
         :icon="getIcon(modelValue)"
@@ -272,6 +272,13 @@ function getLabel(name: string) {
 function selectIcon(name: string) {
   emit("update:modelValue", name);
   openModal.value = false;
+}
+
+function openSelectorModal() {
+  // The Ionic modal keeps its content mounted between opens, so the search
+  // text would survive a close-reopen cycle. Reset it on every open.
+  searchText.value = "";
+  openModal.value = true;
 }
 // end functions
 </script>

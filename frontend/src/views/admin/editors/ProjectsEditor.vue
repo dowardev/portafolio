@@ -32,6 +32,14 @@
     </ion-header>
 
     <ion-content>
+      <AdminBreadcrumbs
+        :items="[
+          { label: 'Panel', to: { name: 'PanelAdminPage' } },
+          { label: 'Proyectos', to: { name: 'ProjectsListPage' } },
+          { label: isNew ? 'Nuevo' : 'Editar' },
+        ]"
+      />
+
       <div
         v-if="loading || !loaded"
         class="ion-text-center ion-padding"
@@ -276,6 +284,7 @@ import {
   IonTitle,
   IonToolbar,
   alertController,
+  onIonViewWillEnter,
 } from "@ionic/vue";
 import {
   trashOutline,
@@ -283,13 +292,14 @@ import {
   closeOutline,
   saveOutline,
 } from "ionicons/icons";
-import { computed, ref, onMounted } from "vue";
+import { computed, ref } from "vue";
 
 import { useRoute, useRouter } from "vue-router";
 
 import type { ProjectItem } from "@/services/types";
 
 import IconSelector from "@/components/admin/IconSelector.vue";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 
 import ProjectsController from "@/controllers/projectsController";
 import { usePermissionGuard } from "@/composables/usePermissionGuard";
@@ -330,7 +340,20 @@ function handleTechRemove(index: number) {
   }
 }
 
-onMounted(async () => {
+onIonViewWillEnter(async () => {
+  localProject.value = null;
+  isCurrent.value = false;
+  fileName.value = "";
+  pendingMainImageFile = null;
+  pendingTechFiles = {};
+  titleTouched.value = false;
+  imgTouched.value = false;
+  descriptionTouched.value = false;
+  endDateTouched.value = false;
+  previewSrc.value = null;
+  isPreviewOpen.value = false;
+  fileInput.value = null;
+
   loading.value = true;
   projects.value = await projectsController.loadPublicProjects();
   if (isNew.value) {

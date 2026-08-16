@@ -8,8 +8,8 @@ interface ExperienceApiResponse {
   id: string;
   img: string;
   title: string;
-  startDate: string;
-  endDate?: string;
+  start_date: string;
+  end_date?: string;
   description?: string;
   website?: string;
   technologies: TechnologyItem[];
@@ -45,8 +45,8 @@ export default class ExperienceController {
         id: exp.id,
         img: exp.img,
         title: exp.title,
-        startDate: exp.startDate,
-        endDate: exp.endDate,
+        startDate: exp.start_date,
+        endDate: exp.end_date,
         technologies: exp.technologies || [],
         details: {
           description: exp.description || "",

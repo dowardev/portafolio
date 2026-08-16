@@ -76,6 +76,7 @@ import type { ProjectItem } from "@/services/types";
 import ProjectsController from "@/controllers/projectsController";
 import ProjectDetailModal from "@/components/projects/ProjectDetailModal.vue";
 import { useIconColors } from "@/composables/useIconColors";
+import { sortByStartDateDesc } from "@/utils/sortByDate";
 
 const { getIconColor } = useIconColors();
 const projectsController = new ProjectsController();
@@ -87,7 +88,7 @@ const selectedProject = ref<ProjectItem | null>(null);
 onMounted(async () => {
   try {
     await projectsController.loadPublicProjects();
-    projects.value = projectsController.getProjects();
+    projects.value = sortByStartDateDesc(projectsController.getProjects());
   } catch (error) {
     console.error("Error loading projects data:", error);
   }

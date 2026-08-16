@@ -48,6 +48,8 @@
     </ion-header>
 
     <ion-content>
+      <AdminBreadcrumbs :items="[{ label: 'Panel' }]" />
+
       <section v-if="mainSegment == 'home'">
         <AdminHomeMenu />
       </section>
@@ -89,6 +91,7 @@ import {
 } from "@ionic/vue";
 import { reactive, ref, watch } from "vue";
 import AdminHomeMenu from "./AdminHomeMenu.vue";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 
 // controllers
 import SystemController from "@/controllers/systemController";

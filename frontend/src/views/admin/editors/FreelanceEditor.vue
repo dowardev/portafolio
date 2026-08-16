@@ -54,6 +54,22 @@
     </ion-header>
 
     <ion-content>
+      <AdminBreadcrumbs
+        :items="[
+          { label: 'Panel', to: { name: 'PanelAdminPage' } },
+          {
+            label: freelanceType === 'platform' ? 'Plataformas' : 'Comentarios',
+            to: {
+              name:
+                freelanceType === 'platform'
+                  ? 'FreelancePlatformsListPage'
+                  : 'FreelanceCommentsListPage',
+            },
+          },
+          { label: isNew ? 'Nuevo' : 'Editar' },
+        ]"
+      />
+
       <div
         v-if="loading"
         class="ion-text-center ion-padding"
@@ -228,6 +244,7 @@ import {
   IonTitle,
   IonToolbar,
   alertController,
+  onIonViewWillEnter,
 } from "@ionic/vue";
 import {
   trashOutline,
@@ -236,7 +253,7 @@ import {
   saveOutline,
   bugOutline,
 } from "ionicons/icons";
-import { computed, ref, onMounted } from "vue";
+import { computed, ref } from "vue";
 
 import { useRoute, useRouter } from "vue-router";
 
@@ -246,6 +263,7 @@ import FreelancePlatformController from "@/controllers/freelancePlatformControll
 
 import FreelanceCommentController from "@/controllers/freelanceCommentController";
 import { usePermissionGuard } from "@/composables/usePermissionGuard";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 
 const { guard } = usePermissionGuard();
 
@@ -289,7 +307,18 @@ const isNew = computed(() => {
 
 const localItem = ref<FreelancePlatform | FreelanceComment | null>(null);
 
-onMounted(async () => {
+onIonViewWillEnter(async () => {
+  localItem.value = null;
+  freelanceId.value = undefined;
+  pendingImageFile = null;
+  fileName.value = "";
+  fileInput.value = null;
+  nameTouched.value = false;
+  urlTouched.value = false;
+  imageTouched.value = false;
+  previewSrc.value = null;
+  isPreviewOpen.value = false;
+
   loading.value = true;
   try {
     if (platforms.value.length === 0 && comments.value.length === 0) {
