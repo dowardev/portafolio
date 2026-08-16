@@ -89,6 +89,7 @@ declare module '@tu-org/sso-client' {
 
     readonly isAuthenticated: boolean;
     getUser(): Promise<User | null>;
+    checkSession(): Promise<{ authenticated: boolean; user?: User }>;
 
     onAuthStateChange(callback: (state: AuthState) => void): () => void;
   }

@@ -2,12 +2,7 @@
   <section class="hero-root">
     <div class="hero-content">
       <h1 class="hero-title">
-        Hi, I'm <span class="hero-name">{{ name }}</span>. I'm a
-        <span class="role-wrapper" :style="{ minWidth: `${maxRoleChars}ch` }">
-          <Transition name="role-fade" mode="out-in">
-            <span :key="currentRole" class="role-text">{{ currentRole }}</span>
-          </Transition>
-        </span>
+        Hola, soy <span class="hero-name">{{ name }}</span>
       </h1>
 
       <div v-if="bottomLinks.length > 0" class="hero-links">
@@ -34,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue"
+import { computed } from "vue"
 
 interface NavLink {
   label: string
@@ -43,36 +38,10 @@ interface NavLink {
 
 interface HeroSection3Props {
   name: string
-  roles: string[]
   navLinks?: NavLink[]
 }
 
 const props = defineProps<HeroSection3Props>()
-
-const activeRoleIndex = ref(0)
-const prefersReducedMotion = ref(false)
-let roleInterval: ReturnType<typeof setInterval> | null = null
-
-function advanceRole() {
-  activeRoleIndex.value = (activeRoleIndex.value + 1) % props.roles.length
-}
-
-onMounted(() => {
-  prefersReducedMotion.value = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  if (!prefersReducedMotion.value) {
-    roleInterval = setInterval(advanceRole, 2800)
-  }
-})
-
-onUnmounted(() => {
-  if (roleInterval) clearInterval(roleInterval)
-})
-
-const currentRole = computed(() => props.roles[activeRoleIndex.value])
-
-const maxRoleChars = computed(() => {
-  return Math.max(...props.roles.map((r: string) => r.length)) + 1
-})
 
 const bottomLinks = computed<NavLink[]>(() => {
   if (props.navLinks && props.navLinks.length > 0) {
@@ -122,33 +91,6 @@ const textTags = computed(() => bottomLinks.value.filter((l): l is NavLink & { h
   color: #111;
 }
 
-.role-wrapper {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: bottom;
-  max-width: 100%;
-}
-
-.role-text {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.role-fade-enter-active,
-.role-fade-leave-active {
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-
-.role-fade-enter-from {
-  transform: translateY(100%);
-  opacity: 0;
-}
-
-.role-fade-leave-to {
-  transform: translateY(-100%);
-  opacity: 0;
-}
-
 .hero-links {
   display: flex;
   gap: 2.5rem;
@@ -190,13 +132,6 @@ const textTags = computed(() => bottomLinks.value.filter((l): l is NavLink & { h
   color: #888;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .role-fade-enter-active,
-  .role-fade-leave-active {
-    transition: none;
-  }
-}
-
 @media (max-width: 1024px) {
   .hero-title {
     font-size: 3rem;
@@ -210,14 +145,6 @@ const textTags = computed(() => bottomLinks.value.filter((l): l is NavLink & { h
 
   .hero-title {
     font-size: 2.2rem;
-  }
-
-  .role-wrapper {
-    min-width: 0;
-  }
-
-  .role-text {
-    white-space: normal;
   }
 
   .hero-links {

@@ -57,7 +57,6 @@
       <section id="hero" class="bp-section bp-section-hero">
         <HeroSection3
           :name="name"
-          :roles="roles"
           :nav-links="heroNavLinks"
         />
       </section>
@@ -178,6 +177,7 @@ import FreelancePlatformController from "@/controllers/freelancePlatformControll
 import FreelanceCommentController from "@/controllers/freelanceCommentController"
 import StackController from "@/controllers/stackController"
 import { getIconByName } from "@/utils/iconsIndex"
+import { sortByStartDateDesc } from "@/utils/sortByDate"
 
 import HeroSection3 from "@/views/presentation/sections/HeroSection3.vue"
 import ProjectCard3 from "@/components/projects/ProjectCard3.vue"
@@ -200,7 +200,6 @@ function onResize() {
 const introData = computed(() => introController.data.value || { name: null, username: null, tags: [], description: null, socials: [], logoUrl: null, photoUrl: null, showFooter: true, footerContent: null, showContactForm: { socials: false, freelance: false } })
 const name = computed(() => introData.value.name || "")
 const username = computed(() => introData.value.username || introData.value.name || "")
-const roles = computed(() => (introData.value.tags || []).map(t => t.name))
 const headerLogoUrl = computed(() => introData.value.logoUrl || null)
 
 const heroNavLinks = computed(() => {
@@ -209,30 +208,34 @@ const heroNavLinks = computed(() => {
 })
 
 const projectCards = computed(() =>
-  (projectsController.projects.value || []).slice(0, isMobile.value ? 3 : 6).map((p, i) => ({
-    source: p.source?.name,
-    name: p.title,
-    description: p.details?.description || "",
-    url: p.source?.url || "#",
-    index: i + 1,
-    technologies: (p.technologies || []).map(t => ({
-      name: getIconByName(t.iconName)?.label || t.iconName
+  sortByStartDateDesc(projectsController.projects.value || [])
+    .slice(0, isMobile.value ? 3 : 6)
+    .map((p, i) => ({
+      source: p.source?.name,
+      name: p.title,
+      description: p.details?.description || "",
+      url: p.source?.url || "#",
+      index: i + 1,
+      technologies: (p.technologies || []).map(t => ({
+        name: getIconByName(t.iconName)?.label || t.iconName
+      }))
     }))
-  }))
 )
 
 const experienceCards = computed(() =>
-  (experienceController.experiences.value || []).slice(0, isMobile.value ? 3 : 6).map((e, i) => ({
-    name: e.title,
-    description: e.details?.description || "",
-    url: e.details?.website || "#",
-    startDate: e.startDate,
-    endDate: e.endDate || undefined,
-    index: i + 1,
-    technologies: (e.technologies || []).map(t => ({
-      name: getIconByName(t.iconName)?.label || t.iconName
+  sortByStartDateDesc(experienceController.experiences.value || [])
+    .slice(0, isMobile.value ? 3 : 6)
+    .map((e, i) => ({
+      name: e.title,
+      description: e.details?.description || "",
+      url: e.details?.website || "#",
+      startDate: e.startDate,
+      endDate: e.endDate || undefined,
+      index: i + 1,
+      technologies: (e.technologies || []).map(t => ({
+        name: getIconByName(t.iconName)?.label || t.iconName
+      }))
     }))
-  }))
 )
 
 const freelancePlatforms = computed(() =>

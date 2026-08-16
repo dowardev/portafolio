@@ -2,6 +2,31 @@
 
 ## [Unreleased]
 
+### Added
+
+- **`frontend/src/components/admin/AdminBreadcrumbs.vue`**: new reusable breadcrumbs component (`items: Array<{ label, to? }>`) encapsulating the centered grid + `ion-breadcrumbs` layout; replaces the duplicated blocks in 9 admin pages and adds breadcrumbs to the remaining admin views (editors with `Panel > Section > New/Edit`, PanelAdminPage, Permissions, Users, admin home sub-views)
+- **`frontend/src/controllers/userController.ts`**: `syncSession()` now calls `SSOClient.checkSession()` before `my-permissions`; when the SSO reports `authenticated: false` the store is cleared (`logout` + `updateUserLoggedProp(false)` + `setLoadState('unauthenticated')`), so a logout made on the SSO domain is detected on tab return even while the portfolio access token is still valid (requires `@dowardev/sso-client@0.0.4`)
+- **`frontend/src/utils/sortByDate.ts`**: new `sortByStartDateDesc<T>()` helper sorts projects and experiences by start date descending (mixed formats, no-date last); applied to HomeTemplate2/3, PortfolioPage, ExperiencePage, and the presentation Projects/Experience components
+- **`frontend/src/views/admin/sections/SkillsEditorPage.vue`**: icon cards and skill techs can now be reordered; the "add technology" action is disabled until the current technology has a name
+- **`frontend/src/views/admin/editors/*.vue`**: save and back actions moved to the header toolbar; "add technology" button moved to the list header
+
+### Changed
+
+- **`frontend/package.json`**: `@tu-org/sso-client` alias bumped `npm:@dowardev/sso-client@^0.0.2` → `^0.0.4` (adds `checkSession()`, refresh token grant support, logout revocation)
+- **`frontend/src/main.ts`**: SSO session is revalidated on tab focus and cross-tab logout (storage event)
+
+### Fixed
+
+- **`frontend/src/views/admin/editors/*.vue`**: editor forms reset on every view enter via `onIonViewWillEnter` — creating a new record no longer leaves stale values
+- **`frontend/src/components/admin/IconSelector.vue`**: icon selector search field resets on modal reopen (`:key` remount + reset in the open handler)
+- **`frontend/src/controllers/experienceController.ts`**: experience dates now map the API's snake_case fields (`start_date`/`end_date`) — dates were silently `undefined` and not recorded
+- **`frontend/src/components/projects/ProjectCard3.vue`**: template 3 card descriptions show a scrollbar instead of being clipped with no overflow (`-webkit-line-clamp` + `overflow: hidden` replaced by `max-height` + `overflow-y: auto`)
+- **`frontend/src/views/admin/sections/SkillsListPage.vue`**: skills list reflects a created stack without reloading the page
+- **`frontend/src/views/presentation/sections/HeroSection3.vue`**: removed the hero title slide effect, shows the friendly name
+- **`frontend/src/utils/iconsIndex.ts`**: icon lookup normalized (case/format tolerant) and the shared icon selector modal reused across selectors
+- **`frontend/src/controllers/introController.ts`**: uploaded intro images (logo/photo) now reach the server on shared hosting — storage symlink + FormData null-value filter
+- **`scripts/deploy/deploy.sh` / `setup.sh`**: upload the `.env.*.example` templates into the deployed backend/frontend directories and route setup warnings to stderr
+
 ## 19.8.0 - 2026-08-12
 
 ### Fixed

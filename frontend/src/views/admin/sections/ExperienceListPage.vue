@@ -34,19 +34,12 @@
     </ion-header>
 
     <ion-content>
-      <ion-grid>
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="4">
-            <ion-breadcrumbs>
-              <ion-breadcrumb>
-                <RouterLink :to="{ name: 'PanelAdminPage' }">Panel</RouterLink>
-              </ion-breadcrumb>
-
-              <ion-breadcrumb>Experiencia</ion-breadcrumb>
-            </ion-breadcrumbs>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <AdminBreadcrumbs
+        :items="[
+          { label: 'Panel', to: { name: 'PanelAdminPage' } },
+          { label: 'Experiencia' },
+        ]"
+      />
 
       <template v-if="experiences.length > 0">
         <ion-grid>
@@ -120,8 +113,6 @@
 
 <script setup lang="ts">
 import {
-  IonBreadcrumb,
-  IonBreadcrumbs,
   IonButton,
   IonButtons,
   IonCard,
@@ -158,6 +149,7 @@ import ExperienceController from "@/controllers/experienceController";
 import { usePermissionGuard } from "@/composables/usePermissionGuard";
 
 import { storeToRefs } from "pinia";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 
 const { guard } = usePermissionGuard();
 const router = useRouter();

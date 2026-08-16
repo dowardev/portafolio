@@ -26,18 +26,12 @@
   </ion-header>
 
   <ion-content class="ion-padding">
-    <ion-grid>
-      <ion-row class="ion-justify-content-center">
-        <ion-col size="12" size-md="10" size-lg="6">
-          <ion-breadcrumbs>
-            <ion-breadcrumb>
-              <RouterLink :to="{ name: 'PanelAdminPage' }">Panel</RouterLink>
-            </ion-breadcrumb>
-            <ion-breadcrumb>SEO</ion-breadcrumb>
-          </ion-breadcrumbs>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+    <AdminBreadcrumbs
+      :items="[
+        { label: 'Panel', to: { name: 'PanelAdminPage' } },
+        { label: 'SEO' },
+      ]"
+    />
 
     <ion-grid>
       <ion-row class="ion-justify-content-center">
@@ -218,8 +212,6 @@ defineOptions({
   directives: { tooltip: vTooltip },
 });
 import {
-  IonBreadcrumb,
-  IonBreadcrumbs,
   IonButton,
   IonButtons,
   IonCard,
@@ -248,6 +240,7 @@ import { ref, reactive, onMounted } from "vue";
 import SeoSettingsController from "@/controllers/seoSettingsController";
 import type { SeoSettingsData } from "@/controllers/seoSettingsController";
 import SeoHelpButton from "@/components/admin/SeoHelpButton.vue";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 import { saveOutline, trashOutline } from "ionicons/icons";
 
 const seoSettingsController = new SeoSettingsController();

@@ -211,10 +211,9 @@ const dateText = computed(() => {
   margin: 0 0 0.5rem;
   line-height: 1.6;
   flex: 1;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  min-height: 0;
+  max-height: 4.8em;
+  overflow-y: auto;
 }
 
 .card-dates {

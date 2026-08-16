@@ -93,6 +93,7 @@ import ExperienceController from "@/controllers/experienceController";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useIconColors } from "@/composables/useIconColors";
+import { sortByStartDateDesc } from "@/utils/sortByDate";
 
 const { getIconColor } = useIconColors();
 const experienceController = new ExperienceController();
@@ -105,7 +106,9 @@ const modals = reactive({
 onMounted(async () => {
   try {
     await experienceController.loadPublicExperiences();
-    experiences.value = experienceController.getExperiences();
+    experiences.value = sortByStartDateDesc(
+      experienceController.getExperiences(),
+    );
   } catch (error) {
     console.error("Error loading experience data:", error);
   }

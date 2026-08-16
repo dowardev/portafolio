@@ -47,6 +47,7 @@ import SystemController from "@/controllers/systemController";
 import type { ExperienceItem } from "@/services/types";
 import ExperienceController from "@/controllers/experienceController";
 import ExperienceCard from "@/components/experience/ExperienceCard.vue";
+import { sortByStartDateDesc } from "@/utils/sortByDate";
 import { chevronBackOutline } from "ionicons/icons";
 
 const systemController = new SystemController();
@@ -57,7 +58,7 @@ const pageTitle = "Experiencia";
 const experiences = ref<ExperienceItem[]>([]);
 
 const sortedExperiences = computed(() => {
-  return [...experiences.value];
+  return sortByStartDateDesc(experiences.value);
 });
 
 onMounted(async () => {

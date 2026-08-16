@@ -73,7 +73,32 @@ setSSOClient(ssoClient);
 
 // Bootstrap: cargar identidad una sola vez tras init.
 // Los menús y el router leen reactivamente del store, no hacen HTTP.
-new UserController().loadUser().catch(() => {});
+const userController = new UserController();
+userController.loadUser().catch(() => {});
+
+// Sincronización de sesión con el SSO:
+// - Al volver a la pestaña (focus/visibility) se revalida la sesión contra el
+//   backend. Si el access token expiró o fue revocado, el refresh falla y el
+//   sso-client emite onAuthStateChange(false) → se limpia el store.
+// - El evento 'storage' cubre el logout en otra pestaña del mismo origen: al
+//   borrar el token de localStorage, esta pestaña detecta el cambio y limpia
+//   el store local.
+function syncSessionOnReturn() {
+  userController.syncSession().catch(() => {});
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') syncSessionOnReturn();
+});
+window.addEventListener('focus', syncSessionOnReturn);
+
+const SSO_TOKEN_KEY = '@dowardev/sso-client:token';
+window.addEventListener('storage', (event) => {
+  if (event.key === SSO_TOKEN_KEY && event.newValue === null) {
+    const store = useUserStore();
+    store.logout();
+    store.updateUserLoggedProp(false);
+  }
+});
 
 // service worker (solo produccion — en dev no hay /sw.js)
 import { Workbox } from "workbox-window";

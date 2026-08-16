@@ -163,6 +163,64 @@ export default class UserController {
     await this.loadUser();
   }
 
+  /**
+   * Revalida la sesión de forma silenciosa contra el backend, sin tocar el
+   * estado de carga de la UI.
+   *
+   * Casos que cubre:
+   * - El access token expiró o fue revocado: la llamada real devuelve 401, el
+   *   HttpClient del sso-client intenta refresh y, si falla, emite
+   *   onAuthStateChange(false) → el listener de main.ts limpia el store.
+   * - El token local desapareció (logout en otra pestaña del mismo origen):
+   *   ssoClient.isAuthenticated ya es false mientras el store cree que hay
+   *   sesión → se limpia el store acá.
+   * - Logout real en el dominio del SSO con access token aún vigente:
+   *   checkSession() contra /session/check detecta la sesión revocada y se
+   *   limpia el store (loadState → 'unauthenticated').
+   */
+  async syncSession(): Promise<void> {
+    if (this.userStore.loadState === 'loading') return;
+
+    const ssoClient = getSSOClient();
+
+    if (!ssoClient.isAuthenticated) {
+      if (this.userStore.loadState === 'loaded') {
+        this.userStore.logout();
+        this.userStore.updateUserLoggedProp(false);
+        this.userStore.setLoadState('unauthenticated');
+      }
+      return;
+    }
+
+    try {
+      // Detecta logout real en el SSO aunque el access token del portafolio
+      // aún no haya expirado. checkSession() emite onAuthStateChange(false)
+      // en este caso, pero igual limpiamos el store acá porque el listener de
+      // main.ts no setea 'unauthenticated' (deja 'idle' tras logout()).
+      const session = await ssoClient.checkSession();
+      if (!session.authenticated) {
+        this.userStore.logout();
+        this.userStore.updateUserLoggedProp(false);
+        this.userStore.setLoadState('unauthenticated');
+        return;
+      }
+    } catch {
+      // Silencioso: error de red/HTTP. Si es 401 y el sso-client emite
+      // onAuthStateChange(false), el listener de main.ts ya limpia el store;
+      // si es un error de red, continuamos con my-permissions como hoy.
+    }
+
+    try {
+      // Llamada real que valida el token contra el backend. Si responde 401 y
+      // el refresh falla, el sso-client emite onAuthStateChange(false) y el
+      // listener de main.ts limpia el store automáticamente.
+      await getApiConnector().get<MyPermissionsResponse>('my-permissions');
+    } catch {
+      // Silencioso: el listener de onAuthStateChange ya maneja el logout si el
+      // refresh falló; si es un error de red, mantenemos el estado actual.
+    }
+  }
+
   updateUserProps(params: { user: User }) {
     try {
       const { user } = params;

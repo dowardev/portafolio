@@ -1,6 +1,6 @@
 {
   "name": "dowar-blog",
-  "version": "19.4.1",
+  "version": "19.5.0",
   "private": true,
   "license": "GPL-3.0-or-later",
   "description": "An Ionic project",
@@ -29,7 +29,7 @@
     "@ionic/vue-router": "^8.4.1",
     "@lineiconshq/free-icons": "^1.0.4",
     "@lineiconshq/vue-lineicons": "^0.0.4",
-    "@tu-org/sso-client": "npm:@dowardev/sso-client@^0.0.2",
+    "@tu-org/sso-client": "npm:@dowardev/sso-client@^0.0.4",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
     "axios": "^1.7.9",

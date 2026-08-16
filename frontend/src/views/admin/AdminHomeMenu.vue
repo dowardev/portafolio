@@ -382,7 +382,4 @@ async function navigate(target: string, item: MenuItem) {
 </script>
 
 <style scoped>
-.full-height {
-  padding-top: 10vh;
-}
 </style>

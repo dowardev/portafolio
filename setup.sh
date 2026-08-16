@@ -193,7 +193,12 @@ normalize_url() {
         return 0
     fi
     if [[ ! "$value" =~ ^https?:// ]]; then
-        log_warn "'$value' lacks http:// or https:// scheme — prepending http://"
+        # Route the warning to stderr so command substitution (callers do
+        # `$(normalize_url ...)`) captures ONLY the URL, not the log line.
+        # If this goes to stdout, sed_set receives a multi-line value with
+        # embedded ANSI escapes and a literal `|` (from the `[!]` marker),
+        # which breaks the `s|...|...|` command with "unterminated 's'".
+        printf '  %s   %s\n' "$(color 3 '[!]')" "'$value' lacks http:// or https:// scheme — prepending http://" >&2
         value="http://$value"
     fi
     echo "$value"
@@ -782,6 +787,28 @@ migrate_db() {
     cd "$SCRIPT_DIR"
 }
 
+link_storage() {
+    CURRENT_STEP=$((CURRENT_STEP + 1))
+    log_info "Step $CURRENT_STEP: Linking public storage..."
+
+    cd "$BACK_DIR"
+    if [ -L "public/storage" ]; then
+        log_ok "Public storage already linked"
+    elif [ -d "public" ] && [ -d "storage/app/public" ]; then
+        # Use plain ln -s instead of `php artisan storage:link`: shared hosts
+        # often disable PHP symlink()/exec(), which makes the artisan command
+        # fail with "Call to undefined function ... exec()".
+        if ln -s ../storage/app/public public/storage 2>/dev/null; then
+            log_ok "Public storage linked"
+        else
+            log_warn "Could not link public/storage - uploaded images may 404"
+        fi
+    else
+        log_warn "public/ or storage/app/public missing - skipping storage link"
+    fi
+    cd "$SCRIPT_DIR"
+}
+
 seed_db() {
     CURRENT_STEP=$((CURRENT_STEP + 1))
     log_info "Step $CURRENT_STEP: Seeding database..."
@@ -1247,6 +1274,7 @@ main() {
     generate_app_key
     configure_sso
     migrate_db
+    link_storage
     seed_db
 
     # Frontend config + build only when the toolchain exists. Without

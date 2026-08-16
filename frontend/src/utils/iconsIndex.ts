@@ -63,8 +63,44 @@ export function getIconsBySourceAndType(
   return icons;
 }
 
+/**
+ * Normalize an icon name for tolerant lookup: lowercase, drop the "logo"
+ * prefix used by ionicons entries and the "Outlined"/"Filled" suffix used by
+ * lineicons entries, and remove separators. "docker", "logoDocker" and
+ * "DockerOutlined" all normalize to "docker".
+ */
+function normalizeIconName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/^(logo)/, "")
+    .replace(/(outlined|filled)$/, "")
+    .replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * Explicit aliases for slugs that normalization cannot derive from the icon
+ * name. The seed controller writes TECH_NAMES slugs ("node"); the catalog
+ * entry is "NodejsOutlined", which normalizes to "nodejs", not "node".
+ */
+const ICON_NAME_ALIASES: Record<string, string> = {
+  node: "NodejsOutlined",
+};
+
 export function getIconByName(name: string): UnifiedIconConfig | undefined {
-  return getUnifiedIcons().find((icon) => icon.name === name);
+  const icons = getUnifiedIcons();
+  const alias = ICON_NAME_ALIASES[name.toLowerCase()];
+  const lookupName = alias ?? name;
+  // Fast path: exact match, preserves any caller relying on precise names.
+  const exact = icons.find((icon) => icon.name === lookupName);
+  if (exact) return exact;
+  // Tolerant match: legacy/seed data writes lowercase slugs ("docker"),
+  // configs use "logoDocker"/"DockerOutlined" — compare normalized forms.
+  const normalized = normalizeIconName(lookupName);
+  const byName = icons.find((icon) => normalizeIconName(icon.name) === normalized);
+  if (byName) return byName;
+  // Last resort: match by display label (e.g. "kubernetes" -> label "Kubernetes").
+  const label = lookupName.toLowerCase();
+  return icons.find((icon) => icon.label.toLowerCase() === label);
 }
 
 export function getIonIconSvg(name: string): string | undefined {

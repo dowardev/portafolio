@@ -3,3 +3,5 @@ allowBuilds:
   cypress: true
   esbuild: true
   vue-demi: true
+minimumReleaseAgeExclude:
+  - '@dowardev/sso-client@0.0.4'

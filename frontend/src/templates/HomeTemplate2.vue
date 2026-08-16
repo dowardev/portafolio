@@ -404,6 +404,7 @@ import ExperienceCard from "@/components/experience/ExperienceCard.vue";
 
 
 import { getIconByName } from "@/utils/iconsIndex";
+import { sortByStartDateDesc } from "@/utils/sortByDate";
 import { linkOutline } from "ionicons/icons";
 
 const router = useRouter();
@@ -502,8 +503,12 @@ const mainIcons = computed(() => {
 
 const displayLimit = computed(() => (isTablet.value ? 4 : 3));
 
-const safeExperience = computed(() => experienceController.experiences.value || []);
-const safeProjects = computed(() => projectsController.projects.value || []);
+const safeExperience = computed(() =>
+  sortByStartDateDesc(experienceController.experiences.value || []),
+);
+const safeProjects = computed(() =>
+  sortByStartDateDesc(projectsController.projects.value || []),
+);
 const safeTags = computed(() => introData.value?.tags || []);
 const safeSocials = computed(() => introData.value?.socials || []);
 

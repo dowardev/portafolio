@@ -57,6 +57,7 @@ import { ref, onMounted } from "vue";
 import ProjectCard from "@/components/projects/ProjectCard.vue";
 import ProjectsController from "@/controllers/projectsController";
 import type { ProjectItem } from "@/services/types";
+import { sortByStartDateDesc } from "@/utils/sortByDate";
 import { chevronBackOutline } from "ionicons/icons";
 
 const projectsController = new ProjectsController();
@@ -64,7 +65,7 @@ const projects = ref<ProjectItem[]>([]);
 
 onMounted(async () => {
   await projectsController.loadProjects();
-  projects.value = projectsController.getProjects();
+  projects.value = sortByStartDateDesc(projectsController.getProjects());
 });
 
 const pageTitle = "Proyectos";

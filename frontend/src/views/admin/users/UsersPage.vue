@@ -10,6 +10,13 @@
     </ion-header>
 
     <ion-content>
+      <AdminBreadcrumbs
+        :items="[
+          { label: 'Panel', to: { name: 'PanelAdminPage' } },
+          { label: 'Usuarios' },
+        ]"
+      />
+
       <ion-row>
     <ion-col>
       <ion-list>
@@ -749,6 +756,7 @@ import ModalUserComponent from "./components/ModalUserComponent.vue";
 import SignUpFormComponent from "@/forms/SignUpFormComponent.vue";
 import UserUpdateFormComponent from "@/forms/UserUpdateFormComponent.vue";
 import { CardOptionsExpand, LoadButton } from "ionic-extra-components";
+import AdminBreadcrumbs from "@/components/admin/AdminBreadcrumbs.vue";
 
 // vars
 const pagInfo = reactive({
