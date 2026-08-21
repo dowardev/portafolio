@@ -111,9 +111,6 @@ importers:
       '@eslint/js':
         specifier: ^9.18.0
         version: 9.39.4
-      '@types/dompurify':
-        specifier: ^3.2.0
-        version: 3.2.0
       '@types/js-cookie':
         specifier: ^3.0.6
         version: 3.0.6
@@ -1628,10 +1625,6 @@ packages:
   '@trickfilm400/rollup-plugin-off-main-thread@3.0.0-pre1':
     resolution: {integrity: sha512-/67zpWDBLV+oYAEL682s1ktXL0HgqX76f6gaVGkGnVZlBbm1zd0v4Bz8MFF2GGhoX9rvfq3KSQHubFHwa6w6/Q==}
     engines: {node: '>=12'}
-
-  '@types/dompurify@3.2.0':
-    resolution: {integrity: sha512-Fgg31wv9QbLDA0SpTOXO3MaxySc4DKGLi8sna4/Utjo4r3ZRPdCt4UQee8BWr+Q5z21yifghREPJGYaEOEIACg==}
-    deprecated: This is a stub types definition. dompurify provides its own type definitions, so you do not need this installed.
 
   '@types/esrecurse@4.3.1':
     resolution: {integrity: sha512-xJBAbDifo5hpffDBuHl0Y8ywswbiAp/Wi7Y/GtAgSlZyIABppyurxVueOPE8LUQOxdlgi6Zqce7uoEpqNTeiUw==}
@@ -5720,10 +5713,6 @@ snapshots:
       json5: 2.2.3
       magic-string: 0.30.21
       string.prototype.matchall: 4.0.12
-
-  '@types/dompurify@3.2.0':
-    dependencies:
-      dompurify: 3.4.14
 
   '@types/esrecurse@4.3.1': {}
 

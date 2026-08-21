@@ -63,7 +63,7 @@ const contentBlocks = computed(() => {
       });
     } else if (token.type === "blockquote") {
       flush();
-      const innerHtml = md.parser(token.tokens ?? []);
+      const innerHtml = DOMPurify.sanitize(md.parser(token.tokens ?? []));
       blocks.push({
         type: CardAlert,
         props: {

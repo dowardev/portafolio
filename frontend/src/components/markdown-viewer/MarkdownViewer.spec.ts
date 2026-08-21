@@ -68,4 +68,15 @@ describe("blockquote handling", () => {
     expect(alert.exists()).toBe(true);
     expect(alert.props("content")).toContain("This is a quote");
   });
+
+  it("sanitizes raw HTML inside blockquotes before passing to CardAlert", () => {
+    const wrapper = mount(MarkdownViewer, {
+      props: { content: '> <img src=x onerror=alert("xss")>' },
+    });
+    const alert = wrapper.findComponent({ name: "CardAlert" });
+    expect(alert.exists()).toBe(true);
+    // DOMPurify escapes < > so raw HTML tags are neutralized
+    expect(alert.props("content")).not.toContain("<img");
+    expect(alert.props("content")).not.toContain("<script");
+  });
 });

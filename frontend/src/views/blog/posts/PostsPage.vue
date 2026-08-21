@@ -162,7 +162,7 @@
       <ion-header mode="ios">
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-button @click="isOpenSearchModal = false">
+            <ion-button @click="isOpenSearchModal = false" aria-label="Cerrar búsqueda">
               <ion-icon :icon="closeOutline"></ion-icon>
             </ion-button>
           </ion-buttons>
