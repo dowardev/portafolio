@@ -8,6 +8,7 @@
 import { computed } from "vue";
 import DOMPurify from "dompurify";
 import { Marked } from "marked";
+import type { Tokens } from "marked";
 import { CardAlert, CardCode } from "ionic-extra-components";
 import { informationOutline } from "ionicons/icons";
 
@@ -20,7 +21,8 @@ const props = defineProps({
 
 // Strip <p> wrapper from marked output, remove "Nota" prefix,
 // and convert inline code to bold for CardAlert styling.
-const processAlertContent = (text: string): string => {
+const processAlertContent = (params: { text: string }): string => {
+  const { text } = params;
   let content = text.replace(/^<p>/, "").replace(/<\/p>$/, "").trim();
   const prefix = "Nota\n";
   if (content.startsWith(prefix)) {
@@ -46,7 +48,7 @@ const contentBlocks = computed(() => {
 
   const tokens = md.lexer(props.content);
 
-  tokens.forEach((token: import("marked").Tokens.Generic) => {
+  tokens.forEach((token: Tokens.Generic) => {
     if (token.type === "code") {
       flush();
       blocks.push({
@@ -65,7 +67,7 @@ const contentBlocks = computed(() => {
       blocks.push({
         type: CardAlert,
         props: {
-          content: processAlertContent(innerHtml.trim()),
+          content: processAlertContent({ text: innerHtml.trim() }),
           title: "Nota",
           border: true,
           icon: informationOutline,

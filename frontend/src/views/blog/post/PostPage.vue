@@ -3,7 +3,7 @@
     <ion-header :translucent="true" class="ion-no-border" mode="ios">
     <ion-toolbar class="container-page">
       <ion-buttons slot="start">
-        <ion-button @click="$router.go(-1)">
+        <ion-button aria-label="Volver" @click="$router.go(-1)">
           <ion-icon :icon="chevronBackOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -18,6 +18,7 @@
         <ion-button
           v-if="indexContent.length > 0"
           fill="clear"
+          aria-label="Índice"
           @click="openModalIndexContent()"
         >
           <ion-icon :icon="listOutline"></ion-icon>
@@ -25,6 +26,7 @@
 
         <ion-button
           v-if="userController.isAdmin"
+          aria-label="Más opciones"
           @click="popoverMainOptions = { open: true, event: $event }"
         >
           <ion-icon slot="start" :icon="ellipsisVerticalOutline"></ion-icon>
@@ -34,11 +36,11 @@
       <!-- desktop options -->
       <ion-buttons v-if="isPlatform('desktop')" slot="end">
         <section v-if="userController.isAdmin">
-          <ion-button fill="clear" @click="updatePost()">
+          <ion-button fill="clear" aria-label="Editar" @click="updatePost()">
             <ion-icon :icon="createOutline"></ion-icon>
           </ion-button>
 
-          <ion-button fill="clear" @click="isOpenAlertDeletePost = true">
+          <ion-button fill="clear" aria-label="Eliminar" @click="isOpenAlertDeletePost = true">
             <ion-icon :icon="trashOutline" color="danger"></ion-icon>
           </ion-button>
         </section>
@@ -117,7 +119,7 @@
         @click="deletePost()"
       >
         <ion-icon slot="start" :icon="trashOutline" color="danger"></ion-icon>
-        <ion-label>Indice</ion-label>
+        <ion-label>Eliminar</ion-label>
       </ion-item>
     </ion-content>
   </ion-popover>

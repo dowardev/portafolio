@@ -9,7 +9,7 @@
         <ion-title>{{ pageTitle }}</ion-title>
 
         <ion-buttons slot="end" :mode="designPlatform">
-          <ion-button v-if="userController.isAdmin" fill="clear" @click="addPost()">
+          <ion-button v-if="userController.isAdmin" fill="clear" aria-label="Crear post" @click="addPost()">
             <ion-icon v-if="spinners.buttonAddNewPost == false" :icon="addOutline"></ion-icon>
             <ion-spinner
               v-if="spinners.buttonAddNewPost"
@@ -18,13 +18,14 @@
             ></ion-spinner>
           </ion-button>
 
-          <ion-button fill="clear" :disabled="currentPageIndex <= 0" @click="previousDate()">
+          <ion-button fill="clear" :disabled="currentPageIndex <= 0" aria-label="Fecha anterior" @click="previousDate()">
             <ion-icon :icon="chevronBackOutline"></ion-icon>
           </ion-button>
 
           <ion-button
             fill="clear"
             :disabled="currentPageIndex >= dates.length - 1"
+            aria-label="Fecha siguiente"
             @click="nextDate()"
           >
             <ion-icon :icon="chevronForwardOutline"></ion-icon>
@@ -33,6 +34,7 @@
           <!-- button more options -->
           <ion-button
             fill="clear"
+            aria-label="Más opciones"
             @click="
               popOverMainOPtions.event = $event;
               popOverMainOPtions.isOpen = true;
@@ -427,7 +429,6 @@ const router = useRouter();
 const isOpenSearchModal = ref(false);
 const loadFinished = ref(false);
 const navigating = ref(false);
-const dateLoading = ref(false);
 const searchResult = ref(Array<{ id: string; title: string; slug: string }>());
 const currentPage = ref('');
 const dates = computed(() => postController.dates.value ?? []);
@@ -537,7 +538,6 @@ async function refreshContent(): Promise<void> {
 async function loadContent(params: { status: filterPostOptions }): Promise<void> {
   const { status } = params;
   loadFinished.value = false;
-  dateLoading.value = true;
   openPostLoader({ id: '' });
 
   try {
@@ -576,7 +576,6 @@ async function loadContent(params: { status: filterPostOptions }): Promise<void>
     console.error(error);
   } finally {
     loadFinished.value = true;
-    dateLoading.value = false;
     closePostLoader();
   }
 }
@@ -817,10 +816,10 @@ button.alert-button.alert-delete-post-button-confirm {
 }
 
 .slide-fade-post-action-buttons-enter-active {
-  transition: all 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 .slide-fade-post-action-buttons-leave-active {
-  transition: all 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 .slide-fade-post-action-buttons-enter-from,
 .slide-fade-post-action-buttons-leave-to {

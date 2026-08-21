@@ -2,7 +2,7 @@
   <ion-header class="ion-no-border" mode="ios">
     <ion-toolbar>
       <ion-buttons slot="start">
-        <ion-button color="medium" @click="closeModal()"
+        <ion-button color="medium" aria-label="Cerrar" @click="closeModal()">
           ><ion-icon :icon="closeOutline"></ion-icon
         ></ion-button>
       </ion-buttons>

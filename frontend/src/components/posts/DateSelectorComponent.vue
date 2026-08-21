@@ -21,7 +21,7 @@
 
   <template v-else-if="viewMode === 'months'">
     <div class="picker-header">
-      <ion-button fill="clear" size="small" @click="viewMode = 'years'">
+      <ion-button fill="clear" size="small" aria-label="Seleccionar año" @click="viewMode = 'years'">
         <ion-icon :icon="chevronBackOutline"></ion-icon>
       </ion-button>
       <ion-text class="picker-title">{{ pickerYear }}</ion-text>
@@ -44,15 +44,15 @@
 
   <template v-else>
     <div class="month-nav">
-      <ion-button fill="clear" size="small" @click="previousMonth">
+      <ion-button fill="clear" size="small" aria-label="Mes anterior" @click="previousMonth">
         <ion-icon :icon="chevronBackOutline"></ion-icon>
       </ion-button>
 
-      <div class="month-year-label clickable" @click="viewMode = 'years'">
+      <div class="month-year-label clickable" role="button" tabindex="0" aria-label="Seleccionar fecha" @click="viewMode = 'years'">
         {{ monthYearLabel }}
       </div>
 
-      <ion-button fill="clear" size="small" @click="nextMonth">
+      <ion-button fill="clear" size="small" aria-label="Mes siguiente" @click="nextMonth">
         <ion-icon :icon="chevronForwardOutline"></ion-icon>
       </ion-button>
     </div>
