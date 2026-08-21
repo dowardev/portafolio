@@ -4,8 +4,12 @@ import MarkdownViewer from "./MarkdownViewer.vue";
 
 // Mock ionic-extra-components — CardCode and CardAlert are external
 vi.mock("ionic-extra-components", () => ({
-  CardCode: { template: "<div class='card-code'><slot /></div>" },
-  CardAlert: { template: "<div class='card-alert'><slot /></div>" },
+  CardCode: { name: "CardCode", template: "<div class='card-code'><slot /></div>" },
+  CardAlert: {
+    name: "CardAlert",
+    template: "<div class='card-alert'><slot /></div>",
+    props: ["title", "content", "border", "icon", "color"],
+  },
 }));
 
 describe("MarkdownViewer", () => {
@@ -33,5 +37,35 @@ describe("MarkdownViewer", () => {
     });
     const html = wrapper.html();
     expect(html).toContain("<strong>");
+  });
+});
+
+describe("blockquote handling", () => {
+  it("strips Nota prefix from blockquote body", () => {
+    const wrapper = mount(MarkdownViewer, {
+      props: { content: "> Nota\n> This is a note" },
+    });
+    const alert = wrapper.findComponent({ name: "CardAlert" });
+    expect(alert.exists()).toBe(true);
+    expect(alert.props("title")).toBe("Nota");
+    expect(alert.props("content")).not.toContain("Nota");
+  });
+
+  it("converts inline code to bold inside blockquotes", () => {
+    const wrapper = mount(MarkdownViewer, {
+      props: { content: "> Use `npm install` to install" },
+    });
+    const alert = wrapper.findComponent({ name: "CardAlert" });
+    expect(alert.props("content")).toContain("<b>npm install</b>");
+    expect(alert.props("content")).not.toContain("<code>npm install</code>");
+  });
+
+  it("renders plain blockquotes without Nota prefix", () => {
+    const wrapper = mount(MarkdownViewer, {
+      props: { content: "> This is a quote" },
+    });
+    const alert = wrapper.findComponent({ name: "CardAlert" });
+    expect(alert.exists()).toBe(true);
+    expect(alert.props("content")).toContain("This is a quote");
   });
 });

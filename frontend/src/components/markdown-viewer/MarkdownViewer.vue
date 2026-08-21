@@ -18,13 +18,15 @@ const props = defineProps({
   },
 });
 
-// Strip the "Nota<br />" prefix if present and render inline code as bold.
+// Strip <p> wrapper from marked output, remove "Nota" prefix,
+// and convert inline code to bold for CardAlert styling.
 const processAlertContent = (text: string): string => {
-  const prefix = "Nota<br />";
-  if (text.startsWith(prefix)) {
-    text = text.slice(prefix.length);
+  let content = text.replace(/^<p>/, "").replace(/<\/p>$/, "").trim();
+  const prefix = "Nota\n";
+  if (content.startsWith(prefix)) {
+    content = content.slice(prefix.length);
   }
-  return text.replace(/`([^`]+)`/g, "<b>$1</b>");
+  return content.replace(/<code>([^<]+)<\/code>/g, "<b>$1</b>");
 };
 
 // Standalone markdown instance so renderer overrides never leak across parses.
