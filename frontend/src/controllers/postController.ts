@@ -109,6 +109,14 @@ export default class PostController {
   async loadPost(params: { slug: string; fields?: PostFields[] }) {
     const { slug, fields } = params;
 
+    // Skip the request when the post detail is already loaded (has content).
+    // A post coming from the list only carries light fields (no content),
+    // so it cannot be reused for the detail view.
+    const cachedPost = this.postStore.getPost({ slug });
+    if (cachedPost && cachedPost.content) {
+      return Promise.resolve();
+    }
+
     try {
       const serverResponse = await getApiConnector().get<PostServerResponse>(
         `post-by-slug/${slug}`,

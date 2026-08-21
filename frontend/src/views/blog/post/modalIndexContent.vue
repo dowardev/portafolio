@@ -8,10 +8,6 @@
       </ion-buttons>
 
       <ion-title>Contenido</ion-title>
-
-      <ion-buttons slot="end">
-        <ion-chip outline>Beta</ion-chip>
-      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
@@ -41,7 +37,7 @@
 
 <script setup lang="ts">
 import { closeOutline } from "ionicons/icons";
-import { IonButton, IonButtons, IonChip, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar, modalController } from "@ionic/vue";
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar, modalController } from "@ionic/vue";
 
 const props = defineProps({
   indexContent: {
