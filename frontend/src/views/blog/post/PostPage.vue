@@ -3,7 +3,7 @@
     <ion-header :translucent="true" class="ion-no-border" mode="ios">
     <ion-toolbar class="container-page">
       <ion-buttons slot="start">
-        <ion-button @click="$router.go(-1)">
+        <ion-button aria-label="Volver" @click="$router.go(-1)">
           <ion-icon :icon="chevronBackOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -15,7 +15,20 @@
 
       <!-- mobile options -->
       <ion-buttons v-if="isPlatform('android') || isPlatform('ios')" slot="end">
-        <ion-button @click="popoverMainOptions = { open: true, event: $event }">
+        <ion-button
+          v-if="indexContent.length > 0"
+          fill="clear"
+          aria-label="Índice"
+          @click="openModalIndexContent()"
+        >
+          <ion-icon :icon="listOutline"></ion-icon>
+        </ion-button>
+
+        <ion-button
+          v-if="userController.isAdmin"
+          aria-label="Más opciones"
+          @click="popoverMainOptions = { open: true, event: $event }"
+        >
           <ion-icon slot="start" :icon="ellipsisVerticalOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -23,22 +36,14 @@
       <!-- desktop options -->
       <ion-buttons v-if="isPlatform('desktop')" slot="end">
         <section v-if="userController.isAdmin">
-          <ion-button fill="clear" @click="updatePost()">
+          <ion-button fill="clear" aria-label="Editar" @click="updatePost()">
             <ion-icon :icon="createOutline"></ion-icon>
           </ion-button>
 
-          <ion-button fill="clear" @click="isOpenAlertDeletePost = true">
+          <ion-button fill="clear" aria-label="Eliminar" @click="isOpenAlertDeletePost = true">
             <ion-icon :icon="trashOutline" color="danger"></ion-icon>
           </ion-button>
         </section>
-
-        <ion-button
-          v-if="isPlatform('android') || isPlatform('ios')"
-          fill="clear"
-          @click="openModalIndexContent()"
-        >
-          <ion-icon :icon="menuOutline"></ion-icon>
-        </ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -96,12 +101,6 @@
     @click="popoverMainOptions.open = false"
   >
     <ion-content>
-      <!-- index -->
-      <ion-item lines="full" button @click="openModalIndexContent()">
-        <ion-icon slot="start" :icon="menuOutline"></ion-icon>
-        <ion-label>Indice</ion-label>
-      </ion-item>
-
       <!-- update -->
       <ion-item
         v-if="userController.isAdmin"
@@ -120,7 +119,7 @@
         @click="deletePost()"
       >
         <ion-icon slot="start" :icon="trashOutline" color="danger"></ion-icon>
-        <ion-label>Indice</ion-label>
+        <ion-label>Eliminar</ion-label>
       </ion-item>
     </ion-content>
   </ion-popover>
@@ -147,7 +146,7 @@ import {
   chevronBackOutline,
   createOutline,
   ellipsisVerticalOutline,
-  menuOutline,
+  listOutline,
   trashOutline,
 } from "ionicons/icons";
 import { useRoute, useRouter } from "vue-router";
@@ -225,10 +224,8 @@ onMounted(async () => {
 
 // functions
 async function start(): Promise<void> {
-  enableLoader({ color: "primary" });
   await getPost();
   generarIndexContent();
-  disableLoader();
 }
 
 async function getPost(): Promise<void> {
@@ -308,6 +305,8 @@ async function openModalIndexContent(): Promise<void> {
     componentProps: {
       indexContent: indexContent.value,
     },
+    breakpoints: [0, 0.5, 0.9],
+    initialBreakpoint: 0.5,
   });
   modal.present();
 
@@ -370,6 +369,10 @@ function disableLoader() {
 
 .post-content {
   width: 100%;
+}
+
+.post-content :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: 80px;
 }
 
 .floating-index {

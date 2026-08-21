@@ -6,6 +6,9 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import DOMPurify from "dompurify";
+import { Marked } from "marked";
+import type { Tokens } from "marked";
 import { CardAlert, CardCode } from "ionic-extra-components";
 import { informationOutline } from "ionicons/icons";
 
@@ -16,201 +19,68 @@ const props = defineProps({
   },
 });
 
-const processInlineCode = (text: string): string => {
-  if (/^`[^`\n]+`$/.test(text)) {
-    const content = text.replace(/^`|`$/g, "");
-    return `<code class="inline-code">${content}</code>`;
+// Strip <p> wrapper from marked output, remove "Nota" prefix,
+// and convert inline code to bold for CardAlert styling.
+const processAlertContent = (params: { text: string }): string => {
+  const { text } = params;
+  let content = text.replace(/^<p>/, "").replace(/<\/p>$/, "").trim();
+  const prefix = "Nota\n";
+  if (content.startsWith(prefix)) {
+    content = content.slice(prefix.length);
   }
-  return text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+  return content.replace(/<code>([^<]+)<\/code>/g, "<b>$1</b>");
 };
 
-const escapeHtml = (text: string): string => {
-  const htmlElements: string[] = [];
-  let processedText = text;
-
-  processedText = processedText.replace(/`([^`]+)`/g, (match) => {
-    htmlElements.push(match);
-    return `%%HTML${htmlElements.length - 1}%%`;
-  });
-
-  processedText = processedText.replace(/<iframe.*?<\/iframe>/gs, (match) => {
-    htmlElements.push(match);
-    return `%%HTML${htmlElements.length - 1}%%`;
-  });
-
-  processedText = processedText.replace(
-    /<div\s+class="center">\s*<img[^>]+\/>\s*<\/div>/g,
-    (match) => {
-      htmlElements.push(match);
-      return `%%HTML${htmlElements.length - 1}%%`;
-    },
-  );
-
-  processedText = processedText.replace(/<img[^>]+\/>/g, (match) => {
-    htmlElements.push(match);
-    return `%%HTML${htmlElements.length - 1}%%`;
-  });
-
-  processedText = processedText.replace(
-    /<a\s+(?:[^>]*?\s+)?href="([^"]*)"(?:\s+target="_blank")?>(.*?)<\/a>/g,
-    (match) => {
-      htmlElements.push(match);
-      return `%%HTML${htmlElements.length - 1}%%`;
-    },
-  );
-
-  const map: { [key: string]: string } = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;",
-  };
-  processedText = processedText.replace(/[&<>"']/g, (m) => map[m]);
-
-  processedText = processedText.replace(/%%HTML(\d+)%%/g, (_, index) => {
-    const element = htmlElements[parseInt(index)];
-    return element.startsWith("`") ? processInlineCode(element) : element;
-  });
-
-  return processedText;
-};
-
-const processAlertContent = (text: string): string => {
-  // Remove the "Nota<br />" prefix if it exists
-  const prefix = "Nota<br />";
-  if (text.startsWith(prefix)) {
-    text = text.slice(prefix.length);
-  }
-  return text.replace(/`([^`]+)`/g, "<b>$1</b>");
-};
+// Standalone markdown instance so renderer overrides never leak across parses.
+const md = new Marked();
 
 const contentBlocks = computed(() => {
-  const blocks = [];
-  let currentHtml = "";
+  const blocks: Array<{ type: unknown; props: Record<string, unknown> }> = [];
+  let currentHtml: string[] = [];
 
-  const segments = props.content.split(/(```[\s\S]+?```)/g);
+  const flush = () => {
+    const html = currentHtml.join("");
+    if (html.trim()) {
+      blocks.push({ type: "div", props: { innerHTML: DOMPurify.sanitize(html) } });
+    }
+    currentHtml = [];
+  };
 
-  segments.forEach((segment) => {
-    if (segment.startsWith("```")) {
-      const match = segment.match(/```(\w*)\n([\s\S]*?)```/);
-      if (match) {
-        if (currentHtml.trim()) {
-          blocks.push({
-            type: "div",
-            props: { innerHTML: currentHtml.trim() },
-          });
-          currentHtml = "";
-        }
+  const tokens = md.lexer(props.content);
 
-        const [, lang, code] = match;
-        blocks.push({
-          type: CardCode,
-          props: {
-            code: code.trim(),
-            border: true,
-            color: "primary",
-            language: lang,
-            prettierFormat: true,
-          },
-        });
-      }
-    } else if (segment.trim()) {
-      let processedSegment = segment;
-      let lines = processedSegment.split("\n");
-      let i = 0;
-
-      while (i < lines.length) {
-        const line = lines[i].trim();
-
-        if (line) {
-          if (/^\s*-\s+/.test(line)) {
-            if (currentHtml.trim()) {
-              blocks.push({
-                type: "div",
-                props: { innerHTML: currentHtml.trim() },
-              });
-              currentHtml = "";
-            }
-
-            let listItems = [];
-            while (i < lines.length && /^\s*-\s+/.test(lines[i])) {
-              let item = lines[i].replace(/^\s*-\s+/, "").trim();
-              item = escapeHtml(item)
-                .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
-                .replace(/\*(.+?)\*/g, "<i>$1</i>");
-              listItems.push(`<li>${item}</li>`);
-              i++;
-            }
-            i--;
-
-            blocks.push({
-              type: "div",
-              props: { innerHTML: `<ul>${listItems.join("")}</ul>` },
-            });
-          } else {
-            if (/^#{1,6}\s/.test(line)) {
-              if (currentHtml.trim()) {
-                blocks.push({
-                  type: "div",
-                  props: { innerHTML: currentHtml.trim() },
-                });
-                currentHtml = "";
-              }
-
-              const levelMatch = line.match(/^#{1,6}/);
-              const level = levelMatch ? levelMatch[0].length : 1;
-              let content = line.replace(/^#{1,6}\s/, "");
-              content = escapeHtml(content);
-
-              blocks.push({
-                type: "div",
-                props: { innerHTML: `<h${level}>${content}</h${level}>` },
-              });
-            } else if (line.startsWith(">")) {
-              if (currentHtml.trim()) {
-                blocks.push({
-                  type: "div",
-                  props: { innerHTML: currentHtml.trim() },
-                });
-                currentHtml = "";
-              }
-
-              let blockquoteContent = line.replace(/^>\s?/, "").trim();
-
-              while (i + 1 < lines.length && lines[i + 1].startsWith(">")) {
-                i++;
-                blockquoteContent +=
-                  "<br />" + lines[i].replace(/^>\s?/, "").trim();
-              }
-
-              blocks.push({
-                type: CardAlert,
-                props: {
-                  content: processAlertContent(blockquoteContent),
-                  title: "Nota",
-                  border: true,
-                  icon: informationOutline,
-                  color: "success",
-                },
-              });
-            } else {
-              let textLine = escapeHtml(line.trim());
-              currentHtml += `<p>${textLine}</p>`;
-            }
-          }
-        }
-        i++;
-      }
+  tokens.forEach((token: Tokens.Generic) => {
+    if (token.type === "code") {
+      flush();
+      blocks.push({
+        type: CardCode,
+        props: {
+          code: token.text,
+          border: true,
+          color: "primary",
+          language: token.lang ?? "",
+          prettierFormat: true,
+        },
+      });
+    } else if (token.type === "blockquote") {
+      flush();
+      const innerHtml = DOMPurify.sanitize(md.parser(token.tokens ?? []));
+      blocks.push({
+        type: CardAlert,
+        props: {
+          content: processAlertContent({ text: innerHtml.trim() }),
+          title: "Nota",
+          border: true,
+          icon: informationOutline,
+          color: "success",
+        },
+      });
+    } else {
+      // headings, paragraphs, lists, inline code, links, images, raw html
+      currentHtml.push(md.parser([token]));
     }
   });
 
-  if (currentHtml.trim()) {
-    blocks.push({
-      type: "div",
-      props: { innerHTML: currentHtml.trim() },
-    });
-  }
+  flush();
 
   return blocks;
 });
