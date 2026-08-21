@@ -6,6 +6,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import DOMPurify from "dompurify";
 import { Marked } from "marked";
 import { CardAlert, CardCode } from "ionic-extra-components";
 import { informationOutline } from "ionicons/icons";
@@ -36,7 +37,7 @@ const contentBlocks = computed(() => {
   const flush = () => {
     const html = currentHtml.join("");
     if (html.trim()) {
-      blocks.push({ type: "div", props: { innerHTML: html } });
+      blocks.push({ type: "div", props: { innerHTML: DOMPurify.sanitize(html) } });
     }
     currentHtml = [];
   };
