@@ -15,7 +15,18 @@
 
       <!-- mobile options -->
       <ion-buttons v-if="isPlatform('android') || isPlatform('ios')" slot="end">
-        <ion-button @click="popoverMainOptions = { open: true, event: $event }">
+        <ion-button
+          v-if="indexContent.length > 0"
+          fill="clear"
+          @click="openModalIndexContent()"
+        >
+          <ion-icon :icon="listOutline"></ion-icon>
+        </ion-button>
+
+        <ion-button
+          v-if="userController.isAdmin"
+          @click="popoverMainOptions = { open: true, event: $event }"
+        >
           <ion-icon slot="start" :icon="ellipsisVerticalOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -31,14 +42,6 @@
             <ion-icon :icon="trashOutline" color="danger"></ion-icon>
           </ion-button>
         </section>
-
-        <ion-button
-          v-if="isPlatform('android') || isPlatform('ios')"
-          fill="clear"
-          @click="openModalIndexContent()"
-        >
-          <ion-icon :icon="menuOutline"></ion-icon>
-        </ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -96,12 +99,6 @@
     @click="popoverMainOptions.open = false"
   >
     <ion-content>
-      <!-- index -->
-      <ion-item lines="full" button @click="openModalIndexContent()">
-        <ion-icon slot="start" :icon="menuOutline"></ion-icon>
-        <ion-label>Indice</ion-label>
-      </ion-item>
-
       <!-- update -->
       <ion-item
         v-if="userController.isAdmin"
@@ -147,7 +144,7 @@ import {
   chevronBackOutline,
   createOutline,
   ellipsisVerticalOutline,
-  menuOutline,
+  listOutline,
   trashOutline,
 } from "ionicons/icons";
 import { useRoute, useRouter } from "vue-router";
@@ -225,10 +222,8 @@ onMounted(async () => {
 
 // functions
 async function start(): Promise<void> {
-  enableLoader({ color: "primary" });
   await getPost();
   generarIndexContent();
-  disableLoader();
 }
 
 async function getPost(): Promise<void> {
@@ -308,6 +303,8 @@ async function openModalIndexContent(): Promise<void> {
     componentProps: {
       indexContent: indexContent.value,
     },
+    breakpoints: [0, 0.5, 0.9],
+    initialBreakpoint: 0.5,
   });
   modal.present();
 
@@ -370,6 +367,10 @@ function disableLoader() {
 
 .post-content {
   width: 100%;
+}
+
+.post-content :is(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: 80px;
 }
 
 .floating-index {
