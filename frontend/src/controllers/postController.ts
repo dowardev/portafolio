@@ -23,9 +23,10 @@ export default class PostController {
   private errorController = new ErrorController();
   private pendingRequests = new Map<string, Promise<void>>();
 
-  private getCacheKey(params: { date: string; filter?: filterPostOptions }): string {
-    const { date, filter } = params
-    return `${date}_${filter ?? 'active'}`
+  private getCacheKey(params: { date: string; filter?: filterPostOptions; fields?: PostFields[] }): string {
+    const { date, filter, fields } = params
+    const fieldKey = fields ? fields.join(",") : "all"
+    return `${date}_${filter ?? 'active'}_${fieldKey}`
   }
 
   async loadPosts(params: {
@@ -35,7 +36,7 @@ export default class PostController {
     preload?: boolean;
   }) {
     const { date, filter, fields, preload } = params;
-    const cacheKey = this.getCacheKey({ date, filter: filter ?? 'active' })
+    const cacheKey = this.getCacheKey({ date, filter: filter ?? 'active', fields })
 
     if (this.pendingRequests.has(cacheKey)) {
       return this.pendingRequests.get(cacheKey)
@@ -66,7 +67,7 @@ export default class PostController {
     preload?: boolean;
   }) {
     const { date, filter, fields, preload } = params;
-    const cacheKey = this.getCacheKey({ date, filter: filter ?? 'active' })
+    const cacheKey = this.getCacheKey({ date, filter: filter ?? 'active', fields })
 
     try {
       const serverResponse = await getApiConnector().get(

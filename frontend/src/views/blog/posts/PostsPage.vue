@@ -723,7 +723,7 @@ function preloadAdjacentDates(): void {
       .loadPosts({
         date: nextDate,
         filter: filter.selected,
-        fields: ['id', 'title', 'cover', 'created_at', 'status'],
+        fields: ['id', 'slug', 'title', 'cover', 'created_at', 'status'],
         preload: true,
       })
       .catch(() => {});
@@ -735,7 +735,7 @@ function preloadAdjacentDates(): void {
       .loadPosts({
         date: prevDate,
         filter: filter.selected,
-        fields: ['id', 'title', 'cover', 'created_at', 'status'],
+        fields: ['id', 'slug', 'title', 'cover', 'created_at', 'status'],
         preload: true,
       })
       .catch(() => {});
