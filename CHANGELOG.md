@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 19.9.0 - 2026-08-21
+
 ### Added
 
 - **`frontend/src/components/admin/AdminBreadcrumbs.vue`**: new reusable breadcrumbs component (`items: Array<{ label, to? }>`) encapsulating the centered grid + `ion-breadcrumbs` layout; replaces the duplicated blocks in 9 admin pages and adds breadcrumbs to the remaining admin views (editors with `Panel > Section > New/Edit`, PanelAdminPage, Permissions, Users, admin home sub-views)
@@ -9,9 +11,15 @@
 - **`frontend/src/utils/sortByDate.ts`**: new `sortByStartDateDesc<T>()` helper sorts projects and experiences by start date descending (mixed formats, no-date last); applied to HomeTemplate2/3, PortfolioPage, ExperiencePage, and the presentation Projects/Experience components
 - **`frontend/src/views/admin/sections/SkillsEditorPage.vue`**: icon cards and skill techs can now be reordered; the "add technology" action is disabled until the current technology has a name
 - **`frontend/src/views/admin/editors/*.vue`**: save and back actions moved to the header toolbar; "add technology" button moved to the list header
+- **`frontend/src/components/markdown-viewer/MarkdownViewer.spec.ts`**: new unit tests for the refactored MarkdownViewer component (DOMPurify + marked rendering)
+- **`frontend/src/controllers/postController.spec.ts`**: new unit tests for postController
 
 ### Changed
 
+- **`frontend/src/components/markdown-viewer/MarkdownViewer.vue`**: refactored from manual regex-based HTML processing (~200 lines) to `DOMPurify` + `marked` library (~68 lines); secure markdown rendering with proper sanitization and a new `processAlertContent` helper that strips `<p>` wrappers and converts inline code to bold for `CardAlert` styling
+- **`frontend/src/views/blog/posts/PostsPage.vue`**: major rewrite of the posts listing page — improved layout, loading states, and post card interactions
+- **`frontend/src/views/blog/post/PostPage.vue`**: accessibility improvements (`aria-label` on back, edit, delete, and index buttons); index content modal now uses responsive breakpoints (`[0, 0.5, 0.9]` with `initialBreakpoint: 0.5`); heading elements get `scroll-margin-top: 80px` for correct anchor scrolling; removed redundant loader wrapper around `getPost()`
+- **`frontend/src/components/posts/DateSelectorComponent.vue`**: rewritten with cleaner state management for year/month/day navigation views
 - **`frontend/package.json`**: `@tu-org/sso-client` alias bumped `npm:@dowardev/sso-client@^0.0.2` → `^0.0.4` (adds `checkSession()`, refresh token grant support, logout revocation)
 - **`frontend/src/main.ts`**: SSO session is revalidated on tab focus and cross-tab logout (storage event)
 
@@ -26,6 +34,7 @@
 - **`frontend/src/utils/iconsIndex.ts`**: icon lookup normalized (case/format tolerant) and the shared icon selector modal reused across selectors
 - **`frontend/src/controllers/introController.ts`**: uploaded intro images (logo/photo) now reach the server on shared hosting — storage symlink + FormData null-value filter
 - **`scripts/deploy/deploy.sh` / `setup.sh`**: upload the `.env.*.example` templates into the deployed backend/frontend directories and route setup warnings to stderr
+- **`frontend/src/views/blog/post/PostPage.vue`**: fixed incorrect popover menu label — delete button showed "Índice" instead of "Eliminar"; removed duplicate "Índice" menu item (index is now a direct toolbar button)
 
 ## 19.8.0 - 2026-08-12
 
