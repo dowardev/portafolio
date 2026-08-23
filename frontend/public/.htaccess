@@ -1,11 +1,14 @@
 RewriteEngine On
 
 # Si la request es una ruta de post y es bot, pasar a prerender.php
-RewriteCond %{REQUEST_URI} ^/blog/post/[a-z0-9\-]+$ [NC]
-RewriteCond %{HTTP_USER_AGENT} "facebookexternalhit|Facebot|Twitterbot|Twitter|WhatsApp|Googlebot|LinkedInBot|Slackbot|Discordbot|TelegramBot|Pinterestbot|Slurp|DuckDuckBot|Applebot|baiduspider|yandexbot|semrushbot|ahrefsbot|dotbot" [NC]
-RewriteRule ^blog/post/([a-z0-9\-]+)$ /prerender.php?slug=$1 [L,QSA]
+# Usamos %{THE_REQUEST} (URL original sin el prefijo de la raiz /portafolio/frontend)
+# en lugar de %{REQUEST_URI}, porque el .htaccess de la raiz reescribe la ruta
+# internamente y REQUEST_URI ya incluye el prefijo, rompiendo el match.
+RewriteCond %{THE_REQUEST} \s/blog/post/[a-z0-9\-]+ [NC]
+RewriteCond %{HTTP_USER_AGENT} facebookexternalhit|Facebot|Twitterbot|Twitter|WhatsApp|Googlebot|LinkedInBot|Slackbot|Discordbot|TelegramBot|Pinterestbot|Slurp|DuckDuckBot|Applebot|baiduspider|yandexbot|semrushbot|ahrefsbot|dotbot [NC]
+RewriteRule ^blog/post/([a-z0-9\-]+)$ prerender.php?slug=$1 [L,QSA]
 
 # SPA: servir index.html para cualquier ruta que no sea un archivo real
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /index.html [L]
+RewriteRule . index.html [L]

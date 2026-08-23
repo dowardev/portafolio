@@ -3,7 +3,7 @@ $requestUri = $_SERVER['REQUEST_URI'];
 $parsedUrl = parse_url($requestUri);
 $path = $parsedUrl['path'] ?? '/';
 
-// Matar /blog/post/{slug}
+// Match /blog/post/{slug}
 $matches = [];
 $isPostRoute = preg_match('#^/blog/post/([a-z0-9\-]+)$#', $path, $matches);
 
@@ -13,7 +13,7 @@ if (!$isPostRoute) {
 
 $slug = $matches[1];
 
-// Detectar bots
+// Detect bots
 $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 $botPatterns = [
   'facebookexternalhit',
@@ -50,18 +50,37 @@ if (!$isBot) {
     return false;
 }
 
-// Descubrir API URL desde seo-settings, con fallback a env var
-$defaultApiUrl = getenv('API_URL') ?: 'https://api.dowar.xyz';
+// Tell caches (CDN, proxies) that the response varies by User-Agent.
+// Without this, the CDN may serve the SPA shell to bot crawlers.
+header('Vary: User-Agent');
+
+// Helper: fetch JSON via curl (file_get_contents fails with HTTPS on some Hostinger configs)
+function curlGet($url) {
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_TIMEOUT => 15,
+        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => 0,
+        CURLOPT_HTTPHEADER => ['Accept: application/json'],
+    ]);
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($response === false || $httpCode < 200 || $httpCode >= 300) {
+        return false;
+    }
+    return $response;
+}
+
+// Discover API URL from seo-settings, fallback to env var
+$defaultApiUrl = getenv('API_URL') ?: 'https://blog-backend.dowar.xyz';
 $apiBaseUrl = $defaultApiUrl;
 
 $seoSettingsUrl = rtrim($defaultApiUrl, '/') . '/api/seo-settings';
-$seoResponse = @file_get_contents($seoSettingsUrl, false, stream_context_create([
-  'http' => [
-    'method' => 'GET',
-    'header' => "Accept: application/json\r\n",
-    'timeout' => 5,
-  ],
-]));
+$seoResponse = @curlGet($seoSettingsUrl);
 
 $siteTitle = 'Dowar Blog';
 $siteDescription = '';
@@ -83,15 +102,9 @@ if ($seoResponse !== false) {
     }
 }
 
-// Llamar a la API de Laravel para el post
+// Fetch post from Laravel API
 $apiUrl = rtrim($apiBaseUrl, '/') . '/api/post-by-slug/' . urlencode($slug);
-$apiResponse = @file_get_contents($apiUrl, false, stream_context_create([
-  'http' => [
-    'method' => 'GET',
-    'header' => "Accept: application/json\r\n",
-    'timeout' => 10,
-  ],
-]));
+$apiResponse = @curlGet($apiUrl);
 
 if ($apiResponse === false) {
     http_response_code(502);
@@ -125,6 +138,7 @@ $content = $post['content'] ?? '';
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= $title ?> - <?= htmlspecialchars($siteTitle, ENT_QUOTES, 'UTF-8') ?></title>
   <meta name="description" content="<?= $description ?>">
+  <link rel="shortcut icon" href="/img/favicon.ico">
 
   <!-- Open Graph -->
   <meta property="og:type" content="article">
