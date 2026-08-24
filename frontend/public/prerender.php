@@ -62,8 +62,8 @@ function curlGet($url) {
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_TIMEOUT => 15,
         CURLOPT_CONNECTTIMEOUT => 5,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_SSL_VERIFYHOST => 0,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_SSL_VERIFYHOST => 2,
         CURLOPT_HTTPHEADER => ['Accept: application/json'],
     ]);
     $response = curl_exec($ch);
@@ -76,11 +76,17 @@ function curlGet($url) {
 }
 
 // Discover API URL from seo-settings, fallback to env var
-$defaultApiUrl = getenv('API_URL') ?: 'https://blog-backend.dowar.xyz';
+$defaultApiUrl = getenv('API_URL');
+    if (!$defaultApiUrl) {
+        http_response_code(500);
+        error_log('API_URL env var not set');
+        echo '<html><body><h1>Configuration Error</h1></body></html>';
+        exit;
+    }
 $apiBaseUrl = $defaultApiUrl;
 
 $seoSettingsUrl = rtrim($defaultApiUrl, '/') . '/api/seo-settings';
-$seoResponse = @curlGet($seoSettingsUrl);
+$seoResponse = curlGet($seoSettingsUrl);
 
 $siteTitle = 'Dowar Blog';
 $siteDescription = '';
@@ -104,7 +110,7 @@ if ($seoResponse !== false) {
 
 // Fetch post from Laravel API
 $apiUrl = rtrim($apiBaseUrl, '/') . '/api/post-by-slug/' . urlencode($slug);
-$apiResponse = @curlGet($apiUrl);
+$apiResponse = curlGet($apiUrl);
 
 if ($apiResponse === false) {
     http_response_code(502);

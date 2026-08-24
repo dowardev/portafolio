@@ -1,6 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /admin-panel/
+Disallow: /api/
+Disallow: /storage/
 
 # Sitemaps
-Sitemap: https://dowar.xyz/sitemap.xml
+# Sitemap: https://dowar.xyz/sitemap.xml
