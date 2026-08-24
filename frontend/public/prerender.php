@@ -8,7 +8,9 @@ $matches = [];
 $isPostRoute = preg_match('#^/blog/post/([a-z0-9\-]+)$#', $path, $matches);
 
 if (!$isPostRoute) {
-    return false;
+    http_response_code(404);
+    echo "<html><body><h1>Not Found</h1></body></html>";
+    exit;
 }
 
 $slug = $matches[1];
@@ -47,7 +49,9 @@ foreach ($botPatterns as $pattern) {
 }
 
 if (!$isBot) {
-    return false;
+    // Non-bot request reached prerender directly: serve the SPA shell
+    readfile(__DIR__ . "/index.html");
+    exit;
 }
 
 // Tell caches (CDN, proxies) that the response varies by User-Agent.
@@ -57,13 +61,14 @@ header('Vary: User-Agent');
 // Helper: fetch JSON via curl (file_get_contents fails with HTTPS on some Hostinger configs)
 function curlGet($url) {
     $ch = curl_init($url);
+    $sslVerify = strtolower(getenv('PRERENDER_SSL_VERIFY') ?: '') !== 'false';
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_TIMEOUT => 15,
         CURLOPT_CONNECTTIMEOUT => 5,
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_SSL_VERIFYPEER => $sslVerify,
+        CURLOPT_SSL_VERIFYHOST => $sslVerify ? 2 : 0,
         CURLOPT_HTTPHEADER => ['Accept: application/json'],
     ]);
     $response = curl_exec($ch);
@@ -77,12 +82,10 @@ function curlGet($url) {
 
 // Discover API URL from seo-settings, fallback to env var
 $defaultApiUrl = getenv('API_URL');
-    if (!$defaultApiUrl) {
-        http_response_code(500);
-        error_log('API_URL env var not set');
-        echo '<html><body><h1>Configuration Error</h1></body></html>';
-        exit;
-    }
+if (!$defaultApiUrl) {
+    $defaultApiUrl = 'https://blog-backend.dowar.xyz';
+    error_log('WARNING: API_URL env var not set, using fallback: ' . $defaultApiUrl);
+}
 $apiBaseUrl = $defaultApiUrl;
 
 $seoSettingsUrl = rtrim($defaultApiUrl, '/') . '/api/seo-settings';

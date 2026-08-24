@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /admin-panel/
 Disallow: /api/
-Disallow: /storage/
+# Disallow: /storage/  # permitir indexación de imágenes subidas
 
 # Sitemaps
 # Sitemap: https://dowar.xyz/sitemap.xml

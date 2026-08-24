@@ -805,7 +805,7 @@ link_storage() {
         # Use plain ln -s instead of `php artisan storage:link`: shared hosts
         # often disable PHP symlink()/exec(), which makes the artisan command
         # fail with "Call to undefined function ... exec()".
-        if ln -s ../storage/app/public public/storage 2>/dev/null; then
+        if ln -sfn ../storage/app/public public/storage 2>/dev/null; then
             log_ok "Public storage linked"
         else
             log_warn "Could not link public/storage - uploaded images may 404"
