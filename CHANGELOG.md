@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+## 19.10.0 - 2026-08-24
+
+### Added
+
+- **`frontend/public/prerender.php`**: bot-facing prerender for blog post pages — OG/Twitter meta tags generated server-side from the Laravel API, with `Vary: User-Agent` header so CDNs cache the SPA shell and prerendered HTML separately; configurable TLS verification via `PRERENDER_SSL_VERIFY` (secure by default) and `API_URL` env fallback with warning log
+- **`frontend/public/robots.txt`**: crawler directives — allows all content, blocks `/admin-panel/` and `/api/`
+- **`scripts/deploy/deploy.conf`**: deploy now recreates the backend `public/storage` symlink (`mkdir -p` guarded) so uploaded images survive fresh releases
+
+### Changed
+
+- **`frontend/public/.htaccess`**: bot detection on `/blog/post/{slug}` rewritten to match against `%{THE_REQUEST}` — fixes rewrite failures caused by root-level path prefixing; explicit `[OR]`-chained UA conditions replace the broken pipe-separated pattern
+
+### Fixed
+
+- **`setup.sh`**: broken `public/storage` symlinks are detected and force-relinked with `ln -sfn`; plain links no longer fail when a stale link exists
+
 ## 19.9.0 - 2026-08-21
 
 ### Added

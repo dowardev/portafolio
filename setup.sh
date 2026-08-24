@@ -793,12 +793,19 @@ link_storage() {
 
     cd "$BACK_DIR"
     if [ -L "public/storage" ]; then
-        log_ok "Public storage already linked"
+        # Verify the symlink target actually exists (catch broken symlinks)
+        if [ -e "public/storage" ]; then
+            log_ok "Public storage already linked"
+        else
+            log_warn "Public storage symlink is broken — recreating"
+            ln -sfn ../storage/app/public public/storage && log_ok "Public storage relinked" \
+                || log_warn "Could not relink public/storage - uploaded images may 404"
+        fi
     elif [ -d "public" ] && [ -d "storage/app/public" ]; then
         # Use plain ln -s instead of `php artisan storage:link`: shared hosts
         # often disable PHP symlink()/exec(), which makes the artisan command
         # fail with "Call to undefined function ... exec()".
-        if ln -s ../storage/app/public public/storage 2>/dev/null; then
+        if ln -sfn ../storage/app/public public/storage 2>/dev/null; then
             log_ok "Public storage linked"
         else
             log_warn "Could not link public/storage - uploaded images may 404"
