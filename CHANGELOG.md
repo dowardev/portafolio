@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Removed
+
+- **`frontend`**: removed the unused local login/signup UI (`LoginPage.vue`, `SignUpPage.vue`, `SessionContentComponent.vue`, `SessionHeaderComponent.vue`, `LoginFormComponent.vue`, `RecoverPasswordComponent.vue`) and the now-unused `key.png` / `mail.png` assets — authentication is handled exclusively by the external SSO client (`loginWithRedirect`); these views had no registered route and were unreachable dead code
+
 ## 19.10.0 - 2026-08-24
 
 ### Added
