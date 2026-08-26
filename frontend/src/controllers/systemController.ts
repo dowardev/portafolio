@@ -2,7 +2,6 @@ import { Toast, Theme } from "@/utils/interfaces";
 import { toastController } from "@ionic/vue";
 import { useSystemStore } from "../store/systemStore";
 import { DEFAULT_THEME } from "@/utils/themeDefaults";
-import { wb } from "@/main";
 
 // controllers
 import ErrorController from "./errorController";
@@ -284,22 +283,6 @@ export default class SystemController {
     }
   }
 
-  toggleUpdateOption() {
-    try {
-      this.systemStore.toggleUpdateOption();
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  getUpdateStatus() {
-    try {
-      return this.systemStore.update;
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
   async getImageURL(params: { name: string }): Promise<{ url: string }> {
     try {
       const { name } = params;
@@ -358,21 +341,6 @@ export default class SystemController {
   createFirstCookie() {
     try {
       this.systemService.createFirstCookie();
-    } catch (error) {
-      return this.errorController.handleError({ error });
-    }
-  }
-
-  updateApp() {
-    try {
-      if (wb) {
-        wb.addEventListener("controlling", () => {
-          window.location.reload();
-        });
-        wb.messageSkipWaiting();
-      } else {
-        throw new Error("Workbox no está inicializado.");
-      }
     } catch (error) {
       return this.errorController.handleError({ error });
     }

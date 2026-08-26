@@ -5,6 +5,7 @@
 ### Removed
 
 - **`frontend`**: removed the unused local login/signup UI (`LoginPage.vue`, `SignUpPage.vue`, `SessionContentComponent.vue`, `SessionHeaderComponent.vue`, `LoginFormComponent.vue`, `RecoverPasswordComponent.vue`) and the now-unused `key.png` / `mail.png` assets — authentication is handled exclusively by the external SSO client (`loginWithRedirect`); these views had no registered route and were unreachable dead code
+- **`frontend`**: removed the **PWA** implementation (`vite-plugin-pwa` plugin, Workbox service worker + the "update available" feature, apple PWA meta tags, `pwa-*.png` icons, `workbox-window`/`vite-plugin-pwa` deps) and the **Android/Capacitor** app (`android/` directories, `capacitor.config.ts`, `ionic.config.json`, all `@capacitor/*` dependencies, the hardware-back `App.exitApp()` exit flow, and the "Nuestras aplicaciones" menu modal with its PWA/Android/desktop download cards) — the app is now web-only
 
 ## 19.10.0 - 2026-08-24
 

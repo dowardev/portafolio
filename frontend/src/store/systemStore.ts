@@ -9,7 +9,6 @@ export const useSystemStore = defineStore("system", () => {
     ...DEFAULT_THEME,
     options: { ...DEFAULT_THEME.options },
   } as Theme);
-  const update = ref(false);
   const loader = ref<{ status: boolean; color: string }>({
     status: false,
     color: "",
@@ -67,10 +66,6 @@ export const useSystemStore = defineStore("system", () => {
     themeModalOpen.value = false;
   }
 
-  function toggleUpdateOption() {
-    update.value = !update.value;
-  }
-
   function updateLoader(params: { status: boolean; color?: string }) {
     const { status, color = "primary" } = params;
     loader.value = { status, color };
@@ -107,8 +102,6 @@ export const useSystemStore = defineStore("system", () => {
     setTemplate,
     getVariant,
     setVariant,
-    toggleUpdateOption,
-    update,
     loader,
     updateLoader,
     designMode,

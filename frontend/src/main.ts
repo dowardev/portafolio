@@ -100,15 +100,6 @@ window.addEventListener('storage', (event) => {
   }
 });
 
-// service worker (solo produccion — en dev no hay /sw.js)
-import { Workbox } from "workbox-window";
-let wb: Workbox | null = null;
-if (import.meta.env.PROD && "serviceWorker" in navigator) {
-  wb = new Workbox("/sw.js");
-  wb.register();
-}
-export { wb };
-
 const app = createApp(App).use(IonicVue).use(pinia).use(router).use(head);
 app.directive("tooltip", vTooltip);
 app.directive("section-reveal", vSectionReveal);

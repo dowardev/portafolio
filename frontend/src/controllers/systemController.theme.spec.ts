@@ -3,9 +3,8 @@ import SystemController from "@/controllers/systemController";
 import type { Theme } from "@/utils/interfaces";
 import { DEFAULT_THEME } from "@/utils/themeDefaults";
 
-// Mock @/main: systemController imports wb and SystemService imports storageInstance.
+// Mock @/main: SystemService imports storageInstance.
 vi.mock("@/main", () => ({
-  wb: undefined,
   get storageInstance() {
     return currentFakeStorage;
   },
@@ -35,12 +34,10 @@ const mockSystemStore = {
   setTemplate: vi.fn(),
   getVariant: vi.fn(() => DEFAULT_THEME.variant),
   setVariant: vi.fn(),
-  toggleUpdateOption: vi.fn(),
   updateLoader: vi.fn(),
   getDesignMode: vi.fn(() => "md"),
   setDesignMode: vi.fn(),
   updateScreenSize: vi.fn(),
-  update: false,
   loader: { status: false, color: "" },
   screenSize: { width: 1280, height: 720, preset: "" },
 };

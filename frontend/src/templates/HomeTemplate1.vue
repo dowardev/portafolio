@@ -128,10 +128,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import {
-  alertController,
   IonButtons,
   IonMenuButton,
-  useBackButton,
   IonHeader,
   IonToolbar,
   IonTitle,
@@ -184,10 +182,6 @@ const showContactForm = computed(() => introController.showContactForm);
 let observer: IntersectionObserver | null = null;
 
 onMounted(async () => {
-  useBackButton(10, () => {
-    alertExitApp();
-  });
-
   setupIntersectionObserver();
 
   await Promise.all([
@@ -222,27 +216,6 @@ function setupIntersectionObserver() {
   sections.forEach((section) => {
     observer?.observe(section);
   });
-}
-
-async function alertExitApp() {
-  const alert = await alertController.create({
-    header: "Alerta",
-    message: "Esta a punto de salir de la aplicación",
-    buttons: [
-      {
-        text: "Cancel",
-        role: "cancel",
-        cssClass: "secondary",
-        handler: () => {},
-      },
-      {
-        text: "Continuar",
-        id: "confirm-button",
-        handler: () => {},
-      },
-    ],
-  });
-  await alert.present();
 }
 
 function scrollToSection(params: { event: CustomEvent }) {

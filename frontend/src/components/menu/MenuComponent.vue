@@ -246,32 +246,7 @@
                                     <ion-label>Novedades</ion-label>
                                   </ion-item>
                                 </div>
-
-                                <div>
-                                  <ion-button
-                                    v-if="
-                                      systemController.getUpdateStatus() == true
-                                    "
-                                    color="primary"
-                                    size="small"
-                                    @click="updateApp()"
-                                    >Actualizar</ion-button
-                                  >
-                                </div>
                               </div>
-                              <!-- more -->
-                              <ion-item
-                                lines="none"
-                                button
-                                @click="openModalApps"
-                              >
-                                <ion-icon
-                                  slot="start"
-                                  color="primary"
-                                  :icon="appsOutline"
-                                ></ion-icon>
-                                <ion-label>Mas</ion-label>
-                              </ion-item>
                             </div>
                           </ion-accordion>
                         </ion-accordion-group>
@@ -351,8 +326,6 @@ import {
   IonRow,
   IonSpinner,
   IonToolbar,
-  menuController,
-  modalController,
 } from "@ionic/vue";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
@@ -361,7 +334,6 @@ import {
   logOutOutline,
   thumbsUpOutline,
   logoGitlab,
-  appsOutline,
   documentsOutline,
   personOutline,
   cogOutline,
@@ -378,7 +350,6 @@ import {
   peopleOutline,
   people,
 } from "ionicons/icons";
-import AppsComponent from "./apps/AppsMenu.vue";
 import DonationsComponent from "./donations/DonationsMenu.vue";
 
 // components
@@ -474,18 +445,6 @@ function overrideSSOProfile() {
   window.open(`${ssoFrontendUrl}/user/profile/limited`, '_blank', 'noopener,noreferrer');
 }
 
-async function openModalApps() {
-  const modal = await modalController.create({
-    component: AppsComponent,
-    cssClass: "my-custom-class",
-  });
-  menuController.close();
-  return modal.present();
-}
-
-function updateApp() {
-  systemController.updateApp();
-}
 </script>
 
 <style scoped>
