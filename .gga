@@ -22,7 +22,9 @@
 #   PROVIDER="github:deepseek-r1"
 #   PROVIDER="minimax"
 #   PROVIDER="minimax:MiniMax-M3"
-PROVIDER="opencode:opencode-go/deepseek-v4-flash"
+#
+# PROVIDER is intentionally NOT set here: it depends on each developer's
+# billing/subscription. Define it once in ~/.config/gga/config instead.
 
 # File patterns to include in review (comma-separated)
 # Default: * (all files)
