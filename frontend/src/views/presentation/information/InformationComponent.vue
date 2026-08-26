@@ -300,11 +300,9 @@ import {
   IonModal,
   IonPopover,
   IonRow,
-  alertController,
   modalController,
-  useBackButton,
 } from "@ionic/vue";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import {
   mail,
   copyOutline,
@@ -346,7 +344,6 @@ import {
   logoTumblr,
   logoVk,
 } from "ionicons/icons";
-import { App } from "@capacitor/app";
 
 // components
 import ContactModal from "../../../components/modals/contact/ContactModal.vue";
@@ -432,43 +429,7 @@ function getSocialIcon(iconName: string): string {
 
 // end vars
 
-// mounted()
-onMounted(() => {
-  useBackButton(10, () => {
-    alertExitApp();
-  });
-});
-
 // functions
-async function alertExitApp() {
-  const alert = await alertController.create({
-    header: "Alerta",
-    message: "Esta a punto de salir de la aplicación",
-    buttons: [
-      {
-        text: "Cancel",
-        role: "cancel",
-        cssClass: "secondary",
-        id: "cancel-button",
-        handler: () => {
-          // console.log('Confirm Cancel:', blah)
-        },
-      },
-      {
-        text: "Continuar",
-        id: "confirm-button",
-        handler: () => {
-          App.exitApp();
-        },
-      },
-    ],
-  });
-  await alert.present();
-
-  const { role } = await alert.onDidDismiss();
-  console.log("onDidDismiss resolved with role", role);
-}
-
 async function copyToClipboard(params: { text: string }) {
   const text = params.text;
   try {

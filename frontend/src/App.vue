@@ -22,15 +22,6 @@
       <ThemeComponente />
     </ion-modal>
 
-    <!-- toast update -->
-    <ion-toast
-      message="Nueva actualización disponible, más detalles en la sección de novedades"
-      :is-open="openToastUpdateApp"
-      :buttons="toastUpdateButtons"
-      :duration="7000"
-      @did-dismiss="updateApp($event)"
-    ></ion-toast>
-
     <div class="landscape-warning">
       <p>Por favor, gira tu dispositivo para ver este sitio web.</p>
     </div>
@@ -44,7 +35,6 @@ import {
   IonRouterOutlet,
   IonMenu,
   IonSplitPane,
-  IonToast,
   toastController,
   isPlatform,
 } from "@ionic/vue";
@@ -55,7 +45,6 @@ import MenuComponent3 from "./components/menu/MenuComponent3.vue";
 import ThemeComponente from "./components/theme/ThemeComponente.vue";
 import { useRouter, useRoute } from "vue-router";
 import { Storage } from "@ionic/storage";
-import { wb } from "./main";
 import { useSeoMeta } from "@unhead/vue";
 
 // interface
@@ -89,14 +78,7 @@ const router = useRouter();
 const route = useRoute();
 
 // vars
-const openToastUpdateApp = ref(false);
 const previousRoute = ref("");
-const toastUpdateButtons = [
-  {
-    text: "Actualizar",
-    role: "update",
-  },
-];
 const designMode = ref<DesignMode>(isPlatform("ios") ? "ios" : "md");
 // end vars
 
@@ -142,12 +124,6 @@ onMounted(async () => {
       systemController.onSystemColorSchemeChange();
     });
 
-  if ("serviceWorker" in navigator && wb) {
-    wb.addEventListener("waiting", () => {
-      systemController.toggleUpdateOption();
-      openToastUpdateApp.value = true;
-    });
-  }
   systemController.setDesignMode({ mode: designMode.value });
   updateScreenSize();
   window.addEventListener("resize", updateScreenSize);
@@ -187,10 +163,6 @@ async function openToastOptions() {
     ],
   });
   await toast.present();
-}
-
-function updateApp(e: Event) {
-  if ((e as CustomEvent).detail.role == "update") systemController.updateApp();
 }
 
 function updateScreenSize(): void {

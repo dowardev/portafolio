@@ -1,7 +1,0 @@
-{
-  "name": "dowar-blog",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "vue-vite"
-}

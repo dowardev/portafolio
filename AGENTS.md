@@ -80,7 +80,6 @@ gitignored para que cada desarrollador mantenga sus valores locales reales.
 
 ### Frontend (`frontend/`)
 - **Ionic 8** + **Vue 3** with Composition API
-- **Capacitor 7** for Android support
 - **Pinia** for state management
 - **SSO client** (local package `@tu-org/sso-client`)
 - `src/views/` — Views organized by feature (admin, blog, portfolio, session, etc.)
@@ -90,7 +89,6 @@ gitignored para que cada desarrollador mantenga sus valores locales reales.
 - `src/store/` — Pinia stores
 - `src/services/` — API services
 - `src/router/` — Vue Router
-- **PWA** with vite-plugin-pwa
 
 #### Identity Layer (Reflow de Autenticación + Autorización)
 

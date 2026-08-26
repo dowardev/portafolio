@@ -129,12 +129,6 @@
                     @click="openChangelog()"
                   />
 
-                  <MenuItem3
-                    label="MÁS APPS"
-                    :index="12"
-                    :active-routes="[]"
-                    @click="openModalApps()"
-                  />
                 </div>
               </ion-accordion>
             </ion-accordion-group>
@@ -226,8 +220,6 @@ import {
   IonPopover,
   IonSpinner,
   IonToolbar,
-  menuController,
-  modalController,
 } from "@ionic/vue"
 import { computed, ref } from "vue"
 import { storeToRefs } from "pinia"
@@ -237,7 +229,6 @@ import { logOutOutline } from "ionicons/icons"
 import MenuItem3 from "./MenuItem3.vue"
 import DonationsComponent from "@/components/menu/donations/DonationsMenu.vue"
 import FeedbackComponent from "@/components/feedback/FeedbackComponent.vue"
-import AppsComponent from "@/components/menu/apps/AppsMenu.vue"
 
 import { getSSOClient } from "@/ssoClientAccessor"
 
@@ -327,15 +318,6 @@ function openChangelog() {
     "https://gitlab.com/dowardev/portafolio/-/blob/master/CHANGELOG.md?ref_type=heads",
     "_blank",
   )
-}
-
-async function openModalApps() {
-  menuController.close()
-  const modal = await modalController.create({
-    component: AppsComponent,
-    cssClass: "my-custom-class",
-  })
-  return modal.present()
 }
 </script>
 
