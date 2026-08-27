@@ -38,3 +38,5 @@ npm-debug.log*
 .env.production
 
 pnpm-workspace.yaml
+# Local Pi runtime state
+.atl/
