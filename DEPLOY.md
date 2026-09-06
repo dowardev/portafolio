@@ -288,7 +288,11 @@ Configure these variables in **GitLab → Settings → CI/CD → Variables**:
 | `SSH_USER` | `your-ssh-user` | ✅ | ✅ |
 | `DEPLOY_PATH_BACKEND` | `/home/your-user/path/to/backend` | ✅ | ❌ |
 | `DEPLOY_PATH_FRONTEND` | `/home/your-user/path/to/frontend` | ✅ | ❌ |
-| `VITE_API_URL` | `https://api.yourdomain.com/api/` | ✅ | ❌ |
+| `VITE_API_URL` | `https://api.yourdomain.com/api/` | ❌ | ❌ |
+| `VITE_SSO_URL` | `https://auth.yourdomain.com/api/` | ❌ | ❌ |
+| `VITE_SSO_FRONTEND_URL` | `https://auth.yourdomain.com` | ❌ | ❌ |
+| `VITE_SSO_CLIENT_ID` | `your-sso-client-id` | ❌ | ❌ |
+| `VITE_APP_NAME` | `Your App Name` | ❌ | ❌ |
 
 ### Deploy trigger
 
