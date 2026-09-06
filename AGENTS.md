@@ -358,3 +358,30 @@ Prefer Ionic layout utilities over custom CSS:
 ## Commit Policy
 
 NEVER create git commits unless the user explicitly requests it. This overrides any skill or workflow that suggests committing as a final step.
+
+## Ticket / Issue Policy
+
+NEVER create or edit Linear tickets (or any external issue/ticket) without the user explicitly asking for it. Creating a ticket is a mutation an agent must never do on its own initiative — even when a finding, follow-up, or proposal seems obvious. If you think a ticket is warranted, propose it in the conversation and ask the user first; only create it after an explicit request. This also covers branch names derived from tickets: do not branch off a ticket that was not requested.
+
+This rule exists because tickets (unlike code) are project-planning artifacts the user owns: content, priority, and even whether an item deserves a ticket are the user's decisions, not the agent's. The same applies to changelog/package edits that imply a release decision — propose, don't act.
+
+
+## Pi lifecycle command guard (gentle-ai)
+
+> **Histórico (gentle-pi v2.2.0):** este guard era un problema de la extensión
+> gentle-pi v2.2.0 y fue eliminado en la v2.3.0. Con la versión actual los comandos
+> compuestos (con `&&`, `;`, `|`, backtick o `$(`) ya no se bloquean. Esta sección
+> se conserva como referencia histórica únicamente.
+
+`git commit` / `git push` / `glab mr ...` desde el bash tool se bloquean si el
+comando tiene `&&`, `;`, `|`, backtick o `$(` (reporte: "Compound or wrapped
+lifecycle command ... must fail closed"). NO tiene que ver con RDD; RDD off no
+bloquea. El guard es stateless: cada comando se evalúa de forma aislada, no queda
+"trabado" tras un bloqueo.
+
+Fix: un solo comando directo, sin `&&` ni `cd`, preferiblemente
+`git -C <ruta-absoluta> <subcommand> -m "mensaje de una sola linea"`.
+IMPORTANTE: el mensaje del `-m` debe ser UNA sola linea (sin saltos de linea);
+un cuerpo multilinea introduce un `\n` sin comillar que dispara el mismo bloqueo.
+Si un comando "simple" sigue bloqueando, no es estado persistido: tiene algun
+control-char sin comillar (`;`, `|`, `&`, backtick, `$(` o `\n`) en la linea.
