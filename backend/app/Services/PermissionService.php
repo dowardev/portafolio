@@ -6,8 +6,8 @@ use App\Models\Permission;
 use App\Models\RolePermission;
 use App\Models\UserPermission;
 use App\Traits\ExtractsRoleSlugs;
-use Illuminate\Support\Facades\Cache;
 use Dowardev\SsoServer\Facades\SsoAuth;
+use Illuminate\Support\Facades\Cache;
 
 class PermissionService
 {

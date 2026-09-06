@@ -6,9 +6,9 @@ use App\Models\RolePermission;
 use App\Models\UserPermission;
 use App\Traits\ExtractsRoleSlugs;
 use Closure;
+use Dowardev\SsoServer\Facades\SsoAuth;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Dowardev\SsoServer\Facades\SsoAuth;
 
 class PermissionMiddleware
 {

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Dowardev\SsoServer\Facades\SsoAuth;
+use Illuminate\Http\Request;
 
 class SsoController extends Controller
 {
