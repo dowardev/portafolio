@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **`frontend/package.json`**: `@tu-org/sso-client` alias bumped `npm:@dowardev/sso-client@^0.0.4` → `^0.2.1` — `pnpm install` now resolves the real registry artifact (replacing the manual `node_modules` symlink to the SSO repo source) and the lockfile records `@dowardev/sso-client@0.2.1`
+- **`frontend/src/types/sso-client.d.ts`**: hand-maintained shim realigned with the real 0.2.1 API — `logout()` / `handleCallback()` accept `{ redirectUri, openUrl }`, `loginWithRedirect()` gains optional `openUrl`, new shared `OpenUrlHandler` type, `rememberMe` on `LoginParams` / `AuthResponse`, `password` on `User`, `pivot` on `Role`, `onAuthSuccess` / `onAuthError` on `SSOConfig`, and `createAuthGuard()` now takes `SSOClientLike` with `loginRedirect?: boolean` (was `string`) plus local `RouteLike` / `NavigationGuardNext` types instead of `vue-router` imports
+
 ### Removed
 
 - **`frontend`**: removed the unused local login/signup UI (`LoginPage.vue`, `SignUpPage.vue`, `SessionContentComponent.vue`, `SessionHeaderComponent.vue`, `LoginFormComponent.vue`, `RecoverPasswordComponent.vue`) and the now-unused `key.png` / `mail.png` assets — authentication is handled exclusively by the external SSO client (`loginWithRedirect`); these views had no registered route and were unreachable dead code

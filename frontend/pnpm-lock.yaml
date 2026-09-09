@@ -27,8 +27,8 @@ importers:
         specifier: ^0.0.4
         version: 0.0.4(react@19.2.5)(vue@3.5.33(typescript@5.9.3))
       '@tu-org/sso-client':
-        specifier: npm:@dowardev/sso-client@^0.0.4
-        version: '@dowardev/sso-client@0.0.4'
+        specifier: npm:@dowardev/sso-client@^0.2.1
+        version: '@dowardev/sso-client@0.2.1'
       '@unhead/vue':
         specifier: ^1.11.0
         version: 1.11.20(vue@3.5.33(typescript@5.9.3))
@@ -692,8 +692,8 @@ packages:
   '@cypress/xvfb@1.2.4':
     resolution: {integrity: sha512-skbBzPggOVYCbnGgV+0dmBdW/s77ZkAOXIC1knS8NagwDjBrNC1LuXtQJeiN6l+m7lzmHtaoUw/ctJKdqkG57Q==}
 
-  '@dowardev/sso-client@0.0.4':
-    resolution: {integrity: sha512-RlXu+QD+pNgn/EanpEEqhaxpL0xzJQ6pz4qg6ft54hzuEWd3EtHQUKGUkZs+57MCVyO+W01+Ssb1aAUGSxvucQ==}
+  '@dowardev/sso-client@0.2.1':
+    resolution: {integrity: sha512-xlggvYuur2gS7VGe0mWiI3uGd6QkAY5srs5UGRZ1P6IYjg5Lh4xuWFZY7IKWlypirXoZqf3qie8WUGmMzw53Ug==}
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -943,6 +943,10 @@ packages:
     resolution: {integrity: sha512-14kG6ZpjN4gUQRu08qYhtgfj2OJL++rvjCh5jkG6kofYcj7WymwT1lnJ9e6eisHSrSDiUPov+eOQtfCE3QpF0A==}
     peerDependencies:
       vue: ^3.5.21
+
+  '@noble/hashes@2.4.0':
+    resolution: {integrity: sha512-X5XaVWZIBCT7HHZGm5I7ZQXDwLG+bGXuSrMQAW+7Zvl87h1kmc1ZB1VSRJcpUfoUrGQp4Fkoxm5kZ+Ms+aW+eA==}
+    engines: {node: '>= 20.19.0'}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1444,6 +1448,9 @@ packages:
     resolution: {integrity: sha512-hPt/bgL5cE+Qp+/TPHBqptcAgPzgj46mPcg/16zNUmbQk0j+mOEQV/+Lqu8QRtDV3Ek95Q6FeFITpuhl6OTsAA==}
     cpu: [x64]
     os: [win32]
+
+  '@scure/bip39@2.4.0':
+    resolution: {integrity: sha512-82dxFbZUYboyOf0AXiydsQrFQ5Q4h9mX+O2UkE91ROYmsc0BKMGZLwDmy96Jpa2+vrtoxomjUhy1RPIgH/r2nA==}
 
   '@stencil/core@4.43.0':
     resolution: {integrity: sha512-6Uj2Z3lzLuufYAE7asZ6NLKgSwsB9uxl84Eh34PASnUjfj32GkrP4DtKK7fNeh1WFGGyffsTDka3gwtl+4reUg==}
@@ -4224,8 +4231,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@dowardev/sso-client@0.0.4':
+  '@dowardev/sso-client@0.2.1':
     dependencies:
+      '@scure/bip39': 2.4.0
       axios: 1.16.0
     transitivePeerDependencies:
       - debug
@@ -4438,6 +4446,8 @@ snapshots:
       vue: 3.5.33(typescript@5.9.3)
     transitivePeerDependencies:
       - react
+
+  '@noble/hashes@2.4.0': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -4702,6 +4712,10 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.60.3':
     optional: true
+
+  '@scure/bip39@2.4.0':
+    dependencies:
+      '@noble/hashes': 2.4.0
 
   '@stencil/core@4.43.0':
     optionalDependencies:

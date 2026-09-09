@@ -1,6 +1,7 @@
 declare module '@tu-org/sso-client' {
   import type { AxiosRequestConfig } from 'axios';
-  import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
+
+  export type OpenUrlHandler = (params: { url: string }) => void | Promise<void>;
 
   export interface Role {
     id: number;
@@ -8,12 +9,16 @@ declare module '@tu-org/sso-client' {
     slug: string;
     description: string | null;
     is_protected: boolean;
+    pivot?: {
+      sso_client_id: number | null;
+    };
   }
 
   export interface User {
     id?: string;
     name?: string;
     user?: string;
+    password?: string;
     email?: string;
     roles?: Role[];
     isEmailVerified?: boolean;
@@ -25,6 +30,7 @@ declare module '@tu-org/sso-client' {
     token: string;
     refreshToken?: string;
     user?: User;
+    rememberMe?: boolean;
   }
 
   export interface RegisterParams {
@@ -38,6 +44,7 @@ declare module '@tu-org/sso-client' {
   export interface LoginParams {
     email: string;
     password: string;
+    rememberMe?: boolean;
   }
 
   export interface AuthState {
@@ -45,11 +52,19 @@ declare module '@tu-org/sso-client' {
     user: User | null;
   }
 
+  export interface ICustomError {
+    status?: number;
+    errorDetail?: string;
+    cause?: Error;
+  }
+
   export interface SSOConfig {
     ssoUrl: string;
     ssoFrontendUrl: string;
     apiBaseUrl: string;
     clientId: string;
+    onAuthSuccess?: (user: User) => void;
+    onAuthError?: (error: ICustomError) => void;
   }
 
   export class HttpClient {
@@ -62,14 +77,28 @@ declare module '@tu-org/sso-client' {
 
   export interface AuthGuardOptions {
     publicRoutes?: string[];
-    loginRedirect?: string;
+    loginRedirect?: boolean;
     redirectUri?: string;
   }
 
+  export interface RouteLike {
+    name?: string | symbol | null;
+    path: string;
+  }
+
+  export interface NavigationGuardNext {
+    (path?: string | { path: string }): void;
+  }
+
+  export interface SSOClientLike {
+    readonly isAuthenticated: boolean;
+    loginWithRedirect(options?: { redirectUri?: string; screenHint?: 'login' | 'register'; openUrl?: OpenUrlHandler }): Promise<void>;
+  }
+
   export function createAuthGuard(
-    ssoClient: SSOClient,
+    ssoClient: SSOClientLike,
     options?: AuthGuardOptions
-  ): (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => Promise<void>;
+  ): (to: RouteLike, from: RouteLike, next: NavigationGuardNext) => Promise<void>;
 
   export class SSOClient {
     constructor(config: SSOConfig);
@@ -78,10 +107,10 @@ declare module '@tu-org/sso-client' {
     readonly http: HttpClient;
 
     login(params: LoginParams): Promise<AuthResponse>;
-    loginWithRedirect(options?: { redirectUri?: string; screenHint?: 'login' | 'register' }): Promise<void>;
-    handleCallback(url: string): Promise<{ user: User }>;
+    loginWithRedirect(options?: { redirectUri?: string; screenHint?: 'login' | 'register'; openUrl?: OpenUrlHandler }): Promise<void>;
+    handleCallback(url: string, options?: { redirectUri?: string }): Promise<{ user: User }>;
     register(params: RegisterParams): Promise<void>;
-    logout(): Promise<void>;
+    logout(options?: { redirectUri?: string; openUrl?: OpenUrlHandler }): Promise<void>;
     refreshToken(refreshToken: string): Promise<AuthResponse>;
     recoverPassword(params: { email: string }): Promise<void>;
     resetPassword(params: { email: string; code: number | string; password: string }): Promise<void>;
