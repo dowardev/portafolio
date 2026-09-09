@@ -4,4 +4,4 @@ allowBuilds:
   esbuild: true
   vue-demi: true
 minimumReleaseAgeExclude:
-  - '@dowardev/sso-client@0.0.4'
+  - '@dowardev/sso-client'

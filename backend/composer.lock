@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "68b0859e0c1c949943bb5b2461341a5d",
+    "content-hash": "c7f25ea2cf6b3fad7738186176368b4f",
     "packages": [
         {
             "name": "brick/math",
@@ -379,16 +379,16 @@
         },
         {
             "name": "dowardev/sso-server",
-            "version": "v0.1.0",
+            "version": "v0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/dowardev/sso-server.git",
-                "reference": "543ef3f41c1c3859bcfece93f98274e0facdc11c"
+                "reference": "8f38033e3fc46c467acdc5ddec5dae75f43afe0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/dowardev%2Fsso-server/repository/archive.zip?sha=543ef3f41c1c3859bcfece93f98274e0facdc11c",
-                "reference": "543ef3f41c1c3859bcfece93f98274e0facdc11c",
+                "url": "https://gitlab.com/api/v4/projects/dowardev%2Fsso-server/repository/archive.zip?sha=8f38033e3fc46c467acdc5ddec5dae75f43afe0a",
+                "reference": "8f38033e3fc46c467acdc5ddec5dae75f43afe0a",
                 "shasum": ""
             },
             "require": {
@@ -424,9 +424,9 @@
             "description": "Server-side SSO authentication library for Laravel with DPoP verification",
             "support": {
                 "issues": "https://gitlab.com/dowardev/sso-server/-/issues",
-                "source": "https://gitlab.com/dowardev/sso-server/-/tree/v0.1.0"
+                "source": "https://gitlab.com/dowardev/sso-server/-/tree/v0.1.1"
             },
-            "time": "2026-07-23T15:02:44+00:00"
+            "time": "2026-07-24T13:47:19+00:00"
         },
         {
             "name": "dragonmantank/cron-expression",
