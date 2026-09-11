@@ -2,7 +2,12 @@
 
 ## [Unreleased]
 
+## 19.10.1 - 2026-09-11
+
 ### Changed
+
+- **`frontend/package.json`**: `@tu-org/sso-client` (`npm:@dowardev/sso-client`) bumped `^0.2.1` → `^0.2.3`. The SDK now revokes the refresh token on logout even with an expired access token, no longer leaves a DPoP IndexedDB connection open (which could stall logout), and sweeps stale PKCE entries. Web-facing API unchanged, so no `sso-client.d.ts` update was needed.
+- **`frontend/package.json`**: the app's own version record synced to the monorepo release (it had been left at `19.5.0`).
 
 - **`frontend/package.json`**: `@tu-org/sso-client` alias bumped `npm:@dowardev/sso-client@^0.0.4` → `^0.2.1` — `pnpm install` now resolves the real registry artifact (replacing the manual `node_modules` symlink to the SSO repo source) and the lockfile records `@dowardev/sso-client@0.2.1`
 - **`frontend/src/types/sso-client.d.ts`**: hand-maintained shim realigned with the real 0.2.1 API — `logout()` / `handleCallback()` accept `{ redirectUri, openUrl }`, `loginWithRedirect()` gains optional `openUrl`, new shared `OpenUrlHandler` type, `rememberMe` on `LoginParams` / `AuthResponse`, `password` on `User`, `pivot` on `Role`, `onAuthSuccess` / `onAuthError` on `SSOConfig`, and `createAuthGuard()` now takes `SSOClientLike` with `loginRedirect?: boolean` (was `string`) plus local `RouteLike` / `NavigationGuardNext` types instead of `vue-router` imports
@@ -11,6 +16,8 @@
 
 - **`frontend`**: removed the unused local login/signup UI (`LoginPage.vue`, `SignUpPage.vue`, `SessionContentComponent.vue`, `SessionHeaderComponent.vue`, `LoginFormComponent.vue`, `RecoverPasswordComponent.vue`) and the now-unused `key.png` / `mail.png` assets — authentication is handled exclusively by the external SSO client (`loginWithRedirect`); these views had no registered route and were unreachable dead code
 - **`frontend`**: removed the **PWA** implementation (`vite-plugin-pwa` plugin, Workbox service worker + the "update available" feature, apple PWA meta tags, `pwa-*.png` icons, `workbox-window`/`vite-plugin-pwa` deps) and the **Android/Capacitor** app (`android/` directories, `capacitor.config.ts`, `ionic.config.json`, all `@capacitor/*` dependencies, the hardware-back `App.exitApp()` exit flow, and the "Nuestras aplicaciones" menu modal with its PWA/Android/desktop download cards) — the app is now web-only
+
+> Note: this section also carries the `0.2.1` items and the PWA/Android removals below, which were tagged as `v19.9.1` but never promoted out of `[Unreleased]` at the time.
 
 ## 19.10.0 - 2026-08-24
 
