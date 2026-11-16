@@ -25,7 +25,15 @@ cache:
   before_script:
     - apk add --no-cache openssh-client
     - mkdir -p ~/.ssh && chmod 700 ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+    - |
+      # The variable holds the key content, or the path to a file with it
+      # (a GitLab file variable). Both shapes are accepted.
+      if [ -f "$SSH_PRIVATE_KEY" ]; then
+        cp "$SSH_PRIVATE_KEY" ~/.ssh/id_rsa
+      else
+        printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+      fi
+      chmod 600 ~/.ssh/id_rsa
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - eval $(ssh-agent -s) && ssh-add ~/.ssh/id_rsa
     - echo "Host *" > ~/.ssh/config
