@@ -18,7 +18,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*.*.*'
   workflow_dispatch:
     inputs:
       rollback_target:
@@ -50,9 +50,31 @@ jobs:
   # Lint stage
   # ============================================================
 
+  # Gate de tag semver: las expresiones de GitHub Actions no tienen regex
+  # (no existe `matches()`), asi que el filtro exacto de las tag rules de
+  # GitLab (^vX.Y.Z con prerelease opcional) se evalua aqui en bash.
+  # Salida `release`: 'true' solo para tags semver validas.
+  release_gate:
+    name: release_gate
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.check.outputs.release }}
+    steps:
+      - id: check
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc|dryrun)\.[0-9]+)?$ ]]; then
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          fi
+
   backend_lint:
     name: backend_lint
     runs-on: ubuntu-latest
+    if: needs.release_gate.outputs.release == 'true'
+    needs: [release_gate]
     steps:
       - uses: actions/checkout@v4
 
@@ -82,6 +104,8 @@ jobs:
   frontend_lint:
     name: frontend_lint
     runs-on: ubuntu-latest
+    if: needs.release_gate.outputs.release == 'true'
+    needs: [release_gate]
     steps:
       - uses: actions/checkout@v4
 
@@ -107,7 +131,8 @@ jobs:
   backend_test:
     name: backend_test
     runs-on: ubuntu-latest
-    needs: [backend_lint]
+    if: needs.release_gate.outputs.release == 'true'
+    needs: [release_gate, backend_lint]
     env:
       DB_CONNECTION: sqlite
       DB_DATABASE: ':memory:'
@@ -143,7 +168,8 @@ jobs:
   frontend_test:
     name: frontend_test
     runs-on: ubuntu-latest
-    needs: [frontend_lint]
+    if: needs.release_gate.outputs.release == 'true'
+    needs: [release_gate, frontend_lint]
     steps:
       - uses: actions/checkout@v4
 
@@ -169,6 +195,8 @@ jobs:
   backend_assets_build:
     name: backend_assets_build
     runs-on: ubuntu-latest
+    if: needs.release_gate.outputs.release == 'true'
+    needs: [release_gate]
     steps:
       - uses: actions/checkout@v4
 
@@ -197,7 +225,8 @@ jobs:
   backend_build:
     name: backend_build
     runs-on: ubuntu-latest
-    needs: [backend_assets_build]
+    if: needs.release_gate.outputs.release == 'true'
+    needs: [release_gate, backend_assets_build]
     steps:
       - uses: actions/checkout@v4
 
@@ -227,7 +256,8 @@ jobs:
   frontend_build:
     name: frontend_build
     runs-on: ubuntu-latest
-    needs: [frontend_lint]
+    if: needs.release_gate.outputs.release == 'true'
+    needs: [release_gate, frontend_lint]
     steps:
       - uses: actions/checkout@v4
 
@@ -260,7 +290,8 @@ jobs:
   backend_deploy:
     name: backend_deploy
     runs-on: ubuntu-latest
-    needs: [backend_lint, backend_test, backend_build]
+    if: needs.release_gate.outputs.release == 'true'
+    needs: [release_gate, backend_lint, backend_test, backend_build]
     environment: production
     steps:
       - uses: actions/checkout@v4
