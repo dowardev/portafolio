@@ -358,6 +358,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # GitLab Bajaba los artifacts del job frontend_build al workspace del
+      # deploy (needs: [frontend_build]). En GitHub hay que bajarlos.
+      - name: Download frontend build
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist
+
       # GitLab hacia el setup a mano: id_rsa + known_hosts + ~/.ssh/config con
       # los algoritmos RSA legacy. Se replica igual: la accion
       # webfactory/ssh-agent no tiene input para known_hosts.
