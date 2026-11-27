@@ -7,8 +7,8 @@ This guide covers deploying the Portfolio application on traditional hosting (sh
 > Deploy can be done:
 >
 > - **Manually via SSH/FTP** (sections 2–7) — upload files, run migrations by hand
-> - **Automatically via GitLab CI/CD** on tags (section 9) — push a `vX.Y.Z` tag, the pipeline deploys
-> - **Manually via local script** (section 10) — runs the same deploy steps from your machine, no GitLab CI minutes consumed
+> - **Automatically via GitHub Actions** on tags (section 9) — push a `vX.Y.Z` tag, the workflow deploys
+> - **Manually via local script** (section 10) — runs the same deploy steps from your machine, no CI minutes consumed
 >
 > For a detailed step-by-step checklist, see [backend/DEPLOYMENT_CHECKLIST.md](backend/DEPLOYMENT_CHECKLIST.md).
 
@@ -272,27 +272,39 @@ See [section 2.4](#4-run-migrations) for details.
 
 ---
 
-## 9. GitLab CI/CD Auto-Deploy (manual alternative)
+## 9. GitHub Actions Auto-Deploy (manual alternative)
 
-The `.gitlab-ci.yml` files in `backend/` and `frontend/` enable automatic deploy when pushing a semantic tag.
+The `.github/workflows/release.yml` workflow enables automatic deploy when pushing a semantic tag.
 
 ### Prerequisites
 
-Configure these variables in **GitLab → Settings → CI/CD → Variables**:
+Configure these at **Settings → Secrets and variables → Actions**: `SSH_PRIVATE_KEY` is a repository **secret**; the rest are repository **variables** (the Variables tab).
 
-| Variable | Value | Protected | Masked |
-|----------|-------|-----------|--------|
-| `SSH_PRIVATE_KEY` | Server SSH private key | ✅ | ✅ |
-| `SSH_HOST` | `your-server.com` | ✅ | ✅ |
-| `SSH_PORT` | `22` | ✅ | ✅ |
-| `SSH_USER` | `your-ssh-user` | ✅ | ✅ |
-| `DEPLOY_PATH_BACKEND` | `/home/your-user/path/to/backend` | ✅ | ❌ |
-| `DEPLOY_PATH_FRONTEND` | `/home/your-user/path/to/frontend` | ✅ | ❌ |
-| `VITE_API_URL` | `https://api.yourdomain.com/api/` | ❌ | ❌ |
-| `VITE_SSO_URL` | `https://auth.yourdomain.com/api/` | ❌ | ❌ |
-| `VITE_SSO_FRONTEND_URL` | `https://auth.yourdomain.com` | ❌ | ❌ |
-| `VITE_SSO_CLIENT_ID` | `your-sso-client-id` | ❌ | ❌ |
-| `VITE_APP_NAME` | `Your App Name` | ❌ | ❌ |
+| Variable | Value | Where |
+|----------|-------|--------|
+| `SSH_PRIVATE_KEY` | Server SSH private key | secret |
+| `SSH_HOST` | `your-server.com` | variable |
+| `SSH_PORT` | `22` | variable |
+| `SSH_USER` | `your-ssh-user` | variable |
+| `DEPLOY_PATH_BACKEND` | `/home/your-user/path/to/backend` | variable |
+| `DEPLOY_PATH_FRONTEND` | `/home/your-user/path/to/frontend` | variable |
+| `VITE_API_URL` | `https://api.yourdomain.com/api/` | variable |
+| `VITE_SSO_URL` | `https://auth.yourdomain.com/api/` | variable |
+| `VITE_SSO_FRONTEND_URL` | `https://auth.yourdomain.com` | variable |
+| `VITE_SSO_CLIENT_ID` | `your-sso-client-id` | variable |
+| `VITE_APP_NAME` | `Your App Name` | variable |
+
+### SSH key preflight
+
+Before anything is built, the `ssh_preflight` job checks that the deploy key
+is actually authorized on the server: the secret is not empty, it is a valid
+private key, and the host accepts it. A missing or unauthorized key fails in
+seconds with a message that says what to do, instead of failing at the end of
+the deploy.
+
+To authorize it, add the **public** key of `SSH_PRIVATE_KEY` to the hosting
+panel (SSH keys of the deploy user) and make sure the known-hosts entry is
+present in `SSH_KNOWN_HOSTS`.
 
 ### Deploy trigger
 
@@ -338,10 +350,10 @@ graph LR
 ## 10. Local Deploy Script (CI/CD bypass)  (Script Automatizado — Un Comando)
 
 > **Este bloque (sección 10) es el enfoque SCRIPT LOCAL.**
-> Corrés **un comando** en tu máquina (`./scripts/deploy.sh --tag vX.Y.Z`); el script hace **lint + tests → build → tar → scp → ssh-deploy** (los **mismos pasos** que el pipeline completo de GitLab CI: lint, test, build, deploy).
+> Corrés **un comando** en tu máquina (`./scripts/deploy.sh --tag vX.Y.Z`); el script hace **lint + tests → build → tar → scp → ssh-deploy** (los **mismos pasos** que el pipeline completo de CI: lint, test, build, deploy).
 > Usalo cuando: querés automatización sin depender de CI/CD, preferís deployar desde tu laptop, o necesitás controlar el deploy manualmente.
 
-El script `scripts/deploy.sh` reproduce el pipeline completo de `.gitlab-ci.yml` (lint → test → build → deploy) y lo corre localmente por SSH. **Por defecto corre lint y tests** antes de buildear — si fallan, el deploy se aborta y no sube errores a producción.
+El script `scripts/deploy.sh` reproduce el pipeline completo de `.github/workflows/release.yml` (lint → test → build → deploy) y lo corre localmente por SSH. **Por defecto corre lint y tests** antes de buildear — si fallan, el deploy se aborta y no sube errores a producción.
 
 Podés saltar los checks con `--skip-checks` (solo para emergencias / hotfixes controlados):
 
@@ -396,7 +408,7 @@ está commiteada como documentación.
 ./scripts/deploy.sh --dry-run
 ```
 
-### Qué hace (1:1 con pipeline completo `.gitlab-ci.yml`)
+### Qué hace (1:1 con pipeline completo `.github/workflows/release.yml`)
 
 **Pre-deploy checks (lint + test) — igual que stages `lint` y `test` del CI:**
 

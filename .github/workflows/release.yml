@@ -1,6 +1,6 @@
 # ============================================================
 # portafolio — GitHub Actions
-# Traducido desde .gitlab-ci.yml (ver odd/tasks/github-migration-translation.md)
+# Traducido desde el .gitlab-ci.yml original
 #
 # DESVIACIÓN DOCUMENTADA (sección 0 de la guía): en GitLab TODOS los jobs de
 # este pipeline son tag-only (`.tag_rules`) y los jobs de deploy consumen los

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+### Changed
+- **`.github/workflows/release.yml`**: the deploy verifies the SSH key against the server before anything is built: a missing, invalid or unauthorized key now fails in seconds with a message that says exactly what to fix, instead of failing at the end of the deploy.
 ## 19.10.1 - 2026-09-11
 
 ### Changed

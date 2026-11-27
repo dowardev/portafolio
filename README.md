@@ -313,7 +313,7 @@ See [DEPLOY.md](DEPLOY.md) for complete deploy instructions and [backend/DEPLOYM
 1. Configure DNS, SSL, and server (see checklist)
 2. On server: `cp .env.production.example .env.production` and complete real values
 3. Deploy SSO Server at `sso.dowar.xyz`
-4. GitLab CI/CD deploys automatically when pushing a semantic tag (`git push origin v1.0.0`). See [DEPLOY.md §9](DEPLOY.md#9-gitlab-cicd-auto-deploy-manual-alternative)
+4. GitHub Actions deploys automatically when pushing a semantic tag (`git push origin v1.0.0`). See [DEPLOY.md §9](DEPLOY.md#9-github-actions-auto-deploy-manual-alternative)
 
 ---
 
