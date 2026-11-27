@@ -313,8 +313,6 @@ Determines when to use a **controller** vs a **composable**:
 **General rule:** If you need `ref`, `computed`, `watch`, or `onMounted` → **composable**.
 If you only need pure functions or data access → **controller**.
 
----
-
 ### Frontend (Vue Components): Ionic Imports
 
 All Vue components that use Ionic components in their template **must explicitly import** those components in **section 1** (`// 1. Imports (ionic/vue/ionicons)`) of the script.
@@ -361,30 +359,15 @@ NEVER create git commits unless the user explicitly requests it. This overrides 
 
 ## Ticket / Issue Policy
 
-NEVER create or edit Linear tickets (or any external issue/ticket) without the user explicitly asking for it. Creating a ticket is a mutation an agent must never do on its own initiative — even when a finding, follow-up, or proposal seems obvious. If you think a ticket is warranted, propose it in the conversation and ask the user first; only create it after an explicit request. This also covers branch names derived from tickets: do not branch off a ticket that was not requested.
+NEVER create or edit GitLab issues (or any external issue/ticket) without the user explicitly asking for it. Creating an issue is a mutation an agent must never do on its own initiative — even when a finding, follow-up, or proposal seems obvious. If you think an issue is warranted, propose it in the conversation and ask the user first; only create it after an explicit request. This also covers branch names derived from issues: do not branch off an issue that was not requested.
 
 This rule exists because tickets (unlike code) are project-planning artifacts the user owns: content, priority, and even whether an item deserves a ticket are the user's decisions, not the agent's. The same applies to changelog/package edits that imply a release decision — propose, don't act.
 
+Before creating anything, search for open duplicates first:
+  GET /issues?state=opened&search=QUERY&per_page=20
+If a clear duplicate exists, do NOT create a second one: comment on the existing
+issue and ask the user (comment on the existing / create anyway).
 
-## Pi lifecycle command guard (gentle-ai)
-
-> **Histórico (gentle-pi v2.2.0):** este guard era un problema de la extensión
-> gentle-pi v2.2.0 y fue eliminado en la v2.3.0. Con la versión actual los comandos
-> compuestos (con `&&`, `;`, `|`, backtick o `$(`) ya no se bloquean. Esta sección
-> se conserva como referencia histórica únicamente.
-
-`git commit` / `git push` / `glab mr ...` desde el bash tool se bloquean si el
-comando tiene `&&`, `;`, `|`, backtick o `$(` (reporte: "Compound or wrapped
-lifecycle command ... must fail closed"). NO tiene que ver con RDD; RDD off no
-bloquea. El guard es stateless: cada comando se evalúa de forma aislada, no queda
-"trabado" tras un bloqueo.
-
-Fix: un solo comando directo, sin `&&` ni `cd`, preferiblemente
-`git -C <ruta-absoluta> <subcommand> -m "mensaje de una sola linea"`.
-IMPORTANTE: el mensaje del `-m` debe ser UNA sola linea (sin saltos de linea);
-un cuerpo multilinea introduce un `\n` sin comillar que dispara el mismo bloqueo.
-Si un comando "simple" sigue bloqueando, no es estado persistido: tiene algun
-control-char sin comillar (`;`, `|`, `&`, backtick, `$(` o `\n`) en la linea.
 
 ## Formato HTML / Vue / Ionic (legibilidad para review)
 
@@ -409,3 +392,4 @@ Ejemplo incorrecto (sin saltos):
   <ion-button>Guardar</ion-button>
 </ion-item>
 ```
+

@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Fixed
+- **`setup.sh`**: the setup removes the stray `.env.production` / `.env.development` files before the Laravel setup runs, so the app no longer boots with the wrong environment when those files are present.
+
+### Changed
+- **`.gitignore`**: the ODD task notes stay local; the `odd/` directory is no longer tracked by git.
+- **`AGENTS.md`**: the repo rules drop the retired Pi lifecycle guard and point the ticket policy at GitLab issues.
 ## 19.10.1 - 2026-09-11
 
 ### Changed
