@@ -4,6 +4,7 @@
 
 ### Fixed
 - **`setup.sh`**: the setup removes the stray `.env.production` / `.env.development` files before the Laravel setup runs, so the app no longer boots with the wrong environment when those files are present.
+- **`.github/workflows/release.yml`**: the frontend build now receives the `VITE_API_URL`, `VITE_SSO_URL`, `VITE_SSO_FRONTEND_URL` and `VITE_SSO_CLIENT_ID` variables. Vite inlines them at build time, so without them the bundle shipped with an undefined API URL and an SSO menu pointing at `localhost:8101`.
 
 ### Changed
 - **`.gitignore`**: the ODD task notes stay local; the `odd/` directory is no longer tracked by git.
