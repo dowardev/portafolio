@@ -7,7 +7,12 @@
 - The pipeline now runs on pull requests: lint, tests and the builds validate every PR, while the deploy and the rollback stay tag-only.
 
 ### Fixed
+- **`setup.sh`**: the setup removes the stray `.env.production` / `.env.development` files before the Laravel setup runs, so the app no longer boots with the wrong environment when those files are present.
 - **`.github/workflows/release.yml`**: the frontend build now receives the `VITE_API_URL`, `VITE_SSO_URL`, `VITE_SSO_FRONTEND_URL` and `VITE_SSO_CLIENT_ID` variables. Vite inlines them at build time, so without them the bundle shipped with an undefined API URL and an SSO menu pointing at `localhost:8101`.
+
+### Changed
+- **`.gitignore`**: the ODD task notes stay local; the `odd/` directory is no longer tracked by git.
+- **`AGENTS.md`**: the repo rules drop the retired Pi lifecycle guard and point the ticket policy at GitLab issues.
 ## 19.10.1 - 2026-09-11
 
 ### Changed

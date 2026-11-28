@@ -36,3 +36,6 @@ progress.md
 findings.md
 *.bak
 .php-cs-fixer.cache
+
+# ODD task notes stay local-only
+odd/
