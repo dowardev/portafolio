@@ -4,6 +4,7 @@
 
 ### Changed
 - **`.github/workflows/release.yml`**: the deploy verifies the SSH key against the server before anything is built: a missing, invalid or unauthorized key now fails in seconds with a message that says exactly what to fix, instead of failing at the end of the deploy.
+- The pipeline now runs on pull requests: lint, tests and the builds validate every PR, while the deploy and the rollback stay tag-only.
 ## 19.10.1 - 2026-09-11
 
 ### Changed

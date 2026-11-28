@@ -16,6 +16,7 @@
 name: Release
 
 on:
+  pull_request:
   push:
     tags:
       - 'v*.*.*'
@@ -73,7 +74,7 @@ jobs:
   backend_lint:
     name: backend_lint
     runs-on: ubuntu-latest
-    if: needs.release_gate.outputs.release == 'true'
+    if: github.event_name == 'pull_request' || needs.release_gate.outputs.release == 'true'
     needs: [release_gate]
     steps:
       - uses: actions/checkout@v4
@@ -104,7 +105,7 @@ jobs:
   frontend_lint:
     name: frontend_lint
     runs-on: ubuntu-latest
-    if: needs.release_gate.outputs.release == 'true'
+    if: github.event_name == 'pull_request' || needs.release_gate.outputs.release == 'true'
     needs: [release_gate]
     steps:
       - uses: actions/checkout@v4
@@ -134,7 +135,7 @@ jobs:
   backend_test:
     name: backend_test
     runs-on: ubuntu-latest
-    if: needs.release_gate.outputs.release == 'true'
+    if: github.event_name == 'pull_request' || needs.release_gate.outputs.release == 'true'
     needs: [release_gate, backend_lint]
     env:
       DB_CONNECTION: sqlite
@@ -171,7 +172,7 @@ jobs:
   frontend_test:
     name: frontend_test
     runs-on: ubuntu-latest
-    if: needs.release_gate.outputs.release == 'true'
+    if: github.event_name == 'pull_request' || needs.release_gate.outputs.release == 'true'
     needs: [release_gate, frontend_lint]
     steps:
       - uses: actions/checkout@v4
@@ -201,7 +202,7 @@ jobs:
   backend_assets_build:
     name: backend_assets_build
     runs-on: ubuntu-latest
-    if: needs.release_gate.outputs.release == 'true'
+    if: github.event_name == 'pull_request' || needs.release_gate.outputs.release == 'true'
     needs: [release_gate]
     steps:
       - uses: actions/checkout@v4
@@ -234,7 +235,7 @@ jobs:
   backend_build:
     name: backend_build
     runs-on: ubuntu-latest
-    if: needs.release_gate.outputs.release == 'true'
+    if: github.event_name == 'pull_request' || needs.release_gate.outputs.release == 'true'
     needs: [release_gate, backend_assets_build]
     steps:
       - uses: actions/checkout@v4
@@ -265,7 +266,7 @@ jobs:
   frontend_build:
     name: frontend_build
     runs-on: ubuntu-latest
-    if: needs.release_gate.outputs.release == 'true'
+    if: github.event_name == 'pull_request' || needs.release_gate.outputs.release == 'true'
     needs: [release_gate, frontend_lint]
     steps:
       - uses: actions/checkout@v4
@@ -405,7 +406,9 @@ jobs:
   frontend_deploy:
     name: frontend_deploy
     runs-on: ubuntu-latest
-    needs: [frontend_lint, frontend_test, frontend_build]
+    needs: [release_gate, frontend_lint, frontend_test, frontend_build]
+    # sin este gate el deploy se dispararia en cada pull_request
+    if: needs.release_gate.outputs.release == 'true'
     environment: production
     steps:
       - uses: actions/checkout@v4
