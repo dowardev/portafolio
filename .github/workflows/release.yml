@@ -287,6 +287,13 @@ jobs:
 
       - name: Build frontend
         working-directory: frontend
+        env:
+          # Vite inlines these at BUILD time: without them the bundle ships an
+          # undefined API URL and points the SSO menu at localhost.
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_SSO_URL: ${{ vars.VITE_SSO_URL }}
+          VITE_SSO_FRONTEND_URL: ${{ vars.VITE_SSO_FRONTEND_URL }}
+          VITE_SSO_CLIENT_ID: ${{ vars.VITE_SSO_CLIENT_ID }}
         run: pnpm exec vite build
 
       - name: Upload frontend build

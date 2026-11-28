@@ -5,6 +5,9 @@
 ### Changed
 - **`.github/workflows/release.yml`**: the deploy verifies the SSH key against the server before anything is built: a missing, invalid or unauthorized key now fails in seconds with a message that says exactly what to fix, instead of failing at the end of the deploy.
 - The pipeline now runs on pull requests: lint, tests and the builds validate every PR, while the deploy and the rollback stay tag-only.
+
+### Fixed
+- **`.github/workflows/release.yml`**: the frontend build now receives the `VITE_API_URL`, `VITE_SSO_URL`, `VITE_SSO_FRONTEND_URL` and `VITE_SSO_CLIENT_ID` variables. Vite inlines them at build time, so without them the bundle shipped with an undefined API URL and an SSO menu pointing at `localhost:8101`.
 ## 19.10.1 - 2026-09-11
 
 ### Changed
